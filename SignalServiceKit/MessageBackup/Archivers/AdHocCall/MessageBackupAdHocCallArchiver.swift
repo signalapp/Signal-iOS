@@ -87,46 +87,48 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
         var partialErrors = [ArchiveFrameError]()
         do {
             try callRecordStore.enumerateAdHocCallRecords(tx: context.tx) { record in
-                var adHocCallProto = BackupProto_AdHocCall()
-                adHocCallProto.callID = record.callId
-                adHocCallProto.callTimestamp = record.callBeganTimestamp
+                autoreleasepool {
+                    var adHocCallProto = BackupProto_AdHocCall()
+                    adHocCallProto.callID = record.callId
+                    adHocCallProto.callTimestamp = record.callBeganTimestamp
 
-                // It's a cross-client decision that `state` can only
-                // ever be `.generic` (even if the client state is
-                // actually `.joined`).
-                adHocCallProto.state = .generic
+                    // It's a cross-client decision that `state` can only
+                    // ever be `.generic` (even if the client state is
+                    // actually `.joined`).
+                    adHocCallProto.state = .generic
 
-                let recordId = AdHocCallAppId(callRecord: record)
+                    let recordId = AdHocCallAppId(callRecord: record)
 
-                guard
-                    let callLinkRecordId = MessageBackup.CallLinkRecordId(callRecordConversationId: record.conversationId)
-                else {
-                    partialErrors.append(.archiveFrameError(
-                        .adHocCallDoesNotHaveCallLinkAsConversationId,
-                        recordId
-                    ))
-                    return
-                }
-                guard let recipientId = context.recipientContext[.callLink(callLinkRecordId)] else {
-                    partialErrors.append(.archiveFrameError(
-                        .referencedRecipientIdMissing(.callLink(callLinkRecordId)),
-                        recordId
-                    ))
-                    return
-                }
-                adHocCallProto.recipientID = recipientId.value
+                    guard
+                        let callLinkRecordId = MessageBackup.CallLinkRecordId(callRecordConversationId: record.conversationId)
+                    else {
+                        partialErrors.append(.archiveFrameError(
+                            .adHocCallDoesNotHaveCallLinkAsConversationId,
+                            recordId
+                        ))
+                        return
+                    }
+                    guard let recipientId = context.recipientContext[.callLink(callLinkRecordId)] else {
+                        partialErrors.append(.archiveFrameError(
+                            .referencedRecipientIdMissing(.callLink(callLinkRecordId)),
+                            recordId
+                        ))
+                        return
+                    }
+                    adHocCallProto.recipientID = recipientId.value
 
-                let error = Self.writeFrameToStream(
-                    stream,
-                    objectId: recordId
-                ) {
-                    var frame = BackupProto_Frame()
-                    frame.adHocCall = adHocCallProto
-                    return frame
-                }
+                    let error = Self.writeFrameToStream(
+                        stream,
+                        objectId: recordId
+                    ) {
+                        var frame = BackupProto_Frame()
+                        frame.adHocCall = adHocCallProto
+                        return frame
+                    }
 
-                if let error {
-                    partialErrors.append(error)
+                    if let error {
+                        partialErrors.append(error)
+                    }
                 }
             }
         } catch {

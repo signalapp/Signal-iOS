@@ -36,20 +36,24 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
         do {
             // enumerate deleted threads
             for item in privateStoryThreadDeletionManager.allDeletedIdentifiers(tx: context.tx) {
-                self.archiveDeletedStoryList(
-                    rawDistributionId: item,
-                    stream: stream,
-                    context: context,
-                    errors: &errors
-                )
+                autoreleasepool {
+                    self.archiveDeletedStoryList(
+                        rawDistributionId: item,
+                        stream: stream,
+                        context: context,
+                        errors: &errors
+                    )
+                }
             }
             try threadStore.enumerateStoryThreads(context: context) { storyThread in
-                self.archiveStoryThread(
-                    storyThread,
-                    stream: stream,
-                    context: context,
-                    errors: &errors
-                )
+                autoreleasepool {
+                    self.archiveStoryThread(
+                        storyThread,
+                        stream: stream,
+                        context: context,
+                        errors: &errors
+                    )
+                }
 
                 return true
             }

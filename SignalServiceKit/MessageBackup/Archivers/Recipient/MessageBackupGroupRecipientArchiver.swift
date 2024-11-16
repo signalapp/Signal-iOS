@@ -56,12 +56,14 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
         do {
             try threadStore.enumerateGroupThreads(context: context) { groupThread in
-                self.archiveGroupThread(
-                    groupThread,
-                    stream: stream,
-                    context: context,
-                    errors: &errors
-                )
+                autoreleasepool {
+                    self.archiveGroupThread(
+                        groupThread,
+                        stream: stream,
+                        context: context,
+                        errors: &errors
+                    )
+                }
 
                 return true
             }

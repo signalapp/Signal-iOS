@@ -307,7 +307,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             self.processErrors(errors: errors, tx: tx)
         }
 
-        try writeHeader(stream: stream, tx: tx)
+        try autoreleasepool {
+            try writeHeader(stream: stream, tx: tx)
+        }
 
         let currentBackupAttachmentUploadEra: String?
         if MessageBackupMessageAttachmentArchiver.isFreeTierBackup() {
@@ -321,16 +323,18 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             tx: tx
         )
-        let accountDataResult = accountDataArchiver.archiveAccountData(
-            stream: stream,
-            context: customChatColorContext
-        )
-        switch accountDataResult {
-        case .success:
-            break
-        case .failure(let error):
-            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
-            throw OWSAssertionError("Failed to archive account data")
+        try autoreleasepool {
+            let accountDataResult = accountDataArchiver.archiveAccountData(
+                stream: stream,
+                context: customChatColorContext
+            )
+            switch accountDataResult {
+            case .success:
+                break
+            case .failure(let error):
+                errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
+                throw OWSAssertionError("Failed to archive account data")
+            }
         }
 
         let localRecipientResult = localRecipientArchiver.archiveLocalRecipient(
@@ -353,15 +357,17 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             tx: tx
         )
 
-        switch releaseNotesRecipientArchiver.archiveReleaseNotesRecipient(
-            stream: stream,
-            context: recipientArchivingContext
-        ) {
-        case .success:
-            break
-        case .failure(let error):
-            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
-            throw OWSAssertionError("Failed to archive release notes channel!")
+        try autoreleasepool {
+            switch releaseNotesRecipientArchiver.archiveReleaseNotesRecipient(
+                stream: stream,
+                context: recipientArchivingContext
+            ) {
+            case .success:
+                break
+            case .failure(let error):
+                errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
+                throw OWSAssertionError("Failed to archive release notes channel!")
+            }
         }
 
         switch contactRecipientArchiver.archiveAllContactRecipients(
@@ -725,159 +731,161 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         let contexts = Contexts(localIdentifiers: localIdentifiers, tx: tx)
 
         while hasMoreFrames {
-            let frame: BackupProto_Frame?
-            switch stream.readFrame() {
-            case let .success(_frame, moreBytesAvailable):
-                frame = _frame
-                hasMoreFrames = moreBytesAvailable
-            case .invalidByteLengthDelimiter:
-                throw OWSAssertionError("invalid byte length delimiter on header")
-            case .emptyFinalFrame:
-                frame = nil
-                hasMoreFrames = false
-            case .protoDeserializationError(let error):
-                // fail the whole thing if we fail to deserialize one frame
-                owsFailDebug("Failed to deserialize proto frame!")
-                throw error
-            }
+            try autoreleasepool {
+                let frame: BackupProto_Frame?
+                switch stream.readFrame() {
+                case let .success(_frame, moreBytesAvailable):
+                    frame = _frame
+                    hasMoreFrames = moreBytesAvailable
+                case .invalidByteLengthDelimiter:
+                    throw OWSAssertionError("invalid byte length delimiter on header")
+                case .emptyFinalFrame:
+                    frame = nil
+                    hasMoreFrames = false
+                case .protoDeserializationError(let error):
+                    // fail the whole thing if we fail to deserialize one frame
+                    owsFailDebug("Failed to deserialize proto frame!")
+                    throw error
+                }
 
-            switch frame?.item {
-            case .recipient(let recipient):
-                let recipientResult: MessageBackup.RestoreFrameResult<MessageBackup.RecipientId>
-                switch recipient.destination {
+                switch frame?.item {
+                case .recipient(let recipient):
+                    let recipientResult: MessageBackup.RestoreFrameResult<MessageBackup.RecipientId>
+                    switch recipient.destination {
+                    case nil:
+                        recipientResult = .failure([.restoreFrameError(
+                            .invalidProtoData(.recipientMissingDestination),
+                            recipient.recipientId
+                        )])
+                    case .self_p(let selfRecipientProto):
+                        recipientResult = localRecipientArchiver.restoreSelfRecipient(
+                            selfRecipientProto,
+                            recipient: recipient,
+                            context: contexts.recipient
+                        )
+                    case .contact(let contactRecipientProto):
+                        recipientResult = contactRecipientArchiver.restoreContactRecipientProto(
+                            contactRecipientProto,
+                            recipient: recipient,
+                            context: contexts.recipient
+                        )
+                    case .group(let groupRecipientProto):
+                        recipientResult = groupRecipientArchiver.restoreGroupRecipientProto(
+                            groupRecipientProto,
+                            recipient: recipient,
+                            context: contexts.recipient
+                        )
+                    case .distributionList(let distributionListRecipientProto):
+                        recipientResult = distributionListRecipientArchiver.restoreDistributionListRecipientProto(
+                            distributionListRecipientProto,
+                            recipient: recipient,
+                            context: contexts.recipient
+                        )
+                    case .releaseNotes(let releaseNotesRecipientProto):
+                        recipientResult = releaseNotesRecipientArchiver.restoreReleaseNotesRecipientProto(
+                            releaseNotesRecipientProto,
+                            recipient: recipient,
+                            context: contexts.recipient
+                        )
+                    case .callLink(let callLinkRecipientProto):
+                        recipientResult = callLinkRecipientArchiver.restoreCallLinkRecipientProto(
+                            callLinkRecipientProto,
+                            recipient: recipient,
+                            context: contexts.recipient
+                        )
+                    }
+
+                    switch recipientResult {
+                    case .success:
+                        return
+                    case .partialRestore(let errors):
+                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: recipient) })
+                    case .failure(let errors):
+                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: recipient) })
+                        throw BackupError()
+                    }
+                case .chat(let chat):
+                    let chatResult = chatArchiver.restore(
+                        chat,
+                        context: contexts.chat
+                    )
+                    switch chatResult {
+                    case .success:
+                        return
+                    case .partialRestore(let errors):
+                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: chat) })
+                    case .failure(let errors):
+                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: chat) })
+                        throw BackupError()
+                    }
+                case .chatItem(let chatItem):
+                    let chatItemResult = chatItemArchiver.restore(
+                        chatItem,
+                        context: contexts.chatItem
+                    )
+                    switch chatItemResult {
+                    case .success:
+                        return
+                    case .partialRestore(let errors):
+                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: chatItem) })
+                    case .failure(let errors):
+                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: chatItem) })
+                        throw BackupError()
+                    }
+                case .account(let backupProtoAccountData):
+                    let accountDataResult = accountDataArchiver.restore(
+                        backupProtoAccountData,
+                        chatColorsContext: contexts.customChatColor,
+                        chatItemContext: contexts.chatItem
+                    )
+                    switch accountDataResult {
+                    case .success:
+                        return
+                    case .partialRestore(let errors):
+                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoAccountData) })
+                    case .failure(let errors):
+                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoAccountData) })
+                        throw BackupError()
+                    }
+                case .stickerPack(let backupProtoStickerPack):
+                    let stickerPackResult = stickerPackArchiver.restore(
+                        backupProtoStickerPack,
+                        context: MessageBackup.RestoringContext(tx: tx)
+                    )
+                    switch stickerPackResult {
+                    case .success:
+                        return
+                    case .partialRestore(let errors):
+                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoStickerPack) })
+                    case .failure(let errors):
+                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoStickerPack) })
+                        throw BackupError()
+                    }
+                case .adHocCall(let backupProtoAdHocCall):
+                    let adHocCallResult = adHocCallArchiver.restore(
+                        backupProtoAdHocCall,
+                        context: contexts.chatItem
+                    )
+                    switch adHocCallResult {
+                    case .success:
+                        return
+                    case .partialRestore(let errors):
+                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoAdHocCall) })
+                    case .failure(let errors):
+                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoAdHocCall) })
+                        throw BackupError()
+                    }
                 case nil:
-                    recipientResult = .failure([.restoreFrameError(
-                        .invalidProtoData(.recipientMissingDestination),
-                        recipient.recipientId
-                    )])
-                case .self_p(let selfRecipientProto):
-                    recipientResult = localRecipientArchiver.restoreSelfRecipient(
-                        selfRecipientProto,
-                        recipient: recipient,
-                        context: contexts.recipient
-                    )
-                case .contact(let contactRecipientProto):
-                    recipientResult = contactRecipientArchiver.restoreContactRecipientProto(
-                        contactRecipientProto,
-                        recipient: recipient,
-                        context: contexts.recipient
-                    )
-                case .group(let groupRecipientProto):
-                    recipientResult = groupRecipientArchiver.restoreGroupRecipientProto(
-                        groupRecipientProto,
-                        recipient: recipient,
-                        context: contexts.recipient
-                    )
-                case .distributionList(let distributionListRecipientProto):
-                    recipientResult = distributionListRecipientArchiver.restoreDistributionListRecipientProto(
-                        distributionListRecipientProto,
-                        recipient: recipient,
-                        context: contexts.recipient
-                    )
-                case .releaseNotes(let releaseNotesRecipientProto):
-                    recipientResult = releaseNotesRecipientArchiver.restoreReleaseNotesRecipientProto(
-                        releaseNotesRecipientProto,
-                        recipient: recipient,
-                        context: contexts.recipient
-                    )
-                case .callLink(let callLinkRecipientProto):
-                    recipientResult = callLinkRecipientArchiver.restoreCallLinkRecipientProto(
-                        callLinkRecipientProto,
-                        recipient: recipient,
-                        context: contexts.recipient
-                    )
-                }
-
-                switch recipientResult {
-                case .success:
-                    continue
-                case .partialRestore(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: recipient) })
-                case .failure(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: recipient) })
-                    throw BackupError()
-                }
-            case .chat(let chat):
-                let chatResult = chatArchiver.restore(
-                    chat,
-                    context: contexts.chat
-                )
-                switch chatResult {
-                case .success:
-                    continue
-                case .partialRestore(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: chat) })
-                case .failure(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: chat) })
-                    throw BackupError()
-                }
-            case .chatItem(let chatItem):
-                let chatItemResult = chatItemArchiver.restore(
-                    chatItem,
-                    context: contexts.chatItem
-                )
-                switch chatItemResult {
-                case .success:
-                    continue
-                case .partialRestore(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: chatItem) })
-                case .failure(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: chatItem) })
-                    throw BackupError()
-                }
-            case .account(let backupProtoAccountData):
-                let accountDataResult = accountDataArchiver.restore(
-                    backupProtoAccountData,
-                    chatColorsContext: contexts.customChatColor,
-                    chatItemContext: contexts.chatItem
-                )
-                switch accountDataResult {
-                case .success:
-                    continue
-                case .partialRestore(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoAccountData) })
-                case .failure(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoAccountData) })
-                    throw BackupError()
-                }
-            case .stickerPack(let backupProtoStickerPack):
-                let stickerPackResult = stickerPackArchiver.restore(
-                    backupProtoStickerPack,
-                    context: MessageBackup.RestoringContext(tx: tx)
-                )
-                switch stickerPackResult {
-                case .success:
-                    continue
-                case .partialRestore(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoStickerPack) })
-                case .failure(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoStickerPack) })
-                    throw BackupError()
-                }
-            case .adHocCall(let backupProtoAdHocCall):
-                let adHocCallResult = adHocCallArchiver.restore(
-                    backupProtoAdHocCall,
-                    context: contexts.chatItem
-                )
-                switch adHocCallResult {
-                case .success:
-                    continue
-                case .partialRestore(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoAdHocCall) })
-                case .failure(let errors):
-                    frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoAdHocCall) })
-                    throw BackupError()
-                }
-            case nil:
-                if hasMoreFrames {
-                    owsFailDebug("Frame missing item!")
-                    frameErrors.append(LoggableErrorAndProto(
-                        error: MessageBackup.RestoreFrameError.restoreFrameError(
-                            .invalidProtoData(.frameMissingItem),
-                            MessageBackup.EmptyFrameId.shared
-                        ),
-                        wasFatal: false
-                    ))
+                    if hasMoreFrames {
+                        owsFailDebug("Frame missing item!")
+                        frameErrors.append(LoggableErrorAndProto(
+                            error: MessageBackup.RestoreFrameError.restoreFrameError(
+                                .invalidProtoData(.frameMissingItem),
+                                MessageBackup.EmptyFrameId.shared
+                            ),
+                            wasFatal: false
+                        ))
+                    }
                 }
             }
         }

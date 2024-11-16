@@ -110,22 +110,26 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         func archiveInteraction(
             _ interaction: TSInteraction
         ) -> Bool {
-            let result = self.archiveInteraction(
-                interaction,
-                stream: stream,
-                context: context
-            )
-            switch result {
-            case .success:
-                break
-            case .partialSuccess(let errors):
-                partialFailures.append(contentsOf: errors)
-            case .completeFailure(let error):
-                completeFailureError = error
-                return false
+            var stop = false
+            autoreleasepool {
+                let result = self.archiveInteraction(
+                    interaction,
+                    stream: stream,
+                    context: context
+                )
+                switch result {
+                case .success:
+                    break
+                case .partialSuccess(let errors):
+                    partialFailures.append(contentsOf: errors)
+                case .completeFailure(let error):
+                    completeFailureError = error
+                    stop = true
+                    return
+                }
             }
 
-            return true
+            return !stop
         }
 
         do {

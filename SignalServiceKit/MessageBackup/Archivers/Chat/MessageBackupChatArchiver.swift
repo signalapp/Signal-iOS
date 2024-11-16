@@ -71,48 +71,52 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         var partialErrors = [ArchiveFrameError]()
 
         func archiveThread(_ thread: TSThread) -> Bool {
-            let result: ArchiveMultiFrameResult
-            if let thread = thread as? TSContactThread {
-                // Check address directly; isNoteToSelf uses global state.
-                if thread.contactAddress.isEqualToAddress(context.recipientContext.localIdentifiers.aciAddress) {
-                    result = self.archiveNoteToSelfThread(
+            var stop = false
+            autoreleasepool {
+                let result: ArchiveMultiFrameResult
+                if let thread = thread as? TSContactThread {
+                    // Check address directly; isNoteToSelf uses global state.
+                    if thread.contactAddress.isEqualToAddress(context.recipientContext.localIdentifiers.aciAddress) {
+                        result = self.archiveNoteToSelfThread(
+                            thread,
+                            stream: stream,
+                            context: context
+                        )
+                    } else {
+                        result = self.archiveContactThread(
+                            thread,
+                            stream: stream,
+                            context: context
+                        )
+                    }
+                } else if let thread = thread as? TSGroupThread, thread.isGroupV2Thread {
+                    result = self.archiveGroupV2Thread(
                         thread,
                         stream: stream,
                         context: context
                     )
+                } else if let thread = thread as? TSGroupThread, thread.isGroupV1Thread {
+                    // Remember which threads were gv1 so we can silently drop their messages.
+                    context.gv1ThreadIds.insert(thread.uniqueThreadIdentifier)
+                    // Skip gv1 threads; count as success.
+                    result = .success
                 } else {
-                    result = self.archiveContactThread(
-                        thread,
-                        stream: stream,
-                        context: context
-                    )
+                    result = .completeFailure(.fatalArchiveError(.unrecognizedThreadType))
                 }
-            } else if let thread = thread as? TSGroupThread, thread.isGroupV2Thread {
-                result = self.archiveGroupV2Thread(
-                    thread,
-                    stream: stream,
-                    context: context
-                )
-            } else if let thread = thread as? TSGroupThread, thread.isGroupV1Thread {
-                // Remember which threads were gv1 so we can silently drop their messages.
-                context.gv1ThreadIds.insert(thread.uniqueThreadIdentifier)
-                // Skip gv1 threads; count as success.
-                result = .success
-            } else {
-                result = .completeFailure(.fatalArchiveError(.unrecognizedThreadType))
+
+                switch result {
+                case .success:
+                    break
+                case .completeFailure(let error):
+                    completeFailureError = error
+                    stop = true
+                    return
+                case .partialSuccess(let errors):
+                    partialErrors.append(contentsOf: errors)
+                }
             }
 
-            switch result {
-            case .success:
-                break
-            case .completeFailure(let error):
-                completeFailureError = error
-                return false
-            case .partialSuccess(let errors):
-                partialErrors.append(contentsOf: errors)
-            }
-
-            return true
+            return !stop
         }
 
         do {

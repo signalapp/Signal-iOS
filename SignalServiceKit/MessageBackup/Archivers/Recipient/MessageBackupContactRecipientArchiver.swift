@@ -231,7 +231,9 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         }
 
         do {
-            try recipientStore.enumerateAllSignalRecipients(context, block: recipientBlock)
+            try recipientStore.enumerateAllSignalRecipients(context, block: { recipient in
+                autoreleasepool { recipientBlock(recipient) }
+            })
         } catch {
             return .completeFailure(.fatalArchiveError(.recipientIteratorError(error)))
         }
@@ -257,76 +259,78 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         /// relationship between `SignalRecipient` and `OWSUserProfile`, we can
         /// remove this code.
         profileManager.enumerateUserProfiles(tx: context.tx) { userProfile in
-            if let serviceId = userProfile.serviceId {
-                let (inserted, _) = archivedServiceIds.insert(serviceId)
+            autoreleasepool {
+                if let serviceId = userProfile.serviceId {
+                    let (inserted, _) = archivedServiceIds.insert(serviceId)
 
-                if !inserted {
-                    /// Bail early if we've already archived a `Contact` for this
-                    /// service ID.
+                    if !inserted {
+                        /// Bail early if we've already archived a `Contact` for this
+                        /// service ID.
+                        return
+                    }
+                }
+                if let phoneNumber = userProfile.phoneNumber {
+                    let (inserted, _) = archivedPhoneNumbers.insert(phoneNumber)
+
+                    if !inserted {
+                        /// Bail early if we've already archived a `Contact` for this
+                        /// phone number.
+                        return
+                    }
+                }
+
+                guard
+                    let contactAddress = MessageBackup.ContactAddress(
+                        aci: userProfile.serviceId as? Aci,
+                        pni: userProfile.serviceId as? Pni,
+                        e164: userProfile.phoneNumber.flatMap { E164($0) }
+                    )
+                else {
+                    /// Skip profiles with no identifiers, but don't add to the
+                    /// list of errors.
+                    Logger.warn("Skipping empty OWSUserProfile!")
                     return
                 }
-            }
-            if let phoneNumber = userProfile.phoneNumber {
-                let (inserted, _) = archivedPhoneNumbers.insert(phoneNumber)
 
-                if !inserted {
-                    /// Bail early if we've already archived a `Contact` for this
-                    /// phone number.
+                let signalServiceAddress: MessageBackup.InteropAddress
+                switch userProfile.internalAddress {
+                case .localUser:
+                    /// Skip the local user. We need to check `internalAddress`
+                    /// here, since the "local user profile" has historically been
+                    /// persisted with a special, magic phone number.
                     return
+                case .otherUser(let _signalServiceAddress):
+                    signalServiceAddress = _signalServiceAddress
                 }
-            }
 
-            guard
-                let contactAddress = MessageBackup.ContactAddress(
-                    aci: userProfile.serviceId as? Aci,
-                    pni: userProfile.serviceId as? Pni,
-                    e164: userProfile.phoneNumber.flatMap { E164($0) }
+                let contact = buildContactRecipient(
+                    aci: contactAddress.aci,
+                    pni: contactAddress.pni,
+                    e164: contactAddress.e164,
+                    username: nil, // If we have a user profile, we have no username.
+                    isBlocked: blockedAddresses.contains(signalServiceAddress),
+                    isWhitelisted: whitelistedAddresses.contains(signalServiceAddress),
+                    isStoryHidden: false, // Can't have a story if there's no recipient.
+                    visibility: .visible, // Can't have hidden if there's no recipient.
+                    registration: {
+                        // We don't know if they're registered; if we did, we'd have
+                        // a recipient.
+                        var notRegistered = BackupProto_Contact.NotRegistered()
+                        notRegistered.unregisteredTimestamp = 0
+
+                        return .notRegistered(notRegistered)
+                    }(),
+                    userProfile: userProfile,
+                    // We don't have (and can't fetch) identity info for
+                    // profile addresses without SignalRecipients.
+                    identity: nil
                 )
-            else {
-                /// Skip profiles with no identifiers, but don't add to the
-                /// list of errors.
-                Logger.warn("Skipping empty OWSUserProfile!")
-                return
+
+                writeToStream(
+                    contact: contact,
+                    contactAddress: contactAddress
+                )
             }
-
-            let signalServiceAddress: MessageBackup.InteropAddress
-            switch userProfile.internalAddress {
-            case .localUser:
-                /// Skip the local user. We need to check `internalAddress`
-                /// here, since the "local user profile" has historically been
-                /// persisted with a special, magic phone number.
-                return
-            case .otherUser(let _signalServiceAddress):
-                signalServiceAddress = _signalServiceAddress
-            }
-
-            let contact = buildContactRecipient(
-                aci: contactAddress.aci,
-                pni: contactAddress.pni,
-                e164: contactAddress.e164,
-                username: nil, // If we have a user profile, we have no username.
-                isBlocked: blockedAddresses.contains(signalServiceAddress),
-                isWhitelisted: whitelistedAddresses.contains(signalServiceAddress),
-                isStoryHidden: false, // Can't have a story if there's no recipient.
-                visibility: .visible, // Can't have hidden if there's no recipient.
-                registration: {
-                    // We don't know if they're registered; if we did, we'd have
-                    // a recipient.
-                    var notRegistered = BackupProto_Contact.NotRegistered()
-                    notRegistered.unregisteredTimestamp = 0
-
-                    return .notRegistered(notRegistered)
-                }(),
-                userProfile: userProfile,
-                // We don't have (and can't fetch) identity info for
-                // profile addresses without SignalRecipients.
-                identity: nil
-            )
-
-            writeToStream(
-                contact: contact,
-                contactAddress: contactAddress
-            )
         }
 
         if errors.isEmpty {

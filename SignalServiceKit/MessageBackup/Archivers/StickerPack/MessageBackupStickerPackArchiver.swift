@@ -79,24 +79,26 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
         var handledPacks = Set<Data>()
 
         func archiveInstalledStickerPack(_ installedStickerPack: StickerPack) {
-            guard !handledPacks.contains(installedStickerPack.packId) else { return }
-            let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
-                stream,
-                objectId: StickerPackId(installedStickerPack.packId)) {
-                    var stickerPack = BackupProto_StickerPack()
-                    stickerPack.packID = installedStickerPack.packId
-                    stickerPack.packKey = installedStickerPack.packKey
+            autoreleasepool {
+                guard !handledPacks.contains(installedStickerPack.packId) else { return }
+                let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
+                    stream,
+                    objectId: StickerPackId(installedStickerPack.packId)) {
+                        var stickerPack = BackupProto_StickerPack()
+                        stickerPack.packID = installedStickerPack.packId
+                        stickerPack.packKey = installedStickerPack.packKey
 
-                    var frame = BackupProto_Frame()
-                    frame.item = .stickerPack(stickerPack)
+                        var frame = BackupProto_Frame()
+                        frame.item = .stickerPack(stickerPack)
 
-                    return frame
+                        return frame
+                    }
+
+                if let maybeError {
+                    errors.append(maybeError)
+                } else {
+                    handledPacks.insert(installedStickerPack.packId)
                 }
-
-            if let maybeError {
-                errors.append(maybeError)
-            } else {
-                handledPacks.insert(installedStickerPack.packId)
             }
         }
 
@@ -116,23 +118,25 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
         // Iterate over any restored sticker packs that have yet to be downloaded via StickerManager.
         do {
             try backupStickerPackDownloadStore.iterateAllEnqueued(tx: context.tx) { record in
-                guard !handledPacks.contains(record.packId) else { return }
-                let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
-                    stream,
-                    objectId: StickerPackId(record.packId)) {
-                        var stickerPack = BackupProto_StickerPack()
-                        stickerPack.packID = record.packId
-                        stickerPack.packKey = record.packKey
+                autoreleasepool {
+                    guard !handledPacks.contains(record.packId) else { return }
+                    let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
+                        stream,
+                        objectId: StickerPackId(record.packId)) {
+                            var stickerPack = BackupProto_StickerPack()
+                            stickerPack.packID = record.packId
+                            stickerPack.packKey = record.packKey
 
-                        var frame = BackupProto_Frame()
-                        frame.item = .stickerPack(stickerPack)
+                            var frame = BackupProto_Frame()
+                            frame.item = .stickerPack(stickerPack)
 
-                        return frame
+                            return frame
+                        }
+                    if let maybeError {
+                        errors.append(maybeError)
+                    } else {
+                        handledPacks.insert(record.packId)
                     }
-                if let maybeError {
-                    errors.append(maybeError)
-                } else {
-                    handledPacks.insert(record.packId)
                 }
             }
         } catch {
