@@ -240,10 +240,10 @@ extension SenderKeyStore: LibSignalClient.SenderKeyStore {
 // MARK: - Storage
 
 extension SenderKeyStore {
-    private static let sendingDistributionIdStore = SDSKeyValueStore(collection: "SenderKeyStore_SendingDistributionId")
-    private static let keyMetadataStore = SDSKeyValueStore(collection: "SenderKeyStore_KeyMetadata")
-    private var sendingDistributionIdStore: SDSKeyValueStore { Self.sendingDistributionIdStore }
-    private var keyMetadataStore: SDSKeyValueStore { Self.keyMetadataStore }
+    private static let sendingDistributionIdStore = KeyValueStore(collection: "SenderKeyStore_SendingDistributionId")
+    private static let keyMetadataStore = KeyValueStore(collection: "SenderKeyStore_KeyMetadata")
+    private var sendingDistributionIdStore: KeyValueStore { Self.sendingDistributionIdStore }
+    private var keyMetadataStore: KeyValueStore { Self.keyMetadataStore }
 
     fileprivate func getKeyMetadata(for keyId: KeyId, readTx: SDSAnyReadTransaction) -> KeyMetadata? {
         let persisted: KeyMetadata?

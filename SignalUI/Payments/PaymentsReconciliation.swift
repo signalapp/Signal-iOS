@@ -76,7 +76,7 @@ public class PaymentsReconciliation {
         await Self.reconcileIfNecessary(transactionHistory: accountActivity)
     }
 
-    private static let schedulingStore = SDSKeyValueStore(collection: "PaymentsReconciliation.schedulingStore")
+    private static let schedulingStore = KeyValueStore(collection: "PaymentsReconciliation.schedulingStore")
     private static let successDateKey = "successDateKey"
     private static let lastKnownBlockCountKey = "lastKnownBlockCountKey"
     private static let lastKnownReceivedTXOCountKey = "lastKnownReceivedTXOCountKey"

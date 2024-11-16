@@ -256,8 +256,8 @@ class DebugUIMisc: NSObject, DebugUIPage {
 
     // MARK: KVS
 
-    private static func randomKeyValueStore() -> SDSKeyValueStore {
-        SDSKeyValueStore(collection: "randomKeyValueStore")
+    private static func randomKeyValueStore() -> KeyValueStore {
+        KeyValueStore(collection: "randomKeyValueStore")
     }
 
     private static func populateRandomKeyValueStores(keyCount: UInt) {

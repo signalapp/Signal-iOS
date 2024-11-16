@@ -11,7 +11,7 @@ public class ReactionManager: NSObject {
     public static let localUserReacted = Notification.Name("localUserReacted")
     public static let defaultEmojiSet = ["❤️", "👍", "👎", "😂", "😮", "😢"]
 
-    private static let emojiSetKVS = SDSKeyValueStore(collection: "EmojiSetKVS")
+    private static let emojiSetKVS = KeyValueStore(collection: "EmojiSetKVS")
     private static let emojiSetKey = "EmojiSetKey"
 
     /// Returns custom emoji set by the user, or `nil` if the user has never customized their emoji

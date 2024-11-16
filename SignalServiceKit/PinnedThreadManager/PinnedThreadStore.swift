@@ -24,10 +24,8 @@ public class PinnedThreadStoreImpl: PinnedThreadStoreWrite {
 
     private let keyValueStore: KeyValueStore
 
-    public init(
-        keyValueStoreFactory: KeyValueStoreFactory
-    ) {
-        self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: "PinnedConversationManager")
+    public init() {
+        self.keyValueStore = KeyValueStore(collection: "PinnedConversationManager")
     }
 
     public func pinnedThreadIds(tx: DBReadTransaction) -> [String] {

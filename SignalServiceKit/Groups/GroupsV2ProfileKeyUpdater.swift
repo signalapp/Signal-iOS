@@ -57,7 +57,7 @@ class GroupsV2ProfileKeyUpdater {
     // MARK: -
 
     // Stores the list of v2 groups that we need to update with our latest profile key.
-    private let keyValueStore = SDSKeyValueStore(collection: "GroupsV2ProfileKeyUpdater")
+    private let keyValueStore = KeyValueStore(collection: "GroupsV2ProfileKeyUpdater")
 
     private func key(for groupId: Data) -> String {
         return groupId.hexadecimalString

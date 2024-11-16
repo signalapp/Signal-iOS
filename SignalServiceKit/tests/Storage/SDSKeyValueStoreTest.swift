@@ -7,10 +7,10 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
-class SDSKeyValueStoreTest: SSKBaseTest {
+class KeyValueStoreTest: SSKBaseTest {
 
     func test_bool() {
-        let store = SDSKeyValueStore(collection: "test")
+        let store = KeyValueStore(collection: "test")
 
         self.write { transaction in
             XCTAssertFalse(store.getBool("boolA", defaultValue: false, transaction: transaction.asV2Read))
@@ -54,7 +54,7 @@ class SDSKeyValueStoreTest: SSKBaseTest {
     }
 
     func test_string() {
-        let store = SDSKeyValueStore(collection: "test")
+        let store = KeyValueStore(collection: "test")
 
         self.write { transaction in
             XCTAssertNil(store.getString("stringA", transaction: transaction.asV2Read))
@@ -88,7 +88,7 @@ class SDSKeyValueStoreTest: SSKBaseTest {
     }
 
     func test_data() {
-        let store = SDSKeyValueStore(collection: "test")
+        let store = KeyValueStore(collection: "test")
 
         let bytesA = Randomness.generateRandomBytes(32)
         let bytesB = Randomness.generateRandomBytes(32)
@@ -125,7 +125,7 @@ class SDSKeyValueStoreTest: SSKBaseTest {
     }
 
     func test_misc() {
-        let store = SDSKeyValueStore(collection: "test")
+        let store = KeyValueStore(collection: "test")
 
         self.write { transaction in
             let key = "string"

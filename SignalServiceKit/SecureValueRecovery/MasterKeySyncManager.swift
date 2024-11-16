@@ -35,13 +35,12 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
 
     init(
         dateProvider: @escaping DateProvider,
-        keyValueStoreFactory: KeyValueStoreFactory,
         svr: SecureValueRecovery,
         syncManager: Shims.SyncManager,
         tsAccountManager: TSAccountManager
     ) {
         self.dateProvider = dateProvider
-        self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: StoreConstants.collectionName)
+        self.keyValueStore = KeyValueStore(collection: StoreConstants.collectionName)
         self.svr = svr
         self.syncManager = syncManager
         self.tsAccountManager = tsAccountManager

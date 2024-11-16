@@ -9,7 +9,6 @@ public protocol MessageBackupErrorPresenterFactory {
 
     func build(
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         tsAccountManager: TSAccountManager
     ) -> MessageBackupErrorPresenter
 }
@@ -38,7 +37,6 @@ public class NoOpMessageBackupErrorPresenterFactory: MessageBackupErrorPresenter
 
     public func build(
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         tsAccountManager: TSAccountManager
     ) -> MessageBackupErrorPresenter {
         return NoOpMessageBackupErrorPresenter()

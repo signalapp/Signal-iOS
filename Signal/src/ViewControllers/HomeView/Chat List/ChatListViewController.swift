@@ -1272,7 +1272,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             return
         }
 
-        let keyValueStore = SDSKeyValueStore(collection: "FailedNSELaunches")
+        let keyValueStore = KeyValueStore(collection: "FailedNSELaunches")
         let mostRecentDateKey = "mostRecentPromptDate"
         let promptCountKey = "promptCount"
 

@@ -44,8 +44,8 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     // NOTE: This k-v store is shared by PaymentsHelperImpl and PaymentsImpl.
-    fileprivate static var keyValueStore: SDSKeyValueStore { SSKEnvironment.shared.paymentsHelperRef.keyValueStore}
-    fileprivate var keyValueStore: SDSKeyValueStore { SSKEnvironment.shared.paymentsHelperRef.keyValueStore}
+    fileprivate static var keyValueStore: KeyValueStore { SSKEnvironment.shared.paymentsHelperRef.keyValueStore}
+    fileprivate var keyValueStore: KeyValueStore { SSKEnvironment.shared.paymentsHelperRef.keyValueStore}
 
     private func updateLastKnownLocalPaymentAddressProtoDataIfNecessary() {
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {

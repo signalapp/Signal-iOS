@@ -26,7 +26,6 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         dateProvider: @escaping DateProvider,
         db: any DB,
         profileManager: ProfileManager,
-        keyValueStoreFactory: KeyValueStoreFactory,
         serviceClient: SignalServiceClient,
         schedulers: Schedulers,
         svrLocalStorage: SVRLocalStorage,
@@ -44,7 +43,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         self.syncManager = syncManager
         self.tsAccountManager = tsAccountManager
 
-        self.kvStore = keyValueStoreFactory.keyValueStore(collection: "AccountAttributesUpdater")
+        self.kvStore = KeyValueStore(collection: "AccountAttributesUpdater")
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Task {

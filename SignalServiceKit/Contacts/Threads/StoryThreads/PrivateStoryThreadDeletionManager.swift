@@ -45,7 +45,7 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
     private let logger = PrefixedLogger(prefix: "PvtStoryThreadDelMgr")
 
     private let dateProvider: DateProvider
-    private let deletedAtTimestampStore: any KeyValueStore
+    private let deletedAtTimestampStore: KeyValueStore
     private let remoteConfigProvider: any RemoteConfigProvider
     private let storageServiceManager: any StorageServiceManager
     private let threadRemover: any ThreadRemover
@@ -53,14 +53,13 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
 
     init(
         dateProvider: @escaping DateProvider,
-        keyValueStoreFactory: KeyValueStoreFactory,
         remoteConfigProvider: any RemoteConfigProvider,
         storageServiceManager: any StorageServiceManager,
         threadRemover: any ThreadRemover,
         threadStore: any ThreadStore
     ) {
         self.dateProvider = dateProvider
-        self.deletedAtTimestampStore = keyValueStoreFactory.keyValueStore(collection: "TSPrivateStoryThread+DeletedAtTimestamp")
+        self.deletedAtTimestampStore = KeyValueStore(collection: "TSPrivateStoryThread+DeletedAtTimestamp")
         self.remoteConfigProvider = remoteConfigProvider
         self.storageServiceManager = storageServiceManager
         self.threadRemover = threadRemover

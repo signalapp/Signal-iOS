@@ -62,8 +62,8 @@ public class StickerManager: NSObject {
 
     // MARK: - Properties
 
-    public static let store = SDSKeyValueStore(collection: "recentStickers")
-    public static let emojiMapStore = SDSKeyValueStore(collection: "emojiMap")
+    public static let store = KeyValueStore(collection: "recentStickers")
+    public static let emojiMapStore = KeyValueStore(collection: "emojiMap")
 
     public enum InstallMode: Int {
         case doNotInstall
@@ -1232,7 +1232,7 @@ public class StickerManager: NSObject {
 // These methods are used to maintain a "string set":
 // A set (no duplicates) of strings stored as a list.
 // As a bonus, the set is stored in order of descending recency.
-private extension SDSKeyValueStore {
+private extension KeyValueStore {
     func prependToOrderedUniqueArray(
         key: String,
         value: String,

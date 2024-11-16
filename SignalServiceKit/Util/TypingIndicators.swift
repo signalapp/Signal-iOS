@@ -7,7 +7,7 @@ import Foundation
 import LibSignalClient
 
 public protocol TypingIndicators: AnyObject {
-    var keyValueStore: SDSKeyValueStore { get }
+    var keyValueStore: KeyValueStore { get }
 
     func warmCaches()
 
@@ -46,7 +46,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
     private let _areTypingIndicatorsEnabled = AtomicBool(false, lock: .sharedGlobal)
 
-    public let keyValueStore = SDSKeyValueStore(collection: "TypingIndicators")
+    public let keyValueStore = KeyValueStore(collection: "TypingIndicators")
 
     public func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)

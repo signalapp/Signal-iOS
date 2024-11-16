@@ -17,7 +17,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let connectionFactory: SgxWebsocketConnectionFactory
     private let credentialStorage: SVRAuthCredentialStorage
     private let db: any DB
-    private let keyValueStoreFactory: KeyValueStoreFactory
     private let localStorage: SVRLocalStorageInternal
     private let schedulers: Schedulers
     private let storageServiceManager: StorageServiceManager
@@ -34,7 +33,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         connectionFactory: SgxWebsocketConnectionFactory,
         credentialStorage: SVRAuthCredentialStorage,
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorageInternal,
@@ -52,7 +50,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             connectionFactory: connectionFactory,
             credentialStorage: credentialStorage,
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
             svrLocalStorage: svrLocalStorage,
@@ -74,7 +71,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         connectionFactory: SgxWebsocketConnectionFactory,
         credentialStorage: SVRAuthCredentialStorage,
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorageInternal,
@@ -91,7 +87,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         self.connectionFactory = connectionFactory
         self.credentialStorage = credentialStorage
         self.db = db
-        self.keyValueStoreFactory = keyValueStoreFactory
         self.schedulers = schedulers
         self.storageServiceManager = storageServiceManager
         self.syncManager = syncManager
@@ -573,7 +568,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: - Backup/Expose Request
 
-    private lazy var kvStore = keyValueStoreFactory.keyValueStore(collection: "SecureValueRecovery2Impl")
+    private lazy var kvStore = KeyValueStore(collection: "SecureValueRecovery2Impl")
 
     /// We must be careful to never repeat a backup request when an expose request fails, or
     /// even if an expose request was made. Once we get a success response from a backup

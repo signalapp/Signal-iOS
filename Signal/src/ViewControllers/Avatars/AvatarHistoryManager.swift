@@ -19,7 +19,7 @@ enum AvatarContext {
 }
 
 public class AvatarHistoryManager: NSObject {
-    static let keyValueStore = SDSKeyValueStore(collection: "AvatarHistory")
+    static let keyValueStore = KeyValueStore(collection: "AvatarHistory")
     static let appSharedDataDirectory = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
     static let imageHistoryDirectory = URL(fileURLWithPath: "AvatarHistory", isDirectory: true, relativeTo: appSharedDataDirectory)
 

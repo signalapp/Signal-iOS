@@ -926,7 +926,7 @@ extension RecipientPickerViewController {
         })
     }
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "RecipientPicker.contactAccess")
+    private static let keyValueStore = KeyValueStore(collection: "RecipientPicker.contactAccess")
     private static let showNotAllowedReminderKey = "shouldShowNotAllowedReminder"
 
     private func shouldShowContactAccessNotAllowedReminderItemWithSneakyTransaction() -> Bool {

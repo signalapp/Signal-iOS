@@ -60,7 +60,7 @@ private extension String {
 }
 
 private extension RemoteMegaphoneFetcher {
-    private static let fetcherStore = SDSKeyValueStore(collection: .fetcherStoreCollection)
+    private static let fetcherStore = KeyValueStore(collection: .fetcherStoreCollection)
 
     private static let delayBetweenSyncs: TimeInterval = 3 * kDayInterval
 

@@ -11,7 +11,7 @@ struct ChatListFilterStore {
         static let inboxFilterKey = "inboxFilter"
     }
 
-    private let store = SDSKeyValueStoreFactory().keyValueStore(collection: Constants.collectionName)
+    private let store = KeyValueStore(collection: Constants.collectionName)
 
     func inboxFilter(transaction: some DBReadTransaction) -> InboxFilter? {
         let rawValue = store.getInt(Constants.inboxFilterKey, defaultValue: 0, transaction: transaction)

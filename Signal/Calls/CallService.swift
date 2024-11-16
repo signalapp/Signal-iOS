@@ -863,7 +863,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     // MARK: - Data Modes
 
     static let callServicePreferencesDidChange = Notification.Name("CallServicePreferencesDidChange")
-    private static let keyValueStore = SDSKeyValueStore(collection: "CallService")
+    private static let keyValueStore = KeyValueStore(collection: "CallService")
     // This used to be called "high bandwidth", but "data" is more accurate.
     private static let highDataPreferenceKey = "HighBandwidthPreferenceKey"
 

@@ -16,10 +16,10 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     public static let maxAvatarDiameterPixels: UInt = 1024
     public static let notificationKeyUserProfileWriter = "kNSNotificationKey_UserProfileWriter"
 
-    public let whitelistedPhoneNumbersStore = SDSKeyValueStore(collection: "kOWSProfileManager_UserWhitelistCollection")
-    public let whitelistedServiceIdsStore = SDSKeyValueStore(collection: "kOWSProfileManager_UserUUIDWhitelistCollection")
-    public let whitelistedGroupsStore = SDSKeyValueStore(collection: "kOWSProfileManager_GroupWhitelistCollection")
-    public let settingsStore = SDSKeyValueStore(collection: "kOWSProfileManager_SettingsStore")
+    public let whitelistedPhoneNumbersStore = KeyValueStore(collection: "kOWSProfileManager_UserWhitelistCollection")
+    public let whitelistedServiceIdsStore = KeyValueStore(collection: "kOWSProfileManager_UserUUIDWhitelistCollection")
+    public let whitelistedGroupsStore = KeyValueStore(collection: "kOWSProfileManager_GroupWhitelistCollection")
+    public let settingsStore = KeyValueStore(collection: "kOWSProfileManager_SettingsStore")
     public let badgeStore = BadgeStore()
 
     // This can be inlined soon, but first a direct port from objc to swift
@@ -37,7 +37,7 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     // it is not. The pattern of use in the objc code has been replicated here for the time being.
     @Atomic private var _localUserProfile: OWSUserProfile?
 
-    fileprivate let metadataStore = SDSKeyValueStore(collection: "kOWSProfileManager_Metadata")
+    fileprivate let metadataStore = KeyValueStore(collection: "kOWSProfileManager_Metadata")
     @Atomic fileprivate var isRotatingProfileKey: Bool = false
 
     private let appReadiness: AppReadiness
@@ -1326,7 +1326,7 @@ extension OWSProfileManager: ProfileManager {
         }
     }
 
-    private static let storageServiceStore = SDSKeyValueStore(collection: "OWSProfileManager.storageServiceStore")
+    private static let storageServiceStore = KeyValueStore(collection: "OWSProfileManager.storageServiceStore")
     private static let hasUpdatedStorageServiceKey = "hasUpdatedStorageServiceKey"
 
     // MARK: - Other User's Profiles
@@ -1642,7 +1642,7 @@ extension OWSProfileManager: ProfileManager {
     private static let maxAvatarRepairAttempts = 5
 
     private func avatairRepairAttemptCount(_ transaction: SDSAnyReadTransaction) -> Int {
-        let store = SDSKeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
+        let store = KeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
         return store.getInt(GRDBSchemaMigrator.avatarRepairAttemptCount,
                             defaultValue: Self.maxAvatarRepairAttempts,
                             transaction: transaction.asV2Read)
@@ -1656,12 +1656,12 @@ extension OWSProfileManager: ProfileManager {
     }
 
     private func incrementAvatarRepairAttempts(tx: SDSAnyWriteTransaction) {
-        let store = SDSKeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
+        let store = KeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
         store.setInt(avatairRepairAttemptCount(tx) + 1, key: GRDBSchemaMigrator.avatarRepairAttemptCount, transaction: tx.asV2Write)
     }
 
     private func clearAvatarRepairNeeded(tx: SDSAnyWriteTransaction) {
-        let store = SDSKeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
+        let store = KeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
         store.removeValue(forKey: GRDBSchemaMigrator.avatarRepairAttemptCount, transaction: tx.asV2Write)
     }
 

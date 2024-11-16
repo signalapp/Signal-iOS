@@ -183,8 +183,8 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
 
         private let kvStore: KeyValueStore
 
-        init(kvStoreFactory: KeyValueStoreFactory) {
-            kvStore = kvStoreFactory.keyValueStore(collection: Constants.collection)
+        init() {
+            kvStore = KeyValueStore(collection: Constants.collection)
         }
 
         func isUsernameCorrupted(tx: DBReadTransaction) -> Bool {
@@ -215,8 +215,8 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
 
         private let kvStore: KeyValueStore
 
-        init(kvStoreFactory: KeyValueStoreFactory) {
-            kvStore = kvStoreFactory.keyValueStore(collection: Constants.collection)
+        init() {
+            kvStore = KeyValueStore(collection: Constants.collection)
         }
 
         func username(tx: DBReadTransaction) -> String? {
@@ -283,7 +283,6 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
 
     init(
         db: any DB,
-        kvStoreFactory: KeyValueStoreFactory,
         reachabilityManager: SSKReachabilityManager,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
@@ -298,8 +297,8 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
         self.usernameApiClient = usernameApiClient
         self.usernameLinkManager = usernameLinkManager
 
-        corruptionStore = CorruptionStore(kvStoreFactory: kvStoreFactory)
-        usernameStore = UsernameStore(kvStoreFactory: kvStoreFactory)
+        corruptionStore = CorruptionStore()
+        usernameStore = UsernameStore()
 
         self.maxNetworkRequestRetries = maxNetworkRequestRetries
     }

@@ -65,8 +65,8 @@ public class ExternalPendingIDEALDonationStoreImpl: ExternalPendingIDEALDonation
     }
 
     private let keyStore: KeyValueStore
-    init(keyStoreFactory: KeyValueStoreFactory) {
-        keyStore = keyStoreFactory.keyValueStore(collection: "PendingExternalDonationStore")
+    init() {
+        keyStore = KeyValueStore(collection: "PendingExternalDonationStore")
     }
 
     public func getPendingOneTimeDonation(tx: DBReadTransaction) -> PendingOneTimeIDEALDonation? {

@@ -26,7 +26,7 @@ private class BannerHiding {
         let numberOfTimesHidden: UInt
     }
 
-    let bannerHidingStore: SDSKeyValueStore
+    let bannerHidingStore: KeyValueStore
 
     private let hideDuration: TimeInterval
     private let hideForeverAfterNumberOfHides: UInt?
@@ -39,7 +39,7 @@ private class BannerHiding {
         hideDuration: TimeInterval,
         hideForeverAfterNumberOfHides: UInt? = nil
     ) {
-        bannerHidingStore = SDSKeyValueStore(collection: identifier)
+        bannerHidingStore = KeyValueStore(collection: identifier)
 
         self.hideDuration = hideDuration
         self.hideForeverAfterNumberOfHides = hideForeverAfterNumberOfHides

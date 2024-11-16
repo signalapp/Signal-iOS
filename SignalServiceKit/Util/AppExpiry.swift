@@ -57,12 +57,11 @@ public class AppExpiryImpl: AppExpiry {
     static let keyValueKey = "expirationState"
 
     public init(
-        keyValueStoreFactory: KeyValueStoreFactory,
         dateProvider: @escaping DateProvider,
         appVersion: AppVersion,
         schedulers: Schedulers
     ) {
-        self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: Self.keyValueCollection)
+        self.keyValueStore = KeyValueStore(collection: Self.keyValueCollection)
         self.dateProvider = dateProvider
         self.appVersion = appVersion
         self.schedulers = schedulers

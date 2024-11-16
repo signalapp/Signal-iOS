@@ -770,7 +770,6 @@
 		661170C82ABA4F3A00A1B16D /* TSAccountManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C72ABA4F3A00A1B16D /* TSAccountManagerImpl.swift */; };
 		661170CA2ABA522200A1B16D /* TSContactThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C92ABA522200A1B16D /* TSContactThread.swift */; };
 		661278082996BA8900A1D5A1 /* RegistrationCoordinatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661278062996BA7800A1D5A1 /* RegistrationCoordinatorTest.swift */; };
-		6612780C2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6612780B2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift */; };
 		6612780D2996BD0300A1D5A1 /* RegistrationCoordinatorTestShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661278092996BAB400A1D5A1 /* RegistrationCoordinatorTestShims.swift */; };
 		661278112996BE0C00A1D5A1 /* TestSchedulers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661278102996BE0C00A1D5A1 /* TestSchedulers.swift */; };
 		661278132996BE3400A1D5A1 /* TestScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661278122996BE3400A1D5A1 /* TestScheduler.swift */; };
@@ -1050,8 +1049,6 @@
 		669573022C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669573012C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift */; };
 		669573082C1B9ECD0092B755 /* AttachmentDownloadQueueDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669573052C1B9E360092B755 /* AttachmentDownloadQueueDBTests.swift */; };
 		669874E72CCC134600CDD7E9 /* MediaRootBackupKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669874E62CCC133E00CDD7E9 /* MediaRootBackupKeyStore.swift */; };
-		6698FC0D297EFE21004EFC30 /* KeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */; };
-		6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */; };
 		6698FC1A2980AB45004EFC30 /* DependenciesBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC192980AB45004EFC30 /* DependenciesBridge.swift */; };
 		669941A12CC976B500DC99A1 /* LinkAndSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669941A02CC976B000DC99A1 /* LinkAndSyncManager.swift */; };
 		669947BA2A20129000E4DC0C /* SVR2Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669947B92A20129000E4DC0C /* SVR2Shims.swift */; };
@@ -3394,7 +3391,7 @@
 		F9C5CD26289453B300548EEE /* GRDBSchemaMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */; };
 		F9C5CD27289453B300548EEE /* DeepCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA48289453B100548EEE /* DeepCopy.swift */; };
 		F9C5CD29289453B300548EEE /* SDSRecordType.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4A289453B100548EEE /* SDSRecordType.swift */; };
-		F9C5CD2A289453B300548EEE /* SDSKeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4B289453B100548EEE /* SDSKeyValueStore.swift */; };
+		F9C5CD2A289453B300548EEE /* KeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4B289453B100548EEE /* KeyValueStore.swift */; };
 		F9C5CD2B289453B300548EEE /* SDSDatabaseStorage+Objc.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4C289453B100548EEE /* SDSDatabaseStorage+Objc.m */; };
 		F9C5CD2C289453B300548EEE /* SSKAccessors+SDS.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA4D289453B100548EEE /* SSKAccessors+SDS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD2D289453B300548EEE /* SDSCodableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4E289453B100548EEE /* SDSCodableModel.swift */; };
@@ -4602,7 +4599,6 @@
 		661170C92ABA522200A1B16D /* TSContactThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSContactThread.swift; sourceTree = "<group>"; };
 		661278062996BA7800A1D5A1 /* RegistrationCoordinatorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorTest.swift; sourceTree = "<group>"; };
 		661278092996BAB400A1D5A1 /* RegistrationCoordinatorTestShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorTestShims.swift; sourceTree = "<group>"; };
-		6612780B2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryKeyValueStore.swift; sourceTree = "<group>"; };
 		661278102996BE0C00A1D5A1 /* TestSchedulers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSchedulers.swift; sourceTree = "<group>"; };
 		661278122996BE3400A1D5A1 /* TestScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScheduler.swift; sourceTree = "<group>"; };
 		66138FB5298326C7002E0CFE /* SecureValueRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecovery.swift; sourceTree = "<group>"; };
@@ -4884,8 +4880,6 @@
 		669573012C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueuedAttachmentDownloadRecord.swift; sourceTree = "<group>"; };
 		669573052C1B9E360092B755 /* AttachmentDownloadQueueDBTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadQueueDBTests.swift; sourceTree = "<group>"; };
 		669874E62CCC133E00CDD7E9 /* MediaRootBackupKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaRootBackupKeyStore.swift; sourceTree = "<group>"; };
-		6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStore.swift; sourceTree = "<group>"; };
-		6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStoreFactory.swift; sourceTree = "<group>"; };
 		6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerContext.swift; sourceTree = "<group>"; };
 		6698FC192980AB45004EFC30 /* DependenciesBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependenciesBridge.swift; sourceTree = "<group>"; };
 		669941A02CC976B000DC99A1 /* LinkAndSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkAndSyncManager.swift; sourceTree = "<group>"; };
@@ -7266,7 +7260,7 @@
 		F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBSchemaMigrator.swift; sourceTree = "<group>"; };
 		F9C5CA48289453B100548EEE /* DeepCopy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepCopy.swift; sourceTree = "<group>"; };
 		F9C5CA4A289453B100548EEE /* SDSRecordType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSRecordType.swift; sourceTree = "<group>"; };
-		F9C5CA4B289453B100548EEE /* SDSKeyValueStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSKeyValueStore.swift; sourceTree = "<group>"; };
+		F9C5CA4B289453B100548EEE /* KeyValueStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyValueStore.swift; sourceTree = "<group>"; };
 		F9C5CA4C289453B100548EEE /* SDSDatabaseStorage+Objc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SDSDatabaseStorage+Objc.m"; sourceTree = "<group>"; };
 		F9C5CA4D289453B100548EEE /* SSKAccessors+SDS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SSKAccessors+SDS.h"; sourceTree = "<group>"; };
 		F9C5CA4E289453B100548EEE /* SDSCodableModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSCodableModel.swift; sourceTree = "<group>"; };
@@ -9134,14 +9128,6 @@
 			path = Registration;
 			sourceTree = "<group>";
 		};
-		6612780E2996BDF400A1D5A1 /* DB */ = {
-			isa = PBXGroup;
-			children = (
-				6612780B2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift */,
-			);
-			path = DB;
-			sourceTree = "<group>";
-		};
 		6612780F2996BDFE00A1D5A1 /* Scheduler */ = {
 			isa = PBXGroup;
 			children = (
@@ -9556,16 +9542,6 @@
 				66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */,
 			);
 			path = SecureValueRecovery;
-			sourceTree = "<group>";
-		};
-		6673FF82297B659D00F96CFD /* SDSKeyValueStore */ = {
-			isa = PBXGroup;
-			children = (
-				6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */,
-				6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */,
-				F9C5CA4B289453B100548EEE /* SDSKeyValueStore.swift */,
-			);
-			path = SDSKeyValueStore;
 			sourceTree = "<group>";
 		};
 		6673FF83297B666500F96CFD /* SDSDatabaseStorage */ = {
@@ -12687,7 +12663,6 @@
 			children = (
 				D91AC9372B62F5BF00814975 /* CallRecord */,
 				B9327B3C2BBCC2CD00CCDBBA /* Contacts */,
-				6612780E2996BDF400A1D5A1 /* DB */,
 				6691E7EA2996E61D0032A68A /* KeyBackupService */,
 				6691E7ED2996E8E90032A68A /* OWSSignalService */,
 				6691E7F02996E9B00032A68A /* Registration */,
@@ -13947,7 +13922,6 @@
 				F9C5CA35289453B100548EEE /* Records */,
 				D9F6553029D6530B002A330A /* SDSCodableModel */,
 				6673FF83297B666500F96CFD /* SDSDatabaseStorage */,
-				6673FF82297B659D00F96CFD /* SDSKeyValueStore */,
 				F9C5CA3C289453B100548EEE /* Snapshots */,
 				F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */,
 				F9B652C228D8E3DF006914CA /* DatabaseRecovery.swift */,
@@ -13955,6 +13929,7 @@
 				F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */,
 				F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */,
 				D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */,
+				F9C5CA4B289453B100548EEE /* KeyValueStore.swift */,
 				72A132A62CA25EE9000ACED6 /* SDSCrossProcess.swift */,
 				F9C5CA3B289453B100548EEE /* SDSDeserialization.swift */,
 				F9C5CA32289453B100548EEE /* SDSError.swift */,
@@ -17559,7 +17534,6 @@
 				667BB2032C545C0400E79B57 /* IncrementalTSAttachmentMigrator.swift in Sources */,
 				D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */,
 				D9B95A9B29E8923B00D7CB95 /* InMemoryDB.swift in Sources */,
-				6612780C2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift in Sources */,
 				C1DD78AB2BB1CEF80020F064 /* InputStreamable.swift in Sources */,
 				F9C5CC12289453B300548EEE /* InstalledSticker+SDS.swift in Sources */,
 				F9C5CC15289453B300548EEE /* InstalledSticker.m in Sources */,
@@ -17573,8 +17547,7 @@
 				D9AE0ADD2918B2960063488B /* JobRecord+Columns.swift in Sources */,
 				D9B8541229137C150058F97B /* JobRecord.swift in Sources */,
 				F9C5CDEB289453B400548EEE /* JobRecordFinder.swift in Sources */,
-				6698FC0D297EFE21004EFC30 /* KeyValueStore.swift in Sources */,
-				6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */,
+				F9C5CD2A289453B300548EEE /* KeyValueStore.swift in Sources */,
 				6671DC872CD44CA8002620EF /* LastVisibleInteractionStore.swift in Sources */,
 				D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */,
 				66076B692BC0A06C0043D547 /* LegacyAttachmentMigrator.swift in Sources */,
@@ -18069,7 +18042,6 @@
 				6673FF8B297B6FA800F96CFD /* SDSDB.swift in Sources */,
 				F9C5CD1B289453B300548EEE /* SDSDeserialization.swift in Sources */,
 				F9C5CD13289453B300548EEE /* SDSError.swift in Sources */,
-				F9C5CD2A289453B300548EEE /* SDSKeyValueStore.swift in Sources */,
 				F9C5CD15289453B300548EEE /* SDSModel.swift in Sources */,
 				F9C5CD1E289453B300548EEE /* SDSRecord.swift in Sources */,
 				F9C5CD29289453B300548EEE /* SDSRecordType.swift in Sources */,

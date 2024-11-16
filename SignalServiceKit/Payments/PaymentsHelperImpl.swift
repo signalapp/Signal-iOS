@@ -86,8 +86,8 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
     // MARK: - PaymentsState
 
     // NOTE: This k-v store is shared by PaymentsHelperImpl and PaymentsImpl.
-    fileprivate static let keyValueStore = SDSKeyValueStore(collection: "Payments")
-    public var keyValueStore: SDSKeyValueStore { Self.keyValueStore}
+    fileprivate static let keyValueStore = KeyValueStore(collection: "Payments")
+    public var keyValueStore: KeyValueStore { Self.keyValueStore}
 
     private static let arePaymentsEnabledKey = "isPaymentEnabled"
     private static let paymentsEntropyKey = "paymentsEntropy"
@@ -278,7 +278,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
 
     // MARK: -
 
-    private static let arePaymentsEnabledForUserStore = SDSKeyValueStore(collection: "arePaymentsEnabledForUserStore")
+    private static let arePaymentsEnabledForUserStore = KeyValueStore(collection: "arePaymentsEnabledForUserStore")
 
     public func setArePaymentsEnabled(for serviceId: ServiceIdObjC, hasPaymentsEnabled: Bool, transaction tx: SDSAnyWriteTransaction) {
         Self.arePaymentsEnabledForUserStore.setBool(hasPaymentsEnabled, key: serviceId.serviceIdUppercaseString, transaction: tx.asV2Write)

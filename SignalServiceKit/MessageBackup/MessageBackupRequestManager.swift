@@ -179,14 +179,13 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
     init(
         dateProvider: @escaping DateProvider,
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         messageBackupAuthCredentialManager: MessageBackupAuthCredentialManager,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         networkManager: NetworkManager
     ) {
         self.dateProvider = dateProvider
         self.db = db
-        self.kvStore = keyValueStoreFactory.keyValueStore(collection: Constants.keyValueStoreCollectionName)
+        self.kvStore = KeyValueStore(collection: Constants.keyValueStoreCollectionName)
         self.messageBackupAuthCredentialManager = messageBackupAuthCredentialManager
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
         self.networkManager = networkManager

@@ -8,7 +8,7 @@
 /// SyncPushTokensJob can rotate the APNS token to try and recover.
 public final class APNSRotationStore: NSObject {
 
-    private static let kvStore = SDSKeyValueStore(collection: "APNSRotationStore")
+    private static let kvStore = KeyValueStore(collection: "APNSRotationStore")
 
     // exposed for testing. we need a better way to do this.
     internal static var nowMs: () -> UInt64 = { Date().ows_millisecondsSince1970 }

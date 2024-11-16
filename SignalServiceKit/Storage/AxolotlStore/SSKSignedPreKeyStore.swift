@@ -11,19 +11,19 @@ private let lastPreKeyRotationDate = "lastKeyRotationDate"
 public class SSKSignedPreKeyStore: NSObject {
 
     private let identity: OWSIdentity
-    private let keyStore: SDSKeyValueStore
-    private let metadataStore: SDSKeyValueStore
+    private let keyStore: KeyValueStore
+    private let metadataStore: KeyValueStore
 
     public init(for identity: OWSIdentity) {
         self.identity = identity
 
         switch identity {
         case .aci:
-            self.keyStore = SDSKeyValueStore(collection: "TSStorageManagerSignedPreKeyStoreCollection")
-            self.metadataStore = SDSKeyValueStore(collection: "TSStorageManagerSignedPreKeyMetadataCollection")
+            self.keyStore = KeyValueStore(collection: "TSStorageManagerSignedPreKeyStoreCollection")
+            self.metadataStore = KeyValueStore(collection: "TSStorageManagerSignedPreKeyMetadataCollection")
         case .pni:
-            self.keyStore = SDSKeyValueStore(collection: "TSStorageManagerPNISignedPreKeyStoreCollection")
-            self.metadataStore = SDSKeyValueStore(collection: "TSStorageManagerPNISignedPreKeyMetadataCollection")
+            self.keyStore = KeyValueStore(collection: "TSStorageManagerPNISignedPreKeyStoreCollection")
+            self.metadataStore = KeyValueStore(collection: "TSStorageManagerPNISignedPreKeyMetadataCollection")
         }
     }
 
@@ -186,7 +186,7 @@ extension SignalServiceKit.SignedPreKeyRecord {
     }
 }
 
-extension SDSKeyValueStore {
+extension KeyValueStore {
     fileprivate func signedPreKeyRecord(key: String, transaction: SDSAnyReadTransaction) -> SignalServiceKit.SignedPreKeyRecord? {
         getObject(forKey: key, transaction: transaction.asV2Read) as? SignalServiceKit.SignedPreKeyRecord
     }

@@ -300,7 +300,7 @@ public class Sounds {
 
     private static let cachedSystemSounds = AnyLRUCache(maxSize: 4, nseMaxSize: 0, shouldEvacuateInBackground: false)
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "kOWSSoundsStorageNotificationCollection")
+    private static let keyValueStore = KeyValueStore(collection: "kOWSSoundsStorageNotificationCollection")
 
     private init() { }
 

@@ -24,7 +24,7 @@ struct DoubleTapToEditOnboardingController {
     }
 
     func beginEditing(animated: Bool) {
-        let store = DependenciesBridge.shared.keyValueStoreFactory.keyValueStore(collection: Keys.collectionIdentifier)
+        let store = KeyValueStore(collection: Keys.collectionIdentifier)
         let db = DependenciesBridge.shared.db
         let hasSeenOnboarding = db.read { store.getBool(Keys.hasSeenOnboarding, defaultValue: false, transaction: $0) }
 

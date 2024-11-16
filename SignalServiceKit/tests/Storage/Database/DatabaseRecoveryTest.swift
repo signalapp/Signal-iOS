@@ -258,7 +258,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
         databaseStorage.write { transaction in
-            try! transaction.unwrapGrdbWrite.database.drop(table: SDSKeyValueStore.tableName)
+            try! transaction.unwrapGrdbWrite.database.drop(table: KeyValueStore.tableName)
         }
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 

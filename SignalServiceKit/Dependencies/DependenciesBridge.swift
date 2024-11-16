@@ -93,7 +93,6 @@ public class DependenciesBridge {
     public let individualCallRecordManager: IndividualCallRecordManager
     public let interactionDeleteManager: InteractionDeleteManager
     public let interactionStore: InteractionStore
-    public let keyValueStoreFactory: KeyValueStoreFactory
     public let lastVisibleInteractionStore: LastVisibleInteractionStore
     public let learnMyOwnPniManager: LearnMyOwnPniManager
     public let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
@@ -216,7 +215,6 @@ public class DependenciesBridge {
         individualCallRecordManager: IndividualCallRecordManager,
         interactionDeleteManager: InteractionDeleteManager,
         interactionStore: InteractionStore,
-        keyValueStoreFactory: KeyValueStoreFactory,
         lastVisibleInteractionStore: LastVisibleInteractionStore,
         learnMyOwnPniManager: LearnMyOwnPniManager,
         linkedDevicePniKeyManager: LinkedDevicePniKeyManager,
@@ -338,7 +336,6 @@ public class DependenciesBridge {
         self.individualCallRecordManager = individualCallRecordManager
         self.interactionDeleteManager = interactionDeleteManager
         self.interactionStore = interactionStore
-        self.keyValueStoreFactory = keyValueStoreFactory
         self.lastVisibleInteractionStore = lastVisibleInteractionStore
         self.learnMyOwnPniManager = learnMyOwnPniManager
         self.linkedDevicePniKeyManager = linkedDevicePniKeyManager

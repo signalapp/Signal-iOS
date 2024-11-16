@@ -268,7 +268,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
 
     // MARK: Storage
 
-    private static var keyValueStore = SDSKeyValueStore(collection: "GroupThreadCollisionFinder")
+    private static var keyValueStore = KeyValueStore(collection: "GroupThreadCollisionFinder")
 
     private func recentProfileUpdateSearchStartId(transaction: SDSAnyReadTransaction) -> UInt64? {
         Self.keyValueStore.getUInt64(groupThread.uniqueId, transaction: transaction.asV2Read)

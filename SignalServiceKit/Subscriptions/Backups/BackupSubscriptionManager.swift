@@ -114,12 +114,11 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     init(
         dateProvider: @escaping DateProvider,
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         networkManager: NetworkManager
     ) {
         self.dateProvider = dateProvider
         self.db = db
-        self.kvStore = keyValueStoreFactory.keyValueStore(collection: "BackupSubscriptionManager")
+        self.kvStore = KeyValueStore(collection: "BackupSubscriptionManager")
         self.networkManager = networkManager
 
         listenForTransactionUpdates()

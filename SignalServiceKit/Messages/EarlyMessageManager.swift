@@ -164,9 +164,9 @@ public class EarlyMessageManager: NSObject {
     private static let maxEarlyEnvelopeSize: Int = 1024
     private static let maxQueuedPerMessage: Int = 128
 
-    private var pendingEnvelopeStore = SDSKeyValueStore(collection: "EarlyEnvelopesStore")
-    private var pendingReceiptStore =  SDSKeyValueStore(collection: "EarlyReceiptsStore")
-    private var metadataStore =  SDSKeyValueStore(collection: "EarlyMessageManager.metadata")
+    private var pendingEnvelopeStore = KeyValueStore(collection: "EarlyEnvelopesStore")
+    private var pendingReceiptStore =  KeyValueStore(collection: "EarlyReceiptsStore")
+    private var metadataStore =  KeyValueStore(collection: "EarlyMessageManager.metadata")
 
     public init(appReadiness: AppReadiness) {
         super.init()

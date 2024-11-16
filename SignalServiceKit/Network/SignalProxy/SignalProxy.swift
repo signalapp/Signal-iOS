@@ -28,7 +28,7 @@ public class SignalProxy: NSObject {
 
     private static let relayServer = RelayServer()
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "SignalProxy")
+    private static let keyValueStore = KeyValueStore(collection: "SignalProxy")
     private static let proxyHostKey = "proxyHostKey"
     private static let proxyUseKey = "proxyUseKey"
 

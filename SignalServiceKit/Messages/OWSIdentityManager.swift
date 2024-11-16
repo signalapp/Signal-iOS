@@ -213,7 +213,6 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         aciProtocolStore: SignalProtocolStore,
         appReadiness: AppReadiness,
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         messageSenderJobQueue: MessageSenderJobQueue,
         networkManager: NetworkManager,
         notificationPresenter: any NotificationPresenter,
@@ -230,17 +229,17 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         self.messageSenderJobQueue = messageSenderJobQueue
         self.networkManager = networkManager
         self.notificationPresenter = notificationPresenter
-        self.ownIdentityKeyValueStore = keyValueStoreFactory.keyValueStore(
+        self.ownIdentityKeyValueStore = KeyValueStore(
             collection: "TSStorageManagerIdentityKeyStoreCollection"
         )
         self.pniProtocolStore = pniProtocolStore
-        self.queuedVerificationStateSyncMessagesKeyValueStore = keyValueStoreFactory.keyValueStore(
+        self.queuedVerificationStateSyncMessagesKeyValueStore = KeyValueStore(
             collection: "OWSIdentityManager_QueuedVerificationStateSyncMessages"
         )
         self.recipientFetcher = recipientFetcher
         self.recipientIdFinder = recipientIdFinder
         self.schedulers = schedulers
-        self.shareMyPhoneNumberStore = keyValueStoreFactory.keyValueStore(
+        self.shareMyPhoneNumberStore = KeyValueStore(
             collection: "OWSIdentityManager.shareMyPhoneNumberStore"
         )
         self.storageServiceManager = storageServiceManager

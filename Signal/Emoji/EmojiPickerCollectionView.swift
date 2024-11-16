@@ -22,7 +22,7 @@ protocol EmojiPickerCollectionViewDelegate: AnyObject {
 class EmojiPickerCollectionView: UICollectionView {
     let layout: UICollectionViewFlowLayout
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "EmojiPickerCollectionView")
+    private static let keyValueStore = KeyValueStore(collection: "EmojiPickerCollectionView")
     private static let recentEmojiKey = "recentEmoji"
 
     /// Reads the stored recent emoji and removes duplicates using `removingNonNormalizedDuplicates`.
@@ -590,7 +590,7 @@ private class EmojiSearchIndex: NSObject {
     public static let EmojiSearchManifestFetchedNotification = Notification.Name("EmojiSearchManifestFetchedNotification")
     public static let EmojiSearchIndexFetchedNotification = Notification.Name("EmojiSearchIndexFetchedNotification")
 
-    private static let emojiSearchIndexKVS = SDSKeyValueStore(collection: "EmojiSearchIndexKeyValueStore")
+    private static let emojiSearchIndexKVS = KeyValueStore(collection: "EmojiSearchIndexKeyValueStore")
     private static let emojiSearchIndexVersionKey = "emojiSearchIndexVersionKey"
     private static let emojiSearchIndexAvailableLocalizationsKey = "emojiSearchIndexAvailableLocalizationsKey"
 

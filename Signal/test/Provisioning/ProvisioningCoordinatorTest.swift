@@ -65,7 +65,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             identityManager: identityManagerMock,
             linkAndSyncManager: MockLinkAndSyncManager(),
             messageFactory: messageFactoryMock,
-            mrbkStore: MediaRootBackupKeyStore(keyValueStoreFactory: InMemoryKeyValueStoreFactory()),
+            mrbkStore: MediaRootBackupKeyStore(),
             preKeyManager: prekeyManagerMock,
             profileManager: profileManagerMock,
             pushRegistrationManager: pushRegistrationManagerMock,

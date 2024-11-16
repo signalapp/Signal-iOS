@@ -29,7 +29,7 @@ public class CallMessagePushPayload: CustomStringConvertible {
 }
 
 public class CallMessageRelay {
-    private static let pendingCallMessageStore = SDSKeyValueStore(collection: "PendingCallMessageStore")
+    private static let pendingCallMessageStore = KeyValueStore(collection: "PendingCallMessageStore")
 
     public static func handleVoipPayload(_ payload: CallMessagePushPayload) {
         Logger.info("Handling incoming VoIP payload: \(payload)")

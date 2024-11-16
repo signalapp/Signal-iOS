@@ -5,7 +5,7 @@
 
 import GRDB
 
-public struct SDSKeyValueStore: KeyValueStore {
+public struct KeyValueStore {
     private enum TableMetadata {
         enum Columns {
             static let collection = "collection"
@@ -26,7 +26,7 @@ public struct SDSKeyValueStore: KeyValueStore {
     }
 
     public static func logCollectionStatistics() {
-        Logger.info("SDSKeyValueStore statistics:")
+        Logger.info("KeyValueStore statistics:")
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             do {
                 let sql = """

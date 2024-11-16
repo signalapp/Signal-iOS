@@ -103,7 +103,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         scheduler = TestScheduler()
 
-        let inMemoryKvStoreFactory = InMemoryKeyValueStoreFactory()
         let dependencies = RegistrationCoordinatorDependencies(
             appExpiry: appExpiryMock,
             changeNumberPniManager: changeNumberPniManager,
@@ -113,7 +112,6 @@ public class RegistrationCoordinatorTest: XCTestCase {
             db: db,
             experienceManager: experienceManager,
             featureFlags: featureFlags,
-            keyValueStoreFactory: inMemoryKvStoreFactory,
             localUsernameManager: localUsernameManagerMock,
             messageBackupKeyMaterial: MessageBackupKeyMaterialMock(),
             messageBackupErrorPresenter: NoOpMessageBackupErrorPresenter(),
@@ -130,7 +128,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             schedulers: TestSchedulers(scheduler: scheduler),
             sessionManager: sessionManager,
             signalService: mockSignalService,
-            storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStoreImpl(keyValueStoreFactory: inMemoryKvStoreFactory),
+            storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStoreImpl(),
             storageServiceManager: storageServiceManagerMock,
             svr: svr,
             svrAuthCredentialStore: svrAuthCredentialStore,

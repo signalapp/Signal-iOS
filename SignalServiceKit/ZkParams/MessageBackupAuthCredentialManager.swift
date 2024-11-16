@@ -38,14 +38,13 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
         authCredentialStore: AuthCredentialStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         networkManager: NetworkManager
     ) {
         self.authCredentialStore = authCredentialStore
         self.dateProvider = dateProvider
         self.db = db
-        self.kvStore = keyValueStoreFactory.keyValueStore(collection: Constants.keyValueStoreCollectionName)
+        self.kvStore = KeyValueStore(collection: Constants.keyValueStoreCollectionName)
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
         self.networkManager = networkManager
     }

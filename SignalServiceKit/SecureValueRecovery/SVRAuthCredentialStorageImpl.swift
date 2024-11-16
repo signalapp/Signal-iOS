@@ -7,13 +7,7 @@ import Foundation
 
 public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
 
-    private let keyValueStoreFactory: KeyValueStoreFactory
-
-    public init(
-        keyValueStoreFactory: KeyValueStoreFactory
-    ) {
-        self.keyValueStoreFactory = keyValueStoreFactory
-    }
+    public init() {}
 
     // MARK: SVR2
 
@@ -66,7 +60,7 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
         if let existing = kvStores[type] {
             return existing
         }
-        let new = keyValueStoreFactory.keyValueStore(collection: type.kvStoreCollectionName)
+        let new = KeyValueStore(collection: type.kvStoreCollectionName)
         kvStores[type] = new
         return new
     }

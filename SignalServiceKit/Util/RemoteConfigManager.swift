@@ -679,14 +679,13 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         appExpiry: AppExpiry,
         appReadiness: AppReadiness,
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         tsAccountManager: TSAccountManager,
         serviceClient: SignalServiceClient
     ) {
         self.appExpiry = appExpiry
         self.appReadiness = appReadiness
         self.db = db
-        self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: "RemoteConfigManager")
+        self.keyValueStore = KeyValueStore(collection: "RemoteConfigManager")
         self.tsAccountManager = tsAccountManager
         self.serviceClient = serviceClient
 

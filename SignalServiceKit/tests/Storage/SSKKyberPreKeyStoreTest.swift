@@ -11,7 +11,6 @@ import XCTest
 //
 
 class KyberPreKeyStoreTest: XCTestCase {
-    var keyValueStoreFactory: KeyValueStoreFactory!
     var dateProvider: DateProvider!
     var currentDate = Date()
     var db = InMemoryDB()
@@ -20,13 +19,11 @@ class KyberPreKeyStoreTest: XCTestCase {
     var kyberPreKeyStore: SSKKyberPreKeyStore!
 
     override func setUp() {
-        keyValueStoreFactory = InMemoryKeyValueStoreFactory()
         dateProvider = { return self.currentDate }
         identityKey = ECKeyPair.generateKeyPair()
         kyberPreKeyStore = SSKKyberPreKeyStore(
             for: .aci,
             dateProvider: dateProvider,
-            keyValueStoreFactory: keyValueStoreFactory,
             remoteConfigProvider: MockRemoteConfigProvider()
         )
     }
@@ -71,7 +68,7 @@ class KyberPreKeyStoreTest: XCTestCase {
     }
 
     func testGenerateIncrementsNextId() {
-        let metadataStore = keyValueStoreFactory.keyValueStore(
+        let metadataStore = KeyValueStore(
             collection: SSKKyberPreKeyStore.Constants.ACI.metadataStoreCollection
         )
 
@@ -97,7 +94,7 @@ class KyberPreKeyStoreTest: XCTestCase {
     }
 
     func testLastResortId() {
-        let metadataStore = keyValueStoreFactory.keyValueStore(
+        let metadataStore = KeyValueStore(
             collection: SSKKyberPreKeyStore.Constants.ACI.metadataStoreCollection
         )
 
@@ -124,7 +121,7 @@ class KyberPreKeyStoreTest: XCTestCase {
 
     // check that prekeyIds overflow in batches
     func testPreKeyIdOverFlow() {
-        let metadataStore = keyValueStoreFactory.keyValueStore(
+        let metadataStore = KeyValueStore(
             collection: SSKKyberPreKeyStore.Constants.ACI.metadataStoreCollection
         )
 
@@ -182,15 +179,8 @@ class KyberPreKeyStoreTest: XCTestCase {
             ).first
         }
 
-        let keyStore = keyValueStoreFactory.keyValueStore(
-            collection: SSKKyberPreKeyStore.Constants.ACI.keyStoreCollection
-        )
-
         let fetchedKey = self.db.read { tx in
-            keyStore.getObject(
-                forKey: kyberPreKeyStore.key(for: key!.id),
-                transaction: tx
-            )
+            return kyberPreKeyStore.loadKyberPreKey(id: key!.id, tx: tx)
         }
         XCTAssertNil(fetchedKey)
     }
@@ -209,16 +199,9 @@ class KyberPreKeyStoreTest: XCTestCase {
             return records
         }
 
-        let keyStore = keyValueStoreFactory.keyValueStore(
-            collection: SSKKyberPreKeyStore.Constants.ACI.keyStoreCollection
-        )
-
         self.db.read { tx in
             for record in records {
-                let fetchedRecord = keyStore.getObject(
-                    forKey: kyberPreKeyStore.key(for: record.id),
-                    transaction: tx
-                )
+                let fetchedRecord = kyberPreKeyStore.loadKyberPreKey(id: record.id, tx: tx)
                 XCTAssertNotNil(fetchedRecord)
             }
         }
@@ -237,15 +220,8 @@ class KyberPreKeyStoreTest: XCTestCase {
         XCTAssertNotNil(lastResortKey)
         XCTAssertTrue(lastResortKey.isLastResort)
 
-        let keyStore = keyValueStoreFactory.keyValueStore(
-            collection: SSKKyberPreKeyStore.Constants.ACI.keyStoreCollection
-        )
-
         let fetchedKey = self.db.read { tx in
-            keyStore.getObject(
-                forKey: kyberPreKeyStore.key(for: lastResortKey.id),
-                transaction: tx
-            )
+            return kyberPreKeyStore.loadKyberPreKey(id: lastResortKey.id, tx: tx)
         }
         XCTAssertNil(fetchedKey)
     }
@@ -266,18 +242,7 @@ class KyberPreKeyStoreTest: XCTestCase {
             return lastResortKey
         }
 
-        let keyStore = keyValueStoreFactory.keyValueStore(
-            collection: SSKKyberPreKeyStore.Constants.ACI.keyStoreCollection
-        )
-
         self.db.read { tx in
-            // Check the raw record was stored
-            let fetchedRecord = keyStore.getObject(
-                forKey: kyberPreKeyStore.key(for: lastResortKey.id),
-                transaction: tx
-            )
-            XCTAssertNotNil(fetchedRecord)
-
             // Check the record deserializes correctly
             let fetchedKey = self.kyberPreKeyStore.loadKyberPreKey(id: lastResortKey.id, tx: tx)
             XCTAssertNotNil(fetchedKey)
@@ -304,16 +269,9 @@ class KyberPreKeyStoreTest: XCTestCase {
             try self.kyberPreKeyStore.markKyberPreKeyUsed(id: firstRecord.id, tx: tx)
         }
 
-        let keyStore = keyValueStoreFactory.keyValueStore(
-            collection: SSKKyberPreKeyStore.Constants.ACI.keyStoreCollection
-        )
-
         self.db.read { tx in
             for record in records {
-                let fetchedRecord = keyStore.getObject(
-                    forKey: kyberPreKeyStore.key(for: record.id),
-                    transaction: tx
-                )
+                let fetchedRecord = kyberPreKeyStore.loadKyberPreKey(id: record.id, tx: tx)
                 if record.id == firstRecord.id {
                     XCTAssertNil(fetchedRecord)
                 } else {
@@ -354,7 +312,6 @@ class KyberPreKeyStoreTest: XCTestCase {
         let pniKyberPreKeyStore = SSKKyberPreKeyStore(
             for: .pni,
             dateProvider: dateProvider,
-            keyValueStoreFactory: keyValueStoreFactory,
             remoteConfigProvider: MockRemoteConfigProvider()
         )
 
@@ -381,20 +338,12 @@ class KyberPreKeyStoreTest: XCTestCase {
         let (aciRecords, aciLastResort) = generateKeys(keyStore: kyberPreKeyStore, identityKey: identityKey)
         let (pniRecords, pniLastResort) = generateKeys(keyStore: pniKyberPreKeyStore, identityKey: pniIdentityKey)
 
-        let aciKeyStore = keyValueStoreFactory.keyValueStore(
-            collection: SSKKyberPreKeyStore.Constants.ACI.keyStoreCollection
-        )
-
-        let pniKeyStore = keyValueStoreFactory.keyValueStore(
-            collection: SSKKyberPreKeyStore.Constants.PNI.keyStoreCollection
-        )
-
         self.db.read { tx in
 
             // make sure no PNI one-time keys in ACI store
             for record in aciRecords {
-                let aciRecord = aciKeyStore.getObject(forKey: kyberPreKeyStore.key(for: record.id), transaction: tx)
-                let pniRecord = pniKeyStore.getObject(forKey: kyberPreKeyStore.key(for: record.id), transaction: tx)
+                let aciRecord = kyberPreKeyStore.loadKyberPreKey(id: record.id, tx: tx)
+                let pniRecord = pniKyberPreKeyStore.loadKyberPreKey(id: record.id, tx: tx)
 
                 XCTAssertNotNil(aciRecord)
                 XCTAssertNil(pniRecord)
@@ -402,24 +351,24 @@ class KyberPreKeyStoreTest: XCTestCase {
 
             // make sure no ACI one-time keys in PNI store
             for record in pniRecords {
-                let aciRecord = aciKeyStore.getObject(forKey: kyberPreKeyStore.key(for: record.id), transaction: tx)
-                let pniRecord = pniKeyStore.getObject(forKey: kyberPreKeyStore.key(for: record.id), transaction: tx)
+                let aciRecord = kyberPreKeyStore.loadKyberPreKey(id: record.id, tx: tx)
+                let pniRecord = pniKyberPreKeyStore.loadKyberPreKey(id: record.id, tx: tx)
 
                 XCTAssertNil(aciRecord)
                 XCTAssertNotNil(pniRecord)
             }
 
             // make sure no PNI last resort keys in ACI store
-            let aciLastResortRecord1 = aciKeyStore.getObject(forKey: kyberPreKeyStore.key(for: aciLastResort.id), transaction: tx)
-            let pniLastResortRecord1 = pniKeyStore.getObject(forKey: kyberPreKeyStore.key(for: aciLastResort.id), transaction: tx)
-                XCTAssertNotNil(aciLastResortRecord1)
-                XCTAssertNil(pniLastResortRecord1)
+            let aciLastResortRecord1 = kyberPreKeyStore.loadKyberPreKey(id: aciLastResort.id, tx: tx)
+            let pniLastResortRecord1 = pniKyberPreKeyStore.loadKyberPreKey(id: aciLastResort.id, tx: tx)
+            XCTAssertNotNil(aciLastResortRecord1)
+            XCTAssertNil(pniLastResortRecord1)
 
             // make sure no ACI last resort keys in PNI store
-            let aciLastResortRecord2 = aciKeyStore.getObject(forKey: kyberPreKeyStore.key(for: pniLastResort.id), transaction: tx)
-            let pniLastResortRecord2 = pniKeyStore.getObject(forKey: kyberPreKeyStore.key(for: pniLastResort.id), transaction: tx)
-                XCTAssertNil(aciLastResortRecord2)
-                XCTAssertNotNil(pniLastResortRecord2)
+            let aciLastResortRecord2 = kyberPreKeyStore.loadKyberPreKey(id: pniLastResort.id, tx: tx)
+            let pniLastResortRecord2 = pniKyberPreKeyStore.loadKyberPreKey(id: pniLastResort.id, tx: tx)
+            XCTAssertNil(aciLastResortRecord2)
+            XCTAssertNotNil(pniLastResortRecord2)
         }
     }
 
@@ -449,7 +398,7 @@ class KyberPreKeyStoreTest: XCTestCase {
             return records
         }
 
-        let keyStore = keyValueStoreFactory.keyValueStore(
+        let keyStore = KeyValueStore(
             collection: SSKKyberPreKeyStore.Constants.ACI.keyStoreCollection
         )
 
@@ -509,7 +458,7 @@ class KyberPreKeyStoreTest: XCTestCase {
             return record
         }
 
-        let keyStore = keyValueStoreFactory.keyValueStore(
+        let keyStore = KeyValueStore(
             collection: SSKKyberPreKeyStore.Constants.ACI.keyStoreCollection
         )
 

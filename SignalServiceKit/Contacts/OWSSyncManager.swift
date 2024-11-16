@@ -14,8 +14,8 @@ extension Notification.Name {
 
 @objc
 public class OWSSyncManager: NSObject {
-    private static var keyValueStore: SDSKeyValueStore {
-        SDSKeyValueStore(collection: "kTSStorageManagerOWSSyncManagerCollection")
+    private static var keyValueStore: KeyValueStore {
+        KeyValueStore(collection: "kTSStorageManagerOWSSyncManagerCollection")
     }
 
     private let contactSyncQueue = SerialTaskQueue()

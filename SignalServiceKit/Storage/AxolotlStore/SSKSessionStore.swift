@@ -16,10 +16,9 @@ public final class SSKSessionStore: SignalSessionStore {
 
     public init(
         for identity: OWSIdentity,
-        keyValueStoreFactory: KeyValueStoreFactory,
         recipientIdFinder: RecipientIdFinder
     ) {
-        self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: {
+        self.keyValueStore = KeyValueStore(collection: {
             switch identity {
             case .aci:
                 return "TSStorageManagerSessionStoreCollection"

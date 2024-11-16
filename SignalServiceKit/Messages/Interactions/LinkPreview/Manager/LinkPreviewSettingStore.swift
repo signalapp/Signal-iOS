@@ -10,9 +10,9 @@ public class LinkPreviewSettingStore {
         static let areLinkPreviewsEnabledKey = "areLinkPreviewsEnabled"
     }
 
-    private let keyValueStore: any KeyValueStore
+    private let keyValueStore: KeyValueStore
 
-    init(keyValueStore: any KeyValueStore) {
+    init(keyValueStore: KeyValueStore) {
         self.keyValueStore = keyValueStore
     }
 
@@ -26,7 +26,7 @@ public class LinkPreviewSettingStore {
 
     #if TESTABLE_BUILD
     static func mock() -> LinkPreviewSettingStore {
-        return LinkPreviewSettingStore(keyValueStore: InMemoryKeyValueStore(collection: ""))
+        return LinkPreviewSettingStore(keyValueStore: KeyValueStore(collection: "blorp"))
     }
     #endif
 }

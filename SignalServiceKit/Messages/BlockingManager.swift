@@ -607,7 +607,7 @@ extension BlockingManager {
 
         // MARK: Persistence
 
-        static let keyValueStore = SDSKeyValueStore(collection: "kOWSBlockingManager_BlockedPhoneNumbersCollection")
+        static let keyValueStore = KeyValueStore(collection: "kOWSBlockingManager_BlockedPhoneNumbersCollection")
 
         enum PersistenceKey: String {
             case changeTokenKey = "kOWSBlockingManager_ChangeTokenKey"

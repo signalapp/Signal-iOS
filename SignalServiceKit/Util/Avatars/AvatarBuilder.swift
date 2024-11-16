@@ -661,7 +661,7 @@ public class AvatarBuilder: NSObject {
         )
     )
 
-    private static let contactCacheKeys = SDSKeyValueStore(collection: "AvatarBuilder.contactCacheKeys")
+    private static let contactCacheKeys = KeyValueStore(collection: "AvatarBuilder.contactCacheKeys")
 
     private func avatarImage(forAvatarContent avatarContent: AvatarContent, transaction: SDSAnyReadTransaction?) -> UIImage? {
         let cacheKey = avatarContent.cacheKey

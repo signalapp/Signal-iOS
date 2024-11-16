@@ -1361,7 +1361,7 @@ private class CustomColorPreviewView: UIView {
 
     // MARK: - Tooltip
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "CustomColorPreviewView")
+    private static let keyValueStore = KeyValueStore(collection: "CustomColorPreviewView")
     private static let tooltipWasDismissedKey = "tooltipWasDismissed"
 
     private var customColorTooltip: CustomColorTooltip?

@@ -15,9 +15,9 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
         private let db: any DB
         private let kvStore: KeyValueStore
 
-        init(db: any DB, kvStoreFactory: KeyValueStoreFactory) {
+        init(db: any DB) {
             self.db = db
-            self.kvStore = kvStoreFactory.keyValueStore(collection: "LinkedDevicePniKeyManagerImpl")
+            self.kvStore = KeyValueStore(collection: "LinkedDevicePniKeyManagerImpl")
         }
 
         func hasDecryptionError() -> Bool {
@@ -38,13 +38,11 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
     private var isMarkedDeregistered: Bool = false
 
     override func setUp() {
-        let kvStoreFactory = InMemoryKeyValueStoreFactory()
-
         testScheduler = TestScheduler()
         let testSchedulers = TestSchedulers(scheduler: testScheduler)
 
         db = InMemoryDB()
-        kvStore = TestKVStore(db: db, kvStoreFactory: kvStoreFactory)
+        kvStore = TestKVStore(db: db)
         messageProcessorMock = MessageProcessorMock(schedulers: testSchedulers)
         pniIdentityKeyCheckerMock = PniIdentityKeyCheckerMock()
         registrationStateChangeManagerMock = .init()
@@ -58,7 +56,6 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
 
         linkedDevicePniKeyManager = LinkedDevicePniKeyManagerImpl(
             db: db,
-            keyValueStoreFactory: kvStoreFactory,
             messageProcessor: messageProcessorMock,
             pniIdentityKeyChecker: pniIdentityKeyCheckerMock,
             registrationStateChangeManager: registrationStateChangeManagerMock,

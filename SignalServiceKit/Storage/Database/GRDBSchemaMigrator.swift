@@ -864,7 +864,7 @@ public class GRDBSchemaMigrator: NSObject {
             try transaction.database.drop(table: "model_TSRecipientReadReceipt")
             try transaction.database.drop(table: "model_OWSLinkedDeviceReadReceipt")
 
-            let viewOnceStore = SDSKeyValueStore(collection: "viewOnceMessages")
+            let viewOnceStore = KeyValueStore(collection: "viewOnceMessages")
             viewOnceStore.removeAll(transaction: transaction.asAnyWrite.asV2Write)
             return .success(())
         }
@@ -3772,7 +3772,7 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(.dataMigration_turnScreenSecurityOnForExistingUsers) { transaction in
             // Declare the key value store here, since it's normally only
             // available in SignalMessaging.Preferences.
-            let preferencesKeyValueStore = SDSKeyValueStore(collection: "SignalPreferences")
+            let preferencesKeyValueStore = KeyValueStore(collection: "SignalPreferences")
             let screenSecurityKey = "Screen Security Key"
             guard !preferencesKeyValueStore.hasValue(
                 screenSecurityKey,
@@ -3960,7 +3960,7 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(.dataMigration_repairAvatar) { transaction in
             // Declare the key value store here, since it's normally only
             // available in SignalMessaging.Preferences.
-            let preferencesKeyValueStore = SDSKeyValueStore(collection: Self.migrationSideEffectsCollectionName)
+            let preferencesKeyValueStore = KeyValueStore(collection: Self.migrationSideEffectsCollectionName)
             let key = Self.avatarRepairAttemptCount
             preferencesKeyValueStore.setInt(0, key: key, transaction: transaction.asAnyWrite.asV2Write)
             return .success(())
@@ -3968,10 +3968,10 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.dataMigration_dropEmojiAvailabilityStore) { transaction in
             // This is a bit of a layering violation, since these tables were previously managed in the app layer.
-            // In the long run we'll have a general "unused SDSKeyValueStore cleaner" migration,
+            // In the long run we'll have a general "unused KeyValueStore cleaner" migration,
             // but for now this should drop 2000 or so rows for free.
-            SDSKeyValueStore(collection: "Emoji+availableStore").removeAll(transaction: transaction.asAnyWrite.asV2Write)
-            SDSKeyValueStore(collection: "Emoji+metadataStore").removeAll(transaction: transaction.asAnyWrite.asV2Write)
+            KeyValueStore(collection: "Emoji+availableStore").removeAll(transaction: transaction.asAnyWrite.asV2Write)
+            KeyValueStore(collection: "Emoji+metadataStore").removeAll(transaction: transaction.asAnyWrite.asV2Write)
             return .success(())
         }
 
@@ -3999,8 +3999,8 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.dataMigration_deleteOldGroupCapabilities) { transaction in
             let sql = """
-                DELETE FROM \(SDSKeyValueStore.tableName)
-                WHERE \(SDSKeyValueStore.collectionColumnName)
+                DELETE FROM \(KeyValueStore.tableName)
+                WHERE \(KeyValueStore.collectionColumnName)
                 IN ("GroupManager.senderKeyCapability", "GroupManager.announcementOnlyGroupsCapability", "GroupManager.groupsV2MigrationCapability")
             """
             try transaction.database.execute(sql: sql)
@@ -4143,7 +4143,7 @@ public class GRDBSchemaMigrator: NSObject {
             ]
 
             for collection in keyValueCollections {
-                SDSKeyValueStore(collection: collection).removeAll(transaction: transaction.asAnyWrite.asV2Write)
+                KeyValueStore(collection: collection).removeAll(transaction: transaction.asAnyWrite.asV2Write)
             }
 
             return .success(())

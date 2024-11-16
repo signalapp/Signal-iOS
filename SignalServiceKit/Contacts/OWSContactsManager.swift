@@ -54,7 +54,7 @@ public enum ContactAuthorizationForSharing {
 public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     let swiftValues: OWSContactsManagerSwiftValues
     let systemContactsFetcher: SystemContactsFetcher
-    let keyValueStore: SDSKeyValueStore
+    let keyValueStore: KeyValueStore
 
     public var isEditingAllowed: Bool {
         // We're only allowed to edit contacts on devices that can sync them. Otherwise the UX doesn't make sense.
@@ -122,7 +122,7 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     public private(set) var hasLoadedSystemContacts: Bool = false
 
     public init(appReadiness: AppReadiness, swiftValues: OWSContactsManagerSwiftValues) {
-        keyValueStore = SDSKeyValueStore(collection: "OWSContactsManagerCollection")
+        keyValueStore = KeyValueStore(collection: "OWSContactsManagerCollection")
         systemContactsFetcher = SystemContactsFetcher(appReadiness: appReadiness)
         self.swiftValues = swiftValues
         super.init()
@@ -222,8 +222,8 @@ public class OWSContactsManagerSwiftValues {
     fileprivate let unknownThreadWarningCache = LowTrustCache()
 
     fileprivate let intersectionQueue = DispatchQueue(label: "org.signal.contacts.intersection")
-    fileprivate let skipContactAvatarBlurByServiceIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
-    fileprivate let skipGroupAvatarBlurByGroupIdStore = SDSKeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
+    fileprivate let skipContactAvatarBlurByServiceIdStore = KeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
+    fileprivate let skipGroupAvatarBlurByGroupIdStore = KeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
 
     fileprivate let usernameLookupManager: UsernameLookupManager
     fileprivate let recipientDatabaseTable: any RecipientDatabaseTable

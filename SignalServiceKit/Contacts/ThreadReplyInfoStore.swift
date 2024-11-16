@@ -7,8 +7,8 @@ import Foundation
 
 public class ThreadReplyInfoStore {
     private let keyValueStore: KeyValueStore
-    init(keyValueStoreFactory: KeyValueStoreFactory) {
-        self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: "TSThreadReplyInfo")
+    init() {
+        self.keyValueStore = KeyValueStore(collection: "TSThreadReplyInfo")
     }
 
     public func fetch(for threadUniqueId: String, tx: DBReadTransaction) -> ThreadReplyInfo? {

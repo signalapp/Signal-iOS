@@ -16,8 +16,8 @@ public class MediaRootBackupKeyStore {
 
     private let kvStore: KeyValueStore
 
-    public init(keyValueStoreFactory: KeyValueStoreFactory) {
-        self.kvStore = keyValueStoreFactory.keyValueStore(collection: "MediaRootBackupKey")
+    public init() {
+        self.kvStore = KeyValueStore(collection: "MediaRootBackupKey")
     }
 
     /// Get the already-generated MRBK. Returns nil if none has been set. If you require an MRBK

@@ -22,8 +22,8 @@ public class LastVisibleInteractionStore {
 
     private let kvStore: KeyValueStore
 
-    public init(keyValueStoreFactory: KeyValueStoreFactory) {
-        self.kvStore = keyValueStoreFactory.keyValueStore(collection: "lastVisibleInteractionStore")
+    public init() {
+        self.kvStore = KeyValueStore(collection: "lastVisibleInteractionStore")
     }
 
     public func hasLastVisibleInteraction(for thread: TSThread, tx: DBReadTransaction) -> Bool {

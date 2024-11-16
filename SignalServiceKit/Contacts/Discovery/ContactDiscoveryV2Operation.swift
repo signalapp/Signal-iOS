@@ -257,7 +257,7 @@ struct CdsPreviousE164: Codable, FetchableRecord, PersistableRecord {
 }
 
 private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2PersistentState {
-    private static let tokenStore = SDSKeyValueStore(collection: "CdsMetadata")
+    private static let tokenStore = KeyValueStore(collection: "CdsMetadata")
     private static let tokenKey = "token"
 
     func load() -> (token: Data, e164s: Set<E164>)? {

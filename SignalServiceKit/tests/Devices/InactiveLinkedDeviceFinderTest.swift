@@ -49,7 +49,6 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
             deviceNameDecrypter: mockDeviceNameDecrypter,
             deviceStore: mockDeviceStore,
             devicesService: mockDevicesService,
-            kvStoreFactory: InMemoryKeyValueStoreFactory(),
             remoteConfigProvider: MockRemoteConfigProvider(),
             tsAccountManager: mockTSAccountManager
         )

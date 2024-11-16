@@ -25,7 +25,7 @@ class SessionStoreTest: SSKBaseTest {
 
         // We have to use the database-based KeyValueStore to test this
         // because the in-memory one skips the archiving step.
-        let sessionStore = SSKSessionStore(for: .aci, keyValueStoreFactory: SDSKeyValueStoreFactory(), recipientIdFinder: DependenciesBridge.shared.recipientIdFinder)
+        let sessionStore = SSKSessionStore(for: .aci, recipientIdFinder: DependenciesBridge.shared.recipientIdFinder)
         let recipient = write {
             DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: Aci.randomForTesting(), tx: $0.asV2Write)
         }

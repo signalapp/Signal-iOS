@@ -30,10 +30,9 @@ private class MockStorageServiceManager: StorageServiceManager {
 private class TestDependencies {
     let aciSessionStore: SignalSessionStore
     var aciSessionStoreKeyValueStore: KeyValueStore {
-        keyValueStoreFactory.keyValueStore(collection: "TSStorageManagerSessionStoreCollection")
+        KeyValueStore(collection: "TSStorageManagerSessionStoreCollection")
     }
     let identityManager: MockIdentityManager
-    let keyValueStoreFactory = InMemoryKeyValueStoreFactory()
     let mockDB = InMemoryDB()
     let recipientMerger: RecipientMerger
     let recipientDatabaseTable = MockRecipientDatabaseTable()
@@ -47,14 +46,13 @@ private class TestDependencies {
         let storageServiceManager = MockStorageServiceManager()
         recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientDatabaseTable)
         recipientIdFinder = RecipientIdFinder(recipientDatabaseTable: recipientDatabaseTable, recipientFetcher: recipientFetcher)
-        aciSessionStore = SSKSessionStore(for: .aci, keyValueStoreFactory: keyValueStoreFactory, recipientIdFinder: recipientIdFinder)
+        aciSessionStore = SSKSessionStore(for: .aci, recipientIdFinder: recipientIdFinder)
         identityManager = MockIdentityManager(recipientIdFinder: recipientIdFinder)
         identityManager.recipientIdentities = [:]
         identityManager.sessionSwitchoverMessages = []
         threadAssociatedDataStore = MockThreadAssociatedDataStore()
         threadStore = MockThreadStore()
         threadMerger = ThreadMerger.forUnitTests(
-            keyValueStoreFactory: keyValueStoreFactory,
             threadAssociatedDataStore: threadAssociatedDataStore,
             threadStore: threadStore
         )

@@ -18,10 +18,10 @@ struct StorageServiceRecordIkmCapabilityStoreImpl: StorageServiceRecordIkmCapabi
         static let isRecordIkmCapable = "isRecordIkmCapable"
     }
 
-    private let kvStore: any KeyValueStore
+    private let kvStore: KeyValueStore
 
-    init(keyValueStoreFactory: KeyValueStoreFactory) {
-        kvStore = keyValueStoreFactory.keyValueStore(collection: "SSRecIkmCapStore")
+    init() {
+        kvStore = KeyValueStore(collection: "SSRecIkmCapStore")
     }
 
     // MARK: -

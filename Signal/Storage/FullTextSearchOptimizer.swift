@@ -23,9 +23,9 @@ final class FullTextSearchOptimizer {
         static let currentVersion = 1
     }
 
-    init(appContext: AppContext, db: any DB, keyValueStoreFactory: KeyValueStoreFactory) {
+    init(appContext: AppContext, db: any DB) {
         self.db = db
-        self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: "FullTextSearchOptimizer")
+        self.keyValueStore = KeyValueStore(collection: "FullTextSearchOptimizer")
         self.preconditions = Preconditions([AppActivePrecondition(appContext: appContext)])
     }
 

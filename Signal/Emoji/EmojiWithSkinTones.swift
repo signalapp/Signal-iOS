@@ -43,7 +43,7 @@ extension EmojiWithSkinTones {
 }
 
 extension Emoji {
-    private static let keyValueStore = SDSKeyValueStore(collection: "Emoji+PreferredSkinTonePermutation")
+    private static let keyValueStore = KeyValueStore(collection: "Emoji+PreferredSkinTonePermutation")
 
     static func allSendableEmojiByCategoryWithPreferredSkinTones(transaction: SDSAnyReadTransaction) -> [Category: [EmojiWithSkinTones]] {
         return Category.allCases.reduce(into: [Category: [EmojiWithSkinTones]]()) { result, category in

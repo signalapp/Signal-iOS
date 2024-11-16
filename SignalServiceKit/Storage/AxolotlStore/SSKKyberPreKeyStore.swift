@@ -167,7 +167,6 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
     public init(
         for identity: OWSIdentity,
         dateProvider: @escaping DateProvider,
-        keyValueStoreFactory: KeyValueStoreFactory,
         remoteConfigProvider: any RemoteConfigProvider
     ) {
         self.identity = identity
@@ -176,11 +175,11 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
 
         switch identity {
         case .aci:
-            self.keyStore = keyValueStoreFactory.keyValueStore(collection: Constants.ACI.keyStoreCollection)
-            self.metadataStore = keyValueStoreFactory.keyValueStore(collection: Constants.ACI.metadataStoreCollection)
+            self.keyStore = KeyValueStore(collection: Constants.ACI.keyStoreCollection)
+            self.metadataStore = KeyValueStore(collection: Constants.ACI.metadataStoreCollection)
         case .pni:
-            self.keyStore = keyValueStoreFactory.keyValueStore(collection: Constants.PNI.keyStoreCollection)
-            self.metadataStore = keyValueStoreFactory.keyValueStore(collection: Constants.PNI.metadataStoreCollection)
+            self.keyStore = KeyValueStore(collection: Constants.PNI.keyStoreCollection)
+            self.metadataStore = KeyValueStore(collection: Constants.PNI.metadataStoreCollection)
         }
     }
 

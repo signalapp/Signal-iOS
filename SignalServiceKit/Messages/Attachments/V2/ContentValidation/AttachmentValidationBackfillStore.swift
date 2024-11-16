@@ -8,7 +8,7 @@ import GRDB
 
 public class AttachmentValidationBackfillStore {
 
-    private let kvStore = SDSKeyValueStore(collection: "AttachmentValidationBackfillStore")
+    private let kvStore = KeyValueStore(collection: "AttachmentValidationBackfillStore")
 
     public init() {}
 

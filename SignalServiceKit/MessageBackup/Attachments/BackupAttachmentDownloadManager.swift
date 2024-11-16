@@ -59,7 +59,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         dateProvider: @escaping DateProvider,
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         messageBackupRequestManager: MessageBackupRequestManager,
@@ -82,7 +81,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             attachmentStore: attachmentStore,
             attachmentUploadStore: attachmentUploadStore,
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
             messageBackupRequestManager: messageBackupRequestManager,
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
@@ -246,7 +244,6 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             attachmentStore: AttachmentStore,
             attachmentUploadStore: AttachmentUploadStore,
             db: any DB,
-            keyValueStoreFactory: KeyValueStoreFactory,
             messageBackupRequestManager: MessageBackupRequestManager,
             messageBackupKeyMaterial: MessageBackupKeyMaterial,
             orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
@@ -255,7 +252,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             self.attachmentStore = attachmentStore
             self.attachmentUploadStore = attachmentUploadStore
             self.db = db
-            self.kvStore = keyValueStoreFactory.keyValueStore(collection: "ListBackupMediaManager")
+            self.kvStore = KeyValueStore(collection: "ListBackupMediaManager")
             self.messageBackupRequestManager = messageBackupRequestManager
             self.messageBackupKeyMaterial = messageBackupKeyMaterial
             self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore

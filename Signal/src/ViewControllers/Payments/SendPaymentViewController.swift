@@ -931,7 +931,7 @@ public class SendPaymentViewController: OWSViewController {
 
     // MARK: -
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "SendPaymentView")
+    private static let keyValueStore = KeyValueStore(collection: "SendPaymentView")
     private static let wasLastPaymentInFiatKey = "wasLastPaymentInFiat"
 
     private static var wasLastPaymentInFiat: Bool {

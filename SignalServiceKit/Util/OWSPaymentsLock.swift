@@ -28,7 +28,7 @@ public class OWSPaymentsLock: NSObject {
 
     // MARK: - KV Store
 
-    private let keyValueStore = SDSKeyValueStore(collection: "OWSPaymentsLock")
+    private let keyValueStore = KeyValueStore(collection: "OWSPaymentsLock")
 
     // MARK: - Properties
 

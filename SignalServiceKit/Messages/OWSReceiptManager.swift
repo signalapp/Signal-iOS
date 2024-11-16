@@ -77,9 +77,9 @@ public class OWSReceiptManager: NSObject {
     private var isProcessing = AtomicValue(false, lock: .init())
     private var areReadReceiptsEnabledCached = AtomicOptional<Bool>(nil, lock: .init())
 
-    static let keyValueStore = SDSKeyValueStore(collection: "OWSReadReceiptManagerCollection")
-    private static let toLinkedDevicesReadReceiptMapStore = SDSKeyValueStore(collection: "OWSReceiptManager.toLinkedDevicesReadReceiptMapStore")
-    private static let toLinkedDevicesViewedReceiptMapStore = SDSKeyValueStore(collection: "OWSReceiptManager.toLinkedDevicesViewedReceiptMapStore")
+    static let keyValueStore = KeyValueStore(collection: "OWSReadReceiptManagerCollection")
+    private static let toLinkedDevicesReadReceiptMapStore = KeyValueStore(collection: "OWSReceiptManager.toLinkedDevicesReadReceiptMapStore")
+    private static let toLinkedDevicesViewedReceiptMapStore = KeyValueStore(collection: "OWSReceiptManager.toLinkedDevicesViewedReceiptMapStore")
 
     private static let kOwsReceiptManagerAreReadReceiptsEnabled = "areReadReceiptsEnabled"
 

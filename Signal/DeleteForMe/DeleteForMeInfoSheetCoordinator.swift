@@ -32,14 +32,13 @@ final class DeleteForMeInfoSheetCoordinator {
         deleteForMeSyncMessageSettingsStore: DeleteForMeSyncMessageSettingsStore,
         deviceStore: OWSDeviceStore,
         interactionDeleteManager: InteractionDeleteManager,
-        keyValueStoreFactory: KeyValueStoreFactory,
         threadSoftDeleteManager: ThreadSoftDeleteManager
     ) {
         self.db = db
         self.deleteForMeSyncMessageSettingsStore = deleteForMeSyncMessageSettingsStore
         self.deviceStore = deviceStore
         self.interactionDeleteManager = interactionDeleteManager
-        self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: "DeleteForMeInfoSheetCoordinator")
+        self.keyValueStore = KeyValueStore(collection: "DeleteForMeInfoSheetCoordinator")
         self.threadSoftDeleteManager = threadSoftDeleteManager
     }
 
@@ -49,7 +48,6 @@ final class DeleteForMeInfoSheetCoordinator {
             deleteForMeSyncMessageSettingsStore: DependenciesBridge.shared.deleteForMeSyncMessageSettingsStore,
             deviceStore: DependenciesBridge.shared.deviceStore,
             interactionDeleteManager: DependenciesBridge.shared.interactionDeleteManager,
-            keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
             threadSoftDeleteManager: DependenciesBridge.shared.threadSoftDeleteManager
         )
     }

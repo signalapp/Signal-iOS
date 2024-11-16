@@ -72,7 +72,7 @@ public class Preferences: NSObject {
     }
 
     private static let preferencesCollection = "SignalPreferences"
-    private let keyValueStore = SDSKeyValueStore(collection: Preferences.preferencesCollection)
+    private let keyValueStore = KeyValueStore(collection: Preferences.preferencesCollection)
 
     public override init() {
         super.init()

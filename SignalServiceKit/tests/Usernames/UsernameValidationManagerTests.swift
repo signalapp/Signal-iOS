@@ -35,7 +35,6 @@ final class UsernameValidationManagerTest: XCTestCase {
         validationManager = UsernameValidationManagerImpl(context: .init(
             accountServiceClient: mockAccountServiceClient,
             database: mockDB,
-            keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
             localUsernameManager: mockLocalUsernameManager,
             messageProcessor: mockMessageProcessor,
             schedulers: TestSchedulers(scheduler: mockScheduler),

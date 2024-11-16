@@ -44,7 +44,7 @@ extension LegacyChangePhoneNumber {
             static let changeTokenPniPendingState = "ChangeNumberPniPendingState"
         }
 
-        private let keyValueStore = SDSKeyValueStore(
+        private let keyValueStore = KeyValueStore(
             collection: "ChangePhoneNumber.incompleteChanges"
         )
 

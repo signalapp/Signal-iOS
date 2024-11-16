@@ -292,7 +292,7 @@ public class StorageServiceUnknownFieldMigrator {
         // locally.
         static let lastSuccessfulStorageServiceWrite = "lastSuccessfulStorageServiceWrite"
     }
-    private static var kvStore = SDSKeyValueStore(collection: "StorageServiceUnknownFieldMigrator")
+    private static var kvStore = KeyValueStore(collection: "StorageServiceUnknownFieldMigrator")
 
     private class Migrator {
         var migrations: [MigrationId: any StorageServiceUnknownFieldMigration] = [:]

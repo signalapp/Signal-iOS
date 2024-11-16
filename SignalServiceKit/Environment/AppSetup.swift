@@ -27,7 +27,6 @@ public class AppSetup {
         let dateProvider: DateProvider?
         let groupV2Updates: (any GroupV2Updates)?
         let groupsV2: (any GroupsV2)?
-        let keyValueStoreFactory: (any KeyValueStoreFactory)?
         let messageSender: MessageSender?
         let modelReadCaches: ModelReadCaches?
         let networkManager: NetworkManager?
@@ -52,7 +51,6 @@ public class AppSetup {
             dateProvider: DateProvider? = nil,
             groupV2Updates: (any GroupV2Updates)? = nil,
             groupsV2: (any GroupsV2)? = nil,
-            keyValueStoreFactory: (any KeyValueStoreFactory)? = nil,
             messageSender: MessageSender? = nil,
             modelReadCaches: ModelReadCaches? = nil,
             networkManager: NetworkManager? = nil,
@@ -76,7 +74,6 @@ public class AppSetup {
             self.dateProvider = dateProvider
             self.groupV2Updates = groupV2Updates
             self.groupsV2 = groupsV2
-            self.keyValueStoreFactory = keyValueStoreFactory
             self.messageSender = messageSender
             self.modelReadCaches = modelReadCaches
             self.networkManager = networkManager
@@ -131,7 +128,6 @@ public class AppSetup {
         owsPrecondition(OWSFileSystem.protectFileOrFolder(atPath: temporaryDirectory, fileProtectionType: .completeUntilFirstUserAuthentication))
 
         let tsConstants = TSConstants.shared
-        let keyValueStoreFactory = testDependencies.keyValueStoreFactory ?? SDSKeyValueStoreFactory()
 
         let libsignalNet = Net(
             env: TSConstants.isUsingProductionService ? .production : .staging,
@@ -146,7 +142,6 @@ public class AppSetup {
         let schedulers = DispatchQueueSchedulers()
 
         let appExpiry = AppExpiryImpl(
-            keyValueStoreFactory: keyValueStoreFactory,
             dateProvider: dateProvider,
             appVersion: appVersion,
             schedulers: schedulers
@@ -159,7 +154,6 @@ public class AppSetup {
             dateProvider: dateProvider,
             databaseChangeObserver: databaseStorage.databaseChangeObserver,
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
             schedulers: schedulers
         )
 
@@ -167,7 +161,6 @@ public class AppSetup {
             appExpiry: appExpiry,
             appReadiness: appReadiness,
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
             tsAccountManager: tsAccountManager,
             serviceClient: SignalServiceRestClient.shared
         )
@@ -175,7 +168,6 @@ public class AppSetup {
         let accountServiceClient = testDependencies.accountServiceClient ?? AccountServiceClient()
         let aciSignalProtocolStore = SignalProtocolStoreImpl(
             for: .aci,
-            keyValueStoreFactory: keyValueStoreFactory,
             recipientIdFinder: recipientIdFinder,
             remoteConfigProvider: remoteConfigManager
         )
@@ -197,7 +189,6 @@ public class AppSetup {
         let archivedPaymentStore = ArchivedPaymentStoreImpl()
         let pniSignalProtocolStore = SignalProtocolStoreImpl(
             for: .pni,
-            keyValueStoreFactory: keyValueStoreFactory,
             recipientIdFinder: recipientIdFinder,
             remoteConfigProvider: remoteConfigManager
         )
@@ -227,7 +218,7 @@ public class AppSetup {
 
         let signalAccountStore = SignalAccountStoreImpl()
         let threadStore = ThreadStoreImpl()
-        let lastVisibleInteractionStore = LastVisibleInteractionStore(keyValueStoreFactory: keyValueStoreFactory)
+        let lastVisibleInteractionStore = LastVisibleInteractionStore()
         let userProfileStore = UserProfileStoreImpl()
         let usernameLookupRecordStore = UsernameLookupRecordStoreImpl()
         let nicknameRecordStore = NicknameRecordStoreImpl()
@@ -261,7 +252,7 @@ public class AppSetup {
             )
         )
 
-        let authCredentialStore = AuthCredentialStore(keyValueStoreFactory: keyValueStoreFactory)
+        let authCredentialStore = AuthCredentialStore()
 
         let callLinkPublicParams = try! GenericServerPublicParams(contents: [UInt8](tsConstants.callLinkPublicParams))
         let authCredentialManager = AuthCredentialManagerImpl(
@@ -281,7 +272,6 @@ public class AppSetup {
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
         let mediaBandwidthPreferenceStore = MediaBandwidthPreferenceStoreImpl(
-            keyValueStoreFactory: keyValueStoreFactory,
             reachabilityManager: reachabilityManager,
             schedulers: schedulers
         )
@@ -299,8 +289,8 @@ public class AppSetup {
             attachmentValidator: attachmentContentValidator
         )
 
-        let svrCredentialStorage = SVRAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
-        let svrLocalStorage = SVRLocalStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
+        let svrCredentialStorage = SVRAuthCredentialStorageImpl()
+        let svrLocalStorage = SVRLocalStorageImpl()
 
         let accountAttributesUpdater = AccountAttributesUpdaterImpl(
             appReadiness: appReadiness,
@@ -308,7 +298,6 @@ public class AppSetup {
             dateProvider: dateProvider,
             db: db,
             profileManager: profileManager,
-            keyValueStoreFactory: keyValueStoreFactory,
             serviceClient: SignalServiceRestClient(),
             schedulers: schedulers,
             svrLocalStorage: svrLocalStorage,
@@ -324,7 +313,6 @@ public class AppSetup {
             connectionFactory: SgxWebsocketConnectionFactoryImpl(websocketFactory: webSocketFactory),
             credentialStorage: svrCredentialStorage,
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
             svrLocalStorage: svrLocalStorage,
@@ -334,7 +322,7 @@ public class AppSetup {
             twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager)
         )
 
-        let mrbkStore = MediaRootBackupKeyStore(keyValueStoreFactory: keyValueStoreFactory)
+        let mrbkStore = MediaRootBackupKeyStore()
         let messageBackupKeyMaterial = MessageBackupKeyMaterialImpl(
             mrbkStore: mrbkStore,
             svr: svr
@@ -342,12 +330,10 @@ public class AppSetup {
         let messageBackupRequestManager = MessageBackupRequestManagerImpl(
             dateProvider: dateProvider,
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
             messageBackupAuthCredentialManager: MessageBackupAuthCredentialManagerImpl(
                 authCredentialStore: authCredentialStore,
                 dateProvider: dateProvider,
                 db: db,
-                keyValueStoreFactory: keyValueStoreFactory,
                 messageBackupKeyMaterial: messageBackupKeyMaterial,
                 networkManager: networkManager
             ),
@@ -465,7 +451,6 @@ public class AppSetup {
             aciProtocolStore: aciProtocolStore,
             appReadiness: appReadiness,
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
             messageSenderJobQueue: messageSenderJobQueue,
             networkManager: networkManager,
             notificationPresenter: notificationPresenter,
@@ -540,7 +525,7 @@ public class AppSetup {
 
         let groupMemberStore = GroupMemberStoreImpl()
         let threadAssociatedDataStore = ThreadAssociatedDataStoreImpl()
-        let threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: keyValueStoreFactory)
+        let threadReplyInfoStore = ThreadReplyInfoStore()
 
         let wallpaperImageStore = WallpaperImageStoreImpl(
             attachmentManager: attachmentManager,
@@ -549,12 +534,10 @@ public class AppSetup {
             db: db
         )
         let wallpaperStore = WallpaperStore(
-            keyValueStoreFactory: keyValueStoreFactory,
             notificationScheduler: schedulers.main,
             wallpaperImageStore: wallpaperImageStore
         )
         let chatColorSettingStore = ChatColorSettingStore(
-            keyValueStoreFactory: keyValueStoreFactory,
             wallpaperStore: wallpaperStore
         )
 
@@ -628,9 +611,7 @@ public class AppSetup {
             threadStore: threadStore
         )
 
-        let deleteForMeSyncMessageSettingsStore = DeleteForMeSyncMessageSettingsStoreImpl(
-            keyValueStoreFactory: keyValueStoreFactory
-        )
+        let deleteForMeSyncMessageSettingsStore = DeleteForMeSyncMessageSettingsStoreImpl()
         let deleteForMeOutgoingSyncMessageManager = DeleteForMeOutgoingSyncMessageManagerImpl(
             deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
             recipientDatabaseTable: recipientDatabaseTable,
@@ -724,7 +705,7 @@ public class AppSetup {
             wallpaperStore: wallpaperStore
         )
 
-        let pinnedThreadStore = PinnedThreadStoreImpl(keyValueStoreFactory: keyValueStoreFactory)
+        let pinnedThreadStore = PinnedThreadStoreImpl()
         let pinnedThreadManager = PinnedThreadManagerImpl(
             db: db,
             pinnedThreadStore: pinnedThreadStore,
@@ -732,7 +713,7 @@ public class AppSetup {
             threadStore: threadStore
         )
 
-        let authorMergeHelper = AuthorMergeHelper(keyValueStoreFactory: keyValueStoreFactory)
+        let authorMergeHelper = AuthorMergeHelper()
         let recipientMerger = RecipientMergerImpl(
             aciSessionStore: aciProtocolStore.sessionStore,
             blockedRecipientStore: blockedRecipientStore,
@@ -790,7 +771,6 @@ public class AppSetup {
         )
         let linkedDevicePniKeyManager = LinkedDevicePniKeyManagerImpl(
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
             messageProcessor: LinkedDevicePniKeyManagerImpl.Wrappers.MessageProcessor(messageProcessor),
             pniIdentityKeyChecker: pniIdentityKeyChecker,
             registrationStateChangeManager: registrationStateChangeManager,
@@ -800,7 +780,6 @@ public class AppSetup {
         let pniHelloWorldManager = PniHelloWorldManagerImpl(
             database: db,
             identityManager: identityManager,
-            keyValueStoreFactory: keyValueStoreFactory,
             networkManager: PniHelloWorldManagerImpl.Wrappers.NetworkManager(networkManager),
             pniDistributionParameterBuilder: pniDistributionParameterBuilder,
             pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
@@ -825,7 +804,6 @@ public class AppSetup {
             dateProvider: dateProvider,
             db: db,
             identityManager: PreKey.Wrappers.IdentityManager(identityManager),
-            keyValueStoryFactory: keyValueStoreFactory,
             linkedDevicePniKeyManager: linkedDevicePniKeyManager,
             messageProcessor: PreKey.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
             protocolStoreManager: signalProtocolStoreManager,
@@ -845,7 +823,6 @@ public class AppSetup {
         let registrationSessionManager = RegistrationSessionManagerImpl(
             dateProvider: dateProvider,
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
             schedulers: schedulers,
             signalService: signalService
         )
@@ -857,15 +834,13 @@ public class AppSetup {
             messageSenderJobQueue: messageSenderJobQueue
         )
 
-        let donationReceiptCredentialResultStore = DonationReceiptCredentialResultStoreImpl(
-            kvStoreFactory: keyValueStoreFactory
-        )
+        let donationReceiptCredentialResultStore = DonationReceiptCredentialResultStoreImpl()
 
         let usernameApiClient = UsernameApiClientImpl(
             networkManager: UsernameApiClientImpl.Wrappers.NetworkManager(networkManager: networkManager),
             schedulers: schedulers
         )
-        let usernameEducationManager = UsernameEducationManagerImpl(keyValueStoreFactory: keyValueStoreFactory)
+        let usernameEducationManager = UsernameEducationManagerImpl()
         let usernameLinkManager = UsernameLinkManagerImpl(
             db: db,
             apiClient: usernameApiClient,
@@ -873,7 +848,6 @@ public class AppSetup {
         )
         let localUsernameManager = LocalUsernameManagerImpl(
             db: db,
-            kvStoreFactory: keyValueStoreFactory,
             reachabilityManager: reachabilityManager,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
@@ -883,7 +857,6 @@ public class AppSetup {
         let usernameValidationManager = UsernameValidationManagerImpl(context: .init(
             accountServiceClient: Usernames.Validation.Wrappers.AccountServiceClient(accountServiceClient),
             database: db,
-            keyValueStoreFactory: keyValueStoreFactory,
             localUsernameManager: localUsernameManager,
             messageProcessor: Usernames.Validation.Wrappers.MessageProcessor(messageProcessor),
             schedulers: schedulers,
@@ -908,7 +881,6 @@ public class AppSetup {
 
         let masterKeySyncManager = MasterKeySyncManagerImpl(
             dateProvider: dateProvider,
-            keyValueStoreFactory: keyValueStoreFactory,
             svr: svr,
             syncManager: MasterKeySyncManagerImpl.Wrappers.SyncManager(syncManager),
             tsAccountManager: tsAccountManager
@@ -966,16 +938,13 @@ public class AppSetup {
 
         let privateStoryThreadDeletionManager = PrivateStoryThreadDeletionManagerImpl(
             dateProvider: dateProvider,
-            keyValueStoreFactory: keyValueStoreFactory,
             remoteConfigProvider: remoteConfigManager,
             storageServiceManager: storageServiceManager,
             threadRemover: threadRemover,
             threadStore: threadStore
         )
 
-        let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl(
-            keyValueStoreFactory: keyValueStoreFactory
-        )
+        let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl()
         let backupAttachmentDownloadManager = testDependencies.backupAttachmentDownloadManager
             ?? BackupAttachmentDownloadManagerImpl(
                 appReadiness: appReadiness,
@@ -985,7 +954,6 @@ public class AppSetup {
                 backupAttachmentDownloadStore: backupAttachmentDownloadStore,
                 dateProvider: dateProvider,
                 db: db,
-                keyValueStoreFactory: keyValueStoreFactory,
                 mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
                 messageBackupKeyMaterial: messageBackupKeyMaterial,
                 messageBackupRequestManager: messageBackupRequestManager,
@@ -1009,16 +977,13 @@ public class AppSetup {
         let backupSubscriptionManager = BackupSubscriptionManagerImpl(
             dateProvider: dateProvider,
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
             networkManager: networkManager
         )
 
         let reactionStore: any ReactionStore = ReactionStoreImpl()
         let disappearingMessagesJob = OWSDisappearingMessagesJob(appReadiness: appReadiness, databaseStorage: databaseStorage)
 
-        let storageServiceRecordIkmCapabilityStore = StorageServiceRecordIkmCapabilityStoreImpl(
-            keyValueStoreFactory: keyValueStoreFactory
-        )
+        let storageServiceRecordIkmCapabilityStore = StorageServiceRecordIkmCapabilityStoreImpl()
 
         let profileFetcher = ProfileFetcherImpl(
             db: db,
@@ -1060,7 +1025,6 @@ public class AppSetup {
 
         let messageBackupErrorPresenter = messageBackupErrorPresenterFactory.build(
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
             tsAccountManager: tsAccountManager
         )
         let messageBackupAvatarFetcher = MessageBackupAvatarFetcher(
@@ -1163,7 +1127,6 @@ public class AppSetup {
                 db: db,
                 fullTextSearchIndexer: MessageBackupFullTextSearchIndexerImpl.Wrappers.FullTextSearchIndexer(),
                 interactionStore: interactionStore,
-                keyValueStoreFactory: keyValueStoreFactory,
                 searchableNameIndexer: searchableNameIndexer
             ),
             groupRecipientArchiver: MessageBackupGroupRecipientArchiver(
@@ -1175,7 +1138,6 @@ public class AppSetup {
                 threadStore: backupThreadStore
             ),
             incrementalTSAttachmentMigrator: incrementalTSAttachmentMigrator,
-            kvStoreFactory: keyValueStoreFactory,
             localRecipientArchiver: MessageBackupLocalRecipientArchiver(),
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             mrbkStore: mrbkStore,
@@ -1198,7 +1160,7 @@ public class AppSetup {
             )
         )
 
-        let externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl(keyStoreFactory: keyValueStoreFactory)
+        let externalPendingIDEALDonationStore = ExternalPendingIDEALDonationStoreImpl()
 
         // TODO: Move this into ProfileFetcherJob.
         // Ideally, this would be a private implementation detail of that class.
@@ -1244,7 +1206,7 @@ public class AppSetup {
             db: db
         )
 
-        let deviceManager = OWSDeviceManagerImpl(keyValueStoreFactory: keyValueStoreFactory)
+        let deviceManager = OWSDeviceManagerImpl()
         let deviceStore = OWSDeviceStoreImpl()
         let inactiveLinkedDeviceFinder = InactiveLinkedDeviceFinderImpl(
             dateProvider: dateProvider,
@@ -1252,7 +1214,6 @@ public class AppSetup {
             deviceNameDecrypter: InactiveLinkedDeviceFinderImpl.Wrappers.OWSDeviceNameDecrypter(identityManager: identityManager),
             deviceStore: deviceStore,
             devicesService: InactiveLinkedDeviceFinderImpl.Wrappers.OWSDevicesService(),
-            kvStoreFactory: keyValueStoreFactory,
             remoteConfigProvider: remoteConfigManager,
             tsAccountManager: tsAccountManager
         )
@@ -1261,7 +1222,6 @@ public class AppSetup {
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
             messageBackupManager: messageBackupManager,
             networkManager: networkManager,
             tsAccountManager: tsAccountManager
@@ -1323,7 +1283,6 @@ public class AppSetup {
             individualCallRecordManager: individualCallRecordManager,
             interactionDeleteManager: interactionDeleteManager,
             interactionStore: interactionStore,
-            keyValueStoreFactory: keyValueStoreFactory,
             lastVisibleInteractionStore: lastVisibleInteractionStore,
             learnMyOwnPniManager: learnMyOwnPniManager,
             linkedDevicePniKeyManager: linkedDevicePniKeyManager,
@@ -1415,7 +1374,6 @@ public class AppSetup {
         let groupsV2MessageProcessor = GroupsV2MessageProcessor(appReadiness: appReadiness)
         let receiptSender = ReceiptSender(
             appReadiness: appReadiness,
-            kvStoreFactory: keyValueStoreFactory,
             recipientDatabaseTable: recipientDatabaseTable
         )
         let stickerManager = StickerManager(
@@ -1664,7 +1622,6 @@ extension AppSetup.FinalContinuation {
             appReadiness: appReadiness,
             authCredentialStore: authCredentialStore,
             db: dependenciesBridge.db,
-            keyValueStoreFactory: dependenciesBridge.keyValueStoreFactory,
             profileManager: sskEnvironment.profileManagerRef,
             tsAccountManager: dependenciesBridge.tsAccountManager,
             versionedProfiles: sskEnvironment.versionedProfilesRef

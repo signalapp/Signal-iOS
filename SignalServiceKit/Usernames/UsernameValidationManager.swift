@@ -42,7 +42,6 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
     internal struct Context {
         let accountServiceClient: Usernames.Validation.Shims.AccountServiceClient
         let database: any DB
-        let keyValueStoreFactory: KeyValueStoreFactory
         let localUsernameManager: LocalUsernameManager
         let messageProcessor: Usernames.Validation.Shims.MessageProcessor
         let schedulers: Schedulers
@@ -59,7 +58,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
 
     init(context: Context) {
         self.context = context
-        keyValueStore = context.keyValueStoreFactory.keyValueStore(collection: Constants.collectionName)
+        keyValueStore = KeyValueStore(collection: Constants.collectionName)
     }
 
     // MARK: Username Validation

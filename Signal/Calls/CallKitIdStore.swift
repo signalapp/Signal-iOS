@@ -9,10 +9,10 @@ import SignalServiceKit
 import SignalUI
 
 class CallKitIdStore {
-    private static let phoneNumberStore = SDSKeyValueStore(collection: "TSStorageManagerCallKitIdToPhoneNumberCollection")
-    private static let serviceIdStore = SDSKeyValueStore(collection: "TSStorageManagerCallKitIdToUUIDCollection")
-    private static let groupIdStore = SDSKeyValueStore(collection: "TSStorageManagerCallKitIdToGroupId")
-    private static let callLinkStore = SDSKeyValueStore(collection: "CallKitIdToCallLink")
+    private static let phoneNumberStore = KeyValueStore(collection: "TSStorageManagerCallKitIdToPhoneNumberCollection")
+    private static let serviceIdStore = KeyValueStore(collection: "TSStorageManagerCallKitIdToUUIDCollection")
+    private static let groupIdStore = KeyValueStore(collection: "TSStorageManagerCallKitIdToGroupId")
+    private static let callLinkStore = KeyValueStore(collection: "CallKitIdToCallLink")
 
     static func setGroupThread(_ thread: TSGroupThread, forCallKitId callKitId: String) {
         SSKEnvironment.shared.databaseStorageRef.write { tx in

@@ -42,7 +42,7 @@ public class VoiceMessageInterruptedDraftStore {
 
     // MARK: -
 
-    private static var keyValueStore: SDSKeyValueStore { .init(collection: "DraftVoiceMessage") }
+    private static var keyValueStore: KeyValueStore { .init(collection: "DraftVoiceMessage") }
 
     public static func hasDraft(for thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
         hasDraft(for: thread.uniqueId, transaction: transaction)

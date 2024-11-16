@@ -94,7 +94,6 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
         deviceNameDecrypter: Shims.OWSDeviceNameDecrypter,
         deviceStore: OWSDeviceStore,
         devicesService: Shims.OWSDevicesService,
-        kvStoreFactory: KeyValueStoreFactory,
         remoteConfigProvider: any RemoteConfigProvider,
         tsAccountManager: TSAccountManager
     ) {
@@ -103,7 +102,7 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
         self.deviceNameDecrypter = deviceNameDecrypter
         self.deviceStore = deviceStore
         self.devicesService = devicesService
-        self.kvStore = kvStoreFactory.keyValueStore(collection: "InactiveLinkedDeviceFinderImpl")
+        self.kvStore = KeyValueStore(collection: "InactiveLinkedDeviceFinderImpl")
         self.remoteConfigProvider = remoteConfigProvider
         self.tsAccountManager = tsAccountManager
     }

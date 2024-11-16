@@ -68,7 +68,7 @@ class AppUpdateNag {
 
     // MARK: - KV Store
 
-    private let keyValueStore = SDSKeyValueStore(collection: "TSStorageManagerAppUpgradeNagCollection")
+    private let keyValueStore = KeyValueStore(collection: "TSStorageManagerAppUpgradeNagCollection")
 
     // MARK: - Bundle accessors
 

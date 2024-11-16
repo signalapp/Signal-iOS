@@ -52,7 +52,7 @@ public class OWSMessageDecrypter {
             return
         }
 
-        let store = SDSKeyValueStore(collection: "OWSMessageDecrypter+NullMessage")
+        let store = KeyValueStore(collection: "OWSMessageDecrypter+NullMessage")
 
         let lastNullMessageDate = store.getDate(senderId, transaction: transaction.asV2Read)
         let timeSinceNullMessage = abs(lastNullMessageDate?.timeIntervalSinceNow ?? .infinity)
@@ -92,7 +92,7 @@ public class OWSMessageDecrypter {
     }
 
     private func trySendReactiveProfileKey(to sourceAci: Aci, tx transaction: SDSAnyWriteTransaction) {
-        let store = SDSKeyValueStore(collection: "OWSMessageDecrypter+ReactiveProfileKey")
+        let store = KeyValueStore(collection: "OWSMessageDecrypter+ReactiveProfileKey")
 
         let lastProfileKeyMessageDate = store.getDate(sourceAci.serviceIdUppercaseString, transaction: transaction.asV2Read)
         let timeSinceProfileKeyMessage = abs(lastProfileKeyMessageDate?.timeIntervalSinceNow ?? .infinity)

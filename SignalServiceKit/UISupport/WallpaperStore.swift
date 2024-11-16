@@ -18,12 +18,11 @@ public class WallpaperStore {
     private let notificationScheduler: Scheduler
 
     init(
-        keyValueStoreFactory: KeyValueStoreFactory,
         notificationScheduler: Scheduler,
         wallpaperImageStore: WallpaperImageStore
     ) {
-        self.enumStore = keyValueStoreFactory.keyValueStore(collection: "Wallpaper+Enum")
-        self.dimmingStore = keyValueStoreFactory.keyValueStore(collection: "Wallpaper+Dimming")
+        self.enumStore = KeyValueStore(collection: "Wallpaper+Enum")
+        self.dimmingStore = KeyValueStore(collection: "Wallpaper+Dimming")
         self.notificationScheduler = notificationScheduler
         self.wallpaperImageStore = wallpaperImageStore
     }

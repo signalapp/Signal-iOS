@@ -577,7 +577,7 @@ private class ChatColorPicker: UIView {
 
     // MARK: - Tooltip
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "ChatColorPicker")
+    private static let keyValueStore = KeyValueStore(collection: "ChatColorPicker")
     private static let tooltipWasDismissedKey = "tooltipWasDismissed"
 
     private var chatColorTooltip: ChatColorTooltip?

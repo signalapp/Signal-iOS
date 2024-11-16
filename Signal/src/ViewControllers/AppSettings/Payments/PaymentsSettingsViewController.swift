@@ -97,7 +97,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         return Double(paymentBalance.amount.picoMob) >= significantPicoMob
     }
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "PaymentSettings")
+    private static let keyValueStore = KeyValueStore(collection: "PaymentSettings")
 
     private static let savePassphraseShownKey = "PaymentsSavePassphraseShown"
     private var savePassphraseShown: Bool {
@@ -218,7 +218,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         return filterDismissedHelpCards(helpCards.orderedMembers)
     }
 
-    private static let helpCardStore = SDSKeyValueStore(collection: "paymentsHelpCardStore")
+    private static let helpCardStore = KeyValueStore(collection: "paymentsHelpCardStore")
 
     private func filterDismissedHelpCards(_ helpCards: [HelpCard]) -> [HelpCard] {
         let dismissedKeys = SSKEnvironment.shared.databaseStorageRef.read { transaction in

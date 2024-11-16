@@ -345,7 +345,7 @@ public extension Notification.Name {
 }
 
 extension StoryManager {
-    private static let keyValueStore = SDSKeyValueStore(collection: "StoryManager")
+    private static let keyValueStore = KeyValueStore(collection: "StoryManager")
     private static let areStoriesEnabledKey = "areStoriesEnabled"
 
     private static var areStoriesEnabledCache = AtomicBool(true, lock: .sharedGlobal)

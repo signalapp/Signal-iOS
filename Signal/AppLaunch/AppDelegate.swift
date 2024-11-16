@@ -535,7 +535,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let appContext = launchContext.appContext
 
         if DebugFlags.internalLogging {
-            DispatchQueue.global().async { SDSKeyValueStore.logCollectionStatistics() }
+            DispatchQueue.global().async { KeyValueStore.logCollectionStatistics() }
         }
 
         SignalApp.shared.performInitialSetup(appReadiness: appReadiness)
@@ -554,8 +554,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             Task.detached(priority: .low) {
                 await FullTextSearchOptimizer(
                     appContext: appContext,
-                    db: DependenciesBridge.shared.db,
-                    keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory
+                    db: DependenciesBridge.shared.db
                 ).run()
             }
         }

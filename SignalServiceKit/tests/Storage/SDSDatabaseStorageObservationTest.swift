@@ -62,7 +62,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
 
         mockObserver.clear()
 
-        let keyValueStore = SDSKeyValueStore(collection: "test")
+        let keyValueStore = KeyValueStore(collection: "test")
         self.write { transaction in
             keyValueStore.setBool(true, key: "test", transaction: transaction.asV2Write)
         }
@@ -75,7 +75,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
         XCTAssertEqual(mockObserver.lastChange?.didUpdateThreads, false)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: OWSDevice.databaseTableName), false)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: "invalid table name"), false)
-        XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: SDSKeyValueStore.tableName), true)
+        XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: KeyValueStore.tableName), true)
 
         mockObserver.clear()
 
@@ -92,7 +92,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
         XCTAssertEqual(mockObserver.lastChange?.didUpdateThreads, true)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: OWSDevice.databaseTableName), false)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: "invalid table name"), false)
-        XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: SDSKeyValueStore.tableName), false)
+        XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: KeyValueStore.tableName), false)
 
         mockObserver.clear()
 
@@ -116,7 +116,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
         XCTAssertEqual(mockObserver.lastChange?.didUpdateThreads, true)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: OWSDevice.databaseTableName), false)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: "invalid table name"), false)
-        XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: SDSKeyValueStore.tableName), true)
+        XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: KeyValueStore.tableName), true)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(interaction: lastMessage), true)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(interaction: unsavedMessage), false)
 
@@ -135,7 +135,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
         XCTAssertEqual(mockObserver.lastChange?.didUpdateThreads, true)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: OWSDevice.databaseTableName), false)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: "invalid table name"), false)
-        XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: SDSKeyValueStore.tableName), false)
+        XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: KeyValueStore.tableName), false)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(interaction: lastMessage), false)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(interaction: unsavedMessage), false)
 
@@ -154,7 +154,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
         XCTAssertEqual(mockObserver.lastChange?.didUpdateThreads, true)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: OWSDevice.databaseTableName), false)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: "invalid table name"), false)
-        XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: SDSKeyValueStore.tableName), false)
+        XCTAssertEqual(mockObserver.lastChange?.didUpdate(tableName: KeyValueStore.tableName), false)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(interaction: lastMessage), true)
         XCTAssertEqual(mockObserver.lastChange?.didUpdate(interaction: unsavedMessage), false)
     }

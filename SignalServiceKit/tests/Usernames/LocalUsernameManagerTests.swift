@@ -18,7 +18,6 @@ class LocalUsernameManagerTests: XCTestCase {
     private var mockUsernameApiClient: MockUsernameApiClient!
     private var mockUsernameLinkManager: MockUsernameLinkManager!
 
-    private var kvStoreFactory: KeyValueStoreFactory!
     private var kvStore: KeyValueStore!
 
     private var localUsernameManager: LocalUsernameManager!
@@ -32,8 +31,7 @@ class LocalUsernameManagerTests: XCTestCase {
         mockUsernameApiClient = MockUsernameApiClient()
         mockUsernameLinkManager = MockUsernameLinkManager()
 
-        kvStoreFactory = InMemoryKeyValueStoreFactory()
-        kvStore = kvStoreFactory.keyValueStore(collection: "localUsernameManager")
+        kvStore = KeyValueStore(collection: "localUsernameManager")
 
         setLocalUsernameManager(maxNetworkRequestRetries: 0)
     }
@@ -41,7 +39,6 @@ class LocalUsernameManagerTests: XCTestCase {
     private func setLocalUsernameManager(maxNetworkRequestRetries: Int) {
         localUsernameManager = LocalUsernameManagerImpl(
             db: mockDB,
-            kvStoreFactory: kvStoreFactory,
             reachabilityManager: mockReachabilityManager,
             schedulers: TestSchedulers(scheduler: testScheduler),
             storageServiceManager: mockStorageServiceManager,

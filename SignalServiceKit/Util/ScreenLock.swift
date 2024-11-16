@@ -43,7 +43,7 @@ public class ScreenLock: NSObject {
 
     // MARK: - KV Store
 
-    public let keyValueStore = SDSKeyValueStore(collection: "OWSScreenLock_Collection")
+    public let keyValueStore = KeyValueStore(collection: "OWSScreenLock_Collection")
 
     // MARK: - Properties
 

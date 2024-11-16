@@ -13,18 +13,18 @@ public extension GroupsV2Impl {
     // A list of all groups we've learned of from the storage service.
     //
     // Values are irrelevant (bools).
-    private static let allStorageServiceGroupMasterKeys = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_All")
+    private static let allStorageServiceGroupMasterKeys = KeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_All")
 
     // A list of the groups we need to try to restore. Values are serialized GroupV2Records.
-    private static let storageServiceGroupsToRestore = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_EnqueuedRecordForRestore")
+    private static let storageServiceGroupsToRestore = KeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_EnqueuedRecordForRestore")
 
     // A deprecated list of the groups we need to restore. Values are master keys.
-    private static let legacyStorageServiceGroupsToRestore = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_EnqueuedForRestore")
+    private static let legacyStorageServiceGroupsToRestore = KeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_EnqueuedForRestore")
 
     // A list of the groups we failed to restore.
     //
     // Values are irrelevant (bools).
-    private static let failedStorageServiceGroupMasterKeys = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_Failed")
+    private static let failedStorageServiceGroupMasterKeys = KeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_Failed")
 
     static func isGroupKnownToStorageService(groupModel: TSGroupModelV2, transaction: SDSAnyReadTransaction) -> Bool {
         do {

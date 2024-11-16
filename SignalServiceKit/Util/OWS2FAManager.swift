@@ -43,7 +43,7 @@ public class OWS2FAManager {
 
 extension OWS2FAManager {
 
-    public static var keyValueStore = SDSKeyValueStore(collection: "kOWS2FAManager_Collection")
+    public static var keyValueStore = KeyValueStore(collection: "kOWS2FAManager_Collection")
     public static var isRegistrationLockV2EnabledKey = "isRegistrationLockV2Enabled"
 
     public var mode: OWS2FAMode {

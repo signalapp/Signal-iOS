@@ -1417,7 +1417,7 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         }
     }
 
-    private let statsStore: SDSKeyValueStore = SDSKeyValueStore(collection: "OWSChatConnectionWithLibSignalShadowing")
+    private let statsStore: KeyValueStore = KeyValueStore(collection: "OWSChatConnectionWithLibSignalShadowing")
 
     private struct Stats: Codable {
         var requestsCompared: UInt64 = 0

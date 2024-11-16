@@ -152,8 +152,8 @@ public protocol OWSUDManager {
 
 public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
-    private let keyValueStore = SDSKeyValueStore(collection: "kUDCollection")
-    private let serviceIdAccessStore = SDSKeyValueStore(collection: "kUnidentifiedAccessUUIDCollection")
+    private let keyValueStore = KeyValueStore(collection: "kUDCollection")
+    private let serviceIdAccessStore = KeyValueStore(collection: "kUnidentifiedAccessUUIDCollection")
 
     // MARK: Local Configuration State
 

@@ -83,8 +83,8 @@ public class TSAttachmentDownloadManager: NSObject {
 
     // MARK: -
 
-    private static let pendingMessageDownloads = SDSKeyValueStore(collection: "PendingNewMessageDownloads")
-    private static let pendingStoryMessageDownloads = SDSKeyValueStore(collection: "PendingNewStoryMessageDownloads")
+    private static let pendingMessageDownloads = KeyValueStore(collection: "PendingNewMessageDownloads")
+    private static let pendingStoryMessageDownloads = KeyValueStore(collection: "PendingNewStoryMessageDownloads")
 
     private func startPendingMessageDownloads() {
         owsAssertDebug(CurrentAppContext().isMainApp)
@@ -127,7 +127,7 @@ public class TSAttachmentDownloadManager: NSObject {
 
     private func processPendingMessages(
         _ pendingMessages: [String: UInt],
-        store: SDSKeyValueStore,
+        store: KeyValueStore,
         transaction: SDSAnyWriteTransaction,
         enqueue: (String, TSAttachmentDownloadBehavior) -> Void
     ) {

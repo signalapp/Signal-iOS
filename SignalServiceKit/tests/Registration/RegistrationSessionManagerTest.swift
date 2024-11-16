@@ -14,7 +14,7 @@ public class RegistrationSessionManagerTest: XCTestCase {
     private var date = Date()
 
     private var db: InMemoryDB!
-    private var kvStore: InMemoryKeyValueStore!
+    private var kvStore: KeyValueStore!
     private var mockURLSession: TSRequestOWSURLSessionMock!
 
     public override func setUp() {
@@ -27,15 +27,13 @@ public class RegistrationSessionManagerTest: XCTestCase {
             return mockURLSession
         }
 
-        let kvStoreFactory = InMemoryKeyValueStoreFactory()
-        kvStore = kvStoreFactory.keyValueStore(
+        kvStore = KeyValueStore(
             collection: RegistrationSessionManagerImpl.KvStore.collectionName
-        ) as? InMemoryKeyValueStore
+        )
 
         registrationSessionManager = RegistrationSessionManagerImpl(
             dateProvider: { self.date },
             db: db,
-            keyValueStoreFactory: kvStoreFactory,
             schedulers: DispatchQueueSchedulers(),
             signalService: mockSignalService
         )

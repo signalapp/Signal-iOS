@@ -19,11 +19,10 @@ public class ChatColorSettingStore {
     private let wallpaperStore: WallpaperStore
 
     public init(
-        keyValueStoreFactory: KeyValueStoreFactory,
         wallpaperStore: WallpaperStore
     ) {
-        self.settingStore = keyValueStoreFactory.keyValueStore(collection: "chatColorSettingStore")
-        self.customColorsStore = keyValueStoreFactory.keyValueStore(collection: "customColorsStore.3")
+        self.settingStore = KeyValueStore(collection: "chatColorSettingStore")
+        self.customColorsStore = KeyValueStore(collection: "customColorsStore.3")
         self.wallpaperStore = wallpaperStore
     }
 

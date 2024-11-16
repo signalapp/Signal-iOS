@@ -82,7 +82,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadManager: AttachmentUploadManager,
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         messageBackupManager: MessageBackupManager,
         networkManager: NetworkManager,
         tsAccountManager: TSAccountManager
@@ -90,7 +89,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentUploadManager = attachmentUploadManager
         self.db = db
-        self.kvStore = keyValueStoreFactory.keyValueStore(collection: "LinkAndSyncManagerImpl")
+        self.kvStore = KeyValueStore(collection: "LinkAndSyncManagerImpl")
         self.messageBackupManager = messageBackupManager
         self.networkManager = networkManager
         self.tsAccountManager = tsAccountManager

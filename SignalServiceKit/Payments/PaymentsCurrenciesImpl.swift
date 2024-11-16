@@ -40,7 +40,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
 
     static let defaultCurrencyCode = PaymentsConstants.currencyCodeGBP
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "PaymentsCurrencies")
+    private static let keyValueStore = KeyValueStore(collection: "PaymentsCurrencies")
 
     private static let currentCurrencyCodeKey = "currentCurrencyCodeKey"
 

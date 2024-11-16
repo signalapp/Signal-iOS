@@ -249,7 +249,7 @@ public class DonationSubscriptionManager: NSObject {
     /// - Note
     /// This collection name is reused by other subscription-related stores. For
     /// example, see ``DonationReceiptCredentialResultStore``.
-    private static let subscriptionKVS = SDSKeyValueStore(collection: "SubscriptionKeyValueStore")
+    private static let subscriptionKVS = KeyValueStore(collection: "SubscriptionKeyValueStore")
 
     fileprivate static let subscriberIDKey = "subscriberID"
     fileprivate static let subscriberCurrencyCodeKey = "subscriberCurrencyCode"

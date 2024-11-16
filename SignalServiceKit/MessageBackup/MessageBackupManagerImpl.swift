@@ -78,7 +78,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         fullTextSearchIndexer: MessageBackupFullTextSearchIndexer,
         groupRecipientArchiver: MessageBackupGroupRecipientArchiver,
         incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
-        kvStoreFactory: KeyValueStoreFactory,
         localRecipientArchiver: MessageBackupLocalRecipientArchiver,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         mrbkStore: MediaRootBackupKeyStore,
@@ -109,7 +108,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.fullTextSearchIndexer = fullTextSearchIndexer
         self.groupRecipientArchiver = groupRecipientArchiver
         self.incrementalTSAttachmentMigrator = incrementalTSAttachmentMigrator
-        self.kvStore = kvStoreFactory.keyValueStore(collection: Constants.keyValueStoreCollectionName)
+        self.kvStore = KeyValueStore(collection: Constants.keyValueStoreCollectionName)
         self.localRecipientArchiver = localRecipientArchiver
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
         self.mrbkStore = mrbkStore

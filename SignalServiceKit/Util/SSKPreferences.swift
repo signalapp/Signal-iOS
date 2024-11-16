@@ -9,9 +9,9 @@ import GRDB
 @objc
 public class SSKPreferences: NSObject {
 
-    public static let store = SDSKeyValueStore(collection: "SSKPreferences")
+    public static let store = KeyValueStore(collection: "SSKPreferences")
 
-    private var store: SDSKeyValueStore {
+    private var store: KeyValueStore {
         return SSKPreferences.store
     }
 

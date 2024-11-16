@@ -7,16 +7,16 @@ import Foundation
 import LibSignalClient
 
 class AuthCredentialStore {
-    private let callLinkAuthCredentialStore: any KeyValueStore
-    private let groupAuthCredentialStore: any KeyValueStore
-    private let backupAuthCredentialStore: any KeyValueStore
-    private let mediaAuthCredentialStore: any KeyValueStore
+    private let callLinkAuthCredentialStore: KeyValueStore
+    private let groupAuthCredentialStore: KeyValueStore
+    private let backupAuthCredentialStore: KeyValueStore
+    private let mediaAuthCredentialStore: KeyValueStore
 
-    init(keyValueStoreFactory: any KeyValueStoreFactory) {
-        self.callLinkAuthCredentialStore = keyValueStoreFactory.keyValueStore(collection: "CallLinkAuthCredential")
-        self.groupAuthCredentialStore = keyValueStoreFactory.keyValueStore(collection: "GroupsV2Impl.authCredentialStoreStore")
-        self.backupAuthCredentialStore = keyValueStoreFactory.keyValueStore(collection: "BackupAuthCredential")
-        self.mediaAuthCredentialStore = keyValueStoreFactory.keyValueStore(collection: "MediaAuthCredential")
+    init() {
+        self.callLinkAuthCredentialStore = KeyValueStore(collection: "CallLinkAuthCredential")
+        self.groupAuthCredentialStore = KeyValueStore(collection: "GroupsV2Impl.authCredentialStoreStore")
+        self.backupAuthCredentialStore = KeyValueStore(collection: "BackupAuthCredential")
+        self.mediaAuthCredentialStore = KeyValueStore(collection: "MediaAuthCredential")
     }
 
     private static func callLinkAuthCredentialKey(for redemptionTime: UInt64) -> String {

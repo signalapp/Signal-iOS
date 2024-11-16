@@ -71,9 +71,9 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
     private let schedulers: Schedulers
     private let storyMessageFactory: OnboardingStoryManagerStoryMessageFactory.Type
 
-    private let kvStore = SDSKeyValueStore(collection: "OnboardingStory")
-    private let overlayKvStore = SDSKeyValueStore(collection: "StoryViewerOnboardingOverlay")
-    private let groupStoryEducationStore = SDSKeyValueStore(collection: "GroupStoryEducation")
+    private let kvStore = KeyValueStore(collection: "OnboardingStory")
+    private let overlayKvStore = KeyValueStore(collection: "StoryViewerOnboardingOverlay")
+    private let groupStoryEducationStore = KeyValueStore(collection: "GroupStoryEducation")
 
     private let queue: Scheduler
     internal let chainedPromise: ChainedPromise<Void>

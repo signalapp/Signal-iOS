@@ -53,12 +53,12 @@ public class ReceiptSender: NSObject {
     private let pendingTasks = PendingTasks(label: #fileID)
     private let sendingState: AtomicValue<SendingState>
 
-    public init(appReadiness: AppReadiness, kvStoreFactory: KeyValueStoreFactory, recipientDatabaseTable: any RecipientDatabaseTable) {
+    public init(appReadiness: AppReadiness, recipientDatabaseTable: any RecipientDatabaseTable) {
         self.appReadiness = appReadiness
         self.recipientDatabaseTable = recipientDatabaseTable
-        self.deliveryReceiptStore = kvStoreFactory.keyValueStore(collection: "kOutgoingDeliveryReceiptManagerCollection")
-        self.readReceiptStore = kvStoreFactory.keyValueStore(collection: "kOutgoingReadReceiptManagerCollection")
-        self.viewedReceiptStore = kvStoreFactory.keyValueStore(collection: "kOutgoingViewedReceiptManagerCollection")
+        self.deliveryReceiptStore = KeyValueStore(collection: "kOutgoingDeliveryReceiptManagerCollection")
+        self.readReceiptStore = KeyValueStore(collection: "kOutgoingReadReceiptManagerCollection")
+        self.viewedReceiptStore = KeyValueStore(collection: "kOutgoingViewedReceiptManagerCollection")
 
         self.sendingState = AtomicValue(SendingState(), lock: .init())
 

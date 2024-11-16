@@ -281,9 +281,9 @@ extension SpamChallengeResolver {
 
 extension SpamChallengeResolver {
     static private let outstandingChallengesKey = "OutstandingChallengesArray"
-    static private let keyValueStore = SDSKeyValueStore(collection: "SpamChallengeResolver")
+    static private let keyValueStore = KeyValueStore(collection: "SpamChallengeResolver")
     private var outstandingChallengesKey: String { Self.outstandingChallengesKey }
-    private var keyValueStore: SDSKeyValueStore { Self.keyValueStore }
+    private var keyValueStore: KeyValueStore { Self.keyValueStore }
 
     private func loadChallengesFromDatabase() {
         assertOnQueue(workQueue)

@@ -56,11 +56,9 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
 
     private let keyValueStore: KeyValueStore
 
-    public init(
-        keyValueStoreFactory: KeyValueStoreFactory
-    ) {
+    public init() {
         // Collection name must not be changed; matches that historically kept in KeyBackupServiceImpl.
-        self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: "kOWSKeyBackupService_Keys")
+        self.keyValueStore = KeyValueStore(collection: "kOWSKeyBackupService_Keys")
     }
 
     // MARK: - Getters

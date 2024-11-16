@@ -30,9 +30,9 @@ public struct VersionedProfileRequest {
 public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedProfiles {
 
     private enum CredentialStore {
-        private static let deprecatedCredentialStore = SDSKeyValueStore(collection: "VersionedProfiles.credentialStore")
+        private static let deprecatedCredentialStore = KeyValueStore(collection: "VersionedProfiles.credentialStore")
 
-        private static let expiringCredentialStore = SDSKeyValueStore(collection: "VersionedProfilesImpl.expiringCredentialStore")
+        private static let expiringCredentialStore = KeyValueStore(collection: "VersionedProfilesImpl.expiringCredentialStore")
 
         private static func storeKey(for aci: Aci) -> String {
             return aci.serviceIdUppercaseString

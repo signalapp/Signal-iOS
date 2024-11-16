@@ -17,9 +17,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
 
     override func setUp() async throws {
         db = InMemoryDB()
-        store = BackupAttachmentDownloadStoreImpl(
-            keyValueStoreFactory: SDSKeyValueStoreFactory()
-        )
+        store = BackupAttachmentDownloadStoreImpl()
     }
 
     func testEnqueue() throws {

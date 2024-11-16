@@ -17,13 +17,12 @@ public class RegistrationSessionManagerImpl: RegistrationSessionManager {
     public init(
         dateProvider: @escaping DateProvider = Date.provider,
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         schedulers: Schedulers,
         signalService: OWSSignalServiceProtocol
     ) {
         self.dateProvider = dateProvider
         self.db = db
-        self.kvStore = keyValueStoreFactory.keyValueStore(collection: KvStore.collectionName)
+        self.kvStore = KeyValueStore(collection: KvStore.collectionName)
         self.schedulers = schedulers
         self.signalService = signalService
     }

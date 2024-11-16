@@ -268,7 +268,7 @@ extension GetStartedBannerViewController: GetStartedBannerCellDelegate {
 
 extension GetStartedBannerViewController {
     private static let activeCardsDidChange = NSNotification.Name("ActiveBannerCardsDidChange")
-    private static let keyValueStore = SDSKeyValueStore(collection: "GetStartedBannerViewController")
+    private static let keyValueStore = KeyValueStore(collection: "GetStartedBannerViewController")
     private static let completePrefix = "ActiveCard."
 
     static func enableAllCards(writeTx: SDSAnyWriteTransaction) {

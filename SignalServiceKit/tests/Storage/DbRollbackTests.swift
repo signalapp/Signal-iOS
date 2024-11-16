@@ -14,13 +14,13 @@ class SDSDatabaseStorageRollbackTest: SSKBaseTest {
     // MARK: - Test Life Cycle
 
     var databaseStorage: SDSDatabaseStorage!
-    var kvStore: SDSKeyValueStore!
+    var kvStore: KeyValueStore!
     let key = "boolKey"
 
     override func setUp() {
         super.setUp()
 
-        kvStore = SDSKeyValueStore(collection: "SDSDatabaseStorageRollbackTest")
+        kvStore = KeyValueStore(collection: "SDSDatabaseStorageRollbackTest")
         databaseStorage = SSKEnvironment.shared.databaseStorageRef
     }
 

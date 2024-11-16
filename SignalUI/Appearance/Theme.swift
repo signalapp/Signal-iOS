@@ -43,8 +43,8 @@ final public class Theme: NSObject {
         }
     }
 
-    private static var keyValueStore: SDSKeyValueStore {
-        return SDSKeyValueStore(collection: "ThemeCollection")
+    private static var keyValueStore: KeyValueStore {
+        return KeyValueStore(collection: "ThemeCollection")
     }
 
     private struct KVSKeys {

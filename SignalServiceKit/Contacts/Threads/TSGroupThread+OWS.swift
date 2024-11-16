@@ -43,7 +43,7 @@ public extension TSGroupThread {
     static let groupThreadUniqueIdPrefix = "g"
 
     @nonobjc
-    private static let uniqueIdMappingStore = SDSKeyValueStore(collection: "TSGroupThread.uniqueIdMappingStore")
+    private static let uniqueIdMappingStore = KeyValueStore(collection: "TSGroupThread.uniqueIdMappingStore")
 
     private static func mappingKey(forGroupId groupId: Data) -> String {
         groupId.hexadecimalString

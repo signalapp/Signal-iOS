@@ -10,7 +10,7 @@ public class GroupV2UpdatesImpl {
 
     // This tracks the last time that groups were updated to the current
     // revision.
-    private static let groupRefreshStore = SDSKeyValueStore(collection: "groupRefreshStore")
+    private static let groupRefreshStore = KeyValueStore(collection: "groupRefreshStore")
 
     private let changeCache = LRUCache<Data, ChangeCacheItem>(maxSize: 5)
     private var lastSuccessfulRefreshMap = LRUCache<Data, Date>(maxSize: 256)

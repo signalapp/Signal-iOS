@@ -12,17 +12,17 @@ private let tsNextPrekeyIdKey = "TSStorageInternalSettingsNextPreKeyId"
 class SSKPreKeyStore: NSObject {
 
     private let lock: NSRecursiveLock = .init()
-    private let keyStore: SDSKeyValueStore
-    private let metadataStore: SDSKeyValueStore
+    private let keyStore: KeyValueStore
+    private let metadataStore: KeyValueStore
 
     init(for identity: OWSIdentity) {
         switch identity {
         case .aci:
-            keyStore = SDSKeyValueStore(collection: "TSStorageManagerPreKeyStoreCollection")
-            metadataStore = SDSKeyValueStore(collection: "TSStorageInternalSettingsCollection")
+            keyStore = KeyValueStore(collection: "TSStorageManagerPreKeyStoreCollection")
+            metadataStore = KeyValueStore(collection: "TSStorageInternalSettingsCollection")
         case .pni:
-            keyStore = SDSKeyValueStore(collection: "TSStorageManagerPNIPreKeyStoreCollection")
-            metadataStore = SDSKeyValueStore(collection: "TSStorageManagerPNIPreKeyMetadataCollection")
+            keyStore = KeyValueStore(collection: "TSStorageManagerPNIPreKeyStoreCollection")
+            metadataStore = KeyValueStore(collection: "TSStorageManagerPNIPreKeyMetadataCollection")
         }
     }
 
@@ -153,7 +153,7 @@ extension SSKPreKeyStore: LibSignalClient.PreKeyStore {
 
 }
 
-extension SDSKeyValueStore {
+extension KeyValueStore {
     fileprivate func preKeyRecord(key: String, transaction: SDSAnyReadTransaction) -> SignalServiceKit.PreKeyRecord? {
         getObject(forKey: key, transaction: transaction.asV2Read) as? SignalServiceKit.PreKeyRecord
     }

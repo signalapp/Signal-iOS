@@ -32,7 +32,7 @@ public class PreKeyManagerImpl: PreKeyManager {
 
     private let db: any DB
     private let identityManager: PreKey.Shims.IdentityManager
-    private let keyValueStore: any KeyValueStore
+    private let keyValueStore: KeyValueStore
     private let protocolStoreManager: SignalProtocolStoreManager
     private let chatConnectionManager: any ChatConnectionManager
     private let tsAccountManager: any TSAccountManager
@@ -43,7 +43,6 @@ public class PreKeyManagerImpl: PreKeyManager {
         dateProvider: @escaping DateProvider,
         db: any DB,
         identityManager: PreKey.Shims.IdentityManager,
-        keyValueStoryFactory: any KeyValueStoreFactory,
         linkedDevicePniKeyManager: LinkedDevicePniKeyManager,
         messageProcessor: PreKey.Shims.MessageProcessor,
         protocolStoreManager: SignalProtocolStoreManager,
@@ -53,7 +52,7 @@ public class PreKeyManagerImpl: PreKeyManager {
     ) {
         self.db = db
         self.identityManager = identityManager
-        self.keyValueStore = keyValueStoryFactory.keyValueStore(collection: "PreKeyManager")
+        self.keyValueStore = KeyValueStore(collection: "PreKeyManager")
         self.protocolStoreManager = protocolStoreManager
         self.chatConnectionManager = chatConnectionManager
         self.tsAccountManager = tsAccountManager

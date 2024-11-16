@@ -9,7 +9,7 @@ public protocol PaymentsHelper: AnyObject {
 
     func warmCaches()
 
-    var keyValueStore: SDSKeyValueStore { get }
+    var keyValueStore: KeyValueStore { get }
 
     var isKillSwitchActive: Bool { get }
     var hasValidPhoneNumberForPayments: Bool { get }
@@ -146,8 +146,8 @@ extension MockPaymentsHelper: PaymentsHelperSwift, PaymentsHelper {
     public var isPaymentsVersionOutdated: Bool { false }
     public func setPaymentsVersionOutdated(_ value: Bool) {}
 
-    fileprivate static let keyValueStore = SDSKeyValueStore(collection: "MockPayments")
-    public var keyValueStore: SDSKeyValueStore { Self.keyValueStore}
+    fileprivate static let keyValueStore = KeyValueStore(collection: "MockPayments")
+    public var keyValueStore: KeyValueStore { Self.keyValueStore}
 
     public func warmCaches() {}
 

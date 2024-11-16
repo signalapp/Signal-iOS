@@ -18,7 +18,6 @@ class ZkParamsMigrator {
         appReadiness: AppReadiness,
         authCredentialStore: AuthCredentialStore,
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         profileManager: ProfileManager,
         tsAccountManager: TSAccountManager,
         versionedProfiles: VersionedProfilesSwift
@@ -27,7 +26,7 @@ class ZkParamsMigrator {
         self.authCredentialStore = authCredentialStore
         self.db = db
         // This collection name is weird for historical reasons.
-        self.migrationStore = keyValueStoreFactory.keyValueStore(collection: "GroupsV2Impl.serviceStore")
+        self.migrationStore = KeyValueStore(collection: "GroupsV2Impl.serviceStore")
         self.profileManager = profileManager
         self.tsAccountManager = tsAccountManager
         self.versionedProfiles = versionedProfiles

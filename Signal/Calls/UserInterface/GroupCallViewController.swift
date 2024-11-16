@@ -242,7 +242,7 @@ class GroupCallViewController: UIViewController {
 
     private var membersAtJoin: Set<SignalServiceAddress>?
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "GroupCallViewController")
+    private static let keyValueStore = KeyValueStore(collection: "GroupCallViewController")
     private static let didUserSwipeToSpeakerViewKey = "didUserSwipeToSpeakerView"
     private static let didUserSwipeToScreenShareKey = "didUserSwipeToScreenShare"
 

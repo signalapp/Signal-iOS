@@ -39,8 +39,8 @@ class OWSDeviceManagerImpl: OWSDeviceManager {
 
     private let keyValueStore: KeyValueStore
 
-    init(keyValueStoreFactory: KeyValueStoreFactory) {
-        self.keyValueStore = keyValueStoreFactory.keyValueStore(
+    init() {
+        self.keyValueStore = KeyValueStore(
             collection: Constants.keyValueStoreCollectionName
         )
     }

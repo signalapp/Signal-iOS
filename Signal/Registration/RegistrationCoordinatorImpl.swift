@@ -28,7 +28,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         dependencies: RegistrationCoordinatorDependencies
     ) {
         self._unsafeToModify_mode = mode
-        self.kvStore = dependencies.keyValueStoreFactory.keyValueStore(collection: "RegistrationCoordinator")
+        self.kvStore = KeyValueStore(collection: "RegistrationCoordinator")
         self.loader = loader
         self.deps = dependencies
     }

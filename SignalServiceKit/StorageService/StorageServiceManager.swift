@@ -592,11 +592,11 @@ private struct PendingMutations {
 
 class StorageServiceOperation {
 
-    private static let migrationStore: SDSKeyValueStore = SDSKeyValueStore(collection: "StorageServiceMigration")
+    private static let migrationStore: KeyValueStore = KeyValueStore(collection: "StorageServiceMigration")
     private static let versionKey = "Version"
 
-    fileprivate static var keyValueStore: SDSKeyValueStore {
-        return SDSKeyValueStore(collection: "kOWSStorageServiceOperation_IdentifierMap")
+    fileprivate static var keyValueStore: KeyValueStore {
+        return KeyValueStore(collection: "kOWSStorageServiceOperation_IdentifierMap")
     }
 
     // MARK: -

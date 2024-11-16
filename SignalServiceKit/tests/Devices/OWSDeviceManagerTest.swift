@@ -11,9 +11,7 @@ class OWSDeviceManagerTest: XCTestCase {
     private var deviceManager: OWSDeviceManager!
 
     override func setUp() {
-        deviceManager = OWSDeviceManagerImpl(
-            keyValueStoreFactory: InMemoryKeyValueStoreFactory()
-        )
+        deviceManager = OWSDeviceManagerImpl()
     }
 
     func testHasReceivedSyncMessage() {

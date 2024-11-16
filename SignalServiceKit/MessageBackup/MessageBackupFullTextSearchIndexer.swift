@@ -40,7 +40,6 @@ public class MessageBackupFullTextSearchIndexerImpl: MessageBackupFullTextSearch
         db: any DB,
         fullTextSearchIndexer: Shims.FullTextSearchIndexer,
         interactionStore: InteractionStore,
-        keyValueStoreFactory: KeyValueStoreFactory,
         searchableNameIndexer: SearchableNameIndexer
     ) {
         self.appReadiness = appReadiness
@@ -48,7 +47,7 @@ public class MessageBackupFullTextSearchIndexerImpl: MessageBackupFullTextSearch
         self.db = db
         self.fullTextSearchIndexer = fullTextSearchIndexer
         self.interactionStore = interactionStore
-        self.kvStore = keyValueStoreFactory.keyValueStore(collection: "BackupFullTextSearchIndexerImpl")
+        self.kvStore = KeyValueStore(collection: "BackupFullTextSearchIndexerImpl")
         self.searchableNameIndexer = searchableNameIndexer
         self.taskQueue = SerialTaskQueue()
 

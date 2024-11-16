@@ -136,14 +136,14 @@ final class DonationReceiptCredentialResultStoreImpl: DonationReceiptCredentialR
     private let errorPresentationKVStore: KeyValueStore
     private let successPresentationKVStore: KeyValueStore
 
-    init(kvStoreFactory: KeyValueStoreFactory) {
-        legacyErrorKVStore = kvStoreFactory.keyValueStore(collection: LegacyErrorConstants.collection)
+    init() {
+        legacyErrorKVStore = KeyValueStore(collection: LegacyErrorConstants.collection)
 
-        errorKVStore = kvStoreFactory.keyValueStore(collection: StoreConstants.errorCollection)
-        successKVStore = kvStoreFactory.keyValueStore(collection: StoreConstants.successCollection)
+        errorKVStore = KeyValueStore(collection: StoreConstants.errorCollection)
+        successKVStore = KeyValueStore(collection: StoreConstants.successCollection)
 
-        errorPresentationKVStore = kvStoreFactory.keyValueStore(collection: StoreConstants.errorPresentationCollection)
-        successPresentationKVStore = kvStoreFactory.keyValueStore(collection: StoreConstants.successPresentationCollection)
+        errorPresentationKVStore = KeyValueStore(collection: StoreConstants.errorPresentationCollection)
+        successPresentationKVStore = KeyValueStore(collection: StoreConstants.successPresentationCollection)
     }
 
     private func key(mode: Mode) -> String {

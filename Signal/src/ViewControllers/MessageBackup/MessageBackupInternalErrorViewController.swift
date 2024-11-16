@@ -12,12 +12,10 @@ import UIKit
 class MessageBackupErrorPresenterFactoryInternal: MessageBackupErrorPresenterFactory {
     func build(
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         tsAccountManager: TSAccountManager
     ) -> MessageBackupErrorPresenter {
         return MessageBackupErrorPresenterInternal(
             db: db,
-            keyValueStoreFactory: keyValueStoreFactory,
             tsAccountManager: tsAccountManager
         )
     }
@@ -38,12 +36,11 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
 
     init(
         db: any DB,
-        keyValueStoreFactory: KeyValueStoreFactory,
         tsAccountManager: TSAccountManager
     ) {
         self.db = db
         self.tsAccountManager = tsAccountManager
-        self.kvStore = keyValueStoreFactory.keyValueStore(collection: "MessageBackupErrorPresenterImpl")
+        self.kvStore = KeyValueStore(collection: "MessageBackupErrorPresenterImpl")
     }
 
     func persistErrors(_ errors: [SignalServiceKit.MessageBackup.CollapsedErrorLog], tx outerTx: DBWriteTransaction) {

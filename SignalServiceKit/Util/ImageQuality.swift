@@ -62,7 +62,7 @@ public enum ImageQualityLevel: UInt, Comparable {
         }
     }
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "ImageQualityLevel")
+    private static let keyValueStore = KeyValueStore(collection: "ImageQualityLevel")
     private static var userSelectedHighQualityKey: String { "defaultQuality" }
 
     public static func resolvedQuality(tx: SDSAnyReadTransaction) -> ImageQualityLevel {

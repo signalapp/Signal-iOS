@@ -447,27 +447,24 @@ protocol _ThreadMerger_SDSThreadMergerShim {
 extension ThreadMerger {
     static func forUnitTests(
         interactionStore: InteractionStore = MockInteractionStore(),
-        keyValueStoreFactory: KeyValueStoreFactory = InMemoryKeyValueStoreFactory(),
         threadAssociatedDataStore: MockThreadAssociatedDataStore = MockThreadAssociatedDataStore(),
         threadStore: ThreadStore = MockThreadStore()
     ) -> ThreadMerger {
         let disappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
-        let threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: keyValueStoreFactory)
+        let threadReplyInfoStore = ThreadReplyInfoStore()
         let wallpaperImageStore = MockWallpaperImageStore()
         let wallpaperStore = WallpaperStore(
-            keyValueStoreFactory: keyValueStoreFactory,
             notificationScheduler: SyncScheduler(),
             wallpaperImageStore: wallpaperImageStore
         )
         let chatColorSettingStore = ChatColorSettingStore(
-            keyValueStoreFactory: keyValueStoreFactory,
             wallpaperStore: wallpaperStore
         )
         let threadRemover = ThreadRemoverImpl(
             chatColorSettingStore: chatColorSettingStore,
             databaseStorage: ThreadRemover_MockDatabaseStorage(),
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
-            lastVisibleInteractionStore: LastVisibleInteractionStore(keyValueStoreFactory: keyValueStoreFactory),
+            lastVisibleInteractionStore: LastVisibleInteractionStore(),
             threadAssociatedDataStore: threadAssociatedDataStore,
             threadReadCache: ThreadRemover_MockThreadReadCache(),
             threadReplyInfoStore: threadReplyInfoStore,

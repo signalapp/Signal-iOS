@@ -28,8 +28,8 @@ final class DeleteForMeSyncMessageSettingsStoreImpl: DeleteForMeSyncMessageSetti
 
     private let keyValueStore: KeyValueStore
 
-    init(keyValueStoreFactory: KeyValueStoreFactory) {
-        self.keyValueStore = keyValueStoreFactory.keyValueStore(collection: "DeleteForMeSyncMessageSettingsStoreImpl")
+    init() {
+        self.keyValueStore = KeyValueStore(collection: "DeleteForMeSyncMessageSettingsStoreImpl")
     }
 
     func isSendingEnabled(tx: any DBReadTransaction) -> Bool {

@@ -13,7 +13,7 @@ class FlipCameraTooltipManager {
         self.db = db
     }
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "FlipCameraButton")
+    private static let keyValueStore = KeyValueStore(collection: "FlipCameraButton")
     private static let tooltipWasSeenKey = "tooltipWasSeen"
 
     private var flipCameraTooltip: FlipCameraTooltipView?

@@ -253,7 +253,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
 
 extension ForwardMessageViewController {
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "ForwardMessageViewController")
+    private static let keyValueStore = KeyValueStore(collection: "ForwardMessageViewController")
     private static let hasForwardedKey = "hasForwardedKey"
 
     private var hasForwardedWithSneakyTransaction: Bool {
