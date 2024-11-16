@@ -52,8 +52,7 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
     ) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
         do {
-            let callLinkRecords = try self.callLinkStore.fetchAll(tx: context.tx)
-            callLinkRecords.forEach { record in
+            try self.callLinkStore.enumerateAll(tx: context.tx) { record in
                 var callLink = BackupProto_CallLink()
                 callLink.rootKey = record.rootKey.bytes
                 if let adminPasskey = record.adminPasskey {

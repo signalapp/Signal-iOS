@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import GRDB
+
 public extension MessageBackup {
     /// An identifier for a ``BackupProto_StickerPack`` backup frame.
     struct StickerPackId: MessageBackupLoggableId {
@@ -61,14 +63,11 @@ public protocol MessageBackupStickerPackArchiver: MessageBackupProtoArchiver {
 public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchiver {
 
     private let backupStickerPackDownloadStore: BackupStickerPackDownloadStore
-    private let stickerManager: MessageBackup.Shims.StickerManager
 
     init(
-        backupStickerPackDownloadStore: BackupStickerPackDownloadStore,
-        stickerManager: MessageBackup.Shims.StickerManager
+        backupStickerPackDownloadStore: BackupStickerPackDownloadStore
     ) {
         self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
-        self.stickerManager = stickerManager
     }
 
     public func archiveStickerPacks(
@@ -79,10 +78,8 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
 
         var handledPacks = Set<Data>()
 
-        // Iterate over the installed sticker packs
-        let installedStickerPacks = stickerManager.installedStickerPacks(tx: context.tx)
-        for installedStickerPack in installedStickerPacks {
-            guard !handledPacks.contains(installedStickerPack.packId) else { continue }
+        func archiveInstalledStickerPack(_ installedStickerPack: StickerPack) {
+            guard !handledPacks.contains(installedStickerPack.packId) else { return }
             let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
                 stream,
                 objectId: StickerPackId(installedStickerPack.packId)) {
@@ -101,6 +98,19 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
             } else {
                 handledPacks.insert(installedStickerPack.packId)
             }
+        }
+
+        // Iterate over the installed sticker packs
+        do {
+            let cursor = try StickerPackRecord
+                .filter(Column(StickerPackRecord.CodingKeys.isInstalled) == true)
+                .fetchCursor(context.tx.databaseConnection)
+            while let next = try cursor.next() {
+                let stickerPack = try StickerPack.fromRecord(next)
+                archiveInstalledStickerPack(stickerPack)
+            }
+        } catch {
+            return .completeFailure(.fatalArchiveError(.stickerPackIteratorError(error)))
         }
 
         // Iterate over any restored sticker packs that have yet to be downloaded via StickerManager.

@@ -1189,8 +1189,7 @@ public class AppSetup {
             ),
             releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver(),
             stickerPackArchiver: MessageBackupStickerPackArchiverImpl(
-                backupStickerPackDownloadStore: backupStickerPackDownloadStore,
-                stickerManager: MessageBackup.Wrappers.StickerManager()
+                backupStickerPackDownloadStore: backupStickerPackDownloadStore
             ),
             adHocCallArchiver: MessageBackupAdHocCallArchiverImpl(
                 callRecordStore: callRecordStore,
