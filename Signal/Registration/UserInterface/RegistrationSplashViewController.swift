@@ -112,24 +112,29 @@ public class RegistrationSplashViewController: OWSViewController {
         let titleLabel = UILabel.titleLabelForRegistration(text: titleText)
         titleLabel.accessibilityIdentifier = "registration.splash.titleLabel"
         stackView.addArrangedSubview(titleLabel)
-        stackView.setCustomSpacing(92, after: titleLabel)
+        stackView.setCustomSpacing(12, after: titleLabel)
 
-        // TODO: This should be a button, not a label.
-        let explanationLabel = UILabel()
-        explanationLabel.text = OWSLocalizedString(
-            "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY",
-            comment: "Link to the 'terms and privacy policy' in the 'onboarding splash' view."
+        let explanationButton = UIButton()
+        explanationButton.setTitle(
+            OWSLocalizedString(
+                "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY",
+                comment: "Link to the 'terms and privacy policy' in the 'onboarding splash' view."
+            ),
+            for: .normal
         )
-        explanationLabel.textColor = Theme.accentBlueColor
-        explanationLabel.font = UIFont.dynamicTypeSubheadlineClamped
-        explanationLabel.numberOfLines = 0
-        explanationLabel.textAlignment = .center
-        explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.isUserInteractionEnabled = true
-        explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(explanationLabelTapped)))
-        explanationLabel.accessibilityIdentifier = "registration.splash.explanationLabel"
-        stackView.addArrangedSubview(explanationLabel)
-        stackView.setCustomSpacing(24, after: explanationLabel)
+        explanationButton.setTitleColor(Theme.secondaryTextAndIconColor, for: .normal)
+        explanationButton.titleLabel?.font = UIFont.dynamicTypeBody2
+        explanationButton.titleLabel?.numberOfLines = 0
+        explanationButton.titleLabel?.textAlignment = .center
+        explanationButton.titleLabel?.lineBreakMode = .byWordWrapping
+        explanationButton.addTarget(
+            self,
+            action: #selector(explanationButtonTapped),
+            for: .touchUpInside
+        )
+        explanationButton.accessibilityIdentifier = "registration.splash.explanationLabel"
+        stackView.addArrangedSubview(explanationButton)
+        stackView.setCustomSpacing(57, after: explanationButton)
 
         let continueButton = OWSFlatButton.primaryButtonForRegistration(
             title: CommonStrings.continueButton,
@@ -163,8 +168,7 @@ public class RegistrationSplashViewController: OWSViewController {
     }
 
     @objc
-    private func explanationLabelTapped(sender: UIGestureRecognizer) {
-        guard sender.state == .recognized else { return }
+    private func explanationButtonTapped(sender: UIGestureRecognizer) {
         let safariVC = SFSafariViewController(url: TSConstants.legalTermsUrl)
         present(safariVC, animated: true)
     }
