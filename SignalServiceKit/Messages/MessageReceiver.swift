@@ -959,6 +959,11 @@ public final class MessageReceiver {
             return nil
         }
 
+        guard dataMessage.body?.utf8.count ?? 0 <= kOversizeTextMessageSizeThreshold else {
+            Logger.error("Dropping message with too large body: \(dataMessage.body?.utf8.count ?? 0)")
+            return nil
+        }
+
         let body = dataMessage.body
         let bodyRanges = dataMessage.bodyRanges.isEmpty ? nil : MessageBodyRanges(protos: dataMessage.bodyRanges)
         let serverGuid = envelope.envelope.serverGuid.flatMap { UUID(uuidString: $0) }

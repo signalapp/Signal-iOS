@@ -840,7 +840,7 @@ extension BodyRangesTextView {
             editableBody.endEditing()
         } else if let string = UIPasteboard.general.strings?.first {
             editableBody.beginEditing()
-            editableBody.replaceCharacters(in: selectedRange, with: string, selectedRange: selectedRange)
+            editableBody.replaceCharacters(in: selectedRange, with: StringSanitizer.sanitize(string), selectedRange: selectedRange)
             editableBody.endEditing()
             // Put the selection at the end of the new range.
             self.selectedRange = NSRange(location: selectedRange.location + (string as NSString).length, length: 0)
