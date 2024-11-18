@@ -135,7 +135,7 @@ public class PaymentsReconciliation {
         // TODO: Until reconciliation testing is complete, don't mark reconciliation as complete.
         #if TESTABLE_BUILD
         #else
-        Self.schedulingStore.setDate(Date(), key: Self.successDateKey, transaction: transaction)
+        Self.schedulingStore.setDate(Date(), key: Self.successDateKey, transaction: transaction.asV2Write)
 
         let lastKnownBlockCount = transactionHistory.blockCount
         let spentItemsCount = transactionHistory.spentItems.count
@@ -143,13 +143,13 @@ public class PaymentsReconciliation {
 
         Self.schedulingStore.setUInt64(lastKnownBlockCount,
                                        key: Self.lastKnownBlockCountKey,
-                                       transaction: transaction)
+                                       transaction: transaction.asV2Write)
         Self.schedulingStore.setInt(spentItemsCount,
                                     key: Self.lastKnownSpentTXOCountKey,
-                                    transaction: transaction)
+                                    transaction: transaction.asV2Write)
         Self.schedulingStore.setInt(receivedItemsCount,
                                     key: Self.lastKnownReceivedTXOCountKey,
-                                    transaction: transaction)
+                                    transaction: transaction.asV2Write)
         #endif
     }
 
