@@ -1009,6 +1009,8 @@ public class AppSetup {
             versionedProfiles: versionedProfiles
         )
 
+        let messagePipelineSupervisor = MessagePipelineSupervisor()
+
         let messageBackupChatStyleArchiver = MessageBackupChatStyleArchiver(
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
@@ -1140,6 +1142,7 @@ public class AppSetup {
             incrementalTSAttachmentMigrator: incrementalTSAttachmentMigrator,
             localRecipientArchiver: MessageBackupLocalRecipientArchiver(),
             messageBackupKeyMaterial: messageBackupKeyMaterial,
+            messagePipelineSupervisor: messagePipelineSupervisor,
             mrbkStore: mrbkStore,
             plaintextStreamProvider: MessageBackupPlaintextProtoStreamProviderImpl(),
             postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager(
@@ -1383,7 +1386,6 @@ public class AppSetup {
         let sskPreferences = SSKPreferences()
         let groupV2Updates = testDependencies.groupV2Updates ?? GroupV2UpdatesImpl(appReadiness: appReadiness)
         let messageFetcherJob = MessageFetcherJob(appReadiness: appReadiness)
-        let messagePipelineSupervisor = MessagePipelineSupervisor()
         let paymentsCurrencies = testDependencies.paymentsCurrencies ?? PaymentsCurrenciesImpl(appReadiness: appReadiness)
         let spamChallengeResolver = SpamChallengeResolver(appReadiness: appReadiness)
         let phoneNumberUtil = PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())

@@ -49,6 +49,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let kvStore: KeyValueStore
     private let localRecipientArchiver: MessageBackupLocalRecipientArchiver
     private let messageBackupKeyMaterial: MessageBackupKeyMaterial
+    private let messagePipelineSupervisor: MessagePipelineSupervisor
     private let mrbkStore: MediaRootBackupKeyStore
     private let plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider
     private let postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager
@@ -80,6 +81,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
         localRecipientArchiver: MessageBackupLocalRecipientArchiver,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
+        messagePipelineSupervisor: MessagePipelineSupervisor,
         mrbkStore: MediaRootBackupKeyStore,
         plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider,
         postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager,
@@ -111,6 +113,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.kvStore = KeyValueStore(collection: Constants.keyValueStoreCollectionName)
         self.localRecipientArchiver = localRecipientArchiver
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
+        self.messagePipelineSupervisor = messagePipelineSupervisor
         self.mrbkStore = mrbkStore
         self.plaintextStreamProvider = plaintextStreamProvider
         self.postFrameRestoreActionManager = postFrameRestoreActionManager
@@ -196,6 +199,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         await migrateAttachmentsBeforeBackup()
 
+        let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
+        defer {
+            handle.invalidate()
+        }
+
         let progress = try MessageBackupExportProgress.prepare(db: db)
 
         let task = Task {
@@ -250,6 +258,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         await migrateAttachmentsBeforeBackup()
+
+        let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
+        defer {
+            handle.invalidate()
+        }
 
         let progress = try MessageBackupExportProgress.prepare(db: db)
 
@@ -532,6 +545,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         await migrateAttachmentsBeforeBackup()
 
+        let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
+        defer {
+            handle.invalidate()
+        }
+
         let progress = try MessageBackupImportProgress.prepare(fileUrl: fileUrl)
 
         let task = Task {
@@ -590,6 +608,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         await migrateAttachmentsBeforeBackup()
+
+        let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
+        defer {
+            handle.invalidate()
+        }
 
         let progress = try MessageBackupImportProgress.prepare(fileUrl: fileUrl)
 
