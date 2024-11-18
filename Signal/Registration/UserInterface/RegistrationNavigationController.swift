@@ -403,6 +403,10 @@ extension RegistrationNavigationController: RegistrationSplashPresenter {
         pushNextController(coordinator.continueFromSplash())
     }
 
+    public func restoreOrTransfer() {
+        // TODO: Enter "Restore or Transfer" flow.
+    }
+
     public func switchToDeviceLinkingMode() {
         Logger.info("Pushing device linking")
         let controller = RegistrationConfirmModeSwitchViewController(presenter: self)

@@ -12,6 +12,7 @@ public import SignalUI
 
 public protocol RegistrationSplashPresenter: AnyObject {
     func continueFromSplash()
+    func restoreOrTransfer()
 
     func switchToDeviceLinkingMode()
     func transferDevice()
@@ -149,6 +150,27 @@ public class RegistrationSplashViewController: OWSViewController {
             continueButton.autoPinEdge(toSuperviewEdge: .leading)
             continueButton.autoPinEdge(toSuperviewEdge: .trailing)
         }
+
+        if FeatureFlags.messageBackupQuickRestoreFlow {
+            stackView.setCustomSpacing(16, after: continueButton)
+
+            let restoreOrTransferButton = OWSFlatButton.secondaryButtonForRegistration(
+                title: OWSLocalizedString(
+                    "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE",
+                    comment: "Button for restoring or transferring account in the 'onboarding splash' view."
+                ),
+                target: self,
+                selector: #selector(didTapRestoreOrTransfer)
+            )
+            restoreOrTransferButton.accessibilityIdentifier = "registration.splash.continueButton"
+            stackView.addArrangedSubview(restoreOrTransferButton)
+            restoreOrTransferButton.autoSetDimension(.width, toSize: 280)
+            restoreOrTransferButton.autoHCenterInSuperview()
+            NSLayoutConstraint.autoSetPriority(.defaultLow) {
+                restoreOrTransferButton.autoPinEdge(toSuperviewEdge: .leading)
+                restoreOrTransferButton.autoPinEdge(toSuperviewEdge: .trailing)
+            }
+        }
     }
 
     // MARK: - Events
@@ -177,5 +199,11 @@ public class RegistrationSplashViewController: OWSViewController {
     private func continuePressed() {
         Logger.info("")
         presenter?.continueFromSplash()
+    }
+
+    @objc
+    private func didTapRestoreOrTransfer() {
+        Logger.info("")
+        presenter?.restoreOrTransfer()
     }
 }

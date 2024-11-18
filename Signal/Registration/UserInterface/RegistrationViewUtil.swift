@@ -92,6 +92,19 @@ extension OWSFlatButton {
         return result
     }
 
+    static func secondaryButtonForRegistration(title: String, target: Any, selector: Selector) -> OWSFlatButton {
+        let result = insetButton(
+            title: title,
+            font: UIFont.dynamicTypeBodyClamped.semibold(),
+            titleColor: .ows_accentBlue,
+            backgroundColor: .clear,
+            target: target,
+            selector: selector
+        )
+        result.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 14)
+        return result
+    }
+
     static func linkButtonForRegistration(title: String, target: Any, selector: Selector) -> OWSFlatButton {
         let button = OWSFlatButton.button(
             title: title,
