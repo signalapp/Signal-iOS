@@ -132,9 +132,6 @@ public class PaymentsReconciliation {
 
     private static func reconciliationDidSucceed(transaction: SDSAnyWriteTransaction,
                                                  transactionHistory: MCTransactionHistory) {
-        // TODO: Until reconciliation testing is complete, don't mark reconciliation as complete.
-        #if TESTABLE_BUILD
-        #else
         Self.schedulingStore.setDate(Date(), key: Self.successDateKey, transaction: transaction.asV2Write)
 
         let lastKnownBlockCount = transactionHistory.blockCount
@@ -150,7 +147,6 @@ public class PaymentsReconciliation {
         Self.schedulingStore.setInt(receivedItemsCount,
                                     key: Self.lastKnownReceivedTXOCountKey,
                                     transaction: transaction.asV2Write)
-        #endif
     }
 
     public func scheduleReconciliationNow(transaction: SDSAnyWriteTransaction) {
