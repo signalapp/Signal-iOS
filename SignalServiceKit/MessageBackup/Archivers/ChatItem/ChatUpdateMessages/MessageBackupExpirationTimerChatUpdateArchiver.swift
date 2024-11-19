@@ -36,7 +36,7 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
 
     func archiveExpirationTimerChatUpdate(
         infoMessage: TSInfoMessage,
-        thread: TSThread,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(
@@ -64,7 +64,11 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
             chatUpdateExpiresInMs = 0
         }
 
-        guard let contactThread = thread as? TSContactThread else {
+        let recipientAddress: MessageBackup.ContactAddress?
+        switch threadInfo {
+        case .contactThread(let contactAddress):
+            recipientAddress = contactAddress
+        case .groupThread:
             // This may have been a DM timer update in a gv1 group that became a gv2 group;
             // we can't tell anymore if this group was ever gv1 so just assume so
             // and swizzle this to a gv2 timer update for backup purposes.
@@ -80,7 +84,7 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
         if wasAuthoredByLocalUser {
             chatUpdateAuthorRecipientId = context.recipientContext.localRecipientId
         } else {
-            guard let recipientAddress = contactThread.contactAddress.asSingleServiceIdBackupAddress() else {
+            guard let recipientAddress else {
                 return messageFailure(.disappearingMessageConfigUpdateMissingAuthor)
             }
             guard let recipientId = context.recipientContext[.contact(recipientAddress)] else {

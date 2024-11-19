@@ -93,7 +93,6 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
         Builder: MessageBackupTSMessageEditHistoryBuilder<MessageType>
     >(
         _ message: MessageType,
-        thread _: TSThread,
         context: MessageBackup.ChatArchivingContext,
         builder: Builder
     ) -> MessageBackup.ArchiveInteractionResult<Details>

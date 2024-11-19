@@ -93,7 +93,15 @@ extension MessageBackup {
         private var currentChatId = ChatId(value: 1)
         private let map = SharedMap<ThreadUniqueId, ChatId>()
         public var gv1ThreadIds = Set<ThreadUniqueId>()
-        private let threadCache = SharedMap<ChatId, TSThread>()
+
+        public enum CachedThreadInfo {
+            case groupThread
+            // Contact threads may be _missing_ their address, which
+            // will likely cause partial failures downstream.
+            case contactThread(contactAddress: MessageBackup.ContactAddress?)
+        }
+
+        private let threadCache = SharedMap<ChatId, CachedThreadInfo>()
 
         internal init(
             currentBackupAttachmentUploadEra: String?,
@@ -116,7 +124,13 @@ extension MessageBackup {
                 currentChatId = ChatId(value: currentChatId.value + 1)
             }
             map[ThreadUniqueId(thread: thread)] = currentChatId
-            threadCache[currentChatId] = thread
+            if let contactThread = thread as? TSContactThread {
+                threadCache[currentChatId] = .contactThread(
+                    contactAddress: contactThread.contactAddress.asSingleServiceIdBackupAddress()
+                )
+            } else if thread is TSGroupThread {
+                threadCache[currentChatId] = .groupThread
+            }
             return currentChatId
         }
 
@@ -125,7 +139,7 @@ extension MessageBackup {
             get { map[threadUniqueId] }
         }
 
-        internal subscript(_ chatId: ChatId) -> TSThread? {
+        internal subscript(_ chatId: ChatId) -> CachedThreadInfo? {
             // swiftlint:disable:next implicit_getter
             get { threadCache[chatId] }
         }

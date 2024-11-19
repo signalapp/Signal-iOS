@@ -25,7 +25,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
 
     func archiveSimpleChatUpdate(
         infoMessage: TSInfoMessage,
-        thread: TSThread,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(
@@ -209,17 +209,18 @@ final class MessageBackupSimpleChatUpdateArchiver {
         case .precomputedRecipientId(let recipientId):
             updateAuthorRecipientId = recipientId
         case .containingContactThread:
-            guard
-                let contactThread = thread as? TSContactThread,
-                let authorAddress = contactThread.contactAddress.asSingleServiceIdBackupAddress()
-            else {
+            switch threadInfo {
+            case .groupThread:
                 return messageFailure(.simpleChatUpdateMessageNotInContactThread)
+            case .contactThread(let authorAddress):
+                guard let authorAddress else {
+                    return messageFailure(.simpleChatUpdateMessageNotInContactThread)
+                }
+                guard let authorRecipientId = context.recipientContext[.contact(authorAddress)] else {
+                    return messageFailure(.referencedRecipientIdMissing(.contact(authorAddress)))
+                }
+                updateAuthorRecipientId = authorRecipientId
             }
-            guard let authorRecipientId = context.recipientContext[.contact(authorAddress)] else {
-                return messageFailure(.referencedRecipientIdMissing(.contact(authorAddress)))
-            }
-
-            updateAuthorRecipientId = authorRecipientId
         case .localUser:
             updateAuthorRecipientId = context.recipientContext.localRecipientId
         }
@@ -246,7 +247,6 @@ final class MessageBackupSimpleChatUpdateArchiver {
 
     func archiveSimpleChatUpdate(
         errorMessage: TSErrorMessage,
-        thread: TSThread,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(

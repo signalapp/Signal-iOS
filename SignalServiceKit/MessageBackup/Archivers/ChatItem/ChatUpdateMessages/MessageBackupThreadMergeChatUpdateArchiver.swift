@@ -21,7 +21,7 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
 
     func archiveThreadMergeChatUpdate(
         infoMessage: TSInfoMessage,
-        thread: TSThread,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(
@@ -42,7 +42,12 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
             return .skippableChatUpdate(.legacyInfoMessage(.threadMergeWithoutPhoneNumber))
         }
 
-        guard let mergedContactAddress = (thread as? TSContactThread)?.contactAddress.asSingleServiceIdBackupAddress() else {
+        let mergedContactAddress: MessageBackup.ContactAddress
+        switch threadInfo {
+        case .contactThread(let contactAddress):
+            guard let contactAddress else { fallthrough }
+            mergedContactAddress = contactAddress
+        case .groupThread:
             return messageFailure(.threadMergeUpdateMissingAuthor)
         }
 

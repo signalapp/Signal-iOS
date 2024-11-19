@@ -78,7 +78,6 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
 
     func archiveGroupCall(
         _ groupCallInteraction: OWSGroupCallMessage,
-        thread: TSThread,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         return groupCallArchiver.archiveGroupCall(
@@ -89,20 +88,18 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
 
     func archiveErrorMessage(
         _ errorMessage: TSErrorMessage,
-        thread: TSThread,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         /// All `TSErrorMessage`s map to simple chat updates.
         return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
             errorMessage: errorMessage,
-            thread: thread,
             context: context
         )
     }
 
     func archiveInfoMessage(
         _ infoMessage: TSInfoMessage,
-        thread: TSThread,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         switch infoMessage.groupUpdateMetadata(
@@ -158,37 +155,35 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
             /// These info message types map to simple chat updates.
             return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
                 infoMessage: infoMessage,
-                thread: thread,
+                threadInfo: threadInfo,
                 context: context
             )
         case .profileUpdate:
             return profileChangeChatUpdateArchiver.archive(
                 infoMessage: infoMessage,
-                thread: thread,
                 context: context
             )
         case .typeDisappearingMessagesUpdate:
             return expirationTimerChatUpdateArchiver.archiveExpirationTimerChatUpdate(
                 infoMessage: infoMessage,
-                thread: thread,
+                threadInfo: threadInfo,
                 context: context
             )
         case .threadMerge:
             return threadMergeChatUpdateArchiver.archiveThreadMergeChatUpdate(
                 infoMessage: infoMessage,
-                thread: thread,
+                threadInfo: threadInfo,
                 context: context
             )
         case .sessionSwitchover:
             return sessionSwitchoverChatUpdateArchiver.archiveSessionSwitchoverChatUpdate(
                 infoMessage: infoMessage,
-                thread: thread,
+                threadInfo: threadInfo,
                 context: context
             )
         case .learnedProfileName:
             return learnedProfileChatUpdateArchiver.archiveLearnedProfileChatUpdate(
                 infoMessage: infoMessage,
-                thread: thread,
                 context: context
             )
         }

@@ -160,18 +160,15 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         var partialErrors = [ArchiveFrameError]()
 
         let chatId = context[interaction.uniqueThreadIdentifier]
-        let thread = chatId.map { context[$0] } ?? nil
+        let threadInfo = chatId.map { context[$0] } ?? nil
 
-        if
-            context.gv1ThreadIds.contains(interaction.uniqueThreadIdentifier)
-            || (thread as? TSGroupThread)?.isGroupV1Thread == true
-        {
+        if context.gv1ThreadIds.contains(interaction.uniqueThreadIdentifier) {
             /// We are knowingly dropping GV1 data from backups, so we'll skip
             /// archiving any interactions for GV1 threads without errors.
             return .success
         }
 
-        guard let chatId, let thread  else {
+        guard let chatId, let threadInfo else {
             partialErrors.append(.archiveFrameError(
                 .referencedThreadIdMissing(interaction.uniqueThreadIdentifier),
                 interaction.uniqueInteractionId
@@ -190,13 +187,11 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         } else if let incomingMessage = interaction as? TSIncomingMessage {
             archiveInteractionResult = incomingMessageArchiver.archiveIncomingMessage(
                 incomingMessage,
-                thread: thread,
                 context: context
             )
         } else if let outgoingMessage = interaction as? TSOutgoingMessage {
             archiveInteractionResult = outgoingMessageArchiver.archiveOutgoingMessage(
                 outgoingMessage,
-                thread: thread,
                 context: context
             )
         } else if let individualCallInteraction = interaction as? TSCall {
@@ -207,19 +202,17 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         } else if let groupCallInteraction = interaction as? OWSGroupCallMessage {
             archiveInteractionResult = chatUpdateMessageArchiver.archiveGroupCall(
                 groupCallInteraction,
-                thread: thread,
                 context: context
             )
         } else if let errorMessage = interaction as? TSErrorMessage {
             archiveInteractionResult = chatUpdateMessageArchiver.archiveErrorMessage(
                 errorMessage,
-                thread: thread,
                 context: context
             )
         } else if let infoMessage = interaction as? TSInfoMessage {
             archiveInteractionResult = chatUpdateMessageArchiver.archiveInfoMessage(
                 infoMessage,
-                thread: thread,
+                threadInfo: threadInfo,
                 context: context
             )
         } else {

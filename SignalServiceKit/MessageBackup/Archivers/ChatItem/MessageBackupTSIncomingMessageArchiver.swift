@@ -33,7 +33,6 @@ class MessageBackupTSIncomingMessageArchiver {
 
     func archiveIncomingMessage(
         _ incomingMessage: TSIncomingMessage,
-        thread: TSThread,
         context: MessageBackup.ChatArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         var partialErrors = [ArchiveFrameError]()
@@ -41,7 +40,6 @@ class MessageBackupTSIncomingMessageArchiver {
         let incomingMessageDetails: Details
         switch editHistoryArchiver.archiveMessageAndEditHistory(
             incomingMessage,
-            thread: thread,
             context: context,
             builder: self
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {

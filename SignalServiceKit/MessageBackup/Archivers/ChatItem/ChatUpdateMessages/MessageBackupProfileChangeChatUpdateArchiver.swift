@@ -21,7 +21,6 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
 
     func archive(
         infoMessage: TSInfoMessage,
-        thread: TSThread,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(
