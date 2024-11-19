@@ -300,7 +300,7 @@ class MediaGallery {
     typealias Update = Sections.Update
     typealias Journal = [JournalingOrderedDictionaryChange<Sections.ItemChange>]
 
-    private let thread: TSThread
+    let thread: TSThread
 
     // Used for filtering.
     private(set) var mediaFilter: AllMediaFilter

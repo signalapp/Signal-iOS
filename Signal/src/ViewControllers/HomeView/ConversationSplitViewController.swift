@@ -125,7 +125,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         }
     }
 
-    func presentThread(_ thread: TSThread, action: ConversationViewAction, focusMessageId: String?, animated: Bool) {
+    func presentThread(_ thread: TSThread, action: ConversationViewAction, focusMessageId: String?, animated: Bool, forceReload: Bool = false) {
         AssertIsOnMainThread()
 
         // On iOS 13, there is a bug with UISplitViewController that causes the `isCollapsed` state to
@@ -137,14 +137,14 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             owsFailDebug("check if this still happens")
             // Reset this to avoid getting stuck in a loop. We're becoming active.
             lastActiveInterfaceOrientation = windowScene.interfaceOrientation
-            DispatchQueue.main.async { self.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated) }
+            DispatchQueue.main.async { self.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated, forceReload: forceReload) }
             return
         }
 
         if homeVC.selectedHomeTab != .chatList {
             guard homeVC.presentedViewController == nil else {
                 homeVC.dismiss(animated: true) {
-                    self.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated)
+                    self.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated, forceReload: forceReload)
                 }
                 return
             }
@@ -153,7 +153,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             homeVC.selectedHomeTab = .chatList
         }
 
-        guard selectedThread?.uniqueId != thread.uniqueId else {
+        guard ((selectedThread?.uniqueId != thread.uniqueId) || forceReload) else {
             // If this thread is already selected, pop to the thread if
             // anything else has been presented above the view.
             guard let selectedConversationVC = selectedConversationViewController else { return }
@@ -684,3 +684,4 @@ extension ConversationSplitViewController: DeviceTransferServiceObserver {
 
     func deviceTransferServiceDidRequestAppRelaunch() {}
 }
+

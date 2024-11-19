@@ -4168,6 +4168,9 @@
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Delete";
 
+/* Context menu item in media viewer, Refers to jumping to position in conversation*/
+"MEDIA_VIEWER_JUMP_TO_CONVERSATION" = "Show in Chat";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "Remind Me Later";
 

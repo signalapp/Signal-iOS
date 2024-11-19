@@ -158,7 +158,8 @@ extension SignalApp {
         _ thread: TSThread,
         action: ConversationViewAction = .none,
         focusMessageId: String? = nil,
-        animated: Bool
+        animated: Bool,
+        forceReload: Bool = false
     ) {
         AssertIsOnMainThread()
 
@@ -179,7 +180,7 @@ extension SignalApp {
                 }
                 return
             }
-            conversationSplitViewController.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated)
+            conversationSplitViewController.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated, forceReload: forceReload)
         }
     }
 
