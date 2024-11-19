@@ -20,12 +20,6 @@ class DebugUISessionState: DebugUIPage {
                 OWSTableItem(title: "Log All Recipient Identities", actionBlock: {
                     OWSRecipientIdentity.printAllIdentities()
                 }),
-                OWSTableItem(title: "Log All Sessions", actionBlock: {
-                    SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                        let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-                        sessionStore.printAll(tx: transaction.asV2Read)
-                    }
-                }),
                 OWSTableItem(title: "Toggle Key Change", actionBlock: {
                     DebugUISessionState.toggleKeyChange(for: contactThread)
                 }),

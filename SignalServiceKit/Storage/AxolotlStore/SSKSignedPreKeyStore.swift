@@ -47,8 +47,12 @@ public class SSKSignedPreKeyStore: NSObject {
     }
 
     public func cullSignedPreKeyRecords(justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord, transaction: SDSAnyWriteTransaction) {
-        guard var oldSignedPrekeys = keyStore.allValues(transaction: transaction.asV2Read) as? [SignalServiceKit.SignedPreKeyRecord] else {
-            owsFail("signed prekeys are not of type SignedPreKeyRecord")
+        var oldSignedPrekeys = keyStore.allKeys(transaction: transaction.asV2Read).map {
+            let signedPreKeyRecord = keyStore.getObject($0, ofClass: SignalServiceKit.SignedPreKeyRecord.self, transaction: transaction.asV2Read)
+            guard let signedPreKeyRecord else {
+                owsFail("Couldn't decode SignedPreKeyRecord.")
+            }
+            return signedPreKeyRecord
         }
 
         // Remove the current record from the list.
@@ -188,7 +192,7 @@ extension SignalServiceKit.SignedPreKeyRecord {
 
 extension KeyValueStore {
     fileprivate func signedPreKeyRecord(key: String, transaction: SDSAnyReadTransaction) -> SignalServiceKit.SignedPreKeyRecord? {
-        getObject(forKey: key, transaction: transaction.asV2Read) as? SignalServiceKit.SignedPreKeyRecord
+        return getObject(key, ofClass: SignalServiceKit.SignedPreKeyRecord.self, transaction: transaction.asV2Read)
     }
 
     fileprivate func setSignedPreKeyRecord(_ record: SignalServiceKit.SignedPreKeyRecord, key: String, transaction: SDSAnyWriteTransaction) {

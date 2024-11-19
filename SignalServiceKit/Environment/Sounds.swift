@@ -505,7 +505,9 @@ public class Sounds {
         guard !allCustomSounds.isEmpty else { return }
 
         let allInUseSoundIds = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return Set(keyValueStore.allValues(transaction: transaction.asV2Read) as! [UInt])
+            return Set(keyValueStore.allKeys(transaction: transaction.asV2Read).compactMap {
+                return keyValueStore.getUInt($0, transaction: transaction.asV2Read)
+            })
         }
 
         let orphanedSounds = allCustomSounds.filter { !allInUseSoundIds.contains($0.id) }

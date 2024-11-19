@@ -1017,9 +1017,10 @@ extension DonationSubscriptionManager {
 
     public static func getSubscriberID(transaction: SDSAnyReadTransaction) -> Data? {
         guard let subscriberID = subscriptionKVS.getObject(
-            forKey: subscriberIDKey,
+            subscriberIDKey,
+            ofClass: NSData.self,
             transaction: transaction.asV2Read
-        ) as? Data else {
+        ) as Data? else {
             return nil
         }
         return subscriberID
@@ -1032,10 +1033,10 @@ extension DonationSubscriptionManager {
     }
 
     public static func getSubscriberCurrencyCode(transaction: SDSAnyReadTransaction) -> String? {
-        guard let subscriberCurrencyCode = subscriptionKVS.getObject(
-            forKey: subscriberCurrencyCodeKey,
+        guard let subscriberCurrencyCode = subscriptionKVS.getString(
+            subscriberCurrencyCodeKey,
             transaction: transaction.asV2Read
-        ) as? String else {
+        ) else {
             return nil
         }
         return subscriberCurrencyCode
@@ -1103,8 +1104,7 @@ extension DonationSubscriptionManager {
     }
 
     fileprivate static func knownUserSubscriptionBadgeIDs(transaction: SDSAnyReadTransaction) -> [String] {
-        let ids = subscriptionKVS.getObject(forKey: knownUserSubscriptionBadgeIDsKey, transaction: transaction.asV2Read) as? [String]
-        return ids ?? []
+        return subscriptionKVS.getStringArray(knownUserSubscriptionBadgeIDsKey, transaction: transaction.asV2Read) ?? []
     }
 
     fileprivate static func setKnownUserBoostBadgeIDs(badgeIDs: [String], transaction: SDSAnyWriteTransaction) {
@@ -1112,11 +1112,7 @@ extension DonationSubscriptionManager {
     }
 
     fileprivate static func knownUserBoostBadgeIDs(transaction: SDSAnyReadTransaction) -> [String] {
-        guard let ids = subscriptionKVS.getObject(forKey: knownUserBoostBadgeIDsKey, transaction: transaction.asV2Read) as? [String] else {
-            return []
-        }
-
-        return ids
+        return subscriptionKVS.getStringArray(knownUserBoostBadgeIDsKey, transaction: transaction.asV2Read) ?? []
     }
 
     fileprivate static func setKnownUserGiftBadgeIDs(badgeIDs: [String], transaction: SDSAnyWriteTransaction) {
@@ -1124,7 +1120,7 @@ extension DonationSubscriptionManager {
     }
 
     fileprivate static func knownUserGiftBadgeIDs(transaction: SDSAnyReadTransaction) -> [String] {
-        subscriptionKVS.getObject(forKey: knownUserGiftBadgeIDsKey, transaction: transaction.asV2Read) as? [String] ?? []
+        return subscriptionKVS.getStringArray(knownUserGiftBadgeIDsKey, transaction: transaction.asV2Read) ?? []
     }
 
     fileprivate static func setMostRecentlyExpiredBadgeID(badgeID: String?, transaction: SDSAnyWriteTransaction) {

@@ -143,10 +143,12 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             }
 
             // Check if device capabilities have changed.
-            let lastUpdateDeviceCapabilities = self.kvStore.getObject(
-                forKey: Keys.lastUpdateDeviceCapabilities,
+            let lastUpdateDeviceCapabilities = self.kvStore.getDictionary(
+                Keys.lastUpdateDeviceCapabilities,
+                keyClass: NSString.self,
+                objectClass: NSNumber.self,
                 transaction: tx
-            ) as? [String: NSNumber]
+            ) as [String: NSNumber]?
             if lastUpdateDeviceCapabilities != currentDeviceCapabilities.requestParameters {
                 return .yes(
                     currentDeviceCapabilities: currentDeviceCapabilities,

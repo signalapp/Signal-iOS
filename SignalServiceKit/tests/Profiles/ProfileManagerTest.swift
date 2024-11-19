@@ -146,6 +146,6 @@ class ProfileManagerTest: XCTestCase {
 
     private static func deserialize(data: Data) throws -> PendingProfileUpdate {
         NSKeyedUnarchiver.setClass(PendingProfileUpdate.self, forClassName: "SignalMessaging.PendingProfileUpdate")
-        return try XCTUnwrap(NSKeyedUnarchiver.unarchivedObject(ofClass: PendingProfileUpdate.self, from: data, requiringSecureCoding: false))
+        return try XCTUnwrap(NSKeyedUnarchiver.unarchivedObject(ofClass: PendingProfileUpdate.self, from: data))
     }
 }

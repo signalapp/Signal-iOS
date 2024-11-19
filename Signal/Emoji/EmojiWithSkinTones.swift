@@ -52,11 +52,8 @@ extension Emoji {
     }
 
     func withPreferredSkinTones(transaction: SDSAnyReadTransaction) -> EmojiWithSkinTones {
-        guard let rawSkinTones = Self.keyValueStore.getObject(forKey: rawValue, transaction: transaction.asV2Read) as? [String] else {
-            return EmojiWithSkinTones(baseEmoji: self, skinTones: nil)
-        }
-
-        return EmojiWithSkinTones(baseEmoji: self, skinTones: rawSkinTones.compactMap { SkinTone(rawValue: $0) })
+        let rawSkinTones = Self.keyValueStore.getStringArray(rawValue, transaction: transaction.asV2Read)
+        return EmojiWithSkinTones(baseEmoji: self, skinTones: rawSkinTones?.compactMap { SkinTone(rawValue: $0) })
     }
 
     func setPreferredSkinTones(_ preferredSkinTonePermutation: [SkinTone]?, transaction: SDSAnyWriteTransaction) {

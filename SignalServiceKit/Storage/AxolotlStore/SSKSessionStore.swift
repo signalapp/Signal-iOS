@@ -237,30 +237,6 @@ public final class SSKSessionStore: SignalSessionStore {
         Logger.warn("resetting session store")
         keyValueStore.removeAll(transaction: tx)
     }
-
-    public func printAll(tx: DBReadTransaction) {
-        Logger.debug("All Sessions.")
-        keyValueStore.enumerateKeysAndObjects(transaction: tx) { key, value, _ in
-            guard let deviceSessions = value as? NSDictionary else {
-                owsFailDebug("Unexpected type: \(type(of: value)) in collection.")
-                return
-            }
-
-            Logger.debug("     Sessions for recipient: \(key)")
-            deviceSessions.enumerateKeysAndObjects { key, value, _ in
-                guard let data = self.serializedSession(fromDatabaseRepresentation: value) else {
-                    // We've already logged an error here, just move on.
-                    return
-                }
-                do {
-                    let sessionRecord = try SessionRecord(bytes: data)
-                    Logger.debug("         Device: \(key) hasCurrentState: \(sessionRecord.hasCurrentState)")
-                } catch {
-                    owsFailDebug("invalid session record: \(error)")
-                }
-            }
-        }
-    }
 }
 
 extension SSKSessionStore {

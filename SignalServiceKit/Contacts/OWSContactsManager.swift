@@ -888,7 +888,7 @@ extension OWSContactsManager: ContactManager {
     }
 
     private func fetchPriorIntersectionPhoneNumbers(tx: SDSAnyReadTransaction) -> Set<String>? {
-        keyValueStore.getObject(forKey: Constants.lastKnownContactPhoneNumbers, transaction: tx.asV2Read) as? Set<String>
+        return keyValueStore.getSet(Constants.lastKnownContactPhoneNumbers, ofClass: NSString.self, transaction: tx.asV2Read) as Set<String>?
     }
 
     private func setPriorIntersectionPhoneNumbers(_ phoneNumbers: Set<String>, tx: SDSAnyWriteTransaction) {

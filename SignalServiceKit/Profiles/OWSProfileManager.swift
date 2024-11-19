@@ -1850,14 +1850,7 @@ extension OWSProfileManager: ProfileManager {
     }
 
     private func currentPendingProfileChanges(tx: SDSAnyReadTransaction) -> PendingProfileUpdate? {
-        guard let value = settingsStore.getObject(forKey: Self.kPendingProfileUpdateKey, transaction: tx.asV2Read) else {
-            return nil
-        }
-        guard let profileChanges = value as? PendingProfileUpdate else {
-            owsFailDebug("Invalid value.")
-            return nil
-        }
-        return profileChanges
+        return settingsStore.getObject(Self.kPendingProfileUpdateKey, ofClass: PendingProfileUpdate.self, transaction: tx.asV2Read)
     }
 
     private func isCurrentPendingProfileChanges(_ profileChanges: PendingProfileUpdate, tx: SDSAnyReadTransaction) -> Bool {
@@ -1991,7 +1984,7 @@ extension OWSProfileManager: ProfileManager {
 
 // MARK: -
 
-public class PendingProfileUpdate: NSObject, NSCoding {
+public class PendingProfileUpdate: NSObject, NSSecureCoding {
     let id: UUID
 
     let profileGivenName: OptionalChange<OWSUserProfile.NameComponent>
@@ -2031,6 +2024,8 @@ public class PendingProfileUpdate: NSObject, NSCoding {
     }
 
     // MARK: - NSCoding
+
+    public class var supportsSecureCoding: Bool { true }
 
     private enum NSCodingKeys: String {
         case id
@@ -2091,28 +2086,28 @@ public class PendingProfileUpdate: NSObject, NSCoding {
         aCoder.encodeCInt(Int32(userProfileWriter.rawValue), forKey: NSCodingKeys.userProfileWriter.rawValue)
     }
 
-    private static func decodeOptionalChange<T>(for codingKey: NSCodingKeys, with aDecoder: NSCoder) -> OptionalChange<T?> {
+    private static func decodeOptionalChange<T: NSObject & NSSecureCoding>(of cls: T.Type, for codingKey: NSCodingKeys, with aDecoder: NSCoder) -> OptionalChange<T?> {
         if aDecoder.containsValue(forKey: codingKey.changedKey), !aDecoder.decodeBool(forKey: codingKey.changedKey) {
             return .noChange
         }
-        return .setTo(aDecoder.decodeObject(forKey: codingKey.rawValue) as? T? ?? nil)
+        return .setTo(aDecoder.decodeObject(of: cls, forKey: codingKey.rawValue) as T?)
     }
 
-    private static func decodeOptionalAvatarChange<T>(for codingKey: NSCodingKeys, with aDecoder: NSCoder) -> OptionalAvatarChange<T?> {
+    private static func decodeOptionalAvatarChange(for codingKey: NSCodingKeys, with aDecoder: NSCoder) -> OptionalAvatarChange<Data?> {
         if aDecoder.containsValue(forKey: codingKey.changedKey), !aDecoder.decodeBool(forKey: codingKey.changedKey) {
             if aDecoder.containsValue(forKey: codingKey.mustReuploadKey), aDecoder.decodeBool(forKey: codingKey.mustReuploadKey) {
                 return .noChangeButMustReupload
             }
             return .noChange
         }
-        return .setTo(aDecoder.decodeObject(forKey: codingKey.rawValue) as? T? ?? nil)
+        return .setTo(aDecoder.decodeObject(of: NSData.self, forKey: codingKey.rawValue) as Data?)
     }
 
     private static func decodeOptionalNameChange(
         for codingKey: NSCodingKeys,
         with aDecoder: NSCoder
     ) -> OptionalChange<OWSUserProfile.NameComponent?> {
-        let stringChange: OptionalChange<String?> = decodeOptionalChange(for: codingKey, with: aDecoder)
+        let stringChange = decodeOptionalChange(of: NSString.self, for: codingKey, with: aDecoder)
         switch stringChange {
         case .noChange:
             return .noChange
@@ -2121,7 +2116,7 @@ public class PendingProfileUpdate: NSObject, NSCoding {
         case .setTo(.some(let value)):
             // We shouldn't be able to encode an invalid value. If we do, fall back to
             // `.noChange` rather than clearing it.
-            guard let nameComponent = OWSUserProfile.NameComponent(truncating: value) else {
+            guard let nameComponent = OWSUserProfile.NameComponent(truncating: value as String) else {
                 return .noChange
             }
             return .setTo(nameComponent)
@@ -2145,7 +2140,7 @@ public class PendingProfileUpdate: NSObject, NSCoding {
     }
 
     private static func decodeVisibleBadgeIds(for codingKey: NSCodingKeys, with aDecoder: NSCoder) -> OptionalChange<[String]> {
-        guard let visibleBadgeIds = aDecoder.decodeObject(forKey: codingKey.rawValue) as? [String] else {
+        guard let visibleBadgeIds = aDecoder.decodeArrayOfObjects(ofClass: NSString.self, forKey: codingKey.rawValue) as [String]? else {
             return .noChange
         }
         return .setTo(visibleBadgeIds)
@@ -2153,7 +2148,7 @@ public class PendingProfileUpdate: NSObject, NSCoding {
 
     public required init?(coder aDecoder: NSCoder) {
         guard
-            let idString = aDecoder.decodeObject(forKey: NSCodingKeys.id.rawValue) as? String,
+            let idString = aDecoder.decodeObject(of: NSString.self, forKey: NSCodingKeys.id.rawValue) as String?,
             let id = UUID(uuidString: idString)
         else {
             owsFailDebug("Missing id")
@@ -2162,8 +2157,8 @@ public class PendingProfileUpdate: NSObject, NSCoding {
         self.id = id
         self.profileGivenName = Self.decodeRequiredNameChange(for: .profileGivenName, with: aDecoder)
         self.profileFamilyName = Self.decodeOptionalNameChange(for: .profileFamilyName, with: aDecoder)
-        self.profileBio = Self.decodeOptionalChange(for: .profileBio, with: aDecoder)
-        self.profileBioEmoji = Self.decodeOptionalChange(for: .profileBioEmoji, with: aDecoder)
+        self.profileBio = Self.decodeOptionalChange(of: NSString.self, for: .profileBio, with: aDecoder).map({ $0 as String? })
+        self.profileBioEmoji = Self.decodeOptionalChange(of: NSString.self, for: .profileBioEmoji, with: aDecoder).map({ $0 as String? })
         self.profileAvatarData = Self.normalizeAvatar(Self.decodeOptionalAvatarChange(for: .profileAvatarData, with: aDecoder))
         self.visibleBadgeIds = Self.decodeVisibleBadgeIds(for: .visibleBadgeIds, with: aDecoder)
         if

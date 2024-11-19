@@ -304,7 +304,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     // MARK: - Local Identity
 
     public func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair? {
-        return ownIdentityKeyValueStore.getObject(forKey: identity.persistenceKey, transaction: tx) as? ECKeyPair
+        return ownIdentityKeyValueStore.getObject(identity.persistenceKey, ofClass: ECKeyPair.self, transaction: tx)
     }
 
     public func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction) {
@@ -616,27 +616,31 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         localThread: TSThread,
         tx: DBReadTransaction
     ) -> OWSVerificationStateSyncMessage? {
-        guard let value = queuedVerificationStateSyncMessagesKeyValueStore.getObject(forKey: key, transaction: tx) else {
+        let value: Any? = queuedVerificationStateSyncMessagesKeyValueStore.getObject(
+            key,
+            ofClasses: [NSNumber.self, NSString.self, SignalServiceAddress.self],
+            transaction: tx
+        )
+        guard let value else {
             return nil
         }
         let recipientUniqueId: RecipientUniqueId
         switch value {
-        case let value as Bool:
-            guard value else {
+        case let numberValue as NSNumber:
+            guard numberValue.boolValue else {
                 return nil
             }
             recipientUniqueId = key
         case is SignalServiceAddress:
             recipientUniqueId = key
-        case let value as String:
+        case let stringValue as NSString:
             // Previously, we stored phone numbers in this KV store.
-            let address = SignalServiceAddress.legacyAddress(serviceId: nil, phoneNumber: value)
+            let address = SignalServiceAddress.legacyAddress(serviceId: nil, phoneNumber: stringValue as String)
             guard let recipientUniqueId_ = try? recipientIdFinder.recipientUniqueId(for: address, tx: tx)?.get() else {
                 return nil
             }
             recipientUniqueId = recipientUniqueId_
         default:
-            owsFailDebug("Invalid object: \(type(of: value))")
             return nil
         }
 

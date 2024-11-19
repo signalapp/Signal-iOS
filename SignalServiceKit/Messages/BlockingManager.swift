@@ -632,21 +632,20 @@ extension BlockingManager {
             )
 
             if databaseChangeToken != changeToken {
-                func fetchObject<T>(of type: T.Type, key: String, defaultValue: T) -> T {
-                    if let storedObject = Self.keyValueStore.getObject(forKey: key, transaction: transaction.asV2Read) {
-                        owsAssertDebug(storedObject is T)
-                        return (storedObject as? T) ?? defaultValue
-                    } else {
-                        return defaultValue
-                    }
-                }
                 changeToken = Self.keyValueStore.getUInt64(
                     PersistenceKey.changeTokenKey.rawValue,
                     defaultValue: Self.initialChangeToken,
                     transaction: transaction.asV2Read
                 )
                 blockedRecipientIds = Set((try? blockedRecipientStore.blockedRecipientIds(tx: transaction.asV2Read)) ?? [])
-                blockedGroupMap = fetchObject(of: [Data: TSGroupModel].self, key: PersistenceKey.blockedGroupMapKey.rawValue, defaultValue: [:])
+                blockedGroupMap = Self.keyValueStore.getData(PersistenceKey.blockedGroupMapKey.rawValue, transaction: transaction.asV2Read).flatMap {
+                    do {
+                        return try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData($0)
+                    } catch {
+                        owsFailDebug("Couldn't decode blocked groups.")
+                        return nil
+                    }
+                } as? [Data: TSGroupModel] ?? [:]
                 isDirty = false
             }
         }

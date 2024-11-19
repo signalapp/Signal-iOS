@@ -995,23 +995,17 @@ private extension KeyValueStore {
     private static var remoteConfigIsEnabledFlagsKey: String { "remoteConfigKey" }
 
     func getRemoteConfigIsEnabledFlags(transaction: DBReadTransaction) -> [String: Bool]? {
-        guard let object = getObject(forKey: Self.remoteConfigIsEnabledFlagsKey,
-                                     transaction: transaction) else {
-            return nil
-        }
-
-        guard let remoteConfig = object as? [String: Bool] else {
-            owsFailDebug("unexpected object: \(object)")
-            return nil
-        }
-
-        return remoteConfig
+        let decodedValue = getDictionary(
+            Self.remoteConfigIsEnabledFlagsKey,
+            keyClass: NSString.self,
+            objectClass: NSNumber.self,
+            transaction: transaction
+        ) as [String: NSNumber]?
+        return decodedValue?.mapValues { $0.boolValue }
     }
 
     func setRemoteConfigIsEnabledFlags(_ newValue: [String: Bool], transaction: DBWriteTransaction) {
-        return setObject(newValue,
-                         key: Self.remoteConfigIsEnabledFlagsKey,
-                         transaction: transaction)
+        return setObject(newValue, key: Self.remoteConfigIsEnabledFlagsKey, transaction: transaction)
     }
 
     // MARK: - Remote Config Value Flags
@@ -1019,16 +1013,12 @@ private extension KeyValueStore {
     private static var remoteConfigValueFlagsKey: String { "remoteConfigValueFlags" }
 
     func getRemoteConfigValueFlags(transaction: DBReadTransaction) -> [String: String]? {
-        guard let object = getObject(forKey: Self.remoteConfigValueFlagsKey, transaction: transaction) else {
-            return nil
-        }
-
-        guard let remoteConfig = object as? [String: String] else {
-            owsFailDebug("unexpected object: \(object)")
-            return nil
-        }
-
-        return remoteConfig
+        return getDictionary(
+            Self.remoteConfigValueFlagsKey,
+            keyClass: NSString.self,
+            objectClass: NSString.self,
+            transaction: transaction
+        ) as [String: String]?
     }
 
     func setRemoteConfigValueFlags(_ newValue: [String: String], transaction: DBWriteTransaction) {
@@ -1040,16 +1030,12 @@ private extension KeyValueStore {
     private static var remoteConfigTimeGatedFlagsKey: String { "remoteConfigTimeGatedFlags" }
 
     func getRemoteConfigTimeGatedFlags(transaction: DBReadTransaction) -> [String: Date]? {
-        guard let object = getObject(forKey: Self.remoteConfigTimeGatedFlagsKey, transaction: transaction) else {
-            return nil
-        }
-
-        guard let remoteConfig = object as? [String: Date] else {
-            owsFailDebug("unexpected object: \(object)")
-            return nil
-        }
-
-        return remoteConfig
+        return getDictionary(
+            Self.remoteConfigTimeGatedFlagsKey,
+            keyClass: NSString.self,
+            objectClass: NSDate.self,
+            transaction: transaction
+        ) as [String: Date]?
     }
 
     func setRemoteConfigTimeGatedFlags(_ newValue: [String: Date], transaction: DBWriteTransaction) {

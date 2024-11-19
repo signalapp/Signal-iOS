@@ -77,9 +77,7 @@ class SSKPreKeyStore: NSObject {
                 stop.pointee = true
                 return
             }
-            let record = keyStore.getObject(forKey: key, transaction: transaction.asV2Read)
-            guard let record = record as? SignalServiceKit.PreKeyRecord else {
-                owsFailDebug("Unexpected value: \(type(of: record))")
+            guard let record = keyStore.getObject(key, ofClass: SignalServiceKit.PreKeyRecord.self, transaction: transaction.asV2Read) else {
                 // TODO: Why this is not being removed is unclear, but the objc code was not removing it so keeping present behavior for now.
                 return
             }
@@ -155,7 +153,7 @@ extension SSKPreKeyStore: LibSignalClient.PreKeyStore {
 
 extension KeyValueStore {
     fileprivate func preKeyRecord(key: String, transaction: SDSAnyReadTransaction) -> SignalServiceKit.PreKeyRecord? {
-        getObject(forKey: key, transaction: transaction.asV2Read) as? SignalServiceKit.PreKeyRecord
+        return getObject(key, ofClass: SignalServiceKit.PreKeyRecord.self, transaction: transaction.asV2Read)
     }
 
     fileprivate func setPreKeyRecord(_ record: SignalServiceKit.PreKeyRecord, key: String, transaction: SDSAnyWriteTransaction) {

@@ -1241,7 +1241,7 @@ private extension KeyValueStore {
     ) {
         // Prepend value to ensure descending order of recency.
         var orderedArray = [value]
-        if let storedValue = getObject(forKey: key, transaction: tx.asV2Read) as? [String] {
+        if let storedValue = getStringArray(key, transaction: tx.asV2Read) {
             orderedArray += storedValue.filter { $0 != value }
         }
         if let maxCount {
@@ -1252,7 +1252,7 @@ private extension KeyValueStore {
 
     func removeFromOrderedUniqueArray(key: String, value: String, tx: SDSAnyWriteTransaction) {
         var orderedArray = [String]()
-        if let storedValue = getObject(forKey: key, transaction: tx.asV2Read) as? [String] {
+        if let storedValue = getStringArray(key, transaction: tx.asV2Read) {
             guard storedValue.contains(value) else {
                 // No work to do.
                 return
@@ -1263,13 +1263,6 @@ private extension KeyValueStore {
     }
 
     func orderedUniqueArray(forKey key: String, tx: SDSAnyReadTransaction) -> [String] {
-        guard let object = getObject(forKey: key, transaction: tx.asV2Read) else {
-            return []
-        }
-        guard let orderedArray = object as? [String] else {
-            owsFailDebug("Value has unexpected type \(type(of: object)).")
-            return []
-        }
-        return orderedArray
+        return getStringArray(key, transaction: tx.asV2Read) ?? []
     }
 }

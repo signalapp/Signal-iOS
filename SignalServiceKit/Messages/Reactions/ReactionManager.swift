@@ -19,7 +19,7 @@ public class ReactionManager: NSObject {
     ///
     /// This is important because we shouldn't ever send the default set of reactions over storage service.
     public class func customEmojiSet(transaction: SDSAnyReadTransaction) -> [String]? {
-        return emojiSetKVS.getObject(forKey: emojiSetKey, transaction: transaction.asV2Read) as? [String]
+        return emojiSetKVS.getStringArray(emojiSetKey, transaction: transaction.asV2Read)
     }
 
     public class func setCustomEmojiSet(_ emojis: [String]?, transaction: SDSAnyWriteTransaction) {

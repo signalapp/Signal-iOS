@@ -33,7 +33,7 @@ class MessageReceiptSet: NSObject, Codable {
         uniqueIds.subtract(other.uniqueIds)
     }
 
-    fileprivate func union(timestampSet: Set<UInt64>) {
+    fileprivate func union(timestampSet: some Sequence<UInt64>) {
         timestamps.formUnion(timestampSet)
     }
 }
@@ -367,7 +367,7 @@ public class ReceiptSender: NSObject {
         let result = MessageReceiptSet()
         if let receiptSet: MessageReceiptSet = try? store.getCodableValue(forKey: identifier, transaction: tx) {
             result.union(receiptSet)
-        } else if let numberSet = store.getObject(forKey: identifier, transaction: tx) as? Set<UInt64> {
+        } else if let numberSet = store.getSet(identifier, ofClass: NSNumber.self, transaction: tx)?.map({ $0.uint64Value }) {
             result.union(timestampSet: numberSet)
         }
         return result

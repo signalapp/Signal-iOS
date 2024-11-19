@@ -29,10 +29,7 @@ public class PinnedThreadStoreImpl: PinnedThreadStoreWrite {
     }
 
     public func pinnedThreadIds(tx: DBReadTransaction) -> [String] {
-        return keyValueStore.getObject(
-            forKey: Self.pinnedThreadIdsKey,
-            transaction: tx
-        ) as? [String] ?? []
+        return keyValueStore.getStringArray(Self.pinnedThreadIdsKey, transaction: tx) ?? []
     }
 
     public func isThreadPinned(_ thread: TSThread, tx: DBReadTransaction) -> Bool {
