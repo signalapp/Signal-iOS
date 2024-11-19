@@ -69,6 +69,8 @@ extension MessageBackup {
 
             /// A link preview is missing its url
             case linkPreviewMissingUrl
+            /// A link preview's URL isn't in the message body
+            case linkPreviewUrlNotInBody
 
             /// A sticker message had no associated attachment for the sticker's image contents.
             case stickerMessageMissingStickerAttachment
@@ -258,6 +260,7 @@ extension MessageBackup {
                     .invalidOutgoingMessageRecipient,
                     .invalidQuoteAuthor,
                     .linkPreviewMissingUrl,
+                    .linkPreviewUrlNotInBody,
                     .stickerMessageMissingStickerAttachment,
                     .failedToEnqueueAttachmentForUpload,
                     .invalidReactionAddress,
@@ -366,6 +369,10 @@ extension MessageBackup {
                 // that don't have names on them. We filter these at render time
                 // (see `hasRenderableChanges`), so drop them from the backup
                 // with a warning but not an error.
+                return .warning
+            case .linkPreviewUrlNotInBody:
+                // We've seen real world databases with invalid link previews; we
+                // just drop these on export and just issue a warning.
                 return .warning
             }
         }

@@ -373,6 +373,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         if let linkPreview = message.linkPreview {
             let linkPreviewResult = self.archiveLinkPreview(
                 linkPreview,
+                messageBody: standardMessage.text.body,
                 interactionUniqueId: message.uniqueInteractionId,
                 context: context,
                 messageRowId: messageRowId
@@ -574,6 +575,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
 
     private func archiveLinkPreview(
         _ linkPreview: OWSLinkPreview,
+        messageBody: String,
         interactionUniqueId: MessageBackup.InteractionUniqueId,
         context: MessageBackup.RecipientArchivingContext,
         messageRowId: Int64
@@ -586,6 +588,14 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             // by returning nil.
             partialErrors.append(.archiveFrameError(
                 .linkPreviewMissingUrl,
+                interactionUniqueId
+            ))
+            return .partialFailure(nil, partialErrors)
+        }
+
+        guard messageBody.contains(url) else {
+            partialErrors.append(.archiveFrameError(
+                .linkPreviewUrlNotInBody,
                 interactionUniqueId
             ))
             return .partialFailure(nil, partialErrors)
@@ -1158,7 +1168,12 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             else {
                 return .messageFailure(partialErrors)
             }
-            (linkPreview, linkPreviewAttachment) = linkPreviewResult
+            if let linkPreviewResult {
+                (linkPreview, linkPreviewAttachment) = linkPreviewResult
+            } else {
+                linkPreview = nil
+                linkPreviewAttachment = nil
+            }
         } else {
             linkPreview = nil
             linkPreviewAttachment = nil
@@ -1458,15 +1473,15 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         standardMessage: BackupProto_StandardMessage,
         chatItemId: MessageBackup.ChatItemId,
         context: MessageBackup.RestoringContext
-    ) -> RestoreInteractionResult<(OWSLinkPreview, BackupProto_FilePointer?)> {
+    ) -> RestoreInteractionResult<(OWSLinkPreview, BackupProto_FilePointer?)?> {
         guard let url = linkPreviewProto.url.nilIfEmpty else {
-            return .messageFailure([.restoreFrameError(
+            return .partialRestore(nil, [.restoreFrameError(
                 .invalidProtoData(.linkPreviewEmptyUrl),
                 chatItemId
             )])
         }
         guard standardMessage.text.body.contains(url) else {
-            return .messageFailure([.restoreFrameError(
+            return .partialRestore(nil, [.restoreFrameError(
                 .invalidProtoData(.linkPreviewUrlNotInBody),
                 chatItemId
             )])
