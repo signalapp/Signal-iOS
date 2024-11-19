@@ -6,14 +6,6 @@
 import Foundation
 import GRDB
 
-// Sentinel protocol used to convey that a Codable type should be encoded/decoded to database storage
-// using Swift.Codable instead of NS(Secure)Coding.
-public protocol SDSSwiftSerializable: Codable {}
-extension Array: SDSSwiftSerializable where Element: SDSSwiftSerializable {}
-extension Dictionary: SDSSwiftSerializable where Key: SDSSwiftSerializable, Value: SDSSwiftSerializable {}
-extension Set: SDSSwiftSerializable where Element: SDSSwiftSerializable {}
-extension Optional: SDSSwiftSerializable where Wrapped: SDSSwiftSerializable {}
-
 // This class can be used to convert database values to Swift values.
 //
 // TODO: Maybe we should rename this to a SDSSerializer protocol and
@@ -67,39 +59,6 @@ public class SDSDeserialization {
     }
 
     // MARK: - Blob
-
-    public class func optionalUnarchive<T: SDSSwiftSerializable>(_ encoded: Data?, name: String) throws -> T? {
-        guard let encoded = encoded else {
-            return nil
-        }
-        // The only time we ever return nil is if we fail the above guard condition.
-        // Explicitly declaring our expected return type helps the type checker pick the correct specialization
-        // since otherwise it will infer the result of `unarchive(_:name:)` to be Optional<T> and not T.
-        // (This isn't so important since if T conforms to SDSSwiftSerializable then Optional<T> does too, but
-        // it doesn't hurt to be explicit).
-        let result: T = try unarchive(encoded, name: name)
-        return result
-    }
-
-    public class func unarchive<T: SDSSwiftSerializable>(
-        _ encoded: Data?,
-        name: String,
-        _ file: StaticString = #file,
-        _ function: StaticString = #function,
-        _ line: UInt = #line
-    ) throws -> T {
-        guard let encoded = encoded else {
-            owsFailDebug("Missing required field: \(name).")
-            throw SDSError.missingRequiredField(file, function, line)
-        }
-
-        do {
-            return try JSONDecoder().decode(T.self, from: encoded)
-        } catch {
-            owsFailDebug("Read failed[\(name)]: \(error).")
-            throw SDSError.invalidValue(file, function, line)
-        }
-    }
 
     public class func optionalUnarchive<T: Any>(_ encoded: Data?, name: String) throws -> T? {
         guard let encoded = encoded else {
