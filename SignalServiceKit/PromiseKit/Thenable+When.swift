@@ -72,24 +72,19 @@ fileprivate extension Thenable {
     ) -> Promise<Void> {
         guard !thenables.isEmpty else { return Promise.value(()) }
 
-        var pendingPromiseCount = thenables.count
-
         let (returnPromise, future) = Promise<Void>.pending()
 
-        let lock = UnfairLock()
+        let remainingCount = AtomicValue<Int>(thenables.count, lock: .init())
 
         for thenable in thenables {
             thenable.observe(on: scheduler) { result in
-                lock.withLock {
-                    switch result {
-                    case .success:
-                        guard !future.isSealed else { return }
-                        pendingPromiseCount -= 1
-                        if pendingPromiseCount == 0 { future.resolve() }
-                    case .failure(let error):
-                        guard !future.isSealed else { return }
-                        future.reject(error)
+                switch result {
+                case .success:
+                    if remainingCount.update(block: { $0 -= 1; return $0 }) == 0 {
+                        future.resolve()
                     }
+                case .failure(let error):
+                    future.reject(error)
                 }
             }
         }
@@ -127,17 +122,14 @@ fileprivate extension Thenable {
     ) -> Guarantee<Void> {
         guard !thenables.isEmpty else { return Guarantee.value(()) }
 
-        var pendingPromiseCount = thenables.count
-
         let (returnGuarantee, future) = Guarantee<Void>.pending()
 
-        let lock = UnfairLock()
+        let remainingCount = AtomicValue<Int>(thenables.count, lock: .init())
 
         for thenable in thenables {
             thenable.observe(on: scheduler) { _ in
-                lock.withLock {
-                    pendingPromiseCount -= 1
-                    if pendingPromiseCount == 0 { future.resolve() }
+                if remainingCount.update(block: { $0 -= 1; return $0 }) == 0 {
+                    future.resolve()
                 }
             }
         }

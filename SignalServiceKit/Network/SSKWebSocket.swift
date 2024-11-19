@@ -215,18 +215,17 @@ public class SSKWebSocketNative: SSKWebSocket {
     }
 
     public func connect() {
-        var taskToResume: URLSessionWebSocketTask?
-        lock.withLock {
+        let taskToResume = lock.withLock { () -> URLSessionWebSocketTask? in
             owsAssertDebug(webSocketTask == nil && !hasEverConnected, "Must connect only once.")
             guard webSocketTask == nil else {
-                return
+                return nil
             }
             webSocketTask = urlSession.webSocketTask(
                 requestUrl: requestUrl,
                 didOpenBlock: { [weak self] _ in self?.didOpen() },
                 didCloseBlock: { [weak self] error in self?.didClose(error: error) }
             )
-            taskToResume = webSocketTask
+            return webSocketTask
         }
         taskToResume?.resume()
     }
@@ -321,12 +320,12 @@ public class SSKWebSocketNative: SSKWebSocket {
     }
 
     public func disconnect(code: URLSessionWebSocketTask.CloseCode?) {
-        var taskToCancel: URLSessionWebSocketTask?
-        lock.withLock {
+        let taskToCancel = lock.withLock { () -> URLSessionWebSocketTask? in
             // The user requested a cancellation, so don't report an error
             shouldReportError = false
-            taskToCancel = webSocketTask
+            let result = webSocketTask
             webSocketTask = nil
+            return result
         }
         if let code {
             taskToCancel?.cancel(with: code, reason: nil)
@@ -336,14 +335,13 @@ public class SSKWebSocketNative: SSKWebSocket {
     }
 
     public func write(data: Data) {
-        var taskToSendTo: URLSessionWebSocketTask?
-        lock.withLock {
+        let taskToSendTo = lock.withLock { () -> URLSessionWebSocketTask? in
             owsAssertDebug(hasEverConnected, "Must connect before sending to web socket.")
             guard let webSocketTask else {
                 reportErrorWithLock(OWSGenericError("Missing webSocketTask."), context: "write")
-                return
+                return nil
             }
-            taskToSendTo = webSocketTask
+            return webSocketTask
         }
         taskToSendTo?.send(.data(data)) { [weak self] error in
             self?.reportError(error, context: "write")
@@ -351,19 +349,18 @@ public class SSKWebSocketNative: SSKWebSocket {
     }
 
     public func writePing() {
-        var taskToPing: URLSessionWebSocketTask?
-        lock.withLock {
+        let taskToPing = lock.withLock { () -> URLSessionWebSocketTask? in
             owsAssertDebug(hasEverConnected, "Must connect before sending a ping.")
             guard let webSocketTask else {
                 reportErrorWithLock(OWSGenericError("Missing webSocketTask."), context: "ping")
-                return
+                return nil
             }
             guard !hasUnansweredPing else {
                 reportErrorWithLock(OWSGenericError("Ping didn't get a response."), context: "ping")
-                return
+                return nil
             }
             hasUnansweredPing = true
-            taskToPing = webSocketTask
+            return webSocketTask
         }
         taskToPing?.sendPing(pongReceiveHandler: { [weak self] error in
             self?.receivedPong(error)
