@@ -76,6 +76,11 @@ final class MessageBackupGroupCallArchiver {
             if associatedCallRecord.callEndedTimestamp > 0 {
                 groupCallUpdate.endedCallTimestamp = associatedCallRecord.callEndedTimestamp
             }
+        } else {
+            /// This property is non-optional, but we only track it for calls
+            /// with an `associatedCallRecord`. For those without, mark them as
+            /// read.
+            groupCallUpdate.read = true
         }
 
         if let ringerAci = associatedCallRecord?.groupCallRingerAci {

@@ -97,6 +97,11 @@ final class MessageBackupIndividualCallArchiver {
             case .read: true
             case .unread: false
             }
+        } else {
+            /// This property is non-optional, but we only track it for calls
+            /// with an `associatedCallRecord`. For those without, mark them as
+            /// read.
+            individualCallUpdate.read = true
         }
 
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
