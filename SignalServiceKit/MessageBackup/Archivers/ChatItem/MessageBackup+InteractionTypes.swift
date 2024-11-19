@@ -6,15 +6,17 @@
 extension MessageBackup {
     public struct InteractionUniqueId: MessageBackupLoggableId, Hashable {
         let value: String
+        let timestamp: UInt64
 
         public init(interaction: TSInteraction) {
             self.value = interaction.uniqueId
+            self.timestamp = interaction.timestamp
         }
 
         // MARK: MessageBackupLoggableId
 
         public var typeLogString: String { "TSInteraction" }
-        public var idLogString: String { value }
+        public var idLogString: String { "\(value):\(timestamp)" }
     }
 }
 
