@@ -19,7 +19,7 @@ public struct SystemContact {
     public let phoneNumbers: [(value: String, label: String?)]
     public let emailAddresses: [String]
 
-    public init(cnContact: CNContact) {
+    public init(cnContact: CNContact, didFetchEmailAddresses: Bool = true) {
         if cnContact.phoneNumbers.count > Constants.maxPhoneNumbers {
             Logger.warn("Ignoring phone numbers from contact with more than \(Constants.maxPhoneNumbers)")
         }
@@ -33,8 +33,10 @@ public struct SystemContact {
         }
 
         var emailAddresses = [String]()
-        for emailAddress in cnContact.emailAddresses {
-            emailAddresses.append(emailAddress.value as String)
+        if didFetchEmailAddresses {
+            for emailAddress in cnContact.emailAddresses {
+                emailAddresses.append(emailAddress.value as String)
+            }
         }
 
         self.cnContactId = cnContact.identifier

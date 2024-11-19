@@ -29,26 +29,18 @@ public class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee
         super.init()
     }
 
-    private static let minimalContactKeys: [CNKeyDescriptor] = [
+    private static let discoveryContactKeys: [CNKeyDescriptor] = [
         CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
         CNContactPhoneNumbersKey as CNKeyDescriptor,
-        CNContactEmailAddressesKey as CNKeyDescriptor,
-        CNContactPostalAddressesKey as CNKeyDescriptor
     ]
 
-    private static let fullContactKeys: [CNKeyDescriptor] = ContactsFrameworkContactStoreAdaptee.minimalContactKeys + [
+    public static let fullContactKeys: [CNKeyDescriptor] = ContactsFrameworkContactStoreAdaptee.discoveryContactKeys + [
+        CNContactEmailAddressesKey as CNKeyDescriptor,
+        CNContactPostalAddressesKey as CNKeyDescriptor,
         CNContactThumbnailImageDataKey as CNKeyDescriptor, // TODO full image instead of thumbnail?
         CNContactViewController.descriptorForRequiredKeys(),
         CNContactVCardSerialization.descriptorForRequiredKeys()
     ]
-
-    public static var allowedContactKeys: [CNKeyDescriptor] {
-        if CurrentAppContext().isNSE {
-            return minimalContactKeys
-        } else {
-            return fullContactKeys
-        }
-    }
 
     var rawAuthorizationStatus: RawContactAuthorizationStatus {
         let authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
@@ -110,11 +102,11 @@ public class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee
     func fetchContacts() -> Result<[SystemContact], Error> {
         do {
             var contacts = [SystemContact]()
-            let contactFetchRequest = CNContactFetchRequest(keysToFetch: ContactsFrameworkContactStoreAdaptee.allowedContactKeys)
+            let contactFetchRequest = CNContactFetchRequest(keysToFetch: Self.discoveryContactKeys)
             contactFetchRequest.sortOrder = .userDefault
             try autoreleasepool {
                 try contactStoreForLargeRequests.enumerateContacts(with: contactFetchRequest) { (systemContact, _) -> Void in
-                    contacts.append(SystemContact(cnContact: systemContact))
+                    contacts.append(SystemContact(cnContact: systemContact, didFetchEmailAddresses: false))
                 }
             }
             return .success(contacts)
@@ -131,12 +123,13 @@ public class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee
     }
 
     func fetchCNContact(contactId: String) -> CNContact? {
-        var result: CNContact?
         do {
-            let contactFetchRequest = CNContactFetchRequest(keysToFetch: ContactsFrameworkContactStoreAdaptee.allowedContactKeys)
+            owsAssertDebug(!CurrentAppContext().isNSE)
+            let contactFetchRequest = CNContactFetchRequest(keysToFetch: ContactsFrameworkContactStoreAdaptee.fullContactKeys)
             contactFetchRequest.sortOrder = .userDefault
             contactFetchRequest.predicate = CNContact.predicateForContacts(withIdentifiers: [contactId])
 
+            var result: CNContact?
             try self.contactStoreForSmallRequests.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
                 guard result == nil else {
                     owsFailDebug("More than one contact with contact id.")
@@ -144,17 +137,15 @@ public class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee
                 }
                 result = contact
             }
-        } catch let error as NSError {
-            if error.domain == CNErrorDomain && error.code == CNError.communicationError.rawValue {
-                // These errors are transient and can be safely ignored.
-                Logger.error("Communication error: \(error)")
-                return nil
-            }
+            return result
+        } catch CNError.communicationError {
+            // These errors are transient and can be safely ignored.
+            Logger.error("Communication error")
+            return nil
+        } catch {
             owsFailDebug("Failed to fetch contact with error:\(error)")
             return nil
         }
-
-        return result
     }
 }
 
