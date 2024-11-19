@@ -598,6 +598,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             case text
             case pdf
             case pkPass
+            case json
             case data
 
             var typeIdentifier: String {
@@ -618,6 +619,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     return UTType.pdf.identifier
                 case .pkPass:
                     return "com.apple.pkpass"
+                case .json:
+                    return UTType.json.identifier
                 case .data:
                     return UTType.data.identifier
                 }
@@ -639,7 +642,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             switch itemType {
             case .movie, .image, .webUrl, .text:
                 return true
-            case .fileUrl, .contact, .pdf, .pkPass, .data:
+            case .fileUrl, .contact, .pdf, .pkPass, .json, .data:
                 return false
             }
         }
@@ -651,7 +654,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         //     conforms to public.text, but when asking the OS for text it returns a file URL instead
         let forcedDataTypeIdentifiers: [String] = ["com.topografix.gpx"]
         // due to UT conformance fallbacks the order these are checked is important; more specific types need to come earlier in the list than their fallbacks
-        let itemTypeOrder: [TypedItemProvider.ItemType] = [.movie, .image, .contact, .text, .pdf, .pkPass, .fileUrl, .webUrl, .data]
+        let itemTypeOrder: [TypedItemProvider.ItemType] = [.movie, .image, .contact, .json, .text, .pdf, .pkPass, .fileUrl, .webUrl, .data]
         let candidates: [TypedItemProvider] = try itemProviders.map { itemProvider in
             for typeIdentifier in forcedDataTypeIdentifiers {
                 if itemProvider.hasItemConformingToTypeIdentifier(typeIdentifier) {
@@ -706,8 +709,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             }
         case .movie, .pdf, .data:
             return try await self.buildFileAttachment(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
-        case .fileUrl:
-            let url: NSURL = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, cannotLoadError: .cannotLoadURLObject, failedLoadError: .loadURLObjectFailed)
+        case .fileUrl, .json:
+            let url: NSURL = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: TypedItemProvider.ItemType.fileUrl.typeIdentifier, cannotLoadError: .cannotLoadURLObject, failedLoadError: .loadURLObjectFailed)
             let attachment = try Self.copyAttachment(fromUrl: url as URL)
             return try await self.compressVideo(attachment: attachment)
         case .webUrl:
