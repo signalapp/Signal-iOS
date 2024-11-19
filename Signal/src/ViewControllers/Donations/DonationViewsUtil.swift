@@ -46,13 +46,22 @@ public class ProfileBadgeLookup {
         return preferDarkTheme ? assets.dark16 : assets.light16
     }
 
-    public func attemptToPopulateBadgeAssets(populateAssetsOnBadge: (ProfileBadge) -> Promise<Void>) -> Guarantee<Void> {
+    public func attemptToPopulateBadgeAssets(populateAssetsOnBadge: @escaping (ProfileBadge) async throws -> Void) async -> Void {
         var badgesToLoad = Array(badgesBySubscriptionLevel.values)
         if let boostBadge = boostBadge { badgesToLoad.append(boostBadge) }
         if let giftBadge = giftBadge { badgesToLoad.append(giftBadge) }
 
-        let promises = badgesToLoad.map { populateAssetsOnBadge($0) }
-        return Promise.when(fulfilled: promises).recover { _ in Guarantee.value(()) }
+        await withTaskGroup(of: Void.self) { group in
+            for badge in badgesToLoad {
+                group.addTask {
+                    do {
+                        try await populateAssetsOnBadge(badge)
+                    } catch {}
+                }
+            }
+
+            await group.waitForAll()
+        }
     }
 }
 
@@ -312,7 +321,7 @@ public final class DonationViewsUtil {
         }.map { donationConfiguration -> [DonationSubscriptionLevel] in
             donationConfiguration.subscription.levels
         }.then { (fetchedSubscriptions: [DonationSubscriptionLevel]) -> Promise<[DonationSubscriptionLevel]> in
-            let badgeUpdatePromises = fetchedSubscriptions.map { badgeStore.populateAssetsOnBadge($0.badge) }
+            let badgeUpdatePromises = fetchedSubscriptions.map { subscription in Promise.wrapAsync { try await badgeStore.populateAssetsOnBadge(subscription.badge) } }
             return Promise.when(fulfilled: badgeUpdatePromises).map { fetchedSubscriptions }
         }
     }

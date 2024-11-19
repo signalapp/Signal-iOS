@@ -790,8 +790,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             let boostBadge = donationConfiguration.boost.badge
             let subscriptionBadges = donationConfiguration.subscription.levels.map { $0.badge }
 
-            let badgePromises = ([boostBadge] + subscriptionBadges).map {
-                SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge($0)
+            let badgePromises = ([boostBadge] + subscriptionBadges).map { badge in
+                Promise.wrapAsync { try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(badge) }
             }
 
             return Promise.when(fulfilled: badgePromises).map(on: DispatchQueue.sharedUserInitiated) { donationConfiguration }

@@ -76,7 +76,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         }.then { donationConfiguration -> Promise<DonationSubscriptionManager.DonationConfiguration> in
             Logger.info("[Gifting] Populating badge assets...")
             let giftBadge = donationConfiguration.gift.badge
-            return SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(giftBadge)
+            return Promise.wrapAsync { try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(giftBadge) }
                 .map { donationConfiguration }
         }.then { donationConfiguration -> Guarantee<State> in
             let defaultCurrencyCode = DonationUtilities.chooseDefaultCurrency(

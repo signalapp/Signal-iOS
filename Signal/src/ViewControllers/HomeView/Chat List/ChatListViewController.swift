@@ -905,8 +905,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         let logger = PrefixedLogger(prefix: "[Donations]", suffix: "\(errorMode)")
 
-        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-            SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(badge)
+        Promise.wrapAsync {
+            try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(badge)
         }.done(on: DispatchQueue.main) {
             guard self.isChatListTopmostViewController() else {
                 logger.info("Not presenting error – no longer the top view controller.")
@@ -962,8 +962,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             firstly {
                 DonationSubscriptionManager.getBoostBadge()
             }.done(on: DispatchQueue.global()) { boostBadge in
-                firstly {
-                    SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(boostBadge)
+                Promise.wrapAsync {
+                    try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(boostBadge)
                 }.done(on: DispatchQueue.main) {
                     // Make sure we're still the active VC
                     guard UIApplication.shared.frontmostViewController == self.conversationSplitViewController,

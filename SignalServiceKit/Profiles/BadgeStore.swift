@@ -7,7 +7,6 @@ import Foundation
 public import GRDB
 
 /// Model object for a badge. Only information for the badge itself, nothing user-specific (expirations, visibility, etc.)
-@objc
 public class ProfileBadge: NSObject, Codable {
     public let id: String
     public let category: Category
@@ -21,7 +20,6 @@ public class ProfileBadge: NSObject, Codable {
     public let duration: TimeInterval?
 
     // Nil until a badge is checked in to the BadgeStore
-    @objc
     public fileprivate(set) var assets: BadgeAssets?
 
     private enum CodingKeys: String, CodingKey {
@@ -219,10 +217,13 @@ public class BadgeStore: NSObject {
             try newBadge.save(writeTx.unwrapGrdbWrite.database)
 
             // Finally we update our cached badge and start preparing our assets
-            firstly {
-                populateAssets(newBadge)
-            }.catch { error in
-                owsFailDebug("Failed to populate assets on badge \(error)")
+            let badgeAssets = getBadgetAssets(newBadge)
+            Task {
+                do {
+                    try await badgeAssets.prepareAssetsIfNecessary()
+                } catch {
+                    owsFailDebug("Failed to populate assets on badge \(error)")
+                }
             }
 
             owsAssertDebug(newBadge.assets != nil)
@@ -237,10 +238,13 @@ public class BadgeStore: NSObject {
                     owsAssertDebug(cachedBadge.assets != nil)
                     return cachedBadge
                 } else if let fetchedBadge = try ProfileBadge.filter(key: badgeId).fetchOne(readTx.unwrapGrdbRead.database) {
-                    firstly {
-                        populateAssets(fetchedBadge)
-                    }.catch { error in
-                        owsFailDebug("Failed to populate assets on badge \(error)")
+                    let badgeAssets = getBadgetAssets(fetchedBadge)
+                    Task {
+                        do {
+                            try await badgeAssets.prepareAssetsIfNecessary()
+                        } catch {
+                            owsFailDebug("Failed to populate assets on badge \(error)")
+                        }
                     }
 
                     owsAssertDebug(fetchedBadge.assets != nil)
@@ -256,16 +260,11 @@ public class BadgeStore: NSObject {
         }
     }
 
-    public func populateAssetsOnBadge(_ badge: ProfileBadge) -> Promise<Void> {
-        return lock.withLock {
-            populateAssets(badge)
-        }
-    }
-
-    private func populateAssets(_ badge: ProfileBadge) -> Promise<Void> {
+    private func getBadgetAssets(_ badge: ProfileBadge) -> BadgeAssets {
         lock.assertOwner()
 
         let badgeAssets: BadgeAssets
+
         // We try and reuse any existing BadgeAssets instances if we have one cached
         if let cachedValue = badgeCache[badge.id], cachedValue.resourcePath == badge.resourcePath, let assets = cachedValue.assets {
             badgeAssets = assets
@@ -280,6 +279,13 @@ public class BadgeStore: NSObject {
         }
         badge.assets = badgeAssets
 
-        return badgeAssets.prepareAssetsIfNecessary()
+        return badgeAssets
+    }
+
+    public func populateAssetsOnBadge(_ badge: ProfileBadge) async throws {
+        let badgeAssets = lock.withLock {
+            return getBadgetAssets(badge)
+        }
+        try await badgeAssets.prepareAssetsIfNecessary()
     }
 }

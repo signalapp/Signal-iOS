@@ -54,8 +54,8 @@ public final class CachedBadge: Equatable {
                     return Promise.value(.notFound)
 
                 case .some(let profileBadge):
-                    return firstly {
-                        SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(profileBadge)
+                    return Promise.wrapAsync {
+                        try await SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(profileBadge)
                     }.map { _ in
                         return .profileBadge(profileBadge)
                     }
