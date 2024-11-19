@@ -12,19 +12,8 @@ public class GroupsV2Protos {
 
     // MARK: -
 
-    private class func serverPublicParamsData() throws -> Data {
-        guard let data = Data(base64Encoded: TSConstants.serverPublicParamsBase64),
-            data.count > 0 else {
-                throw OWSAssertionError("Invalid server public params")
-        }
-
-        return data
-    }
-
     public class func serverPublicParams() throws -> ServerPublicParams {
-        let data = try serverPublicParamsData()
-        let bytes = [UInt8](data)
-        return try ServerPublicParams(contents: bytes)
+        return try ServerPublicParams(contents: TSConstants.serverPublicParams)
     }
 
     // MARK: -
