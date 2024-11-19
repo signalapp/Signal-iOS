@@ -589,33 +589,33 @@ public class GroupsV2Impl: GroupsV2 {
 
     // MARK: - Fetch Current Group State
 
-    public func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModelV2) async throws -> GroupV2Snapshot {
+    public func fetchLatestSnapshot(groupModel: TSGroupModelV2) async throws -> GroupV2Snapshot {
         // Collect the avatar state to avoid an unnecessary download in the
         // case where we've just created this group but not yet inserted it
         // into the database.
         let justUploadedAvatars = GroupV2DownloadedAvatars.from(groupModel: groupModel)
-        return try await fetchCurrentGroupV2Snapshot(
+        return try await fetchLatestSnapshot(
             groupSecretParams: try groupModel.secretParams(),
             justUploadedAvatars: justUploadedAvatars
         )
     }
 
-    public func fetchCurrentGroupV2Snapshot(groupSecretParams: GroupSecretParams) async throws -> GroupV2Snapshot {
-        return try await fetchCurrentGroupV2Snapshot(
+    public func fetchLatestSnapshot(groupSecretParams: GroupSecretParams) async throws -> GroupV2Snapshot {
+        return try await fetchLatestSnapshot(
             groupSecretParams: groupSecretParams,
             justUploadedAvatars: nil
         )
     }
 
-    private func fetchCurrentGroupV2Snapshot(
+    private func fetchLatestSnapshot(
         groupSecretParams: GroupSecretParams,
         justUploadedAvatars: GroupV2DownloadedAvatars?
     ) async throws -> GroupV2Snapshot {
         let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
-        return try await fetchCurrentGroupV2Snapshot(groupV2Params: groupV2Params, justUploadedAvatars: justUploadedAvatars)
+        return try await fetchLatestSnapshot(groupV2Params: groupV2Params, justUploadedAvatars: justUploadedAvatars)
     }
 
-    private func fetchCurrentGroupV2Snapshot(
+    private func fetchLatestSnapshot(
         groupV2Params: GroupV2Params,
         justUploadedAvatars: GroupV2DownloadedAvatars?
     ) async throws -> GroupV2Snapshot {

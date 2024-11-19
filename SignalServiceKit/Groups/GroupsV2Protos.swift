@@ -259,9 +259,11 @@ public class GroupsV2Protos {
 
     // MARK: -
 
-    public class func parse(groupProto: GroupsProtoGroup,
-                            downloadedAvatars: GroupV2DownloadedAvatars,
-                            groupV2Params: GroupV2Params) throws -> GroupV2Snapshot {
+    class func parse(
+        groupProto: GroupsProtoGroup,
+        downloadedAvatars: GroupV2DownloadedAvatars,
+        groupV2Params: GroupV2Params
+    ) throws -> GroupV2Snapshot {
 
         let title = groupV2Params.decryptGroupName(groupProto.title) ?? ""
         let descriptionText = groupV2Params.decryptGroupDescription(groupProto.descriptionBytes)
@@ -413,9 +415,11 @@ public class GroupsV2Protos {
         // disappearing messages should be disabled.
         let disappearingMessageToken = groupV2Params.decryptDisappearingMessagesTimer(groupProto.disappearingMessagesTimer)
 
-        let groupAccess = GroupAccess(members: GroupV2Access.access(forProtoAccess: accessControlForMembers),
-                                      attributes: GroupV2Access.access(forProtoAccess: accessControlForAttributes),
-                                      addFromInviteLink: GroupV2Access.access(forProtoAccess: accessControlForAddFromInviteLink))
+        let groupAccess = GroupAccess(
+            members: GroupV2Access.access(forProtoAccess: accessControlForMembers),
+            attributes: GroupV2Access.access(forProtoAccess: accessControlForAttributes),
+            addFromInviteLink: GroupV2Access.access(forProtoAccess: accessControlForAddFromInviteLink)
+        )
 
         validateInviteLinkState(inviteLinkPassword: inviteLinkPassword, groupAccess: groupAccess)
 
@@ -423,7 +427,6 @@ public class GroupsV2Protos {
         let groupSecretParams = groupV2Params.groupSecretParams
         return GroupV2Snapshot(
             groupSecretParams: groupSecretParams,
-            groupProto: groupProto,
             revision: revision,
             title: title,
             descriptionText: descriptionText,

@@ -932,7 +932,7 @@ private extension GroupV2UpdatesImpl {
         groupModelOptions: TSGroupModelOptions,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
     ) async throws -> TSGroupThread {
-        let groupV2Snapshot = try await SSKEnvironment.shared.groupsV2Ref.fetchCurrentGroupV2Snapshot(groupSecretParams: groupSecretParams)
+        let groupV2Snapshot = try await SSKEnvironment.shared.groupsV2Ref.fetchLatestSnapshot(groupSecretParams: groupSecretParams)
         return try await self.tryToApplyCurrentGroupV2SnapshotFromService(
             groupV2Snapshot: groupV2Snapshot,
             groupUpdateMode: groupUpdateMode,

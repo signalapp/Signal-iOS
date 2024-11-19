@@ -4,31 +4,19 @@
 //
 
 import Foundation
-public import LibSignalClient
+import LibSignalClient
 
 public struct GroupV2Snapshot {
-
-    public let groupSecretParams: GroupSecretParams
-
-    public let groupProto: GroupsProtoGroup
-
-    public let revision: UInt32
-
-    public let title: String
-    public let descriptionText: String?
-
-    public let avatarUrlPath: String?
-    public let avatarData: Data?
-
-    public let groupMembership: GroupMembership
-
-    public let groupAccess: GroupAccess
-
-    public let inviteLinkPassword: Data?
-
-    public let disappearingMessageToken: DisappearingMessageToken
-
-    public let isAnnouncementsOnly: Bool
-
-    public let profileKeys: [Aci: Data]
+    let groupSecretParams: GroupSecretParams
+    let revision: UInt32
+    let title: String
+    let descriptionText: String?
+    let avatarUrlPath: String?
+    let avatarData: Data?
+    let groupMembership: GroupMembership
+    let groupAccess: GroupAccess
+    let inviteLinkPassword: Data?
+    let disappearingMessageToken: DisappearingMessageToken
+    let isAnnouncementsOnly: Bool
+    let profileKeys: [Aci: Data]
 }

@@ -50,10 +50,7 @@ public struct TSGroupModelBuilder {
         self.didJustAddSelfViaGroupLink = false
     }
 
-    public
-    static func builderForSnapshot(groupV2Snapshot: GroupV2Snapshot,
-                                   transaction: SDSAnyWriteTransaction) throws -> TSGroupModelBuilder {
-
+    static func builderForSnapshot(groupV2Snapshot: GroupV2Snapshot, transaction: SDSAnyWriteTransaction) throws -> TSGroupModelBuilder {
         var builder = try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot)
 
         guard let groupId = builder.groupId else {
