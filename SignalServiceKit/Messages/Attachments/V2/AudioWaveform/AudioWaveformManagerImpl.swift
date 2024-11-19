@@ -215,16 +215,16 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         waveformPath: String?
     ) throws -> AudioWaveform {
         if let waveformPath {
-            if FileManager.default.fileExists(atPath: waveformPath) {
+            do {
+                let waveformData = try Data(contentsOf: URL(fileURLWithPath: waveformPath))
                 // We have a cached waveform on disk, read it into memory.
-                do {
-                    return try AudioWaveform(contentsOfFile: waveformPath)
-                } catch {
-                    owsFailDebug("Error: \(error)")
-
-                    // Remove the file from disk and create a new one.
-                    OWSFileSystem.deleteFileIfExists(waveformPath)
-                }
+                return try AudioWaveform(archivedData: waveformData)
+            } catch POSIXError.ENOENT, CocoaError.fileReadNoSuchFile, CocoaError.fileNoSuchFile {
+                // The file doesn't exist...
+            } catch {
+                owsFailDebug("Error: \(error)")
+                // Remove the file from disk and create a new one.
+                OWSFileSystem.deleteFileIfExists(waveformPath)
             }
         }
 
