@@ -20,6 +20,7 @@ https://support.signal.org/
 or email support@signal.org
 
 Let's begin with a checklist: Replace the empty checkboxes [ ] below with checked ones [x] accordingly. -->
+Search issues here: https://github.com/signalapp/Signal-iOS/issues?q=is%3Aissue+
 
 - [ ] I have searched open and closed issues for duplicates
 - [ ] I am submitting a bug report for existing functionality that does not work as intended
