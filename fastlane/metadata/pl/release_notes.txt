@@ -1,1 +1,1 @@
-• Od teraz błyskawicznie wyświetlisz wszystkie nieodczytane wiadomości — wystarczy, że przeciągniesz w dół listę czatów. Spokojnie, to wcale nie znaczy, że musisz się spieszyć z odpisywaniem.
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

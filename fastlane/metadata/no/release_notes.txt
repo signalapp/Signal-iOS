@@ -1,1 +1,1 @@
-• Nå kan du enkelt se de uleste samtalene dine ved å trykke og dra ned i samtalelisten.
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

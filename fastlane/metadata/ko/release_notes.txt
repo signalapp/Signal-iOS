@@ -1,1 +1,1 @@
-• 이제 대화 목록을 아래로 당겨 쉽게 모든 읽지 않은 메시지를 확인할 수 있습니다.
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

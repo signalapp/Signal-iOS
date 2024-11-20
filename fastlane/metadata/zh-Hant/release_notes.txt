@@ -1,1 +1,1 @@
-• 你現在可以下拉聊天清單來輕鬆查看未讀聊天訊息。快速篩選未讀訊息，但也可以慢慢決定是否讓它們變為已讀狀態。
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

@@ -1,1 +1,1 @@
-• Kini Anda dapat dengan mudah melihat semua obrolan yang belum dibaca dengan menarik ke bawah di bagian daftar obrolan.
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

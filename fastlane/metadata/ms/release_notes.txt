@@ -1,1 +1,1 @@
-• Kini anda boleh lihat semua sembang yang belum dibaca dengan mudah dengan menarik senarai sembang.
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

@@ -1,1 +1,1 @@
-• Ara pots filtrar els teus xats no llegits desplaçant-te cap avall a la llista de xats.
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

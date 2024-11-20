@@ -1,1 +1,1 @@
-• Acum poți să vezi cu ușurință toate conversațiile tale necitite trăgând în jos în lista de chat. Filtrează rapid ceea ce nu este citit, dar nu ezita să-ți acorzi timp în timp ce decizi dacă să le lași citite sau nu.
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

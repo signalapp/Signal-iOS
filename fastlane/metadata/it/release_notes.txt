@@ -1,1 +1,1 @@
-• Da ora puoi vedere tutte le chat non lette tenendo premuto verso il basso e scorrendo nell'elenco delle chat. Scopri quali messaggi richiedono di più la tua attenzione: risponderai subito o ti farai attendere?
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

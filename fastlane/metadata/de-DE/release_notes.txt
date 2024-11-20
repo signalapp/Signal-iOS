@@ -1,1 +1,1 @@
-• Jetzt kannst du all deine ungelesenen Chats sehen, indem du die Chatliste nach unten ziehst. Filtere schnell heraus, was ungelesen ist, aber lass dir ruhig Zeit bei der Entscheidung, ob du etwas lesen möchtest oder nicht.
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

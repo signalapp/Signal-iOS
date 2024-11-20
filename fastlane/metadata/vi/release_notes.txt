@@ -1,1 +1,1 @@
-• Giờ đây bạn có thể dễ dàng xem tất cả cuộc trò chuyện chưa đọc bằng cách kéo danh sách cuộc trò chuyện xuống.
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

@@ -1,1 +1,1 @@
-• Тепер можна швидко переглянути всі непрочитані повідомлення, потягнувши список чатів униз. А от відповісти одразу чи потягнути час ще трошки — вирішувати тільки вам.
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

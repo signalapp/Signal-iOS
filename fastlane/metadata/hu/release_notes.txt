@@ -1,1 +1,1 @@
-• Mostantól könnyedén megtekintheted az összes olvasatlan csevegést, ha lehúzod a csevegőlistát.
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

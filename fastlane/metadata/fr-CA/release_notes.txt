@@ -1,1 +1,1 @@
-• Affichez toutes vos conversations non lues d'un seul geste : il suffit de faire glisser la liste de conversations vers le bas. Ne manquez plus aucun de vos messages. Mais libre à vous d'y répondre, de les ignorer ou de les marquer comme non lus pour y revenir plus tard.
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

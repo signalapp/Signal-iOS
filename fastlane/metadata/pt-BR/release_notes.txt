@@ -1,1 +1,1 @@
-• Agora você pode ver todas as conversas não lidas com facilidade ao deslizar a lista de conversas para baixo.
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.

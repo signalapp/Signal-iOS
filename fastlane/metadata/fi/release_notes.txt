@@ -1,1 +1,1 @@
-• Nyt voit helposti nähdä kaikki lukemattomat keskustelusi vetämällä keskusteluluetteloa alaspäin.
+• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.
