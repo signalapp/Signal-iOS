@@ -821,13 +821,13 @@ public class GroupsV2Impl: GroupsV2 {
             downloadedAvatars.merge(GroupV2DownloadedAvatars.from(groupModel: groupModel))
         }
 
-        let protoAvatarUrlPaths = try await GroupsV2Protos.collectAvatarUrlPaths(
+        let protoAvatarUrlPaths = try GroupsV2Protos.collectAvatarUrlPaths(
             groupProto: groupProto,
             groupChangesProto: groupChangesProto,
             changeActionsProto: changeActionsProto,
             ignoreSignature: ignoreSignature,
             groupV2Params: groupV2Params
-        ).awaitable()
+        )
 
         return try await fetchAvatarData(
             avatarUrlPaths: protoAvatarUrlPaths,

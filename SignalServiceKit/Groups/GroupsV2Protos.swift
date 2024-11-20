@@ -529,31 +529,36 @@ public class GroupsV2Protos {
 
     // MARK: -
 
-    public class func collectAvatarUrlPaths(groupProto: GroupsProtoGroup? = nil,
-                                            groupChangesProto: GroupsProtoGroupChanges? = nil,
-                                            changeActionsProto: GroupsProtoGroupChangeActions? = nil,
-                                            ignoreSignature: Bool,
-                                            groupV2Params: GroupV2Params) -> Promise<[String]> {
-        return DispatchQueue.global().async(.promise) { () throws -> [String] in
-            var avatarUrlPaths = [String]()
-            if let groupProto = groupProto {
-                avatarUrlPaths += self.collectAvatarUrlPaths(groupProto: groupProto)
-            }
-            if let groupChangesProto = groupChangesProto {
-                avatarUrlPaths += try self.collectAvatarUrlPaths(groupChangesProto: groupChangesProto,
-                                                                 ignoreSignature: ignoreSignature,
-                                                                 groupV2Params: groupV2Params)
-            }
-            if let changeActionsProto = changeActionsProto {
-                avatarUrlPaths += self.collectAvatarUrlPaths(changeActionsProto: changeActionsProto)
-            }
-            // Discard empty avatar urls.
-            return avatarUrlPaths.filter { !$0.isEmpty }
+    public class func collectAvatarUrlPaths(
+        groupProto: GroupsProtoGroup? = nil,
+        groupChangesProto: GroupsProtoGroupChanges? = nil,
+        changeActionsProto: GroupsProtoGroupChangeActions? = nil,
+        ignoreSignature: Bool,
+        groupV2Params: GroupV2Params
+    ) throws -> [String] {
+        var avatarUrlPaths = [String]()
+        if let groupProto = groupProto {
+            avatarUrlPaths += self.collectAvatarUrlPaths(groupProto: groupProto)
         }
+        if let groupChangesProto = groupChangesProto {
+            avatarUrlPaths += try self.collectAvatarUrlPaths(
+                groupChangesProto: groupChangesProto,
+                ignoreSignature: ignoreSignature,
+                groupV2Params: groupV2Params
+            )
+        }
+        if let changeActionsProto = changeActionsProto {
+            avatarUrlPaths += self.collectAvatarUrlPaths(changeActionsProto: changeActionsProto)
+        }
+        // Discard empty avatar urls.
+        return avatarUrlPaths.filter { !$0.isEmpty }
     }
 
-    private class func collectAvatarUrlPaths(groupChangesProto: GroupsProtoGroupChanges, ignoreSignature: Bool,
-                                             groupV2Params: GroupV2Params) throws -> [String] {
+    private class func collectAvatarUrlPaths(
+        groupChangesProto: GroupsProtoGroupChanges,
+        ignoreSignature: Bool,
+        groupV2Params: GroupV2Params
+    ) throws -> [String] {
         var avatarUrlPaths = [String]()
         for changeStateData in groupChangesProto.groupChanges {
             let changeStateProto = try GroupsProtoGroupChangesGroupChangeState(serializedData: changeStateData)
