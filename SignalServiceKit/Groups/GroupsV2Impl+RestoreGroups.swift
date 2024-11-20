@@ -244,7 +244,7 @@ public extension GroupsV2Impl {
         // failover to using a "snapshot".
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
         do {
-            _ = try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupThread(
+            try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupThread(
                 groupId: groupContextInfo.groupId,
                 spamReportingMetadata: .learnedByLocallyInitatedRefresh,
                 groupSecretParams: groupContextInfo.groupSecretParams,

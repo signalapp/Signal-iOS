@@ -521,7 +521,7 @@ public class GroupManager: NSObject {
     public static func localAcceptInviteToGroupV2(
         groupModel: TSGroupModelV2,
         waitForMessageProcessing: Bool = false
-    ) async throws -> TSGroupThread {
+    ) async throws {
         if waitForMessageProcessing {
             try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout(description: "Accept invite")
         }
@@ -532,7 +532,7 @@ public class GroupManager: NSObject {
                 transaction: transaction
             )
         }
-        return try await updateGroupV2(
+        _ = try await updateGroupV2(
             groupModel: groupModel,
             description: "Accept invite"
         ) { groupChangeSet in
@@ -672,9 +672,9 @@ public class GroupManager: NSObject {
         inviteLinkPassword: Data,
         groupInviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?
-    ) async throws -> TSGroupThread {
+    ) async throws {
         try await ensureLocalProfileHasCommitmentIfNecessary()
-        let groupThread = try await SSKEnvironment.shared.groupsV2Ref.joinGroupViaInviteLink(
+        try await SSKEnvironment.shared.groupsV2Ref.joinGroupViaInviteLink(
             groupId: groupId,
             groupSecretParams: groupSecretParams,
             inviteLinkPassword: inviteLinkPassword,
@@ -689,7 +689,6 @@ public class GroupManager: NSObject {
                 transaction: transaction
             )
         }
-        return groupThread
     }
 
     public static func acceptOrDenyMemberRequestsV2(

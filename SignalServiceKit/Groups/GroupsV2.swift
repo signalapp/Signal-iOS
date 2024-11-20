@@ -159,7 +159,7 @@ public protocol GroupsV2 {
         inviteLinkPassword: Data,
         groupInviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?
-    ) async throws -> TSGroupThread
+    ) async throws
 
     func cancelMemberRequests(groupModel: TSGroupModelV2) async throws -> TSGroupThread
 
@@ -341,20 +341,20 @@ public protocol GroupV2Updates {
     func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
         groupId: Data,
         groupSecretParams: GroupSecretParams
-    ) async throws -> TSGroupThread
+    ) async throws
 
     func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
         groupId: Data,
         groupSecretParams: GroupSecretParams,
         groupModelOptions: TSGroupModelOptions
-    ) async throws -> TSGroupThread
+    ) async throws
 
     func tryToRefreshV2GroupThread(
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupSecretParams: GroupSecretParams,
         groupUpdateMode: GroupUpdateMode
-    ) async throws -> TSGroupThread
+    ) async throws
 
     func updateGroupWithChangeActions(
         groupId: Data,
@@ -729,7 +729,7 @@ public class MockGroupsV2: GroupsV2 {
         inviteLinkPassword: Data,
         groupInviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?
-    ) async throws -> TSGroupThread {
+    ) async throws {
         owsFail("Not implemented.")
     }
 
@@ -767,7 +767,7 @@ public class MockGroupV2Updates: GroupV2Updates {
     public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
         groupId: Data,
         groupSecretParams: GroupSecretParams
-    ) async throws -> TSGroupThread {
+    ) async throws {
         owsFail("Not implemented.")
     }
 
@@ -775,7 +775,7 @@ public class MockGroupV2Updates: GroupV2Updates {
         groupId: Data,
         groupSecretParams: GroupSecretParams,
         groupModelOptions: TSGroupModelOptions
-    ) async throws -> TSGroupThread {
+    ) async throws {
         owsFail("Not implemented.")
     }
 
@@ -784,7 +784,7 @@ public class MockGroupV2Updates: GroupV2Updates {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupSecretParams: GroupSecretParams,
         groupUpdateMode: GroupUpdateMode
-    ) async throws -> TSGroupThread {
+    ) async throws {
         owsFail("Not implemented.")
     }
 

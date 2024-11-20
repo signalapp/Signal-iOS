@@ -427,7 +427,7 @@ class DebugUIGroupsV2: DebugUIPage {
         let groupSecretParamsData = groupModelV2.secretParamsData
         Task {
             do {
-                _ = try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+                try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
                     groupId: groupId,
                     groupSecretParams: try GroupSecretParams(contents: [UInt8](groupSecretParamsData))
                 )

@@ -428,7 +428,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                         avatarData = nil
                     }
 
-                    let groupThread = try await GroupManager.joinGroupViaInviteLink(
+                    try await GroupManager.joinGroupViaInviteLink(
                         groupId: groupV2ContextInfo.groupId,
                         groupSecretParams: groupV2ContextInfo.groupSecretParams,
                         inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
@@ -440,6 +440,10 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                         AssertIsOnMainThread()
                         self?.dismiss(animated: true) {
                             AssertIsOnMainThread()
+                            let groupThread = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                                // We successfully joined, so we must be able to find the TSGroupThread.
+                                return TSGroupThread.fetch(groupId: groupV2ContextInfo.groupId, transaction: tx)!
+                            }
                             SignalApp.shared.presentConversationForThread(groupThread, animated: true)
                         }
                     }

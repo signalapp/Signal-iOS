@@ -231,7 +231,7 @@ public class GroupsV2Impl: GroupsV2 {
                 // committed to the service, we should refresh our local state
                 // for the group and try again to apply our changes.
 
-                _ = try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+                try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
                     groupId: groupId,
                     groupSecretParams: groupV2Params.groupSecretParams
                 )
@@ -1178,7 +1178,7 @@ public class GroupsV2Impl: GroupsV2 {
         let groupSecretParamsData = groupModelV2.secretParamsData
         Task {
             do {
-                _ = try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupThread(
+                try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupThread(
                     groupId: groupId,
                     spamReportingMetadata: .learnedByLocallyInitatedRefresh,
                     groupSecretParams: try GroupSecretParams(contents: [UInt8](groupSecretParamsData)),
@@ -1440,18 +1440,19 @@ public class GroupsV2Impl: GroupsV2 {
         inviteLinkPassword: Data,
         groupInviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?
-    ) async throws -> TSGroupThread {
+    ) async throws {
         let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
         var remainingRetries = 3
         while true {
             do {
-                return try await self.joinGroupViaInviteLinkAttempt(
+                try await self.joinGroupViaInviteLinkAttempt(
                     groupId: groupId,
                     inviteLinkPassword: inviteLinkPassword,
                     groupV2Params: groupV2Params,
                     groupInviteLinkPreview: groupInviteLinkPreview,
                     avatarData: avatarData
                 )
+                return
             } catch where remainingRetries > 0 && error.isNetworkFailureOrTimeout {
                 Logger.warn("Retryable after error: \(error)")
                 remainingRetries -= 1
@@ -1465,7 +1466,7 @@ public class GroupsV2Impl: GroupsV2 {
         groupV2Params: GroupV2Params,
         groupInviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?
-    ) async throws -> TSGroupThread {
+    ) async throws {
 
         // There are many edge cases around joining groups via invite links.
         //
@@ -1484,7 +1485,7 @@ public class GroupsV2Impl: GroupsV2 {
             // * We already have a pending invite. If so, use it.
             //
             // Note: this will typically fail.
-            return try await joinGroupViaInviteLinkUsingAlternateMeans(
+            try await joinGroupViaInviteLinkUsingAlternateMeans(
                 groupId: groupId,
                 inviteLinkPassword: inviteLinkPassword,
                 groupV2Params: groupV2Params
@@ -1494,7 +1495,7 @@ public class GroupsV2Impl: GroupsV2 {
                 throw error
             }
             Logger.warn("Error: \(error)")
-            return try await self.joinGroupViaInviteLinkUsingPatch(
+            try await self.joinGroupViaInviteLinkUsingPatch(
                 groupId: groupId,
                 inviteLinkPassword: inviteLinkPassword,
                 groupV2Params: groupV2Params,
@@ -1508,12 +1509,12 @@ public class GroupsV2Impl: GroupsV2 {
         groupId: Data,
         inviteLinkPassword: Data,
         groupV2Params: GroupV2Params
-    ) async throws -> TSGroupThread {
+    ) async throws {
 
         // First try to fetch latest group state from service.
         // This will fail for users trying to join via group link
         // who are not yet in the group.
-        let groupThread = try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+        try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
             groupId: groupId,
             groupSecretParams: groupV2Params.groupSecretParams
         )
@@ -1521,30 +1522,33 @@ public class GroupsV2Impl: GroupsV2 {
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             throw OWSAssertionError("Missing localAci.")
         }
-        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+
+        let groupThread = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return TSGroupThread.fetch(groupId: groupId, transaction: tx)
+        }
+        guard let groupModelV2 = groupThread?.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
         }
         let groupMembership = groupModelV2.groupMembership
-        if groupMembership.isFullMember(localIdentifiers.aci) ||
-            groupMembership.isRequestingMember(localIdentifiers.aci) {
+        if groupMembership.isFullMember(localIdentifiers.aci) || groupMembership.isRequestingMember(localIdentifiers.aci) {
             // We're already in the group.
-            return groupThread
-        } else if groupMembership.isInvitedMember(localIdentifiers.aci) {
+            return
+        }
+        if groupMembership.isInvitedMember(localIdentifiers.aci) {
             // We're already invited by ACI; try to join by accepting the invite.
             // That will make us a full member; requesting to join via
             // the invite link might make us a requesting member.
-            return try await GroupManager.localAcceptInviteToGroupV2(groupModel: groupModelV2)
-        } else if
-            let pni = localIdentifiers.pni,
-            groupMembership.isInvitedMember(pni)
-        {
+            try await GroupManager.localAcceptInviteToGroupV2(groupModel: groupModelV2)
+            return
+        }
+        if let pni = localIdentifiers.pni, groupMembership.isInvitedMember(pni) {
             // We're already invited by PNI; try to join by accepting the invite.
             // That will make us a full member; requesting to join via
             // the invite link might make us a requesting member.
-            return try await GroupManager.localAcceptInviteToGroupV2(groupModel: groupModelV2)
-        } else {
-            throw GroupsV2Error.localUserNotInGroup
+            try await GroupManager.localAcceptInviteToGroupV2(groupModel: groupModelV2)
+            return
         }
+        throw GroupsV2Error.localUserNotInGroup
     }
 
     private func joinGroupViaInviteLinkUsingPatch(
@@ -1553,7 +1557,7 @@ public class GroupsV2Impl: GroupsV2 {
         groupV2Params: GroupV2Params,
         groupInviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?
-    ) async throws -> TSGroupThread {
+    ) async throws {
 
         let revisionForPlaceholderModel = AtomicOptional<UInt32>(nil, lock: .sharedGlobal)
 
@@ -1590,7 +1594,7 @@ public class GroupsV2Impl: GroupsV2 {
             //
             // Download and update database with the group state.
             do {
-                _ = try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+                try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
                     groupId: groupId,
                     groupSecretParams: groupV2Params.groupSecretParams,
                     groupModelOptions: .didJustAddSelfViaGroupLink
@@ -1609,7 +1613,6 @@ public class GroupsV2Impl: GroupsV2 {
                 thread: groupThread,
                 changeActionsProtoData: changeActionsProtoData
             )
-            return groupThread
         } catch {
             // We create a placeholder in a couple of different scenarios:
             //
@@ -1646,11 +1649,10 @@ public class GroupsV2Impl: GroupsV2 {
             guard !isJoinRequestPlaceholder else {
                 // There's no point in sending a group update for a placeholder
                 // group, since we don't know who to send it to.
-                return groupThread
+                return
             }
 
             await GroupManager.sendGroupUpdateMessage(thread: groupThread, changeActionsProtoData: nil)
-            return groupThread
         }
     }
 

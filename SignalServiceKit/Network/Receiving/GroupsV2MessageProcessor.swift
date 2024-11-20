@@ -820,7 +820,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
         }()
         let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: groupContext.revision)
         do {
-            _ = try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupThread(
+            try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupThread(
                 groupId: groupContextInfo.groupId,
                 spamReportingMetadata: spamReportingMetadata,
                 groupSecretParams: groupContextInfo.groupSecretParams,
