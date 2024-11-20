@@ -109,8 +109,8 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
     // MARK: -
 
-    public func clientZkProfileOperations() throws -> ClientZkProfileOperations {
-        return ClientZkProfileOperations(serverPublicParams: try GroupsV2Protos.serverPublicParams())
+    public func clientZkProfileOperations() -> ClientZkProfileOperations {
+        return ClientZkProfileOperations(serverPublicParams: GroupsV2Protos.serverPublicParams())
     }
 
     // MARK: - Update
@@ -311,7 +311,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             }
 
             let credentialResponse = try ExpiringProfileKeyCredentialResponse(contents: [UInt8](credentialResponseData))
-            let clientZkProfileOperations = try self.clientZkProfileOperations()
+            let clientZkProfileOperations = self.clientZkProfileOperations()
             let profileKeyCredential = try clientZkProfileOperations.receiveExpiringProfileKeyCredential(
                 profileKeyCredentialRequestContext: requestContext,
                 profileKeyCredentialResponse: credentialResponse

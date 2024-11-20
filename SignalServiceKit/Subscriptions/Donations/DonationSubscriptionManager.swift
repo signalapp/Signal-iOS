@@ -612,7 +612,7 @@ public class DonationSubscriptionManager: NSObject {
 
     public class func generateReceiptRequest() -> (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest) {
         do {
-            let clientOperations = try clientZKReceiptOperations()
+            let clientOperations = clientZKReceiptOperations()
             let receiptSerial = try generateReceiptSerial()
 
             let receiptCredentialRequestContext = try clientOperations.createReceiptCredentialRequestContext(receiptSerial: receiptSerial)
@@ -720,7 +720,7 @@ public class DonationSubscriptionManager: NSObject {
         isValidReceiptLevelPredicate: (UInt64) -> Bool,
         logger: PrefixedLogger
     ) throws -> ReceiptCredential {
-        let clientOperations = try clientZKReceiptOperations()
+        let clientOperations = clientZKReceiptOperations()
 
         let httpStatusCode = httpResponse.responseStatusCode
         switch httpStatusCode {
@@ -837,8 +837,8 @@ public class DonationSubscriptionManager: NSObject {
         return try ReceiptSerial(contents: [UInt8](bytes))
     }
 
-    private class func clientZKReceiptOperations() throws -> ClientZkReceiptOperations {
-        let params = try GroupsV2Protos.serverPublicParams()
+    private class func clientZKReceiptOperations() -> ClientZkReceiptOperations {
+        let params = GroupsV2Protos.serverPublicParams()
         return ClientZkReceiptOperations(serverPublicParams: params)
     }
 

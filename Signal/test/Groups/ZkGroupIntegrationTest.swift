@@ -11,8 +11,7 @@ import XCTest
 
 class ZkGroupIntegrationTest: XCTestCase {
     func testServerParamsAreUpToDate() {
-        XCTAssertNoThrow(try GroupsV2Protos.serverPublicParams(),
-                         "The zkgroup server public parameters have changed!")
+        _ = GroupsV2Protos.serverPublicParams()
     }
 
     func testEncryptedAvatarMaximumLength() throws {

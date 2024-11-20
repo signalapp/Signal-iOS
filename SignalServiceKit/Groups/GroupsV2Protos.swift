@@ -12,8 +12,8 @@ public class GroupsV2Protos {
 
     // MARK: -
 
-    public class func serverPublicParams() throws -> ServerPublicParams {
-        return try ServerPublicParams(contents: TSConstants.serverPublicParams)
+    public class func serverPublicParams() -> ServerPublicParams {
+        return try! ServerPublicParams(contents: TSConstants.serverPublicParams)
     }
 
     // MARK: -
@@ -73,7 +73,7 @@ public class GroupsV2Protos {
         profileKeyCredential: ExpiringProfileKeyCredential,
         groupV2Params: GroupV2Params
     ) throws -> Data {
-        let serverPublicParams = try self.serverPublicParams()
+        let serverPublicParams = self.serverPublicParams()
         let profileOperations = ClientZkProfileOperations(serverPublicParams: serverPublicParams)
         let presentation = try profileOperations.createProfileKeyCredentialPresentation(
             groupSecretParams: groupV2Params.groupSecretParams,
@@ -249,7 +249,7 @@ public class GroupsV2Protos {
                 throw OWSAssertionError("Missing serverSignature.")
             }
             let serverSignature = try NotarySignature(contents: [UInt8](serverSignatureData))
-            let serverPublicParams = try self.serverPublicParams()
+            let serverPublicParams = self.serverPublicParams()
             try serverPublicParams.verifySignature(message: [UInt8](changeActionsProtoData),
                                                    notarySignature: serverSignature)
         }
