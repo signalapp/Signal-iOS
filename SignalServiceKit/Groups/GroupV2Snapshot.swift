@@ -6,6 +6,11 @@
 import Foundation
 import LibSignalClient
 
+public struct GroupV2SnapshotResponse {
+    let groupSnapshot: GroupV2Snapshot
+    let groupSendEndorsements: Data?
+}
+
 public struct GroupV2Snapshot {
     let groupSecretParams: GroupSecretParams
     let revision: UInt32

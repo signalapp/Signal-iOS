@@ -260,6 +260,20 @@ public class GroupsV2Protos {
     // MARK: -
 
     class func parse(
+        groupResponseProto: GroupsProtoGroupResponse,
+        downloadedAvatars: GroupV2DownloadedAvatars,
+        groupV2Params: GroupV2Params
+    ) throws -> GroupV2SnapshotResponse {
+        guard let groupProto = groupResponseProto.group else {
+            throw OWSAssertionError("Missing group state in response.")
+        }
+        return GroupV2SnapshotResponse(
+            groupSnapshot: try parse(groupProto: groupProto, downloadedAvatars: downloadedAvatars, groupV2Params: groupV2Params),
+            groupSendEndorsements: groupResponseProto.groupSendEndorsementsResponse
+        )
+    }
+
+    class func parse(
         groupProto: GroupsProtoGroup,
         downloadedAvatars: GroupV2DownloadedAvatars,
         groupV2Params: GroupV2Params
@@ -489,9 +503,11 @@ public class GroupsV2Protos {
 
             var snapshot: GroupV2Snapshot?
             if let snapshotProto = changeStateProto.groupState {
-                snapshot = try parse(groupProto: snapshotProto,
-                                     downloadedAvatars: downloadedAvatars,
-                                     groupV2Params: groupV2Params)
+                snapshot = try parse(
+                    groupProto: snapshotProto,
+                    downloadedAvatars: downloadedAvatars,
+                    groupV2Params: groupV2Params
+                )
             }
 
             var changeActionsProto: GroupsProtoGroupChangeActions?

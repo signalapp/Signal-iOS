@@ -96,7 +96,7 @@ public protocol GroupsV2 {
     func createNewGroupOnService(
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken
-    ) async throws -> GroupV2Snapshot
+    ) async throws -> GroupV2SnapshotResponse
 
     func loadProfileKeyCredentials(
         for acis: [Aci],
@@ -109,9 +109,9 @@ public protocol GroupsV2 {
         forceRefresh: Bool
     ) async throws
 
-    func fetchLatestSnapshot(groupModel: TSGroupModelV2) async throws -> GroupV2Snapshot
+    func fetchLatestSnapshot(groupModel: TSGroupModelV2) async throws -> GroupV2SnapshotResponse
 
-    func fetchLatestSnapshot(groupSecretParams: GroupSecretParams) async throws -> GroupV2Snapshot
+    func fetchLatestSnapshot(groupSecretParams: GroupSecretParams) async throws -> GroupV2SnapshotResponse
 
     func updateGroupV2(
         groupId: Data,
@@ -599,7 +599,7 @@ public class MockGroupsV2: GroupsV2 {
     public func createNewGroupOnService(
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken
-    ) async throws -> GroupV2Snapshot {
+    ) async throws -> GroupV2SnapshotResponse {
         owsFail("Not implemented.")
     }
 
@@ -621,11 +621,11 @@ public class MockGroupsV2: GroupsV2 {
         forceRefresh: Bool
     ) async throws { }
 
-    public func fetchLatestSnapshot(groupModel: TSGroupModelV2) async throws -> GroupV2Snapshot {
+    public func fetchLatestSnapshot(groupModel: TSGroupModelV2) async throws -> GroupV2SnapshotResponse {
         owsFail("Not implemented.")
     }
 
-    public func fetchLatestSnapshot(groupSecretParams: GroupSecretParams) async throws -> GroupV2Snapshot {
+    public func fetchLatestSnapshot(groupSecretParams: GroupSecretParams) async throws -> GroupV2SnapshotResponse {
         owsFail("Not implemented.")
     }
 

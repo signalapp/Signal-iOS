@@ -932,9 +932,9 @@ private extension GroupV2UpdatesImpl {
         groupModelOptions: TSGroupModelOptions,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
     ) async throws -> TSGroupThread {
-        let groupV2Snapshot = try await SSKEnvironment.shared.groupsV2Ref.fetchLatestSnapshot(groupSecretParams: groupSecretParams)
+        let snapshotResponse = try await SSKEnvironment.shared.groupsV2Ref.fetchLatestSnapshot(groupSecretParams: groupSecretParams)
         return try await self.tryToApplyCurrentGroupV2SnapshotFromService(
-            groupV2Snapshot: groupV2Snapshot,
+            snapshotResponse: snapshotResponse,
             groupUpdateMode: groupUpdateMode,
             groupModelOptions: groupModelOptions,
             spamReportingMetadata: spamReportingMetadata
@@ -942,7 +942,7 @@ private extension GroupV2UpdatesImpl {
     }
 
     private func tryToApplyCurrentGroupV2SnapshotFromService(
-        groupV2Snapshot: GroupV2Snapshot,
+        snapshotResponse: GroupV2SnapshotResponse,
         groupUpdateMode: GroupUpdateMode,
         groupModelOptions: TSGroupModelOptions,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
@@ -951,19 +951,20 @@ private extension GroupV2UpdatesImpl {
             await SSKEnvironment.shared.messageProcessorRef.waitForFetchingAndProcessing().awaitable()
         }
         return try await self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(
-            groupV2Snapshot: groupV2Snapshot,
+            snapshotResponse: snapshotResponse,
             groupModelOptions: groupModelOptions,
             spamReportingMetadata: spamReportingMetadata
         )
     }
 
     private func tryToApplyCurrentGroupV2SnapshotFromServiceNow(
-        groupV2Snapshot: GroupV2Snapshot,
+        snapshotResponse: GroupV2SnapshotResponse,
         groupModelOptions: TSGroupModelOptions,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
     ) async throws -> TSGroupThread {
 
         let localProfileKey = SSKEnvironment.shared.profileManagerRef.localProfileKey
+        let groupV2Snapshot = snapshotResponse.groupSnapshot
 
         return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
             guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {

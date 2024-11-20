@@ -253,14 +253,14 @@ class GroupsV2ProfileKeyUpdater {
 
         // Get latest group state from service and verify that this update is still necessary.
         try Task.checkCancellation()
-        let groupV2Snapshot = try await SSKEnvironment.shared.groupsV2Ref.fetchLatestSnapshot(groupModel: groupModel)
-        guard groupV2Snapshot.groupMembership.isFullMember(localAci) else {
+        let snapshotResponse = try await SSKEnvironment.shared.groupsV2Ref.fetchLatestSnapshot(groupModel: groupModel)
+        guard snapshotResponse.groupSnapshot.groupMembership.isFullMember(localAci) else {
             // We're not a full member, no need to update profile key.
             throw GroupsV2Error.redundantChange
         }
         let profileManager = SSKEnvironment.shared.profileManagerRef
         let profileKeyData = profileManager.localProfileKey.keyData
-        guard groupV2Snapshot.profileKeys[localAci] != profileKeyData else {
+        guard snapshotResponse.groupSnapshot.profileKeys[localAci] != profileKeyData else {
             // Group state already has our current key.
             throw GroupsV2Error.redundantChange
         }

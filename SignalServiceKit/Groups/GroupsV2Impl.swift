@@ -82,7 +82,7 @@ public class GroupsV2Impl: GroupsV2 {
     public func createNewGroupOnService(
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken
-    ) async throws -> GroupV2Snapshot {
+    ) async throws -> GroupV2SnapshotResponse {
         do {
             return try await _createNewGroupOnService(
                 groupModel: groupModel,
@@ -106,7 +106,7 @@ public class GroupsV2Impl: GroupsV2 {
         groupModel: TSGroupModelV2,
         disappearingMessageToken: DisappearingMessageToken,
         isRetryingAfterRecoverable400: Bool
-    ) async throws -> GroupV2Snapshot {
+    ) async throws -> GroupV2SnapshotResponse {
         let groupV2Params = try groupModel.groupV2Params()
 
         let groupProto = try await self.buildProtoToCreateNewGroupOnService(
@@ -134,12 +134,8 @@ public class GroupsV2Impl: GroupsV2 {
 
         let groupResponseProto = try GroupsProtoGroupResponse(serializedData: response.responseBodyData ?? Data())
 
-        guard let groupProto = groupResponseProto.group else {
-            throw OWSAssertionError("Missing group state in response.")
-        }
-
         return try GroupsV2Protos.parse(
-            groupProto: groupProto,
+            groupResponseProto: groupResponseProto,
             downloadedAvatars: GroupV2DownloadedAvatars.from(groupModel: groupModel),
             groupV2Params: groupV2Params
         )
@@ -589,7 +585,7 @@ public class GroupsV2Impl: GroupsV2 {
 
     // MARK: - Fetch Current Group State
 
-    public func fetchLatestSnapshot(groupModel: TSGroupModelV2) async throws -> GroupV2Snapshot {
+    public func fetchLatestSnapshot(groupModel: TSGroupModelV2) async throws -> GroupV2SnapshotResponse {
         // Collect the avatar state to avoid an unnecessary download in the
         // case where we've just created this group but not yet inserted it
         // into the database.
@@ -600,7 +596,7 @@ public class GroupsV2Impl: GroupsV2 {
         )
     }
 
-    public func fetchLatestSnapshot(groupSecretParams: GroupSecretParams) async throws -> GroupV2Snapshot {
+    public func fetchLatestSnapshot(groupSecretParams: GroupSecretParams) async throws -> GroupV2SnapshotResponse {
         return try await fetchLatestSnapshot(
             groupSecretParams: groupSecretParams,
             justUploadedAvatars: nil
@@ -610,7 +606,7 @@ public class GroupsV2Impl: GroupsV2 {
     private func fetchLatestSnapshot(
         groupSecretParams: GroupSecretParams,
         justUploadedAvatars: GroupV2DownloadedAvatars?
-    ) async throws -> GroupV2Snapshot {
+    ) async throws -> GroupV2SnapshotResponse {
         let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
         return try await fetchLatestSnapshot(groupV2Params: groupV2Params, justUploadedAvatars: justUploadedAvatars)
     }
@@ -618,7 +614,7 @@ public class GroupsV2Impl: GroupsV2 {
     private func fetchLatestSnapshot(
         groupV2Params: GroupV2Params,
         justUploadedAvatars: GroupV2DownloadedAvatars?
-    ) async throws -> GroupV2Snapshot {
+    ) async throws -> GroupV2SnapshotResponse {
         let requestBuilder: RequestBuilder = { (authCredential) in
             try StorageService.buildFetchCurrentGroupV2SnapshotRequest(
                 groupV2Params: groupV2Params,
@@ -635,21 +631,21 @@ public class GroupsV2Impl: GroupsV2 {
             behavior404: .groupDoesNotExistOnService
         )
 
-        guard let groupProtoData = response.responseBodyData else {
-            throw OWSAssertionError("Invalid responseObject.")
-        }
-
-        let groupProto = try GroupsProtoGroup(serializedData: groupProtoData)
+        let groupResponseProto = try GroupsProtoGroupResponse(serializedData: response.responseBodyData ?? Data())
 
         // We can ignoreSignature; these protos came from the service.
         let downloadedAvatars = try await fetchAllAvatarData(
-            groupProto: groupProto,
+            groupProto: groupResponseProto.group,
             justUploadedAvatars: justUploadedAvatars,
             ignoreSignature: true,
             groupV2Params: groupV2Params
         )
 
-        return try GroupsV2Protos.parse(groupProto: groupProto, downloadedAvatars: downloadedAvatars, groupV2Params: groupV2Params)
+        return try GroupsV2Protos.parse(
+            groupResponseProto: groupResponseProto,
+            downloadedAvatars: downloadedAvatars,
+            groupV2Params: groupV2Params
+        )
     }
 
     // MARK: - Fetch Group Change Actions

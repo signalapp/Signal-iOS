@@ -61,7 +61,7 @@ public extension StorageService {
     ) throws -> GroupsV2Request {
         return try buildGroupV2Request(
             protoData: nil,
-            urlString: "/v1/groups/",
+            urlString: "v2/groups",
             method: .get,
             groupV2Params: groupV2Params,
             authCredential: authCredential
