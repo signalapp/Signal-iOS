@@ -239,8 +239,10 @@ public class GroupsV2Protos {
     }
 
     // This method throws if verification fails.
-    public class func parseAndVerifyChangeActionsProto(_ changeProto: GroupsProtoGroupChange,
-                                                       ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions {
+    public class func parseAndVerifyChangeActionsProto(
+        _ changeProto: GroupsProtoGroupChange,
+        ignoreSignature: Bool
+    ) throws -> GroupsProtoGroupChangeActions {
         guard let changeActionsProtoData = changeProto.actions else {
             throw OWSAssertionError("Missing changeActionsProtoData.")
         }
@@ -250,8 +252,7 @@ public class GroupsV2Protos {
             }
             let serverSignature = try NotarySignature(contents: [UInt8](serverSignatureData))
             let serverPublicParams = self.serverPublicParams()
-            try serverPublicParams.verifySignature(message: [UInt8](changeActionsProtoData),
-                                                   notarySignature: serverSignature)
+            try serverPublicParams.verifySignature(message: [UInt8](changeActionsProtoData), notarySignature: serverSignature)
         }
         let changeActionsProto = try GroupsProtoGroupChangeActions(serializedData: changeActionsProtoData)
         return changeActionsProto
@@ -494,9 +495,11 @@ public class GroupsV2Protos {
     // MARK: -
 
     // We do not treat an empty response with no changes as an error.
-    public class func parseChangesFromService(groupChangesProto: GroupsProtoGroupChanges,
-                                              downloadedAvatars: GroupV2DownloadedAvatars,
-                                              groupV2Params: GroupV2Params) throws -> [GroupV2Change] {
+    public class func parseChangesFromService(
+        groupChangesProto: GroupsProtoGroupChanges,
+        downloadedAvatars: GroupV2DownloadedAvatars,
+        groupV2Params: GroupV2Params
+    ) throws -> [GroupV2Change] {
         var result = [GroupV2Change]()
         for changeStateData in groupChangesProto.groupChanges {
             let changeStateProto = try GroupsProtoGroupChangesGroupChangeState(serializedData: changeStateData)
@@ -520,9 +523,11 @@ public class GroupsV2Protos {
                 throw OWSAssertionError("both groupState and groupChange are absent")
             }
 
-            result.append(GroupV2Change(snapshot: snapshot,
-                                        changeActionsProto: changeActionsProto,
-                                        downloadedAvatars: downloadedAvatars))
+            result.append(GroupV2Change(
+                snapshot: snapshot,
+                changeActionsProto: changeActionsProto,
+                downloadedAvatars: downloadedAvatars
+            ))
         }
         return result
     }
