@@ -1652,8 +1652,13 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
 
         /// When the app is ready, trigger a rotation of the Storage Service
-        /// manifest since our keys have changed and the remote manifest is
+        /// manifest since our SVR master key, which is used to encrypt Storage
+        /// Service manifests, has changed and the remote manifest is now
         /// encrypted with out-of-date keys.
+        ///
+        /// If possible, though, we'll try and preserve Storage Service records,
+        /// which may be encrypted with a `recordIkm` in the manifest instead of
+        /// the SVR master key. (See: ``StorageServiceRecordIkmMigrator``.)
         ///
         /// It's okay if this doesn't succeed (e.g., the rotation fails or is
         /// interrupted), as the next time we attempt to back up or restore
@@ -1663,6 +1668,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [storageServiceManager, syncManager] in
             Task {
                 try? await storageServiceManager.rotateManifest(
+                    mode: .preservingRecordsIfPossible,
                     authedDevice: authedDeviceForStorageServiceSync
                 )
 

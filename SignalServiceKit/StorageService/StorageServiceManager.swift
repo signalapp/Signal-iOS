@@ -9,6 +9,8 @@ public import SignalRingRTC
 import SwiftProtobuf
 
 public protocol StorageServiceManager {
+    typealias ManifestRotationMode = StorageServiceManagerManifestRotationMode
+
     /// Updates the local user's identity.
     ///
     /// Called during app launch, registration, and change number.
@@ -31,16 +33,10 @@ public protocol StorageServiceManager {
     @discardableResult
     func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void>
 
-    /// Creates a brand-new manifest based on local state, pointing to brand-new
-    /// records.
-    /// - Important
-    /// This method is synchronized internally, and multiple calls will be
-    /// serialized. However, this is an expensive operation (as all existing
-    /// records need to be deleted and recreated from scratch), so callers
-    /// should take care to avoid unnecessary calls.
-    /// - Note
-    /// The new manifest's version will be `currentVersion + 1`.
-    func rotateManifest(authedDevice: AuthedDevice) async throws
+    func rotateManifest(
+        mode: ManifestRotationMode,
+        authedDevice: AuthedDevice
+    ) async throws
 
     /// Wipes all local state related to Storage Service, without mutating
     /// remote state.
@@ -91,6 +87,42 @@ extension StorageServiceManager {
         } else {
             owsFailDebug("How did we end up with pending updates to a V1 group?")
         }
+    }
+}
+
+public enum StorageServiceManagerManifestRotationMode {
+    /// Recreate the manifest, preserving its contained data related to records.
+    /// Since the record data is preserved, such as their identifiers and the
+    /// `recordIkm`, the manifest can be inexpensively recreated in place
+    /// leaving records untouched.
+    ///
+    /// - Note
+    /// This mode is only applicable if we have previously migrated to using a
+    /// `recordIkm`. If not, this mode is treated like `.alsoRotatingRecords`.
+    case preservingRecordsIfPossible
+
+    /// Recreate the manifest and all records, using local data as the source of
+    /// truth for creating records. This deletes all existing records, replacing
+    /// them with new ones with newly-generated identifiers; if we are capable,
+    /// the records will be encrypted using a newly-generated `recordIkm`.
+    case alsoRotatingRecords
+
+    /// Orders cases by precedence, with higher numbers more significant.
+    private var precedenceOrder: Int {
+        switch self {
+        case .preservingRecordsIfPossible: return 0
+        case .alsoRotatingRecords: return 1
+        }
+    }
+
+    /// Merge the given mode into this one, returning the one with the higher
+    /// precedence.
+    fileprivate func mergeByPrecedence(_ other: Self) -> Self {
+        if precedenceOrder >= other.precedenceOrder {
+            return self
+        }
+
+        return other
     }
 }
 
@@ -177,6 +209,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         struct PendingManifestRotation {
             var authedDevice: AuthedDevice
             var continuations: [CheckedContinuation<Void, Error>]
+            var mode: ManifestRotationMode
         }
         var pendingManifestRotation: PendingManifestRotation?
 
@@ -261,7 +294,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
             if let rotateManifestOperation = buildOperation(
                 managerState: managerState,
-                mode: .rotateManifest,
+                mode: .rotateManifest(mode: pendingManifestRotation.mode),
                 authedDevice: pendingManifestRotation.authedDevice
             ) {
                 let cleanupBlock: ((inout ManagerState, (any Error)?) -> Void) = { _, error in
@@ -471,12 +504,20 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         return promise
     }
 
-    public func rotateManifest(authedDevice: AuthedDevice) async throws {
+    public func rotateManifest(
+        mode: ManifestRotationMode,
+        authedDevice: AuthedDevice
+    ) async throws {
         try await withCheckedThrowingContinuation { continuation in
             updateManagerState { managerState in
-                var pendingRotation = managerState.pendingManifestRotation ?? .init(authedDevice: .implicit, continuations: [])
+                var pendingRotation = managerState.pendingManifestRotation ?? .init(
+                    authedDevice: .implicit,
+                    continuations: [],
+                    mode: mode
+                )
                 pendingRotation.continuations.append(continuation)
                 pendingRotation.authedDevice = authedDevice.orIfImplicitUse(pendingRotation.authedDevice)
+                pendingRotation.mode = pendingRotation.mode.mergeByPrecedence(mode)
 
                 managerState.pendingManifestRotation = pendingRotation
             }
@@ -602,7 +643,7 @@ class StorageServiceOperation {
     // MARK: -
 
     fileprivate enum Mode {
-        case rotateManifest
+        case rotateManifest(mode: StorageServiceManager.ManifestRotationMode)
         case backup
         case restoreOrCreate
         case cleanUpUnknownData
@@ -654,10 +695,19 @@ class StorageServiceOperation {
         }
 
         switch mode {
-        case .rotateManifest:
-            try await createNewManifestAndRecords(
-                version: currentStateIfRotatingManifest!.manifestVersion + 1
-            )
+        case .rotateManifest(let mode):
+            guard isPrimaryDevice else {
+                throw OWSAssertionError("Can only rotate manifest from primary device!")
+            }
+
+            let nextManifestVersion = currentStateIfRotatingManifest!.manifestVersion + 1
+
+            switch mode {
+            case .preservingRecordsIfPossible:
+                try await createNewManifestPreservingRecords(version: nextManifestVersion)
+            case .alsoRotatingRecords:
+                try await createNewManifestAndRecords(version: nextManifestVersion)
+            }
         case .backup:
             try await backupPendingChanges()
         case .restoreOrCreate:
@@ -1029,6 +1079,47 @@ class StorageServiceOperation {
     }
 
     // MARK: - Creating new manifests
+
+    private func createNewManifestPreservingRecords(version: UInt64) async throws(StorageService.StorageError) {
+        owsPrecondition(isPrimaryDevice)
+
+        var state = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            State.current(transaction: tx)
+        }
+        state.manifestVersion = version
+
+        guard let manifestRecordIkm = state.manifestRecordIkm else {
+            /// It only makes sense to preserve records if they're encrypted
+            /// differently from the manifest; which is to say, they use a
+            /// `recordIkm`. If we have no `recordIkm`, we should only create
+            /// a new manifest alongside all-new records.
+            Logger.warn("Missing manifest recordIkm while trying to create new manifest preserving records. Pivoting to creating new manifest and records.")
+            try await createNewManifestAndRecords(version: version)
+            return
+        }
+
+        let manifest = buildManifestRecord(
+            manifestVersion: version,
+            manifestRecordIkm: manifestRecordIkm,
+            identifiers: state.allIdentifiers
+        )
+
+        if let conflictingManifestVersion = try await createNewManifestAndSaveState(
+            manifest,
+            state: &state,
+            newItems: [],
+            deletedIdentifiers: [],
+            deleteAllExistingRecords: false
+        ) {
+            /// We hit a conflict, and consequently we can't be confident that
+            /// the records we wanted to preserve can still be preserved. This
+            /// indicates devices racing with unfortunate timing, and so should
+            /// be a niche case. Since we know we need to create a new manifest,
+            /// we can recover by recreating the manifest and records.
+            Logger.warn("Got conflicting manifest version while trying to create new manifest preserving records. Pivoting to creating new manifest and records.")
+            try await createNewManifestAndRecords(version: conflictingManifestVersion + 1)
+        }
+    }
 
     private func createNewManifestAndRecords(version: UInt64) async throws(StorageService.StorageError) {
         owsPrecondition(isPrimaryDevice)

@@ -88,8 +88,8 @@ struct StorageServiceRecordIkmMigratorImpl: StorageServiceRecordIkmMigrator {
 
         logger.info("Rotating Storage Service manifest to ensure recordIkm is generated.")
 
-        /// All we need to do is rotate the Storage Service manifest. As of the
-        /// change that adds this comment, when a manifest is recreated (and the
+        /// All we need to do is rotate the Storage Service manifest and
+        /// referenced records. When we recreate a manifest and records (and the
         /// relevant capability is `true`, which we assert above) we will
         /// generate, store, and thereafter use a `recordIkm`.
         ///
@@ -97,7 +97,10 @@ struct StorageServiceRecordIkmMigratorImpl: StorageServiceRecordIkmMigrator {
         /// other devices to fetch the latest manifest, and thereby learn about
         /// the `recordIkm` themselves.
         do {
-            try await storageServiceManager.rotateManifest(authedDevice: .implicit)
+            try await storageServiceManager.rotateManifest(
+                mode: .alsoRotatingRecords,
+                authedDevice: .implicit
+            )
 
             logger.info("Successfully rotated Storage Service manifest.")
 

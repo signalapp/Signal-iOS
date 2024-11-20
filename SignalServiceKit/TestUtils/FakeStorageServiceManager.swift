@@ -30,7 +30,7 @@ public class FakeStorageServiceManager: NSObject, StorageServiceManager {
         return restoreOrCreateManifestIfNecessaryMock(authedDevice)
     }
 
-    public func rotateManifest(authedDevice: AuthedDevice) async throws {}
+    public func rotateManifest(mode: ManifestRotationMode, authedDevice: AuthedDevice) async throws {}
 
     public func waitForPendingRestores() -> Promise<Void> { Promise.value(()) }
 

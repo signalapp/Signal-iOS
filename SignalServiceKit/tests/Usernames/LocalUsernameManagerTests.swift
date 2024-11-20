@@ -800,5 +800,5 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingUpdates(groupModel: TSGroupModel) { owsFail("Not implemented!") }
     func backupPendingChanges(authedDevice: AuthedDevice) { owsFail("Not implemented!") }
     func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void> { owsFail("Not implemented!") }
-    func rotateManifest(authedDevice: AuthedDevice) async throws { owsFail("Not implemented!") }
+    func rotateManifest(mode: ManifestRotationMode, authedDevice: AuthedDevice) async throws { owsFail("Not implemented!") }
 }
