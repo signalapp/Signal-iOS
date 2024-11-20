@@ -211,16 +211,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             )
         } catch KeychainError.notAllowed where application.applicationState == .background {
             notifyThatPhoneMustBeUnlocked()
-        } catch let error as DatabaseError where error.resultCode == .SQLITE_CORRUPT {
+        } catch {
             // It's so corrupt that we can't even try to repair it.
             didAppLaunchFail = true
-            Logger.error("Couldn't launch with corrupt database")
+            Logger.error("Couldn't launch with broken database: \(error.grdbErrorForLogging)")
             let viewController = terminalErrorViewController()
             _ = initializeWindow(mainAppContext: mainAppContext, rootViewController: viewController)
             presentDatabaseUnrecoverablyCorruptedError(from: viewController, action: .submitDebugLogsAndCrash)
             return true
-        } catch {
-            owsFail("Couldn't load database: \(error.grdbErrorForLogging)")
         }
 
         // This must happen in appDidFinishLaunching or earlier to ensure we don't
