@@ -21,16 +21,6 @@ public enum OWSRequestFactory {
 
     static let textSecureHTTPTimeOut: TimeInterval = 10
 
-    static func useUDAuth(request: TSRequest, accessKey: SMKUDAccessKey) {
-        // Suppress normal auth headers.
-        request.shouldHaveAuthorizationHeaders = false
-
-        // Add UD auth header.
-        request.setValue(accessKey.keyData.base64EncodedString(), forHTTPHeaderField: "Unidentified-Access-Key")
-
-        request.isUDRequest = true
-    }
-
     // MARK: - Other
 
     static func allocAttachmentRequestV4() -> TSRequest {
@@ -118,10 +108,10 @@ public enum OWSRequestFactory {
         serviceId: ServiceId,
         messages: [DeviceMessage],
         timestamp: UInt64,
-        udAccessKey: SMKUDAccessKey?,
         isOnline: Bool,
         isUrgent: Bool,
-        isStory: Bool
+        isStory: Bool,
+        auth: TSRequest.SealedSenderAuth?
     ) -> TSRequest {
         // NOTE: messages may be empty; See comments in OWSDeviceManager.
         owsAssertDebug(timestamp > 0)
@@ -140,8 +130,8 @@ public enum OWSRequestFactory {
         ]
 
         let request = TSRequest(url: URL(string: path)!, method: "PUT", parameters: parameters)
-        if let udAccessKey {
-            useUDAuth(request: request, accessKey: udAccessKey)
+        if let auth {
+            request.setAuth(sealedSender: auth)
         }
         return request
     }
@@ -161,7 +151,7 @@ public enum OWSRequestFactory {
 
         let request = TSRequest(url: components.url!, method: "PUT", parameters: nil)
         request.setValue("application/vnd.signal-messenger.mrm", forHTTPHeaderField: "Content-Type")
-        useUDAuth(request: request, accessKey: accessKey)
+        request.setAuth(sealedSender: .accessKey(accessKey))
         request.httpBody = ciphertext
         return request
     }
@@ -510,12 +500,12 @@ public enum OWSRequestFactory {
         return TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
     }
 
-    static func recipientPreKeyRequest(serviceId: ServiceId, deviceId: UInt32, udAccessKey: SMKUDAccessKey?) -> TSRequest {
+    static func recipientPreKeyRequest(serviceId: ServiceId, deviceId: UInt32, auth: TSRequest.SealedSenderAuth?) -> TSRequest {
         let path = "\(self.textSecureKeysAPI)/\(serviceId.serviceIdString)/\(deviceId)"
 
         let request = TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
-        if let udAccessKey {
-            useUDAuth(request: request, accessKey: udAccessKey)
+        if let auth {
+            request.setAuth(sealedSender: auth)
         }
         return request
     }
@@ -579,11 +569,11 @@ public enum OWSRequestFactory {
 
     // MARK: - Profiles
 
-    static func getUnversionedProfileRequest(serviceId: ServiceId, udAccessKey: SMKUDAccessKey?, auth: ChatServiceAuth) -> TSRequest {
+    static func getUnversionedProfileRequest(serviceId: ServiceId, sealedSenderAuth: TSRequest.SealedSenderAuth?, auth: ChatServiceAuth) -> TSRequest {
         let path = "v1/profile/\(serviceId.serviceIdString)"
         let request = TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
-        if let udAccessKey {
-            useUDAuth(request: request, accessKey: udAccessKey)
+        if let sealedSenderAuth {
+            request.setAuth(sealedSender: sealedSenderAuth)
         } else {
             request.setAuth(auth)
         }
@@ -608,7 +598,7 @@ public enum OWSRequestFactory {
 
         let request = TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
         if let udAccessKey {
-            useUDAuth(request: request, accessKey: udAccessKey)
+            request.setAuth(sealedSender: .accessKey(udAccessKey))
         } else {
             request.setAuth(auth)
         }

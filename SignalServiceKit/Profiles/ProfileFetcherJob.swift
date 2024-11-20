@@ -151,35 +151,41 @@ public class ProfileFetcherJob {
             }
         }
 
-        var versionedProfileRequest: VersionedProfileRequest?
         let requestMaker = RequestMaker(
             label: "Profile Fetch",
-            requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest in
-                if let aci = serviceId as? Aci, let profileKey {
-                    let request = try versionedProfiles.versionedProfileRequest(
-                        for: aci,
-                        profileKey: profileKey,
-                        shouldRequestCredential: shouldRequestCredential,
-                        udAccessKey: udAccessKeyForRequest,
-                        auth: self.authedAccount.chatServiceAuth
-                    )
-                    versionedProfileRequest = request
-                    return request.request
-                } else {
-                    return OWSRequestFactory.getUnversionedProfileRequest(
-                        serviceId: serviceId,
-                        udAccessKey: udAccessKeyForRequest,
-                        auth: self.authedAccount.chatServiceAuth
-                    )
-                }
-            },
             serviceId: serviceId,
-            udAccess: udAccess,
+            accessKey: udAccess,
             authedAccount: self.authedAccount,
             options: [.allowIdentifiedFallback, .isProfileFetch]
         )
 
-        let result = try await requestMaker.makeRequest().awaitable()
+        var versionedProfileRequest: VersionedProfileRequest?
+        let result = try await requestMaker.makeRequest { sealedSenderAuth in
+            if let aci = serviceId as? Aci, let profileKey {
+                let udAccessKey: SMKUDAccessKey?
+                switch sealedSenderAuth {
+                case .accessKey(let _udAccessKey):
+                    udAccessKey = _udAccessKey
+                case .none:
+                    udAccessKey = nil
+                }
+                let request = try versionedProfiles.versionedProfileRequest(
+                    for: aci,
+                    profileKey: profileKey,
+                    shouldRequestCredential: shouldRequestCredential,
+                    udAccessKey: udAccessKey,
+                    auth: self.authedAccount.chatServiceAuth
+                )
+                versionedProfileRequest = request
+                return request.request
+            } else {
+                return OWSRequestFactory.getUnversionedProfileRequest(
+                    serviceId: serviceId,
+                    sealedSenderAuth: sealedSenderAuth,
+                    auth: self.authedAccount.chatServiceAuth
+                )
+            }
+        }
 
         let profile: SignalServiceProfile = try .fromResponse(
             serviceId: serviceId,

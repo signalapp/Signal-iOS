@@ -4,7 +4,7 @@
 //
 
 import Foundation
-public import LibSignalClient
+import LibSignalClient
 
 @objc
 public enum RequestMakerUDAuthError: Int, Error, IsRetryableProvider {
@@ -25,7 +25,6 @@ public enum RequestMakerUDAuthError: Int, Error, IsRetryableProvider {
 public struct RequestMakerResult {
     public let response: HTTPResponse
     public let wasSentByUD: Bool
-    public let wasSentByWebsocket: Bool
 
     public var responseJson: Any? {
         response.responseBodyJson
@@ -38,19 +37,17 @@ public struct RequestMakerResult {
 /// NSE) & whether or not we're connected.
 ///
 /// - Retrying UD requests that fail due to 401/403 errors.
-public final class RequestMaker {
+final class RequestMaker {
 
-    public typealias RequestFactoryBlock = (SMKUDAccessKey?) throws -> TSRequest
+    struct Options: OptionSet {
+        let rawValue: Int
 
-    public struct Options: OptionSet {
-        public let rawValue: Int
-
-        public init(rawValue: Int) {
+        init(rawValue: Int) {
             self.rawValue = rawValue
         }
 
-        /// If the initial request uses UD and that fails, send the request again as
-        /// an identified request.
+        /// If the initial request uses Sealed Sender and that fails, send the
+        /// request again as an identified request.
         static let allowIdentifiedFallback = Options(rawValue: 1 << 0)
 
         /// This RequestMaker is used when fetching profiles, so it shouldn't kick
@@ -59,125 +56,144 @@ public final class RequestMaker {
     }
 
     private let label: String
-    private let requestFactoryBlock: RequestFactoryBlock
     private let serviceId: ServiceId
     private let address: SignalServiceAddress
-    private let udAccess: OWSUDAccess?
+    private let accessKey: OWSUDAccess?
     private let authedAccount: AuthedAccount
     private let options: Options
 
-    public init(
+    init(
         label: String,
-        requestFactoryBlock: @escaping RequestFactoryBlock,
         serviceId: ServiceId,
-        udAccess: OWSUDAccess?,
+        accessKey: OWSUDAccess?,
         authedAccount: AuthedAccount,
         options: Options
     ) {
         self.label = label
-        self.requestFactoryBlock = requestFactoryBlock
         self.serviceId = serviceId
         self.address = SignalServiceAddress(serviceId)
-        self.udAccess = udAccess
+        self.accessKey = accessKey
         self.authedAccount = authedAccount
         self.options = options
     }
 
-    public func makeRequest() -> Promise<RequestMakerResult> {
-        return makeRequestInternal(skipUD: false)
+    private enum SealedSenderAuth {
+        case accessKey(OWSUDAccess)
+
+        func toRequestAuth() -> TSRequest.SealedSenderAuth {
+            switch self {
+            case .accessKey(let udAccess): .accessKey(udAccess.udAccessKey)
+            }
+        }
     }
 
-    private func makeRequestInternal(skipUD: Bool) -> Promise<RequestMakerResult> {
-        let udAccess: OWSUDAccess? = skipUD ? nil : self.udAccess
-        let isUDRequest: Bool = udAccess != nil
-        let request: TSRequest
-        do {
-            request = try requestFactoryBlock(udAccess?.udAccessKey)
-        } catch {
-            return Promise(error: error)
+    /// Invokes `block` with each available authentication mechanism.
+    ///
+    /// The `block` is always invoked at least once, and it may be invoked
+    /// multiple times when Sealed Sender auth errors occur.
+    private func forEachAuthMechanism<T>(block: (SealedSenderAuth?) async throws -> T) async throws -> T {
+        var authMechanisms: [() -> SealedSenderAuth?] = [
+            accessKey.map({ accessKey in { .accessKey(accessKey) } }),
+        ].compacted()
+        if authMechanisms.isEmpty || self.options.contains(.allowIdentifiedFallback) {
+            authMechanisms.append({ nil })
         }
-        owsAssertDebug(isUDRequest == request.isUDRequest)
 
-        let connectionType: OWSChatConnectionType = (isUDRequest ? .unidentified : .identified)
+        var mostRecentError: (any Error)?
+        for authMechanism in authMechanisms {
+            do {
+                return try await block(authMechanism())
+            } catch {
+                mostRecentError = error
+                switch error {
+                case RequestMakerUDAuthError.udAuthFailure:
+                    continue
+                default:
+                    throw error
+                }
+            }
+        }
+
+        // We must run the loop at least once, and we either exit successfully or
+        // set `mostRecentError` to some value.
+        owsPrecondition(!authMechanisms.isEmpty)
+        throw mostRecentError!
+    }
+
+    func makeRequest(requestBlock: (TSRequest.SealedSenderAuth?) throws -> TSRequest) async throws -> RequestMakerResult {
+        return try await self.forEachAuthMechanism { sealedSenderAuth in
+            do {
+                let request = try requestBlock(sealedSenderAuth?.toRequestAuth())
+                let isUDRequest = sealedSenderAuth != nil
+                owsPrecondition(isUDRequest == request.isUDRequest)
+
+                let result = try await self._makeRequest(request: request)
+                await requestSucceeded(sealedSenderAuth: sealedSenderAuth)
+                return result
+            } catch {
+                try await requestFailed(error: error, sealedSenderAuth: sealedSenderAuth)
+            }
+        }
+    }
+
+    private func _makeRequest(request: TSRequest) async throws -> RequestMakerResult {
+        let connectionType: OWSChatConnectionType = (request.isUDRequest ? .unidentified : .identified)
         let shouldUseWebsocket: Bool = (
             OWSChatConnection.canAppUseSocketsToMakeRequests
             && DependenciesBridge.shared.chatConnectionManager.canMakeRequests(connectionType: connectionType)
         )
 
+        let response: HTTPResponse
         if shouldUseWebsocket {
-            return Promise.wrapAsync {
-                try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)
-            }.map(on: DispatchQueue.global()) { response in
-                self.requestSucceeded(udAccess: udAccess)
-                return RequestMakerResult(response: response, wasSentByUD: isUDRequest, wasSentByWebsocket: true)
-            }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<RequestMakerResult> in
-                return try self.requestFailed(error: error, udAccess: udAccess)
-            }
+            response = try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)
         } else {
-            return firstly {
-                SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
-            }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> RequestMakerResult in
-                self.requestSucceeded(udAccess: udAccess)
-                return RequestMakerResult(response: response, wasSentByUD: isUDRequest, wasSentByWebsocket: false)
-            }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<RequestMakerResult> in
-                return try self.requestFailed(error: error, udAccess: udAccess)
-            }
+            response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
         }
+        return RequestMakerResult(response: response, wasSentByUD: request.isUDRequest)
     }
 
-    private func requestFailed(error: Error, udAccess: OWSUDAccess?) throws -> Promise<RequestMakerResult> {
-        if let udAccess, (error.httpStatusCode == 401 || error.httpStatusCode == 403) {
-            // If a UD request fails due to service response (as opposed to network
-            // failure), mark recipient as _not_ in UD mode, then retry.
-            let newUdAccessMode: UnidentifiedAccessMode = {
-                switch udAccess.udAccessMode {
-                case .unrestricted:
-                    // If it was unrestricted, we *might* have the right profile key.
-                    return .unknown
-                case .unknown, .enabled, .disabled:
-                    // If it was unknown, we may have tried the real key (if we had it) or a
-                    // random key. In either of these cases, we don't want to try again because
-                    // it won't work.
-                    return .disabled
-                }
-            }()
-            SSKEnvironment.shared.databaseStorageRef.write { tx in
-                SSKEnvironment.shared.udManagerRef.setUnidentifiedAccessMode(newUdAccessMode, for: self.serviceId, tx: tx)
+    private func requestFailed(error: Error, sealedSenderAuth: SealedSenderAuth?) async throws -> Never {
+        if let sealedSenderAuth, (error.httpStatusCode == 401 || error.httpStatusCode == 403) {
+            // If an Access Key-authenticated request fails because of a 401/403, we
+            // assume the Access Key is wrong.
+            if case .accessKey(let udAccess) = sealedSenderAuth {
+                await updateUdAccessMode({
+                    switch udAccess.udAccessMode {
+                    case .unrestricted:
+                        // If it was unrestricted, we *might* have the right profile key.
+                        return .unknown
+                    case .unknown, .enabled, .disabled:
+                        // If it was unknown, we may have tried the real key (if we had it) or a
+                        // random key. In either of these cases, we don't want to try again because
+                        // it won't work.
+                        return .disabled
+                    }
+                }())
             }
-            fetchProfileIfNeeded()
 
-            if self.options.contains(.allowIdentifiedFallback) {
-                Logger.info("UD request '\(self.label)' auth failed; failing over to non-UD request")
-                return self.makeRequestInternal(skipUD: true)
-            } else {
-                throw RequestMakerUDAuthError.udAuthFailure
-            }
+            throw RequestMakerUDAuthError.udAuthFailure
         }
         throw error
     }
 
-    private func requestSucceeded(udAccess: OWSUDAccess?) {
-        // If this was a UD request...
-        guard let udAccess = udAccess else {
-            return
+    private func requestSucceeded(sealedSenderAuth: SealedSenderAuth?) async {
+        // If this was an Access Key-authed request for an "unknown" user...
+        if case .accessKey(let udAccess) = sealedSenderAuth, udAccess.udAccessMode == .unknown {
+            await updateUdAccessMode({
+                if udAccess.isRandomKey {
+                    // ...with a random key, mark address as .unrestricted.
+                    return .unrestricted
+                } else {
+                    // ...with a non-random key, mark address as .enabled.
+                    return .enabled
+                }
+            }())
         }
-        // ...made for a user in "unknown" UD access mode...
-        guard udAccess.udAccessMode == .unknown else {
-            return
-        }
-        let newUdAccessMode: UnidentifiedAccessMode = {
-            if udAccess.isRandomKey {
-                // If a UD request succeeds for an unknown user with a random key,
-                // mark address as .unrestricted.
-                return .unrestricted
-            } else {
-                // If a UD request succeeds for an unknown user with a non-random key,
-                // mark address as .enabled.
-                return .enabled
-            }
-        }()
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
-            SSKEnvironment.shared.udManagerRef.setUnidentifiedAccessMode(newUdAccessMode, for: self.serviceId, tx: tx)
+    }
+
+    private func updateUdAccessMode(_ newValue: UnidentifiedAccessMode) async {
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            SSKEnvironment.shared.udManagerRef.setUnidentifiedAccessMode(newValue, for: self.serviceId, tx: tx)
         }
         fetchProfileIfNeeded()
     }

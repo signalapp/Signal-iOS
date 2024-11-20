@@ -136,23 +136,18 @@ public class MessageSender {
 
         let requestMaker = RequestMaker(
             label: "Prekey Fetch",
-            requestFactoryBlock: { (udAccessKeyForRequest: SMKUDAccessKey?) -> TSRequest in
-                return OWSRequestFactory.recipientPreKeyRequest(
-                    serviceId: serviceId,
-                    deviceId: deviceId,
-                    udAccessKey: udAccessKeyForRequest
-                )
-            },
             serviceId: serviceId,
             // Don't use UD for story preKey fetches, we don't have a valid UD auth key
             // TODO: (PreKey Cleanup)
-            udAccess: isStoryMessage ? nil : udAccess,
+            accessKey: isStoryMessage ? nil : udAccess,
             authedAccount: .implicit(),
             options: []
         )
 
         do {
-            let result = try await requestMaker.makeRequest().awaitable()
+            let result = try await requestMaker.makeRequest {
+                return OWSRequestFactory.recipientPreKeyRequest(serviceId: serviceId, deviceId: deviceId, auth: $0)
+            }
             guard let responseData = result.response.responseBodyData else {
                 throw OWSAssertionError("Prekey fetch missing response object.")
             }
@@ -1420,30 +1415,28 @@ public class MessageSender {
 
         let requestMaker = RequestMaker(
             label: "Message Send",
-            requestFactoryBlock: { (udAccessKey: SMKUDAccessKey?) in
-                OWSRequestFactory.submitMessageRequest(
-                    serviceId: messageSend.serviceId,
-                    messages: deviceMessages,
-                    timestamp: message.timestamp,
-                    udAccessKey: udAccessKey,
-                    isOnline: message.isOnline,
-                    isUrgent: message.isUrgent,
-                    isStory: message.isStorySend
-                )
-            },
             serviceId: messageSend.serviceId,
-            udAccess: sealedSenderParameters?.udSendingAccess.udAccess,
+            accessKey: sealedSenderParameters?.udSendingAccess.udAccess,
             authedAccount: .implicit(),
             options: []
         )
 
         do {
-            let result = try await requestMaker.makeRequest().awaitable()
+            let result = try await requestMaker.makeRequest {
+                return OWSRequestFactory.submitMessageRequest(
+                    serviceId: messageSend.serviceId,
+                    messages: deviceMessages,
+                    timestamp: message.timestamp,
+                    isOnline: message.isOnline,
+                    isUrgent: message.isUrgent,
+                    isStory: message.isStorySend,
+                    auth: $0
+                )
+            }
             return await messageSendDidSucceed(
                 messageSend,
                 deviceMessages: deviceMessages,
-                wasSentByUD: result.wasSentByUD,
-                wasSentByWebsocket: result.wasSentByWebsocket
+                wasSentByUD: result.wasSentByUD
             )
         } catch {
             return try await messageSendDidFail(
@@ -1457,12 +1450,11 @@ public class MessageSender {
     private func messageSendDidSucceed(
         _ messageSend: OWSMessageSend,
         deviceMessages: [DeviceMessage],
-        wasSentByUD: Bool,
-        wasSentByWebsocket: Bool
+        wasSentByUD: Bool
     ) async -> [SentDeviceMessage] {
         let message: TSOutgoingMessage = messageSend.message
 
-        Logger.info("Successfully sent message: \(type(of: message)), serviceId: \(messageSend.serviceId), timestamp: \(message.timestamp), wasSentByUD: \(wasSentByUD), wasSentByWebsocket: \(wasSentByWebsocket)")
+        Logger.info("Successfully sent message: \(type(of: message)), serviceId: \(messageSend.serviceId), timestamp: \(message.timestamp), wasSentByUD: \(wasSentByUD)")
 
         let sentDeviceMessages = deviceMessages.map {
             return SentDeviceMessage(
