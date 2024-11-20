@@ -785,7 +785,7 @@
 "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "Alle, die diesem Anruf über den Link beitreten, sehen deinen Namen, dein Foto und deine Telefonnummer.";
 
 /* Text shown in a confirmation popup when deleting multiple calls from the calls tab. */
-"CALL_LINK_MULTI_CONFIRM" = "Die von dir erstellten Anruflinks funktionieren nicht mehr für Personen, die sie haben.";
+"CALL_LINK_MULTI_CONFIRM" = "Die von dir erstellten Anruflinks werden für alle, die sie erhalten haben, nicht mehr funktionieren.";
 
 /* Title for button to approve all requests to join a call. */
 "CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Alle bestätigen";

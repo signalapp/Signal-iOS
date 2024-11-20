@@ -4112,7 +4112,7 @@
 "MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Descartar cambios";
 
 /* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
-"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "Perderás todos los cambios que hayas hecho a esta foto";
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "Perderás todos los cambios que hayas hecho en esta foto.";
 
 /* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
 "MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "¿Descartar cambios?";
@@ -5690,7 +5690,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Eliminar historia personalizada";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "¿Seguro que quieres eliminar \"%1$@\"? También se eliminarán las actualizaciones compartidas en esta historia.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "¿Seguro que quieres eliminar \"%1$@\"? También se eliminará todo el contenido que hayas compartido en esta historia.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Eliminar";
@@ -6437,7 +6437,7 @@
 "SEPA_DONATION_NAME_PLACEHOLDER" = "Como aparece en la cuenta bancaria";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal usa el cifrado de extremo a extremo y es posible que en determinados casos deba reiniciarse la sesión de un chat. Este reinicio no afecta a la seguridad, pero puede ocurrir que no hayas recibido el último mensaje que esta persona te envió antes del reinicio. Si es así, pídele que vuelva a enviarte el mensaje.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal usa cifrado de extremo a extremo y es posible que en determinados casos deba reiniciarse la sesión de un chat. Este reinicio no afecta a la seguridad, pero puede ocurrir que no hayas recibido el último mensaje que esta persona te envió antes del reinicio. Si es así, pídele que vuelva a enviarte el mensaje.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Sesión de chat reiniciada";
@@ -7628,7 +7628,7 @@
 "STORIES_SETTINGS_VIEW_RECEIPTS" = "Confirmaciones de visualización";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Mira y comparte cuándo se ven las historias. Si lo desactivas, no podrás saber cuándo otras personas ven tus historias.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Mira y comparte cuándo se ven las historias. Si desactivas esta opción, no podrás saber cuándo otras personas ven tus historias.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Compartir";
@@ -7763,25 +7763,25 @@
 "STORY_SENDING" = "Enviando…";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Has iniciado un chat con ellas";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Has iniciado un chat con ellas.";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Aceptando una solicitud de mensaje";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Has aceptado una solicitud de mensaje que te enviaron.";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Están en tus contactos del teléfono";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Están en tus contactos del teléfono.";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Tus contactos pueden ver tu nombre y foto, así como las historias que subas, a no ser que decidas ocultarlas para personas específicas.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Tus contactos pueden ver tu nombre y foto, así como las historias que subas, a menos que decidas ocultarlas para personas específicas.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Los contactos de Signal</bold> son personas en las que has decidido confiar, ya que:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "Tus <bold>contactos de Signal</bold> son personas en las que has decidido confiar por alguno de los siguientes motivos:";
 
 /* Label for the stories section of the settings view */
 "STORY_SETTINGS_TITLE" = "Historias";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Elige quiénes de tus contactos de Signal pueden ver tus historias. Los cambios no afectarán a las historias que ya hayas enviado.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Elige quiénes de tus contactos de Signal pueden ver tus historias. Los cambios no afectarán a las historias que ya hayas compartido.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Quién puede ver esta historia";
@@ -8252,7 +8252,7 @@
 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "El enlace a este alias ya no es válido.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ no utiliza Signal. Asegúrate de haber introducido el alias completo.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ no usa Signal. Asegúrate de haber introducido el alias completo.";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
 "USERNAME_LOOKUP_NOT_FOUND_TITLE" = "No se ha encontrado a esta persona";

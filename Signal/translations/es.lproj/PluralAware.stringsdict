@@ -536,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld persona participa en esta llamada</string>
+			<string>%1$ld persona está en esta llamada</string>
 			<key>other</key>
-			<string>%1$ld personas participan en esta llamada</string>
+			<string>%1$ld personas están en esta llamada</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
