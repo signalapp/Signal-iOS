@@ -32,6 +32,7 @@ class LinkDeviceViewController: OWSViewController {
     var selectedAttachment: ImagePickerAttachment?
 
     private var hasShownEducationSheet = false
+    private weak var educationSheet: HeroSheetViewController?
 
     private lazy var qrCodeScanViewController = QRCodeScanViewController(
         appearance: .framed,
@@ -115,8 +116,11 @@ class LinkDeviceViewController: OWSViewController {
                 buttonTitle: CommonStrings.okayButton
             )
 
-            present(sheet, animated: true)
-            hasShownEducationSheet = true
+            DispatchQueue.main.async {
+                self.present(sheet, animated: true)
+                self.hasShownEducationSheet = true
+                self.educationSheet = sheet
+            }
         }
     }
 
@@ -130,6 +134,20 @@ class LinkDeviceViewController: OWSViewController {
         if !FeatureFlags.biometricLinkedDeviceFlow {
             view.backgroundColor = Theme.backgroundColor
             scanningInstructionsLabel.textColor = Theme.secondaryTextAndIconColor
+        }
+    }
+
+    private func dismissEducationSheetIfNecessary(completion: @escaping () -> Void) {
+        if let educationSheet {
+            educationSheet.dismiss(animated: true, completion: completion)
+        } else {
+            completion()
+        }
+    }
+
+    private func safePresent(_ viewController: UIViewController) {
+        dismissEducationSheetIfNecessary { [weak self] in
+            self?.present(viewController, animated: true)
         }
     }
 
@@ -173,7 +191,7 @@ class LinkDeviceViewController: OWSViewController {
                     self.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: false)
                 }
             ))
-            presentActionSheet(actionSheet)
+            safePresent(actionSheet)
         } else {
             let title = NSLocalizedString(
                 "LINK_DEVICE_PERMISSION_ALERT_TITLE",
@@ -201,7 +219,7 @@ class LinkDeviceViewController: OWSViewController {
                     self.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: false)
                 }
             ))
-            presentActionSheet(actionSheet)
+            safePresent(actionSheet)
         }
     }
 
@@ -302,9 +320,10 @@ class LinkDeviceViewController: OWSViewController {
             }
         }.catch(on: DispatchQueue.main) { error in
             Logger.error("Failed to provision device with error: \(error)")
-            self.presentActionSheet(self.retryActionSheetController(error: error, retryBlock: { [weak self] in
+            let actionSheet = self.retryActionSheetController(error: error, retryBlock: { [weak self] in
                 self?.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: shouldLinkNSync)
-            }))
+            })
+            self.safePresent(actionSheet)
         }
     }
 
@@ -345,12 +364,14 @@ class LinkDeviceViewController: OWSViewController {
     }
 
     private func popToLinkedDeviceList(_ completion: (() -> Void)? = nil) {
-        navigationController?.popViewController(animated: true)
-        // The method for adding a completion handler to popViewController in
-        // UIViewController+SignalUI doesn't play well with UIHostingController
-        navigationController?.transitionCoordinator?.animate(alongsideTransition: nil) { _ in
-            UIViewController.attemptRotationToDeviceOrientation()
-            completion?()
+        dismissEducationSheetIfNecessary { [weak navigationController] in
+            navigationController?.popViewController(animated: true)
+            // The method for adding a completion handler to popViewController in
+            // UIViewController+SignalUI doesn't play well with UIHostingController
+            navigationController?.transitionCoordinator?.animate(alongsideTransition: nil) { _ in
+                UIViewController.attemptRotationToDeviceOrientation()
+                completion?()
+            }
         }
     }
 
@@ -378,7 +399,7 @@ class LinkDeviceViewController: OWSViewController {
             title: CommonStrings.cancelButton,
             style: .cancel
         ))
-        present(alertController, animated: true)
+        safePresent(alertController)
     }
     #endif
 }
@@ -420,7 +441,7 @@ extension LinkDeviceViewController: QRCodeScanOrPickDelegate {
                     self.qrCodeScanViewController.tryToStartScanning()
                 }
             ))
-            presentActionSheet(actionSheet)
+            safePresent(actionSheet)
 
             return .stopScanning
         }
