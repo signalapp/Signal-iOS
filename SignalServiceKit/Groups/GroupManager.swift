@@ -707,10 +707,10 @@ public class GroupManager: NSObject {
         }
     }
 
-    public static func cancelMemberRequestsV2(groupModel: TSGroupModelV2) async throws -> TSGroupThread {
-        let description = "Cancel Member Request"
+    public static func cancelRequestToJoin(groupModel: TSGroupModelV2) async throws -> TSGroupThread {
+        let description = "Cancel Request to Join"
         return try await Promise.wrapAsync {
-            try await SSKEnvironment.shared.groupsV2Ref.cancelMemberRequests(groupModel: groupModel)
+            try await SSKEnvironment.shared.groupsV2Ref.cancelRequestToJoin(groupModel: groupModel)
         }.timeout(seconds: Self.groupUpdateTimeoutDuration, description: description) {
             return GroupsV2Error.timeout
         }.awaitable()

@@ -161,7 +161,7 @@ public protocol GroupsV2 {
         avatarData: Data?
     ) async throws
 
-    func cancelMemberRequests(groupModel: TSGroupModelV2) async throws -> TSGroupThread
+    func cancelRequestToJoin(groupModel: TSGroupModelV2) async throws -> TSGroupThread
 
     func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(
         groupModel: TSGroupModelV2,
@@ -733,7 +733,7 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func cancelMemberRequests(groupModel: TSGroupModelV2) async throws -> TSGroupThread {
+    public func cancelRequestToJoin(groupModel: TSGroupModelV2) async throws -> TSGroupThread {
         owsFail("Not implemented.")
     }
 

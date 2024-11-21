@@ -1832,12 +1832,12 @@ public class GroupsV2Impl: GroupsV2 {
         return actionsBuilder.buildInfallibly()
     }
 
-    public func cancelMemberRequests(groupModel: TSGroupModelV2) async throws -> TSGroupThread {
+    public func cancelRequestToJoin(groupModel: TSGroupModelV2) async throws -> TSGroupThread {
         let groupV2Params = try groupModel.groupV2Params()
 
         var newRevision: UInt32?
         do {
-            newRevision = try await cancelMemberRequestsUsingPatch(
+            newRevision = try await cancelRequestToJoinUsingPatch(
                 groupId: groupModel.groupId,
                 groupV2Params: groupV2Params,
                 inviteLinkPassword: groupModel.inviteLinkPassword
@@ -1913,7 +1913,7 @@ public class GroupsV2Impl: GroupsV2 {
         }
     }
 
-    private func cancelMemberRequestsUsingPatch(
+    private func cancelRequestToJoinUsingPatch(
         groupId: Data,
         groupV2Params: GroupV2Params,
         inviteLinkPassword: Data?
