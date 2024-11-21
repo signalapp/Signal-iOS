@@ -426,16 +426,26 @@ extension MessageSender {
             )
             return (recipients, ciphertext)
         }
-        let result = try await self._sendSenderKeyRequest(
-            encryptedMessageBody: ciphertext,
-            timestamp: message.timestamp,
-            isOnline: message.isOnline,
-            isUrgent: message.isUrgent,
-            isStory: message.isStorySend,
-            thread: thread,
-            recipients: recipients,
-            udAccessMap: udAccessMap,
-            remainingAttempts: 1
+        let result = try await Retry.performRepeatedly(
+            block: {
+                return try await self._sendSenderKeyRequest(
+                    encryptedMessageBody: ciphertext,
+                    timestamp: message.timestamp,
+                    isOnline: message.isOnline,
+                    isUrgent: message.isUrgent,
+                    isStory: message.isStorySend,
+                    thread: thread,
+                    recipients: recipients,
+                    udAccessMap: udAccessMap
+                )
+            },
+            onError: { error, attemptCount in
+                if attemptCount <= 1, (error as? OWSHTTPError)?.httpStatusCode == 428 {
+                    // Retry immediately if we submitted a push challenge.
+                } else {
+                    throw error
+                }
+            }
         )
         Logger.info("Sent sender key message with timestamp \(message.timestamp) to \(result.successServiceIds) (unregistered: \(result.unregisteredServiceIds))")
         return result
@@ -449,8 +459,7 @@ extension MessageSender {
         isStory: Bool,
         thread: TSThread,
         recipients: [Recipient],
-        udAccessMap: [ServiceId: OWSUDAccess],
-        remainingAttempts: UInt
+        udAccessMap: [ServiceId: OWSUDAccess]
     ) async throws -> SenderKeySendResult {
         do {
             let httpResponse = try await self.performSenderKeySend(
@@ -474,24 +483,6 @@ extension MessageSender {
             let unregistered = recipients.filter { unregisteredServiceIds.contains($0.serviceId) }
             return SenderKeySendResult(success: successful, unregistered: unregistered)
         } catch {
-            let retryIfPossible = { () async throws -> SenderKeySendResult in
-                if remainingAttempts > 0 {
-                    return try await self._sendSenderKeyRequest(
-                        encryptedMessageBody: encryptedMessageBody,
-                        timestamp: timestamp,
-                        isOnline: isOnline,
-                        isUrgent: isUrgent,
-                        isStory: isStory,
-                        thread: thread,
-                        recipients: recipients,
-                        udAccessMap: udAccessMap,
-                        remainingAttempts: remainingAttempts-1
-                    )
-                } else {
-                    throw error
-                }
-            }
-
             if let httpError = error as? OWSHTTPError {
                 let statusCode = httpError.httpStatusCode ?? 0
                 let responseData = httpError.httpResponseData
@@ -539,7 +530,6 @@ extension MessageSender {
                             }
                         }
                     }
-                    return try await retryIfPossible()
                 default:
                     break
                 }
