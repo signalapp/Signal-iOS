@@ -10,7 +10,7 @@ PROTOC=protoc \
 WRAPPER_SCRIPT=../../Scripts/protos/ProtoWrappers.py \
 		--proto-dir='./' --verbose
 
-all: signal_service_protos provisioning_protos fingerprint_protos websocket_protos signal_ios_protos storage_service_protos groups_protos device_transfer_protos session_record_protos cdsi_protos svr_protos mobilecoin_protos
+all: signal_service_protos provisioning_protos fingerprint_protos websocket_protos signal_ios_protos storage_service_protos groups_protos device_transfer_protos session_record_protos svr_protos mobilecoin_protos
 
 signal_service_protos: SignalService.proto
 	$(PROTOC) --swift_out=../Protos/Generated \
@@ -69,9 +69,6 @@ device_transfer_protos: DeviceTransfer.proto
 
 session_record_protos: SessionRecord.proto
 	$(PROTOC) --swift_out=../Protos/Generated SessionRecord.proto
-
-cdsi_protos: cdsi.proto
-	$(PROTOC) --swift_out=../Protos/Generated cdsi.proto
 
 svr_protos: svr2.proto
 	$(PROTOC) --swift_out=../Protos/Generated svr2.proto
