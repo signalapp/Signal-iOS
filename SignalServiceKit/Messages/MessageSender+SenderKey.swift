@@ -64,7 +64,7 @@ extension MessageSender {
         in thread: TSThread,
         message: TSOutgoingMessage,
         serializedMessage: SerializedMessage,
-        udAccessMap: [ServiceId: OWSUDSendingAccess],
+        udAccessMap: [ServiceId: OWSUDAccess],
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
@@ -82,7 +82,7 @@ extension MessageSender {
             }
 
             // You also must support Sealed Sender.
-            switch udAccessMap[serviceId]?.udAccess.udAccessMode {
+            switch udAccessMap[serviceId]?.udAccessMode {
             case .disabled, .unknown, nil:
                 return false
             case .enabled, .unrestricted:
@@ -125,6 +125,7 @@ extension MessageSender {
                 in: thread,
                 originalMessage: message,
                 udAccessMap: udAccessMap,
+                senderCertificate: senderCertificate,
                 localIdentifiers: localIdentifiers,
                 tx: tx
             )
@@ -164,7 +165,7 @@ extension MessageSender {
         in thread: TSThread,
         message: TSOutgoingMessage,
         serializedMessage: SerializedMessage,
-        udAccessMap: [ServiceId: OWSUDSendingAccess],
+        udAccessMap: [ServiceId: OWSUDAccess],
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers
     ) async -> [(ServiceId, any Error)] {
@@ -245,7 +246,8 @@ extension MessageSender {
         for recipients: [ServiceId],
         in thread: TSThread,
         originalMessage: TSOutgoingMessage,
-        udAccessMap: [ServiceId: OWSUDSendingAccess],
+        udAccessMap: [ServiceId: OWSUDAccess],
+        senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
         tx writeTx: SDSAnyWriteTransaction
     ) throws -> PrepareDistributionResult {
@@ -305,9 +307,11 @@ extension MessageSender {
                 localIdentifiers: localIdentifiers
             )
 
-            let sealedSenderParameters = udAccessMap[serviceId].map {
-                SealedSenderParameters(message: skdmMessage, udSendingAccess: $0)
-            }
+            let sealedSenderParameters = SealedSenderParameters(
+                message: skdmMessage,
+                senderCertificate: senderCertificate,
+                accessKey: udAccessMap[serviceId]
+            )
 
             result.senderKeyDistributionMessageSends.append((messageSend, sealedSenderParameters))
         }
@@ -400,7 +404,7 @@ extension MessageSender {
         plaintext: Data,
         thread: TSThread,
         serviceIds: [ServiceId],
-        udAccessMap: [ServiceId: OWSUDSendingAccess],
+        udAccessMap: [ServiceId: OWSUDAccess],
         senderCertificate: SenderCertificate
     ) async throws -> SenderKeySendResult {
         if serviceIds.isEmpty {
@@ -445,7 +449,7 @@ extension MessageSender {
         isStory: Bool,
         thread: TSThread,
         recipients: [Recipient],
-        udAccessMap: [ServiceId: OWSUDSendingAccess],
+        udAccessMap: [ServiceId: OWSUDAccess],
         remainingAttempts: UInt
     ) async throws -> SenderKeySendResult {
         do {
@@ -604,12 +608,12 @@ extension MessageSender {
         isStory: Bool,
         thread: TSThread,
         recipients: [Recipient],
-        udAccessMap: [ServiceId: OWSUDSendingAccess]
+        udAccessMap: [ServiceId: OWSUDAccess]
     ) async throws -> HTTPResponse {
 
         // Sender key messages use an access key composed of every recipient's individual access key.
         let allAccessKeys = recipients.compactMap {
-            udAccessMap[$0.serviceId]?.udAccess.senderKeyUDAccessKey
+            udAccessMap[$0.serviceId]?.senderKeyUDAccessKey
         }
         guard recipients.count == allAccessKeys.count else {
             throw OWSAssertionError("Incomplete access key set")

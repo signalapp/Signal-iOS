@@ -94,20 +94,6 @@ public class SenderCertificates: NSObject {
 
 // MARK: -
 
-public class OWSUDSendingAccess: NSObject {
-
-    public let udAccess: OWSUDAccess
-
-    public let senderCertificate: SenderCertificate
-
-    init(udAccess: OWSUDAccess, senderCertificate: SenderCertificate) {
-        self.udAccess = udAccess
-        self.senderCertificate = senderCertificate
-    }
-}
-
-// MARK: -
-
 public protocol OWSUDManager {
 
     var trustRoot: PublicKey { get }

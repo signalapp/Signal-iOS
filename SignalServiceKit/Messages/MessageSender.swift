@@ -74,7 +74,7 @@ public class MessageSender {
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
         isStoryMessage: Bool,
-        udAccess: OWSUDAccess?
+        sealedSenderParameters: SealedSenderParameters?
     ) async throws {
         let hasSession = try SSKEnvironment.shared.databaseStorageRef.read { tx in
             try containsValidSession(for: serviceId, deviceId: deviceId, tx: tx.asV2Read)
@@ -90,7 +90,7 @@ public class MessageSender {
             isOnlineMessage: isOnlineMessage,
             isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
             isStoryMessage: isStoryMessage,
-            udAccess: udAccess
+            sealedSenderParameters: sealedSenderParameters
         )
 
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
@@ -111,7 +111,7 @@ public class MessageSender {
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
         isStoryMessage: Bool,
-        udAccess: OWSUDAccess?
+        sealedSenderParameters: SealedSenderParameters?
     ) async throws -> SignalServiceKit.PreKeyBundle {
         Logger.info("serviceId: \(serviceId).\(deviceId)")
 
@@ -139,7 +139,7 @@ public class MessageSender {
             serviceId: serviceId,
             // Don't use UD for story preKey fetches, we don't have a valid UD auth key
             // TODO: (PreKey Cleanup)
-            accessKey: isStoryMessage ? nil : udAccess,
+            accessKey: isStoryMessage ? nil : sealedSenderParameters?.accessKey,
             authedAccount: .implicit(),
             options: []
         )
@@ -651,14 +651,17 @@ public class MessageSender {
         case lookUpPhoneNumbersAndTryAgain([E164])
 
         /// Perform the `sendPreparedMessage` step.
-        case sendPreparedMessage(
-            serializedMessage: SerializedMessage,
-            thread: TSThread,
-            fanoutRecipients: [ServiceId],
-            sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?,
-            udAccess: [ServiceId: OWSUDSendingAccess],
-            localIdentifiers: LocalIdentifiers
-        )
+        case sendPreparedMessage(PreparedState)
+
+        struct PreparedState {
+            let serializedMessage: SerializedMessage
+            let thread: TSThread
+            let fanoutRecipients: [ServiceId]
+            let sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?
+            let senderCertificate: SenderCertificate
+            let udAccess: [ServiceId: OWSUDAccess]
+            let localIdentifiers: LocalIdentifiers
+        }
     }
 
     /// Certain errors are "correctable" and result in immediate retries. For
@@ -793,14 +796,15 @@ public class MessageSender {
                 sendViaSenderKey = nil
             }
 
-            return .sendPreparedMessage(
+            return .sendPreparedMessage(SendMessageNextAction.PreparedState(
                 serializedMessage: serializedMessage,
                 thread: thread,
                 fanoutRecipients: Array(Set(serviceIds).subtracting(senderKeyRecipients)),
                 sendViaSenderKey: sendViaSenderKey,
+                senderCertificate: senderCertificate,
                 udAccess: udAccessMap,
                 localIdentifiers: localIdentifiers
-            )
+            ))
         }
 
         let retryRecoveryState: OuterRecoveryState
@@ -811,15 +815,16 @@ public class MessageSender {
         case .lookUpPhoneNumbersAndTryAgain(let phoneNumbers):
             try await lookUpPhoneNumbers(phoneNumbers)
             retryRecoveryState = recoveryState.mutated({ $0.canLookUpPhoneNumbers = false })
-        case .sendPreparedMessage(let serializedMessage, let thread, let fanoutRecipients, let sendViaSenderKey, let udAccess, let localIdentifiers):
+        case .sendPreparedMessage(let state):
             let perRecipientErrors = await sendPreparedMessage(
                 message: message,
-                serializedMessage: serializedMessage,
-                in: thread,
-                viaFanoutTo: fanoutRecipients,
-                viaSenderKey: sendViaSenderKey,
-                udAccess: udAccess,
-                localIdentifiers: localIdentifiers
+                serializedMessage: state.serializedMessage,
+                in: state.thread,
+                viaFanoutTo: state.fanoutRecipients,
+                viaSenderKey: state.sendViaSenderKey,
+                senderCertificate: state.senderCertificate,
+                udAccess: state.udAccess,
+                localIdentifiers: state.localIdentifiers
             )
             let recipientErrors = MessageSenderRecipientErrors(recipientErrors: perRecipientErrors)
             if recipientErrors.containsAny(of: .invalidAuthHeader, .invalidRecipient, .oversizeMessage) {
@@ -835,7 +840,7 @@ public class MessageSender {
                 break
             }
             if !perRecipientErrors.isEmpty {
-                try await handleSendFailure(message: message, thread: thread, perRecipientErrors: perRecipientErrors)
+                try await handleSendFailure(message: message, thread: state.thread, perRecipientErrors: perRecipientErrors)
             }
             return
         }
@@ -853,7 +858,8 @@ public class MessageSender {
         in thread: TSThread,
         viaFanoutTo fanoutRecipients: [ServiceId],
         viaSenderKey sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?,
-        udAccess sendingAccessMap: [ServiceId: OWSUDSendingAccess],
+        senderCertificate: SenderCertificate,
+        udAccess sendingAccessMap: [ServiceId: OWSUDAccess],
         localIdentifiers: LocalIdentifiers
     ) async -> [(ServiceId, any Error)] {
         // Both types are Arrays because Sender Key Tasks may return N errors when
@@ -877,9 +883,11 @@ public class MessageSender {
                     serviceId: serviceId,
                     localIdentifiers: localIdentifiers
                 )
-                let sealedSenderParameters = sendingAccessMap[serviceId].map {
-                    SealedSenderParameters(message: message, udSendingAccess: $0)
-                }
+                let sealedSenderParameters = SealedSenderParameters(
+                    message: message,
+                    senderCertificate: senderCertificate,
+                    accessKey: sendingAccessMap[serviceId]
+                )
                 taskGroup.addTask {
                     do {
                         try await self.performMessageSend(messageSend, sealedSenderParameters: sealedSenderParameters)
@@ -900,22 +908,18 @@ public class MessageSender {
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
         tx: SDSAnyReadTransaction
-    ) -> [ServiceId: OWSUDSendingAccess] {
+    ) -> [ServiceId: OWSUDAccess] {
         if DebugFlags.disableUD.get() {
             return [:]
         }
-        var result = [ServiceId: OWSUDSendingAccess]()
+        var result = [ServiceId: OWSUDAccess]()
         for serviceId in serviceIds {
             if localIdentifiers.contains(serviceId: serviceId) {
                 continue
             }
-            let udAccess = (
+            result[serviceId] = (
                 message.isStorySend ? SSKEnvironment.shared.udManagerRef.storyUdAccess() : SSKEnvironment.shared.udManagerRef.udAccess(for: serviceId, tx: tx)
             )
-            guard let udAccess else {
-                continue
-            }
-            result[serviceId] = OWSUDSendingAccess(udAccess: udAccess, senderCertificate: senderCertificate)
         }
         return result
     }
@@ -1313,7 +1317,7 @@ public class MessageSender {
                 isOnlineMessage: isOnlineMessage,
                 isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
                 isStoryMessage: isStoryMessage,
-                udAccess: sealedSenderParameters?.udSendingAccess.udAccess
+                sealedSenderParameters: sealedSenderParameters
             )
         } catch let error {
             switch error {
@@ -1416,7 +1420,7 @@ public class MessageSender {
         let requestMaker = RequestMaker(
             label: "Message Send",
             serviceId: messageSend.serviceId,
-            accessKey: sealedSenderParameters?.udSendingAccess.udAccess,
+            accessKey: sealedSenderParameters?.accessKey,
             authedAccount: .implicit(),
             options: []
         )
@@ -1729,7 +1733,7 @@ public class MessageSender {
                 paddedPlaintext: paddedPlaintext,
                 contentHint: sealedSenderParameters.contentHint.signalClientHint,
                 groupId: sealedSenderParameters.envelopeGroupId(tx: transaction.asV2Read),
-                senderCertificate: sealedSenderParameters.udSendingAccess.senderCertificate,
+                senderCertificate: sealedSenderParameters.senderCertificate,
                 protocolContext: transaction
             )
 
@@ -1799,7 +1803,7 @@ public class MessageSender {
         if let sealedSenderParameters {
             let usmc = try UnidentifiedSenderMessageContent(
                 CiphertextMessage(plaintext),
-                from: sealedSenderParameters.udSendingAccess.senderCertificate,
+                from: sealedSenderParameters.senderCertificate,
                 contentHint: sealedSenderParameters.contentHint.signalClientHint,
                 groupId: sealedSenderParameters.envelopeGroupId(tx: transaction.asV2Read) ?? Data()
             )
