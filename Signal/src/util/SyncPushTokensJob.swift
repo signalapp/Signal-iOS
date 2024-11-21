@@ -8,7 +8,6 @@ import SignalServiceKit
 class SyncPushTokensJob: NSObject {
     enum Mode {
         case normal
-        case forceUpload
         case forceRotation
         case rotateIfEligible
     }
@@ -26,7 +25,7 @@ class SyncPushTokensJob: NSObject {
 
     func run() async throws {
         switch mode {
-        case .normal, .forceUpload:
+        case .normal:
             // Don't rotate.
             return try await run(shouldRotateAPNSToken: false)
         case .forceRotation:
@@ -61,8 +60,6 @@ class SyncPushTokensJob: NSObject {
 
         if SSKEnvironment.shared.preferencesRef.pushToken != pushToken {
             reason = "changed"
-        } else if mode == .forceUpload {
-            reason = "forced"
         } else if AppVersionImpl.shared.lastAppVersion != AppVersionImpl.shared.currentAppVersion {
             reason = "upgraded"
         } else if !Self.hasUploadedTokensOnce.get() {

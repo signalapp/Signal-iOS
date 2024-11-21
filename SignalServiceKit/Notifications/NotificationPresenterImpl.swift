@@ -30,7 +30,6 @@ public enum AppNotificationCategory: CaseIterable {
     case missedCallWithoutActions
     case missedCallFromNoLongerVerifiedIdentity
     case internalError
-    case incomingMessageGeneric
     case incomingGroupStoryReply
     case failedStorySend
     case transferRelaunch
@@ -88,8 +87,6 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.missedCallFromNoLongerVerifiedIdentity"
         case .internalError:
             return "Signal.AppNotificationCategory.internalError"
-        case .incomingMessageGeneric:
-            return "Signal.AppNotificationCategory.incomingMessageGeneric"
         case .incomingGroupStoryReply:
             return "Signal.AppNotificationCategory.incomingGroupStoryReply"
         case .failedStorySend:
@@ -123,8 +120,6 @@ extension AppNotificationCategory {
         case .missedCallFromNoLongerVerifiedIdentity:
             return []
         case .internalError:
-            return []
-        case .incomingMessageGeneric:
             return []
         case .incomingGroupStoryReply:
             return [.reply]
@@ -1167,10 +1162,6 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 soundQuery: .global
             )
         }
-    }
-
-    public func notifyUserOfGenericIncomingMessage() async {
-        await presenter.postGenericIncomingMessageNotification()
     }
 
     private enum SoundQuery {

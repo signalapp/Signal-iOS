@@ -216,28 +216,6 @@ class UserNotificationPresenter {
         }
     }
 
-    // This method is thread-safe.
-    func postGenericIncomingMessageNotification() async {
-        let content = UNMutableNotificationContent()
-        content.categoryIdentifier = AppNotificationCategory.incomingMessageGeneric.identifier
-        content.userInfo = [:]
-        // We use a fixed identifier so that if we post multiple "generic"
-        // notifications, they replace each other.
-        let notificationIdentifier = "org.signal.genericIncomingMessageNotification"
-        content.body = NotificationStrings.genericIncomingMessageNotification
-        let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: nil)
-
-        Logger.info("Presenting generic incoming message notification with identifier \(notificationIdentifier)")
-
-        do {
-            try await Self.notificationCenter.add(request)
-        } catch {
-            owsFailDebug("Error presenting generic incoming message notification with identifier \(notificationIdentifier): \(error)")
-        }
-
-        Logger.info("Presented notification with identifier \(notificationIdentifier)")
-    }
-
     private func shouldPresentNotification(
         category: AppNotificationCategory,
         userInfo: [AnyHashable: Any],
@@ -290,10 +268,6 @@ class UserNotificationPresenter {
             if case .failedStorySends = notificationSuppressionRule {
                 return false
             }
-            return true
-
-        case .incomingMessageGeneric:
-            owsFailDebug(".incomingMessageGeneric should never check shouldPresentNotification().")
             return true
         }
     }

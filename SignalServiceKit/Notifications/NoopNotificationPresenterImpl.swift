@@ -8,10 +8,6 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
-    public func notifyUserOfGenericIncomingMessage() async {
-        Logger.warn("")
-    }
-
     public var expectErrors: Bool = false
 
     public init() {}

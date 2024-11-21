@@ -545,7 +545,6 @@ private enum CrashyMocks {
 
     final class MockNotificationPresenter: NotificationPresenter {
         func registerNotificationSettings() async { failTest(Self.self) }
-        func notifyUserOfGenericIncomingMessage() async { failTest(Self.self) }
         func notifyUser(forIncomingMessage: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) { failTest(Self.self) }
         func notifyUser(forIncomingMessage: TSIncomingMessage, editTarget: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) { failTest(Self.self) }
         func notifyUser(forReaction: OWSReaction, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) { failTest(Self.self) }

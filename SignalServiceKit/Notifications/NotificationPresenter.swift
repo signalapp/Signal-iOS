@@ -8,9 +8,6 @@ public import LibSignalClient
 public protocol NotificationPresenter {
     func registerNotificationSettings() async
 
-    /// Note that this method is not serialized with other notification actions.
-    func notifyUserOfGenericIncomingMessage() async
-
     func notifyUser(forIncomingMessage: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction)
 
     func notifyUser(forIncomingMessage: TSIncomingMessage, editTarget: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction)
