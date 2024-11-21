@@ -62,7 +62,7 @@ public enum FeatureFlags {
     public static let linkedDevicesRedesign = build.includes(.internal)
     public static let biometricLinkedDeviceFlow = build.includes(.internal)
 
-    public static let storageServiceRecordIkmMigration = false
+    public static let storageServiceRecordIkmMigration = true
 }
 
 // MARK: -
