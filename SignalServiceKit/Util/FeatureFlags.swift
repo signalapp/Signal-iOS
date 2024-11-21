@@ -40,8 +40,6 @@ public enum FeatureFlags {
     /// future, we can re-enable this.
     public static let periodicallyCheckDatabaseIntegrity: Bool = false
 
-    public static let doNotSendGroupChangeMessagesOnProfileKeyRotation = false
-
     public static let messageBackupErrorDisplay = build.includes(.internal)
     public static let messageBackupFileAlpha = build.includes(.internal)
     public static let messageBackupRemoteExportAlpha = build.includes(.dev)
