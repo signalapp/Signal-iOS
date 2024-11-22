@@ -385,12 +385,15 @@ extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDele
         var callingCodeInt: Int?
         var countryCode: String?
 
-        if let localE164 = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(localNumber), let localCallingCode = localE164.getCallingCode()?.intValue {
+        if
+            let localE164 = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(localNumber),
+            let localCallingCode = localE164.getCallingCode()
+        {
             callingCodeInt = localCallingCode
         } else {
             callingCodeInt = SSKEnvironment.shared.phoneNumberUtilRef.getCallingCode(
                 forRegion: PhoneNumberUtil.defaultCountryCode()
-            ).intValue
+            )
         }
 
         var callingCode: String?

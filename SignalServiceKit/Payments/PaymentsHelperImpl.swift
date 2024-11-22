@@ -62,7 +62,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
             // Germany
             49
         ]
-        return validCallingCodes.contains(callingCode.intValue)
+        return validCallingCodes.contains(callingCode)
     }
 
     internal static func isValidPhoneNumberForPayments_remoteConfigBlocklist(

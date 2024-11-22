@@ -334,13 +334,13 @@ public class RemoteConfig {
 
         guard
             let localPhoneNumber,
-            let localCallingCode = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(localPhoneNumber)?.getCallingCode()?.stringValue
+            let localCallingCode = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(localPhoneNumber)?.getCallingCode()
         else {
             owsFailDebug("Invalid local number")
             return nil
         }
 
-        return callingCodeToValueMap[localCallingCode] ?? callingCodeToValueMap["*"]
+        return callingCodeToValueMap[String(localCallingCode)] ?? callingCodeToValueMap["*"]
     }
 
     private static func isBucketEnabled(key: String, countEnabled: UInt64, bucketSize: UInt64, localAci: Aci) -> Bool {

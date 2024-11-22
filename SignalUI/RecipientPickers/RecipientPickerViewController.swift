@@ -1231,7 +1231,7 @@ struct PhoneNumberFinder {
             potentialE164 = filteredValue
         } else if
             let localNumber,
-            let callingCode = phoneNumberUtil.parseE164(localNumber)?.getCallingCode()?.intValue
+            let callingCode = phoneNumberUtil.parseE164(localNumber)?.getCallingCode()
         {
             potentialE164 = "+\(callingCode)\(filteredValue)"
         } else {

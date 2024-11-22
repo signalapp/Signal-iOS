@@ -12,7 +12,7 @@ class PhoneNumberTest: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        phoneNumberUtilRef = PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
+        phoneNumberUtilRef = PhoneNumberUtil()
     }
 
     func testInitWithE164() {

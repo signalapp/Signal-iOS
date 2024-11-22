@@ -6,27 +6,20 @@
 import Foundation
 public import libPhoneNumber_iOS
 
-public class PhoneNumberUtilSwiftValues {
-    fileprivate let nbPhoneNumberUtil = NBPhoneNumberUtil()
-    fileprivate let countryCodesFromCallingCodeCache = AtomicDictionary<String, [String]>([:], lock: .init())
-    fileprivate let parsedPhoneNumberCache = LRUCache<String, NBPhoneNumber>(
+// MARK: -
+
+public class PhoneNumberUtil: NSObject {
+    private let nbPhoneNumberUtil = NBPhoneNumberUtil()
+    private let countryCodesFromCallingCodeCache = AtomicDictionary<String, [String]>([:], lock: .init())
+    private let parsedPhoneNumberCache = LRUCache<String, NBPhoneNumber>(
         maxSize: 256,
         nseMaxSize: 0,
         shouldEvacuateInBackground: false
     )
-    fileprivate let nationalPrefixTransformRuleCache = AtomicDictionary<String, String?>([:], lock: .init())
-    fileprivate let phoneNumberCountryCodeCache = AtomicDictionary<String, String?>([:], lock: .init())
-}
+    private let nationalPrefixTransformRuleCache = AtomicDictionary<String, String?>([:], lock: .init())
+    private let phoneNumberCountryCodeCache = AtomicDictionary<String, String?>([:], lock: .init())
 
-// MARK: -
-
-@objc
-public class PhoneNumberUtil: NSObject {
-    public let swiftValues: PhoneNumberUtilSwiftValues
-
-    public init(swiftValues: PhoneNumberUtilSwiftValues) {
-        self.swiftValues = swiftValues
-
+    public override init() {
         super.init()
 
         SwiftSingletons.register(self)
@@ -163,10 +156,9 @@ extension PhoneNumberUtil {
         }
 
         let callingCode = getCallingCode(forRegion: countryCode)
-        return PhoneNumber.countryCodePrefix + "\(callingCode.intValue)"
+        return PhoneNumber.countryCodePrefix + "\(callingCode)"
     }
 
-    @objc
     public static func defaultCountryCode() -> String {
         return Locale.current.regionCode ?? "US"
     }
@@ -177,7 +169,7 @@ extension PhoneNumberUtil {
         guard let callingCode = callingCode.nilIfEmpty else {
             return []
         }
-        if let cachedValue = swiftValues.countryCodesFromCallingCodeCache[callingCode] {
+        if let cachedValue = countryCodesFromCallingCodeCache[callingCode] {
             return cachedValue
         }
         let countryCodes: [String] = Self.countryCodesSortedByPopulationDescending.compactMap { (countryCode: String) -> String? in
@@ -187,23 +179,21 @@ extension PhoneNumberUtil {
             }
             return countryCode
         }
-        swiftValues.countryCodesFromCallingCodeCache[callingCode] = countryCodes
+        countryCodesFromCallingCodeCache[callingCode] = countryCodes
         return countryCodes
     }
 
-    @objc
     public func format(_ phoneNumber: NBPhoneNumber, numberFormat: NBEPhoneNumberFormat) throws -> String {
-        try swiftValues.nbPhoneNumberUtil.format(phoneNumber, numberFormat: numberFormat)
+        try nbPhoneNumberUtil.format(phoneNumber, numberFormat: numberFormat)
     }
 
-    @objc
     public func parse(_ numberToParse: String, defaultRegion: String) throws -> NBPhoneNumber {
         let hashKey = "numberToParse:\(numberToParse), defaultRegion:\(defaultRegion)"
-        if let cachedValue = swiftValues.parsedPhoneNumberCache[hashKey] {
+        if let cachedValue = parsedPhoneNumberCache[hashKey] {
             return cachedValue
         }
-        let result = try swiftValues.nbPhoneNumberUtil.parse(numberToParse, defaultRegion: defaultRegion)
-        swiftValues.parsedPhoneNumberCache[hashKey] = result
+        let result = try nbPhoneNumberUtil.parse(numberToParse, defaultRegion: defaultRegion)
+        parsedPhoneNumberCache[hashKey] = result
         return result
     }
 
@@ -216,7 +206,7 @@ extension PhoneNumberUtil {
                     let phoneNumber = PhoneNumberUtil.getExampleNumber(
                         forType: countryCode,
                         type: type,
-                        nbPhoneNumberUtil: swiftValues.nbPhoneNumberUtil
+                        nbPhoneNumberUtil: nbPhoneNumberUtil
                     )
                     if let phoneNumber {
                         return phoneNumber
@@ -228,7 +218,7 @@ extension PhoneNumberUtil {
                 owsFailDebug("Could not find example phone number for: \(countryCode)")
                 return nil
             }
-            return try swiftValues.nbPhoneNumberUtil.format(nbPhoneNumber, numberFormat: .E164)
+            return try nbPhoneNumberUtil.format(nbPhoneNumber, numberFormat: .E164)
         } catch {
             owsFailDebug("Error: \(error)")
             return nil
@@ -236,36 +226,27 @@ extension PhoneNumberUtil {
     }
 
     public func isPossibleNumber(_ number: NBPhoneNumber) -> Bool {
-        return swiftValues.nbPhoneNumberUtil.isPossibleNumber(number)
+        return nbPhoneNumberUtil.isPossibleNumber(number)
     }
 
-    @objc
-    public func getRegionCodeForCountryCode(_ countryCallingCode: NSNumber) -> String {
-        return swiftValues.nbPhoneNumberUtil.getRegionCode(forCountryCode: countryCallingCode)
+    public func getRegionCodeForCountryCode(_ countryCallingCode: Int) -> String {
+        return nbPhoneNumberUtil.getRegionCode(forCountryCode: NSNumber(value: countryCallingCode))
     }
 
-    @objc
-    public func isValidNumber(_ number: NBPhoneNumber) -> Bool {
-        return swiftValues.nbPhoneNumberUtil.isValidNumber(number)
+    public func getCallingCode(forRegion regionCode: String) -> Int {
+        return nbPhoneNumberUtil.getCountryCode(forRegion: regionCode).intValue
     }
 
-    public func getCallingCode(forRegion regionCode: String) -> NSNumber {
-        return swiftValues.nbPhoneNumberUtil.getCountryCode(forRegion: regionCode)
-    }
-
-    @objc
     public func nationalNumber(for phoneNumber: PhoneNumber) -> String {
-        return swiftValues.nbPhoneNumberUtil.getNationalSignificantNumber(phoneNumber.nbPhoneNumber)
+        return nbPhoneNumberUtil.getNationalSignificantNumber(phoneNumber.nbPhoneNumber)
     }
 
-    @objc
     public func formattedNationalNumber(for phoneNumber: PhoneNumber) -> String? {
         return try? format(phoneNumber.nbPhoneNumber, numberFormat: .NATIONAL)
     }
 
     /// Returns the most likely country code for a calling code based on population.
     /// If no country codes are found, returns the empty string.
-    @objc
     public func probableCountryCode(forCallingCode callingCode: String) -> String {
         return countryCodes(fromCallingCode: callingCode).first ?? ""
     }
@@ -287,7 +268,6 @@ extension PhoneNumberUtil {
     }
 
     /// Get country codes from a search term.
-    @objc
     public func countryCodes(forSearchTerm searchTerm: String?) -> [String] {
         let cleanedSearch = (searchTerm ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -316,7 +296,6 @@ extension PhoneNumberUtil {
     }
 
     /// Convert country code to country name.
-    @objc
     public class func countryName(fromCountryCode countryCode: String) -> String {
         lazy var unknownValue =  OWSLocalizedString(
             "UNKNOWN_VALUE",
@@ -343,7 +322,6 @@ extension PhoneNumberUtil {
         }
     }
 
-    @objc
     public func parsePhoneNumber(userSpecifiedText: String) -> PhoneNumber? {
         if userSpecifiedText.isEmpty {
             return nil
@@ -357,7 +335,7 @@ extension PhoneNumberUtil {
         if userSpecifiedText.isEmpty {
             return nil
         }
-        let regionCode = getRegionCodeForCountryCode(NSNumber(value: (callingCode as NSString).integerValue))
+        let regionCode = getRegionCodeForCountryCode((callingCode as NSString).integerValue)
         if regionCode == NB_UNKNOWN_REGION {
             return parsePhoneNumber(userSpecifiedText: callingCode.appending(userSpecifiedText))
         }
@@ -368,7 +346,6 @@ extension PhoneNumberUtil {
         return parsePhoneNumber(sanitizedText, regionCode: regionCode)
     }
 
-    @objc
     public func parseE164(_ phoneNumberString: String) -> PhoneNumber? {
         guard let phoneNumber = E164(phoneNumberString) else {
             return nil
@@ -380,7 +357,6 @@ extension PhoneNumberUtil {
         return parsePhoneNumber(phoneNumber.stringValue, regionCode: "ZZ")
     }
 
-    @objc
     public func parsePhoneNumbers(userSpecifiedText: String, localPhoneNumber: String?) -> [PhoneNumber] {
         var results = parsePhoneNumbers(normalizedText: userSpecifiedText, localPhoneNumber: localPhoneNumber)
 
@@ -503,10 +479,10 @@ extension PhoneNumberUtil {
     /// Adds the local user's area code to `normalizedText` if it doesn't have its own.
     private static func phoneNumberWithAreaCodeIfMissing(
         normalizedText: String,
-        localCallingCode: NSNumber,
+        localCallingCode: Int,
         localPhoneNumber: String
     ) -> String? {
-        switch localCallingCode.intValue {
+        switch localCallingCode {
         case 1:
             return addMissingAreaCode(
                 normalizedText: normalizedText,
@@ -546,7 +522,7 @@ extension PhoneNumberUtil {
 
     private static func addMissingAreaCode(
         normalizedText: String,
-        localCallingCode: NSNumber,
+        localCallingCode: Int,
         localPhoneNumber: String,
         missingAreaCodeRegex: NSRegularExpression,
         areaCodeRegex: NSRegularExpression
@@ -569,16 +545,16 @@ extension PhoneNumberUtil {
     }
 
     private func nationalPrefixTransformRule(countryCode: String) -> String? {
-        if let transformRule = swiftValues.nationalPrefixTransformRuleCache[countryCode] {
+        if let transformRule = nationalPrefixTransformRuleCache[countryCode] {
             return transformRule
         }
         let transformRule: String? = NBMetadataHelper().getMetadataForRegion(countryCode)?.nationalPrefixTransformRule
-        swiftValues.nationalPrefixTransformRuleCache[countryCode] = transformRule
+        nationalPrefixTransformRuleCache[countryCode] = transformRule
         return transformRule
     }
 
     private func countryCode(for phoneNumber: String) -> String? {
-        if let countryCode = swiftValues.phoneNumberCountryCodeCache[phoneNumber] {
+        if let countryCode = phoneNumberCountryCodeCache[phoneNumber] {
             return countryCode
         }
         let countryCode: String? = {
@@ -587,7 +563,7 @@ extension PhoneNumberUtil {
             }
             return probableCountryCode(forCallingCode: "+\(callingCode)").nilIfEmpty
         }()
-        swiftValues.phoneNumberCountryCodeCache[phoneNumber] = countryCode
+        phoneNumberCountryCodeCache[phoneNumber] = countryCode
         return countryCode
     }
 

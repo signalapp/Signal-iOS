@@ -1388,7 +1388,7 @@ public class AppSetup {
         let messageFetcherJob = MessageFetcherJob(appReadiness: appReadiness)
         let paymentsCurrencies = testDependencies.paymentsCurrencies ?? PaymentsCurrenciesImpl(appReadiness: appReadiness)
         let spamChallengeResolver = SpamChallengeResolver(appReadiness: appReadiness)
-        let phoneNumberUtil = PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
+        let phoneNumberUtil = PhoneNumberUtil()
         let legacyChangePhoneNumber = LegacyChangePhoneNumber(appReadiness: appReadiness)
         let contactDiscoveryManager = ContactDiscoveryManagerImpl(
             db: db,

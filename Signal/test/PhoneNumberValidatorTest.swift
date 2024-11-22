@@ -13,7 +13,7 @@ class PhoneNumberValidatorTest: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        phoneNumberUtilRef = PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
+        phoneNumberUtilRef = PhoneNumberUtil()
     }
 
     func assertValid(e164: String, file: StaticString = #filePath, line: UInt = #line) {

@@ -22,7 +22,7 @@ final class RecipientPickerViewControllerTests: XCTestCase {
         let finder = PhoneNumberFinder(
             localNumber: "+16505550100",
             contactDiscoveryManager: MockContactDiscoveryManager(),
-            phoneNumberUtil: PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
+            phoneNumberUtil: PhoneNumberUtil()
         )
         struct TestCase {
             var searchText: String
@@ -80,7 +80,7 @@ final class RecipientPickerViewControllerTests: XCTestCase {
                         )
                     ] : []
                 }),
-                phoneNumberUtil: PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
+                phoneNumberUtil: PhoneNumberUtil()
             )
             let lookupResult = try await finder.lookUp(phoneNumber: testCase.searchResult).awaitable()
             switch lookupResult {

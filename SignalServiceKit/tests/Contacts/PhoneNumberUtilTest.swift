@@ -12,7 +12,7 @@ class PhoneNumberUtilTestSwift: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.phoneNumberUtilRef = PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
+        self.phoneNumberUtilRef = PhoneNumberUtil()
     }
 
     func test_probableCountryCode() {
@@ -148,53 +148,28 @@ class PhoneNumberUtilTestSwift: XCTestCase {
         XCTAssertEqual(false, phoneNumberUtilRef.isPossibleNumber(phoneNumber4))
     }
 
-    func test_isValidNumber() {
-        let phoneNumber1 = try! phoneNumberUtilRef.parse("+12125556789", defaultRegion: "US")
-        let phoneNumber2 = try! phoneNumberUtilRef.parse("+441752395464", defaultRegion: "US")
-        let phoneNumber3 = try! phoneNumberUtilRef.parse("+12125556789", defaultRegion: "GB")
-        let phoneNumber4 = try! phoneNumberUtilRef.parse("+441752395464", defaultRegion: "GB")
-        // Invalid numbers.
-        let phoneNumber5 = try! phoneNumberUtilRef.parse("+44175239546", defaultRegion: "US")
-        let phoneNumber6 = try! phoneNumberUtilRef.parse("44", defaultRegion: "US")
-        let phoneNumber7 = try! phoneNumberUtilRef.parse("+13334445555", defaultRegion: "US")
-        let phoneNumber8 = try! phoneNumberUtilRef.parse("+44175239546", defaultRegion: "GB")
-        let phoneNumber9 = try! phoneNumberUtilRef.parse("44", defaultRegion: "GB")
-        let phoneNumber10 = try! phoneNumberUtilRef.parse("+13334445555", defaultRegion: "GB")
-
-        XCTAssertEqual(true, phoneNumberUtilRef.isValidNumber(phoneNumber1))
-        XCTAssertEqual(true, phoneNumberUtilRef.isValidNumber(phoneNumber2))
-        XCTAssertEqual(true, phoneNumberUtilRef.isValidNumber(phoneNumber3))
-        XCTAssertEqual(true, phoneNumberUtilRef.isValidNumber(phoneNumber4))
-        XCTAssertEqual(false, phoneNumberUtilRef.isValidNumber(phoneNumber5))
-        XCTAssertEqual(false, phoneNumberUtilRef.isValidNumber(phoneNumber6))
-        XCTAssertEqual(false, phoneNumberUtilRef.isValidNumber(phoneNumber7))
-        XCTAssertEqual(false, phoneNumberUtilRef.isValidNumber(phoneNumber8))
-        XCTAssertEqual(false, phoneNumberUtilRef.isValidNumber(phoneNumber9))
-        XCTAssertEqual(false, phoneNumberUtilRef.isValidNumber(phoneNumber10))
-    }
-
     func test_getRegionCodeForCountryCode() {
-        XCTAssertEqual("US", phoneNumberUtilRef.getRegionCodeForCountryCode(NSNumber(value: 1)))
-        XCTAssertEqual("GB", phoneNumberUtilRef.getRegionCodeForCountryCode(NSNumber(value: 44)))
-        XCTAssertEqual("UY", phoneNumberUtilRef.getRegionCodeForCountryCode(NSNumber(value: 598)))
-        XCTAssertEqual("ZZ", phoneNumberUtilRef.getRegionCodeForCountryCode(NSNumber(value: 0)))
-        XCTAssertEqual("ZZ", phoneNumberUtilRef.getRegionCodeForCountryCode(NSNumber(value: 99999)))
-        XCTAssertEqual("ZZ", phoneNumberUtilRef.getRegionCodeForCountryCode(NSNumber(value: -1)))
+        XCTAssertEqual("US", phoneNumberUtilRef.getRegionCodeForCountryCode(1))
+        XCTAssertEqual("GB", phoneNumberUtilRef.getRegionCodeForCountryCode(44))
+        XCTAssertEqual("UY", phoneNumberUtilRef.getRegionCodeForCountryCode(598))
+        XCTAssertEqual("ZZ", phoneNumberUtilRef.getRegionCodeForCountryCode(0))
+        XCTAssertEqual("ZZ", phoneNumberUtilRef.getRegionCodeForCountryCode(99999))
+        XCTAssertEqual("ZZ", phoneNumberUtilRef.getRegionCodeForCountryCode(-1))
     }
 
     func test_getCallingCodeForRegion() {
-        XCTAssertEqual(NSNumber(value: 1), phoneNumberUtilRef.getCallingCode(forRegion: "US"))
-        XCTAssertEqual(NSNumber(value: 44), phoneNumberUtilRef.getCallingCode(forRegion: "GB"))
-        XCTAssertEqual(NSNumber(value: 598), phoneNumberUtilRef.getCallingCode(forRegion: "UY"))
+        XCTAssertEqual(1, phoneNumberUtilRef.getCallingCode(forRegion: "US"))
+        XCTAssertEqual(44, phoneNumberUtilRef.getCallingCode(forRegion: "GB"))
+        XCTAssertEqual(598, phoneNumberUtilRef.getCallingCode(forRegion: "UY"))
         // Invalid regions.
-        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtilRef.getCallingCode(forRegion: "UK"))
-        XCTAssertEqual(NSNumber(value: 1), phoneNumberUtilRef.getCallingCode(forRegion: "US "))
-        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtilRef.getCallingCode(forRegion: " "))
-        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtilRef.getCallingCode(forRegion: ""))
-        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtilRef.getCallingCode(forRegion: "+1"))
-        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtilRef.getCallingCode(forRegion: "ZZ"))
-        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtilRef.getCallingCode(forRegion: "+"))
-        XCTAssertEqual(NSNumber(value: 0), phoneNumberUtilRef.getCallingCode(forRegion: "ZQ"))
+        XCTAssertEqual(0, phoneNumberUtilRef.getCallingCode(forRegion: "UK"))
+        XCTAssertEqual(1, phoneNumberUtilRef.getCallingCode(forRegion: "US "))
+        XCTAssertEqual(0, phoneNumberUtilRef.getCallingCode(forRegion: " "))
+        XCTAssertEqual(0, phoneNumberUtilRef.getCallingCode(forRegion: ""))
+        XCTAssertEqual(0, phoneNumberUtilRef.getCallingCode(forRegion: "+1"))
+        XCTAssertEqual(0, phoneNumberUtilRef.getCallingCode(forRegion: "ZZ"))
+        XCTAssertEqual(0, phoneNumberUtilRef.getCallingCode(forRegion: "+"))
+        XCTAssertEqual(0, phoneNumberUtilRef.getCallingCode(forRegion: "ZQ"))
     }
 
     func testCountryCodesForSearchTerm() {

@@ -24,7 +24,7 @@ public struct RegistrationCountryState: Equatable {
         AssertIsOnMainThread()
 
         let countryCode: String = PhoneNumberUtil.defaultCountryCode()
-        let callingCodeNumber: NSNumber = SSKEnvironment.shared.phoneNumberUtilRef.getCallingCode(forRegion: countryCode)
+        let callingCodeNumber = SSKEnvironment.shared.phoneNumberUtilRef.getCallingCode(forRegion: countryCode)
         let callingCode = "\(PhoneNumber.countryCodePrefix)\(callingCodeNumber)"
         let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode)
 
