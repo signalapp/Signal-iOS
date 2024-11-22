@@ -511,7 +511,7 @@ public class GroupsV2Impl: GroupsV2 {
         groupV2Params: GroupV2Params
     ) async throws -> TSGroupThread {
         let downloadedAvatars = try await fetchAllAvatarData(
-            changeActionsProto: changeActionsProto,
+            changeActionsProtos: [changeActionsProto],
             justUploadedAvatars: justUploadedAvatars,
             groupV2Params: groupV2Params
         )
@@ -617,7 +617,7 @@ public class GroupsV2Impl: GroupsV2 {
         let groupResponseProto = try GroupsProtoGroupResponse(serializedData: response.responseBodyData ?? Data())
 
         let downloadedAvatars = try await fetchAllAvatarData(
-            groupProto: groupResponseProto.group,
+            groupProtos: [groupResponseProto.group].compacted(),
             justUploadedAvatars: justUploadedAvatars,
             groupV2Params: groupV2Params
         )
@@ -715,16 +715,21 @@ public class GroupsV2Impl: GroupsV2 {
         }
         let groupChangesProto = try GroupsProtoGroupChanges(serializedData: groupChangesProtoData)
 
-        // No need to verify the signature; these are from the service.
+        let parsedChanges = try GroupsV2Protos.parseChangesFromService(groupChangesProto: groupChangesProto)
         let downloadedAvatars = try await fetchAllAvatarData(
-            groupChanges: (groupChangesProto, verifySignature: false),
+            groupProtos: parsedChanges.compactMap(\.groupProto),
+            changeActionsProtos: parsedChanges.compactMap(\.changeActionsProto),
             groupV2Params: groupV2Params
         )
-        let changes = try GroupsV2Protos.parseChangesFromService(
-            groupChangesProto: groupChangesProto,
-            downloadedAvatars: downloadedAvatars,
-            groupV2Params: groupV2Params
-        )
+        let changes = try parsedChanges.map {
+            return GroupV2Change(
+                snapshot: try $0.groupProto.map {
+                    return try GroupsV2Protos.parse(groupProto: $0, downloadedAvatars: downloadedAvatars, groupV2Params: groupV2Params)
+                },
+                changeActionsProto: $0.changeActionsProto,
+                downloadedAvatars: downloadedAvatars
+            )
+        }
         return GroupV2ChangePage(changes: changes, earlyEnd: earlyEnd)
     }
 
@@ -769,9 +774,8 @@ public class GroupsV2Impl: GroupsV2 {
     // * We just created the group.
     // * We just updated the group and we're applying those changes.
     private func fetchAllAvatarData(
-        groupProto: GroupsProtoGroup? = nil,
-        groupChanges: (proto: GroupsProtoGroupChanges, verifySignature: Bool)? = nil,
-        changeActionsProto: GroupsProtoGroupChangeActions? = nil,
+        groupProtos: [GroupsProtoGroup] = [],
+        changeActionsProtos: [GroupsProtoGroupChangeActions] = [],
         justUploadedAvatars: GroupV2DownloadedAvatars? = nil,
         groupV2Params: GroupV2Params
     ) async throws -> GroupV2DownloadedAvatars {
@@ -801,10 +805,8 @@ public class GroupsV2Impl: GroupsV2 {
         }
 
         let protoAvatarUrlPaths = try GroupsV2Protos.collectAvatarUrlPaths(
-            groupProto: groupProto,
-            groupChanges: groupChanges,
-            changeActionsProto: changeActionsProto,
-            groupV2Params: groupV2Params
+            groupProtos: groupProtos,
+            changeActionsProtos: changeActionsProtos
         )
 
         return try await fetchAvatarData(

@@ -361,9 +361,11 @@ public struct GroupV2Change {
     public var changeActionsProto: GroupsProtoGroupChangeActions?
     public let downloadedAvatars: GroupV2DownloadedAvatars
 
-    public init(snapshot: GroupV2Snapshot?,
-                changeActionsProto: GroupsProtoGroupChangeActions?,
-                downloadedAvatars: GroupV2DownloadedAvatars) {
+    public init(
+        snapshot: GroupV2Snapshot?,
+        changeActionsProto: GroupsProtoGroupChangeActions?,
+        downloadedAvatars: GroupV2DownloadedAvatars
+    ) {
         owsPrecondition(snapshot != nil || changeActionsProto != nil)
         self.snapshot = snapshot
         self.changeActionsProto = changeActionsProto

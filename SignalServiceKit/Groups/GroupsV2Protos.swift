@@ -479,88 +479,57 @@ public class GroupsV2Protos {
 
     // MARK: -
 
+    public struct ParsedChange {
+        public var groupProto: GroupsProtoGroup?
+        public var changeActionsProto: GroupsProtoGroupChangeActions?
+
+        public init?(groupProto: GroupsProtoGroup?, changeActionsProto: GroupsProtoGroupChangeActions?) {
+            guard groupProto != nil || changeActionsProto != nil else {
+                return nil
+            }
+            self.groupProto = groupProto
+            self.changeActionsProto = changeActionsProto
+        }
+    }
+
     // We do not treat an empty response with no changes as an error.
-    public class func parseChangesFromService(
-        groupChangesProto: GroupsProtoGroupChanges,
-        downloadedAvatars: GroupV2DownloadedAvatars,
-        groupV2Params: GroupV2Params
-    ) throws -> [GroupV2Change] {
-        var result = [GroupV2Change]()
+    public class func parseChangesFromService(groupChangesProto: GroupsProtoGroupChanges) throws -> [ParsedChange] {
+        var results = [ParsedChange]()
         for changeStateData in groupChangesProto.groupChanges {
             let changeStateProto = try GroupsProtoGroupChangesGroupChangeState(serializedData: changeStateData)
 
-            var snapshot: GroupV2Snapshot?
-            if let snapshotProto = changeStateProto.groupState {
-                snapshot = try parse(
-                    groupProto: snapshotProto,
-                    downloadedAvatars: downloadedAvatars,
-                    groupV2Params: groupV2Params
-                )
-            }
+            let parsedChange = ParsedChange(
+                groupProto: changeStateProto.groupState,
+                changeActionsProto: try changeStateProto.groupChange.map {
+                    // No need to verify the signature; these are from the service.
+                    return try parseGroupChangeProto($0, verifySignature: false)
+                }
+            )
 
-            var changeActionsProto: GroupsProtoGroupChangeActions?
-            if let changeProto = changeStateProto.groupChange {
-                // No need to verify the signature; these are from the service.
-                changeActionsProto = try parseGroupChangeProto(changeProto, verifySignature: false)
-            }
-
-            guard snapshot != nil || changeActionsProto != nil else {
+            guard let parsedChange else {
                 throw OWSAssertionError("both groupState and groupChange are absent")
             }
 
-            result.append(GroupV2Change(
-                snapshot: snapshot,
-                changeActionsProto: changeActionsProto,
-                downloadedAvatars: downloadedAvatars
-            ))
+            results.append(parsedChange)
         }
-        return result
+        return results
     }
 
     // MARK: -
 
     public class func collectAvatarUrlPaths(
-        groupProto: GroupsProtoGroup? = nil,
-        groupChanges: (proto: GroupsProtoGroupChanges, verifySignature: Bool)? = nil,
-        changeActionsProto: GroupsProtoGroupChangeActions? = nil,
-        groupV2Params: GroupV2Params
+        groupProtos: [GroupsProtoGroup] = [],
+        changeActionsProtos: [GroupsProtoGroupChangeActions] = []
     ) throws -> [String] {
         var avatarUrlPaths = [String]()
-        if let groupProto = groupProto {
+        for groupProto in groupProtos {
             avatarUrlPaths += self.collectAvatarUrlPaths(groupProto: groupProto)
         }
-        if let groupChanges = groupChanges {
-            avatarUrlPaths += try self.collectAvatarUrlPaths(
-                groupChangesProto: groupChanges.proto,
-                verifySignature: groupChanges.verifySignature,
-                groupV2Params: groupV2Params
-            )
-        }
-        if let changeActionsProto = changeActionsProto {
+        for changeActionsProto in changeActionsProtos {
             avatarUrlPaths += self.collectAvatarUrlPaths(changeActionsProto: changeActionsProto)
         }
         // Discard empty avatar urls.
         return avatarUrlPaths.filter { !$0.isEmpty }
-    }
-
-    private class func collectAvatarUrlPaths(
-        groupChangesProto: GroupsProtoGroupChanges,
-        verifySignature: Bool,
-        groupV2Params: GroupV2Params
-    ) throws -> [String] {
-        var avatarUrlPaths = [String]()
-        for changeStateData in groupChangesProto.groupChanges {
-            let changeStateProto = try GroupsProtoGroupChangesGroupChangeState(serializedData: changeStateData)
-            if let groupState = changeStateProto.groupState {
-                avatarUrlPaths += collectAvatarUrlPaths(groupProto: groupState)
-            }
-
-            if let changeProto = changeStateProto.groupChange {
-                let changeActionsProto = try parseGroupChangeProto(changeProto, verifySignature: verifySignature)
-                avatarUrlPaths += self.collectAvatarUrlPaths(changeActionsProto: changeActionsProto)
-            }
-        }
-        return avatarUrlPaths
     }
 
     private class func collectAvatarUrlPaths(changeActionsProto: GroupsProtoGroupChangeActions) -> [String] {
