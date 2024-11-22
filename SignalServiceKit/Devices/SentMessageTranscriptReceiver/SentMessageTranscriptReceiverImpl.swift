@@ -210,7 +210,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             isViewOnceMessage: messageParams.isViewOnceMessage,
             isViewOnceComplete: false,
             wasRemotelyDeleted: false,
-            changeActionsProtoData: nil,
+            groupChangeProtoData: nil,
             storyAuthorAci: messageParams.storyAuthorAci,
             storyTimestamp: messageParams.storyTimestamp,
             storyReactionEmoji: nil,

@@ -9,7 +9,7 @@ public import LibSignalClient
 public class TSOutgoingMessageBuilder: TSMessageBuilder {
     public var isVoiceMessage: Bool
     public var groupMetaMessage: TSGroupMetaMessage
-    public var changeActionsProtoData: Data?
+    public var groupChangeProtoData: Data?
 
     @nonobjc
     public init(
@@ -28,7 +28,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         isViewOnceMessage: Bool,
         isViewOnceComplete: Bool,
         wasRemotelyDeleted: Bool,
-        changeActionsProtoData: Data?,
+        groupChangeProtoData: Data?,
         storyAuthorAci: Aci?,
         storyTimestamp: UInt64?,
         storyReactionEmoji: String?,
@@ -40,7 +40,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
     ) {
         self.isVoiceMessage = isVoiceMessage
         self.groupMetaMessage = groupMetaMessage
-        self.changeActionsProtoData = changeActionsProtoData
+        self.groupChangeProtoData = groupChangeProtoData
 
         super.init(
             thread: thread,
@@ -84,7 +84,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         isViewOnceMessage: Bool = false,
         isViewOnceComplete: Bool = false,
         wasRemotelyDeleted: Bool = false,
-        changeActionsProtoData: Data? = nil,
+        groupChangeProtoData: Data? = nil,
         storyAuthorAci: Aci? = nil,
         storyTimestamp: UInt64? = nil,
         storyReactionEmoji: String? = nil,
@@ -110,7 +110,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
             isViewOnceMessage: isViewOnceMessage,
             isViewOnceComplete: isViewOnceComplete,
             wasRemotelyDeleted: wasRemotelyDeleted,
-            changeActionsProtoData: changeActionsProtoData,
+            groupChangeProtoData: groupChangeProtoData,
             storyAuthorAci: storyAuthorAci,
             storyTimestamp: storyTimestamp,
             storyReactionEmoji: storyReactionEmoji,

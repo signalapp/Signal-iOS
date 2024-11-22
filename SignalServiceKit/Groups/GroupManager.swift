@@ -795,7 +795,7 @@ public class GroupManager: NSObject {
 
     // MARK: - Messages
 
-    public static func sendGroupUpdateMessage(thread: TSGroupThread, changeActionsProtoData: Data? = nil) async {
+    public static func sendGroupUpdateMessage(thread: TSGroupThread, groupChangeProtoData: Data? = nil) async {
         guard thread.isGroupV2Thread else {
             owsFail("[GV1] Should be impossible to send V1 group messages!")
         }
@@ -807,7 +807,7 @@ public class GroupManager: NSObject {
                 in: thread,
                 groupMetaMessage: .update,
                 expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read),
-                changeActionsProtoData: changeActionsProtoData,
+                groupChangeProtoData: groupChangeProtoData,
                 additionalRecipients: Self.invitedMembers(in: thread),
                 transaction: transaction
             )

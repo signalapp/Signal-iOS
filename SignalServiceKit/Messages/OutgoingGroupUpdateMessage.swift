@@ -7,19 +7,19 @@ import Foundation
 
 /// An outgoing group v2 update.
 public class OutgoingGroupUpdateMessage: TSOutgoingMessage {
-    public init<T: Sequence>(
+    public init(
         in thread: TSGroupThread,
         groupMetaMessage: TSGroupMetaMessage,
         expiresInSeconds: UInt32 = 0,
-        changeActionsProtoData: Data? = nil,
-        additionalRecipients: T,
+        groupChangeProtoData: Data? = nil,
+        additionalRecipients: some Sequence<SignalServiceAddress>,
         transaction: SDSAnyReadTransaction
-    ) where T.Element == SignalServiceAddress {
+    ) {
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: thread,
             expiresInSeconds: expiresInSeconds,
             groupMetaMessage: groupMetaMessage,
-            changeActionsProtoData: changeActionsProtoData
+            groupChangeProtoData: groupChangeProtoData
         )
 
         super.init(

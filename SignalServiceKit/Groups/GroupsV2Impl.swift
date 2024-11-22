@@ -184,17 +184,6 @@ public class GroupsV2Impl: GroupsV2 {
 
     // MARK: - Update Group
 
-    private struct UpdatedV2Group {
-        public let groupThread: TSGroupThread
-        public let changeActionsProtoData: Data
-
-        public init(groupThread: TSGroupThread,
-                    changeActionsProtoData: Data) {
-            self.groupThread = groupThread
-            self.changeActionsProtoData = changeActionsProtoData
-        }
-    }
-
     // This method updates the group on the service.  This corresponds to:
     //
     // * The local user editing group state (e.g. adding a member).
@@ -260,12 +249,10 @@ public class GroupsV2Impl: GroupsV2 {
             }
         }
 
-        guard let responseBodyData = httpResponse.responseBodyData else {
-            throw OWSAssertionError("Missing data in response body!")
-        }
+        let changeResponse = try GroupsProtoGroupChangeResponse(serializedData: httpResponse.responseBodyData ?? Data())
 
         return try await handleGroupUpdatedOnService(
-            responseBodyData: responseBodyData,
+            changeResponse: changeResponse,
             builtGroupChange: builtGroupChange,
             changes: changes,
             groupId: groupId,
@@ -340,53 +327,55 @@ public class GroupsV2Impl: GroupsV2 {
     }
 
     private func handleGroupUpdatedOnService(
-        responseBodyData: Data,
+        changeResponse: GroupsProtoGroupChangeResponse,
         builtGroupChange: GroupsV2BuiltGroupChange,
         changes: GroupsV2OutgoingChanges,
         groupId: Data,
         groupV2Params: GroupV2Params
     ) async throws -> TSGroupThread {
-        let changeActionsProto = try GroupsV2Protos.parseAndVerifyChangeActionsProto(
-            responseBodyData,
-            ignoreSignature: true
-        )
+        guard let changeProto = changeResponse.groupChange else {
+            throw OWSAssertionError("Missing groupChange.")
+        }
+        guard changeProto.changeEpoch <= GroupManager.changeProtoEpoch else {
+            throw OWSAssertionError("Invalid embedded change proto epoch: \(changeProto.changeEpoch).")
+        }
+        let changeActionsProto = try GroupsV2Protos.parseGroupChangeProto(changeProto, verifySignature: false)
 
         // Collect avatar state from our change set so that we can
         // avoid downloading any avatars we just uploaded while
         // applying the change set locally.
         let downloadedAvatars = GroupV2DownloadedAvatars.from(changes: changes)
 
-        // We can ignoreSignature because these protos came from the service.
         let groupThread = try await updateGroupWithChangeActions(
             groupId: groupId,
             spamReportingMetadata: .learnedByLocallyInitatedRefresh,
             changeActionsProto: changeActionsProto,
             justUploadedAvatars: downloadedAvatars,
-            ignoreSignature: true,
             groupV2Params: groupV2Params
         )
-        let updatedV2Group = UpdatedV2Group(groupThread: groupThread, changeActionsProtoData: responseBodyData)
 
         switch builtGroupChange.groupUpdateMessageBehavior {
         case .sendNothing:
-            return updatedV2Group.groupThread
+            return groupThread
         case .sendUpdateToOtherGroupMembers:
             break
         }
 
+        let groupChangeProtoData = try changeProto.serializedData()
+
         await GroupManager.sendGroupUpdateMessage(
-            thread: updatedV2Group.groupThread,
-            changeActionsProtoData: updatedV2Group.changeActionsProtoData
+            thread: groupThread,
+            groupChangeProtoData: groupChangeProtoData
         )
 
         await sendGroupUpdateMessageToRemovedUsers(
-            groupThread: updatedV2Group.groupThread,
+            groupThread: groupThread,
             groupChangeProto: builtGroupChange.proto,
-            changeActionsProtoData: updatedV2Group.changeActionsProtoData,
+            groupChangeProtoData: groupChangeProtoData,
             groupV2Params: groupV2Params
         )
 
-        return updatedV2Group.groupThread
+        return groupThread
     }
 
     private func membersRemovedByChangeActions(
@@ -433,7 +422,7 @@ public class GroupsV2Impl: GroupsV2 {
     private func sendGroupUpdateMessageToRemovedUsers(
         groupThread: TSGroupThread,
         groupChangeProto: GroupsProtoGroupChangeActions,
-        changeActionsProtoData: Data,
+        groupChangeProtoData: Data,
         groupV2Params: GroupV2Params
     ) async {
         let serviceIds = membersRemovedByChangeActions(groupChangeProto: groupChangeProto, groupV2Params: groupV2Params)
@@ -449,9 +438,9 @@ public class GroupsV2Impl: GroupsV2 {
 
         let plaintextData: Data
         do {
-            let groupV2Context = try GroupsV2Protos.buildGroupContextV2Proto(
+            let groupV2Context = try GroupsV2Protos.buildGroupContextProto(
                 groupModel: groupModel,
-                changeActionsProtoData: changeActionsProtoData
+                groupChangeProtoData: groupChangeProtoData
             )
 
             let dataBuilder = SSKProtoDataMessage.builder()
@@ -486,7 +475,6 @@ public class GroupsV2Impl: GroupsV2 {
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
-        ignoreSignature: Bool,
         groupSecretParams: GroupSecretParams
     ) async throws -> TSGroupThread {
         let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
@@ -495,7 +483,6 @@ public class GroupsV2Impl: GroupsV2 {
             spamReportingMetadata: spamReportingMetadata,
             changeActionsProto: changeActionsProto,
             justUploadedAvatars: nil,
-            ignoreSignature: ignoreSignature,
             groupV2Params: groupV2Params
         )
     }
@@ -505,7 +492,6 @@ public class GroupsV2Impl: GroupsV2 {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         justUploadedAvatars: GroupV2DownloadedAvatars?,
-        ignoreSignature: Bool,
         groupV2Params: GroupV2Params
     ) async throws -> TSGroupThread {
         return try await _updateGroupWithChangeActions(
@@ -513,7 +499,6 @@ public class GroupsV2Impl: GroupsV2 {
             spamReportingMetadata: spamReportingMetadata,
             changeActionsProto: changeActionsProto,
             justUploadedAvatars: justUploadedAvatars,
-            ignoreSignature: ignoreSignature,
             groupV2Params: groupV2Params
         )
     }
@@ -523,13 +508,11 @@ public class GroupsV2Impl: GroupsV2 {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         justUploadedAvatars: GroupV2DownloadedAvatars?,
-        ignoreSignature: Bool,
         groupV2Params: GroupV2Params
     ) async throws -> TSGroupThread {
         let downloadedAvatars = try await fetchAllAvatarData(
             changeActionsProto: changeActionsProto,
             justUploadedAvatars: justUploadedAvatars,
-            ignoreSignature: ignoreSignature,
             groupV2Params: groupV2Params
         )
         return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
@@ -633,11 +616,9 @@ public class GroupsV2Impl: GroupsV2 {
 
         let groupResponseProto = try GroupsProtoGroupResponse(serializedData: response.responseBodyData ?? Data())
 
-        // We can ignoreSignature; these protos came from the service.
         let downloadedAvatars = try await fetchAllAvatarData(
             groupProto: groupResponseProto.group,
             justUploadedAvatars: justUploadedAvatars,
-            ignoreSignature: true,
             groupV2Params: groupV2Params
         )
 
@@ -734,10 +715,9 @@ public class GroupsV2Impl: GroupsV2 {
         }
         let groupChangesProto = try GroupsProtoGroupChanges(serializedData: groupChangesProtoData)
 
-        // We can ignoreSignature; these protos came from the service.
+        // No need to verify the signature; these are from the service.
         let downloadedAvatars = try await fetchAllAvatarData(
-            groupChangesProto: groupChangesProto,
-            ignoreSignature: true,
+            groupChanges: (groupChangesProto, verifySignature: false),
             groupV2Params: groupV2Params
         )
         let changes = try GroupsV2Protos.parseChangesFromService(
@@ -790,10 +770,9 @@ public class GroupsV2Impl: GroupsV2 {
     // * We just updated the group and we're applying those changes.
     private func fetchAllAvatarData(
         groupProto: GroupsProtoGroup? = nil,
-        groupChangesProto: GroupsProtoGroupChanges? = nil,
+        groupChanges: (proto: GroupsProtoGroupChanges, verifySignature: Bool)? = nil,
         changeActionsProto: GroupsProtoGroupChangeActions? = nil,
         justUploadedAvatars: GroupV2DownloadedAvatars? = nil,
-        ignoreSignature: Bool,
         groupV2Params: GroupV2Params
     ) async throws -> GroupV2DownloadedAvatars {
 
@@ -823,9 +802,8 @@ public class GroupsV2Impl: GroupsV2 {
 
         let protoAvatarUrlPaths = try GroupsV2Protos.collectAvatarUrlPaths(
             groupProto: groupProto,
-            groupChangesProto: groupChangesProto,
+            groupChanges: groupChanges,
             changeActionsProto: changeActionsProto,
-            ignoreSignature: ignoreSignature,
             groupV2Params: groupV2Params
         )
 
@@ -1295,19 +1273,6 @@ public class GroupsV2Impl: GroupsV2 {
         }
     }
 
-    // MARK: - Protos
-
-    public func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
-                                         changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
-        return try GroupsV2Protos.buildGroupContextV2Proto(groupModel: groupModel, changeActionsProtoData: changeActionsProtoData)
-    }
-
-    public func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
-                                                 ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions {
-        return try GroupsV2Protos.parseAndVerifyChangeActionsProto(changeProtoData,
-                                                                   ignoreSignature: ignoreSignature)
-    }
-
     // MARK: - Restore Groups
 
     public func isGroupKnownToStorageService(
@@ -1585,9 +1550,12 @@ public class GroupsV2Impl: GroupsV2 {
                 behavior404: .fail
             )
 
-            guard let changeActionsProtoData = response.responseBodyData else {
-                throw OWSAssertionError("Invalid responseObject.")
+            let changeResponse = try GroupsProtoGroupChangeResponse(serializedData: response.responseBodyData ?? Data())
+
+            guard let changeProto = changeResponse.groupChange else {
+                throw OWSAssertionError("Missing groupChange after updating group.")
             }
+
             // The PATCH request that adds us to the group (as a full or requesting member)
             // only return the "change actions" proto data, but not a full snapshot
             // so we need to separately GET the latest group state and update the database.
@@ -1611,7 +1579,7 @@ public class GroupsV2Impl: GroupsV2 {
 
             await GroupManager.sendGroupUpdateMessage(
                 thread: groupThread,
-                changeActionsProtoData: changeActionsProtoData
+                groupChangeProtoData: try changeProto.serializedData()
             )
         } catch {
             // We create a placeholder in a couple of different scenarios:
@@ -1652,7 +1620,7 @@ public class GroupsV2Impl: GroupsV2 {
                 return
             }
 
-            await GroupManager.sendGroupUpdateMessage(thread: groupThread, changeActionsProtoData: nil)
+            await GroupManager.sendGroupUpdateMessage(thread: groupThread, groupChangeProtoData: nil)
         }
     }
 

@@ -244,7 +244,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     _groupMetaMessage = [[self class] groupMetaMessageForBuilder:outgoingMessageBuilder];
     _hasSyncedTranscript = NO;
     _outgoingMessageSchemaVersion = TSOutgoingMessageSchemaVersion;
-    _changeActionsProtoData = outgoingMessageBuilder.changeActionsProtoData;
+    _changeActionsProtoData = outgoingMessageBuilder.groupChangeProtoData;
     _isVoiceMessage = outgoingMessageBuilder.isVoiceMessage;
 
     return self;
@@ -264,7 +264,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     _groupMetaMessage = [[self class] groupMetaMessageForBuilder:outgoingMessageBuilder];
     _hasSyncedTranscript = NO;
     _outgoingMessageSchemaVersion = TSOutgoingMessageSchemaVersion;
-    _changeActionsProtoData = outgoingMessageBuilder.changeActionsProtoData;
+    _changeActionsProtoData = outgoingMessageBuilder.groupChangeProtoData;
     _isVoiceMessage = outgoingMessageBuilder.isVoiceMessage;
 
     return self;

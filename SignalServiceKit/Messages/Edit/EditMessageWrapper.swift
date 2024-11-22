@@ -209,7 +209,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
             isViewOnceMessage: message.isViewOnceMessage,
             isViewOnceComplete: message.isViewOnceComplete,
             wasRemotelyDeleted: message.wasRemotelyDeleted,
-            changeActionsProtoData: message.changeActionsProtoData,
+            groupChangeProtoData: message.changeActionsProtoData,
             storyAuthorAci: message.storyAuthorAci?.wrappedAciValue,
             storyTimestamp: message.storyTimestamp?.uint64Value,
             storyReactionEmoji: message.storyReactionEmoji,

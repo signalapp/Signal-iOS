@@ -415,9 +415,9 @@ public extension TSOutgoingMessage {
         }
 
         do {
-            let groupContextV2 = try SSKEnvironment.shared.groupsV2Ref.buildGroupContextV2Proto(
+            let groupContextV2 = try GroupsV2Protos.buildGroupContextProto(
                 groupModel: groupModel,
-                changeActionsProtoData: self.changeActionsProtoData
+                groupChangeProtoData: self.changeActionsProtoData
             )
             builder.setGroupV2(groupContextV2)
             return .addedWithoutGroupAvatar

@@ -205,17 +205,18 @@ public class GroupsV2Protos {
         return builder.buildInfallibly()
     }
 
-    public class func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
-                                               changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
-
+    public class func buildGroupContextProto(
+        groupModel: TSGroupModelV2,
+        groupChangeProtoData: Data?
+    ) throws -> SSKProtoGroupContextV2 {
         let builder = SSKProtoGroupContextV2.builder()
         builder.setMasterKey(try groupModel.masterKey().serialize().asData)
         builder.setRevision(groupModel.revision)
 
-        if let changeActionsProtoData = changeActionsProtoData {
-            if changeActionsProtoData.count <= GroupManager.maxEmbeddedChangeProtoLength {
-                assert(changeActionsProtoData.count > 0)
-                builder.setGroupChange(changeActionsProtoData)
+        if let groupChangeProtoData {
+            if groupChangeProtoData.count <= GroupManager.maxEmbeddedChangeProtoLength {
+                assert(groupChangeProtoData.count > 0)
+                builder.setGroupChange(groupChangeProtoData)
             } else {
                 // This isn't necessarily a bug, but it should be rare.
                 owsFailDebug("Discarding oversize group change proto.")
@@ -227,35 +228,19 @@ public class GroupsV2Protos {
 
     // MARK: -
 
-    // This method throws if verification fails.
-    public class func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
-                                                       ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions {
-        let changeProto = try GroupsProtoGroupChange(serializedData: changeProtoData)
-        guard changeProto.changeEpoch <= GroupManager.changeProtoEpoch else {
-            throw OWSAssertionError("Invalid embedded change proto epoch: \(changeProto.changeEpoch).")
-        }
-        return try parseAndVerifyChangeActionsProto(changeProto,
-                                                    ignoreSignature: ignoreSignature)
-    }
-
-    // This method throws if verification fails.
-    public class func parseAndVerifyChangeActionsProto(
+    /// This method throws if verification fails.
+    public static func parseGroupChangeProto(
         _ changeProto: GroupsProtoGroupChange,
-        ignoreSignature: Bool
+        verifySignature: Bool
     ) throws -> GroupsProtoGroupChangeActions {
         guard let changeActionsProtoData = changeProto.actions else {
             throw OWSAssertionError("Missing changeActionsProtoData.")
         }
-        if !ignoreSignature {
-            guard let serverSignatureData = changeProto.serverSignature else {
-                throw OWSAssertionError("Missing serverSignature.")
-            }
-            let serverSignature = try NotarySignature(contents: [UInt8](serverSignatureData))
-            let serverPublicParams = self.serverPublicParams()
-            try serverPublicParams.verifySignature(message: [UInt8](changeActionsProtoData), notarySignature: serverSignature)
+        if verifySignature {
+            let serverSignature = try NotarySignature(contents: [UInt8](changeProto.serverSignature ?? Data()))
+            try self.serverPublicParams().verifySignature(message: [UInt8](changeActionsProtoData), notarySignature: serverSignature)
         }
-        let changeActionsProto = try GroupsProtoGroupChangeActions(serializedData: changeActionsProtoData)
-        return changeActionsProto
+        return try GroupsProtoGroupChangeActions(serializedData: changeActionsProtoData)
     }
 
     // MARK: -
@@ -515,8 +500,8 @@ public class GroupsV2Protos {
 
             var changeActionsProto: GroupsProtoGroupChangeActions?
             if let changeProto = changeStateProto.groupChange {
-                // We can ignoreSignature because these protos came from the service.
-                changeActionsProto = try parseAndVerifyChangeActionsProto(changeProto, ignoreSignature: true)
+                // No need to verify the signature; these are from the service.
+                changeActionsProto = try parseGroupChangeProto(changeProto, verifySignature: false)
             }
 
             guard snapshot != nil || changeActionsProto != nil else {
@@ -536,19 +521,18 @@ public class GroupsV2Protos {
 
     public class func collectAvatarUrlPaths(
         groupProto: GroupsProtoGroup? = nil,
-        groupChangesProto: GroupsProtoGroupChanges? = nil,
+        groupChanges: (proto: GroupsProtoGroupChanges, verifySignature: Bool)? = nil,
         changeActionsProto: GroupsProtoGroupChangeActions? = nil,
-        ignoreSignature: Bool,
         groupV2Params: GroupV2Params
     ) throws -> [String] {
         var avatarUrlPaths = [String]()
         if let groupProto = groupProto {
             avatarUrlPaths += self.collectAvatarUrlPaths(groupProto: groupProto)
         }
-        if let groupChangesProto = groupChangesProto {
+        if let groupChanges = groupChanges {
             avatarUrlPaths += try self.collectAvatarUrlPaths(
-                groupChangesProto: groupChangesProto,
-                ignoreSignature: ignoreSignature,
+                groupChangesProto: groupChanges.proto,
+                verifySignature: groupChanges.verifySignature,
                 groupV2Params: groupV2Params
             )
         }
@@ -561,7 +545,7 @@ public class GroupsV2Protos {
 
     private class func collectAvatarUrlPaths(
         groupChangesProto: GroupsProtoGroupChanges,
-        ignoreSignature: Bool,
+        verifySignature: Bool,
         groupV2Params: GroupV2Params
     ) throws -> [String] {
         var avatarUrlPaths = [String]()
@@ -572,8 +556,7 @@ public class GroupsV2Protos {
             }
 
             if let changeProto = changeStateProto.groupChange {
-                // We can ignoreSignature because these protos came from the service.
-                let changeActionsProto = try parseAndVerifyChangeActionsProto(changeProto, ignoreSignature: ignoreSignature)
+                let changeActionsProto = try parseGroupChangeProto(changeProto, verifySignature: verifySignature)
                 avatarUrlPaths += self.collectAvatarUrlPaths(changeActionsProto: changeActionsProto)
             }
         }

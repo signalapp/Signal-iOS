@@ -75,11 +75,6 @@ public protocol GroupsV2 {
         transaction: SDSAnyReadTransaction
     ) -> Bool
 
-    func buildGroupContextV2Proto(
-        groupModel: TSGroupModelV2,
-        changeActionsProtoData: Data?
-    ) throws -> SSKProtoGroupContextV2
-
     func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction)
 
     func processProfileKeyUpdates()
@@ -119,16 +114,10 @@ public protocol GroupsV2 {
         changesBlock: (GroupsV2OutgoingChanges) -> Void
     ) async throws -> TSGroupThread
 
-    func parseAndVerifyChangeActionsProto(
-        _ changeProtoData: Data,
-        ignoreSignature: Bool
-    ) throws -> GroupsProtoGroupChangeActions
-
     func updateGroupWithChangeActions(
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
-        ignoreSignature: Bool,
         groupSecretParams: GroupSecretParams
     ) async throws -> TSGroupThread
 
@@ -629,23 +618,11 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
-                                         changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
-        owsFail("Not implemented.")
-    }
-
     public func updateGroupV2(
         groupId: Data,
         groupSecretParams: GroupSecretParams,
         changesBlock: (GroupsV2OutgoingChanges) -> Void
     ) async throws -> TSGroupThread {
-        owsFail("Not implemented.")
-    }
-
-    public func parseAndVerifyChangeActionsProto(
-        _ changeProtoData: Data,
-        ignoreSignature: Bool
-    ) throws -> GroupsProtoGroupChangeActions {
         owsFail("Not implemented.")
     }
 
@@ -665,7 +642,6 @@ public class MockGroupsV2: GroupsV2 {
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
-        ignoreSignature: Bool,
         groupSecretParams: GroupSecretParams
     ) async throws -> TSGroupThread {
         owsFail("Not implemented.")

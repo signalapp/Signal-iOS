@@ -741,18 +741,20 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
             // one revision.
             return .failureShouldFailoverToService
         }
-        guard let changeActionsProtoData = groupContext.groupChange else {
+        guard let changeProtoData = groupContext.groupChange else {
             // No embedded group change.
             return .failureShouldFailoverToService
         }
 
         do {
+            let changeProto = try GroupsProtoGroupChange(serializedData: changeProtoData)
+            guard changeProto.changeEpoch <= GroupManager.changeProtoEpoch else {
+                throw OWSAssertionError("Invalid embedded change proto epoch: \(changeProto.changeEpoch).")
+            }
+
             // We need to verify the signatures because these protos came from
             // another client, not the service.
-            let changeActionsProto = try SSKEnvironment.shared.groupsV2Ref.parseAndVerifyChangeActionsProto(
-                changeActionsProtoData,
-                ignoreSignature: false
-            )
+            let changeActionsProto = try GroupsV2Protos.parseGroupChangeProto(changeProto, verifySignature: true)
 
             guard changeActionsProto.revision == contextRevision else {
                 throw OWSAssertionError("Embedded change proto revision doesn't match context revision.")
@@ -766,7 +768,6 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
                 groupId: oldGroupModel.groupId,
                 spamReportingMetadata: spamReportingMetadata,
                 changeActionsProto: changeActionsProto,
-                ignoreSignature: false,
                 groupSecretParams: try oldGroupModel.secretParams()
             )
 

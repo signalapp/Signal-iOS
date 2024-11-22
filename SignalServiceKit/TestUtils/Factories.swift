@@ -135,7 +135,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
             isViewOnceMessage: isViewOnceMessageBuilder(),
             isViewOnceComplete: false,
             wasRemotelyDeleted: false,
-            changeActionsProtoData: changeActionsProtoDataBuilder(),
+            groupChangeProtoData: groupChangeProtoDataBuilder(),
             storyAuthorAci: storyAuthorAciBuilder(),
             storyTimestamp: storyTimestampBuilder(),
             storyReactionEmoji: storyReactionEmojiBuilder(),
@@ -219,7 +219,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return false
     }
 
-    public var changeActionsProtoDataBuilder: () -> Data? = {
+    public var groupChangeProtoDataBuilder: () -> Data? = {
         return nil
     }
 

@@ -195,8 +195,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 @property (nonatomic, readonly) BOOL isUrgent;
 
-// NOTE: We do not persist this property; it is only used for
-//       group updates which we don't insert into the database.
+/// NOTE: We do not persist this property in a TSInteraction column;
+/// however, we **do** persist it via NSKeyedArchiver. It is only used for
+/// group updates that are inserted into MessageSenderJobQueue. It's also
+/// misnamed: it actually stores a GroupChange, not a GroupChange.Actions.
 @property (nonatomic, readonly, nullable) NSData *changeActionsProtoData;
 
 /**

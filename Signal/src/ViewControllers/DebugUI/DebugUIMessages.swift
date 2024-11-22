@@ -1360,7 +1360,7 @@ class DebugUIMessages: DebugUIPage {
         if let groupThread = thread as? TSGroupThread, groupThread.isGroupV2Thread {
             let groupModel = groupThread.groupModel as! TSGroupModelV2
 
-            let groupContext = try! SSKEnvironment.shared.groupsV2Ref.buildGroupContextV2Proto(groupModel: groupModel, changeActionsProtoData: nil)
+            let groupContext = try! GroupsV2Protos.buildGroupContextProto(groupModel: groupModel, groupChangeProtoData: nil)
             dataMessageBuilder.setGroupV2(groupContext)
         }
 

@@ -479,7 +479,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 isViewOnceMessage: false,
                 isViewOnceComplete: false,
                 wasRemotelyDeleted: false,
-                changeActionsProtoData: nil,
+                groupChangeProtoData: nil,
                 // We never restore stories.
                 storyAuthorAci: nil,
                 storyTimestamp: nil,

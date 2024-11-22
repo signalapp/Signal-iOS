@@ -37,22 +37,26 @@ public extension StorageService {
         )
     }
 
-    static func buildUpdateGroupRequest(groupChangeProto: GroupsProtoGroupChangeActions,
-                                        groupV2Params: GroupV2Params,
-                                        authCredential: AuthCredentialWithPni,
-                                        groupInviteLinkPassword: Data?) throws -> GroupsV2Request {
+    static func buildUpdateGroupRequest(
+        groupChangeProto: GroupsProtoGroupChangeActions,
+        groupV2Params: GroupV2Params,
+        authCredential: AuthCredentialWithPni,
+        groupInviteLinkPassword: Data?
+    ) throws -> GroupsV2Request {
 
-        var urlString = "/v1/groups/"
-        if let groupInviteLinkPassword = groupInviteLinkPassword {
+        var urlString = "v2/groups"
+        if let groupInviteLinkPassword {
             urlString += "?inviteLinkPassword=\(groupInviteLinkPassword.asBase64Url)"
         }
 
         let protoData = try groupChangeProto.serializedData()
-        return try buildGroupV2Request(protoData: protoData,
-                                       urlString: urlString,
-                                       method: .patch,
-                                       groupV2Params: groupV2Params,
-                                       authCredential: authCredential)
+        return try buildGroupV2Request(
+            protoData: protoData,
+            urlString: urlString,
+            method: .patch,
+            groupV2Params: groupV2Params,
+            authCredential: authCredential
+        )
     }
 
     static func buildFetchCurrentGroupV2SnapshotRequest(

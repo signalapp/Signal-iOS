@@ -167,7 +167,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
 
         do {
             if let groupThread = thread as? TSGroupThread, let groupModel = groupThread.groupModel as? TSGroupModelV2 {
-                builder.setGroup(try SSKEnvironment.shared.groupsV2Ref.buildGroupContextV2Proto(groupModel: groupModel, changeActionsProtoData: nil))
+                builder.setGroup(try GroupsV2Protos.buildGroupContextProto(groupModel: groupModel, groupChangeProtoData: nil))
             }
 
             return try builder.build()
