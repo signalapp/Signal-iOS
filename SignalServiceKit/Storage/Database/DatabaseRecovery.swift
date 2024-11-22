@@ -599,7 +599,7 @@ public extension DatabaseRecovery {
                 owsPrecondition(SqliteUtil.isSafe(sqlName: columnName))
             }
 
-            let columnNamesSql = columnNames.joined(separator: ", ")
+            let columnNamesSql = columnNames.map({"'\($0)'"}).joined(separator: ", ")
             let valuesSql = columnNames.map({ ":\($0)" }).joined(separator: ", ")
             return "INSERT INTO \(tableName) (\(columnNamesSql)) VALUES (\(valuesSql))"
         }
