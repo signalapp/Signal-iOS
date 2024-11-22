@@ -248,9 +248,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     public override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
 
-        if FeatureFlags.chatListFilter {
-            updateFilterControl(animated: false)
-        }
+        updateFilterControl(animated: false)
     }
 
     public override func viewDidLayoutSubviews() {
@@ -412,14 +410,12 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             buildActions: { settingsAction -> [UIAction] in
                 var contextMenuActions: [UIAction] = []
 
-                if FeatureFlags.chatListFilter {
-                    // FIXME: combine viewState.inboxFilter and renderState.viewInfo.inboxFilter to avoid bugs with them getting out of sync
-                    switch viewState.inboxFilter {
-                    case .unread:
-                        contextMenuActions.append(.disableChatListFilter(target: self))
-                    case .none?, nil:
-                        contextMenuActions.append(.enableChatListFilter(target: self))
-                    }
+                // FIXME: combine viewState.inboxFilter and renderState.viewInfo.inboxFilter to avoid bugs with them getting out of sync
+                switch viewState.inboxFilter {
+                case .unread:
+                    contextMenuActions.append(.disableChatListFilter(target: self))
+                case .none?, nil:
+                    contextMenuActions.append(.enableChatListFilter(target: self))
                 }
 
                 if viewState.settingsButtonCreator.hasInboxChats {

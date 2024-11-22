@@ -1437,9 +1437,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func getSnapshot() -> Snapshot {
         var snapshot = Snapshot()
         snapshot.appendSections([.createCallLink])
-        if FeatureFlags.callLinkCreate {
-            snapshot.appendItems([.createCallLink])
-        }
+        snapshot.appendItems([.createCallLink])
         snapshot.appendSections([.existingCalls])
         snapshot.appendItems(viewModelLoader.viewModelReferences().map { .callViewModelReference($0) })
         return snapshot

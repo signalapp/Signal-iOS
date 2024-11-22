@@ -328,9 +328,6 @@ class GroupCallViewController: UIViewController {
         for callLink: CallLink,
         callLinkStateRetrievalStrategy: CallService.CallLinkStateRetrievalStrategy = .fetch
     ) {
-        guard FeatureFlags.callLinkJoin else {
-            return
-        }
         self._presentLobby { viewController in
             do {
                 return try await self._prepareLobby(from: viewController, shouldAskForCameraPermission: true) {

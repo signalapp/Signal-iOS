@@ -29,17 +29,15 @@ final class ChatListContainerView: UIView {
         addSubview(tableView)
         tableView.autoPinEdgesToSuperviewEdges()
 
-        if FeatureFlags.chatListFilter {
-            let filterControl = ChatListFilterControl(container: self, scrollView: tableView)
-            _filterControl = filterControl
-            insertSubview(filterControl, aboveSubview: tableView)
+        let filterControl = ChatListFilterControl(container: self, scrollView: tableView)
+        _filterControl = filterControl
+        insertSubview(filterControl, aboveSubview: tableView)
 
-            observation = tableView.observe(\.contentOffset) { [weak self] _, _ in
-                guard let self else { return }
-                scrollPositionDidChange()
-                filterControl.adjustedContentOffsetDidChange(adjustedContentOffset)
-                layoutFilterControl()
-            }
+        observation = tableView.observe(\.contentOffset) { [weak self] _, _ in
+            guard let self else { return }
+            scrollPositionDidChange()
+            filterControl.adjustedContentOffsetDidChange(adjustedContentOffset)
+            layoutFilterControl()
         }
     }
 

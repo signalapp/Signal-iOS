@@ -125,7 +125,7 @@ public struct AccountAttributes: Codable {
         public let pni = true
         public let paymentActivation = true
         public let deleteSyncSendSupport = true
-        public let versionedExpireTimer = FeatureFlags.versionedExpireTimer
+        public let versionedExpireTimer = true
         public let storageServiceRecordIkm = FeatureFlags.storageServiceRecordIkmMigration
 
         public enum CodingKeys: String, CodingKey {

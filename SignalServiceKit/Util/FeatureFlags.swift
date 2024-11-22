@@ -32,8 +32,6 @@ public enum FeatureFlags {
 
     public static let preRegDeviceTransfer = build.includes(.dev)
 
-    public static let paymentsScrubDetails = false
-
     public static let isPrerelease = build.includes(.beta)
 
     /// If we ever need to internally detect database corruption again in the
@@ -48,14 +46,6 @@ public enum FeatureFlags {
     public static let linkAndSyncTimeoutSeconds: UInt32 = 60 * (build.includes(.internal) ? 5 : 1)
     public static let backupsMemorySamplerRatio: Float = build.includes(.internal) ? 0.1 : 0
     public static let messageBackupQuickRestoreFlow = false
-
-    public static let callLinkCreate = true
-    public static let callLinkSync = true
-    public static let callLinkJoin = true
-
-    public static let chatListFilter = true
-
-    public static let versionedExpireTimer = true
 
     public static let linkedDevicesRedesign = build.includes(.internal)
     public static let biometricLinkedDeviceFlow = build.includes(.internal)
