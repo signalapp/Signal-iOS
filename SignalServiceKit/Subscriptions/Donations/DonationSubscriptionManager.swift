@@ -82,9 +82,7 @@ public struct Subscription: Equatable {
     /// server will, upon getting that callback, cancel the subscription.
     public enum SubscriptionStatus: String {
         case unknown
-        case trialing = "trialing"
         case incomplete = "incomplete"
-        case incompleteExpired = "incomplete_expired"
         case unpaid = "unpaid"
 
         /// Indicates the subscription has been paid successfully for the
@@ -414,7 +412,7 @@ public class DonationSubscriptionManager: NSObject {
             switch subscription.status {
             case .active, .pastDue:
                 break
-            case .canceled, .incomplete, .incompleteExpired, .trialing, .unpaid, .unknown:
+            case .canceled, .incomplete, .unpaid, .unknown:
                 return Promise.value(())
             }
 

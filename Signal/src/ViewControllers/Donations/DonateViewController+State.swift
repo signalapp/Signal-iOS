@@ -251,7 +251,7 @@ extension DonateViewController {
                 }
             }
 
-            public var paymentProcessingWithPaymentMethod: DonationPaymentMethod? {
+            public var paymentMethodIfPaymentProcessing: DonationPaymentMethod? {
                 guard let subscription = currentSubscription else { return nil }
 
                 let subscriptionProcessing = subscription.isPaymentProcessing
