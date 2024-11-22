@@ -310,21 +310,6 @@ public class GroupManager: NSObject {
 
     #if TESTABLE_BUILD
 
-    @objc
-    public static func createGroupForTestsObjc(members: [SignalServiceAddress],
-                                               name: String? = nil,
-                                               avatarData: Data? = nil,
-                                               transaction: SDSAnyWriteTransaction) -> TSGroupThread {
-        do {
-            return try createGroupForTests(members: members,
-                                           name: name,
-                                           avatarData: avatarData,
-                                           transaction: transaction)
-        } catch {
-            owsFail("Error: \(error)")
-        }
-    }
-
     /// Create a group for testing purposes.
     ///
     /// - Parameter shouldInsertInfoMessage
