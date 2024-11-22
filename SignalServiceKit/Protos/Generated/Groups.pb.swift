@@ -464,6 +464,13 @@ struct GroupsProtos_GroupChange: @unchecked Sendable {
       set {_uniqueStorage()._sourceUserID = newValue}
     }
 
+    /// clients should not provide this value; the server will provide it in the response buffer to ensure the signature is binding to a particular group
+    /// if clients set it during a request the server will respond with 400.
+    var groupID: Data {
+      get {return _storage._groupID}
+      set {_uniqueStorage()._groupID = newValue}
+    }
+
     /// The change revision number
     var revision: UInt32 {
       get {return _storage._revision}
@@ -1820,6 +1827,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
   static let protoMessageName: String = GroupsProtos_GroupChange.protoMessageName + ".Actions"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "sourceUserId"),
+    25: .standard(proto: "group_id"),
     2: .same(proto: "revision"),
     3: .same(proto: "addMembers"),
     4: .same(proto: "deleteMembers"),
@@ -1847,6 +1855,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
 
   fileprivate class _StorageClass {
     var _sourceUserID: Data = Data()
+    var _groupID: Data = Data()
     var _revision: UInt32 = 0
     var _addMembers: [GroupsProtos_GroupChange.Actions.AddMemberAction] = []
     var _deleteMembers: [GroupsProtos_GroupChange.Actions.DeleteMemberAction] = []
@@ -1885,6 +1894,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
 
     init(copying source: _StorageClass) {
       _sourceUserID = source._sourceUserID
+      _groupID = source._groupID
       _revision = source._revision
       _addMembers = source._addMembers
       _deleteMembers = source._deleteMembers
@@ -1950,6 +1960,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
         case 22: try { try decoder.decodeRepeatedMessageField(value: &_storage._addBannedMembers) }()
         case 23: try { try decoder.decodeRepeatedMessageField(value: &_storage._deleteBannedMembers) }()
         case 24: try { try decoder.decodeRepeatedMessageField(value: &_storage._promotePniPendingMembers) }()
+        case 25: try { try decoder.decodeSingularBytesField(value: &_storage._groupID) }()
         default: break
         }
       }
@@ -2034,6 +2045,9 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
       if !_storage._promotePniPendingMembers.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._promotePniPendingMembers, fieldNumber: 24)
       }
+      if !_storage._groupID.isEmpty {
+        try visitor.visitSingularBytesField(value: _storage._groupID, fieldNumber: 25)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2044,6 +2058,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
         let _storage = _args.0
         let rhs_storage = _args.1
         if _storage._sourceUserID != rhs_storage._sourceUserID {return false}
+        if _storage._groupID != rhs_storage._groupID {return false}
         if _storage._revision != rhs_storage._revision {return false}
         if _storage._addMembers != rhs_storage._addMembers {return false}
         if _storage._deleteMembers != rhs_storage._deleteMembers {return false}

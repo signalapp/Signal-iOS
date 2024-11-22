@@ -339,7 +339,7 @@ public class GroupsV2Impl: GroupsV2 {
         guard changeProto.changeEpoch <= GroupManager.changeProtoEpoch else {
             throw OWSAssertionError("Invalid embedded change proto epoch: \(changeProto.changeEpoch).")
         }
-        let changeActionsProto = try GroupsV2Protos.parseGroupChangeProto(changeProto, verifySignature: false)
+        let changeActionsProto = try GroupsV2Protos.parseGroupChangeProto(changeProto, verificationOperation: .alreadyTrusted)
 
         // Collect avatar state from our change set so that we can
         // avoid downloading any avatars we just uploaded while

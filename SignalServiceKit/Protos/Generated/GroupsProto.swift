@@ -5015,6 +5015,16 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
         return !proto.sourceUserID.isEmpty
     }
 
+    public var groupID: Data? {
+        guard hasGroupID else {
+            return nil
+        }
+        return proto.groupID
+    }
+    public var hasGroupID: Bool {
+        return !proto.groupID.isEmpty
+    }
+
     public var revision: UInt32 {
         return proto.revision
     }
@@ -5219,6 +5229,9 @@ extension GroupsProtoGroupChangeActions {
         if let _value = sourceUserID {
             builder.setSourceUserID(_value)
         }
+        if let _value = groupID {
+            builder.setGroupID(_value)
+        }
         builder.setRevision(revision)
         builder.setAddMembers(addMembers)
         builder.setDeleteMembers(deleteMembers)
@@ -5281,6 +5294,16 @@ public struct GroupsProtoGroupChangeActionsBuilder {
 
     public mutating func setSourceUserID(_ valueParam: Data) {
         proto.sourceUserID = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setGroupID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.groupID = valueParam
+    }
+
+    public mutating func setGroupID(_ valueParam: Data) {
+        proto.groupID = valueParam
     }
 
     public mutating func setRevision(_ valueParam: UInt32) {

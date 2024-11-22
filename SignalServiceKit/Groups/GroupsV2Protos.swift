@@ -228,19 +228,30 @@ public class GroupsV2Protos {
 
     // MARK: -
 
+    public enum VerificationOperation {
+        case alreadyTrusted
+        case verifySignature(groupId: Data)
+    }
+
     /// This method throws if verification fails.
     public static func parseGroupChangeProto(
         _ changeProto: GroupsProtoGroupChange,
-        verifySignature: Bool
+        verificationOperation: VerificationOperation
     ) throws -> GroupsProtoGroupChangeActions {
         guard let changeActionsProtoData = changeProto.actions else {
             throw OWSAssertionError("Missing changeActionsProtoData.")
         }
-        if verifySignature {
+        if case .verifySignature = verificationOperation {
             let serverSignature = try NotarySignature(contents: [UInt8](changeProto.serverSignature ?? Data()))
             try self.serverPublicParams().verifySignature(message: [UInt8](changeActionsProtoData), notarySignature: serverSignature)
         }
-        return try GroupsProtoGroupChangeActions(serializedData: changeActionsProtoData)
+        let result = try GroupsProtoGroupChangeActions(serializedData: changeActionsProtoData)
+        if case .verifySignature(let groupId) = verificationOperation {
+            guard result.groupID == groupId else {
+                throw OWSAssertionError("Invalid groupId.")
+            }
+        }
+        return result
     }
 
     // MARK: -
@@ -502,7 +513,7 @@ public class GroupsV2Protos {
                 groupProto: changeStateProto.groupState,
                 changeActionsProto: try changeStateProto.groupChange.map {
                     // No need to verify the signature; these are from the service.
-                    return try parseGroupChangeProto($0, verifySignature: false)
+                    return try parseGroupChangeProto($0, verificationOperation: .alreadyTrusted)
                 }
             )
 

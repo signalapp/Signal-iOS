@@ -754,7 +754,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
 
             // We need to verify the signatures because these protos came from
             // another client, not the service.
-            let changeActionsProto = try GroupsV2Protos.parseGroupChangeProto(changeProto, verifySignature: true)
+            let changeActionsProto = try GroupsV2Protos.parseGroupChangeProto(changeProto, verificationOperation: .verifySignature(groupId: groupId))
 
             guard changeActionsProto.revision == contextRevision else {
                 throw OWSAssertionError("Embedded change proto revision doesn't match context revision.")
