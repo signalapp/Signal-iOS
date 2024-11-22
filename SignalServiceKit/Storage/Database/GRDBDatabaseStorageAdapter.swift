@@ -215,20 +215,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         }
     }
 
-    public func resetAllStorage() {
-        Logger.info("")
-
-        // This might be redundant but in the spirit of thoroughness...
-
-        GRDBDatabaseStorageAdapter.removeAllFiles()
-
-        if CurrentAppContext().isMainApp {
-            TSAttachmentStream.deleteAttachmentsFromDisk()
-        }
-
-        // TODO: Delete Profiles on Disk?
-    }
-
     static func prepareDatabase(db: Database, keyFetcher: GRDBKeyFetcher) throws {
         let key = try keyFetcher.fetchString()
         try db.execute(sql: "PRAGMA key = \"\(key)\"")
@@ -827,7 +813,7 @@ public struct GRDBKeyFetcher {
         return try keychainStorage.dataValue(service: Constants.keyServiceName, key: Constants.keyName)
     }
 
-    func clear() throws {
+    public func clear() throws {
         try keychainStorage.removeValue(service: Constants.keyServiceName, key: Constants.keyName)
     }
 

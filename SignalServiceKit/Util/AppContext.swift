@@ -108,6 +108,7 @@ public protocol AppContext {
     ///
     /// App becomes unuseable. As of time of writing, the only option
     /// after doing this is to terminate the app and relaunch.
+    @MainActor
     func resetAppDataAndExit() -> Never
 }
 

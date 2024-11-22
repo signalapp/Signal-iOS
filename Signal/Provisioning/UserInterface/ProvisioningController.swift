@@ -301,13 +301,17 @@ public class ProvisioningController: NSObject {
                     let message = OWSLocalizedString("SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE",
                                                     comment: "Message for error alert indicating that re-linking failed because the account did not match.")
                     alert = ActionSheetController(title: title, message: message)
-                    alert.addAction(ActionSheetAction(title: OWSLocalizedString("SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE",
-                                                                               comment: "Label for the 'reset device' action in the 're-linking failed because the account did not match' alert."),
-                                                      accessibilityIdentifier: "alert.reset_device",
-                                                      style: .default,
-                                                      handler: { _ in
-                                                        Self.resetDeviceState()
-                                                      }))
+                    alert.addAction(ActionSheetAction(
+                        title: OWSLocalizedString(
+                            "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE",
+                            comment: "Label for the 'reset device' action in the 're-linking failed because the account did not match' alert."
+                        ),
+                        accessibilityIdentifier: "alert.reset_device",
+                        style: .default,
+                        handler: { _ in
+                            Self.resetDeviceState()
+                        }
+                    ))
                 case .deviceLimitExceededError(let error):
                     alert = ActionSheetController(title: error.errorDescription, message: error.recoverySuggestion)
                     alert.addAction(ActionSheetAction(title: CommonStrings.okButton))
@@ -353,6 +357,7 @@ public class ProvisioningController: NSObject {
         SignalApp.shared.showConversationSplitView(appReadiness: appReadiness)
     }
 
+    @MainActor
     private static func resetDeviceState() {
         Logger.warn("")
 

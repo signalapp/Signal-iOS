@@ -110,8 +110,10 @@ extension DeviceTransferService: MCSessionDelegate {
             // When the old device receives the done message from the new device,
             // it can be confident that the transfer has completed successfully and
             // clear out all data from this device. This will crash the app.
-            SignalApp.resetAppData()
-            SignalApp.showTransferCompleteAndExit()
+            Task { @MainActor in
+                SignalApp.resetAppData(keyFetcher: SSKEnvironment.shared.databaseStorageRef.keyFetcher)
+                SignalApp.showTransferCompleteAndExit()
+            }
 
         case .incoming(let oldDevicePeerId, _, let receivedFileIds, let skippedFileIds, _):
             guard peerId == oldDevicePeerId else {

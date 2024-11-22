@@ -194,8 +194,8 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
                 comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset."
             ),
             proceedStyle: .destructive
-        ) { _ in
-            SignalApp.resetAppDataWithUI()
+        ) { [keychainStorage] _ in
+            SignalApp.resetAppDataWithUI(keyFetcher: GRDBKeyFetcher(keychainStorage: keychainStorage))
         }
     }
 

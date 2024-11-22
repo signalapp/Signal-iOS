@@ -406,7 +406,7 @@ public class ActionSheetAction: NSObject {
     }
 
     fileprivate let handler: Handler?
-    public typealias Handler = (ActionSheetAction) -> Void
+    public typealias Handler = @MainActor (ActionSheetAction) -> Void
 
     public var trailingIcon: ThemeIcon? {
         get {

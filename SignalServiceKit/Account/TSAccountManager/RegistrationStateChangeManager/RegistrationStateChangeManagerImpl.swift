@@ -224,7 +224,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
                 .awaitable()
 
             // No need to set any state, as we wipe the whole app anyway.
-            appContext.resetAppDataAndExit()
+            await appContext.resetAppDataAndExit()
         } catch {
             owsFailDebugUnlessNetworkFailure(error)
             throw error

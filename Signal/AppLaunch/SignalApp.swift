@@ -238,73 +238,75 @@ extension SignalApp {
 
 extension SignalApp {
 
-    static func resetAppDataWithUI() {
+    @MainActor
+    static func resetAppDataWithUI(keyFetcher: GRDBKeyFetcher = SSKEnvironment.shared.databaseStorageRef.keyFetcher) {
         Logger.info("")
 
-        DispatchMainThreadSafe {
-            guard let fromVC = UIApplication.shared.frontmostViewController else { return }
-            ModalActivityIndicatorViewController.present(
-                fromViewController: fromVC,
-                canCancel: true,
-                backgroundBlock: { _ in
-                    SignalApp.resetAppDataAndExit()
-                }
-            )
-        }
+        guard let fromVC = UIApplication.shared.frontmostViewController else { return }
+        ModalActivityIndicatorViewController.present(
+            fromViewController: fromVC,
+            canCancel: false,
+            asyncBlock: { _ in
+                SignalApp.resetAppDataAndExit(keyFetcher: keyFetcher)
+            }
+        )
     }
 
-    static func resetAppDataAndExit() -> Never {
-        resetAppData()
+    @MainActor
+    static func resetAppDataAndExit(keyFetcher: GRDBKeyFetcher) -> Never {
+        resetAppData(keyFetcher: keyFetcher)
         exit(0)
     }
 
-    static func resetAppData() {
+    @MainActor
+    static func resetAppData(keyFetcher: GRDBKeyFetcher) {
         // This _should_ be wiped out below.
         Logger.info("")
         Logger.flush()
 
-        DispatchSyncMainThreadSafe {
-            SSKEnvironment.shared.databaseStorageRef.resetAllStorage()
-            OWSUserProfile.resetProfileStorage()
-            SSKEnvironment.shared.preferencesRef.removeAllValues()
-            SSKEnvironment.shared.notificationPresenterRef.clearAllNotifications()
-            UIApplication.shared.applicationIconBadgeNumber = 0
-            OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appSharedDataDirectoryPath())
-            OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appDocumentDirectoryPath())
-            OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.cachesDirectoryPath())
-            OWSFileSystem.deleteContents(ofDirectory: OWSTemporaryDirectory())
-            OWSFileSystem.deleteContents(ofDirectory: NSTemporaryDirectory())
-            AppDelegate.updateApplicationShortcutItems(isRegistered: false)
+        do {
+            try keyFetcher.clear()
+        } catch {
+            owsFailDebug("Could not clear keychain: \(error)")
         }
+
+        // This *must not* touch any environments -- they're not always available.
+        SSKEnvironment.shared.preferencesRef.removeAllValues()
+        SSKEnvironment.shared.notificationPresenterRef.clearAllNotifications()
+        UIApplication.shared.applicationIconBadgeNumber = 0
+        OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appSharedDataDirectoryPath())
+        OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appDocumentDirectoryPath())
+        OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.cachesDirectoryPath())
+        OWSFileSystem.deleteContents(ofDirectory: NSTemporaryDirectory())
+        AppDelegate.updateApplicationShortcutItems(isRegistered: false)
 
         DebugLogger.shared.wipeLogsAlways(appContext: CurrentAppContext() as! MainAppContext)
     }
 
+    @MainActor
     static func showTransferCompleteAndExit() {
-        DispatchQueue.main.async {
-            let actionSheet = ActionSheetController(
-                title: OWSLocalizedString(
-                    "OUTGOING_TRANSFER_COMPLETE_TITLE",
-                    comment: "Title for action sheet shown when device transfer completes"
-                ),
-                message: OWSLocalizedString(
-                    "OUTGOING_TRANSFER_COMPLETE_MESSAGE",
-                    comment: "Message for action sheet shown when device transfer completes"
-                )
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "OUTGOING_TRANSFER_COMPLETE_TITLE",
+                comment: "Title for action sheet shown when device transfer completes"
+            ),
+            message: OWSLocalizedString(
+                "OUTGOING_TRANSFER_COMPLETE_MESSAGE",
+                comment: "Message for action sheet shown when device transfer completes"
             )
-            actionSheet.addAction(.init(
-                title: OWSLocalizedString(
-                    "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION",
-                    comment: "Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch)."
-                ),
-                style: .destructive,
-                handler: { _ in
-                    exit(0)
-                }
-            ))
-            actionSheet.isCancelable = false
-            CurrentAppContext().frontmostViewController()?.present(actionSheet, animated: true)
-        }
+        )
+        actionSheet.addAction(.init(
+            title: OWSLocalizedString(
+                "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION",
+                comment: "Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch)."
+            ),
+            style: .destructive,
+            handler: { _ in
+                exit(0)
+            }
+        ))
+        actionSheet.isCancelable = false
+        CurrentAppContext().frontmostViewController()?.present(actionSheet, animated: true)
     }
 }
 

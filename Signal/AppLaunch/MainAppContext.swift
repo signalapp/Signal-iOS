@@ -197,7 +197,8 @@ class MainAppContext: NSObject, AppContext {
 
     var debugLogsDirPath: String { DebugLogger.mainAppDebugLogsDirPath }
 
+    @MainActor
     func resetAppDataAndExit() -> Never {
-        SignalApp.resetAppDataAndExit()
+        SignalApp.resetAppDataAndExit(keyFetcher: SSKEnvironment.shared.databaseStorageRef.keyFetcher)
     }
 }

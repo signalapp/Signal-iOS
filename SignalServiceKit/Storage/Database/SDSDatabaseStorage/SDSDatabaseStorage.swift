@@ -122,16 +122,6 @@ public class SDSDatabaseStorage: NSObject {
         }
     }
 
-    public func resetAllStorage() {
-        YDBStorage.deleteYDBStorage()
-        do {
-            try keyFetcher.clear()
-        } catch {
-            owsFailDebug("Could not clear keychain: \(error)")
-        }
-        grdbStorage.resetAllStorage()
-    }
-
     // MARK: - Id Mapping
 
     public func updateIdMapping(thread: TSThread, transaction: SDSAnyWriteTransaction) {

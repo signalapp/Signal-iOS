@@ -587,15 +587,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
     // TODO: We may want to clean up this directory in the "orphan cleanup" logic.
 
-    public static func resetProfileStorage() {
-        AssertIsOnMainThread()
-        do {
-            try FileManager.default.removeItem(atPath: profileAvatarsDirPath)
-        } catch {
-            Logger.error("Failed to delete database: \(error)")
-        }
-    }
-
     @objc
     public static func allProfileAvatarFilePaths(tx: SDSAnyReadTransaction) -> Set<String> {
         var result = Set<String>()
