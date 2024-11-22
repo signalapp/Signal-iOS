@@ -1888,10 +1888,7 @@ public class GroupsV2Impl: GroupsV2 {
         groupV2Params: GroupV2Params,
         inviteLinkPassword: Data?
     ) async throws -> UInt32 {
-
-        let revisionForPlaceholderModel = AtomicOptional<UInt32>(nil, lock: .sharedGlobal)
-
-        // We re-fetch the GroupInviteLinkPreview with every attempt in order to get the latest:
+        // We re-fetch the GroupInviteLinkPreview before trying in order to get the latest:
         //
         // * revision
         // * addFromInviteLinkAccess
@@ -1901,12 +1898,13 @@ public class GroupsV2Impl: GroupsV2 {
             groupSecretParams: groupV2Params.groupSecretParams,
             allowCached: false
         )
+        let oldRevision = groupInviteLinkPreview.revision
+        let newRevision = oldRevision + 1
 
         let requestBuilder: RequestBuilder = { (authCredential) in
             let groupChangeProto = try self.buildChangeActionsProtoToCancelMemberRequest(
-                groupInviteLinkPreview: groupInviteLinkPreview,
                 groupV2Params: groupV2Params,
-                revisionForPlaceholderModel: revisionForPlaceholderModel
+                newRevision: newRevision
             )
             return try StorageService.buildUpdateGroupRequest(
                 groupChangeProto: groupChangeProto,
@@ -1924,23 +1922,16 @@ public class GroupsV2Impl: GroupsV2 {
             behavior404: .fail
         )
 
-        guard let revision = revisionForPlaceholderModel.get() else {
-            throw OWSAssertionError("Missing revisionForPlaceholderModel.")
-        }
-        return revision
+        return newRevision
     }
 
     private func buildChangeActionsProtoToCancelMemberRequest(
-        groupInviteLinkPreview: GroupInviteLinkPreview,
         groupV2Params: GroupV2Params,
-        revisionForPlaceholderModel: AtomicOptional<UInt32>
+        newRevision: UInt32
     ) throws -> GroupsProtoGroupChangeActions {
         guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             throw OWSAssertionError("Missing localAci.")
         }
-        let oldRevision = groupInviteLinkPreview.revision
-        let newRevision = oldRevision + 1
-        revisionForPlaceholderModel.set(newRevision)
 
         var actionsBuilder = GroupsProtoGroupChangeActions.builder()
         actionsBuilder.setRevision(newRevision)
