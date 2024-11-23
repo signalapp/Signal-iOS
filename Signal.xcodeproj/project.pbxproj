@@ -1679,6 +1679,8 @@
 		B982ACFF2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B982ACFE2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf */; };
 		B982AD012BA8FD3200AD7E81 /* SignalSymbols-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B982AD002BA8FD3100AD7E81 /* SignalSymbols-Light.otf */; };
 		B9921F882CC6FDB200AB667F /* HeroSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9921F872CC6FDB200AB667F /* HeroSheetViewController.swift */; };
+		B99287FB2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99287FA2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift */; };
+		B99288002CF124AC000D62C4 /* Text+Links.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99287FF2CF124AC000D62C4 /* Text+Links.swift */; };
 		B99B155D2A71BA5200E26DAC /* StoryContextViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */; };
 		B9A0807A2B07D76A000FDB5B /* HomeTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */; };
 		B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */; };
@@ -5508,6 +5510,8 @@
 		B982ACFE2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Bold.otf"; sourceTree = "<group>"; };
 		B982AD002BA8FD3100AD7E81 /* SignalSymbols-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Light.otf"; sourceTree = "<group>"; };
 		B9921F872CC6FDB200AB667F /* HeroSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroSheetViewController.swift; sourceTree = "<group>"; };
+		B99287FA2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedDevicesEducationSheet.swift; sourceTree = "<group>"; };
+		B99287FF2CF124AC000D62C4 /* Text+Links.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Text+Links.swift"; sourceTree = "<group>"; };
 		B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextViewState.swift; sourceTree = "<group>"; };
 		B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabViewController.swift; sourceTree = "<group>"; };
 		B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSticker.swift; sourceTree = "<group>"; };
@@ -10795,6 +10799,7 @@
 			isa = PBXGroup;
 			children = (
 				505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */,
+				B99287FA2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift */,
 				3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */,
 				B9E322E82CD191CF006DAF3B /* LinkedDevicesView.swift */,
 			);
@@ -11151,6 +11156,7 @@
 				05594CCD2C989F1900CCBFF6 /* ScrollableWhenCompact.swift */,
 				0510F69D2C91EB2800FA3FDE /* ScrollBounceBehaviorIfAvailable.swift */,
 				B9D721752C87B8EB007EDA85 /* SwiftUI+Animations.swift */,
+				B99287FF2CF124AC000D62C4 /* Text+Links.swift */,
 			);
 			path = SwiftUIExtensions;
 			sourceTree = "<group>";
@@ -16300,6 +16306,7 @@
 				B9D721762C87B8EB007EDA85 /* SwiftUI+Animations.swift in Sources */,
 				3402AA7E271D9E180084CBAE /* TappableStackView.swift in Sources */,
 				3402AA80271D9E180084CBAE /* TappableView.swift in Sources */,
+				B99288002CF124AC000D62C4 /* Text+Links.swift in Sources */,
 				3402AA31271D9DCD0084CBAE /* TextApprovalViewController.swift in Sources */,
 				88B6D673280770C4005D86EC /* TextAttachmentView.swift in Sources */,
 				764FE0412A2EF3A7004D2804 /* TextFieldFormatting.swift in Sources */,
@@ -16795,6 +16802,7 @@
 				D9C30DDB2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift in Sources */,
 				660FA9112CE58CD7006F9C34 /* LinkAndSyncLoadingViewController.swift in Sources */,
 				505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */,
+				B99287FB2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift in Sources */,
 				3437F63A2512835300AC1767 /* LinkedDevicesTableViewController.swift in Sources */,
 				B9E322E92CD191CF006DAF3B /* LinkedDevicesView.swift in Sources */,
 				76C87FE128BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift in Sources */,

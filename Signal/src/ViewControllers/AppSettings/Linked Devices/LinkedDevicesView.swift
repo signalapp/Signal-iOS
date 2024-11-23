@@ -28,6 +28,7 @@ class LinkedDevicesViewModel: ObservableObject {
         case updateFailureAlert(Error)
         case unlinkFailureAlert(device: OWSDevice, error: Error)
         case activityIndicator(ModalActivityIndicatorViewController)
+        case linkedDeviceEducation
     }
 
     fileprivate var present = PassthroughSubject<Presentation, Never>()
@@ -280,6 +281,8 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
                 self.showUnlinkFailedAlert(device: device, error: error)
             case let .activityIndicator(modal):
                 self.present(modal, animated: false)
+            case .linkedDeviceEducation:
+                self.present(LinkedDevicesEducationSheet(), animated: true)
             }
         }.store(in: &subscriptions)
 
@@ -577,7 +580,11 @@ struct LinkedDevicesView: View {
                         "LINKED_DEVICES_HEADER_DESCRIPTION",
                         comment: "Description for header of the linked devices list"
                     ))
+                    .appendLink(CommonStrings.learnMore) {
+                        viewModel.present.send(.linkedDeviceEducation)
+                    }
                     .foregroundStyle(Color.Signal.secondaryLabel)
+                    .font(.subheadline)
                     .multilineTextAlignment(.center)
 
                     Button {
