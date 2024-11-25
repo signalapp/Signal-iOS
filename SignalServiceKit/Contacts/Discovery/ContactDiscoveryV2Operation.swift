@@ -58,8 +58,7 @@ extension LibSignalClient.Net: ContactDiscoveryConnection {
             e164s: request.newE164s.map(\.stringValue),
             prevE164s: request.prevE164s.map(\.stringValue),
             acisAndAccessKeys: request.acisAndAccessKeys,
-            token: request.token,
-            returnAcisWithoutUaks: true
+            token: request.token
         ))
     }
 
