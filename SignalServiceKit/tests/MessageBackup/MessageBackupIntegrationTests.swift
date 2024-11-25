@@ -65,6 +65,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         case chatItemGiftBadge
         case chatItemGroupCall
         case chatItemGroupChangeChatUpdate
+        case chatItemGroupChangeChatMultipleUpdate
         case chatItemIndividualCall
         case chatItemLearnedProfile
         case chatItemPaymentNotification
@@ -148,10 +149,9 @@ class MessageBackupIntegrationTests: XCTestCase {
                 case .chatItemGroupCall:
                     return binprotoName.contains("chat_item_group_call_update_")
                 case .chatItemGroupChangeChatUpdate:
-                    // Tests 37 and 38 are intentionally excluded from iOS because they fail
-                    // for spurious reasons. Namely, for GroupMemberAddedUpdate, iOS has neither
-                    // 1) distinct inviterAci/updaterAci fields, nor 2) a need for hasOpenInvite.
                     return binprotoName.contains("chat_item_group_change_chat_update_")
+                case .chatItemGroupChangeChatMultipleUpdate:
+                    return binprotoName.contains("chat_item_group_change_chat_multiple_update_")
                 case .chatItemIndividualCall:
                     return binprotoName.contains("chat_item_individual_call_update_")
                 case .chatItemLearnedProfile:
