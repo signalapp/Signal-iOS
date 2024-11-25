@@ -491,13 +491,30 @@ public extension Stripe {
 
 public extension Stripe {
 
-    static func isStripeIDEALCallback(_ url: URL) -> Bool {
-        url.scheme == "https" &&
-        url.host == "signaldonations.org" &&
-        url.path == "/ideal" &&
-        url.user == nil &&
-        url.password == nil &&
-        url.port == nil
+    private static func isStripeIDEALCallback(_ url: URL) -> Bool {
+        if
+            url.scheme == "https" &&
+            url.host == "signaldonations.org" &&
+            url.path == "/ideal" &&
+            url.user == nil &&
+            url.password == nil &&
+            url.port == nil
+        {
+            return true
+        }
+
+        if
+            url.scheme == "sgnl" &&
+            url.host == "ideal" &&
+            url.path.isEmpty &&
+            url.user == nil &&
+            url.password == nil &&
+            url.port == nil
+        {
+            return true
+        }
+
+        return false
     }
 
     enum IDEALCallbackType {
