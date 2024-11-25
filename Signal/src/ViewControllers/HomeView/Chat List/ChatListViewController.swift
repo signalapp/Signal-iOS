@@ -34,12 +34,8 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     // MARK: View Lifecycle
 
-    private var container: ChatListContainerView!
-    private var filterControl: ChatListFilterControl? { container.filterControl }
-
     public override func loadView() {
-        container = ChatListContainerView(tableView: tableView, searchBar: searchBar)
-        view = container
+        view = containerView
     }
 
     public override func viewDidLoad() {
@@ -296,7 +292,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         guard isViewLoaded else { return }
 
-        container.willTransition(to: size, with: coordinator)
+        containerView.willTransition(to: size, with: coordinator)
 
         // There is a subtle difference in when the split view controller
         // transitions between collapsed and expanded state on iPad vs
