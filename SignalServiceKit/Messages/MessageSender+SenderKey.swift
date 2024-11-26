@@ -603,7 +603,7 @@ extension MessageSender {
 
         // Sender key messages use an access key composed of every recipient's individual access key.
         let allAccessKeys = recipients.compactMap {
-            udAccessMap[$0.serviceId]?.senderKeyUDAccessKey
+            udAccessMap[$0.serviceId]?.udAccessKey
         }
         guard recipients.count == allAccessKeys.count else {
             throw OWSAssertionError("Incomplete access key set")

@@ -60,25 +60,9 @@ extension UnidentifiedAccessMode: CustomStringConvertible {
 
 // MARK: -
 
-public class OWSUDAccess: NSObject {
-    public let udAccessKey: SMKUDAccessKey
-    public var senderKeyUDAccessKey: SMKUDAccessKey {
-        // If unrestricted, we use a zeroed out key instead of a random key
-        // This ensures we don't scribble over the rest of our composite key when talking to the multi_recipient endpoint
-        udAccessMode == .unrestricted ? .zeroedKey : udAccessKey
-    }
-
-    public let udAccessMode: UnidentifiedAccessMode
-
-    public let isRandomKey: Bool
-
-    public init(udAccessKey: SMKUDAccessKey,
-                udAccessMode: UnidentifiedAccessMode,
-                isRandomKey: Bool) {
-        self.udAccessKey = udAccessKey
-        self.udAccessMode = udAccessMode
-        self.isRandomKey = isRandomKey
-    }
+public struct OWSUDAccess {
+    let udAccessKey: SMKUDAccessKey
+    let udAccessMode: UnidentifiedAccessMode
 }
 
 // MARK: -
@@ -209,10 +193,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // MARK: - Recipient state
 
-    private func randomUDAccessKey() -> SMKUDAccessKey {
-        return SMKUDAccessKey(randomKeyData: ())
-    }
-
     private func unidentifiedAccessMode(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> UnidentifiedAccessMode {
         let existingValue: UnidentifiedAccessMode? = {
             guard let rawValue = serviceIdAccessStore.getInt(serviceId.serviceIdUppercaseString, transaction: tx.asV2Read) else {
@@ -266,38 +246,30 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // Returns the UD access key for sending to a given recipient or fetching a profile
     public func udAccess(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> OWSUDAccess? {
+        let accessKey: SMKUDAccessKey
         let accessMode = unidentifiedAccessMode(for: serviceId, tx: tx)
 
         switch accessMode {
         case .unrestricted:
-            // Unrestricted users should use a random key.
-            let udAccessKey = randomUDAccessKey()
-            return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: true)
+            accessKey = .zeroedKey
         case .unknown:
-            // Unknown users should use a derived key if possible,
-            // and otherwise use a random key.
-            if let udAccessKey = udAccessKey(for: serviceId, tx: tx) {
-                return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: false)
-            } else {
-                let udAccessKey = randomUDAccessKey()
-                return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: true)
-            }
+            // If we're not sure, try our best to use the right key.
+            accessKey = udAccessKey(for: serviceId, tx: tx) ?? .zeroedKey
         case .enabled:
-            guard let udAccessKey = udAccessKey(for: serviceId, tx: tx) else {
-                // Not an error.
-                // We can only use UD if the user has UD enabled _and_
-                // we know their profile key.
+            guard let knownAccessKey = udAccessKey(for: serviceId, tx: tx) else {
+                // Shouldn't happen because we need a profile key to enable it.
                 Logger.warn("Missing profile key for UD-enabled user: \(serviceId).")
                 return nil
             }
-            return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: false)
+            accessKey = knownAccessKey
         case .disabled:
             return nil
         }
+        return OWSUDAccess(udAccessKey: accessKey, udAccessMode: accessMode)
     }
 
     public func storyUdAccess() -> OWSUDAccess {
-        return OWSUDAccess(udAccessKey: randomUDAccessKey(), udAccessMode: .unrestricted, isRandomKey: true)
+        return OWSUDAccess(udAccessKey: .zeroedKey, udAccessMode: .unrestricted)
     }
 
     // MARK: - Sender Certificate

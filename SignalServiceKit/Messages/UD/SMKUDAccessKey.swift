@@ -6,23 +6,14 @@
 import Foundation
 import LibSignalClient
 
-@objc
-public class SMKUDAccessKey: NSObject {
+public struct SMKUDAccessKey {
 
-    @objc
     public static let kUDAccessKeyLength: Int = 16
 
-    @objc
     public let keyData: Data
 
-    @objc
     public init(profileKey: Data) throws {
         self.keyData = try Data(ProfileKey(contents: [UInt8](profileKey)).deriveAccessKey())
-    }
-
-    @objc
-    public init(randomKeyData: ()) {
-        self.keyData = Randomness.generateRandomBytes(UInt(SMKUDAccessKey.kUDAccessKeyLength))
     }
 
     private init(keyData: Data) {
@@ -36,11 +27,6 @@ public class SMKUDAccessKey: NSObject {
 
         let xoredBytes = zip(lhs.keyData, rhs.keyData).map(^)
         return .init(keyData: Data(xoredBytes))
-    }
-
-    override public func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? SMKUDAccessKey else { return false }
-        return self.keyData == other.keyData
     }
 
     // Unrestricted UD recipients should have a zeroed access key sent to the multi-recipient endpoint

@@ -179,15 +179,8 @@ final class RequestMaker {
     private func requestSucceeded(sealedSenderAuth: SealedSenderAuth?) async {
         // If this was an Access Key-authed request for an "unknown" user...
         if case .accessKey(let udAccess) = sealedSenderAuth, udAccess.udAccessMode == .unknown {
-            await updateUdAccessMode({
-                if udAccess.isRandomKey {
-                    // ...with a random key, mark address as .unrestricted.
-                    return .unrestricted
-                } else {
-                    // ...with a non-random key, mark address as .enabled.
-                    return .enabled
-                }
-            }())
+            // ...fetch their profile since we know udAccessMode is out of date.
+            fetchProfileIfNeeded()
         }
     }
 

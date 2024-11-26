@@ -15,7 +15,7 @@ class SMKUDAccessKeyTest: XCTestCase {
         let udAccessKey2 = try! SMKUDAccessKey(profileKey: profileKey)
         XCTAssertEqual(udAccessKey2.keyData.count, SMKUDAccessKey.kUDAccessKeyLength)
 
-        XCTAssertEqual(udAccessKey1, udAccessKey2)
+        XCTAssertEqual(udAccessKey1.keyData, udAccessKey2.keyData)
     }
 
     func testUDAccessKeyForProfileKey_badProfileKey() {
