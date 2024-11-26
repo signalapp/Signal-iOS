@@ -68,6 +68,7 @@ public class OnboardingStoryManagerStoryMessageFactory: NSObject {
 public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
 
     private let fileSystem: OnboardingStoryManagerFilesystem.Type
+    private let messageProcessor: any Shims.MessageProcessor
     private let schedulers: Schedulers
     private let storyMessageFactory: OnboardingStoryManagerStoryMessageFactory.Type
 
@@ -78,10 +79,11 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
     private let queue: Scheduler
     internal let chainedPromise: ChainedPromise<Void>
 
-    public convenience init(appReadiness: AppReadiness) {
+    public convenience init(appReadiness: AppReadiness, messageProcessor: MessageProcessor) {
         self.init(
             appReadiness: appReadiness,
             fileSystem: OnboardingStoryManagerFilesystem.self,
+            messageProcessor: Wrappers.MessageProcessor(messageProcessor),
             schedulers: DispatchQueueSchedulers(),
             storyMessageFactory: OnboardingStoryManagerStoryMessageFactory.self
         )
@@ -90,10 +92,12 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
     init(
         appReadiness: AppReadiness,
         fileSystem: OnboardingStoryManagerFilesystem.Type,
+        messageProcessor: any Shims.MessageProcessor,
         schedulers: Schedulers,
         storyMessageFactory: OnboardingStoryManagerStoryMessageFactory.Type
     ) {
         self.fileSystem = fileSystem
+        self.messageProcessor = messageProcessor
         self.schedulers = schedulers
         self.storyMessageFactory = storyMessageFactory
         self.queue = schedulers.queue(label: "org.signal.story.onboarding", qos: .utility)
@@ -400,7 +404,8 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
     }
 
     private func syncOnboardingStoryViewStatus() -> Promise<OnboardingStoryViewStatus> {
-        SSKEnvironment.shared.storageServiceManagerRef.restoreOrCreateManifestIfNecessary(authedDevice: .implicit)
+        messageProcessor.waitForFetchingAndProcessing()
+            .then(on: queue) { SSKEnvironment.shared.storageServiceManagerRef.waitForPendingRestores() }
             .then(on: queue) { [weak self] _ -> Promise<OnboardingStoryViewStatus> in
                 guard let strongSelf = self else {
                     return .init(error: OWSAssertionError("SystemStoryManager unretained"))
@@ -758,5 +763,36 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
         static let imageHeight = 1998
 
         static let postViewingTimeout: TimeInterval = 24 /* hrs */ * 60 * 60
+    }
+}
+
+// MARK: - Shims
+
+extension SystemStoryManager {
+    public enum Shims {
+        public typealias MessageProcessor = _SystemStoryManager_MessageProcessorShim
+    }
+
+    public enum Wrappers {
+        public typealias MessageProcessor = _SystemStoryManager_MessageProcessorWrapper
+    }
+}
+
+// MARK: MessageProcessor
+
+public protocol _SystemStoryManager_MessageProcessorShim {
+    func waitForFetchingAndProcessing() -> Guarantee<Void>
+}
+
+public class _SystemStoryManager_MessageProcessorWrapper: _SystemStoryManager_MessageProcessorShim {
+
+    private let messageProcessor: MessageProcessor
+
+    public init(_ messageProcessor: MessageProcessor) {
+        self.messageProcessor = messageProcessor
+    }
+
+    public func waitForFetchingAndProcessing() -> Guarantee<Void> {
+        return self.messageProcessor.waitForFetchingAndProcessing()
     }
 }

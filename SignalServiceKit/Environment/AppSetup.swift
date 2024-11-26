@@ -914,7 +914,10 @@ public class AppSetup {
         )
 
         let preferences = Preferences()
-        let systemStoryManager = testDependencies.systemStoryManager ?? SystemStoryManager(appReadiness: appReadiness)
+        let systemStoryManager = testDependencies.systemStoryManager ?? SystemStoryManager(
+            appReadiness: appReadiness,
+            messageProcessor: messageProcessor
+        )
         let typingIndicators = TypingIndicatorsImpl()
 
         let attachmentUploadManager = AttachmentUploadManagerImpl(

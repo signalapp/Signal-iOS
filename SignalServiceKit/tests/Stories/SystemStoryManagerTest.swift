@@ -12,6 +12,12 @@ class SystemStoryManagerTest: SSKBaseTest {
         return SSKEnvironment.shared.signalServiceRef as! OWSSignalServiceMock
     }
 
+    private class MockMessageProcessor: SystemStoryManager.Shims.MessageProcessor {
+        func waitForFetchingAndProcessing() -> Guarantee<Void> {
+            return .value(())
+        }
+    }
+
     var manager: SystemStoryManager!
 
     override func setUp() {
@@ -25,6 +31,7 @@ class SystemStoryManagerTest: SSKBaseTest {
         manager = SystemStoryManager(
             appReadiness: AppReadinessMock(),
             fileSystem: OnboardingStoryManagerFilesystemMock.self,
+            messageProcessor: MockMessageProcessor(),
             schedulers: DispatchQueueSchedulers(),
             storyMessageFactory: OnboardingStoryManagerStoryMessageFactoryMock.self
         )
