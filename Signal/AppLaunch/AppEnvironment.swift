@@ -82,6 +82,7 @@ public class AppEnvironment: NSObject {
                 return DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice ?? true
             }
 
+            let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
             let db = DependenciesBridge.shared.db
             let deletedCallRecordCleanupManager = DependenciesBridge.shared.deletedCallRecordCleanupManager
             let groupCallRecordRingingCleanupManager = GroupCallRecordRingingCleanupManager.fromGlobals()
@@ -122,8 +123,22 @@ public class AppEnvironment: NSObject {
 
             deletedCallRecordCleanupManager.startCleanupIfNecessary()
 
-            DonationSubscriptionManager.performMigrationToStorageServiceIfNecessary()
-            DonationSubscriptionManager.performSubscriptionKeepAliveIfNecessary()
+            Task {
+                do {
+                    try await backupSubscriptionManager.redeemSubscriptionIfNecessary()
+                } catch {
+                    owsFailDebug("Failed to redeem subscription in launch job: \(error)")
+                }
+            }
+
+            Task {
+                DonationSubscriptionManager.performMigrationToStorageServiceIfNecessary()
+                do {
+                    try await DonationSubscriptionManager.redeemSubscriptionIfNecessary()
+                } catch {
+                    owsFailDebug("Failed to redeem subscription in launch job: \(error)")
+                }
+            }
         }
     }
 }

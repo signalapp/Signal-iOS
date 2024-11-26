@@ -848,7 +848,7 @@ public class DonationSubscriptionManager: NSObject {
 
     // MARK: Heartbeat
 
-    public class func performSubscriptionKeepAliveIfNecessary() {
+    public class func redeemSubscriptionIfNecessary() async throws {
         struct CheckerStore: SubscriptionRedemptionNecessityCheckerStore {
             let donationSubscriptionManager: DonationSubscriptionManager.Type
 
@@ -882,34 +882,28 @@ public class DonationSubscriptionManager: NSObject {
             tsAccountManager: DependenciesBridge.shared.tsAccountManager
         )
 
-        Task {
-            do {
-                try await subscriptionRedemptionNecessaryChecker.enqueueRedemptionIfNecessary { subscriberId, subscription in
-                    /// It's possible that we won't know which subscription period we
-                    /// last renewed for, potentially due to reinstalling. If that
-                    /// happens, we may or may not have already redeemed for the period
-                    /// we're in now.
-                    ///
-                    /// The consequence of attempting to redeem, if we'd already done so
-                    /// in a previous install, is that we'll get a "payment already
-                    /// redeemed" error from our servers. That's fine – we've clearly
-                    /// already done the thing we want to do, so we can always treat
-                    /// this like a success.
-                    let shouldSuppressPaymentAlreadyRedeemed = true
+        try await subscriptionRedemptionNecessaryChecker.enqueueRedemptionIfNecessary { subscriberId, subscription in
+            /// It's possible that we won't know which subscription period we
+            /// last renewed for, potentially due to reinstalling. If that
+            /// happens, we may or may not have already redeemed for the period
+            /// we're in now.
+            ///
+            /// The consequence of attempting to redeem, if we'd already done so
+            /// in a previous install, is that we'll get a "payment already
+            /// redeemed" error from our servers. That's fine – we've clearly
+            /// already done the thing we want to do, so we can always treat
+            /// this like a success.
+            let shouldSuppressPaymentAlreadyRedeemed = true
 
-                    _ = requestAndRedeemReceipt(
-                        subscriberId: subscriberId,
-                        subscriptionLevel: subscription.level,
-                        priorSubscriptionLevel: nil,
-                        paymentProcessor: subscription.paymentProcessor,
-                        paymentMethod: subscription.paymentMethod,
-                        isNewSubscription: false,
-                        shouldSuppressPaymentAlreadyRedeemed: shouldSuppressPaymentAlreadyRedeemed
-                    )
-                }
-            } catch {
-                owsFailDebug("Failed to redeem subscription if necessary: \(error)")
-            }
+            _ = requestAndRedeemReceipt(
+                subscriberId: subscriberId,
+                subscriptionLevel: subscription.level,
+                priorSubscriptionLevel: nil,
+                paymentProcessor: subscription.paymentProcessor,
+                paymentMethod: subscription.paymentMethod,
+                isNewSubscription: false,
+                shouldSuppressPaymentAlreadyRedeemed: shouldSuppressPaymentAlreadyRedeemed
+            )
         }
     }
 

@@ -976,7 +976,8 @@ public class AppSetup {
         let backupSubscriptionManager = BackupSubscriptionManagerImpl(
             dateProvider: dateProvider,
             db: db,
-            networkManager: networkManager
+            networkManager: networkManager,
+            tsAccountManager: tsAccountManager
         )
 
         let reactionStore: any ReactionStore = ReactionStoreImpl()

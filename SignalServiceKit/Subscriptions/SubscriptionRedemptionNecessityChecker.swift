@@ -68,11 +68,13 @@ struct SubscriptionRedemptionNecessityChecker {
 
         guard let subscriberId else {
             /// If we don't have a subscriber ID, there's nothing to do.
+            logger.info("Not redeeming, missing subscriber ID!")
             return
         }
 
         guard registrationState.isRegisteredPrimaryDevice else {
             /// Only primaries manage subscriptions!
+            logger.info("Not redeeming, not a registered primary!")
             return
         }
 
@@ -81,6 +83,7 @@ struct SubscriptionRedemptionNecessityChecker {
             dateProvider().timeIntervalSince(lastRedemptionNecessaryCheck) < Constants.intervalBetweenChecks
         {
             /// Not necessary to check, we did so recently!
+            logger.info("Not redeeming, we did so recently!")
             return
         }
 
