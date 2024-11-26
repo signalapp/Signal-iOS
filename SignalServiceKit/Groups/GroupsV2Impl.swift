@@ -205,10 +205,10 @@ public class GroupsV2Impl: GroupsV2 {
         let groupId = changes.groupId
         let groupV2Params = try GroupV2Params(groupSecretParams: changes.groupSecretParams)
 
-        var builtGroupChange: GroupsV2BuiltGroupChange
+        let messageBehavior: GroupUpdateMessageBehavior
         let httpResponse: HTTPResponse
         do {
-            (builtGroupChange, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
+            (messageBehavior, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
                 groupId: groupId,
                 groupV2Params: groupV2Params,
                 changes: changes
@@ -225,7 +225,7 @@ public class GroupsV2Impl: GroupsV2 {
                     groupSecretParams: groupV2Params.groupSecretParams
                 )
 
-                (builtGroupChange, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
+                (messageBehavior, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
                     groupId: groupId,
                     groupV2Params: groupV2Params,
                     changes: changes
@@ -237,7 +237,7 @@ public class GroupsV2Impl: GroupsV2 {
                 // should try again exactly once, forcing a refresh of all the
                 // credentials first.
 
-                (builtGroupChange, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
+                (messageBehavior, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
                     groupId: groupId,
                     groupV2Params: groupV2Params,
                     changes: changes,
@@ -253,7 +253,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         return try await handleGroupUpdatedOnService(
             changeResponse: changeResponse,
-            builtGroupChange: builtGroupChange,
+            messageBehavior: messageBehavior,
             changes: changes,
             groupId: groupId,
             groupV2Params: groupV2Params
@@ -271,7 +271,7 @@ public class GroupsV2Impl: GroupsV2 {
         changes: GroupsV2OutgoingChanges,
         shouldForceRefreshProfileKeyCredentials: Bool = false,
         forceFailOn400: Bool = false
-    ) async throws -> (GroupsV2BuiltGroupChange, HTTPResponse) {
+    ) async throws -> (GroupUpdateMessageBehavior, HTTPResponse) {
         let (groupThread, dmToken) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx) else {
                 throw OWSAssertionError("Thread does not exist.")
@@ -291,7 +291,7 @@ public class GroupsV2Impl: GroupsV2 {
             currentGroupModel: groupModel,
             currentDisappearingMessageToken: dmToken,
             forceRefreshProfileKeyCredentials: shouldForceRefreshProfileKeyCredentials
-        ).awaitable()
+        )
 
         var behavior400: Behavior400 = .fail
         if
@@ -323,12 +323,12 @@ public class GroupsV2Impl: GroupsV2 {
             behavior404: .fail
         )
 
-        return (builtGroupChange, response)
+        return (builtGroupChange.groupUpdateMessageBehavior, response)
     }
 
     private func handleGroupUpdatedOnService(
         changeResponse: GroupsProtoGroupChangeResponse,
-        builtGroupChange: GroupsV2BuiltGroupChange,
+        messageBehavior: GroupUpdateMessageBehavior,
         changes: GroupsV2OutgoingChanges,
         groupId: Data,
         groupV2Params: GroupV2Params
@@ -354,7 +354,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupV2Params: groupV2Params
         )
 
-        switch builtGroupChange.groupUpdateMessageBehavior {
+        switch messageBehavior {
         case .sendNothing:
             return groupThread
         case .sendUpdateToOtherGroupMembers:
@@ -370,7 +370,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         await sendGroupUpdateMessageToRemovedUsers(
             groupThread: groupThread,
-            groupChangeProto: builtGroupChange.proto,
+            changeActionsProto: changeActionsProto,
             groupChangeProtoData: groupChangeProtoData,
             groupV2Params: groupV2Params
         )
@@ -379,11 +379,11 @@ public class GroupsV2Impl: GroupsV2 {
     }
 
     private func membersRemovedByChangeActions(
-        groupChangeProto: GroupsProtoGroupChangeActions,
+        groupChangeActionsProto: GroupsProtoGroupChangeActions,
         groupV2Params: GroupV2Params
     ) -> [ServiceId] {
         var serviceIds = [ServiceId]()
-        for action in groupChangeProto.deleteMembers {
+        for action in groupChangeActionsProto.deleteMembers {
             guard let userId = action.deletedUserID else {
                 owsFailDebug("Missing userID.")
                 continue
@@ -394,7 +394,7 @@ public class GroupsV2Impl: GroupsV2 {
                 owsFailDebug("Error: \(error)")
             }
         }
-        for action in groupChangeProto.deletePendingMembers {
+        for action in groupChangeActionsProto.deletePendingMembers {
             guard let userId = action.deletedUserID else {
                 owsFailDebug("Missing userID.")
                 continue
@@ -405,7 +405,7 @@ public class GroupsV2Impl: GroupsV2 {
                 owsFailDebug("Error: \(error)")
             }
         }
-        for action in groupChangeProto.deleteRequestingMembers {
+        for action in groupChangeActionsProto.deleteRequestingMembers {
             guard let userId = action.deletedUserID else {
                 owsFailDebug("Missing userID.")
                 continue
@@ -421,13 +421,16 @@ public class GroupsV2Impl: GroupsV2 {
 
     private func sendGroupUpdateMessageToRemovedUsers(
         groupThread: TSGroupThread,
-        groupChangeProto: GroupsProtoGroupChangeActions,
+        changeActionsProto: GroupsProtoGroupChangeActions,
         groupChangeProtoData: Data,
         groupV2Params: GroupV2Params
     ) async {
-        let serviceIds = membersRemovedByChangeActions(groupChangeProto: groupChangeProto, groupV2Params: groupV2Params)
+        let serviceIds = membersRemovedByChangeActions(
+            groupChangeActionsProto: changeActionsProto,
+            groupV2Params: groupV2Params
+        )
 
-        guard !serviceIds.isEmpty else {
+        if serviceIds.isEmpty {
             return
         }
 

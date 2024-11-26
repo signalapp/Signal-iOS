@@ -241,12 +241,12 @@ public class GroupsV2OutgoingChangesImpl: GroupsV2OutgoingChanges {
         currentGroupModel: TSGroupModelV2,
         currentDisappearingMessageToken: DisappearingMessageToken,
         forceRefreshProfileKeyCredentials: Bool
-    ) -> Promise<GroupsV2BuiltGroupChange> {
+    ) async throws -> GroupsV2BuiltGroupChange {
         guard groupId == currentGroupModel.groupId else {
-            return Promise(error: OWSAssertionError("Mismatched groupId."))
+            throw OWSAssertionError("Mismatched groupId.")
         }
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-            return Promise(error: OWSAssertionError("Missing localAci."))
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
+            throw OWSAssertionError("Missing localIdentifiers.")
         }
 
         // Note that we're calculating the set of users for whom we need
@@ -256,22 +256,19 @@ public class GroupsV2OutgoingChangesImpl: GroupsV2OutgoingChanges {
         //
         // NOTE: We don't (and can't) gather profile key credentials for pending members.
         var newUserAcis: Set<Aci> = Set(membersToAdd.keys)
-        newUserAcis.insert(localAci)
+        newUserAcis.insert(localIdentifiers.aci)
 
-        return firstly(on: DispatchQueue.global()) { () -> Promise<GroupsV2.ProfileKeyCredentialMap> in
-            return Promise.wrapAsync {
-                try await SSKEnvironment.shared.groupsV2Ref.loadProfileKeyCredentials(
-                    for: Array(newUserAcis),
-                    forceRefresh: forceRefreshProfileKeyCredentials
-                )
-            }
-        }.map(on: DispatchQueue.global()) { (profileKeyCredentialMap: GroupsV2.ProfileKeyCredentialMap) throws -> GroupsV2BuiltGroupChange in
-            try self.buildGroupChangeProto(
-                currentGroupModel: currentGroupModel,
-                currentDisappearingMessageToken: currentDisappearingMessageToken,
-                profileKeyCredentialMap: profileKeyCredentialMap
-            )
-        }
+        let profileKeyCredentialMap = try await SSKEnvironment.shared.groupsV2Ref.loadProfileKeyCredentials(
+            for: Array(newUserAcis),
+            forceRefresh: forceRefreshProfileKeyCredentials
+        )
+
+        return try self.buildGroupChangeProto(
+            currentGroupModel: currentGroupModel,
+            currentDisappearingMessageToken: currentDisappearingMessageToken,
+            localIdentifiers: localIdentifiers,
+            profileKeyCredentialMap: profileKeyCredentialMap
+        )
     }
 
     // Given the "current" group state, build a change proto that
@@ -315,14 +312,12 @@ public class GroupsV2OutgoingChangesImpl: GroupsV2OutgoingChanges {
     private func buildGroupChangeProto(
         currentGroupModel: TSGroupModelV2,
         currentDisappearingMessageToken: DisappearingMessageToken,
+        localIdentifiers: LocalIdentifiers,
         profileKeyCredentialMap: GroupsV2.ProfileKeyCredentialMap
     ) throws -> GroupsV2BuiltGroupChange {
         let groupV2Params = try currentGroupModel.groupV2Params()
 
         var actionsBuilder = GroupsProtoGroupChangeActions.builder()
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
-            throw OWSAssertionError("Missing local identifiers!")
-        }
 
         let localAci = localIdentifiers.aci
 
@@ -336,7 +331,7 @@ public class GroupsV2OutgoingChangesImpl: GroupsV2OutgoingChanges {
         var fullMembers = Set(currentGroupModel.groupMembership.fullMembers.compactMap { $0.serviceId as? Aci })
         var fullMemberAdmins = Set(currentGroupModel.groupMembership.fullMemberAdministrators.compactMap { $0.serviceId as? Aci })
 
-        var groupUpdateMessageBehavior: GroupsV2BuiltGroupChange.GroupUpdateMessageBehavior = .sendUpdateToOtherGroupMembers
+        var groupUpdateMessageBehavior: GroupUpdateMessageBehavior = .sendUpdateToOtherGroupMembers
 
         var didChange = false
 
