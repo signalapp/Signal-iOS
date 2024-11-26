@@ -133,6 +133,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     private let dateProvider: DateProvider
     private let db: any DB
     private let networkManager: NetworkManager
+    private let storageServiceManager: StorageServiceManager
     private let store: Store
     private let tsAccountManager: TSAccountManager
 
@@ -140,11 +141,13 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         dateProvider: @escaping DateProvider,
         db: any DB,
         networkManager: NetworkManager,
+        storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager
     ) {
         self.dateProvider = dateProvider
         self.db = db
         self.networkManager = networkManager
+        self.storageServiceManager = storageServiceManager
         self.store = Store()
         self.tsAccountManager = tsAccountManager
 
@@ -290,7 +293,9 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     }
 
     private func _redeemSubscriptionIfNecessary() async throws {
-        // TODO: [BSub] We need to wait on Storage Service restore, since we keep the subscriber ID in there.
+        /// Wait on any in-progress restores, since there's a chance we're
+        /// restoring subscriber data.
+        try? await storageServiceManager.waitForPendingRestores().awaitable()
 
         let (
             persistedIAPSubscriberData,
@@ -422,7 +427,9 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             store.setIAPSubscriberData(newSubscriberData, tx: tx)
         }
 
-        // TODO: [BSub] Record the new subscriber ID in Storage Service
+        /// We store the subscriber data in Storage Service, so let's kick off
+        /// that backup now.
+        storageServiceManager.recordPendingLocalAccountUpdates()
     }
 
     /// Performs the steps required to redeem a Backup subscription for the
@@ -453,7 +460,6 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         case .unattempted:
             logger.info("Generating receipt credential request.")
 
-            // TODO: [BSub] Move this code out of DonationSubscriptionManager
             let (
                 receiptCredentialRequestContext,
                 receiptCredentialRequest
@@ -480,7 +486,6 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
             let receiptCredential: ReceiptCredential
             do {
-                // TODO: [BSub] Move this code out of DonationSubscriptionManager
                 receiptCredential = try await DonationSubscriptionManager.requestReceiptCredential(
                     subscriberId: subscriberId,
                     isValidReceiptLevelPredicate: { receiptLevel -> Bool in

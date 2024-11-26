@@ -977,6 +977,7 @@ public class AppSetup {
             dateProvider: dateProvider,
             db: db,
             networkManager: networkManager,
+            storageServiceManager: storageServiceManager,
             tsAccountManager: tsAccountManager
         )
 

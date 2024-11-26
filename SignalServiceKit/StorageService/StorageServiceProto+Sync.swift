@@ -1074,7 +1074,9 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
     private let localIdentifiers: LocalIdentifiers
     private let isPrimaryDevice: Bool
+
     private let authedAccount: AuthedAccount
+    private let backupSubscriptionManager: BackupSubscriptionManager
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let groupsV2: GroupsV2
     private let legacyChangePhoneNumber: LegacyChangePhoneNumber
@@ -1098,6 +1100,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         localIdentifiers: LocalIdentifiers,
         isPrimaryDevice: Bool,
         authedAccount: AuthedAccount,
+        backupSubscriptionManager: BackupSubscriptionManager,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         groupsV2: GroupsV2,
         legacyChangePhoneNumber: LegacyChangePhoneNumber,
@@ -1119,7 +1122,9 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     ) {
         self.localIdentifiers = localIdentifiers
         self.isPrimaryDevice = isPrimaryDevice
+
         self.authedAccount = authedAccount
+        self.backupSubscriptionManager = backupSubscriptionManager
         self.dmConfigurationStore = dmConfigurationStore
         self.groupsV2 = groupsV2
         self.legacyChangePhoneNumber = legacyChangePhoneNumber
@@ -1252,10 +1257,27 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             builder.setPreferredReactionEmoji(customEmojiSet)
         }
 
-        if let donationSubscriberID = DonationSubscriptionManager.getSubscriberID(transaction: transaction),
-           let subscriberCurrencyCode = DonationSubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
-            builder.setSubscriberID(donationSubscriberID)
-            builder.setSubscriberCurrencyCode(subscriberCurrencyCode)
+        if
+            let donationSubscriberID = DonationSubscriptionManager.getSubscriberID(transaction: transaction),
+            let donationSubscriberCurrencyCode = DonationSubscriptionManager.getSubscriberCurrencyCode(transaction: transaction)
+        {
+            builder.setDonorSubscriberID(donationSubscriberID)
+            builder.setDonorSubscriberCurrencyCode(donationSubscriberCurrencyCode)
+        }
+        builder.setDonorSubscriptionManuallyCancelled(DonationSubscriptionManager.userManuallyCancelledSubscription(transaction: transaction))
+
+        if let backupSubscriberData = backupSubscriptionManager.getIAPSubscriberData(tx: transaction.asV2Read) {
+            var subscriberDataBuilder = StorageServiceProtoAccountRecordIAPSubscriberData.builder()
+            subscriberDataBuilder.setSubscriberID(backupSubscriberData.subscriberId)
+
+            switch backupSubscriberData.iapSubscriptionId {
+            case .originalTransactionId(let value):
+                subscriberDataBuilder.setIapSubscriptionID(.originalTransactionID(value))
+            case .purchaseToken(let value):
+                subscriberDataBuilder.setIapSubscriptionID(.purchaseToken(value))
+            }
+
+            builder.setBackupSubscriberData(subscriberDataBuilder.buildInfallibly())
         }
 
         builder.setMyStoryPrivacyHasBeenSet(StoryManager.hasSetMyStoriesPrivacy(transaction: transaction))
@@ -1264,7 +1286,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         builder.setViewedOnboardingStory(systemStoryManager.isOnboardingStoryViewed(transaction: transaction))
 
         builder.setDisplayBadgesOnProfile(DonationSubscriptionManager.displayBadgesOnProfile(transaction: transaction))
-        builder.setSubscriptionManuallyCancelled(DonationSubscriptionManager.userManuallyCancelledSubscription(transaction: transaction))
 
         builder.setKeepMutedChatsArchived(SSKPreferences.shouldKeepMutedChatsArchived(transaction: transaction))
 
@@ -1513,29 +1534,56 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             ReactionManager.setCustomEmojiSet(record.preferredReactionEmoji, transaction: transaction)
         }
 
-        if let subscriberIDData = record.subscriberID, let subscriberCurrencyCode = record.subscriberCurrencyCode {
-            if subscriberIDData != DonationSubscriptionManager.getSubscriberID(transaction: transaction) {
-                DonationSubscriptionManager.setSubscriberID(subscriberIDData, transaction: transaction)
+        if
+            let donationSubscriberId = record.donorSubscriberID,
+            let donationSubscriberCurrencyCode = record.donorSubscriberCurrencyCode
+        {
+            if donationSubscriberId != DonationSubscriptionManager.getSubscriberID(transaction: transaction) {
+                DonationSubscriptionManager.setSubscriberID(donationSubscriberId, transaction: transaction)
             }
 
-            if subscriberCurrencyCode != DonationSubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
-                DonationSubscriptionManager.setSubscriberCurrencyCode(subscriberCurrencyCode, transaction: transaction)
+            if donationSubscriberCurrencyCode != DonationSubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
+                DonationSubscriptionManager.setSubscriberCurrencyCode(donationSubscriberCurrencyCode, transaction: transaction)
             }
+        }
+
+        let localDonationSubscriptionManuallyCancelled = DonationSubscriptionManager.userManuallyCancelledSubscription(transaction: transaction)
+        if localDonationSubscriptionManuallyCancelled != record.donorSubscriptionManuallyCancelled {
+            DonationSubscriptionManager.setUserManuallyCancelledSubscription(
+                record.donorSubscriptionManuallyCancelled,
+                updateStorageService: false,
+                transaction: transaction
+            )
+        }
+
+        if
+            let backupSubscriberData = record.backupSubscriberData,
+            let subscriberId = backupSubscriberData.subscriberID,
+            let iapSubscriptionIdProto = backupSubscriberData.iapSubscriptionID
+        {
+            typealias IAPSubscriberData = BackupSubscription.IAPSubscriberData
+
+            let iapSubscriptionId: IAPSubscriberData.IAPSubscriptionId
+            switch iapSubscriptionIdProto {
+            case .originalTransactionID(let value):
+                iapSubscriptionId = .originalTransactionId(value)
+            case .purchaseToken(let value):
+                iapSubscriptionId = .purchaseToken(value)
+            }
+
+            backupSubscriptionManager.restoreIAPSubscriberData(
+                IAPSubscriberData(
+                    subscriberId: subscriberId,
+                    iapSubscriptionId: iapSubscriptionId
+                ),
+                tx: transaction.asV2Write
+            )
         }
 
         let localDisplayBadgesOnProfile = DonationSubscriptionManager.displayBadgesOnProfile(transaction: transaction)
         if localDisplayBadgesOnProfile != record.displayBadgesOnProfile {
             DonationSubscriptionManager.setDisplayBadgesOnProfile(
                 record.displayBadgesOnProfile,
-                updateStorageService: false,
-                transaction: transaction
-            )
-        }
-
-        let localSubscriptionManuallyCancelled = DonationSubscriptionManager.userManuallyCancelledSubscription(transaction: transaction)
-        if localSubscriptionManuallyCancelled != record.subscriptionManuallyCancelled {
-            DonationSubscriptionManager.setUserManuallyCancelledSubscription(
-                record.subscriptionManuallyCancelled,
                 updateStorageService: false,
                 transaction: transaction
             )

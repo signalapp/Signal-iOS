@@ -2862,6 +2862,165 @@ extension StorageServiceProtoAccountRecordUsernameLinkBuilder {
 
 #endif
 
+// MARK: - StorageServiceProtoAccountRecordIAPSubscriberDataOneOfIapSubscriptionID
+
+public enum StorageServiceProtoAccountRecordIAPSubscriberDataOneOfIapSubscriptionID {
+    case purchaseToken(String)
+    case originalTransactionID(UInt64)
+}
+
+private func StorageServiceProtoAccountRecordIAPSubscriberDataOneOfIapSubscriptionIDWrap(_ value: StorageServiceProtos_AccountRecord.IAPSubscriberData.OneOf_IapSubscriptionID) -> StorageServiceProtoAccountRecordIAPSubscriberDataOneOfIapSubscriptionID {
+    switch value {
+    case .purchaseToken(let value): return .purchaseToken(value)
+    case .originalTransactionID(let value): return .originalTransactionID(value)
+    }
+}
+
+private func StorageServiceProtoAccountRecordIAPSubscriberDataOneOfIapSubscriptionIDUnwrap(_ value: StorageServiceProtoAccountRecordIAPSubscriberDataOneOfIapSubscriptionID) -> StorageServiceProtos_AccountRecord.IAPSubscriberData.OneOf_IapSubscriptionID {
+    switch value {
+    case .purchaseToken(let value): return .purchaseToken(value)
+    case .originalTransactionID(let value): return .originalTransactionID(value)
+    }
+}
+
+// MARK: - StorageServiceProtoAccountRecordIAPSubscriberData
+
+public struct StorageServiceProtoAccountRecordIAPSubscriberData: Codable, CustomDebugStringConvertible {
+
+    fileprivate let proto: StorageServiceProtos_AccountRecord.IAPSubscriberData
+
+    public var subscriberID: Data? {
+        guard hasSubscriberID else {
+            return nil
+        }
+        return proto.subscriberID
+    }
+    public var hasSubscriberID: Bool {
+        return !proto.subscriberID.isEmpty
+    }
+
+    public var iapSubscriptionID: StorageServiceProtoAccountRecordIAPSubscriberDataOneOfIapSubscriptionID? {
+        guard let iapSubscriptionID = proto.iapSubscriptionID else {
+            return nil
+        }
+        return StorageServiceProtoAccountRecordIAPSubscriberDataOneOfIapSubscriptionIDWrap(iapSubscriptionID)
+    }
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: StorageServiceProtos_AccountRecord.IAPSubscriberData) {
+        self.proto = proto
+    }
+
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    public init(serializedData: Data) throws {
+        let proto = try StorageServiceProtos_AccountRecord.IAPSubscriberData(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate init(_ proto: StorageServiceProtos_AccountRecord.IAPSubscriberData) {
+        self.init(proto: proto)
+    }
+
+    public init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension StorageServiceProtoAccountRecordIAPSubscriberData {
+    public static func builder() -> StorageServiceProtoAccountRecordIAPSubscriberDataBuilder {
+        return StorageServiceProtoAccountRecordIAPSubscriberDataBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    public func asBuilder() -> StorageServiceProtoAccountRecordIAPSubscriberDataBuilder {
+        var builder = StorageServiceProtoAccountRecordIAPSubscriberDataBuilder()
+        if let _value = subscriberID {
+            builder.setSubscriberID(_value)
+        }
+        if let _value = iapSubscriptionID {
+            builder.setIapSubscriptionID(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+public struct StorageServiceProtoAccountRecordIAPSubscriberDataBuilder {
+
+    private var proto = StorageServiceProtos_AccountRecord.IAPSubscriberData()
+
+    fileprivate init() {}
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setSubscriberID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.subscriberID = valueParam
+    }
+
+    public mutating func setSubscriberID(_ valueParam: Data) {
+        proto.subscriberID = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setIapSubscriptionID(_ valueParam: StorageServiceProtoAccountRecordIAPSubscriberDataOneOfIapSubscriptionID?) {
+        guard let valueParam = valueParam else { return }
+        proto.iapSubscriptionID = StorageServiceProtoAccountRecordIAPSubscriberDataOneOfIapSubscriptionIDUnwrap(valueParam)
+    }
+
+    public mutating func setIapSubscriptionID(_ valueParam: StorageServiceProtoAccountRecordIAPSubscriberDataOneOfIapSubscriptionID) {
+        proto.iapSubscriptionID = StorageServiceProtoAccountRecordIAPSubscriberDataOneOfIapSubscriptionIDUnwrap(valueParam)
+    }
+
+    public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    public func buildInfallibly() -> StorageServiceProtoAccountRecordIAPSubscriberData {
+        return StorageServiceProtoAccountRecordIAPSubscriberData(proto)
+    }
+
+    public func buildSerializedData() throws -> Data {
+        return try StorageServiceProtoAccountRecordIAPSubscriberData(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension StorageServiceProtoAccountRecordIAPSubscriberData {
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension StorageServiceProtoAccountRecordIAPSubscriberDataBuilder {
+    public func buildIgnoringErrors() -> StorageServiceProtoAccountRecordIAPSubscriberData? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - StorageServiceProtoAccountRecordPhoneNumberSharingMode
 
 public enum StorageServiceProtoAccountRecordPhoneNumberSharingMode: SwiftProtobuf.Enum {
@@ -2923,6 +3082,8 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     public let payments: StorageServiceProtoAccountRecordPayments?
 
     public let usernameLink: StorageServiceProtoAccountRecordUsernameLink?
+
+    public let backupSubscriberData: StorageServiceProtoAccountRecordIAPSubscriberData?
 
     public var profileKey: Data? {
         guard hasProfileKey else {
@@ -3011,31 +3172,31 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         return proto.preferredReactionEmoji
     }
 
-    public var subscriberID: Data? {
-        guard hasSubscriberID else {
+    public var donorSubscriberID: Data? {
+        guard hasDonorSubscriberID else {
             return nil
         }
-        return proto.subscriberID
+        return proto.donorSubscriberID
     }
-    public var hasSubscriberID: Bool {
-        return !proto.subscriberID.isEmpty
+    public var hasDonorSubscriberID: Bool {
+        return !proto.donorSubscriberID.isEmpty
     }
 
-    public var subscriberCurrencyCode: String? {
-        guard hasSubscriberCurrencyCode else {
+    public var donorSubscriberCurrencyCode: String? {
+        guard hasDonorSubscriberCurrencyCode else {
             return nil
         }
-        return proto.subscriberCurrencyCode
+        return proto.donorSubscriberCurrencyCode
     }
-    public var hasSubscriberCurrencyCode: Bool {
-        return !proto.subscriberCurrencyCode.isEmpty
+    public var hasDonorSubscriberCurrencyCode: Bool {
+        return !proto.donorSubscriberCurrencyCode.isEmpty
     }
 
     public var displayBadgesOnProfile: Bool {
         return proto.displayBadgesOnProfile
     }
-    public var subscriptionManuallyCancelled: Bool {
-        return proto.subscriptionManuallyCancelled
+    public var donorSubscriptionManuallyCancelled: Bool {
+        return proto.donorSubscriptionManuallyCancelled
     }
     public var keepMutedChatsArchived: Bool {
         return proto.keepMutedChatsArchived
@@ -3079,11 +3240,13 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     private init(proto: StorageServiceProtos_AccountRecord,
                  pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation],
                  payments: StorageServiceProtoAccountRecordPayments?,
-                 usernameLink: StorageServiceProtoAccountRecordUsernameLink?) {
+                 usernameLink: StorageServiceProtoAccountRecordUsernameLink?,
+                 backupSubscriberData: StorageServiceProtoAccountRecordIAPSubscriberData?) {
         self.proto = proto
         self.pinnedConversations = pinnedConversations
         self.payments = payments
         self.usernameLink = usernameLink
+        self.backupSubscriberData = backupSubscriberData
     }
 
     public func serializedData() throws -> Data {
@@ -3109,10 +3272,16 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
             usernameLink = StorageServiceProtoAccountRecordUsernameLink(proto.usernameLink)
         }
 
+        var backupSubscriberData: StorageServiceProtoAccountRecordIAPSubscriberData?
+        if proto.hasBackupSubscriberData {
+            backupSubscriberData = StorageServiceProtoAccountRecordIAPSubscriberData(proto.backupSubscriberData)
+        }
+
         self.init(proto: proto,
                   pinnedConversations: pinnedConversations,
                   payments: payments,
-                  usernameLink: usernameLink)
+                  usernameLink: usernameLink,
+                  backupSubscriberData: backupSubscriberData)
     }
 
     public init(from decoder: Swift.Decoder) throws {
@@ -3169,14 +3338,14 @@ extension StorageServiceProtoAccountRecord {
             builder.setE164(_value)
         }
         builder.setPreferredReactionEmoji(preferredReactionEmoji)
-        if let _value = subscriberID {
-            builder.setSubscriberID(_value)
+        if let _value = donorSubscriberID {
+            builder.setDonorSubscriberID(_value)
         }
-        if let _value = subscriberCurrencyCode {
-            builder.setSubscriberCurrencyCode(_value)
+        if let _value = donorSubscriberCurrencyCode {
+            builder.setDonorSubscriberCurrencyCode(_value)
         }
         builder.setDisplayBadgesOnProfile(displayBadgesOnProfile)
-        builder.setSubscriptionManuallyCancelled(subscriptionManuallyCancelled)
+        builder.setDonorSubscriptionManuallyCancelled(donorSubscriptionManuallyCancelled)
         builder.setKeepMutedChatsArchived(keepMutedChatsArchived)
         builder.setMyStoryPrivacyHasBeenSet(myStoryPrivacyHasBeenSet)
         builder.setViewedOnboardingStory(viewedOnboardingStory)
@@ -3189,6 +3358,9 @@ extension StorageServiceProtoAccountRecord {
         builder.setCompletedUsernameOnboarding(completedUsernameOnboarding)
         if let _value = usernameLink {
             builder.setUsernameLink(_value)
+        }
+        if let _value = backupSubscriberData {
+            builder.setBackupSubscriberData(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -3324,31 +3496,31 @@ public struct StorageServiceProtoAccountRecordBuilder {
     }
 
     @available(swift, obsoleted: 1.0)
-    public mutating func setSubscriberID(_ valueParam: Data?) {
+    public mutating func setDonorSubscriberID(_ valueParam: Data?) {
         guard let valueParam = valueParam else { return }
-        proto.subscriberID = valueParam
+        proto.donorSubscriberID = valueParam
     }
 
-    public mutating func setSubscriberID(_ valueParam: Data) {
-        proto.subscriberID = valueParam
+    public mutating func setDonorSubscriberID(_ valueParam: Data) {
+        proto.donorSubscriberID = valueParam
     }
 
     @available(swift, obsoleted: 1.0)
-    public mutating func setSubscriberCurrencyCode(_ valueParam: String?) {
+    public mutating func setDonorSubscriberCurrencyCode(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.subscriberCurrencyCode = valueParam
+        proto.donorSubscriberCurrencyCode = valueParam
     }
 
-    public mutating func setSubscriberCurrencyCode(_ valueParam: String) {
-        proto.subscriberCurrencyCode = valueParam
+    public mutating func setDonorSubscriberCurrencyCode(_ valueParam: String) {
+        proto.donorSubscriberCurrencyCode = valueParam
     }
 
     public mutating func setDisplayBadgesOnProfile(_ valueParam: Bool) {
         proto.displayBadgesOnProfile = valueParam
     }
 
-    public mutating func setSubscriptionManuallyCancelled(_ valueParam: Bool) {
-        proto.subscriptionManuallyCancelled = valueParam
+    public mutating func setDonorSubscriptionManuallyCancelled(_ valueParam: Bool) {
+        proto.donorSubscriptionManuallyCancelled = valueParam
     }
 
     public mutating func setKeepMutedChatsArchived(_ valueParam: Bool) {
@@ -3397,6 +3569,16 @@ public struct StorageServiceProtoAccountRecordBuilder {
 
     public mutating func setUsernameLink(_ valueParam: StorageServiceProtoAccountRecordUsernameLink) {
         proto.usernameLink = valueParam.proto
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setBackupSubscriberData(_ valueParam: StorageServiceProtoAccountRecordIAPSubscriberData?) {
+        guard let valueParam = valueParam else { return }
+        proto.backupSubscriberData = valueParam.proto
+    }
+
+    public mutating func setBackupSubscriberData(_ valueParam: StorageServiceProtoAccountRecordIAPSubscriberData) {
+        proto.backupSubscriberData = valueParam.proto
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

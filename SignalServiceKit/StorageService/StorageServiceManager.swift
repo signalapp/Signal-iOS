@@ -1995,6 +1995,7 @@ class StorageServiceOperation {
                 localIdentifiers: localIdentifiers,
                 isPrimaryDevice: isPrimaryDevice,
                 authedAccount: authedAccount,
+                backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
                 dmConfigurationStore: DependenciesBridge.shared.disappearingMessagesConfigurationStore,
                 groupsV2: SSKEnvironment.shared.groupsV2Ref,
                 legacyChangePhoneNumber: SSKEnvironment.shared.legacyChangePhoneNumberRef,
