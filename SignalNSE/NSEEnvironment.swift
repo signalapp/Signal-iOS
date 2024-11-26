@@ -145,7 +145,6 @@ class NSEEnvironment {
             callMessageHandler: NSECallMessageHandler(),
             currentCallProvider: CurrentCallNoOpProvider(),
             notificationPresenter: NotificationPresenterImpl(),
-            incrementalTSAttachmentMigrator: NoOpIncrementalMessageTSAttachmentMigrator(),
             messageBackupErrorPresenterFactory: NoOpMessageBackupErrorPresenterFactory()
         )
 

@@ -102,7 +102,6 @@ public class AppSetup {
         callMessageHandler: CallMessageHandler,
         currentCallProvider: any CurrentCallProvider,
         notificationPresenter: any NotificationPresenter,
-        incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
         messageBackupErrorPresenterFactory: MessageBackupErrorPresenterFactory,
         testDependencies: TestDependencies = TestDependencies()
     ) -> AppSetup.DatabaseContinuation {
@@ -1139,7 +1138,6 @@ public class AppSetup {
                 storyStore: backupStoryStore,
                 threadStore: backupThreadStore
             ),
-            incrementalTSAttachmentMigrator: incrementalTSAttachmentMigrator,
             localRecipientArchiver: MessageBackupLocalRecipientArchiver(),
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             messagePipelineSupervisor: messagePipelineSupervisor,

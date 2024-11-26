@@ -237,23 +237,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // Do this even if `appVersion` isn't used -- there's side effects.
         let appVersion = AppVersionImpl.shared
 
-        // Set up and register incremental migration for TSAttachment -> v2 Attachment.
-        // TODO: remove this (and the incremental migrator itself) once we make this
-        // migration a launch-blocking GRDB migration.
-        let incrementalMessageTSAttachmentMigrationStore = IncrementalTSAttachmentMigrationStore()
-        let incrementalMessageTSAttachmentMigrator = IncrementalMessageTSAttachmentMigratorImpl(
-            appContext: mainAppContext,
-            appReadiness: appReadiness,
-            databaseStorage: databaseStorage,
-            store: incrementalMessageTSAttachmentMigrationStore
-        )
-
         let launchContext = LaunchContext(
             appContext: mainAppContext,
             databaseStorage: databaseStorage,
             keychainStorage: keychainStorage,
-            launchStartedAt: launchStartedAt,
-            incrementalMessageTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator
+            launchStartedAt: launchStartedAt
         )
 
         // We need to do this _after_ we set up logging, when the keychain is unlocked,
@@ -287,11 +275,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // We _must_ register BGProcessingTask handlers synchronously in didFinishLaunching.
         // https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler/register(fortaskwithidentifier:using:launchhandler:)
         // WARNING: Apple docs say we can only have 10 BGProcessingTasks registered.
-        IncrementalMessageTSAttachmentMigrationRunner.registerBGProcessingTask(
-            store: incrementalMessageTSAttachmentMigrationStore,
-            migrator: Task { incrementalMessageTSAttachmentMigrator },
-            db: databaseStorage
-        )
         let attachmentBackfillStore = AttachmentValidationBackfillStore()
         AttachmentValidationBackfillRunner.registerBGProcessingTask(
             store: attachmentBackfillStore,
@@ -308,10 +291,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         )
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            IncrementalMessageTSAttachmentMigrationRunner.scheduleBGProcessingTaskIfNeeded(
-                store: incrementalMessageTSAttachmentMigrationStore,
-                db: databaseStorage
-            )
             AttachmentValidationBackfillRunner.scheduleBGProcessingTaskIfNeeded(
                 store: attachmentBackfillStore,
                 db: databaseStorage
@@ -340,7 +319,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         var databaseStorage: SDSDatabaseStorage
         var keychainStorage: any KeychainStorage
         var launchStartedAt: CFTimeInterval
-        var incrementalMessageTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator
     }
 
     private func launchApp(
@@ -387,7 +365,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             callMessageHandler: WebRTCCallMessageHandler(),
             currentCallProvider: currentCall,
             notificationPresenter: NotificationPresenterImpl(),
-            incrementalTSAttachmentMigrator: launchContext.incrementalMessageTSAttachmentMigrator,
             messageBackupErrorPresenterFactory: MessageBackupErrorPresenterFactoryInternal()
         )
         setupNSEInteroperation()

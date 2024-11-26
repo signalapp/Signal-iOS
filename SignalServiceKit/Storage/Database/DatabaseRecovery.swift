@@ -292,9 +292,6 @@ public extension DatabaseRecovery {
             OrphanedAttachmentRecord.databaseTableName,
             QueuedAttachmentDownloadRecord.databaseTableName,
             ArchivedPayment.databaseTableName,
-            // TODO: remove this once the attachment migration is blocking; by the time
-            // this runs migrations are done and the migration table will be deleted.
-            TSAttachmentMigration.V1AttachmentReservedFileIds.databaseTableName,
             QueuedBackupAttachmentDownload.databaseTableName,
             AttachmentUploadRecord.databaseTableName,
             "AttachmentValidationBackfillQueue",

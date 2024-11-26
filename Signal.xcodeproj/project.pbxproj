@@ -924,8 +924,6 @@
 		6660725E2BAB36960084B3D2 /* AttachmentDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660725D2BAB36960084B3D2 /* AttachmentDataSource.swift */; };
 		666072622BAB58A20084B3D2 /* OWSContactSerializationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666072602BAB58850084B3D2 /* OWSContactSerializationTest.swift */; };
 		6660C7972C45C34A00D9C30A /* TSAttachmentMigration+TSMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660C7962C45C34A00D9C30A /* TSAttachmentMigration+TSMessage.swift */; };
-		6660C7992C48277300D9C30A /* IncrementalMessageTSAttachmentMigrationRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660C7982C48277300D9C30A /* IncrementalMessageTSAttachmentMigrationRunner.swift */; };
-		6660C79B2C4874AB00D9C30A /* IncrementalTSAttachmentMigrationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660C79A2C4874AB00D9C30A /* IncrementalTSAttachmentMigrationStore.swift */; };
 		6664B9AB2A314EBD008EF74B /* SpoilerRevealStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */; };
 		666654212AD0B03F00B23B32 /* MasterKeySyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */; };
 		66681CDF2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */; };
@@ -950,7 +948,6 @@
 		667AF9E02B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9DF2B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift */; };
 		667AF9E22B4DC5EE008AEE5D /* GroupUpdateSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9E12B4DC5EE008AEE5D /* GroupUpdateSource.swift */; };
 		667B84EC2C8F9FC300229D8F /* AttachmentValidationBackfillMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667B84EB2C8F9FC300229D8F /* AttachmentValidationBackfillMigrator.swift */; };
-		667BB2032C545C0400E79B57 /* IncrementalTSAttachmentMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667BB2022C545C0400E79B57 /* IncrementalTSAttachmentMigrator.swift */; };
 		667BB2062C58076400E79B57 /* QueuedBackupAttachmentDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667BB2052C58076400E79B57 /* QueuedBackupAttachmentDownload.swift */; };
 		667BB2082C580C1400E79B57 /* BackupAttachmentDownloadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667BB2072C580C1400E79B57 /* BackupAttachmentDownloadStore.swift */; };
 		667BBAD92BAA5F84006AB9DE /* OWSAttachmentInfoSerializationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667BBAD72BAA5F70006AB9DE /* OWSAttachmentInfoSerializationTest.swift */; };
@@ -1753,24 +1750,6 @@
 		C1A0F79D2B9F57340009DC0D /* MessageBackupKeyMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A0F79C2B9F57340009DC0D /* MessageBackupKeyMaterial.swift */; };
 		C1A0F79F2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A0F79E2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift */; };
 		C1BF1F712BA0D7CC0004B112 /* StreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1BF1F702BA0D7CC0004B112 /* StreamTransform.swift */; };
-		C1C083D02CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_04.binproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083C62CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_04.binproto */; };
-		C1C083D12CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_07.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083CD2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_07.txtproto */; };
-		C1C083D22CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_08.binproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083CE2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_08.binproto */; };
-		C1C083D32CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_03.binproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083C42CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_03.binproto */; };
-		C1C083D42CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_05.binproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083C82CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_05.binproto */; };
-		C1C083D52CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_03.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083C52CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_03.txtproto */; };
-		C1C083D62CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_08.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083CF2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_08.txtproto */; };
-		C1C083D72CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_05.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083C92CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_05.txtproto */; };
-		C1C083D82CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_06.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083CB2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_06.txtproto */; };
-		C1C083D92CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_07.binproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083CC2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_07.binproto */; };
-		C1C083DA2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_02.binproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083C22CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_02.binproto */; };
-		C1C083DB2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_02.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083C32CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_02.txtproto */; };
-		C1C083DC2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_04.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083C72CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_04.txtproto */; };
-		C1C083DD2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083BE2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_00.binproto */; };
-		C1C083DE2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_00.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083BF2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_00.txtproto */; };
-		C1C083DF2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_01.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083C12CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_01.txtproto */; };
-		C1C083E02CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083C02CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_01.binproto */; };
-		C1C083E12CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_06.binproto in Resources */ = {isa = PBXBuildFile; fileRef = C1C083CA2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_06.binproto */; };
 		C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */; };
 		C1C7E4FB2BE0419300F196EE /* UploadMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C7E4FA2BE0419300F196EE /* UploadMetadata.swift */; };
 		C1CA5F8E2BE2F21C00D733CA /* MessageBackupDistributionListRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA5F8D2BE2F21C00D733CA /* MessageBackupDistributionListRecipientArchiver.swift */; };
@@ -4773,8 +4752,6 @@
 		6660725D2BAB36960084B3D2 /* AttachmentDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDataSource.swift; sourceTree = "<group>"; };
 		666072602BAB58850084B3D2 /* OWSContactSerializationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactSerializationTest.swift; sourceTree = "<group>"; };
 		6660C7962C45C34A00D9C30A /* TSAttachmentMigration+TSMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+TSMessage.swift"; sourceTree = "<group>"; };
-		6660C7982C48277300D9C30A /* IncrementalMessageTSAttachmentMigrationRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalMessageTSAttachmentMigrationRunner.swift; sourceTree = "<group>"; };
-		6660C79A2C4874AB00D9C30A /* IncrementalTSAttachmentMigrationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalTSAttachmentMigrationStore.swift; sourceTree = "<group>"; };
 		6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealStateTests.swift; sourceTree = "<group>"; };
 		666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterKeySyncManager.swift; sourceTree = "<group>"; };
 		66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadStoreTests.swift; sourceTree = "<group>"; };
@@ -4800,7 +4777,6 @@
 		667AF9DF2B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift"; sourceTree = "<group>"; };
 		667AF9E12B4DC5EE008AEE5D /* GroupUpdateSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupUpdateSource.swift; sourceTree = "<group>"; };
 		667B84EB2C8F9FC300229D8F /* AttachmentValidationBackfillMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentValidationBackfillMigrator.swift; sourceTree = "<group>"; };
-		667BB2022C545C0400E79B57 /* IncrementalTSAttachmentMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalTSAttachmentMigrator.swift; sourceTree = "<group>"; };
 		667BB2052C58076400E79B57 /* QueuedBackupAttachmentDownload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueuedBackupAttachmentDownload.swift; sourceTree = "<group>"; };
 		667BB2072C580C1400E79B57 /* BackupAttachmentDownloadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadStore.swift; sourceTree = "<group>"; };
 		667BBAD72BAA5F70006AB9DE /* OWSAttachmentInfoSerializationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSAttachmentInfoSerializationTest.swift; sourceTree = "<group>"; };
@@ -5605,24 +5581,6 @@
 		C1A0F79E2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupKeyMaterialImpl.swift; sourceTree = "<group>"; };
 		C1BD5FA792ACABB4855877BD /* Pods-SignalUI.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.app store release.xcconfig"; path = "Target Support Files/Pods-SignalUI/Pods-SignalUI.app store release.xcconfig"; sourceTree = "<group>"; };
 		C1BF1F702BA0D7CC0004B112 /* StreamTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamTransform.swift; sourceTree = "<group>"; };
-		C1C083BE2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_group_change_chat_multiple_update_00.binproto; sourceTree = "<group>"; };
-		C1C083BF2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_00.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_group_change_chat_multiple_update_00.txtproto; sourceTree = "<group>"; };
-		C1C083C02CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_group_change_chat_multiple_update_01.binproto; sourceTree = "<group>"; };
-		C1C083C12CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_01.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_group_change_chat_multiple_update_01.txtproto; sourceTree = "<group>"; };
-		C1C083C22CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_02.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_group_change_chat_multiple_update_02.binproto; sourceTree = "<group>"; };
-		C1C083C32CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_02.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_group_change_chat_multiple_update_02.txtproto; sourceTree = "<group>"; };
-		C1C083C42CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_03.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_group_change_chat_multiple_update_03.binproto; sourceTree = "<group>"; };
-		C1C083C52CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_03.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_group_change_chat_multiple_update_03.txtproto; sourceTree = "<group>"; };
-		C1C083C62CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_04.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_group_change_chat_multiple_update_04.binproto; sourceTree = "<group>"; };
-		C1C083C72CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_04.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_group_change_chat_multiple_update_04.txtproto; sourceTree = "<group>"; };
-		C1C083C82CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_05.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_group_change_chat_multiple_update_05.binproto; sourceTree = "<group>"; };
-		C1C083C92CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_05.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_group_change_chat_multiple_update_05.txtproto; sourceTree = "<group>"; };
-		C1C083CA2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_06.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_group_change_chat_multiple_update_06.binproto; sourceTree = "<group>"; };
-		C1C083CB2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_06.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_group_change_chat_multiple_update_06.txtproto; sourceTree = "<group>"; };
-		C1C083CC2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_07.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_group_change_chat_multiple_update_07.binproto; sourceTree = "<group>"; };
-		C1C083CD2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_07.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_group_change_chat_multiple_update_07.txtproto; sourceTree = "<group>"; };
-		C1C083CE2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_08.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_group_change_chat_multiple_update_08.binproto; sourceTree = "<group>"; };
-		C1C083CF2CEB81BF00C07D76 /* chat_item_group_change_chat_multiple_update_08.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_group_change_chat_multiple_update_08.txtproto; sourceTree = "<group>"; };
 		C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerShims.swift; sourceTree = "<group>"; };
 		C1C7E4FA2BE0419300F196EE /* UploadMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadMetadata.swift; sourceTree = "<group>"; };
 		C1CA5F8D2BE2F21C00D733CA /* MessageBackupDistributionListRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupDistributionListRecipientArchiver.swift; sourceTree = "<group>"; };
@@ -9885,7 +9843,6 @@
 		66A1ABE02C33118A0033C5EB /* TSAttachment */ = {
 			isa = PBXGroup;
 			children = (
-				667BB2022C545C0400E79B57 /* IncrementalTSAttachmentMigrator.swift */,
 				669379F62C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift */,
 				669379EE2C3C5E5800EED7A0 /* TSAttachmentMigration+AudioWaveformManager.swift */,
 				669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */,
@@ -10351,7 +10308,6 @@
 			isa = PBXGroup;
 			children = (
 				668787D42C4F199500D13822 /* AttachmentFeatureFlags.swift */,
-				6660C79A2C4874AB00D9C30A /* IncrementalTSAttachmentMigrationStore.swift */,
 				66E1AD952B91437B00C56B7B /* TSAttachmentManager.swift */,
 				66CA4CE82B9FDBF8009A5ED8 /* TSResourceManager.swift */,
 				66CA4CE72B9FDBF8009A5ED8 /* TSResourceManagerImpl.swift */,
@@ -10543,7 +10499,6 @@
 				6698FC12297F38AC004EFC30 /* ViewControllerContext */,
 				66DA8DF92C91125200799E70 /* AttachmentValidationBackfillRunner.swift */,
 				66DA8DF72C910D3B00799E70 /* BGProcessingTaskRunner.swift */,
-				6660C7982C48277300D9C30A /* IncrementalMessageTSAttachmentMigrationRunner.swift */,
 				66CDB7512AF9D117009A36EC /* MessageFetchBGRefreshTask.swift */,
 			);
 			path = src;
@@ -16825,7 +16780,6 @@
 				D9C0AE692BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift in Sources */,
 				D9E43C052CC194140001536E /* IncomingCallControls.swift in Sources */,
 				D9E43C062CC194140001536E /* IncomingReactionsView.swift in Sources */,
-				6660C7992C48277300D9C30A /* IncrementalMessageTSAttachmentMigrationRunner.swift in Sources */,
 				D9E43C2A2CC194140001536E /* IndividualCall.swift in Sources */,
 				D9E43C2B2CC194140001536E /* IndividualCallService.swift in Sources */,
 				D9E43C072CC194140001536E /* IndividualCallViewController.swift in Sources */,
@@ -17574,8 +17528,6 @@
 				F9C5CDA0289453B400548EEE /* IncomingGroupsV2MessageJob.m in Sources */,
 				6640DD602ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift in Sources */,
 				F9C5CC69289453B300548EEE /* IncompleteCallsJob.swift in Sources */,
-				6660C79B2C4874AB00D9C30A /* IncrementalTSAttachmentMigrationStore.swift in Sources */,
-				667BB2032C545C0400E79B57 /* IncrementalTSAttachmentMigrator.swift in Sources */,
 				D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */,
 				D9B95A9B29E8923B00D7CB95 /* InMemoryDB.swift in Sources */,
 				C1DD78AB2BB1CEF80020F064 /* InputStreamable.swift in Sources */,

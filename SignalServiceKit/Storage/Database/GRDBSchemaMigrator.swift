@@ -307,6 +307,9 @@ public class GRDBSchemaMigrator: NSObject {
         case dropOrphanedGroupStoryReplies
         case addMessageBackupAvatarFetchQueue
         case addMessageBackupAvatarFetchQueueRetries
+        case tsMessageAttachmentMigration1
+        case tsMessageAttachmentMigration2
+        case tsMessageAttachmentMigration3
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -368,7 +371,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 99
+    public static let grdbSchemaVersionLatest: UInt = 100
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3701,6 +3704,22 @@ public class GRDBSchemaMigrator: NSObject {
                 on: "MessageBackupAvatarFetchQueue",
                 columns: ["nextRetryTimestamp"]
             )
+            return .success(())
+        }
+
+        migrator.registerMigration(.tsMessageAttachmentMigration1) { tx in
+            try TSAttachmentMigration.TSMessageMigration.prepareBlockingTSMessageMigration(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.tsMessageAttachmentMigration2) { tx in
+            try TSAttachmentMigration.TSMessageMigration.completeBlockingTSMessageMigration(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.tsMessageAttachmentMigration3) { tx in
+            try TSAttachmentMigration.TSMessageMigration.cleanUpTSAttachmentFiles()
+            try tx.database.drop(table: "TSAttachmentMigration")
             return .success(())
         }
 
