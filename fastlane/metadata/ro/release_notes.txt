@@ -1,1 +1,1 @@
-• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.
+• Când cunoști o mulțime de oameni, îți poate afecta viața în moduri neașteptate. Așadar, am remediat un blocaj care afecta unii utilizatori care aveau câteva mii de contacte în agenda lor.

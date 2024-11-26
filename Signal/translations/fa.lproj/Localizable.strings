@@ -4007,13 +4007,13 @@
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "گروه‌های جدید چیستند؟";
 
 /* title for declining to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "Don’t transfer";
+"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "انتقال ندادن";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Finish Linking";
+"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "پایان پیوند دهی";
 
 /* title for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Transfer message history";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "انتقال تاریخچه پیام";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "کد QR معتبر نمی باشد. لطفا مطمئن شوید که در حال اسکن کد QR نمایش داده روی دستگاهی که قصد پیوند به آن را دارید می باشید.";
@@ -4073,16 +4073,16 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "بیشتر بدانید";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
-"LINKED_DEVICES_EMPTY_STATE" = "No linked devices";
+"LINKED_DEVICES_EMPTY_STATE" = "هیچ دستگاه متصلی وجود ندارد";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad. Your messages will sync to your linked devices.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "از سیگنال روی دسکتاپ یا آی‌پد استفاده کنید. پیام‌های شما با دستگاه‌های متصل شما همگام‌سازی می‌شوند.";
 
 /* Footer text below the list of currently-linked devices */
-"LINKED_DEVICES_LIST_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+"LINKED_DEVICES_LIST_FOOTER" = "پیام‌ها و اطلاعات گفتگو با رمزگذاری سرتاسری در همه دستگاه‌ها محافظت می‌شوند";
 
 /* Title above the list of currently-linked devices */
-"LINKED_DEVICES_LIST_TITLE" = "Linked Devices";
+"LINKED_DEVICES_LIST_TITLE" = "دستگاه‌های متصل شده";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "دستگاه‌های متصل شده";
@@ -4091,7 +4091,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "خطا در اتصال دستگاه جدید";
 
 /* Title shown when loading messages during linking process */
-"LINKING_SYNCING_MESSAGES_TITLE" = "Syncing messages";
+"LINKING_SYNCING_MESSAGES_TITLE" = "در حال همگام‌سازی پیام‌ها";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "برای انتقال حساب کاربری سیگنال شما، لازم است تا دسترسی شبکهٔ محلی را روی هر دو دستگاه فعال کنید.";
@@ -4952,7 +4952,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "فرصت شما برای حدس پین تمام شد، ولی همچنان می‌توانید با تأیید شماره تلفن خود، سعی کنید و به حساب سیگنال خود دسترسی پیدا کنید. برای حفظ امنیت و حریم خصوصی، حسابتان بدون هیچ‌گونه اطلاعات یا تنظیمات ذخیره‌شده نمایه بازیابی خواهد شد.";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Restore or Transfer Account";
+"ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "بازیابی یا انتقال حساب";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "شرایط و سیاست های حفظ حریم خصوصی";

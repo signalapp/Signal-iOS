@@ -1,1 +1,1 @@
-• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.
+• Quando conosci un sacco di gente, beh, diventa più facile imbattersi in qualche sorpresa… un po' come il bug che abbiamo appena sistemato, in cui l'app ogni tanto aveva dei crash per gli utenti con migliaia di contatti in rubrica.

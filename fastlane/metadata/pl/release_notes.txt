@@ -1,1 +1,1 @@
-• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.
+• Liczne znajomości powinny być błogosławieństwem, a nie przekleństwem. Dlatego naprawiliśmy błąd, przez który aplikacja zawieszała się u niektórych użytkowników z kilkoma tysiącami kontaktów w książce adresowej.

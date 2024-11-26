@@ -4007,13 +4007,13 @@
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Cosa sono i Nuovi Gruppi?";
 
 /* title for declining to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "Don’t transfer";
+"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "Non trasferire";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Finish Linking";
+"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Termina collegamento";
 
 /* title for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Transfer message history";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Trasferisci la cronologia messaggi";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Questo codice QR non è valido. Assicurati di stare effettuando la scansione del codice QR visualizzato sul dispositivo che desideri collegare.";
@@ -4073,16 +4073,16 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Scopri di più";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
-"LINKED_DEVICES_EMPTY_STATE" = "No linked devices";
+"LINKED_DEVICES_EMPTY_STATE" = "Nessun dispositivo collegato";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad. Your messages will sync to your linked devices.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "Usa Signal su Desktop o iPad. I tuoi messaggi verranno sincronizzati sui tuoi dispositivi collegati.";
 
 /* Footer text below the list of currently-linked devices */
-"LINKED_DEVICES_LIST_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+"LINKED_DEVICES_LIST_FOOTER" = "I messaggi e le informazioni delle chat sono protetti da crittografia end-to-end su tutti i dispositivi";
 
 /* Title above the list of currently-linked devices */
-"LINKED_DEVICES_LIST_TITLE" = "Linked Devices";
+"LINKED_DEVICES_LIST_TITLE" = "Dispositivi collegati";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Dispositivi associati";
@@ -4091,7 +4091,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Associazione dispositivo non riuscita";
 
 /* Title shown when loading messages during linking process */
-"LINKING_SYNCING_MESSAGES_TITLE" = "Syncing messages";
+"LINKING_SYNCING_MESSAGES_TITLE" = "Sincronizzazione messaggi";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Per poter trasferire il tuo account Signal, devi abilitare l'accesso alla rete locale su entrambi i dispositivi.";
@@ -4952,7 +4952,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Hai esaurito i tentativi del PIN, ma puoi comunque provare ad accedere al tuo account Signal verificando il tuo numero di telefono. Per la tua privacy e sicurezza, il tuo account verrà ripristinato senza alcuna informazione o impostazione del profilo salvata.";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Restore or Transfer Account";
+"ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Ripristina o trasferisci il tuo account";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Politica e termini sulla privacy";

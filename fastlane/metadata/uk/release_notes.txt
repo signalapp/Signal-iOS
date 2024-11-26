@@ -1,1 +1,1 @@
-• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.
+• Величезна кількість знайомих може вплинути на життя несподіваним чином. Тож ми виправили збій, що ставався в деяких користувачів, які мають по кілька тисяч збережених контактів.

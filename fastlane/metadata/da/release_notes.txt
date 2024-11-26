@@ -1,1 +1,1 @@
-• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.
+• Når du kender et væld af mennesker, kan det påvirke dit liv på uventede måder. Vi har rettet en fejl, der påvirkede nogle brugere, som havde flere tusinde kontakter i deres adressebog.

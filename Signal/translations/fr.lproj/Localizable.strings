@@ -1145,13 +1145,13 @@
 "CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Supprimer le filtre";
 
 /* Button at top of chat list indicating the active filter is 'Filtered by Unread' and tapping will clear the filter */
-"CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Filtrer les messages non lus";
+"CHAT_LIST_FILTERED_BY_UNREAD_CLEAR_BUTTON" = "Résultats filtrés par conversations non lues";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Conversations";
 
 /* Title for context menu action to enable Filter by Unread */
-"CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filtrer les conversations non lues";
+"CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filtrer par conversations non lues";
 
 /* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "Aucune conversation non lue";
@@ -3608,7 +3608,7 @@
 "GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Seuls les %1$@ peuvent envoyer des messages";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Envoyer un message à un administrateur";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Écrire à un admin";
 
 /* Label for button that lets the user block a request to join the group. */
 "GROUPS_BLOCK_REQUEST_BUTTON" = "Bloquer la demande";
@@ -4007,13 +4007,13 @@
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Que sont les Nouveaux groupes ?";
 
 /* title for declining to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "Don’t transfer";
+"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "Ne pas les transférer";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Finish Linking";
+"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Finaliser l'association";
 
 /* title for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Transfer message history";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Transférer tous les messages";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Ce code QR est incorrect. Veuillez scanner le code QR affiché sur l’appareil à associer.";
@@ -4073,16 +4073,16 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "En savoir plus";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
-"LINKED_DEVICES_EMPTY_STATE" = "No linked devices";
+"LINKED_DEVICES_EMPTY_STATE" = "Aucun appareil associé";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad. Your messages will sync to your linked devices.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "Utilisez Signal sur ordinateur ou sur iPad. Vos messages seront synchronisés sur vos appareils associés.";
 
 /* Footer text below the list of currently-linked devices */
-"LINKED_DEVICES_LIST_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+"LINKED_DEVICES_LIST_FOOTER" = "Avec son protocole de chiffrement de bout en bout, Signal protège vos messages et vos conversations sur tous vos appareils.";
 
 /* Title above the list of currently-linked devices */
-"LINKED_DEVICES_LIST_TITLE" = "Linked Devices";
+"LINKED_DEVICES_LIST_TITLE" = "Appareils associés";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Appareils associés";
@@ -4091,7 +4091,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Impossible d’associer l’appareil.";
 
 /* Title shown when loading messages during linking process */
-"LINKING_SYNCING_MESSAGES_TITLE" = "Syncing messages";
+"LINKING_SYNCING_MESSAGES_TITLE" = "Synchronisation des messages";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Afin de transférer votre compte Signal, vous devez activer l’accès au réseau local sur les deux appareils.";
@@ -4952,7 +4952,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Vous avez atteint le nombre maximal de tentatives autorisées, mais vous pouvez toujours tenter d’accéder à votre compte Signal en procédant à une vérification de votre numéro de téléphone. Afin de protéger vos données personnelles et votre sécurité, votre compte sera restauré sans informations de profil enregistrées ni préférences.";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Restore or Transfer Account";
+"ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Restaurer ou transférer le compte";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Conditions générales d’utilisation et règles de confidentialité";

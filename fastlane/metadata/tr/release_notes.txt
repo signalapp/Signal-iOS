@@ -1,1 +1,1 @@
-• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.
+• Adres defterinde birkaç bin kişi bulunan bazı kullanıcıları etkileyen bir çökmeyi düzelttik. Zira bir sürü insan tanıdığında, bu durum hayatını beklenmedik şekillerde etkileyebilir.

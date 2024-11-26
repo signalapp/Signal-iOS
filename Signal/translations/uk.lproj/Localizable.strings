@@ -143,7 +143,7 @@
 "ALERT_SAVE" = "Зберегти";
 
 /* Message for UI warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "У вас немає спільних груп з цією людиною. Не приймайте запитів без уважної перевірки відправника, щоб уникнути небажаних повідомлень.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "У вас немає спільних груп із цією людиною. Щоб уникнути небажаних повідомлень, не приймайте запитів без уважної перевірки відправника.";
 
 /* Message for UI warning about an unknown group thread. */
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "У вас немає спільних учасників з цією групою. Не приймайте запитів без уважної перевірки, щоб уникнути небажаних повідомлень.";
@@ -4007,13 +4007,13 @@
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Що таке Нові Групи?";
 
 /* title for declining to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "Don’t transfer";
+"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "Не переносити";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Finish Linking";
+"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Завершіть зв'язування";
 
 /* title for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Transfer message history";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Перенести історію повідомлень";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Це не QR-код для зв'язування. Переконайтеся, що ви скануєте QR-код на пристрої, який хочете зв’язати.";
@@ -4073,16 +4073,16 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Подробиці";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
-"LINKED_DEVICES_EMPTY_STATE" = "No linked devices";
+"LINKED_DEVICES_EMPTY_STATE" = "Зв'язаних пристроїв немає";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad. Your messages will sync to your linked devices.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "Користуйтеся застосунком Signal на комп'ютері чи iPad. Ваші повідомлення буде синхронізовано на зв'язаних пристроях.";
 
 /* Footer text below the list of currently-linked devices */
-"LINKED_DEVICES_LIST_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+"LINKED_DEVICES_LIST_FOOTER" = "Повідомлення й інформацію про чати захищено наскрізним шифруванням на всіх пристроях";
 
 /* Title above the list of currently-linked devices */
-"LINKED_DEVICES_LIST_TITLE" = "Linked Devices";
+"LINKED_DEVICES_LIST_TITLE" = "Зв’язані пристрої";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Зв’язані пристрої";
@@ -4091,7 +4091,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Не вдалося зв'язати пристрій";
 
 /* Title shown when loading messages during linking process */
-"LINKING_SYNCING_MESSAGES_TITLE" = "Syncing messages";
+"LINKING_SYNCING_MESSAGES_TITLE" = "Синхронізація повідомлень";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Для перенесення акаунту Signal обом пристроям необхідно надати доступ до локальної мережі.";
@@ -4700,7 +4700,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Інші користувачі";
 
 /* The title for the 'select members for new group' view. */
-"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Вибрати Учасників";
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Учасники";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
 "NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@, чат «%2$@» · Історія";
@@ -4952,7 +4952,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "У вас закінчилися спроби введення PIN-коду, але ви все одно можете отримати доступ до свого акаунту Signal, підтвердивши номер телефону. Для вашої конфіденційності та безпеки акаунт буде відновлено без збереженої інформації профілю і налаштувань.";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Restore or Transfer Account";
+"ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Відновити або перенести акаунт";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Умови надання послуг і Політика конфіденційності";
@@ -8048,7 +8048,7 @@
 "TIME_AMOUNT_MINUTES" = "%1$@ хв";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%1$@х";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%1$@хв";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%1$@ с";

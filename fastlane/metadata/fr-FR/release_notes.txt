@@ -1,1 +1,1 @@
-• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.
+• Un carnet d'adresses bien rempli peut vous réserver bien des surprises. C'est pourquoi nous avons corrigé une erreur qui affectait certains utilisateurs avec plusieurs milliers de contacts au compteur.

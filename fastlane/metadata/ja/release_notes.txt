@@ -1,1 +1,1 @@
-• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.
+• アドレス帳に数千件の連絡先を登録している一部のユーザーに生じていたクラッシュを修正しました。

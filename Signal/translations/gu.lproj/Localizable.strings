@@ -4007,13 +4007,13 @@
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "નવા ગ્રુપ શું છે??";
 
 /* title for declining to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "Don’t transfer";
+"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "ટ્રાન્સફર કરશો નહીં";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Finish Linking";
+"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "લિંક કરવાનું પૂર્ણ કરો";
 
 /* title for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Transfer message history";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "મેસેજની હિસ્ટ્રી ટ્રાન્સફર કરો";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "આ QR કોડ માન્ય નથી. કૃપા કરીને ખાતરી કરો કે તમે QR કોડને સ્કેન કરી રહ્યાં છો કે જે ડિવાઇસને તમે લિંક કરવા માંગો છો તેના પર પ્રદર્શિત થાય છે.";
@@ -4073,16 +4073,16 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "વધુ જાણો";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
-"LINKED_DEVICES_EMPTY_STATE" = "No linked devices";
+"LINKED_DEVICES_EMPTY_STATE" = "કોઈ લિંક કરેલા ડિવાઇસ નથી";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad. Your messages will sync to your linked devices.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "ડેસ્કટોપ અથવા iPad પર Signalનો ઉપયોગ કરો. તમારા મેસેજ તમારા લિંક કરેલા ડિવાઇસ સાથે સિંક થશે.";
 
 /* Footer text below the list of currently-linked devices */
-"LINKED_DEVICES_LIST_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+"LINKED_DEVICES_LIST_FOOTER" = "મેસેજ અને ચેટ માહિતી બધા ડિવાઇસ પર એન્ડ-ટૂ-એન્ડ એન્ક્રિપ્શન દ્વારા સુરક્ષિત છે";
 
 /* Title above the list of currently-linked devices */
-"LINKED_DEVICES_LIST_TITLE" = "Linked Devices";
+"LINKED_DEVICES_LIST_TITLE" = "લિંક થયેલા ડિવાઇસ";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "લિંક થયેલ ડિવાઇસ";
@@ -4091,7 +4091,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "ડિવાઇસને જોડવાનું નિષ્ફળ થયું";
 
 /* Title shown when loading messages during linking process */
-"LINKING_SYNCING_MESSAGES_TITLE" = "Syncing messages";
+"LINKING_SYNCING_MESSAGES_TITLE" = "મેસેજ સિંક થઈ રહ્યાં છે";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "તમારા Signal એકાઉન્ટને સ્થાનાંતરિત કરવા માટે, તમારે બંને ડિવાઇસ પર સ્થાનિક નેટવર્ક ઍક્સેસને સક્ષમ કરવાની જરૂર છે.";
@@ -4952,7 +4952,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "તમે ઘણી બધી વાર પિન અનુમાન કરી લીધા છે, પરંતુ તમે હજી પણ પ્રયાસ કરી શકો છો અને તમારા ફોન નંબરની ચકાસણી કરાવીને તમારા Signal એકાઉન્ટને ઍક્સેસ કરી શકો છો. તમારી ગોપનીયતા અને સુરક્ષા માટે તમારું એકાઉન્ટ કોઈ પણ સેવ કરેલી પ્રોફાઇલ માહિતી અથવા સેટિંગ્સ વિના રિસ્ટોર કરવામાં આવશે.";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Restore or Transfer Account";
+"ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "એકાઉન્ટ રિસ્ટોર અથવા ટ્રાન્સફર કરો";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "શરતો અને ગોપનીયતા નીતિ";

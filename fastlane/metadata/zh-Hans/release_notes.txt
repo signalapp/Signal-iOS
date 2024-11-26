@@ -1,1 +1,1 @@
-• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.
+• 我们修复了一个崩溃问题，该问题会影响通讯录中有数千个联系人的用户。

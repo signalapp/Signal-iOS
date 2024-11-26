@@ -1,1 +1,1 @@
-• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.
+• Ispravili smo programsku pogrešku koja je uzrokovala rušenje aplikacije korisnicima s više tisuća kontakata u imeniku.

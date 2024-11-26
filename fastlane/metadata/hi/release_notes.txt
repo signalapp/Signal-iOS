@@ -1,1 +1,1 @@
-• When you know a ton of people, it can impact your life in unexpected ways. So we fixed a crash that was affecting some users who had several thousand contacts in their address book.
+• जब आप ढेर सारे लोगों को जानते हैं, तो इससे आपकी ज़िंदगी पर अचानक कई तरह से असर पड़ सकता है। तो हमने एक ऐसा क्रैश ठीक कर दिया है, जिससे ऐसे कुछ यूज़र्स पर असर पड़ रहा था जिनकी ऐड्रेस बुक में कई हज़ार संपर्क थे।

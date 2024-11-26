@@ -4007,13 +4007,13 @@
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "ما هي المجموعات الجديدة؟";
 
 /* title for declining to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "Don’t transfer";
+"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "لا تنقلْ";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Finish Linking";
+"LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "إنهاء الارتباط";
 
 /* title for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Transfer message history";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "نقل سجلّ الرسائل";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "رمز الاستجابة السريعة هذا غير صالح. فضلاً تأكد من أنك تقوم بمسح رمز الاستجابة السريعة المعروض على الجهاز الذي تريد ربطه.";
@@ -4073,16 +4073,16 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "معرفة المزيد";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
-"LINKED_DEVICES_EMPTY_STATE" = "No linked devices";
+"LINKED_DEVICES_EMPTY_STATE" = "لا توجد أجهزة مرتبطة";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "Use Signal on desktop or iPad. Your messages will sync to your linked devices.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "استخدام سيجنال على الحاسوب المكتبي أو جهاز الآيباد. ستتمُّ مُزامنة رسائلك مع أجهزتك المرتبطة.";
 
 /* Footer text below the list of currently-linked devices */
-"LINKED_DEVICES_LIST_FOOTER" = "Messages and chat info are protected by end-to-end encryption on all devices";
+"LINKED_DEVICES_LIST_FOOTER" = "معلومات الرسائل والدردشات محمية من خلال التشفير من طرف لِطرف على جميع الأجهزة.";
 
 /* Title above the list of currently-linked devices */
-"LINKED_DEVICES_LIST_TITLE" = "Linked Devices";
+"LINKED_DEVICES_LIST_TITLE" = "اﻷجهزة المرتبطة";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "اﻷجهزة المرتبطة";
@@ -4091,7 +4091,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "فشل ربط الجهاز";
 
 /* Title shown when loading messages during linking process */
-"LINKING_SYNCING_MESSAGES_TITLE" = "Syncing messages";
+"LINKING_SYNCING_MESSAGES_TITLE" = "جاري مزامنة الرسائل";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "من أجل نقل حساب سيجنال الخاص بك، يجب عليك تفعيل الوصول إلى الشبكة المحلية في كلا الجهازين.";
@@ -4952,7 +4952,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين رقم التعريف الشخصي، لكن يُمكنك الوصول إلى حساب سيجنال الخاص بِكَ عبر التحقق من رقم هاتفك. للحفاظ على خصوصيتك وأمانك سَيُستعاد حسابك من غير أي معلومات حساب شخصي أو إعدادات محفوظة مُسبقًا.";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Restore or Transfer Account";
+"ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "استعادة أو نقل الحساب";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "الشُروط وَسياسة الخُصُوصِية";
