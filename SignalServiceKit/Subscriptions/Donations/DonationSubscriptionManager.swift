@@ -275,10 +275,13 @@ public class DonationSubscriptionManager: NSObject {
         }
     }
 
-    public class func getCurrentSubscriptionStatus(for subscriberID: Data) -> Promise<Subscription?> {
+    public class func getCurrentSubscriptionStatus(
+        for subscriberID: Data,
+        networkManager: NetworkManager = SSKEnvironment.shared.networkManagerRef
+    ) -> Promise<Subscription?> {
         let request = OWSRequestFactory.subscriptionGetCurrentSubscriptionLevelRequest(subscriberID: subscriberID)
         return firstly {
-            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
+            networkManager.makePromise(request: request)
         }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
 
@@ -846,125 +849,67 @@ public class DonationSubscriptionManager: NSObject {
     // MARK: Heartbeat
 
     public class func performSubscriptionKeepAliveIfNecessary() {
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false else {
-            return
-        }
+        struct CheckerStore: SubscriptionRedemptionNecessityCheckerStore {
+            let donationSubscriptionManager: DonationSubscriptionManager.Type
 
-        // Fetch subscriberID / subscriber currencyCode
-        var lastKeepAliveHeartbeat: Date?
-        var lastSubscriptionExpiration: Date?
-        var subscriberID: Data?
-        var currencyCode: Currency.Code?
-        SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            lastKeepAliveHeartbeat = self.subscriptionKVS.getDate(self.lastSubscriptionHeartbeatKey, transaction: transaction.asV2Read)
-            lastSubscriptionExpiration = self.lastSubscriptionExpirationDate(transaction: transaction)
-            subscriberID = self.getSubscriberID(transaction: transaction)
-            currencyCode = self.getSubscriberCurrencyCode(transaction: transaction)
-        }
-
-        var performHeartbeat: Bool = true
-        if let lastKeepAliveHeartbeat = lastKeepAliveHeartbeat, Date().timeIntervalSince(lastKeepAliveHeartbeat) < heartbeatInterval {
-            performHeartbeat = false
-        }
-
-        guard performHeartbeat else {
-            return
-        }
-
-        Logger.info("[Donations] Performing subscription heartbeat")
-
-        guard let subscriberID = subscriberID, currencyCode != nil else {
-            Logger.warn("[Donations] No subscription + currency code found")
-            self.updateSubscriptionHeartbeatDate()
-            return
-        }
-
-        firstly(on: DispatchQueue.global()) {
-            self.postSubscriberID(subscriberID: subscriberID)
-        }.then(on: DispatchQueue.global()) {
-            self.getCurrentSubscriptionStatus(for: subscriberID)
-        }.done(on: DispatchQueue.global()) { subscription in
-            defer {
-                // We did a heartbeat, so regardless of the outcomes below we
-                // should save the fact that we did so.
-                self.updateSubscriptionHeartbeatDate()
+            func subscriberId(tx: any DBReadTransaction) -> Data? {
+                return donationSubscriptionManager.getSubscriberID(transaction: SDSDB.shimOnlyBridge(tx))
             }
 
-            guard let subscription else {
-                Logger.info("[Donations] No current subscription for this subscriber ID.")
-                return
+            func getLastRedemptionNecessaryCheck(tx: any DBReadTransaction) -> Date? {
+                return donationSubscriptionManager.subscriptionKVS.getDate(donationSubscriptionManager.lastSubscriptionHeartbeatKey, transaction: tx)
             }
 
-            if let lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 == subscription.endOfCurrentPeriod {
-                Logger.info("[Donations] Not triggering receipt redemption, expiration date is the same")
-            } else if subscription.status == .pastDue {
-                /// For some payment methods (e.g., cards), the payment
-                /// processors will automatically retry a subscription-renewal
-                /// payment failure. While that's happening, the subscription
-                /// will be "past due".
-                ///
-                /// Retries will occur on the scale of days, for a period of
-                /// weeks. We don't want to attempt badge redemption during this
-                /// time since we don't expect to succeed now, but failure
-                /// doesn't yet mean much as we may succeed in the future.
-                Logger.warn("[Donations] Subscription failed to renew, but payment processor is retrying. Not yet attempting receipt credential redemption for this period.")
-            } else {
-                /// When a subscription renews, the "end of period" changes to
-                /// reflect a later date. When that happens, we need to redeem a
-                /// badge for the new period.
-                ///
-                /// We may also get here if we're missing our last subscription
-                /// expiration entirely, potentially due to a reinstall. In that
-                /// case, we don't know whether or not we've already redeemed a
-                /// badge for the period we're in. Either way, we can kick off
-                /// a receipt credential job:
-                ///
-                /// - If we haven't redeemed the badge yet, maybe because the
-                /// subscription renewed just before we reinstalled, everything
-                /// is fortuitously working as expected.
-                ///
-                /// - If we *have* redeemed the badge, we can expect the job to
-                /// fail with a "payment already redeemed" error. We'll
-                /// configure the job to swallow that error and be back to our
-                /// regular rhythm.
+            func setLastRedemptionNecessaryCheck(_ now: Date, tx: any DBWriteTransaction) {
+                donationSubscriptionManager.subscriptionKVS.setDate(now, key: donationSubscriptionManager.lastSubscriptionHeartbeatKey, transaction: tx)
+            }
 
-                let shouldSuppressPaymentAlreadyRedeemed: Bool = {
-                    let newExpiration = Date(timeIntervalSince1970: subscription.endOfCurrentPeriod)
+            func getLastSubscriptionRenewalDate(tx: any DBReadTransaction) -> Date? {
+                return donationSubscriptionManager.lastSubscriptionExpirationDate(transaction: SDSDB.shimOnlyBridge(tx))
+            }
 
-                    if let lastSubscriptionExpiration {
-                        Logger.info("[Donations] Triggering receipt redemption job during heartbeat, last expiration \(lastSubscriptionExpiration), new expiration \(newExpiration)")
-                        return false
-                    } else {
-                        Logger.warn("[Donations] Attempting receipt credential redemption during heartbeat, missing last subscription expiration. New expiration: \(newExpiration)")
-                        return true
-                    }
-                }()
+            func setLastSubscriptionRenewalDate(_ renewalDate: Date, tx: any DBWriteTransaction) {
+                donationSubscriptionManager.setLastSubscriptionExpirationDate(renewalDate, transaction: SDSDB.shimOnlyBridge(tx))
+            }
+        }
 
-                _ = requestAndRedeemReceipt(
-                    subscriberId: subscriberID,
-                    subscriptionLevel: subscription.level,
-                    priorSubscriptionLevel: nil,
-                    paymentProcessor: subscription.paymentProcessor,
-                    paymentMethod: subscription.paymentMethod,
-                    isNewSubscription: false,
-                    shouldSuppressPaymentAlreadyRedeemed: shouldSuppressPaymentAlreadyRedeemed
-                )
+        let subscriptionRedemptionNecessaryChecker = SubscriptionRedemptionNecessityChecker(
+            checkerStore: CheckerStore(donationSubscriptionManager: self),
+            dateProvider: { Date() },
+            db: DependenciesBridge.shared.db,
+            logger: PrefixedLogger(prefix: "[Donations]"),
+            networkManager: SSKEnvironment.shared.networkManagerRef,
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager
+        )
 
-                // Save last expiration
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
+        Task {
+            do {
+                try await subscriptionRedemptionNecessaryChecker.enqueueRedemptionIfNecessary { subscriberId, subscription in
+                    /// It's possible that we won't know which subscription period we
+                    /// last renewed for, potentially due to reinstalling. If that
+                    /// happens, we may or may not have already redeemed for the period
+                    /// we're in now.
+                    ///
+                    /// The consequence of attempting to redeem, if we'd already done so
+                    /// in a previous install, is that we'll get a "payment already
+                    /// redeemed" error from our servers. That's fine – we've clearly
+                    /// already done the thing we want to do, so we can always treat
+                    /// this like a success.
+                    let shouldSuppressPaymentAlreadyRedeemed = true
+
+                    _ = requestAndRedeemReceipt(
+                        subscriberId: subscriberId,
+                        subscriptionLevel: subscription.level,
+                        priorSubscriptionLevel: nil,
+                        paymentProcessor: subscription.paymentProcessor,
+                        paymentMethod: subscription.paymentMethod,
+                        isNewSubscription: false,
+                        shouldSuppressPaymentAlreadyRedeemed: shouldSuppressPaymentAlreadyRedeemed
+                    )
                 }
+            } catch {
+                owsFailDebug("Failed to redeem subscription if necessary: \(error)")
             }
-        }.catch(on: DispatchQueue.global()) { error in
-            owsFailDebug("Failed subscription heartbeat with error \(error)")
-        }
-    }
-
-    private static func updateSubscriptionHeartbeatDate() {
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            // Update keepalive
-            self.subscriptionKVS.setDate(Date(), key: self.lastSubscriptionHeartbeatKey, transaction: transaction.asV2Write)
         }
     }
 
