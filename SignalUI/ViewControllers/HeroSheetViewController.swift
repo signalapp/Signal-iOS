@@ -66,10 +66,6 @@ public class HeroSheetViewController: StackSheetViewController {
         super.init()
     }
 
-    public override var sheetBackgroundColor: UIColor {
-        Theme.tableView2PresentedBackgroundColor
-    }
-
     public override var stackViewInsets: UIEdgeInsets {
         .init(top: 8, leading: 24, bottom: 32, trailing: 24)
     }

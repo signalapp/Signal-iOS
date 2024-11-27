@@ -15,6 +15,10 @@ import Combine
 open class StackSheetViewController: InteractiveSheetViewController {
     public override var interactiveScrollViews: [UIScrollView] { [contentScrollView] }
 
+    open override var sheetBackgroundColor: UIColor {
+        UIColor.Signal.groupedBackground
+    }
+
     private lazy var preferredHeight: CGFloat = self.maximumAllowedHeight()
     open override func maximumPreferredHeight() -> CGFloat {
         min(self.preferredHeight, self.maximumAllowedHeight())
