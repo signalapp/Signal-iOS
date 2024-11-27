@@ -155,43 +155,15 @@ class LinkDeviceViewController: OWSViewController {
 
     func confirmProvisioningWithUrl(_ deviceProvisioningUrl: DeviceProvisioningURL) {
         if FeatureFlags.linkAndSync, deviceProvisioningUrl.capabilities.contains(.linknsync) {
-            // TODO: use the real ux not a standard action sheet
-            let title = NSLocalizedString(
-                "LINK_DEVICE_CONFIRMATION_ALERT_TITLE",
-                comment: "confirm the users intent to link a new device"
-            )
+            let linkOrSyncSheet = LinkOrSyncPickerSheet {
+                self.popToLinkedDeviceList()
+            } linkAndSync: {
+                self.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: true)
+            } linkOnly: {
+                self.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: false)
+            }
 
-            let actionSheet = ActionSheetController(title: title, message: nil)
-            actionSheet.addAction(ActionSheetAction(
-                title: CommonStrings.cancelButton,
-                style: .cancel,
-                handler: { _ in
-                    DispatchQueue.main.async {
-                        self.popToLinkedDeviceList()
-                    }
-                }
-            ))
-            actionSheet.addAction(ActionSheetAction(
-                title: NSLocalizedString(
-                    "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE",
-                    comment: "title for choosing to send message history when linking a new device"
-                ),
-                style: .default,
-                handler: { _ in
-                    self.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: true)
-                }
-            ))
-            actionSheet.addAction(ActionSheetAction(
-                title: NSLocalizedString(
-                    "LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE",
-                    comment: "title for declining to send message history when linking a new device"
-                ),
-                style: .default,
-                handler: { _ in
-                    self.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: false)
-                }
-            ))
-            safePresent(actionSheet)
+            self.safePresent(linkOrSyncSheet)
         } else {
             let title = NSLocalizedString(
                 "LINK_DEVICE_PERMISSION_ALERT_TITLE",
