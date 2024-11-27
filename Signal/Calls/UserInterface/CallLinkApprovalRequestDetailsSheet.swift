@@ -184,30 +184,12 @@ class CallLinkApprovalRequestDetailsSheet: OWSTableSheetViewController {
 #if DEBUG
 @available(iOS 17.0, *)
 #Preview {
-    class PreviewViewController: UIViewController {
-        override func viewDidLoad() {
-            super.viewDidLoad()
-            let button = OWSButton(title: "Present sheet") { [unowned self] in
-                self.sheet().present(from: self, animated: true)
-            }
-            view.addSubview(button)
-            button.autoCenterInSuperview()
-            button.setTitleColor(.ows_signalBlue, for: .normal)
-            view.backgroundColor = .black
-        }
-
-        override func viewDidAppear(_ animated: Bool) {
-            sheet().present(from: self, animated: false)
-        }
-
-        private func sheet() -> CallLinkApprovalRequestDetailsSheet {
-            return CallLinkApprovalRequestDetailsSheet(
-                approvalRequest: .init(aci: .init(fromUUID: UUID()), name: "Candice"),
-                approvalViewModel: CallLinkApprovalViewModel()
-            )
-        }
+    SheetPreviewViewController { viewController, animated in
+        CallLinkApprovalRequestDetailsSheet(
+            approvalRequest: .init(aci: .init(fromUUID: UUID()), name: "Candice"),
+            approvalViewModel: CallLinkApprovalViewModel()
+        )
+        .present(from: viewController, animated: animated)
     }
-
-    return PreviewViewController()
 }
 #endif

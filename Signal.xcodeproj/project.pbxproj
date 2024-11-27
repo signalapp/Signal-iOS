@@ -1680,6 +1680,7 @@
 		B99288002CF124AC000D62C4 /* Text+Links.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99287FF2CF124AC000D62C4 /* Text+Links.swift */; };
 		B99B155D2A71BA5200E26DAC /* StoryContextViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */; };
 		B9A0807A2B07D76A000FDB5B /* HomeTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */; };
+		B9A53B932CF7928A0000578B /* SheetPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B922CF7928A0000578B /* SheetPreviewViewController.swift */; };
 		B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */; };
 		B9A87A382A9E34BD009FCA13 /* Hatsuishi-UPM800.otf in Resources */ = {isa = PBXBuildFile; fileRef = B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */; };
 		B9B2AA942BC598B60060B56C /* ContactNoteSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */; };
@@ -5509,6 +5510,7 @@
 		B99287FF2CF124AC000D62C4 /* Text+Links.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Text+Links.swift"; sourceTree = "<group>"; };
 		B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextViewState.swift; sourceTree = "<group>"; };
 		B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabViewController.swift; sourceTree = "<group>"; };
+		B9A53B922CF7928A0000578B /* SheetPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetPreviewViewController.swift; sourceTree = "<group>"; };
 		B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSticker.swift; sourceTree = "<group>"; };
 		B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hatsuishi-UPM800.otf"; sourceTree = "<group>"; };
 		B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactNoteSheet.swift; sourceTree = "<group>"; };
@@ -8119,6 +8121,7 @@
 				34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */,
 				34A95507271B510400B05242 /* GroupViewUtils.swift */,
 				6605D5042A86EE50004DC345 /* MessageRecipientStatusUtils.swift */,
+				B9A53B922CF7928A0000578B /* SheetPreviewViewController.swift */,
 				C1D9B1522B7E949500D94595 /* SpamReportingUIUtils.swift */,
 			);
 			path = Utils;
@@ -16273,6 +16276,7 @@
 				50597BBF2B97D629004681E1 /* SearchableNameFinder.swift in Sources */,
 				66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */,
 				66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */,
+				B9A53B932CF7928A0000578B /* SheetPreviewViewController.swift in Sources */,
 				3402AA3C271D9DCD0084CBAE /* SheetViewController.swift in Sources */,
 				B9E322E72CD170ED006DAF3B /* SignalList.swift in Sources */,
 				B9F817642BA263A900EAEE23 /* SignalSymbols.swift in Sources */,

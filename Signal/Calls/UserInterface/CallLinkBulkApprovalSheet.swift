@@ -535,23 +535,9 @@ private class RequestCell: UITableViewCell, ReusableTableViewCell {
 // MARK: - Previews
 
 #if DEBUG
-private class PreviewViewController: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        let button = OWSButton(title: "Present sheet") { [unowned self] in
-            self.present(self.sheet(), animated: true)
-        }
-        view.addSubview(button)
-        button.autoCenterInSuperview()
-        button.setTitleColor(.ows_signalBlue, for: .normal)
-        view.backgroundColor = .black
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        self.present(self.sheet(), animated: false)
-    }
-
-    private func sheet() -> UIViewController {
+@available(iOS 17.0, *)
+#Preview {
+    SheetPreviewViewController {
         let viewModel = CallLinkApprovalViewModel()
         viewModel.requests = [
             .init(aci: .init(fromUUID: UUID()), name: "Candice"),
@@ -565,10 +551,5 @@ private class PreviewViewController: UIViewController {
 
         return CallLinkBulkApprovalSheet(viewModel: viewModel)
     }
-}
-
-@available(iOS 17.0, *)
-#Preview {
-    PreviewViewController()
 }
 #endif
