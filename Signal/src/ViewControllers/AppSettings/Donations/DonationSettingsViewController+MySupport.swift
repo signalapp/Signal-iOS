@@ -186,7 +186,26 @@ extension DonationSettingsViewController {
                         // for the purposes of this view – it may yet succeed!
                         return nil
                     case .canceled:
+                        /// This is weird, but could apply to subscriptions that
+                        /// were canceled due to charge failures before we used
+                        /// `ReceiptCredentialRequestError`s to track failures.
                         logger.warn("Subscription is canceled, but we don't have a receipt credential request error about it!")
+
+                        if
+                            let chargeFailure = subscription.chargeFailure,
+                            previouslyHadActiveSubscription
+                        {
+                            return .previouslyActiveSubscriptionLapsed(
+                                chargeFailureCode: chargeFailure.code,
+                                paymentMethod: subscription.paymentMethod
+                            )
+                        } else if let chargeFailure = subscription.chargeFailure {
+                            return .paymentFailed(
+                                chargeFailureCode: chargeFailure.code,
+                                paymentMethod: subscription.paymentMethod
+                            )
+                        }
+
                         return nil
                     case
                             .incomplete,
