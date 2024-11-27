@@ -105,18 +105,17 @@ public class DisplayableText: NSObject {
 
     // If the string...
     //
-    // * Contains <= kMaxJumbomojiCount characters
+    // * Is not empty
     // * Contains only emoji
+    // * Contains <= kMaxJumbomojiCount emoji
     //
     // ...return the number of emoji (to be treated as "Jumbomoji") in the string.
     private class func jumbomojiCount(in string: String) -> UInt {
-        // Don't iterate the entire string; only inspect the first few characters.
-        let stringPrefix = string.prefix(kMaxJumbomojiCount + 1)
-        let emojiCount = stringPrefix.count
-        guard emojiCount <= kMaxJumbomojiCount else {
+        guard string.containsOnlyEmojiIgnoringWhitespace else {
             return 0
         }
-        guard string.containsOnlyEmoji else {
+        let emojiCount = string.removeCharacters(characterSet: .whitespacesAndNewlines).count
+        if emojiCount > kMaxJumbomojiCount {
             return 0
         }
         return UInt(emojiCount)

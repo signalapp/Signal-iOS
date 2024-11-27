@@ -89,6 +89,21 @@ class DisplayableTextTest: XCTestCase {
         XCTAssertFalse("L̷̳͔̲͝Ģ̵̮̯̤̩̙͍̬̟͉̹̘̹͍͈̮̦̰̣͟͝O̶̴̮̻̮̗͘͡!̴̷̟͓͓".containsOnlyEmoji)
     }
 
+    func testContainsOnlyEmojiIgnoringWhitespace() {
+        // Plain text
+        XCTAssertFalse("boring text".containsOnlyEmojiIgnoringWhitespace)
+
+        // Emojis
+        XCTAssertTrue("🇵🇸🌼🇵🇸🌼🇵🇸".containsOnlyEmojiIgnoringWhitespace)
+        XCTAssertTrue("🏳️‍🌈".containsOnlyEmojiIgnoringWhitespace)
+        XCTAssertFalse("🏳️‍⚧️!".containsOnlyEmojiIgnoringWhitespace)
+        XCTAssertTrue("🏴‍☠️ ".containsOnlyEmojiIgnoringWhitespace)
+        XCTAssertTrue("❤️   💜".containsOnlyEmojiIgnoringWhitespace)
+        XCTAssertTrue("❤️\n💜".containsOnlyEmojiIgnoringWhitespace)
+        XCTAssertTrue("🇺🇸🇷🇺🇸 🇦🇫🇦🇲🇸".containsOnlyEmojiIgnoringWhitespace)
+        XCTAssertFalse("１２３".containsOnlyEmojiIgnoringWhitespace)
+    }
+
     func testJumbomojiCount() {
         let testCases: [(String, UInt)] = [
             ("", 0),
@@ -100,8 +115,9 @@ class DisplayableTextTest: XCTestCase {
             ("A💜", 0),
             ("❤️A💜", 0),
             ("A💜B", 0),
-            ("❤️ 💜", 0),
-            ("❤️ ", 0),
+            ("❤️ 💜", 2),
+            ("❤️ ", 1),
+            ("❤️\n💜", 2),
             ("Signal", 0),
             ("Signal Messenger", 0),
             ("Noise", 0)
