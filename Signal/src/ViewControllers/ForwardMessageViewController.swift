@@ -353,7 +353,7 @@ extension ForwardMessageViewController {
             return firstly { () -> Promise<Void> in
                 // Maintain order of interactions.
                 let sortedItems = content.allItems.sorted { lhs, rhs in
-                    lhs.interaction?.timestamp ?? 0 < rhs.interaction?.timestamp ?? 0
+                    lhs.interaction?.sortId ?? 0 < rhs.interaction?.sortId ?? 0
                 }
                 // _Enqueue_ each item serially.
                 // Each item waits on the previous' enqueue promise, then sets its own
