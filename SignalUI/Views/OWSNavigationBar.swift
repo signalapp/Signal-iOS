@@ -248,7 +248,9 @@ internal struct OWSNavigationBarAppearance: Equatable {
         let appearance = UINavigationBarAppearance()
         appearance.backgroundEffect = blurEffect
         appearance.backgroundColor = backgroundColor
-        appearance.backgroundImage = backgroundImage
+        appearance.backgroundImage = backgroundImage(
+            userInterfaceLevel: navigationBar.traitCollection.userInterfaceLevel
+        )
         appearance.titleTextAttributes = titleTextAttributes
         appearance.shadowImage = shadowImage
         // We have to override the color default, we never use it.
@@ -269,14 +271,22 @@ internal struct OWSNavigationBarAppearance: Equatable {
         navigationBar.barTintColor = backgroundColor
     }
 
-    private var backgroundImage: UIImage? {
+    private func backgroundImage(userInterfaceLevel: UIUserInterfaceLevel) -> UIImage? {
         switch backgroundStyle {
         case .blur:
             return UIImage.image(color: .clear)
         case .tint:
             return nil
         case .image(let color):
-            return UIImage.image(color: color)
+            return UIImage.image(color: color.resolvedColor(
+                // The user interface style doesn't propagate to the nav
+                // bar immediately, so only use the elevation from the
+                // nav bar, with the other traits from the app default.
+                with: UITraitCollection(traitsFrom: [
+                    UITraitCollection.current,
+                    UITraitCollection(userInterfaceLevel: userInterfaceLevel),
+                ])
+            ))
         }
     }
 
