@@ -147,6 +147,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             ensureCellAnimations()
         }
 
+        let isCollapsed = splitViewController?.isCollapsed ?? true
         if let selectedIndexPath = tableView.indexPathForSelectedRow, let selectedThread = renderState.thread(forIndexPath: selectedIndexPath) {
             if viewState.lastSelectedThreadId != selectedThread.uniqueId {
                 owsFailDebug("viewState.lastSelectedThreadId out of sync with table view")
@@ -154,7 +155,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 updateShouldBeUpdatingView()
             }
 
-            let isCollapsed = splitViewController?.isCollapsed ?? true
             if isCollapsed {
                 if animated, let transitionCoordinator {
                     transitionCoordinator.animate { [self] _ in
@@ -174,6 +174,11 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                     loadCoordinator.scheduleLoad(updatedThreadIds: [selectedThread.uniqueId], animated: false)
                 }
             }
+        } else if isCollapsed, let threadId = viewState.lastSelectedThreadId {
+            // If there is no currently selected table row, clean up the
+            // lastSelectedThreadId viewState and reload that item
+            viewState.lastSelectedThreadId = nil
+            loadCoordinator.scheduleLoad(updatedThreadIds: [threadId], animated: animated)
         }
     }
 
