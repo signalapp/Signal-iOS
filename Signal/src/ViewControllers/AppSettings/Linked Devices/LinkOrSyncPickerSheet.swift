@@ -189,6 +189,7 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
 
 // MARK: - Previews
 
+#if DEBUG
 @available(iOS 17, *)
 #Preview {
     SheetPreviewViewController(sheet: LinkOrSyncPickerSheet {
@@ -199,3 +200,4 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
         print("linkOnly")
     })
 }
+#endif
