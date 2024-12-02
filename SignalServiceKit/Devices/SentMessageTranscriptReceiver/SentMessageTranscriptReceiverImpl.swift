@@ -277,7 +277,8 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     owner: .quotedReplyAttachment(.init(
                         messageRowId: outgoingMessage.sqliteRowId!,
                         receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
-                        threadRowId: threadRowId
+                        threadRowId: threadRowId,
+                        isPastEditRevision: outgoingMessage.isPastEditRevision()
                     )),
                     tx: tx
                 )
@@ -286,7 +287,8 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     owner: .messageLinkPreview(.init(
                         messageRowId: outgoingMessage.sqliteRowId!,
                         receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
-                        threadRowId: threadRowId
+                        threadRowId: threadRowId,
+                        isPastEditRevision: outgoingMessage.isPastEditRevision()
                     )),
                     tx: tx
                 )
@@ -297,6 +299,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                             messageRowId: outgoingMessage.sqliteRowId!,
                             receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
                             threadRowId: threadRowId,
+                            isPastEditRevision: outgoingMessage.isPastEditRevision(),
                             stickerPackId: $0.info.packId,
                             stickerId: $0.info.stickerId
                         )),
@@ -307,7 +310,8 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     owner: .messageContactAvatar(.init(
                         messageRowId: outgoingMessage.sqliteRowId!,
                         receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
-                        threadRowId: threadRowId
+                        threadRowId: threadRowId,
+                        isPastEditRevision: outgoingMessage.isPastEditRevision()
                     )),
                     tx: tx
                 )

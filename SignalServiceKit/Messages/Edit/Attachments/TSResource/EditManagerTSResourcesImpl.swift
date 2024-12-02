@@ -160,7 +160,8 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
                 owner: .messageLinkPreview(.init(
                     messageRowId: latestRevisionRowId,
                     receivedAtTimestamp: latestRevision.receivedAtTimestamp,
-                    threadRowId: threadRowId
+                    threadRowId: threadRowId,
+                    isPastEditRevision: latestRevision.isPastEditRevision()
                 )),
                 tx: tx
             )
@@ -192,7 +193,8 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
                 owner: .messageLinkPreview(.init(
                     messageRowId: latestRevisionRowId,
                     receivedAtTimestamp: latestRevision.receivedAtTimestamp,
-                    threadRowId: threadRowId
+                    threadRowId: threadRowId,
+                    isPastEditRevision: latestRevision.isPastEditRevision()
                 )),
                 tx: tx
             )

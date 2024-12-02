@@ -251,7 +251,8 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
                     messageRowId: messageRowId,
                     receivedAtTimestamp: message.receivedAtTimestamp,
                     threadRowId: thread.threadRowId,
-                    isViewOnce: message.isViewOnceMessage
+                    isViewOnce: message.isViewOnceMessage,
+                    isPastEditRevision: message.isPastEditRevision()
                 ))
             )
         }
@@ -280,7 +281,8 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
             owner: .messageOversizeText(.init(
                 messageRowId: messageRowId,
                 receivedAtTimestamp: message.receivedAtTimestamp,
-                threadRowId: thread.threadRowId
+                threadRowId: thread.threadRowId,
+                isPastEditRevision: message.isPastEditRevision()
             ))
         )
 
@@ -319,7 +321,8 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
             owner: .quotedReplyAttachment(.init(
                 messageRowId: messageRowId,
                 receivedAtTimestamp: message.receivedAtTimestamp,
-                threadRowId: thread.threadRowId
+                threadRowId: thread.threadRowId,
+                isPastEditRevision: message.isPastEditRevision()
             ))
         )
 
@@ -347,7 +350,8 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
             owner: .messageLinkPreview(.init(
                 messageRowId: messageRowId,
                 receivedAtTimestamp: message.receivedAtTimestamp,
-                threadRowId: thread.threadRowId
+                threadRowId: thread.threadRowId,
+                isPastEditRevision: message.isPastEditRevision()
             ))
         )
 
@@ -375,7 +379,8 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
             owner: .messageContactAvatar(.init(
                 messageRowId: messageRowId,
                 receivedAtTimestamp: message.receivedAtTimestamp,
-                threadRowId: thread.threadRowId
+                threadRowId: thread.threadRowId,
+                isPastEditRevision: message.isPastEditRevision()
             ))
         )
 
@@ -406,6 +411,7 @@ internal class MessageBackupMessageAttachmentArchiver: MessageBackupProtoArchive
                 messageRowId: messageRowId,
                 receivedAtTimestamp: message.receivedAtTimestamp,
                 threadRowId: thread.threadRowId,
+                isPastEditRevision: message.isPastEditRevision(),
                 stickerPackId: stickerPackId,
                 stickerId: stickerId
             ))

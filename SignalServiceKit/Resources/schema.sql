@@ -1494,6 +1494,7 @@ CREATE
             OR contentType = 1
         ) VIRTUAL
         ,"isViewOnce" BOOLEAN NOT NULL DEFAULT 0
+        ,"ownerIsPastEditRevision" BOOLEAN DEFAULT 0
 )
 ;
 

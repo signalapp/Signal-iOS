@@ -192,7 +192,8 @@ public class AttachmentManagerImpl: AttachmentManager {
                     ownerForInput = .messageOversizeText(.init(
                         messageRowId: metadata.messageRowId,
                         receivedAtTimestamp: metadata.receivedAtTimestamp,
-                        threadRowId: metadata.threadRowId
+                        threadRowId: metadata.threadRowId,
+                        isPastEditRevision: metadata.isPastEditRevision
                     ))
                     indexOffset = -1
                     sourceOrder = nil

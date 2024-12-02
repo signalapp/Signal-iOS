@@ -282,7 +282,8 @@ public class UnpreparedOutgoingMessage {
             owner: .messageLinkPreview(.init(
                 messageRowId: messageRowId,
                 receivedAtTimestamp: message.message.receivedAtTimestamp,
-                threadRowId: threadRowId
+                threadRowId: threadRowId,
+                isPastEditRevision: message.message.isPastEditRevision()
             )),
             tx: tx.asV2Write
         )
@@ -290,7 +291,8 @@ public class UnpreparedOutgoingMessage {
             owner: .quotedReplyAttachment(.init(
                 messageRowId: messageRowId,
                 receivedAtTimestamp: message.message.receivedAtTimestamp,
-                threadRowId: threadRowId
+                threadRowId: threadRowId,
+                isPastEditRevision: message.message.isPastEditRevision()
             )),
             tx: tx.asV2Write
         )
@@ -301,6 +303,7 @@ public class UnpreparedOutgoingMessage {
                     messageRowId: messageRowId,
                     receivedAtTimestamp: message.message.receivedAtTimestamp,
                     threadRowId: threadRowId,
+                    isPastEditRevision: message.message.isPastEditRevision(),
                     stickerPackId: $0.info.packId,
                     stickerId: $0.info.stickerId
                 )),
@@ -313,7 +316,8 @@ public class UnpreparedOutgoingMessage {
             owner: .messageContactAvatar(.init(
                 messageRowId: messageRowId,
                 receivedAtTimestamp: message.message.receivedAtTimestamp,
-                threadRowId: threadRowId
+                threadRowId: threadRowId,
+                isPastEditRevision: message.message.isPastEditRevision()
             )),
             tx: tx.asV2Write
         )

@@ -1658,7 +1658,8 @@ class DebugUIMessages: DebugUIPage {
             owner: .quotedReplyAttachment(.init(
                 messageRowId: message.sqliteRowId!,
                 receivedAtTimestamp: message.receivedAtTimestamp,
-                threadRowId: thread.sqliteRowId!
+                threadRowId: thread.sqliteRowId!,
+                isPastEditRevision: message.isPastEditRevision()
             )),
             tx: transaction.asV2Write
         )
@@ -1774,7 +1775,8 @@ class DebugUIMessages: DebugUIPage {
             owner: .quotedReplyAttachment(.init(
                 messageRowId: message.sqliteRowId!,
                 receivedAtTimestamp: message.receivedAtTimestamp,
-                threadRowId: thread.sqliteRowId!
+                threadRowId: thread.sqliteRowId!,
+                isPastEditRevision: message.isPastEditRevision()
             )),
             tx: transaction.asV2Write
         )

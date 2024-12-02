@@ -490,6 +490,7 @@ class AttachmentStoreTests: XCTestCase {
                             receivedAtTimestamp: .random(in: 0..<9999999),
                             threadRowId: threadRowId,
                             contentType: .image,
+                            isPastEditRevision: false,
                             caption: nil,
                             renderingFlag: .default,
                             orderInOwner: 0,
@@ -519,6 +520,7 @@ class AttachmentStoreTests: XCTestCase {
                                 receivedAtTimestamp: .random(in: 0..<9999999),
                                 threadRowId: threadRowId,
                                 contentType: .image,
+                                isPastEditRevision: false,
                                 stickerPackId: packId,
                                 stickerId: stickerId
                             )))),
@@ -837,6 +839,7 @@ class AttachmentStoreTests: XCTestCase {
                     with: reference1,
                     newOwnerMessageRowId: messageId2,
                     newOwnerThreadRowId: threadId,
+                    newOwnerIsPastEditRevision: false,
                     tx: tx
                 )
             default:
@@ -894,6 +897,7 @@ class AttachmentStoreTests: XCTestCase {
                         with: reference1,
                         newOwnerMessageRowId: messageId2,
                         newOwnerThreadRowId: threadId2,
+                        newOwnerIsPastEditRevision: false,
                         tx: tx
                     )
                 default:
@@ -940,7 +944,8 @@ class AttachmentStoreTests: XCTestCase {
                 sourceMediaWidthPixels: 1,
                 stickerPackId: nil,
                 stickerId: 1,
-                isViewOnce: false
+                isViewOnce: false,
+                ownerIsPastEditRevision: false
             ),
             keyPathNames: [
                 \.receivedAtTimestamp: "receivedAtTimestamp"

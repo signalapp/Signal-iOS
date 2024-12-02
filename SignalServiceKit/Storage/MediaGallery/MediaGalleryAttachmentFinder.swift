@@ -290,6 +290,7 @@ public struct MediaGalleryAttachmentFinder {
         let contentTypeColumn = Column(RecordType.CodingKeys.contentType)
         let ownerTypeColumn = Column(RecordType.CodingKeys.ownerType)
         let isViewOnceColumn = Column(RecordType.CodingKeys.isViewOnce)
+        let isPastEditRevisionColumn = Column(RecordType.CodingKeys.ownerIsPastEditRevision)
 
         var query: QueryInterfaceRequest<RecordType> = RecordType
             // All finders are thread-scoped; filter to this thread.
@@ -298,6 +299,8 @@ public struct MediaGalleryAttachmentFinder {
             .filter(ownerTypeColumn == AttachmentReference.MessageOwnerTypeRaw.bodyAttachment.rawValue)
             // Never show view once media in the gallery
             .filter(isViewOnceColumn == false)
+            // Never show past edit revisions in the gallery
+            .filter(isPastEditRevisionColumn == false)
 
         switch filter {
         case .allPhotoVideoCategory:

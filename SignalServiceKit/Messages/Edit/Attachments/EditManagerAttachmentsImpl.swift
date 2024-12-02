@@ -123,6 +123,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                     with: attachmentReferencePriorToEdit,
                     newOwnerMessageRowId: priorRevisionRowId,
                     newOwnerThreadRowId: threadRowId,
+                    newOwnerIsPastEditRevision: true,
                     tx: tx
                 )
             default:
@@ -195,6 +196,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                     with: attachmentReferencePriorToEdit,
                     newOwnerMessageRowId: priorRevisionRowId,
                     newOwnerThreadRowId: threadRowId,
+                    newOwnerIsPastEditRevision: true,
                     tx: tx
                 )
             default:
@@ -230,7 +232,8 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                 owner: .messageLinkPreview(.init(
                     messageRowId: latestRevisionRowId,
                     receivedAtTimestamp: latestRevision.receivedAtTimestamp,
-                    threadRowId: threadRowId
+                    threadRowId: threadRowId,
+                    isPastEditRevision: latestRevision.isPastEditRevision()
                 )),
                 tx: tx
             )
@@ -262,7 +265,8 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                 owner: .messageLinkPreview(.init(
                     messageRowId: latestRevisionRowId,
                     receivedAtTimestamp: latestRevision.receivedAtTimestamp,
-                    threadRowId: threadRowId
+                    threadRowId: threadRowId,
+                    isPastEditRevision: latestRevision.isPastEditRevision()
                 )),
                 tx: tx
             )
@@ -299,6 +303,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                     with: oversizeTextReferencePriorToEdit,
                     newOwnerMessageRowId: priorRevisionRowId,
                     newOwnerThreadRowId: threadRowId,
+                    newOwnerIsPastEditRevision: true,
                     tx: tx
                 )
             default:
@@ -328,7 +333,8 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                     owner: .messageOversizeText(.init(
                         messageRowId: latestRevisionRowId,
                         receivedAtTimestamp: latestRevision.receivedAtTimestamp,
-                        threadRowId: threadRowId
+                        threadRowId: threadRowId,
+                        isPastEditRevision: latestRevision.isPastEditRevision()
                     ))
                 ),
                 tx: tx
@@ -340,7 +346,8 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                     owner: .messageOversizeText(.init(
                         messageRowId: latestRevisionRowId,
                         receivedAtTimestamp: latestRevision.receivedAtTimestamp,
-                        threadRowId: threadRowId
+                        threadRowId: threadRowId,
+                        isPastEditRevision: latestRevision.isPastEditRevision()
                     ))
                 ),
                 tx: tx
@@ -373,6 +380,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                     with: attachmentReference,
                     newOwnerMessageRowId: priorRevisionRowId,
                     newOwnerThreadRowId: threadRowId,
+                    newOwnerIsPastEditRevision: true,
                     tx: tx
                 )
             default:

@@ -109,6 +109,8 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
 @property (nonatomic, readonly, nullable) OWSGiftBadge *giftBadge;
 
+/// Note: updates should be reflected in the MessageAttachmentReferences table.
+/// At time of writing, isPastRevision of edit state never changes after initialization.
 @property (nonatomic) TSEditState editState;
 
 @property (nonatomic, readonly) BOOL isViewOnceMessage;

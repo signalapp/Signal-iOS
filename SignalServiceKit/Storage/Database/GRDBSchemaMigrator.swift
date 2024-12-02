@@ -310,6 +310,7 @@ public class GRDBSchemaMigrator: NSObject {
         case tsMessageAttachmentMigration1
         case tsMessageAttachmentMigration2
         case tsMessageAttachmentMigration3
+        case addEditStateToMessageAttachmentReference
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -371,7 +372,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 100
+    public static let grdbSchemaVersionLatest: UInt = 101
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3720,6 +3721,23 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(.tsMessageAttachmentMigration3) { tx in
             try TSAttachmentMigration.TSMessageMigration.cleanUpTSAttachmentFiles()
             try tx.database.drop(table: "TSAttachmentMigration")
+            return .success(())
+        }
+
+        migrator.registerMigration(.addEditStateToMessageAttachmentReference) { tx in
+            try tx.database.alter(table: "MessageAttachmentReference") { table in
+                table.add(column: "ownerIsPastEditRevision", .boolean)
+                    .defaults(to: false)
+            }
+            // TSEditState.pastRevision rawValue is 2
+            try tx.database.execute(sql: """
+                UPDATE MessageAttachmentReference
+                SET ownerIsPastEditRevision = (
+                  SELECT model_TSInteraction.editState = 2
+                  FROM model_TSInteraction
+                  WHERE MessageAttachmentReference.ownerRowId = model_TSInteraction.id
+                );
+                """)
             return .success(())
         }
 

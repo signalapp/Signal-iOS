@@ -55,7 +55,8 @@ public class TSResourceManagerImpl: TSResourceManager {
                 owner: .messageOversizeText(.init(
                     messageRowId: messageRowId,
                     receivedAtTimestamp: message.receivedAtTimestamp,
-                    threadRowId: threadRowId
+                    threadRowId: threadRowId,
+                    isPastEditRevision: message.isPastEditRevision()
                 ))
             ),
             tx: tx
@@ -83,7 +84,8 @@ public class TSResourceManagerImpl: TSResourceManager {
                         messageRowId: messageRowId,
                         receivedAtTimestamp: message.receivedAtTimestamp,
                         threadRowId: threadRowId,
-                        isViewOnce: message.isViewOnceMessage
+                        isViewOnce: message.isViewOnceMessage,
+                        isPastEditRevision: message.isPastEditRevision()
                     ))
                 )
             },
@@ -111,7 +113,8 @@ public class TSResourceManagerImpl: TSResourceManager {
                     owner: .messageOversizeText(.init(
                         messageRowId: messageRowId,
                         receivedAtTimestamp: message.receivedAtTimestamp,
-                        threadRowId: threadRowId
+                        threadRowId: threadRowId,
+                        isPastEditRevision: message.isPastEditRevision()
                     ))
                 ),
                 tx: tx
@@ -157,7 +160,8 @@ public class TSResourceManagerImpl: TSResourceManager {
                             messageRowId: messageRowId,
                             receivedAtTimestamp: message.receivedAtTimestamp,
                             threadRowId: threadRowId,
-                            isViewOnce: message.isViewOnceMessage
+                            isViewOnce: message.isViewOnceMessage,
+                            isPastEditRevision: message.isPastEditRevision()
                         ))
                     )
                 },

@@ -224,6 +224,8 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     [self anyUpdateIncomingMessageWithTransaction:transaction
                                             block:^(TSIncomingMessage *message) {
                                                 message.read = YES;
+                                                // No need to update MessageAttachmentReferences table;
+                                                // this doesn's change isPastRevision state.
                                                 if (self.editState == TSEditState_LatestRevisionUnread) {
                                                     message.editState = TSEditState_LatestRevisionRead;
                                                 }

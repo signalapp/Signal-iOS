@@ -84,7 +84,7 @@ public protocol AttachmentStore {
 
     /// Create a new ownership reference, copying properties of an existing reference.
     ///
-    /// Copies the database row directly, only modifying the owner column.
+    /// Copies the database row directly, only modifying the owner and isPastEditRevision columns.
     /// IMPORTANT: also copies the receivedAtTimestamp!
     ///
     /// Fails if the provided new owner isn't of the same type as the original
@@ -96,6 +96,7 @@ public protocol AttachmentStore {
         with reference: AttachmentReference,
         newOwnerMessageRowId: Int64,
         newOwnerThreadRowId: Int64,
+        newOwnerIsPastEditRevision: Bool,
         tx: DBWriteTransaction
     ) throws
 

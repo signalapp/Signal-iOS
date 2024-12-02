@@ -75,6 +75,7 @@ extension AttachmentReference {
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
                     contentType: contentType,
+                    isPastEditRevision: metadata.isPastEditRevision,
                     // We ignore captions in modern instances.
                     caption: caption,
                     renderingFlag: renderingFlag,
@@ -93,14 +94,16 @@ extension AttachmentReference {
                     messageRowId: metadata.messageRowId,
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
-                    contentType: contentType
+                    contentType: contentType,
+                    isPastEditRevision: metadata.isPastEditRevision
                 )))
             case .messageLinkPreview(let metadata):
                 return .message(.linkPreview(.init(
                     messageRowId: metadata.messageRowId,
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
-                    contentType: contentType
+                    contentType: contentType,
+                    isPastEditRevision: metadata.isPastEditRevision
                 )))
             case .quotedReplyAttachment(let metadata):
                 return .message(.quotedReply(.init(
@@ -108,6 +111,7 @@ extension AttachmentReference {
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
                     contentType: contentType,
+                    isPastEditRevision: metadata.isPastEditRevision,
                     renderingFlag: renderingFlag
                 )))
             case .messageSticker(let metadata):
@@ -116,6 +120,7 @@ extension AttachmentReference {
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
                     contentType: contentType,
+                    isPastEditRevision: metadata.isPastEditRevision,
                     stickerPackId: metadata.stickerPackId,
                     stickerId: metadata.stickerId
                 )))
@@ -124,7 +129,8 @@ extension AttachmentReference {
                     messageRowId: metadata.messageRowId,
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
-                    contentType: contentType
+                    contentType: contentType,
+                    isPastEditRevision: metadata.isPastEditRevision
                 )))
             case .storyMessageMedia(let metadata):
                 return .storyMessage(.media(.init(
@@ -148,15 +154,19 @@ extension AttachmentReference {
             public let messageRowId: Int64
             public let receivedAtTimestamp: UInt64
             public let threadRowId: Int64
+            /// True if the owning message's ``TSEditState`` is `pastRevision`.
+            public let isPastEditRevision: Bool
 
             public init(
                 messageRowId: Int64,
                 receivedAtTimestamp: UInt64,
-                threadRowId: Int64
+                threadRowId: Int64,
+                isPastEditRevision: Bool
             ) {
                 self.messageRowId = messageRowId
                 self.receivedAtTimestamp = receivedAtTimestamp
                 self.threadRowId = threadRowId
+                self.isPastEditRevision = isPastEditRevision
             }
         }
 
@@ -165,17 +175,21 @@ extension AttachmentReference {
             public let receivedAtTimestamp: UInt64
             public let threadRowId: Int64
             public let isViewOnce: Bool
+            /// True if the owning message's ``TSEditState`` is `pastRevision`.
+            public let isPastEditRevision: Bool
 
             public init(
                 messageRowId: Int64,
                 receivedAtTimestamp: UInt64,
                 threadRowId: Int64,
-                isViewOnce: Bool
+                isViewOnce: Bool,
+                isPastEditRevision: Bool
             ) {
                 self.messageRowId = messageRowId
                 self.receivedAtTimestamp = receivedAtTimestamp
                 self.threadRowId = threadRowId
                 self.isViewOnce = isViewOnce
+                self.isPastEditRevision = isPastEditRevision
             }
         }
 
@@ -183,6 +197,8 @@ extension AttachmentReference {
             public let messageRowId: Int64
             public let receivedAtTimestamp: UInt64
             public let threadRowId: Int64
+            /// True if the owning message's ``TSEditState`` is `pastRevision`.
+            public let isPastEditRevision: Bool
             public let stickerPackId: Data
             public let stickerId: UInt32
 
@@ -190,12 +206,14 @@ extension AttachmentReference {
                 messageRowId: Int64,
                 receivedAtTimestamp: UInt64,
                 threadRowId: Int64,
+                isPastEditRevision: Bool,
                 stickerPackId: Data,
                 stickerId: UInt32
             ) {
                 self.messageRowId = messageRowId
                 self.receivedAtTimestamp = receivedAtTimestamp
                 self.threadRowId = threadRowId
+                self.isPastEditRevision = isPastEditRevision
                 self.stickerPackId = stickerPackId
                 self.stickerId = stickerId
             }

@@ -187,7 +187,8 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 messageRowId: messageRowId,
                 receivedAtTimestamp: timestamp,
                 threadRowId: threadRowId,
-                contentType: nil
+                contentType: nil,
+                isPastEditRevision: false
             ))
         )
         try record.insert(tx.db)

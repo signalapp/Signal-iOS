@@ -1150,7 +1150,8 @@ public final class MessageReceiver {
                 owner: .quotedReplyAttachment(.init(
                     messageRowId: message.sqliteRowId!,
                     receivedAtTimestamp: message.receivedAtTimestamp,
-                    threadRowId: thread.sqliteRowId!
+                    threadRowId: thread.sqliteRowId!,
+                    isPastEditRevision: message.isPastEditRevision()
                 )),
                 tx: tx.asV2Write
             )
@@ -1158,7 +1159,8 @@ public final class MessageReceiver {
                 owner: .messageLinkPreview(.init(
                     messageRowId: message.sqliteRowId!,
                     receivedAtTimestamp: message.receivedAtTimestamp,
-                    threadRowId: thread.sqliteRowId!
+                    threadRowId: thread.sqliteRowId!,
+                    isPastEditRevision: message.isPastEditRevision()
                 )),
                 tx: tx.asV2Write
             )
@@ -1168,6 +1170,7 @@ public final class MessageReceiver {
                         messageRowId: message.sqliteRowId!,
                         receivedAtTimestamp: message.receivedAtTimestamp,
                         threadRowId: thread.sqliteRowId!,
+                        isPastEditRevision: message.isPastEditRevision(),
                         stickerPackId: $0.info.packId,
                         stickerId: $0.info.stickerId
                     )),
@@ -1178,7 +1181,8 @@ public final class MessageReceiver {
                 owner: .messageContactAvatar(.init(
                     messageRowId: message.sqliteRowId!,
                     receivedAtTimestamp: message.receivedAtTimestamp,
-                    threadRowId: thread.sqliteRowId!
+                    threadRowId: thread.sqliteRowId!,
+                    isPastEditRevision: message.isPastEditRevision()
                 )),
                 tx: tx.asV2Write
             )

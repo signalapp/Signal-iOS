@@ -246,6 +246,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         with existingReference: AttachmentReference,
         newOwnerMessageRowId: Int64,
         newOwnerThreadRowId: Int64,
+        newOwnerIsPastEditRevision: Bool,
         tx: DBWriteTransaction
     ) throws {
         var newRecord = MessageAttachmentReferenceRecord(
@@ -260,6 +261,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             throw OWSAssertionError("Copying reference to a message on another thread!")
         }
         newRecord.ownerRowId = newOwnerMessageRowId
+        newRecord.ownerIsPastEditRevision = newOwnerIsPastEditRevision
         try newRecord.insert(tx.databaseConnection)
     }
 
