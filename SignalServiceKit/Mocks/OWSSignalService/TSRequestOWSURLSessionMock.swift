@@ -102,14 +102,14 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
         public static func networkError(
             url: URL
         ) -> Self {
-            Self.init(matcher: { $0.url == url }, error: OWSHTTPError.networkFailure(requestUrl: url))
+            Self.init(matcher: { $0.url == url }, error: OWSHTTPError.networkFailure)
         }
 
         public static func networkError(
             matcher: @escaping (TSRequest) -> Bool,
             url: URL
         ) -> Self {
-            Self.init(matcher: matcher, error: OWSHTTPError.networkFailure(requestUrl: url))
+            Self.init(matcher: matcher, error: OWSHTTPError.networkFailure)
         }
     }
 

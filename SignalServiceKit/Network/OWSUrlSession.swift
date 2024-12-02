@@ -301,11 +301,9 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         return OWSUrlDownloadResponse(httpUrlResponse: httpUrlResponse, downloadUrl: downloadUrl)
     }
 
-    private func handleError(_ error: any Error, originalRequest: URLRequest?, requestConfig: RequestConfig) -> any Error {
-        let requestUrl = requestConfig.requestUrl
-
+    private func handleError(_ error: any Error, originalRequest: URLRequest?, requestConfig: RequestConfig) -> OWSHTTPError {
         if error.isNetworkFailureOrTimeout {
-            return OWSHTTPError.networkFailure(requestUrl: requestUrl)
+            return .networkFailure
         }
 
 #if TESTABLE_BUILD
@@ -314,7 +312,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         }
 #endif
 
-        return OWSHTTPError.invalidResponse(requestUrl: requestUrl)
+        return .wrappedFailure(error)
     }
 
     private func handleResult(urlResponse: URLResponse?, responseData: Data?, originalRequest: URLRequest?, requestConfig: RequestConfig) throws -> HTTPURLResponse {
@@ -335,8 +333,8 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
                 }
 #endif
 
-                let requestUrl = requestConfig.requestUrl
                 if statusCode > 0 {
+                    let requestUrl = requestConfig.requestUrl
                     let responseHeaders = OWSHttpHeaders(response: httpUrlResponse)
                     throw OWSHTTPError.forServiceResponse(
                         requestUrl: requestUrl,
@@ -347,7 +345,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
                     )
                 } else {
                     owsFailDebug("Missing status code.")
-                    throw OWSHTTPError.networkFailure(requestUrl: requestUrl)
+                    throw OWSHTTPError.networkFailure
                 }
             }
         }
@@ -414,7 +412,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         let appExpiry = DependenciesBridge.shared.appExpiry
         guard !appExpiry.isExpired else {
             owsFailDebug("App is expired.")
-            throw OWSHTTPError.invalidAppState(requestUrl: rawRequestUrl)
+            throw OWSHTTPError.invalidAppState
         }
 
         let httpHeaders = OWSHttpHeaders()
@@ -432,7 +430,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
                 try httpHeaders.addAuthHeader(username: rawRequest.authUsername ?? "", password: rawRequest.authPassword ?? "")
             } catch {
                 owsFailDebug("Could not add auth header: \(error).")
-                throw OWSHTTPError.invalidAppState(requestUrl: rawRequestUrl)
+                throw OWSHTTPError.invalidAppState
             }
         }
 
@@ -441,7 +439,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             method = try HTTPMethod.method(for: rawRequest.httpMethod)
         } catch {
             owsFailDebug("Invalid HTTP method: \(rawRequest.httpMethod)")
-            throw OWSHTTPError.invalidRequest(requestUrl: rawRequestUrl)
+            throw OWSHTTPError.invalidRequest
         }
 
         var requestBody = Data()
@@ -455,7 +453,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
                 jsonData = try JSONSerialization.data(withJSONObject: rawRequest.parameters, options: [])
             } catch {
                 owsFailDebug("Could not serialize JSON parameters: \(error).")
-                throw OWSHTTPError.invalidRequest(requestUrl: rawRequestUrl)
+                throw OWSHTTPError.invalidRequest
             }
 
             if let jsonData = jsonData {
@@ -476,7 +474,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             )
         } catch {
             owsFailDebug("Missing or invalid request: \(rawRequestUrl).")
-            throw OWSHTTPError.invalidRequest(requestUrl: rawRequestUrl)
+            throw OWSHTTPError.invalidRequest
         }
 
         let backgroundTask = OWSBackgroundTask(label: "\(#function)")

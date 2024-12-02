@@ -17,8 +17,8 @@ class OWSErrorTest: XCTestCase {
 
         let errorFooBar = FooError.bar
         let errorGeneric = OWSGenericError("Yipes!")
-        let error1 = OWSHTTPError.invalidRequest(requestUrl: URL(string: "https://google.com/")!)
-        let error2 = OWSHTTPError.networkFailure(requestUrl: URL(string: "https://google.com/")!)
+        let error1 = OWSHTTPError.invalidRequest
+        let error2 = OWSHTTPError.networkFailure
         let error3 = OWSUnretryableError()
         let error4 = OWSRetryableError()
         let error5 = MessageSenderNoSuchSignalRecipientError()

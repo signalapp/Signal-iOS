@@ -112,12 +112,6 @@ private class RESTSessionManager {
         let urlSession = self.urlSession
         owsAssertDebug(urlSession.unfrontedBaseUrl == URL(string: TSConstants.mainServiceIdentifiedURL))
 
-        guard let requestUrl = request.url else {
-            owsFailDebug("Missing requestUrl.")
-            failure(.missingRequest)
-            return
-        }
-
         firstly {
             urlSession.promiseForTSRequest(request)
         }.done(on: DispatchQueue.global()) { (response: HTTPResponse) in
@@ -140,7 +134,7 @@ private class RESTSessionManager {
             } else {
                 owsFailDebug("Unexpected error: \(error)")
 
-                failure(.invalidRequest(requestUrl: requestUrl))
+                failure(.invalidRequest)
             }
         }
     }

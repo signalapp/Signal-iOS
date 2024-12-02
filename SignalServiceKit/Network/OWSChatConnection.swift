@@ -538,11 +538,7 @@ public class OWSChatConnection: NSObject {
                             unsubmittedRequestToken: UnsubmittedRequestToken) async throws -> HTTPResponse {
         guard !appExpiry.isExpired else {
             removeUnsubmittedRequestToken(unsubmittedRequestToken)
-
-            guard let requestUrl = request.url else {
-                owsFail("Missing requestUrl.")
-            }
-            throw OWSHTTPError.invalidAppState(requestUrl: requestUrl)
+            throw OWSHTTPError.invalidAppState
         }
 
         let connectionType = self.type
@@ -591,10 +587,7 @@ public class OWSChatConnection: NSObject {
     ) {
         assertOnQueue(self.serialQueue)
         owsFailDebug("should be using a concrete subclass")
-        guard let requestUrl = request.url else {
-            owsFail("Missing requestUrl.")
-        }
-        failure(.invalidAppState(requestUrl: requestUrl))
+        failure(.invalidAppState)
     }
 
     // MARK: - Reconnect
@@ -716,14 +709,14 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
             // Failure already reported
             return
         }
-        let requestUrl = requestInfo.requestUrl
 
         guard let currentWebSocket, currentWebSocket.state == .open else {
             Logger.warn("[\(requestId)]: Missing currentWebSocket.")
-            failure(.networkFailure(requestUrl: requestUrl))
+            failure(.networkFailure)
             return
         }
 
+        let requestUrl = requestInfo.requestUrl
         owsAssertDebug(requestUrl.scheme == nil)
         owsAssertDebug(requestUrl.host == nil)
         owsAssertDebug(!requestUrl.path.hasPrefix("/"))
@@ -1085,12 +1078,12 @@ private class RequestInfo {
     ) {
         guard let requestUrl = request.url else {
             owsFailDebug("[\(requestId)]: Missing requestUrl.")
-            failure(.invalidRequest(requestUrl: request.url!))
+            failure(.invalidRequest)
             return nil
         }
         guard let httpMethod = request.httpMethod.nilIfEmpty else {
             owsFailDebug("[\(requestId)]: Missing httpMethod.")
-            failure(.invalidRequest(requestUrl: request.url!))
+            failure(.invalidRequest)
             return nil
         }
 
@@ -1134,15 +1127,15 @@ private class RequestInfo {
 
     // Returns true if the message timed out.
     func timeoutIfNecessary() -> Bool {
-        return didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
+        return didFail(error: .networkFailure)
     }
 
     func didFailInvalidRequest() {
-        didFail(error: OWSHTTPError.invalidRequest(requestUrl: requestUrl))
+        didFail(error: .invalidRequest)
     }
 
     func didFailDueToNetwork() {
-        didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
+        didFail(error: .networkFailure)
     }
 
     @discardableResult

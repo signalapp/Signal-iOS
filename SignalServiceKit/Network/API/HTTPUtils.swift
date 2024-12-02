@@ -158,7 +158,7 @@ class HTTPUtils {
 
         switch responseStatus {
         case 0:
-            return .networkFailure(requestUrl: requestUrl)
+            return .networkFailure
         case 429:
             let description = OWSLocalizedString("REGISTER_RATE_LIMITING_ERROR", comment: "")
             let recoverySuggestion = OWSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "")
@@ -187,15 +187,8 @@ public extension Error {
         HTTPUtils.httpStatusCode(forError: self)
     }
 
-    var httpRequestUrl: URL? {
-        guard let error = self as? HTTPError else {
-            return nil
-        }
-        return error.requestUrl
-    }
-
     var httpResponseHeaders: OWSHttpHeaders? {
-        guard let error = self as? HTTPError else {
+        guard let error = self as? OWSHTTPError else {
             return nil
         }
         return error.responseHeaders
@@ -227,26 +220,6 @@ public extension Error {
             return false
         }
         return 400 <= statusCode && statusCode <= 499
-    }
-}
-
-// MARK: -
-
-public extension NSError {
-    @objc
-    @available(swift, obsoleted: 1.0)
-    var httpStatusCode: NSNumber? {
-        guard let statusCode = HTTPUtils.httpStatusCode(forError: self) else {
-            return nil
-        }
-        owsAssertDebug(statusCode > 0)
-        return NSNumber(value: statusCode)
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    var isNetworkFailureOrTimeout: Bool {
-        HTTPUtils.isNetworkFailureOrTimeout(forError: self)
     }
 }
 
