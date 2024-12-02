@@ -1172,6 +1172,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     private var isAssetWriterSessionStarted = false
     private var isAssetWriterAcceptingSampleBuffers = false
     private var needsFinishAssetWriterSession = false
+    private var errorSheetPromise: Promise<Void>?
 
     weak var delegate: VideoCaptureDelegate?
 
@@ -1323,8 +1324,16 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
                 } else {
                     result = .failure(PhotoCaptureError.invalidVideo)
                 }
-                DispatchQueue.main.async {
-                    self.delegate?.videoCapture(self, didFinishWith: result)
+                if let errorSheetPromise = self.errorSheetPromise {
+                    errorSheetPromise.ensure(on: DispatchQueue.main) {
+                        DispatchQueue.main.async {
+                            self.delegate?.videoCapture(self, didFinishWith: result)
+                        }
+                    }.cauterize()
+                } else {
+                    DispatchQueue.main.async {
+                        self.delegate?.videoCapture(self, didFinishWith: result)
+                    }
                 }
 
                 self.cleanUp()
@@ -1371,6 +1380,27 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
             Logger.error("Input failed to append sample buffer.")
             needsFinishAssetWriterSession = true
             return
+        }
+
+        if
+            let fileSize = OWSFileSystem.fileSize(of: assetWriter.outputURL)?.uintValue,
+            fileSize >= UInt(Double(OWSMediaUtils.kMaxFileSizeVideo) * 0.95)
+        {
+            Logger.warn("Stopping recording before hitting max file size")
+            needsFinishAssetWriterSession = true
+            let (promise, future) = Promise<Void>.pending()
+            self.errorSheetPromise = promise
+            DispatchQueue.main.async {
+                OWSActionSheets.showActionSheet(
+                    message: OWSLocalizedString(
+                        "MAX_VIDEO_RECORDING_LENGTH_ALERT",
+                        comment: "Title for error sheet shown when the max video length is recorded with the in-app camera"
+                    ),
+                    buttonAction: { _ in
+                        future.resolve(())
+                    }
+                )
+            }
         }
 
         if assetWriterInput == videoWriterInput {
