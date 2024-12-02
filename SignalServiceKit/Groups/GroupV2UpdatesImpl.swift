@@ -90,7 +90,8 @@ public class GroupV2UpdatesImpl {
                     let groupThread = thread as? TSGroupThread,
                     let groupModel = groupThread.groupModel as? TSGroupModelV2,
                     groupModel.groupMembership.isLocalUserFullOrInvitedMember,
-                    let groupSecretParams = try? groupModel.secretParams()
+                    let groupSecretParams = try? groupModel.secretParams(),
+                    !SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked(groupThread.groupId, transaction: transaction)
                 else {
                     // Refreshing a group we're not a member of will throw errors
                     return
