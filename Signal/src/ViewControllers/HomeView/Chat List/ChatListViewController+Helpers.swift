@@ -43,6 +43,8 @@ public extension ChatListViewController {
         // just-selected index path, so update the selection once more to
         // reflect the loaded data.
         ensureSelectedThread(thread, animated: animated)
+
+        tableView.scrollToNearestSelectedRow(at: .none, animated: animated)
     }
 
     /// Verifies that the currently selected cell matches the provided thread.
@@ -60,14 +62,15 @@ public extension ChatListViewController {
         let selectedIndexPath = selectedIndexPaths.first
         let selectedThread = selectedIndexPath.flatMap(renderState.thread(forIndexPath:))
 
-        viewState.lastSelectedThreadId = targetThread.uniqueId
+        tableView.performBatchUpdates {
+            viewState.lastSelectedThreadId = targetThread.uniqueId
 
-        if selectedThread?.uniqueId != targetThread.uniqueId {
-            if let targetPath = tableDataSource.renderState.indexPath(forUniqueId: targetThread.uniqueId) {
-                tableView.selectRow(at: targetPath, animated: animated, scrollPosition: .none)
-                tableView.scrollToRow(at: targetPath, at: .none, animated: animated)
-            } else if let stalePath = selectedIndexPath {
-                tableView.deselectRow(at: stalePath, animated: animated)
+            if let selectedIndexPath, selectedThread?.uniqueId != targetThread.uniqueId {
+                tableView.deselectRow(at: selectedIndexPath, animated: animated)
+            }
+
+            if let targetIndexPath = renderState.indexPath(forUniqueId: targetThread.uniqueId) {
+                tableView.selectRow(at: targetIndexPath, animated: animated, scrollPosition: .none)
             }
         }
     }
