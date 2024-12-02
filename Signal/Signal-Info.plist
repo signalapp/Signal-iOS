@@ -5,7 +5,6 @@
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>AttachmentValidationBackfillMigrator</string>
-		<string>MessageAttachmentMigrationTask</string>
 		<string>MessageFetchBGRefreshTask</string>
 	</array>
 	<key>BuildDetails</key>
