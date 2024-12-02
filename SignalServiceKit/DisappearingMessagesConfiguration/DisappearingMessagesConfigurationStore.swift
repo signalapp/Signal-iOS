@@ -4,7 +4,6 @@
 //
 
 import Foundation
-public import LibSignalClient
 
 public protocol DisappearingMessagesConfigurationStore {
     typealias SetTokenResult = (
@@ -22,16 +21,6 @@ public protocol DisappearingMessagesConfigurationStore {
         for scope: DisappearingMessagesConfigurationScope,
         tx: DBWriteTransaction
     ) -> SetTokenResult
-
-    func isVersionedDMTimerCapable(
-        serviceId: ServiceId,
-        tx: DBReadTransaction
-    ) -> Bool
-
-    func setIsVersionedTimerCapable(
-        serviceId: ServiceId,
-        tx: DBWriteTransaction
-    )
 }
 
 extension DisappearingMessagesConfigurationStore {
@@ -137,15 +126,6 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
             case let .thread(thread) = scope,
             let serviceId = (thread as? TSContactThread)?.contactAddress.serviceId
         {
-            // If we get a dm timer higher than 2, we know for sure
-            // that our peer is capable.
-            if token.version > 2 {
-                self.setIsVersionedTimerCapable(
-                    serviceId: serviceId,
-                    tx: tx
-                )
-            }
-
             // We got a dm timer; check against the version we have locally and reject if lower.
             if token.version < oldConfiguration.timerVersion {
                 Logger.info("Dropping DM timer update with outdated version")
@@ -166,31 +146,6 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
 
     func remove(for thread: TSThread, tx: DBWriteTransaction) {
         fetch(for: .thread(thread), tx: tx)?.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    func isVersionedDMTimerCapable(
-        serviceId: ServiceId,
-        tx: DBReadTransaction
-    ) -> Bool {
-        return (try? Bool.fetchOne(
-            tx.databaseConnection,
-            sql: "SELECT isEnabled FROM VersionedDMTimerCapabilities WHERE serviceId = ?;",
-            arguments: [Data(serviceId.serviceIdBinary)]
-        )) ?? false
-    }
-
-    func setIsVersionedTimerCapable(
-        serviceId: ServiceId,
-        tx: any DBWriteTransaction
-    ) {
-        do {
-            try tx.databaseConnection.execute(
-                sql: "INSERT OR REPLACE INTO VersionedDMTimerCapabilities (serviceId, isEnabled) VALUES(?, ?);",
-                arguments: [Data(serviceId.serviceIdBinary), true]
-            )
-        } catch {
-            Logger.error("Failed to write capablities")
-        }
     }
 }
 
@@ -223,16 +178,6 @@ class MockDisappearingMessagesConfigurationStore: DisappearingMessagesConfigurat
 
     func remove(for thread: TSThread, tx: DBWriteTransaction) {
         values[thread.uniqueId] = nil
-    }
-
-    var capabilities = [ServiceId: Bool]()
-
-    func isVersionedDMTimerCapable(serviceId: ServiceId, tx: any DBReadTransaction) -> Bool {
-        return capabilities[serviceId] ?? false
-    }
-
-    func setIsVersionedTimerCapable(serviceId: ServiceId, tx: any DBWriteTransaction) {
-        capabilities[serviceId] = true
     }
 }
 

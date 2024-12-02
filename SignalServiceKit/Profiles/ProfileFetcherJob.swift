@@ -440,17 +440,6 @@ public class ProfileFetcherJob {
         }
 
         if
-            fetchedCapabilities.versionedExpireTimer,
-            !disappearingMessagesConfigurationStore.isVersionedDMTimerCapable(serviceId: serviceId, tx: tx)
-        {
-            disappearingMessagesConfigurationStore.setIsVersionedTimerCapable(serviceId: serviceId, tx: tx)
-
-            if localIdentifiers.contains(serviceId: serviceId) {
-                shouldSendProfileSync = true
-            }
-        }
-
-        if
             shouldSendProfileSync,
             registrationState.isRegistered
         {

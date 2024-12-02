@@ -1919,14 +1919,6 @@ CREATE
 
 CREATE
     TABLE
-        IF NOT EXISTS "VersionedDMTimerCapabilities" (
-            "serviceId" BLOB NOT NULL UNIQUE
-            ,"isEnabled" BOOLEAN NOT NULL
-        )
-;
-
-CREATE
-    TABLE
         IF NOT EXISTS "AttachmentValidationBackfillQueue" (
             "attachmentId" INTEGER PRIMARY KEY
                 ON CONFLICT IGNORE NOT NULL REFERENCES "Attachment"("id"

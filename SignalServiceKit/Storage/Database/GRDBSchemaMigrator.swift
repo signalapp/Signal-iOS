@@ -311,6 +311,7 @@ public class GRDBSchemaMigrator: NSObject {
         case tsMessageAttachmentMigration2
         case tsMessageAttachmentMigration3
         case addEditStateToMessageAttachmentReference
+        case removeVersionedDMTimerCapabilities
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -372,7 +373,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 101
+    public static let grdbSchemaVersionLatest: UInt = 102
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3738,6 +3739,11 @@ public class GRDBSchemaMigrator: NSObject {
                   WHERE MessageAttachmentReference.ownerRowId = model_TSInteraction.id
                 );
                 """)
+            return .success(())
+        }
+
+        migrator.registerMigration(.removeVersionedDMTimerCapabilities) { tx in
+            try tx.database.drop(table: "VersionedDMTimerCapabilities")
             return .success(())
         }
 

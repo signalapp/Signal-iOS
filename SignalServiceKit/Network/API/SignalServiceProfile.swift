@@ -17,7 +17,6 @@ public class SignalServiceProfile {
 
     public struct Capabilities {
         public let deleteSync: Bool
-        public let versionedExpireTimer: Bool
         public let storageServiceRecordIkm: Bool
     }
 
@@ -139,10 +138,6 @@ public class SignalServiceProfile {
             deleteSync: parseCapabilityFlag(
                 capabilitiesParser: capabilitiesParser,
                 capabilityKey: AccountAttributes.Capabilities.CodingKeys.deleteSyncSendSupport.rawValue
-            ),
-            versionedExpireTimer: parseCapabilityFlag(
-                capabilitiesParser: capabilitiesParser,
-                capabilityKey: AccountAttributes.Capabilities.CodingKeys.versionedExpireTimer.rawValue
             ),
             storageServiceRecordIkm: parseCapabilityFlag(
                 capabilitiesParser: capabilitiesParser,
