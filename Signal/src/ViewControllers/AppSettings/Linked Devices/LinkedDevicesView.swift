@@ -260,6 +260,8 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
     init() {
         super.init(wrappedView: LinkedDevicesView(viewModel: viewModel))
 
+        OWSTableViewController2.removeBackButtonText(viewController: self)
+
         viewModel.present.sink { [weak self] presentation in
             guard let self else { return }
             switch presentation {
@@ -570,22 +572,33 @@ struct LinkedDevicesView: View {
         viewModel.editMode.isEditing
     }
 
+    private var headerSubtitle: String {
+        if FeatureFlags.linkAndSync {
+            OWSLocalizedString(
+                "LINKED_DEVICES_HEADER_DESCRIPTION",
+                comment: "Description for header of the linked devices list"
+            )
+        } else {
+            OWSLocalizedString(
+                "LINKED_DEVICES_HEADER_DESCRIPTION_LINK_AND_SYNC_DISABLED",
+                comment: "Description for header of the linked devices list when Link and Sync is disabled"
+            )
+        }
+    }
+
     var body: some View {
         SignalList {
             SignalSection {
                 VStack(spacing: 20) {
                     Image("linked-device-intro-dark")
 
-                    Text(OWSLocalizedString(
-                        "LINKED_DEVICES_HEADER_DESCRIPTION",
-                        comment: "Description for header of the linked devices list"
-                    ))
-                    .appendLink(CommonStrings.learnMore) {
-                        viewModel.present.send(.linkedDeviceEducation)
-                    }
-                    .foregroundStyle(Color.Signal.secondaryLabel)
-                    .font(.subheadline)
-                    .multilineTextAlignment(.center)
+                    Text(self.headerSubtitle)
+                        .appendLink(CommonStrings.learnMore) {
+                            viewModel.present.send(.linkedDeviceEducation)
+                        }
+                        .foregroundStyle(Color.Signal.secondaryLabel)
+                        .font(.subheadline)
+                        .multilineTextAlignment(.center)
 
                     Button {
                         viewModel.present.send(.linkDeviceAuthentication)

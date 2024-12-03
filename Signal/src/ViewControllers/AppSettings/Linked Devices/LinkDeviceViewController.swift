@@ -34,10 +34,7 @@ class LinkDeviceViewController: OWSViewController {
     private var hasShownEducationSheet = false
     private weak var educationSheet: HeroSheetViewController?
 
-    private lazy var qrCodeScanViewController = QRCodeScanViewController(
-        appearance: .framed,
-        showUploadPhotoButton: FeatureFlags.biometricLinkedDeviceFlow
-    )
+    private lazy var qrCodeScanViewController = QRCodeScanViewController(appearance: .framed)
 
     override func viewDidLoad() {
         super.viewDidLoad()
