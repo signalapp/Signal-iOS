@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se ha invitado a %1$d persona al grupo.</string>
+			<string>Se ha invitado a una persona al grupo.</string>
 			<key>other</key>
-			<string>Se han invitado a %1$d personas al grupo.</string>
+			<string>Se ha invitado a %1$d personas al grupo.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>

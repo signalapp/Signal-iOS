@@ -520,9 +520,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sonne chez %2$@, %3$@ et %1$d autre…</string>
+			<string>appelle %2$@, %3$@ et %1$d autre contact…</string>
 			<key>other</key>
-			<string>Sonne chez %2$@, %3$@ et %1$d autres…</string>
+			<string>appelle %2$@, %3$@ et %1$d autres contacts…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_OTHERS_HERE</key>
@@ -600,9 +600,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, et %1$d autre ont quitté cet appel</string>
+			<string>%2$@, %3$@, et %1$d autre ont quitté l&apos;appel</string>
 			<key>other</key>
-			<string>%2$@, %3$@, et %1$d autres ont quitté cet appel</string>
+			<string>%2$@, %3$@, et %1$d autres ont quitté l&apos;appel</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_ONE_KNOWN_AND_MANY_OTHERS_HERE</key>
@@ -632,9 +632,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ et %1$d autre seront notifiés</string>
+			<string>%2$@, %3$@ et %1$d autre recevront une notification</string>
 			<key>other</key>
-			<string>%2$@, %3$@ et %1$d autres seront notifiés</string>
+			<string>%2$@, %3$@ et %1$d autres recevront une notification</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -648,9 +648,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal sonnera chez %2$@, %3$@ et %1$d autre</string>
+			<string>Signal va appeler %2$@, %3$@ et %1$d autre contact</string>
 			<key>other</key>
-			<string>Signal sonnera chez %2$@, %3$@ et %1$d autres</string>
+			<string>Signal va appeler %2$@, %3$@ et %1$d autres contacts</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -1224,9 +1224,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d réaction supplémentaire.</string>
+			<string>%1$d autre réaction.</string>
 			<key>other</key>
-			<string>%1$d réactions supplémentaires.</string>
+			<string>%1$d autres réactions.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -1256,9 +1256,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d demande de membre en attente.</string>
+			<string>%1$d demande d&apos;adhésion en attente.</string>
 			<key>other</key>
-			<string>%1$d demandes de membres en attente.</string>
+			<string>%1$d demandes d&apos;adhésion en attente.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>

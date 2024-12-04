@@ -520,9 +520,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Bellen naar %2$@, %3$@ en %1$d ander…</string>
+			<string>Belt naar %2$@, %3$@ en %1$d ander…</string>
 			<key>other</key>
-			<string>Bellen naar %2$@, %3$@ en %1$d anderen…</string>
+			<string>Belt naar %2$@, %3$@ en %1$d anderen…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_OTHERS_HERE</key>
@@ -1160,9 +1160,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Alle Signal-contacten · Verborgen voor %1$d</string>
+			<string>Alle Signal-contacten · Voor %1$d verborgen</string>
 			<key>other</key>
-			<string>Alle Signal-contacten · Verborgen voor %1$d</string>
+			<string>Alle Signal-contacten · Voor %1$d verborgen</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -1432,9 +1432,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Versturen…</string>
+			<string>Verzenden…</string>
 			<key>other</key>
-			<string>%1$d aan het versturen…</string>
+			<string>%1$d aan het verzenden…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
