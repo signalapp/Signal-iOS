@@ -315,6 +315,7 @@ public class GRDBSchemaMigrator: NSObject {
         case removeJobRecordTSAttachmentColumns
         case deprecateAttachmentIdsColumn
         case dropTSAttachmentTable
+        case dropMediaGalleryItemTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -376,7 +377,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 105
+    public static let grdbSchemaVersionLatest: UInt = 106
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3766,6 +3767,11 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.dropTSAttachmentTable) { tx in
             try tx.database.drop(table: "model_TSAttachment")
+            return .success(())
+        }
+
+        migrator.registerMigration(.dropMediaGalleryItemTable) { tx in
+            try tx.database.drop(table: "media_gallery_items")
             return .success(())
         }
 

@@ -522,8 +522,6 @@ public class AppSetup {
             signalServiceAddressCache: signalServiceAddressCache
         )
 
-        let mediaGalleryResourceManager = MediaGalleryResourceManagerImpl()
-
         let messageSendLog = MessageSendLog(
             db: db,
             dateProvider: { Date() }
@@ -596,7 +594,6 @@ public class AppSetup {
             deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
             interactionReadCache: modelReadCaches.interactionReadCache,
             interactionStore: interactionStore,
-            mediaGalleryResourceManager: mediaGalleryResourceManager,
             messageSendLog: messageSendLog,
             tsAccountManager: tsAccountManager
         )
@@ -1247,7 +1244,6 @@ public class AppSetup {
             localUsernameManager: localUsernameManager,
             masterKeySyncManager: masterKeySyncManager,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
-            mediaGalleryResourceManager: mediaGalleryResourceManager,
             messageBackupErrorPresenter: messageBackupErrorPresenter,
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             messageBackupManager: messageBackupManager,

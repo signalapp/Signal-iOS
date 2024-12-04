@@ -321,7 +321,6 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
     func mergeThread(_ thread: TSContactThread, into targetThread: TSContactThread, tx: DBWriteTransaction) {
         let threadPair = MergePair<TSContactThread>(fromValue: thread, intoValue: targetThread)
         mergeInteractions(threadPair, tx: SDSDB.shimOnlyBridge(tx))
-        mergeMediaGalleryItems(threadPair, tx: SDSDB.shimOnlyBridge(tx))
         mergeReceiptsPendingMessageRequest(threadPair, tx: SDSDB.shimOnlyBridge(tx))
         mergeMessageSendLogPayloads(threadPair, tx: SDSDB.shimOnlyBridge(tx))
         // We might have changed something in the cache -- evacuate it.
@@ -337,16 +336,6 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
                 WHERE "\(interactionColumn: .threadUniqueId)" = ?
             """,
             arguments: [uniqueIds.intoValue, uniqueIds.fromValue]
-        )
-    }
-
-    private func mergeMediaGalleryItems(_ threadPair: MergePair<TSContactThread>, tx: SDSAnyWriteTransaction) {
-        let threadRowIds = threadPair.map { $0.sqliteRowId! }
-        tx.unwrapGrdbWrite.execute(
-            sql: """
-                UPDATE "media_gallery_items" SET "threadId" = ? WHERE "threadId" = ?
-            """,
-            arguments: [threadRowIds.intoValue, threadRowIds.fromValue]
         )
     }
 

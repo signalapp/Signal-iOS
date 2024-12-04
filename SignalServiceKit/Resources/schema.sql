@@ -455,24 +455,6 @@ CREATE
 
 CREATE
     TABLE
-        IF NOT EXISTS "media_gallery_items" (
-            "attachmentId" INTEGER NOT NULL UNIQUE
-            ,"albumMessageId" INTEGER NOT NULL
-            ,"threadId" INTEGER NOT NULL
-            ,"originalAlbumOrder" INTEGER NOT NULL
-        )
-;
-
-CREATE
-    INDEX "index_media_gallery_items_for_gallery"
-        ON "media_gallery_items"("threadId"
-    ,"albumMessageId"
-    ,"originalAlbumOrder"
-)
-;
-
-CREATE
-    TABLE
         IF NOT EXISTS "model_OWSReaction" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"recordType" INTEGER NOT NULL

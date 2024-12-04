@@ -6,8 +6,7 @@
 import Foundation
 import GRDB
 
-/// Fulfills the contract of MediaGalleryResourceFinder for v2 attachments only.,
-/// driven entirely by the AttachmentReferences table.
+/// Fulfills the contract of MediaGallery, driven entirely by the AttachmentReferences table.
 ///
 /// Even this is still a stepping stone. The API contract for the MediaGalleryFinder
 /// classes as written assumes that the thing being iterated over (MediaGalleryRecord)

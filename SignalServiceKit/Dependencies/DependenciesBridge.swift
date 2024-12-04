@@ -103,7 +103,6 @@ public class DependenciesBridge {
     public let localUsernameManager: LocalUsernameManager
     public let masterKeySyncManager: MasterKeySyncManager
     public let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
-    public let mediaGalleryResourceManager: MediaGalleryResourceManager
     public let messageBackupErrorPresenter: MessageBackupErrorPresenter
     public let messageBackupKeyMaterial: MessageBackupKeyMaterial
     public let messageBackupManager: MessageBackupManager
@@ -217,7 +216,6 @@ public class DependenciesBridge {
         localUsernameManager: LocalUsernameManager,
         masterKeySyncManager: MasterKeySyncManager,
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
-        mediaGalleryResourceManager: MediaGalleryResourceManager,
         messageBackupErrorPresenter: MessageBackupErrorPresenter,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         messageBackupManager: MessageBackupManager,
@@ -330,7 +328,6 @@ public class DependenciesBridge {
         self.localUsernameManager = localUsernameManager
         self.masterKeySyncManager = masterKeySyncManager
         self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
-        self.mediaGalleryResourceManager = mediaGalleryResourceManager
         self.messageBackupErrorPresenter = messageBackupErrorPresenter
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
         self.messageBackupManager = messageBackupManager

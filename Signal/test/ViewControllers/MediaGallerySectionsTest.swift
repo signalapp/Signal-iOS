@@ -50,12 +50,12 @@ private extension MediaGallerySections {
 
 private struct FakeItem: MediaGallerySectionItem, Equatable {
     private static var _nextRowID = Int64(0)
-    private static func allocateItemID() -> MediaGalleryItemId {
+    private static func allocateItemID() -> AttachmentReferenceId {
         defer { _nextRowID += 1 }
-        return .v2(.init(ownerId: .messageBodyAttachment(messageRowId: _nextRowID), orderInOwner: nil))
+        return .init(ownerId: .messageBodyAttachment(messageRowId: _nextRowID), orderInOwner: nil)
     }
-    var itemId: MediaGalleryItemId
-    var attachmentId: MediaGalleryResourceId
+    var itemId: AttachmentReferenceId
+    var attachmentId: AttachmentReferenceId
     var timestamp: Date
 
     var galleryDate: GalleryDate { GalleryDate(date: timestamp) }
@@ -65,13 +65,13 @@ private struct FakeItem: MediaGallerySectionItem, Equatable {
     /// The item's unique ID will be randomly generated.
     init(_ compressedDate: UInt32) {
         self.itemId = FakeItem.allocateItemID()
-        self.attachmentId = .v2(.init(ownerId: .messageBodyAttachment(messageRowId: .random(in: 0...Int64.max)), orderInOwner: nil))
+        self.attachmentId = .init(ownerId: .messageBodyAttachment(messageRowId: .random(in: 0...Int64.max)), orderInOwner: nil)
         self.timestamp = Date(compressedDate: compressedDate)
     }
 
-    init(_ compressedDate: UInt32, attachmentId: MediaGalleryResourceId?, itemId: MediaGalleryItemId) {
+    init(_ compressedDate: UInt32, attachmentId: AttachmentReferenceId?, itemId: AttachmentReferenceId) {
         self.itemId = itemId
-        self.attachmentId = attachmentId ?? .v2(.init(ownerId: .messageBodyAttachment(messageRowId: .random(in: 0...Int64.max)), orderInOwner: nil))
+        self.attachmentId = attachmentId ?? .init(ownerId: .messageBodyAttachment(messageRowId: .random(in: 0...Int64.max)), orderInOwner: nil)
         self.timestamp = Date(compressedDate: compressedDate)
     }
 }
@@ -83,13 +83,13 @@ private final class FakeGalleryStore: MediaGallerySectionLoader {
         offset: Int,
         ascending: Bool,
         transaction: SignalServiceKit.SDSAnyReadTransaction
-    ) -> [DatedMediaGalleryItemId] {
+    ) -> [DatedAttachmentReferenceId] {
         guard let items = itemsBySection[date] else {
             return []
         }
         let sortedItems = ascending ? items : items.reversed()
         return sortedItems[offset...].map {
-            DatedMediaGalleryItemId(
+            DatedAttachmentReferenceId(
                 id: $0.itemId,
                 receivedAtTimestamp: $0.timestamp.ows_millisecondsSince1970
             )
@@ -97,7 +97,7 @@ private final class FakeGalleryStore: MediaGallerySectionLoader {
     }
 
     typealias Item = FakeItem
-    typealias EnumerationCompletion = MediaGalleryResourceFinder.EnumerationCompletion
+    typealias EnumerationCompletion = MediaGalleryAttachmentFinder.EnumerationCompletion
 
     var allItems: [Item]
     var itemsBySection: OrderedDictionary<GalleryDate, [Item]>
@@ -142,7 +142,7 @@ private final class FakeGalleryStore: MediaGallerySectionLoader {
         before date: Date,
         count: Int,
         transaction: SDSAnyReadTransaction,
-        block: (DatedMediaGalleryItemId) -> Void
+        block: (DatedAttachmentReferenceId) -> Void
     ) -> EnumerationCompletion {
         // It would be more efficient to binary search here, but this is for testing.
         let itemsInRange = allItems.reversed().drop { $0.timestamp >= date }
@@ -155,7 +155,7 @@ private final class FakeGalleryStore: MediaGallerySectionLoader {
         after date: Date,
         count: Int,
         transaction: SDSAnyReadTransaction,
-        block: (DatedMediaGalleryItemId) -> Void
+        block: (DatedAttachmentReferenceId) -> Void
     ) -> EnumerationCompletion {
         // It would be more efficient to binary search here, but this is for testing.
         let itemsInRange = allItems.drop { $0.timestamp < date }
@@ -168,7 +168,7 @@ private final class FakeGalleryStore: MediaGallerySectionLoader {
         in interval: DateInterval,
         range: Range<Int>,
         transaction: SDSAnyReadTransaction,
-        block: (_ offset: Int, _ attachmentId: MediaGalleryResourceId, _ buildItem: () -> Item) -> Void
+        block: (_ offset: Int, _ attachmentId: AttachmentReferenceId, _ buildItem: () -> Item) -> Void
     ) {
         // It would be more efficient to binary search here, but this is for testing.
         // DateInterval is usually a *closed* range, but we're using it as a half-open one here.
@@ -427,8 +427,8 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
         let store = standardFakeStore
 
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            var results: [MediaGalleryResourceId] = []
-            let saveToResults = { (offset: Int, attachmentId: MediaGalleryResourceId, buildItem: () -> FakeItem) in
+            var results: [AttachmentReferenceId] = []
+            let saveToResults = { (offset: Int, attachmentId: AttachmentReferenceId, buildItem: () -> FakeItem) in
                 results.append(attachmentId)
                 XCTAssertEqual(attachmentId, buildItem().attachmentId)
             }
@@ -673,11 +673,11 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssertFalse(wrapper.sections.hasFetchedOldest)
         XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
         XCTAssertEqual(
-            [3, 4].map { MediaGalleryItemId.v2(.init(ownerId: .messageBodyAttachment(messageRowId: $0), orderInOwner: nil)) },
+            [3, 4].map { AttachmentReferenceId(ownerId: .messageBodyAttachment(messageRowId: $0), orderInOwner: nil) },
             wrapper.sections.itemsBySection[0].value.map { $0.itemId }
         )
         XCTAssertEqual(
-            [5, 6, 7, 8, 9].map { MediaGalleryItemId.v2(.init(ownerId: .messageBodyAttachment(messageRowId: $0), orderInOwner: nil)) },
+            [5, 6, 7, 8, 9].map { AttachmentReferenceId(ownerId: .messageBodyAttachment(messageRowId: $0), orderInOwner: nil) },
             wrapper.sections.itemsBySection[1].value.map { $0.itemId }
         )
 
@@ -1326,7 +1326,7 @@ class MediaGallerySectionsTest: SignalBaseTest {
             // Keep January unmodified, drop all of April, and drop one value from September.
             [0, 1, 2, 5, 6, 8, 9]
                 .lazy
-                .map({ MediaGalleryItemId.v2(.init(ownerId: .messageBodyAttachment(messageRowId: $0), orderInOwner: nil)) })
+                .map({ AttachmentReferenceId(ownerId: .messageBodyAttachment(messageRowId: $0), orderInOwner: nil) })
                 .contains($0.itemId)
         }
 

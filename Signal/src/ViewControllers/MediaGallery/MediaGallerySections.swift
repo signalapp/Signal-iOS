@@ -34,7 +34,7 @@ struct MediaGalleryIndexPath: Comparable {
 
 /// The minimal requirements needed for items loaded and managed by MediaGallerySections.
 internal protocol MediaGallerySectionItem {
-    var attachmentId: MediaGalleryResourceId { get }
+    var attachmentId: AttachmentReferenceId { get }
     var galleryDate: GalleryDate { get }
 }
 
@@ -50,23 +50,23 @@ internal protocol MediaGallerySectionLoader {
         offset: Int,
         ascending: Bool,
         transaction: SDSAnyReadTransaction
-    ) -> [DatedMediaGalleryItemId]
+    ) -> [DatedAttachmentReferenceId]
 
     /// Should call `block` once for every item (loaded or unloaded) before `date`, up to `count` times.
     func enumerateTimestamps(
         before date: Date,
         count: Int,
         transaction: SDSAnyReadTransaction,
-        block: (DatedMediaGalleryItemId) -> Void
-    ) -> MediaGalleryResourceFinder.EnumerationCompletion
+        block: (DatedAttachmentReferenceId) -> Void
+    ) -> MediaGalleryAttachmentFinder.EnumerationCompletion
 
     /// Should call `block` once for every item (loaded or unloaded) after `date`, up to `count` times.
     func enumerateTimestamps(
         after date: Date,
         count: Int,
         transaction: SDSAnyReadTransaction,
-        block: (DatedMediaGalleryItemId) -> Void
-    ) -> MediaGalleryResourceFinder.EnumerationCompletion
+        block: (DatedAttachmentReferenceId) -> Void
+    ) -> MediaGalleryAttachmentFinder.EnumerationCompletion
 
     /// Should selects a range of items in `interval` and call `block` once for each.
     ///
@@ -77,7 +77,7 @@ internal protocol MediaGallerySectionLoader {
         in interval: DateInterval,
         range: Range<Int>,
         transaction: SDSAnyReadTransaction,
-        block: (_ offset: Int, _ attachmentId: MediaGalleryResourceId, _ buildItem: () -> Item) -> Void
+        block: (_ offset: Int, _ attachmentId: AttachmentReferenceId, _ buildItem: () -> Item) -> Void
     )
 }
 
@@ -93,7 +93,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
     struct MediaGallerySlot {
         /// This is a stable and unique identifier for an item.
-        var itemId: MediaGalleryItemId
+        var itemId: AttachmentReferenceId
         /// This comes from `TSInteraction.receivedAtTimestamp`.
         var receivedAt: Date
         var item: Item?
@@ -342,7 +342,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         internal func indexPathAtApproximateLocation(
             sectionDate: GalleryDate,
             itemDate: Date,
-            itemId: MediaGalleryItemId
+            itemId: AttachmentReferenceId
         ) -> MediaGalleryIndexPath? {
             let si = itemsBySection.orderedKeys.firstIndex { key in
                 key >= sectionDate
@@ -1013,7 +1013,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     /// valid.
     internal mutating func loadInitialSection(
         for date: GalleryDate,
-        replacement: (item: Item, itemId: MediaGalleryItemId)? = nil,
+        replacement: (item: Item, itemId: AttachmentReferenceId)? = nil,
         userData: UpdateUserData? = nil,
         transaction: SDSAnyReadTransaction
     ) -> Item? {
@@ -1286,7 +1286,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
     internal mutating func getOrReplaceItem(
         _ newItem: Item,
-        itemId: MediaGalleryItemId,
+        itemId: AttachmentReferenceId,
         userData: UpdateUserData? = nil
     ) -> Item? {
         return snapshotManager.mutate(userData: userData) { state in
@@ -1299,7 +1299,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
     private struct Location {
         var date: GalleryDate
-        var itemId: MediaGalleryItemId
+        var itemId: AttachmentReferenceId
     }
 
     internal mutating func removeLoadedItems(atIndexPaths paths: [MediaGalleryIndexPath],
