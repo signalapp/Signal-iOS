@@ -4,13 +4,6 @@
 		"TSIncomingMessage.serverTimestamp": "UInt64",
 		"TSOutgoingMessageRecipientState.deliveryTimestamp": "UInt64",
 		"TSOutgoingMessageRecipientState.readTimestamp": "UInt64",
-		"TSAttachment.videoDuration": "Double",
-		"TSAttachmentStream.cachedAudioDurationSeconds": "Double",
-		"TSAttachmentStream.cachedImageWidth": "Double",
-		"TSAttachmentStream.cachedImageHeight": "Double",
-		"TSAttachmentStream.isValidImageCached": "Bool",
-		"TSAttachmentStream.isValidVideoCached": "Bool",
-		"TSAttachmentStream.isAnimatedCached": "Bool",
 		"OWSBackupFragment.uncompressedDataLength": "UInt64",
 		"SSKJobRecord.exclusiveProcessIdentifier": "Int32",
 		"TSMessage.storyTimestamp": "UInt64",
@@ -25,7 +18,6 @@
 		"OWSDynamicOutgoingMessage.block",
 		"OWSDisappearingMessagesConfiguration.originalDictionaryValue",
 		"OWSDisappearingMessagesConfiguration.newRecord",
-		"TSAttachmentStream.cachedAudioWaveform",
 		"TSThread.isArchivedByLegacyTimestampForSorting",
 		"TSContactThread.contactThreadSchemaVersion",
 		"TSCall.callSchemaVersion",
@@ -43,14 +35,12 @@
 	"class_cache_get_code": {
 		"InstalledSticker": "SSKEnvironment.shared.modelReadCachesRef.installedStickerCache.getInstalledSticker(uniqueId: uniqueId, transaction: transaction)",
 		"TSThread": "SSKEnvironment.shared.modelReadCachesRef.threadReadCache.getThread(uniqueId: uniqueId, transaction: transaction)",
-		"TSInteraction": "SSKEnvironment.shared.modelReadCachesRef.interactionReadCache.getInteraction(uniqueId: uniqueId, transaction: transaction)",
-		"TSAttachment": "SSKEnvironment.shared.modelReadCachesRef.attachmentReadCache.getAttachment(uniqueId: uniqueId, transaction: transaction)"
+		"TSInteraction": "SSKEnvironment.shared.modelReadCachesRef.interactionReadCache.getInteraction(uniqueId: uniqueId, transaction: transaction)"
 	},
 	"class_cache_set_code": {
 		"InstalledSticker": "SSKEnvironment.shared.modelReadCachesRef.installedStickerCache.didReadInstalledSticker",
 		"TSThread": "SSKEnvironment.shared.modelReadCachesRef.threadReadCache.didReadThread",
-		"TSInteraction": "SSKEnvironment.shared.modelReadCachesRef.interactionReadCache.didReadInteraction",
-		"TSAttachment": "SSKEnvironment.shared.modelReadCachesRef.attachmentReadCache.didReadAttachment"
+		"TSInteraction": "SSKEnvironment.shared.modelReadCachesRef.interactionReadCache.didReadInteraction"
 	},
 	"class_to_skip_serialization": [
 		"OWSContactOffersInteraction",

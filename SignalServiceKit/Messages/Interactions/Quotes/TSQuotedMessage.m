@@ -5,9 +5,6 @@
 
 #import "TSQuotedMessage.h"
 #import "OWSPaymentMessage.h"
-#import "TSAttachment.h"
-#import "TSAttachmentPointer.h"
-#import "TSAttachmentStream.h"
 #import "TSIncomingMessage.h"
 #import "TSInteraction.h"
 #import "TSOutgoingMessage.h"

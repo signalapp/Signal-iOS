@@ -4,8 +4,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <SignalServiceKit/TSAttachmentPointer.h>
-#import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
@@ -71,39 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSIncomingMessage (SDS)
 
 @property (nonatomic, getter=wasRead) BOOL read;
-
-@end
-
-#pragma mark -
-
-@interface TSAttachment (SDS)
-
-@property (nonatomic, readonly) NSUInteger attachmentSchemaVersion;
-
-@end
-
-#pragma mark -
-
-@interface TSAttachmentPointer (SDS)
-
-@property (nonatomic, nullable, readonly) NSString *lazyRestoreFragmentId;
-
-@end
-
-#pragma mark -
-
-@interface TSAttachmentStream (SDS)
-
-@property (nullable, nonatomic, readonly) NSString *localRelativeFilePath;
-
-@property (nullable, nonatomic, readonly) NSNumber *cachedImageWidth;
-@property (nullable, nonatomic, readonly) NSNumber *cachedImageHeight;
-
-@property (nullable, nonatomic, readonly) NSNumber *cachedAudioDurationSeconds;
-
-@property (atomic, nullable, readonly) NSNumber *isValidImageCached;
-@property (atomic, nullable, readonly) NSNumber *isValidVideoCached;
-@property (atomic, nullable, readonly) NSNumber *isAnimatedCached;
 
 @end
 

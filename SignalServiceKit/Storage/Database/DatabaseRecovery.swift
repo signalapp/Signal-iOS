@@ -264,7 +264,6 @@ public extension DatabaseRecovery {
             SignalAccount.databaseTableName,
             SignalRecipient.databaseTableName,
             StoryMessage.databaseTableName,
-            TSAttachment.table.tableName,
             TSInteraction.table.tableName,
             TSGroupMember.databaseTableName,
             TSMention.databaseTableName,

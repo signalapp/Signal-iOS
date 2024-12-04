@@ -117,7 +117,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
             contactThreadCount,
             groupThreadCount,
             messageCount,
-            tsAttachmentCount,
             v2AttachmentCount,
             donationSubscriberID,
             storageServiceManifestVersion
@@ -126,7 +125,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 TSThread.anyFetchAll(transaction: tx).filter { !$0.isGroupThread }.count,
                 TSThread.anyFetchAll(transaction: tx).filter { $0.isGroupThread }.count,
                 TSInteraction.anyCount(transaction: tx),
-                TSAttachment.anyCount(transaction: tx),
                 try? Attachment.Record.fetchCount(tx.unwrapGrdbRead.database),
                 DonationSubscriptionManager.getSubscriberID(transaction: tx),
                 SSKEnvironment.shared.storageServiceManagerRef.currentManifestVersion(tx: tx.asV2Read)
@@ -172,7 +170,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
         dbSection.add(.copyableItem(label: "Contact Threads", value: numberFormatter.string(for: contactThreadCount)))
         dbSection.add(.copyableItem(label: "Group Threads", value: numberFormatter.string(for: groupThreadCount)))
         dbSection.add(.copyableItem(label: "Messages", value: numberFormatter.string(for: messageCount)))
-        dbSection.add(.copyableItem(label: "TSAttachments", value: numberFormatter.string(for: tsAttachmentCount)))
         dbSection.add(.copyableItem(label: "v2 Attachments", value: numberFormatter.string(for: v2AttachmentCount)))
         contents.add(dbSection)
 

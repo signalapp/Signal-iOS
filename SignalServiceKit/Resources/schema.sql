@@ -159,45 +159,6 @@ CREATE
 
 CREATE
     TABLE
-        IF NOT EXISTS "model_TSAttachment" (
-            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-            ,"recordType" INTEGER NOT NULL
-            ,"uniqueId" TEXT NOT NULL UNIQUE
-                ON CONFLICT FAIL
-            ,"albumMessageId" TEXT
-            ,"attachmentType" INTEGER NOT NULL
-            ,"blurHash" TEXT
-            ,"byteCount" INTEGER NOT NULL
-            ,"caption" TEXT
-            ,"contentType" TEXT NOT NULL
-            ,"encryptionKey" BLOB
-            ,"serverId" INTEGER NOT NULL
-            ,"sourceFilename" TEXT
-            ,"cachedAudioDurationSeconds" DOUBLE
-            ,"cachedImageHeight" DOUBLE
-            ,"cachedImageWidth" DOUBLE
-            ,"creationTimestamp" DOUBLE
-            ,"digest" BLOB
-            ,"isUploaded" INTEGER
-            ,"isValidImageCached" INTEGER
-            ,"isValidVideoCached" INTEGER
-            ,"lazyRestoreFragmentId" TEXT
-            ,"localRelativeFilePath" TEXT
-            ,"mediaSize" BLOB
-            ,"pointerType" INTEGER
-            ,"state" INTEGER
-            ,"uploadTimestamp" INTEGER NOT NULL DEFAULT 0
-            ,"cdnKey" TEXT NOT NULL DEFAULT ''
-            ,"cdnNumber" INTEGER NOT NULL DEFAULT 0
-            ,"isAnimatedCached" INTEGER
-            ,"attachmentSchemaVersion" INTEGER DEFAULT 0
-            ,"videoDuration" DOUBLE
-            ,"clientUuid" TEXT
-        )
-;
-
-CREATE
-    TABLE
         IF NOT EXISTS "model_SSKJobRecord" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"recordType" INTEGER NOT NULL
@@ -406,13 +367,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_attachments_on_albumMessageId"
-        ON "model_TSAttachment"("albumMessageId"
-    ,"recordType"
-)
-;
-
-CREATE
     INDEX "index_interactions_on_uniqueId_and_threadUniqueId"
         ON "model_TSInteraction"("uniqueThreadId"
     ,"uniqueId"
@@ -463,12 +417,6 @@ CREATE
     INDEX "index_interactions_on_expiresInSeconds_and_expiresAt"
         ON "model_TSInteraction"("expiresAt"
     ,"expiresInSeconds"
-)
-;
-
-CREATE
-    INDEX "index_attachments_on_lazyRestoreFragmentId"
-        ON "model_TSAttachment"("lazyRestoreFragmentId"
 )
 ;
 
@@ -730,13 +678,6 @@ CREATE
     INDEX "index_model_OWSReaction_on_uniqueMessageId_and_read"
         ON "model_OWSReaction"("uniqueMessageId"
     ,"read"
-)
-;
-
-CREATE
-    INDEX "index_model_TSAttachment_on_uniqueId_and_contentType"
-        ON "model_TSAttachment"("uniqueId"
-    ,"contentType"
 )
 ;
 
@@ -1187,20 +1128,6 @@ CREATE
             "aci" BLOB PRIMARY KEY NOT NULL
             ,"username" TEXT NOT NULL
         )
-;
-
-CREATE
-    INDEX "index_attachments_toMarkAsFailed"
-        ON "model_TSAttachment" (
-        "recordType"
-        ,"state"
-    )
-WHERE
-    "recordType" = 3
-    AND "state" IN (
-        0
-        ,1
-    )
 ;
 
 CREATE

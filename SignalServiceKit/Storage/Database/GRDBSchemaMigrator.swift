@@ -314,6 +314,7 @@ public class GRDBSchemaMigrator: NSObject {
         case removeVersionedDMTimerCapabilities
         case removeJobRecordTSAttachmentColumns
         case deprecateAttachmentIdsColumn
+        case dropTSAttachmentTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -375,7 +376,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 104
+    public static let grdbSchemaVersionLatest: UInt = 105
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2307,12 +2308,6 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.addIndexToFindFailedAttachments) { tx in
-            // These constants should not change. If they do change, this migration
-            // should not be updated with the new values. Instead, we'd need a new
-            // migration to drop this index and re-build it with the new constants.
-            assert(SDSRecordType.attachmentPointer.rawValue == 3)
-            assert(TSAttachmentPointerState.enqueued.rawValue == 0)
-            assert(TSAttachmentPointerState.downloading.rawValue == 1)
             let sql = """
                 CREATE INDEX "index_attachments_toMarkAsFailed" ON "model_TSAttachment"(
                     "recordType", "state"
@@ -3766,6 +3761,11 @@ public class GRDBSchemaMigrator: NSObject {
             try tx.database.alter(table: "model_TSInteraction") { table in
                 table.rename(column: "attachmentIds", to: "deprecated_attachmentIds")
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.dropTSAttachmentTable) { tx in
+            try tx.database.drop(table: "model_TSAttachment")
             return .success(())
         }
 

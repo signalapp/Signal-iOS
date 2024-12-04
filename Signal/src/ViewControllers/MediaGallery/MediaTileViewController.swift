@@ -778,9 +778,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
                 break
             }
 
-            TSAttachmentVideoDurationHelper.shared.with(context: videoDurationContext) {
-                cell.configure(item: cellItem(for: galleryItem), spoilerState: spoilerState)
-            }
+            cell.configure(item: cellItem(for: galleryItem), spoilerState: spoilerState)
         }
         return cell
     }
@@ -804,7 +802,6 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
             ))
         }
     }
-    private lazy var videoDurationContext = { TSAttachmentVideoDurationHelper.Context() }()
 
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? Cell else {

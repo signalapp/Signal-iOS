@@ -454,7 +454,6 @@
 		45A1684D2A1C308800C2432D /* AudioPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A1684C2A1C308800C2432D /* AudioPresentation.swift */; };
 		45A2F005204473A3002E978A /* NewMessage.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45A2F004204473A3002E978A /* NewMessage.aifc */; };
 		45A3579827DAAC6A0051CE8B /* UserProfileTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A3579727DAAC6A0051CE8B /* UserProfileTest.swift */; };
-		45A66116299EDF3000632EE2 /* VideoAttachmentDetection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A66115299EDF3000632EE2 /* VideoAttachmentDetection.swift */; };
 		45B27B862037FFB400A539DF /* DebugUIFileBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B27B852037FFB400A539DF /* DebugUIFileBrowser.swift */; };
 		45B3680B2A1D75DF0067D05A /* AudioAllMediaPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B3680A2A1D75DF0067D05A /* AudioAllMediaPresenter.swift */; };
 		45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5B2044AAB300CD42F8 /* aurora-quiet.aifc */; };
@@ -481,7 +480,6 @@
 		45B74A892044AAB600CD42F8 /* circles-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A702044AAB500CD42F8 /* circles-quiet.aifc */; };
 		45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A722044AAB600CD42F8 /* synth.aifc */; };
 		45B74A8C2044AAB600CD42F8 /* input-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A732044AAB600CD42F8 /* input-quiet.aifc */; };
-		45B821F92981F7D400BB08BE /* TSAttachmentVideoDurationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B821F82981F7D400BB08BE /* TSAttachmentVideoDurationHelper.swift */; };
 		45BD60821DE9547E00A8F436 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45BD60811DE9547E00A8F436 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		45C845AD291466C0005F6EA5 /* JournalingOrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C845AC291466C0005F6EA5 /* JournalingOrderedDictionary.swift */; };
 		45C845AF291467F7005F6EA5 /* JournalingOrderedDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C845AE291467F7005F6EA5 /* JournalingOrderedDictionaryTests.swift */; };
@@ -935,7 +933,6 @@
 		667BBAD92BAA5F84006AB9DE /* OWSAttachmentInfoSerializationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667BBAD72BAA5F70006AB9DE /* OWSAttachmentInfoSerializationTest.swift */; };
 		667DEE592BC7152E00EFF32D /* MediaGalleryRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE582BC7152E00EFF32D /* MediaGalleryRecord.swift */; };
 		667DEE5F2BC7175300EFF32D /* AllMediaCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE5E2BC7175300EFF32D /* AllMediaCategory.swift */; };
-		667DEE612BC71C3300EFF32D /* TSAttachmentStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE602BC71C3300EFF32D /* TSAttachmentStream.swift */; };
 		667DEE632BC72F1700EFF32D /* DatedMediaGalleryItemId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE622BC72F1700EFF32D /* DatedMediaGalleryItemId.swift */; };
 		667DEE652BC72F4000EFF32D /* MediaGalleryItemId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE642BC72F4000EFF32D /* MediaGalleryItemId.swift */; };
 		667DEE672BC7342900EFF32D /* AttachmentReferenceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE662BC7342900EFF32D /* AttachmentReferenceId.swift */; };
@@ -3208,19 +3205,8 @@
 		F9C5CC6E289453B300548EEE /* OWSRecoverableDecryptionPlaceholder+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C980289453B100548EEE /* OWSRecoverableDecryptionPlaceholder+SDS.swift */; };
 		F9C5CC6F289453B300548EEE /* OWSProfileKeyMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C981289453B100548EEE /* OWSProfileKeyMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC71289453B300548EEE /* OWSMessageDecrypter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C983289453B100548EEE /* OWSMessageDecrypter.swift */; };
-		F9C5CC73289453B300548EEE /* TSAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C986289453B100548EEE /* TSAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC74289453B300548EEE /* BlurHash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C987289453B100548EEE /* BlurHash.swift */; };
 		F9C5CC75289453B300548EEE /* OWSMediaUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C988289453B100548EEE /* OWSMediaUtils.swift */; };
-		F9C5CC76289453B300548EEE /* TSAttachmentStream.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C989289453B100548EEE /* TSAttachmentStream.m */; };
-		F9C5CC77289453B300548EEE /* TSAttachment+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C98A289453B100548EEE /* TSAttachment+SDS.swift */; };
-		F9C5CC78289453B300548EEE /* TSAttachmentPointer.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C98B289453B100548EEE /* TSAttachmentPointer.m */; };
-		F9C5CC79289453B300548EEE /* TSAttachmentPointer+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C98C289453B100548EEE /* TSAttachmentPointer+SDS.swift */; };
-		F9C5CC7A289453B300548EEE /* OWSThumbnailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C98D289453B100548EEE /* OWSThumbnailService.swift */; };
-		F9C5CC7B289453B300548EEE /* TSAttachmentStream+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C98E289453B100548EEE /* TSAttachmentStream+SDS.swift */; };
-		F9C5CC7C289453B300548EEE /* TSAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C98F289453B100548EEE /* TSAttachment.m */; };
-		F9C5CC7D289453B300548EEE /* TSAttachmentPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C990289453B100548EEE /* TSAttachmentPointer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CC7E289453B300548EEE /* TSAttachmentStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C991289453B100548EEE /* TSAttachmentStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CC7F289453B300548EEE /* TSAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C992289453B100548EEE /* TSAttachment.swift */; };
 		F9C5CC80289453B300548EEE /* OWSReceiptManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C993289453B100548EEE /* OWSReceiptManager.swift */; };
 		F9C5CC81289453B300548EEE /* OWSUnknownContactBlockOfferMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C994289453B100548EEE /* OWSUnknownContactBlockOfferMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC82289453B300548EEE /* OWSOutgoingResendRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C995289453B100548EEE /* OWSOutgoingResendRequest.m */; };
@@ -4157,7 +4143,6 @@
 		45A1684C2A1C308800C2432D /* AudioPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPresentation.swift; sourceTree = "<group>"; };
 		45A2F004204473A3002E978A /* NewMessage.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; name = NewMessage.aifc; path = Signal/AudioFiles/NewMessage.aifc; sourceTree = SOURCE_ROOT; };
 		45A3579727DAAC6A0051CE8B /* UserProfileTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileTest.swift; sourceTree = "<group>"; };
-		45A66115299EDF3000632EE2 /* VideoAttachmentDetection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAttachmentDetection.swift; sourceTree = "<group>"; };
 		45A663C41F92EC760027B59E /* GroupTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupTableViewCell.swift; sourceTree = "<group>"; };
 		45A6DAD51EBBF85500893231 /* ReminderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReminderView.swift; sourceTree = "<group>"; };
 		45B27B852037FFB400A539DF /* DebugUIFileBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIFileBrowser.swift; sourceTree = "<group>"; };
@@ -4186,7 +4171,6 @@
 		45B74A702044AAB500CD42F8 /* circles-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "circles-quiet.aifc"; sourceTree = "<group>"; };
 		45B74A722044AAB600CD42F8 /* synth.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = synth.aifc; sourceTree = "<group>"; };
 		45B74A732044AAB600CD42F8 /* input-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "input-quiet.aifc"; sourceTree = "<group>"; };
-		45B821F82981F7D400BB08BE /* TSAttachmentVideoDurationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentVideoDurationHelper.swift; sourceTree = "<group>"; };
 		45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIDevice+FeatureSupport.swift"; sourceTree = "<group>"; };
 		45BD60811DE9547E00A8F436 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		45C845AC291466C0005F6EA5 /* JournalingOrderedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingOrderedDictionary.swift; sourceTree = "<group>"; };
@@ -4695,7 +4679,6 @@
 		667BBAD72BAA5F70006AB9DE /* OWSAttachmentInfoSerializationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSAttachmentInfoSerializationTest.swift; sourceTree = "<group>"; };
 		667DEE582BC7152E00EFF32D /* MediaGalleryRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryRecord.swift; sourceTree = "<group>"; };
 		667DEE5E2BC7175300EFF32D /* AllMediaCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllMediaCategory.swift; sourceTree = "<group>"; };
-		667DEE602BC71C3300EFF32D /* TSAttachmentStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentStream.swift; sourceTree = "<group>"; };
 		667DEE622BC72F1700EFF32D /* DatedMediaGalleryItemId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatedMediaGalleryItemId.swift; sourceTree = "<group>"; };
 		667DEE642BC72F4000EFF32D /* MediaGalleryItemId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryItemId.swift; sourceTree = "<group>"; };
 		667DEE662BC7342900EFF32D /* AttachmentReferenceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentReferenceId.swift; sourceTree = "<group>"; };
@@ -7008,19 +6991,8 @@
 		F9C5C980289453B100548EEE /* OWSRecoverableDecryptionPlaceholder+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSRecoverableDecryptionPlaceholder+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C981289453B100548EEE /* OWSProfileKeyMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSProfileKeyMessage.h; sourceTree = "<group>"; };
 		F9C5C983289453B100548EEE /* OWSMessageDecrypter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSMessageDecrypter.swift; sourceTree = "<group>"; };
-		F9C5C986289453B100548EEE /* TSAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAttachment.h; sourceTree = "<group>"; };
 		F9C5C987289453B100548EEE /* BlurHash.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlurHash.swift; sourceTree = "<group>"; };
 		F9C5C988289453B100548EEE /* OWSMediaUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSMediaUtils.swift; sourceTree = "<group>"; };
-		F9C5C989289453B100548EEE /* TSAttachmentStream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachmentStream.m; sourceTree = "<group>"; };
-		F9C5C98A289453B100548EEE /* TSAttachment+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSAttachment+SDS.swift"; sourceTree = "<group>"; };
-		F9C5C98B289453B100548EEE /* TSAttachmentPointer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachmentPointer.m; sourceTree = "<group>"; };
-		F9C5C98C289453B100548EEE /* TSAttachmentPointer+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSAttachmentPointer+SDS.swift"; sourceTree = "<group>"; };
-		F9C5C98D289453B100548EEE /* OWSThumbnailService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSThumbnailService.swift; sourceTree = "<group>"; };
-		F9C5C98E289453B100548EEE /* TSAttachmentStream+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSAttachmentStream+SDS.swift"; sourceTree = "<group>"; };
-		F9C5C98F289453B100548EEE /* TSAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSAttachment.m; sourceTree = "<group>"; };
-		F9C5C990289453B100548EEE /* TSAttachmentPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAttachmentPointer.h; sourceTree = "<group>"; };
-		F9C5C991289453B100548EEE /* TSAttachmentStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSAttachmentStream.h; sourceTree = "<group>"; };
-		F9C5C992289453B100548EEE /* TSAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSAttachment.swift; sourceTree = "<group>"; };
 		F9C5C993289453B100548EEE /* OWSReceiptManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSReceiptManager.swift; sourceTree = "<group>"; };
 		F9C5C994289453B100548EEE /* OWSUnknownContactBlockOfferMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUnknownContactBlockOfferMessage.h; sourceTree = "<group>"; };
 		F9C5C995289453B100548EEE /* OWSOutgoingResendRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOutgoingResendRequest.m; sourceTree = "<group>"; };
@@ -8457,7 +8429,6 @@
 			children = (
 				765E22D92A44AF33002CCA3B /* Cells */,
 				4CD675BF22E7BE47008010D2 /* Transitions */,
-				664E8D922BD7342E00C4968A /* TSResource */,
 				45D49114296F69AA00B92BB1 /* AllMediaViewController.swift */,
 				45C845AC291466C0005F6EA5 /* JournalingOrderedDictionary.swift */,
 				4CA46F4B219CCC630038ABDE /* MediaCaptionView.swift */,
@@ -9195,22 +9166,6 @@
 			path = ContactShare;
 			sourceTree = "<group>";
 		};
-		664E8D8D2BD72FF900C4968A /* VideoDuration */ = {
-			isa = PBXGroup;
-			children = (
-				665C758A2C34677F00D2E4BA /* TSResource */,
-			);
-			path = VideoDuration;
-			sourceTree = "<group>";
-		};
-		664E8D922BD7342E00C4968A /* TSResource */ = {
-			isa = PBXGroup;
-			children = (
-				45B821F82981F7D400BB08BE /* TSAttachmentVideoDurationHelper.swift */,
-			);
-			path = TSResource;
-			sourceTree = "<group>";
-		};
 		66533E3529B7B53500E8D928 /* WhoAmI */ = {
 			isa = PBXGroup;
 			children = (
@@ -9269,22 +9224,6 @@
 				C17310A62BD9D45400B7A151 /* MessageBackupServiceAuth.swift */,
 			);
 			path = MessageBackup;
-			sourceTree = "<group>";
-		};
-		665C75892C34674000D2E4BA /* TSResource */ = {
-			isa = PBXGroup;
-			children = (
-				F9C5C98D289453B100548EEE /* OWSThumbnailService.swift */,
-			);
-			path = TSResource;
-			sourceTree = "<group>";
-		};
-		665C758A2C34677F00D2E4BA /* TSResource */ = {
-			isa = PBXGroup;
-			children = (
-				45A66115299EDF3000632EE2 /* VideoAttachmentDetection.swift */,
-			);
-			path = TSResource;
 			sourceTree = "<group>";
 		};
 		6660725C2BAB36860084B3D2 /* DataSource */ = {
@@ -9552,7 +9491,6 @@
 		669572F82C1A1DD10092B755 /* Thumbnails */ = {
 			isa = PBXGroup;
 			children = (
-				665C75892C34674000D2E4BA /* TSResource */,
 				669572FF2C1A37020092B755 /* AttachmentThumbnailQuality.swift */,
 				669572F92C1A1DE00092B755 /* AttachmentThumbnailService.swift */,
 				669572FB2C1A1DF30092B755 /* AttachmentThumbnailServiceImpl.swift */,
@@ -9739,7 +9677,6 @@
 				66D7B90C2B9798770005C98B /* QuotedMessageAttachment */,
 				66144B3B2BFD22EE00E2C9CD /* Records */,
 				669572F82C1A1DD10092B755 /* Thumbnails */,
-				664E8D8D2BD72FF900C4968A /* VideoDuration */,
 				66B78E042BE5AACB0022580E /* ViewOnce */,
 				66D7B91C2B97C5330005C98B /* Attachment+ContentType.swift */,
 				66E1AD752B8FD0B700C56B7B /* Attachment.swift */,
@@ -13319,17 +13256,6 @@
 				66C102F02B61E36E00B47EC2 /* V2 */,
 				F9C5C987289453B100548EEE /* BlurHash.swift */,
 				F9C5C988289453B100548EEE /* OWSMediaUtils.swift */,
-				F9C5C98A289453B100548EEE /* TSAttachment+SDS.swift */,
-				F9C5C986289453B100548EEE /* TSAttachment.h */,
-				F9C5C98F289453B100548EEE /* TSAttachment.m */,
-				F9C5C992289453B100548EEE /* TSAttachment.swift */,
-				F9C5C98C289453B100548EEE /* TSAttachmentPointer+SDS.swift */,
-				F9C5C990289453B100548EEE /* TSAttachmentPointer.h */,
-				F9C5C98B289453B100548EEE /* TSAttachmentPointer.m */,
-				F9C5C98E289453B100548EEE /* TSAttachmentStream+SDS.swift */,
-				F9C5C991289453B100548EEE /* TSAttachmentStream.h */,
-				F9C5C989289453B100548EEE /* TSAttachmentStream.m */,
-				667DEE602BC71C3300EFF32D /* TSAttachmentStream.swift */,
 			);
 			path = Attachments;
 			sourceTree = "<group>";
@@ -14101,9 +14027,6 @@
 				F9C5CC1C289453B300548EEE /* StickerInfo.h in Headers */,
 				F9C5CC0F289453B300548EEE /* StickerPack.h in Headers */,
 				668A01142C2B6077007B8808 /* Threading.h in Headers */,
-				F9C5CC73289453B300548EEE /* TSAttachment.h in Headers */,
-				F9C5CC7D289453B300548EEE /* TSAttachmentPointer.h in Headers */,
-				F9C5CC7E289453B300548EEE /* TSAttachmentStream.h in Headers */,
 				F9C5CBC8289453B300548EEE /* TSCall.h in Headers */,
 				F9C5CCD1289453B300548EEE /* TSContactThread.h in Headers */,
 				F9C5CBDD289453B300548EEE /* TSErrorMessage.h in Headers */,
@@ -16702,7 +16625,6 @@
 				88D1D40422EF8A9700F472C5 /* ThreadDetailsInteraction.swift in Sources */,
 				1477630B275E20D700D1067E /* ThreadSwipeHandler.swift in Sources */,
 				88A4CC10246CE2760082211F /* TransferProgressView.swift in Sources */,
-				45B821F92981F7D400BB08BE /* TSAttachmentVideoDurationHelper.swift in Sources */,
 				50BF51052BB1FE7E00C2C309 /* TSInteraction+DeleteActionSheet.swift in Sources */,
 				660248F02BBCD29D009E2956 /* TSMessage+RenderableContent.swift in Sources */,
 				C1661A1C2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift in Sources */,
@@ -17522,7 +17444,6 @@
 				F9C5CBAF289453B300548EEE /* OWSSyncMessageRequestResponseMessage.m in Sources */,
 				F9C5CBB1289453B300548EEE /* OWSSyncRequestMessage.m in Sources */,
 				D93CE1242A5C84F600D916B7 /* OWSSyncRequestMessage.swift in Sources */,
-				F9C5CC7A289453B300548EEE /* OWSThumbnailService.swift in Sources */,
 				F9C5CC4F289453B300548EEE /* OWSUDManager.swift in Sources */,
 				F9C5CC4C289453B300548EEE /* OWSUnknownContactBlockOfferMessage+SDS.swift in Sources */,
 				F9C5CC4D289453B300548EEE /* OWSUnknownContactBlockOfferMessage.m in Sources */,
@@ -17843,9 +17764,6 @@
 				661170C42ABA4D9900A1B16D /* TSAccountManager.swift in Sources */,
 				661170C82ABA4F3A00A1B16D /* TSAccountManagerImpl.swift in Sources */,
 				664657472ACB66630099DE1C /* TSAccountManagerObjcBridge.swift in Sources */,
-				F9C5CC77289453B300548EEE /* TSAttachment+SDS.swift in Sources */,
-				F9C5CC7C289453B300548EEE /* TSAttachment.m in Sources */,
-				F9C5CC7F289453B300548EEE /* TSAttachment.swift in Sources */,
 				669379F72C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift in Sources */,
 				669379EF2C3C5E5800EED7A0 /* TSAttachmentMigration+AudioWaveformManager.swift in Sources */,
 				669379F52C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift in Sources */,
@@ -17856,11 +17774,6 @@
 				665C758C2C35A55300D2E4BA /* TSAttachmentMigration+ThreadWallpaper.swift in Sources */,
 				6660C7972C45C34A00D9C30A /* TSAttachmentMigration+TSMessage.swift in Sources */,
 				66A1ABE22C3311B40033C5EB /* TSAttachmentMigration.swift in Sources */,
-				F9C5CC79289453B300548EEE /* TSAttachmentPointer+SDS.swift in Sources */,
-				F9C5CC78289453B300548EEE /* TSAttachmentPointer.m in Sources */,
-				F9C5CC7B289453B300548EEE /* TSAttachmentStream+SDS.swift in Sources */,
-				F9C5CC76289453B300548EEE /* TSAttachmentStream.m in Sources */,
-				667DEE612BC71C3300EFF32D /* TSAttachmentStream.swift in Sources */,
 				F9C5CC5C289453B300548EEE /* TSCall+SDS.swift in Sources */,
 				F9C5CC5D289453B300548EEE /* TSCall.m in Sources */,
 				D91AC93E2B6337B200814975 /* TSCall.swift in Sources */,
@@ -17987,7 +17900,6 @@
 				66F6D69C2C73F01900EFAF75 /* VersionedDisappearingMessageToken.swift in Sources */,
 				F9C5CE3B289453B400548EEE /* VersionedProfiles.swift in Sources */,
 				724D47B92B97C301001BE973 /* VersionedProfilesImpl.swift in Sources */,
-				45A66116299EDF3000632EE2 /* VideoAttachmentDetection.swift in Sources */,
 				66B78E132BE5AB7E0022580E /* ViewOnceContent.swift in Sources */,
 				F9C5CDD5289453B400548EEE /* ViewOnceMessages.swift in Sources */,
 				7255A4C92B98DF5500E95368 /* VoiceMessageConstants.swift in Sources */,

@@ -222,12 +222,8 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             )
 
             StoryMessage.anyRemoveAllWithInstantiation(transaction: transaction)
-            // V2 attachments have owner deletion cascade rules defined in sql,
-            // no need for an explicit delete here.
-            TSAttachment.anyRemoveAllWithInstantiation(transaction: transaction)
         }
 
-        TSAttachmentStream.deleteAttachmentsFromDisk()
         AttachmentStream.deleteAllAttachmentFiles()
     }
 }

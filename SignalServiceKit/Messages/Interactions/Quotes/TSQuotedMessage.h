@@ -14,9 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyWriteTransaction;
 @class SSKProtoDataMessage;
 @class SignalServiceAddress;
-@class TSAttachment;
-@class TSAttachmentPointer;
-@class TSAttachmentStream;
 @class TSMessage;
 @class TSQuotedMessage;
 @class TSThread;

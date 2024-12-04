@@ -630,63 +630,6 @@ public class InteractionReadCache: NSObject {
 // MARK: -
 
 @objc
-public class AttachmentReadCache: NSObject {
-    typealias KeyType = String
-    typealias ValueType = TSAttachment
-
-    private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
-        override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
-            return TSAttachment.anyFetch(uniqueId: key,
-                                         transaction: transaction,
-                                         ignoreCache: true)
-        }
-
-        override func key(forValue value: ValueType) -> KeyType {
-            value.uniqueId
-        }
-
-        override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
-            return ModelCacheKey(key: key)
-        }
-
-        override func copy(value: ValueType) throws -> ValueType {
-            return try DeepCopies.deepCopy(value)
-        }
-    }
-
-    private let cache: ModelReadCache<KeyType, ValueType>
-    private let adapter = Adapter(cacheName: "TSAttachment", cacheCountLimit: 256, cacheCountLimitNSE: 16)
-
-    @objc
-    public init(_ factory: ModelReadCacheFactory) {
-        cache = factory.create(mode: .read, adapter: adapter)
-    }
-
-    @objc(getAttachmentForUniqueId:transaction:)
-    public func getAttachment(uniqueId: String, transaction: SDSAnyReadTransaction) -> TSAttachment? {
-        let cacheKey = adapter.cacheKey(forKey: uniqueId)
-        return cache.getValue(for: cacheKey, transaction: transaction)
-    }
-
-    @objc(didRemoveAttachment:transaction:)
-    public func didRemove(attachment: TSAttachment, transaction: SDSAnyWriteTransaction) {
-        cache.didRemove(value: attachment, transaction: transaction)
-    }
-
-    @objc(didInsertOrUpdateAttachment:transaction:)
-    public func didInsertOrUpdate(attachment: TSAttachment, transaction: SDSAnyWriteTransaction) {
-        cache.didInsertOrUpdate(value: attachment, transaction: transaction)
-    }
-
-    @objc
-    public func didReadAttachment(_ attachment: TSAttachment, transaction: SDSAnyReadTransaction) {
-        cache.didRead(value: attachment, transaction: transaction)
-    }
-}
-
-// MARK: -
-
-@objc
 public class InstalledStickerCache: NSObject {
     typealias KeyType = String
     typealias ValueType = InstalledSticker
@@ -760,7 +703,6 @@ public class ModelReadCaches: NSObject {
     public init(factory: ModelReadCacheFactory) {
         threadReadCache = ThreadReadCache(factory)
         interactionReadCache = InteractionReadCache(factory)
-        attachmentReadCache = AttachmentReadCache(factory)
         installedStickerCache = InstalledStickerCache(factory)
     }
 
@@ -768,8 +710,6 @@ public class ModelReadCaches: NSObject {
     public let threadReadCache: ThreadReadCache
     @objc
     public let interactionReadCache: InteractionReadCache
-    @objc
-    public let attachmentReadCache: AttachmentReadCache
     @objc
     public let installedStickerCache: InstalledStickerCache
 
