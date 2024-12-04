@@ -134,6 +134,13 @@ public class AttachmentSharing {
     }
 }
 
+extension ReferencedAttachmentStream {
+
+    public func asShareableAttachment() throws -> ShareableAttachment? {
+        return try self.attachmentStream.asShareableAttachment(sourceFilename: reference.sourceFilename)
+    }
+}
+
 extension AttachmentStream {
 
     public func asShareableAttachment(sourceFilename: String?) throws -> ShareableAttachment? {

@@ -49,7 +49,7 @@ public class DraftQuotedReplyModel {
         /// This includes sticker messages, which are thumbnailable attachments.
         case attachment(
             MessageBody?,
-            attachmentRef: TSResourceReference,
+            attachmentRef: AttachmentReference,
             attachment: Attachment,
             thumbnailImage: UIImage?
         )

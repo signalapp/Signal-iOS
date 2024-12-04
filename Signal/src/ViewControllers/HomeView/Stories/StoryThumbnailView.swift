@@ -8,7 +8,7 @@ import SignalUI
 
 class StoryThumbnailView: UIView {
     enum Attachment: Equatable {
-        case file(ReferencedTSResource)
+        case file(ReferencedAttachment)
         case text(PreloadedTextAttachment)
         case missing
 

@@ -10,7 +10,7 @@ public class ContactShareViewModel: NSObject {
 
     public let dbRecord: OWSContact
 
-    private let existingAvatarAttachment: ReferencedTSResource?
+    private let existingAvatarAttachment: ReferencedAttachment?
 
     public var avatarImageData: Data? {
         didSet {
@@ -35,7 +35,7 @@ public class ContactShareViewModel: NSObject {
 
     private init(
         contactShareRecord: OWSContact,
-        existingAvatarAttachment: ReferencedTSResource?,
+        existingAvatarAttachment: ReferencedAttachment?,
         avatarImageData: Data?
     ) {
         self.dbRecord = contactShareRecord

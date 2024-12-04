@@ -39,7 +39,7 @@ public class VideoPlayer {
     }
 
     public convenience init(
-        attachment: ReferencedTSResourceStream,
+        attachment: ReferencedAttachmentStream,
         shouldMixAudioWithOthers: Bool = false
     ) throws {
         try self.init(

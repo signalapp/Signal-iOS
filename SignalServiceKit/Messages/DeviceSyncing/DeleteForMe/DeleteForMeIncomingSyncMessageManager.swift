@@ -187,7 +187,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         /// `DeleteForMe` syncing only applies to body media attachments, so
         /// we'll pull all of them for the target message to see which one
         /// matches the attachment identifer we were given.
-        let targetAttachmentCandidates: [ReferencedTSResource] = tsResourceStore.referencedBodyMediaAttachments(
+        let targetAttachmentCandidates: [ReferencedAttachment] = tsResourceStore.referencedBodyMediaAttachments(
             for: targetMessage,
             tx: tx
         )
@@ -197,10 +197,10 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         /// by the `encryptedDigest` (which should identify most legacy
         /// attachments) and finally by the `plaintextHash` (a last-ditch option
         /// for if somehow the encrypted digest is missing).
-        let targetAttachment: ReferencedTSResource? = {
+        let targetAttachment: ReferencedAttachment? = {
             if
                 let clientUuid = attachmentIdentifier.clientUuid,
-                let clientUuidMatch = targetAttachmentCandidates.first(where: { $0.reference.knownIdInOwningMessage(targetMessage) == clientUuid })
+                let clientUuidMatch = targetAttachmentCandidates.first(where: { $0.reference.knownIdInOwningMessage == clientUuid })
             {
                 return clientUuidMatch
             } else if

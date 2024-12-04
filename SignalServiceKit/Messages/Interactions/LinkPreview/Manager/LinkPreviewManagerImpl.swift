@@ -218,7 +218,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
 
     private func buildProtoForSending(
         _ linkPreview: OWSLinkPreview,
-        previewAttachmentRef: TSResourceReference?,
+        previewAttachmentRef: AttachmentReference?,
         tx: DBReadTransaction
     ) throws -> SSKProtoPreview {
         guard let urlString = linkPreview.urlString else {
@@ -238,7 +238,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
 
         if
             let previewAttachmentRef,
-            let attachment = attachmentStore.fetch(previewAttachmentRef.resourceId, tx: tx),
+            let attachment = attachmentStore.fetch(previewAttachmentRef.attachmentRowId, tx: tx),
             let pointer = attachment.asTransitTierPointer(),
             let attachmentProto = attachmentManager.buildProtoForSending(
                 from: previewAttachmentRef,

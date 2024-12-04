@@ -8,11 +8,11 @@ public import SignalServiceKit
 import SignalUI
 
 public enum CVAttachment: Equatable {
-    case stream(ReferencedTSResourceStream)
-    case pointer(ReferencedTSResourcePointer, transitTierDownloadState: AttachmentDownloadState)
-    case backupThumbnail(ReferencedTSResourceBackupThumbnail)
+    case stream(ReferencedAttachmentStream)
+    case pointer(ReferencedAttachmentTransitPointer, transitTierDownloadState: AttachmentDownloadState)
+    case backupThumbnail(ReferencedAttachmentBackupThumbnail)
 
-    public var attachment: ReferencedTSResource {
+    public var attachment: ReferencedAttachment {
         switch self {
         case .stream(let stream):
             return stream
@@ -50,10 +50,10 @@ public enum CVAttachment: Equatable {
         }
     }
 
-    public static func from(_ attachment: ReferencedTSResource, tx: SDSAnyReadTransaction) -> CVAttachment? {
+    public static func from(_ attachment: ReferencedAttachment, tx: SDSAnyReadTransaction) -> CVAttachment? {
         if let stream = attachment.asReferencedStream {
             return .stream(stream)
-        } else if let pointer = attachment.asReferencedPointer {
+        } else if let pointer = attachment.asReferencedTransitPointer {
             return .pointer(pointer, transitTierDownloadState: pointer.attachmentPointer.downloadState(tx: tx.asV2Read))
         } else if let thumbnail = attachment.asReferencedBackupThumbnail {
             return .backupThumbnail(thumbnail)
@@ -219,11 +219,11 @@ public class CVComponentState: Equatable {
     enum Sticker: Equatable {
         case available(
             stickerMetadata: any StickerMetadata,
-            attachmentStream: ReferencedTSResourceStream
+            attachmentStream: ReferencedAttachmentStream
         )
-        case downloading(attachmentPointer: ReferencedTSResourcePointer)
+        case downloading(attachmentPointer: ReferencedAttachmentTransitPointer)
         case failedOrPending(
-            attachmentPointer: ReferencedTSResourcePointer,
+            attachmentPointer: ReferencedAttachmentTransitPointer,
             transitTierDownloadState: AttachmentDownloadState
         )
 
@@ -235,7 +235,7 @@ public class CVComponentState: Equatable {
                 return nil
             }
         }
-        public var attachmentStream: ReferencedTSResourceStream? {
+        public var attachmentStream: ReferencedAttachmentStream? {
             switch self {
             case .available(_, let attachmentStream):
                 return attachmentStream
@@ -245,7 +245,7 @@ public class CVComponentState: Equatable {
                 return nil
             }
         }
-        public var attachmentPointer: ReferencedTSResourcePointer? {
+        public var attachmentPointer: ReferencedAttachmentTransitPointer? {
             switch self {
             case .available:
                 return nil
@@ -1140,7 +1140,7 @@ fileprivate extension CVComponentState.Builder {
                 owsFailDebug("Invalid content.")
                 return buildViewOnce(viewOnceState: .incomingInvalidContent)
             }
-            let mediaAttachments: [ReferencedTSResource] = DependenciesBridge.shared.tsResourceStore
+            let mediaAttachments: [ReferencedAttachment] = DependenciesBridge.shared.tsResourceStore
                 .referencedBodyMediaAttachments(
                     for: message,
                     tx: transaction.asV2Read
@@ -1346,7 +1346,7 @@ fileprivate extension CVComponentState.Builder {
 
     // MARK: -
 
-    func buildMediaAlbumItems(for mediaAttachments: [ReferencedTSResource],
+    func buildMediaAlbumItems(for mediaAttachments: [ReferencedAttachment],
                               message: TSMessage) -> [CVMediaAlbumItem] {
 
         let threadHasPendingMessageRequest = message.thread(tx: transaction)?
@@ -1463,7 +1463,7 @@ fileprivate extension CVComponentState.Builder {
         return mediaAlbumItems
     }
 
-    mutating func buildNonMediaAttachment(bodyAttachment: ReferencedTSResource?) throws {
+    mutating func buildNonMediaAttachment(bodyAttachment: ReferencedAttachment?) throws {
 
         guard let attachment = bodyAttachment else {
             throw OWSAssertionError("Missing attachment.")
@@ -1494,7 +1494,7 @@ fileprivate extension CVComponentState.Builder {
             )
         {
             self.audioAttachment = audioAttachment
-        } else if let attachmentPointer = attachment.asReferencedPointer {
+        } else if let attachmentPointer = attachment.asReferencedTransitPointer {
             self.audioAttachment = AudioAttachment(
                 attachmentPointer: attachmentPointer,
                 owningMessage: interaction as? TSMessage,
@@ -1601,7 +1601,7 @@ fileprivate extension CVComponentState.Builder {
                         tx: transaction.asV2Read
                     ),
                     let linkPreviewAttachment = DependenciesBridge.shared.tsResourceStore.fetch(
-                        linkPreviewAttachmentRef.resourceId,
+                        linkPreviewAttachmentRef.attachmentRowId,
                         tx: transaction.asV2Read
                     )
                 else {

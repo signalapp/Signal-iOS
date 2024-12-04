@@ -120,7 +120,7 @@ public protocol TSResourceManager {
     // MARK: - Outgoing Proto Creation
 
     func buildProtoForSending(
-        from reference: TSResourceReference,
+        from reference: AttachmentReference,
         pointer: AttachmentTransitPointer
     ) -> SSKProtoAttachmentPointer?
 
@@ -197,17 +197,15 @@ extension TSResourceManager {
 
     public func newQuotedReplyMessageThumbnailBuilder(
         originalAttachment: Attachment,
-        originalReference: TSResourceReference,
+        originalReference: AttachmentReference,
         fallbackQuoteProto: SSKProtoDataMessageQuote,
         originalMessageRowId: Int64,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
-        let attachmentReference = originalReference.concreteType
-        let attachment = originalAttachment
         return self.newQuotedReplyMessageThumbnailBuilder(
             from: QuotedReplyAttachmentDataSource.fromOriginalAttachment(
-                attachment,
-                originalReference: attachmentReference,
+                originalAttachment,
+                originalReference: originalReference,
                 thumbnailPointerFromSender: fallbackQuoteProto.attachments.first?.thumbnail
             ).tsDataSource,
             fallbackQuoteProto: fallbackQuoteProto,

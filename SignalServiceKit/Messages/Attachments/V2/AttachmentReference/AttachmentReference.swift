@@ -89,3 +89,66 @@ public class AttachmentReference {
         return CGSize(width: sourceMediaWidthPixels, height: sourceMediaHeightPixels)
     }
 }
+
+// MARK: Convenience
+
+extension AttachmentReference {
+
+    /// Hint from the sender telling us how to render the attachment.
+    /// Always `default` for types that dont support the flag.
+    public var renderingFlag: RenderingFlag {
+        switch owner {
+        case .message(.bodyAttachment(let metadata)):
+            return metadata.renderingFlag
+        case .message(.quotedReply(let metadata)):
+            return metadata.renderingFlag
+        case .storyMessage(.media(let metadata)):
+            return metadata.shouldLoop ? .shouldLoop : .default
+        default:
+            return .default
+        }
+    }
+
+    /// Caption for story message media attachments. Nil for other reference types.
+    public var storyMediaCaption: StyleOnlyMessageBody? {
+        switch owner {
+        case .storyMessage(.media(let metadata)):
+            return metadata.caption
+        default:
+            return nil
+        }
+    }
+
+    /// Caption for message body attachments.
+    /// Unused in the modern app but may be set for old messages.
+    public var legacyMessageCaption: String? {
+        switch owner {
+        case .message(.bodyAttachment(let metadata)):
+            return metadata.caption
+        default:
+            return nil
+        }
+    }
+
+    public var orderInOwningMessage: UInt32? {
+        switch owner {
+        case .message(.bodyAttachment(let metadata)):
+            return metadata.orderInOwner
+        default:
+            return nil
+        }
+    }
+
+    public var knownIdInOwningMessage: UUID? {
+        switch owner {
+        case .message(.bodyAttachment(let metadata)):
+            return metadata.idInOwner
+        default:
+            return nil
+        }
+    }
+
+    public func hasSameOwner(as other: AttachmentReference) -> Bool {
+        return self.owner.id == other.owner.id
+    }
+}

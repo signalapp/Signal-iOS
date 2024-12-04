@@ -1163,17 +1163,16 @@
 		66D7B9372B99463C0005C98B /* TSResourceDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9362B99463C0005C98B /* TSResourceDownloadManager.swift */; };
 		66D7B9392B99466F0005C98B /* TSResourceDownloadManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9382B99466F0005C98B /* TSResourceDownloadManagerImpl.swift */; };
 		66D7B9402B9A67B00005C98B /* AttachmentDownloadPriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */; };
+		66D89A332CFE8E260074E510 /* AttachmentReference+SDSFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D89A322CFE8E190074E510 /* AttachmentReference+SDSFetch.swift */; };
 		66DA59C62BBB090C00D0EC58 /* AttachmentUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DA59C52BBB090C00D0EC58 /* AttachmentUpload.swift */; };
 		66DA8DF82C910D3B00799E70 /* BGProcessingTaskRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DA8DF72C910D3B00799E70 /* BGProcessingTaskRunner.swift */; };
 		66DA8DFA2C91125200799E70 /* AttachmentValidationBackfillRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DA8DF92C91125200799E70 /* AttachmentValidationBackfillRunner.swift */; };
 		66E1AD532B8D017400C56B7B /* TSResourceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD522B8D017400C56B7B /* TSResourceStore.swift */; };
-		66E1AD572B8D59B000C56B7B /* TSResourceReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD562B8D59B000C56B7B /* TSResourceReference.swift */; };
 		66E1AD592B8D59D700C56B7B /* TSResourceStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD582B8D59D700C56B7B /* TSResourceStoreImpl.swift */; };
 		66E1AD5B2B8D5A1900C56B7B /* TSResourceStoreMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD5A2B8D5A1900C56B7B /* TSResourceStoreMock.swift */; };
 		66E1AD762B8FD0B700C56B7B /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD752B8FD0B700C56B7B /* Attachment.swift */; };
 		66E1AD812B8FDA6900C56B7B /* AttachmentReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD802B8FDA6900C56B7B /* AttachmentReference.swift */; };
 		66E1AD832B8FDE2D00C56B7B /* AttachmentReference+Owner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD822B8FDE2D00C56B7B /* AttachmentReference+Owner.swift */; };
-		66E1AD892B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD882B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift */; };
 		66E1AD982B91444600C56B7B /* TSResourceManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD972B91444600C56B7B /* TSResourceManagerMock.swift */; };
 		66E1AD9A2B91499700C56B7B /* TSResourceUploadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD992B91499700C56B7B /* TSResourceUploadStore.swift */; };
 		66E1ADA02B9155C200C56B7B /* AttachmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD9F2B9155C200C56B7B /* AttachmentStore.swift */; };
@@ -1183,7 +1182,6 @@
 		66E828592C13599800F91D06 /* OrphanedAttachmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E828582C13599800F91D06 /* OrphanedAttachmentStore.swift */; };
 		66E8285B2C139DCD00F91D06 /* QuotedReplyAttachmentDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E8285A2C139DCD00F91D06 /* QuotedReplyAttachmentDataSource.swift */; };
 		66EB029B2BAB9F1C004F0580 /* ReferencedAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EB029A2BAB9F1C004F0580 /* ReferencedAttachment.swift */; };
-		66EB029D2BAB9F55004F0580 /* ReferencedTSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EB029C2BAB9F55004F0580 /* ReferencedTSResource.swift */; };
 		66F0F1DD29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */; };
 		66F0F1DF29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F0F1DE29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift */; };
 		66F2CE1F2A3A37CB00519342 /* EditableMessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F2CE1E2A3A37CB00519342 /* EditableMessageBody.swift */; };
@@ -1209,7 +1207,6 @@
 		66FC638C29E9E9D200F00DAC /* TextCheckingDataItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638B29E9E9D200F00DAC /* TextCheckingDataItem.swift */; };
 		66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */; };
 		66FC639029EDC1E600F00DAC /* ContactSupportAlert+Registration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */; };
-		66FF4D302BE2FA3400106033 /* AttachmentSharing+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FF4D2E2BE2E15900106033 /* AttachmentSharing+TSResource.swift */; };
 		66FFDADC2C823C270079C0E7 /* MessageBackupContexts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FFDADB2C823C270079C0E7 /* MessageBackupContexts.swift */; };
 		720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FD1269F642F00841DF9 /* AvatarModel.swift */; };
 		720547F52B9C97EC00E2CF2F /* APNSRotationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64C2925C012007A311E /* APNSRotationStore.swift */; };
@@ -4960,17 +4957,16 @@
 		66D7B9362B99463C0005C98B /* TSResourceDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceDownloadManager.swift; sourceTree = "<group>"; };
 		66D7B9382B99466F0005C98B /* TSResourceDownloadManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceDownloadManagerImpl.swift; sourceTree = "<group>"; };
 		66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadPriority.swift; sourceTree = "<group>"; };
+		66D89A322CFE8E190074E510 /* AttachmentReference+SDSFetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+SDSFetch.swift"; sourceTree = "<group>"; };
 		66DA59C52BBB090C00D0EC58 /* AttachmentUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUpload.swift; sourceTree = "<group>"; };
 		66DA8DF72C910D3B00799E70 /* BGProcessingTaskRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGProcessingTaskRunner.swift; sourceTree = "<group>"; };
 		66DA8DF92C91125200799E70 /* AttachmentValidationBackfillRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentValidationBackfillRunner.swift; sourceTree = "<group>"; };
 		66E1AD522B8D017400C56B7B /* TSResourceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceStore.swift; sourceTree = "<group>"; };
-		66E1AD562B8D59B000C56B7B /* TSResourceReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceReference.swift; sourceTree = "<group>"; };
 		66E1AD582B8D59D700C56B7B /* TSResourceStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceStoreImpl.swift; sourceTree = "<group>"; };
 		66E1AD5A2B8D5A1900C56B7B /* TSResourceStoreMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceStoreMock.swift; sourceTree = "<group>"; };
 		66E1AD752B8FD0B700C56B7B /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
 		66E1AD802B8FDA6900C56B7B /* AttachmentReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentReference.swift; sourceTree = "<group>"; };
 		66E1AD822B8FDE2D00C56B7B /* AttachmentReference+Owner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+Owner.swift"; sourceTree = "<group>"; };
-		66E1AD882B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+TSResourceReference.swift"; sourceTree = "<group>"; };
 		66E1AD972B91444600C56B7B /* TSResourceManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceManagerMock.swift; sourceTree = "<group>"; };
 		66E1AD992B91499700C56B7B /* TSResourceUploadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceUploadStore.swift; sourceTree = "<group>"; };
 		66E1AD9F2B9155C200C56B7B /* AttachmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStore.swift; sourceTree = "<group>"; };
@@ -4980,7 +4976,6 @@
 		66E828582C13599800F91D06 /* OrphanedAttachmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedAttachmentStore.swift; sourceTree = "<group>"; };
 		66E8285A2C139DCD00F91D06 /* QuotedReplyAttachmentDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyAttachmentDataSource.swift; sourceTree = "<group>"; };
 		66EB029A2BAB9F1C004F0580 /* ReferencedAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferencedAttachment.swift; sourceTree = "<group>"; };
-		66EB029C2BAB9F55004F0580 /* ReferencedTSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferencedTSResource.swift; sourceTree = "<group>"; };
 		66F0F1DC29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorLoader.swift; sourceTree = "<group>"; };
 		66F0F1DE29C12363008C0ECE /* RegistrationCoordinatorDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinatorDependencies.swift; sourceTree = "<group>"; };
 		66F2CE1E2A3A37CB00519342 /* EditableMessageBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableMessageBody.swift; sourceTree = "<group>"; };
@@ -5007,7 +5002,6 @@
 		66FC638B29E9E9D200F00DAC /* TextCheckingDataItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCheckingDataItem.swift; sourceTree = "<group>"; };
 		66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDisplayConfigurations.swift; sourceTree = "<group>"; };
 		66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactSupportAlert+Registration.swift"; sourceTree = "<group>"; };
-		66FF4D2E2BE2E15900106033 /* AttachmentSharing+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentSharing+TSResource.swift"; sourceTree = "<group>"; };
 		66FFDADB2C823C270079C0E7 /* MessageBackupContexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupContexts.swift; sourceTree = "<group>"; };
 		67391FF368D9A60FC8B73F0E /* Pods-Signal.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.profiling.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.profiling.xcconfig"; sourceTree = "<group>"; };
 		675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -8802,7 +8796,6 @@
 		50BF51062BB201AE00C2C309 /* Sharing */ = {
 			isa = PBXGroup;
 			children = (
-				66FF4D2D2BE2E14700106033 /* TSResource */,
 				762EBBCF2A2FB759002FD28F /* AttachmentSharing.swift */,
 			);
 			path = Sharing;
@@ -10121,23 +10114,13 @@
 		66E1AD7F2B8FDA5500C56B7B /* AttachmentReference */ = {
 			isa = PBXGroup;
 			children = (
-				66E1AD842B8FEDD000C56B7B /* TSResource */,
 				66E1AD822B8FDE2D00C56B7B /* AttachmentReference+Owner.swift */,
 				66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */,
+				66D89A322CFE8E190074E510 /* AttachmentReference+SDSFetch.swift */,
 				66E1AD802B8FDA6900C56B7B /* AttachmentReference.swift */,
 				66EB029A2BAB9F1C004F0580 /* ReferencedAttachment.swift */,
 			);
 			path = AttachmentReference;
-			sourceTree = "<group>";
-		};
-		66E1AD842B8FEDD000C56B7B /* TSResource */ = {
-			isa = PBXGroup;
-			children = (
-				66E1AD882B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift */,
-				66EB029C2BAB9F55004F0580 /* ReferencedTSResource.swift */,
-				66E1AD562B8D59B000C56B7B /* TSResourceReference.swift */,
-			);
-			path = TSResource;
 			sourceTree = "<group>";
 		};
 		66E1AD8A2B91298C00C56B7B /* TSResource */ = {
@@ -10217,14 +10200,6 @@
 				6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */,
 			);
 			path = BodyRanges;
-			sourceTree = "<group>";
-		};
-		66FF4D2D2BE2E14700106033 /* TSResource */ = {
-			isa = PBXGroup;
-			children = (
-				66FF4D2E2BE2E15900106033 /* AttachmentSharing+TSResource.swift */,
-			);
-			path = TSResource;
 			sourceTree = "<group>";
 		};
 		720547F12B9C8F5E00E2CF2F /* Avatars */ = {
@@ -15956,7 +15931,6 @@
 				665D9B452C111C6D00E73E94 /* AttachmentMultisend+OversizeText.swift in Sources */,
 				661566722BCEDD58003F1647 /* AttachmentMultisend.swift in Sources */,
 				3402AA3D271D9DCD0084CBAE /* AttachmentPrepViewController.swift in Sources */,
-				66FF4D302BE2FA3400106033 /* AttachmentSharing+TSResource.swift in Sources */,
 				762EBBD02A2FB759002FD28F /* AttachmentSharing.swift in Sources */,
 				3402AA42271D9DCD0084CBAE /* AttachmentTextToolbar.swift in Sources */,
 				3402AA55271D9DCD0084CBAE /* AttachmentTextView.swift in Sources */,
@@ -17073,7 +17047,7 @@
 				6640132E2BFFDC2700F10FC4 /* AttachmentReference+ConstructionParams.swift in Sources */,
 				66E1AD832B8FDE2D00C56B7B /* AttachmentReference+Owner.swift in Sources */,
 				66CA4CE62B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift in Sources */,
-				66E1AD892B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift in Sources */,
+				66D89A332CFE8E260074E510 /* AttachmentReference+SDSFetch.swift in Sources */,
 				66E1AD812B8FDA6900C56B7B /* AttachmentReference.swift in Sources */,
 				667DEE672BC7342900EFF32D /* AttachmentReferenceId.swift in Sources */,
 				66144B3F2BFD3AA700E2C9CD /* AttachmentReferenceRecord.swift in Sources */,
@@ -17844,7 +17818,6 @@
 				506695E329C29BCE00B6D8D0 /* RecipientMerger.swift in Sources */,
 				50B0E9482AC73C3B005D46AB /* RecipientStateMerger.swift in Sources */,
 				66EB029B2BAB9F1C004F0580 /* ReferencedAttachment.swift in Sources */,
-				66EB029D2BAB9F55004F0580 /* ReferencedTSResource.swift in Sources */,
 				F9C5CE18289453B400548EEE /* Refinery.swift in Sources */,
 				720547F62B9C985300E2CF2F /* RefreshEvent.swift in Sources */,
 				661170C12ABA459D00A1B16D /* RegistrationIdGenerator.swift in Sources */,
@@ -18154,7 +18127,6 @@
 				66CA4CEA2B9FDBF8009A5ED8 /* TSResourceManager.swift in Sources */,
 				66CA4CE92B9FDBF8009A5ED8 /* TSResourceManagerImpl.swift in Sources */,
 				66E1AD982B91444600C56B7B /* TSResourceManagerMock.swift in Sources */,
-				66E1AD572B8D59B000C56B7B /* TSResourceReference.swift in Sources */,
 				664165162BA4C2E200C34F6A /* TSResourceRetrievalInfo.swift in Sources */,
 				66E1AD532B8D017400C56B7B /* TSResourceStore.swift in Sources */,
 				66E1AD592B8D59D700C56B7B /* TSResourceStoreImpl.swift in Sources */,

@@ -495,9 +495,9 @@ extension TSOutgoingMessage {
     @objc
     func buildProtosForBodyAttachments(tx: SDSAnyReadTransaction) throws -> [SSKProtoAttachmentPointer] {
         let references = DependenciesBridge.shared.tsResourceStore.bodyAttachments(for: self, tx: tx.asV2Read)
-        let attachments = DependenciesBridge.shared.tsResourceStore.fetch(references.map(\.resourceId), tx: tx.asV2Read)
+        let attachments = DependenciesBridge.shared.tsResourceStore.fetch(references.map(\.attachmentRowId), tx: tx.asV2Read)
         return references.compactMap { reference in
-            guard let attachment = attachments.first(where: { $0.id == reference.resourceId }) else {
+            guard let attachment = attachments.first(where: { $0.id == reference.attachmentRowId }) else {
                 owsFailDebug("Missing attachment for sending!")
                 return nil
             }

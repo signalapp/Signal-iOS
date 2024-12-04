@@ -21,7 +21,7 @@ enum MediaGalleryCellItem {
     case photoVideo(MediaGalleryCellItemPhotoVideo)
     case audio(MediaGalleryCellItemAudio)
 
-    var attachmentStream: ReferencedTSResourceStream? {
+    var attachmentStream: ReferencedAttachmentStream? {
         switch self {
         case .photoVideo(let item):
             return item.galleryItem.attachmentStream
@@ -37,7 +37,7 @@ extension MediaGalleryCellItem: Equatable {
         case let (.photoVideo(lvalue), .photoVideo(rvalue)):
             return lvalue === rvalue
         case let (.audio(lvalue), .audio(rvalue)):
-            return lvalue.attachmentStream.reference.resourceId == rvalue.attachmentStream.reference.resourceId
+            return lvalue.attachmentStream.reference.attachmentRowId == rvalue.attachmentStream.reference.attachmentRowId
         case (.photoVideo, _), (.audio, _):
             return false
         }
@@ -48,7 +48,7 @@ struct MediaGalleryCellItemAudio {
     var message: TSMessage
     var interaction: TSInteraction
     var thread: TSThread
-    var attachmentStream: ReferencedTSResourceStream
+    var attachmentStream: ReferencedAttachmentStream
     var receivedAtDate: Date
     var isVoiceMessage: Bool
     var mediaCache: CVMediaCache

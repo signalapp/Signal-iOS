@@ -9,7 +9,7 @@ import Foundation
 public enum TSQuotedMessageResourceReference {
     /// The quoted message had a thumbnail-able attachment, so
     /// we created a thumbnail and reference it here.
-    case thumbnail(TSResourceReference)
+    case thumbnail(AttachmentReference)
 
     /// The quoted message had an attachment, but it couldn't be captured
     /// as a thumbnail (e.g. it was a generic file). We don't actually reference

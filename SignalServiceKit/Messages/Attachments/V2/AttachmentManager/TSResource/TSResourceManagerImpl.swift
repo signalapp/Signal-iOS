@@ -196,18 +196,12 @@ public class TSResourceManagerImpl: TSResourceManager {
     // MARK: - Outgoing Proto Creation
 
     public func buildProtoForSending(
-        from reference: TSResourceReference,
+        from reference: AttachmentReference,
         pointer: AttachmentTransitPointer
     ) -> SSKProtoAttachmentPointer? {
-        let attachment = pointer.attachment
-        let attachmentReference = reference.concreteType
-        guard let attachmentPointer = AttachmentTransitPointer(attachment: attachment) else {
-            owsFailDebug("Invalid attachment type combination!")
-            return nil
-        }
         return attachmentManager.buildProtoForSending(
-            from: attachmentReference,
-            pointer: attachmentPointer
+            from: reference,
+            pointer: pointer
         )
     }
 

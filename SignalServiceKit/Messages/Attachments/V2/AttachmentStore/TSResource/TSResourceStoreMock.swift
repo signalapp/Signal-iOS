@@ -12,31 +12,31 @@ public class TSResourceStoreMock: TSResourceStore {
     public init() {}
 
     // TSMessage.rowId -> resource ref
-    public var messageResourceReferences = [Int64: [TSResourceReference]]()
+    public var messageResourceReferences = [Int64: [AttachmentReference]]()
     public var resources = [Attachment]()
 
     public func fetch(_ ids: [Attachment.IDType], tx: DBReadTransaction) -> [Attachment] {
         return resources.filter { ids.contains($0.id) }
     }
 
-    public func allAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
+    public func allAttachments(for message: TSMessage, tx: DBReadTransaction) -> [AttachmentReference] {
         guard let rowId = message.sqliteRowId else {
             return []
         }
         return messageResourceReferences[rowId] ?? []
     }
 
-    public func bodyAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
+    public func bodyAttachments(for message: TSMessage, tx: DBReadTransaction) -> [AttachmentReference] {
         // TODO: sub-filter based on reference info
         return allAttachments(for: message, tx: tx)
     }
 
-    public func bodyMediaAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
+    public func bodyMediaAttachments(for message: TSMessage, tx: DBReadTransaction) -> [AttachmentReference] {
         // TODO: sub-filter based on reference info
         return allAttachments(for: message, tx: tx)
     }
 
-    public func oversizeTextAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
+    public func oversizeTextAttachment(for message: TSMessage, tx: DBReadTransaction) -> AttachmentReference? {
         guard let rowId = message.sqliteRowId else {
             return nil
         }
@@ -47,17 +47,17 @@ public class TSResourceStoreMock: TSResourceStore {
         return ref
     }
 
-    public func contactShareAvatarAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
+    public func contactShareAvatarAttachment(for message: TSMessage, tx: DBReadTransaction) -> AttachmentReference? {
         // TODO
         return nil
     }
 
-    public func linkPreviewAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
+    public func linkPreviewAttachment(for message: TSMessage, tx: DBReadTransaction) -> AttachmentReference? {
         // TODO
         return nil
     }
 
-    public func stickerAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
+    public func stickerAttachment(for message: TSMessage, tx: DBReadTransaction) -> AttachmentReference? {
         // TODO
         return nil
     }
@@ -79,21 +79,21 @@ public class TSResourceStoreMock: TSResourceStore {
     public func attachmentToUseInQuote(
         originalMessage: TSMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference? {
+    ) -> AttachmentReference? {
         return nil
     }
 
     public func mediaAttachment(
         for storyMessage: StoryMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference? {
+    ) -> AttachmentReference? {
         return nil
     }
 
     public func linkPreviewAttachment(
         for storyMessage: StoryMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference? {
+    ) -> AttachmentReference? {
         return nil
     }
 }

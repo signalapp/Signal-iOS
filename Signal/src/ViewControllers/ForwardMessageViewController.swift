@@ -89,7 +89,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     }
 
     public class func present(
-        forAttachmentStreams attachmentStreams: [ReferencedTSResourceStream],
+        forAttachmentStreams attachmentStreams: [ReferencedAttachmentStream],
         fromMessage message: TSMessage,
         from fromViewController: UIViewController,
         delegate: ForwardMessageDelegate
@@ -126,7 +126,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         let builder = Item.Builder()
         switch storyMessage.attachment {
         case .file, .foreignReferenceAttachment:
-            let attachment: ReferencedTSResourceStream? = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            let attachment: ReferencedAttachmentStream? = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 guard
                     let reference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: storyMessage, tx: tx.asV2Read),
                     let attachmentStream = reference.fetch(tx: tx)?.asStream()
@@ -724,7 +724,7 @@ public struct ForwardMessageItem {
                 builder.contactShare = oldContactShare.copyForRendering()
             }
 
-            var attachmentStreams = [ReferencedTSResourceStream]()
+            var attachmentStreams = [ReferencedAttachmentStream]()
             attachmentStreams.append(contentsOf: componentState.bodyMediaAttachmentStreams)
             if let attachmentStream = componentState.audioAttachmentStream {
                 attachmentStreams.append(attachmentStream)
@@ -801,7 +801,7 @@ public struct ForwardMessageItem {
             let imageAttachmentId = DependenciesBridge.shared.tsResourceStore.linkPreviewAttachment(
                 for: parentMessage,
                 tx: transaction.asV2Read
-            )?.resourceId,
+            )?.attachmentRowId,
             let image = LinkPreviewImage.load(
                 attachmentId: imageAttachmentId,
                 transaction: transaction

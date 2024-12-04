@@ -50,7 +50,7 @@ public class QuotedReplyModel {
         /// though it may not actually be thumbnail-ed *yet*.
         case attachment(
             MessageBody?,
-            attachment: ReferencedTSResource,
+            attachment: ReferencedAttachment,
             thumbnailImage: UIImage?
         )
 
@@ -58,7 +58,7 @@ public class QuotedReplyModel {
 
         case mediaStory(
             body: StyleOnlyMessageBody?,
-            attachment: ReferencedTSResource,
+            attachment: ReferencedAttachment,
             thumbnailImage: UIImage?
         )
 
@@ -239,7 +239,7 @@ public class QuotedReplyModel {
             let attachmentReference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: storyMessage, tx: transaction.asV2Read)
             let attachment = attachmentReference?.fetch(tx: transaction)
 
-            let referencedAttachment: ReferencedTSResource
+            let referencedAttachment: ReferencedAttachment
             let thumbnailImage: UIImage?
             if let attachmentReference, let attachment {
                 referencedAttachment = .init(reference: attachmentReference, attachment: attachment)
@@ -356,7 +356,7 @@ public class QuotedReplyModel {
         case .thumbnail(let attachmentRef):
             // Fetch the full attachment.
             let thumbnailAttachment = DependenciesBridge.shared.tsResourceStore.fetch(
-                attachmentRef.resourceId,
+                attachmentRef.attachmentRowId,
                 tx: transaction.asV2Read
             )
             let image: UIImage? = {
@@ -393,7 +393,7 @@ public class QuotedReplyModel {
                         tx: transaction.asV2Read
                     ),
                 let originalAttachment = DependenciesBridge.shared.tsResourceStore.fetch(
-                    originalAttachmentReference.resourceId,
+                    originalAttachmentReference.attachmentRowId,
                     tx: transaction.asV2Read
                 )
             {

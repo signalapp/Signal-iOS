@@ -145,7 +145,7 @@ public extension DeleteForMeOutgoingSyncMessageManager {
     /// - Important
     /// All the given messages must belong to the given thread.
     func send(
-        deletedAttachments: [TSMessage: [ReferencedTSResource]],
+        deletedAttachments: [TSMessage: [ReferencedAttachment]],
         thread: TSThread,
         localIdentifiers: LocalIdentifiers,
         tx: any DBWriteTransaction
@@ -155,7 +155,7 @@ public extension DeleteForMeOutgoingSyncMessageManager {
         for (message, attachments) in deletedAttachments {
             let attachmentIdentifiers: [Outgoing.AttachmentIdentifier] = attachments.map { attachment in
                 return Outgoing.AttachmentIdentifier(
-                    clientUuid: attachment.reference.knownIdInOwningMessage(message),
+                    clientUuid: attachment.reference.knownIdInOwningMessage,
                     encryptedDigest: attachment.attachment.asStream()?.encryptedFileSha256Digest,
                     plaintextHash: attachment.attachment.asStream()?.sha256ContentHash
                 )

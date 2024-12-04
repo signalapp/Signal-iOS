@@ -218,18 +218,18 @@ extension CVItemViewModelImpl {
         !shareableAttachments.isEmpty
     }
 
-    private var shareableAttachments: [ShareableTSResource] {
+    private var shareableAttachments: [ShareableAttachment] {
         guard !isViewOnce else {
             return []
         }
 
         if let attachment = self.componentState.audioAttachmentStream {
-            return [try? attachment.asShareableResource()].compacted()
+            return [try? attachment.asShareableAttachment()].compacted()
         } else if let attachment = self.componentState.genericAttachmentStream {
-            return [try? attachment.asShareableResource()].compacted()
+            return [try? attachment.asShareableAttachment()].compacted()
         } else {
             return self.componentState.bodyMediaAttachmentStreams.compactMap { attachment in
-                return try? attachment.asShareableResource()
+                return try? attachment.asShareableAttachment()
             }
         }
     }
@@ -284,11 +284,11 @@ public extension CVComponentState {
         bodyText?.displayableText
     }
 
-    var audioAttachmentStream: ReferencedTSResourceStream? {
+    var audioAttachmentStream: ReferencedAttachmentStream? {
         audioAttachment?.attachmentStream
     }
 
-    var genericAttachmentStream: ReferencedTSResourceStream? {
+    var genericAttachmentStream: ReferencedAttachmentStream? {
         guard
             let reference = genericAttachment?.attachment.attachment.reference,
             let stream = genericAttachment?.attachmentStream
@@ -298,11 +298,11 @@ public extension CVComponentState {
         return .init(reference: reference, attachmentStream: stream)
     }
 
-    var bodyMediaAttachmentStreams: [ReferencedTSResourceStream] {
+    var bodyMediaAttachmentStreams: [ReferencedAttachmentStream] {
         guard let bodyMedia = self.bodyMedia else {
             return []
         }
-        return bodyMedia.items.compactMap { (item) -> ReferencedTSResourceStream? in
+        return bodyMedia.items.compactMap { (item) -> ReferencedAttachmentStream? in
             guard let stream = item.attachmentStream else {
                 return nil
             }

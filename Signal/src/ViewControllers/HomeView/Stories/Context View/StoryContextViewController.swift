@@ -330,7 +330,7 @@ class StoryContextViewController: OWSViewController {
     private func buildStoryItem(for message: StoryMessage, transaction: SDSAnyReadTransaction) -> StoryItem? {
         let replyCount = message.replyCount
 
-        let attachment: ReferencedTSResource?
+        let attachment: ReferencedAttachment?
         switch message.attachment {
         case .file, .foreignReferenceAttachment:
             let attachmentReference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: message, tx: transaction.asV2Read)

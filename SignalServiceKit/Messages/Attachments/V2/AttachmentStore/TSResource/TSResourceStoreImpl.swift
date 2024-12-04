@@ -24,8 +24,8 @@ public class TSResourceStoreImpl: TSResourceStore {
 
     // MARK: - Message Attachment fetching
 
-    public func allAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
-        let v2References: [TSResourceReference]
+    public func allAttachments(for message: TSMessage, tx: DBReadTransaction) -> [AttachmentReference] {
+        let v2References: [AttachmentReference]
 
         guard let messageRowId = message.sqliteRowId else {
             owsFailDebug("Fetching attachments for an un-inserted message!")
@@ -42,7 +42,7 @@ public class TSResourceStoreImpl: TSResourceStore {
         return v2References
     }
 
-    public func bodyAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
+    public func bodyAttachments(for message: TSMessage, tx: DBReadTransaction) -> [AttachmentReference] {
         if message.attachmentIds?.isEmpty != false {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Fetching attachments for an un-inserted message!")
@@ -61,7 +61,7 @@ public class TSResourceStoreImpl: TSResourceStore {
         }
     }
 
-    public func bodyMediaAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
+    public func bodyMediaAttachments(for message: TSMessage, tx: DBReadTransaction) -> [AttachmentReference] {
         if message.attachmentIds?.isEmpty != false {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Fetching attachments for an un-inserted message!")
@@ -73,7 +73,7 @@ public class TSResourceStoreImpl: TSResourceStore {
         }
     }
 
-    public func oversizeTextAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
+    public func oversizeTextAttachment(for message: TSMessage, tx: DBReadTransaction) -> AttachmentReference? {
         guard let messageRowId = message.sqliteRowId else {
             owsFailDebug("Fetching attachments for an un-inserted message!")
             return nil
@@ -81,7 +81,7 @@ public class TSResourceStoreImpl: TSResourceStore {
         return attachmentStore.fetchFirstReference(owner: .messageOversizeText(messageRowId: messageRowId), tx: tx)
     }
 
-    public func contactShareAvatarAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
+    public func contactShareAvatarAttachment(for message: TSMessage, tx: DBReadTransaction) -> AttachmentReference? {
         if
             let contactShare = message.contactShare,
             contactShare.legacyAvatarAttachmentId == nil
@@ -95,7 +95,7 @@ public class TSResourceStoreImpl: TSResourceStore {
         return nil
     }
 
-    public func linkPreviewAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
+    public func linkPreviewAttachment(for message: TSMessage, tx: DBReadTransaction) -> AttachmentReference? {
         guard let linkPreview = message.linkPreview else {
             return nil
         }
@@ -110,7 +110,7 @@ public class TSResourceStoreImpl: TSResourceStore {
         }
     }
 
-    public func stickerAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
+    public func stickerAttachment(for message: TSMessage, tx: DBReadTransaction) -> AttachmentReference? {
         guard let messageSticker = message.messageSticker else {
             return nil
         }
@@ -153,7 +153,7 @@ public class TSResourceStoreImpl: TSResourceStore {
     public func attachmentToUseInQuote(
         originalMessage: TSMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference? {
+    ) -> AttachmentReference? {
         if
             let originalMessageRowId = originalMessage.sqliteRowId,
             let attachment = attachmentStore.attachmentToUseInQuote(originalMessageRowId: originalMessageRowId, tx: tx)
@@ -169,7 +169,7 @@ public class TSResourceStoreImpl: TSResourceStore {
     public func mediaAttachment(
         for storyMessage: StoryMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference? {
+    ) -> AttachmentReference? {
         switch storyMessage.attachment {
         case .text:
             return nil
@@ -190,7 +190,7 @@ public class TSResourceStoreImpl: TSResourceStore {
     public func linkPreviewAttachment(
         for storyMessage: StoryMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference? {
+    ) -> AttachmentReference? {
         switch storyMessage.attachment {
         case .file, .foreignReferenceAttachment:
             return nil

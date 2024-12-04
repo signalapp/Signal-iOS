@@ -59,12 +59,12 @@ public struct MediaGalleryResourceFinder {
         ).map(\.asItemId)
     }
 
-    public func recentMediaAttachments(limit: Int, tx: DBReadTransaction) -> [ReferencedTSResource] {
-        var v2Items = [ReferencedTSResource]()
+    public func recentMediaAttachments(limit: Int, tx: DBReadTransaction) -> [ReferencedAttachment] {
+        var v2Items = [ReferencedAttachment]()
         v2Items = attachmentFinder.recentMediaAttachments(
             limit: limit,
             tx: tx
-        ).map { $0.referencedTSResource }
+        )
         return v2Items
     }
 
@@ -73,7 +73,7 @@ public struct MediaGalleryResourceFinder {
         excluding deletedAttachmentIds: Set<MediaGalleryResourceId>,
         range: NSRange,
         tx: DBReadTransaction,
-        block: (Int, ReferencedTSResource) -> Void
+        block: (Int, ReferencedAttachment) -> Void
     ) {
         return attachmentFinder.enumerateMediaAttachments(
             in: dateInterval,
@@ -81,7 +81,7 @@ public struct MediaGalleryResourceFinder {
             range: range,
             tx: tx,
             block: { index, referencedAttachment in
-                block(index, referencedAttachment.referencedTSResource)
+                block(index, referencedAttachment)
             }
         )
     }
@@ -126,13 +126,13 @@ public struct MediaGalleryResourceFinder {
 
     // Disregards filter.
     public func galleryItemId(
-        of attachment: ReferencedTSResourceStream,
+        of attachment: ReferencedAttachmentStream,
         in interval: DateInterval,
         excluding deletedAttachmentIds: Set<MediaGalleryResourceId>,
         tx: DBReadTransaction
     ) -> MediaGalleryItemId? {
         let attachmentStream = attachment.attachmentStream
-        let reference = attachment.reference.concreteType
+        let reference = attachment.reference
         return attachmentFinder.galleryItemId(
             of: .init(reference: reference, attachmentStream: attachmentStream),
             in: interval,

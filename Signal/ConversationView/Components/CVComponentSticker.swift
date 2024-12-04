@@ -14,10 +14,10 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     private var stickerMetadata: (any StickerMetadata)? {
         sticker.stickerMetadata
     }
-    private var attachmentStream: ReferencedTSResourceStream? {
+    private var attachmentStream: ReferencedAttachmentStream? {
         sticker.attachmentStream
     }
-    private var attachmentPointer: ReferencedTSResourcePointer? {
+    private var attachmentPointer: ReferencedAttachmentTransitPointer? {
         sticker.attachmentPointer
     }
     private var stickerInfo: StickerInfo? {
@@ -109,7 +109,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     }
 
     private func configureForRendering(
-        attachmentPointer: ReferencedTSResourcePointer,
+        attachmentPointer: ReferencedAttachmentTransitPointer,
         transitTierDownloadState: AttachmentDownloadState,
         stackView: ManualStackView,
         cellMeasurement: CVCellMeasurement

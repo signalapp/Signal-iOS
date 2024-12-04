@@ -32,12 +32,12 @@ public enum MediaGalleryResource {
 public protocol MediaGalleryResourceManager {
 
     func didInsert(
-        attachmentStream: ReferencedTSResourceStream,
+        attachmentStream: ReferencedAttachmentStream,
         tx: DBWriteTransaction
     )
 
     func didRemove(
-        attachmentStream: ReferencedTSResourceStream,
+        attachmentStream: ReferencedAttachmentStream,
         tx: DBWriteTransaction
     )
 
@@ -52,14 +52,14 @@ public final class MediaGalleryResourceManagerImpl: MediaGalleryResourceManager 
     public init() {}
 
     public func didInsert(
-        attachmentStream: ReferencedTSResourceStream,
+        attachmentStream: ReferencedAttachmentStream,
         tx: DBWriteTransaction
     ) {
         // Do nothing
     }
 
     public func didRemove(
-        attachmentStream: ReferencedTSResourceStream,
+        attachmentStream: ReferencedAttachmentStream,
         tx: DBWriteTransaction
     ) {
         // Do nothing
@@ -80,12 +80,12 @@ public class MediaGalleryResourceManagerMock: MediaGalleryResourceManager {
     public init() {}
 
     open func didInsert(
-        attachmentStream: ReferencedTSResourceStream,
+        attachmentStream: ReferencedAttachmentStream,
         tx: DBWriteTransaction
     ) {}
 
     open func didRemove(
-        attachmentStream: ReferencedTSResourceStream,
+        attachmentStream: ReferencedAttachmentStream,
         tx: DBWriteTransaction
     ) {}
 

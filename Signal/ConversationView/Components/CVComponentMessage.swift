@@ -1838,7 +1838,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     public func albumItemView(
-        forAttachment attachment: ReferencedTSResource,
+        forAttachment attachment: ReferencedAttachment,
         componentView: CVComponentView
     ) -> UIView? {
         guard let componentView = componentView as? CVComponentViewMessage else {

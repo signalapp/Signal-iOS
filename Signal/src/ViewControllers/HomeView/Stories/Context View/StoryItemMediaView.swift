@@ -903,7 +903,7 @@ class StoryItemMediaView: UIView {
 
     private var videoPlayerLoopCount = 0
     private var videoPlayer: VideoPlayer?
-    private func buildVideoView(attachment: ReferencedTSResourceStream) -> UIView {
+    private func buildVideoView(attachment: ReferencedAttachmentStream) -> UIView {
         guard let player = try? VideoPlayer(attachment: attachment, shouldMixAudioWithOthers: true) else {
             owsFailDebug("Could not load attachment.")
             return buildContentUnavailableView()
@@ -1029,7 +1029,7 @@ class StoryItem: NSObject {
     let numberOfReplies: UInt64
     enum Attachment: Equatable {
         struct Pointer: Equatable {
-            let reference: TSResourceReference
+            let reference: AttachmentReference
             let attachment: AttachmentTransitPointer
             let transitTierDownloadState: AttachmentDownloadState
             var caption: String? { reference.storyMediaCaption?.text }
@@ -1043,7 +1043,7 @@ class StoryItem: NSObject {
         }
 
         struct Stream: Equatable {
-            let attachment: ReferencedTSResourceStream
+            let attachment: ReferencedAttachmentStream
             var isLoopingVideo: Bool { attachment.reference.renderingFlag == .shouldLoop }
             var caption: String? { attachment.reference.storyMediaCaption?.text }
             var captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>] { attachment.reference.storyMediaCaption?.collapsedStyles ?? [] }

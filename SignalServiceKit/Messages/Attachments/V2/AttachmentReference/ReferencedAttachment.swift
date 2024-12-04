@@ -29,6 +29,13 @@ public class ReferencedAttachment {
         }
         return .init(reference: reference, attachmentPointer: attachmentPointer)
     }
+
+    public var asReferencedBackupThumbnail: ReferencedAttachmentBackupThumbnail? {
+        guard let attachmentBackupThumbnail = AttachmentBackupThumbnail(attachment: attachment) else {
+            return nil
+        }
+        return .init(reference: reference, attachmentBackupThumbnail: attachmentBackupThumbnail)
+    }
 }
 
 public class ReferencedAttachmentStream: ReferencedAttachment {

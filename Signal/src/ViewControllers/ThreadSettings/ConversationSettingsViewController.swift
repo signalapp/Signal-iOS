@@ -863,7 +863,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         navigationController?.pushViewController(tileVC, animated: true)
     }
 
-    func showMediaPageView(for attachmentStream: ReferencedTSResourceStream) {
+    func showMediaPageView(for attachmentStream: ReferencedAttachmentStream) {
         guard let vc = MediaPageViewController(
             initialMediaAttachment: attachmentStream,
             thread: thread,
@@ -880,7 +880,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     let maximumRecentMedia = 4
     private(set) var recentMedia = OrderedDictionary<
         MediaGalleryResourceId,
-        (attachment: ReferencedTSResourceStream, imageView: UIImageView)
+        (attachment: ReferencedAttachmentStream, imageView: UIImageView)
     >() {
         didSet { AssertIsOnMainThread() }
     }

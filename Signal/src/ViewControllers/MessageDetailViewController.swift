@@ -41,8 +41,8 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private let cellView = CVCellView()
 
-    private var bodyMediaAttachments: [ReferencedTSResource]?
-    private var bodyMediaAttachmentStreams: [ReferencedTSResourceStream]? {
+    private var bodyMediaAttachments: [ReferencedAttachment]?
+    private var bodyMediaAttachmentStreams: [ReferencedAttachmentStream]? {
         return bodyMediaAttachments?.compactMap { $0.asReferencedStream }
     }
 
@@ -1069,7 +1069,7 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
-        attachmentStream: ReferencedTSResourceStream,
+        attachmentStream: ReferencedAttachmentStream,
         imageView: UIView
     ) {
         guard let thread = thread else {

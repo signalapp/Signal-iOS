@@ -13,7 +13,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     public var componentKey: CVComponentKey { .genericAttachment }
 
     private let genericAttachment: CVComponentState.GenericAttachment
-    private var attachment: ReferencedTSResource { genericAttachment.attachment.attachment }
+    private var attachment: ReferencedAttachment { genericAttachment.attachment.attachment }
     private var attachmentStream: AttachmentStream? { genericAttachment.attachmentStream }
     private var attachmentPointer: AttachmentTransitPointer? { genericAttachment.attachmentPointer }
 
@@ -360,7 +360,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     }
 
     public func showShareUI(from view: UIView) {
-        guard let attachmentStream = try? genericAttachment.attachment.attachment.asReferencedStream?.asShareableResource() else {
+        guard let attachmentStream = try? genericAttachment.attachment.attachment.asReferencedStream?.asShareableAttachment() else {
             owsFailDebug("should not show the share UI unless there's a downloaded attachment")
             return
         }

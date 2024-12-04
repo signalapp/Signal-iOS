@@ -228,7 +228,7 @@ public class ContactShareManagerImpl: ContactShareManager {
                 tx: tx
             ),
             let avatarResource = attachmentStore.fetch(
-                [avatarResourceRef.resourceId],
+                [avatarResourceRef.attachmentRowId],
                 tx: tx
             ).first,
             let avatarPointer = avatarResource.asTransitTierPointer(),

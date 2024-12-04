@@ -63,7 +63,7 @@ public class TSResourceManagerMock: TSResourceManager {
     }
 
     public func buildProtoForSending(
-        from reference: TSResourceReference,
+        from reference: AttachmentReference,
         pointer: AttachmentTransitPointer
     ) -> SSKProtoAttachmentPointer? {
         return nil

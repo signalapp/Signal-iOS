@@ -24,10 +24,9 @@ public enum MediaGalleryResourceId: Equatable, Hashable {
     case v2(AttachmentReferenceId)
 }
 
-extension TSResourceReference {
+extension AttachmentReference {
 
     public var mediaGalleryResourceId: MediaGalleryResourceId {
-        let attachmentReference = self.concreteType
-        return .v2(attachmentReference.referenceId)
+        return .v2(self.referenceId)
     }
 }

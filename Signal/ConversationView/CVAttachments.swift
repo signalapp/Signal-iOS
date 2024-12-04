@@ -11,11 +11,11 @@ public import SignalServiceKit
 public class AudioAttachment {
     public enum State: Equatable {
         case attachmentStream(
-            attachmentStream: ReferencedTSResourceStream,
+            attachmentStream: ReferencedAttachmentStream,
             audioDurationSeconds: TimeInterval
         )
         case attachmentPointer(
-            attachmentPointer: ReferencedTSResourcePointer,
+            attachmentPointer: ReferencedAttachmentTransitPointer,
             transitTierDownloadState: AttachmentDownloadState
         )
 
@@ -59,7 +59,7 @@ public class AudioAttachment {
     public let isDownloading: Bool
 
     public init?(
-        attachmentStream: ReferencedTSResourceStream,
+        attachmentStream: ReferencedAttachmentStream,
         owningMessage: TSMessage?,
         metadata: MediaMetadata?,
         receivedAtDate: Date
@@ -88,7 +88,7 @@ public class AudioAttachment {
     }
 
     public init(
-        attachmentPointer: ReferencedTSResourcePointer,
+        attachmentPointer: ReferencedAttachmentTransitPointer,
         owningMessage: TSMessage?,
         metadata: MediaMetadata?,
         receivedAtDate: Date,
@@ -140,7 +140,7 @@ extension AudioAttachment {
         }
     }
 
-    public var attachmentStream: ReferencedTSResourceStream? {
+    public var attachmentStream: ReferencedAttachmentStream? {
         switch state {
         case .attachmentStream(let attachmentStream, _):
             return attachmentStream
@@ -149,7 +149,7 @@ extension AudioAttachment {
         }
     }
 
-    public var attachmentPointer: ReferencedTSResourcePointer? {
+    public var attachmentPointer: ReferencedAttachmentTransitPointer? {
         switch state {
         case .attachmentStream:
             return nil

@@ -568,7 +568,7 @@ public extension TSMessage {
             }
         }
 
-        let mediaAttachment: ReferencedTSResource?
+        let mediaAttachment: ReferencedAttachment?
         if
             let reference = DependenciesBridge.shared.tsResourceStore
             .bodyMediaAttachments(for: self, tx: tx.asV2Read)
@@ -702,8 +702,8 @@ extension TSMessage {
         rowId: Int64,
         tx: SDSAnyReadTransaction
     ) -> Bool {
-        var fetchedAttachments: [TSResourceReference]?
-        func fetchAttachments() -> [TSResourceReference] {
+        var fetchedAttachments: [AttachmentReference]?
+        func fetchAttachments() -> [AttachmentReference] {
             if let fetchedAttachments { return fetchedAttachments }
             let attachments = DependenciesBridge.shared.tsResourceStore.bodyAttachments(
                 for: self,

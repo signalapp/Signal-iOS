@@ -121,7 +121,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
     }
 
-    public func fileAttachment(tx: SDSAnyReadTransaction) -> ReferencedTSResource? {
+    public func fileAttachment(tx: SDSAnyReadTransaction) -> ReferencedAttachment? {
         guard
             let reference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: self, tx: tx.asV2Read),
             let attachment = reference.fetch(tx: tx)

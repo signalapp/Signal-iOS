@@ -422,7 +422,7 @@ public extension CVRootComponentHost {
                                                   messageSwipeActionState: messageSwipeActionState)
     }
 
-    func albumItemView(forAttachment attachment: ReferencedTSResource) -> UIView? {
+    func albumItemView(forAttachment attachment: ReferencedAttachment) -> UIView? {
         guard let renderItem = renderItem else {
             owsFailDebug("Missing renderItem.")
             return nil

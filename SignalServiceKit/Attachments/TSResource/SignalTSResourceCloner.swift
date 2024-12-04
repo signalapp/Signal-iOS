@@ -8,7 +8,7 @@ import Foundation
 public protocol SignalTSResourceCloner {
 
     func cloneAsSignalAttachment(
-        attachment: ReferencedTSResourceStream
+        attachment: ReferencedAttachmentStream
     ) throws -> SignalAttachment
 }
 
@@ -23,11 +23,11 @@ public class SignalTSResourceClonerImpl: SignalTSResourceCloner {
     }
 
     public func cloneAsSignalAttachment(
-        attachment: ReferencedTSResourceStream
+        attachment: ReferencedAttachmentStream
     ) throws -> SignalAttachment {
         return try attachmentCloner.cloneAsSignalAttachment(
             attachment: .init(
-                reference: attachment.reference.concreteType,
+                reference: attachment.reference,
                 attachmentStream: attachment.attachmentStream
             )
         )
@@ -41,7 +41,7 @@ public class SignalTSResourceClonerMock: SignalTSResourceCloner {
     public init() {}
 
     public func cloneAsSignalAttachment(
-        attachment: ReferencedTSResourceStream
+        attachment: ReferencedAttachmentStream
     ) throws -> SignalAttachment {
         throw OWSAssertionError("Unimplemented")
     }

@@ -327,7 +327,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 tx: tx
             ),
             let originalAttachment = attachmentStore.fetch(
-                [originalReference.resourceId],
+                [originalReference.attachmentRowId],
                 tx: tx
             ).first
         {
@@ -417,7 +417,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         if originalMessage.messageSticker != nil {
             guard
                 let attachmentRef = attachmentStore.stickerAttachment(for: originalMessage, tx: tx),
-                let attachment = attachmentStore.fetch(attachmentRef.resourceId, tx: tx),
+                let attachment = attachmentStore.fetch(attachmentRef.attachmentRowId, tx: tx),
                 let stickerData = try? attachment.asStream()?.decryptedRawData()
             else {
                 owsFailDebug("Couldn't load sticker data")
@@ -481,7 +481,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         }
 
         if let attachmentRef = attachmentStore.attachmentToUseInQuote(originalMessage: originalMessage, tx: tx) {
-            let attachment = attachmentStore.fetch(attachmentRef.resourceId, tx: tx)
+            let attachment = attachmentStore.fetch(attachmentRef.attachmentRowId, tx: tx)
             if
                 let stream = attachment?.asStream(),
                 stream.contentType.isVisualMedia,
@@ -591,7 +591,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 {
                     switch attachmentReference {
                     case .thumbnail(let attachmentRef):
-                        if let attachment = attachmentStore.fetch(attachmentRef.resourceId, tx: tx) {
+                        if let attachment = attachmentStore.fetch(attachmentRef.attachmentRowId, tx: tx) {
                             return .attachment(
                                 messageBody,
                                 attachmentRef: attachmentRef,
@@ -649,7 +649,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         // Find the original message and any attachment
         let (originalMessage, originalAttachmentReference, originalAttachment): (
             TSMessage?,
-            TSResourceReference?,
+            AttachmentReference?,
             Attachment?
         ) = db.read { tx in
             guard
@@ -667,7 +667,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 originalMessage: originalMessage,
                 tx: tx
             )
-            let attachment = attachmentStore.fetch([attachmentReference?.resourceId].compacted(), tx: tx).first
+            let attachment = attachmentStore.fetch([attachmentReference?.attachmentRowId].compacted(), tx: tx).first
             return (originalMessage, attachmentReference, attachment)
         }
         guard let originalMessage else {
@@ -882,7 +882,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
             if
                 let attachment = attachmentStore.fetch(
-                    attachmentRef.resourceId,
+                    attachmentRef.attachmentRowId,
                     tx: tx
                 )
             {

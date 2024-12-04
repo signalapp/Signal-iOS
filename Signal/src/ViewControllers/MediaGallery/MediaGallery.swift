@@ -38,7 +38,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
 
     let message: TSMessage
     let sender: Sender?
-    let attachmentStream: ReferencedTSResourceStream
+    let attachmentStream: ReferencedAttachmentStream
     let receivedAtDate: Date
 
     var renderingFlag: AttachmentReference.RenderingFlag { attachmentStream.reference.renderingFlag }
@@ -52,7 +52,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     init(
         message: TSMessage,
         sender: Sender?,
-        attachmentStream: ReferencedTSResourceStream,
+        attachmentStream: ReferencedAttachmentStream,
         albumIndex: Int,
         numItemsInAlbum: Int,
         spoilerState: SpoilerRenderState,
@@ -150,7 +150,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(attachmentStream.attachmentStream.id)
-        let attachmentReference = attachmentStream.reference.concreteType
+        let attachmentReference = attachmentStream.reference
         hasher.combine(attachmentReference.owner.id)
     }
 
@@ -484,7 +484,7 @@ class MediaGallery {
     internal var galleryDates: [GalleryDate] { sections.sectionDates }
 
     private func buildGalleryItem(
-        attachment: ReferencedTSResource,
+        attachment: ReferencedAttachment,
         spoilerState: SpoilerRenderState,
         transaction: SDSAnyReadTransaction
     ) -> MediaGalleryItem? {
@@ -538,10 +538,10 @@ class MediaGallery {
         )
         // Re-normalize the index in the album; albumOrder may have gaps but MediaGalleryItem.albumIndex
         // needs to have no gaps as its used to index _into_ the ordered attachments.
-        let albumOrder = attachment.reference.orderInOwningMessage(message)
+        let albumOrder = attachment.reference.orderInOwningMessage
         let albumIndex: Int
         if let albumOrder {
-            albumIndex = itemsInAlbum.firstIndex(where: { $0.orderInOwningMessage(message) == albumOrder }) ?? 0
+            albumIndex = itemsInAlbum.firstIndex(where: { $0.orderInOwningMessage == albumOrder }) ?? 0
         } else {
             albumIndex = 0
         }
@@ -664,7 +664,7 @@ class MediaGallery {
                                  shouldLoadAlbumRemainder: shouldLoadAlbumRemainder)
     }
 
-    internal func ensureLoadedForDetailView(focusedAttachment: ReferencedTSResource) -> MediaGalleryItem? {
+    internal func ensureLoadedForDetailView(focusedAttachment: ReferencedAttachment) -> MediaGalleryItem? {
         Logger.info("")
         let newItem: MediaGalleryItem? = SSKEnvironment.shared.databaseStorageRef.read { transaction -> MediaGalleryItem? in
             guard let focusedItem = buildGalleryItem(
@@ -846,11 +846,11 @@ class MediaGallery {
                 // Ensure we have the latest in-memory state for our thread.
                 self.thread.anyReload(transaction: tx)
 
-                var attachmentsRemoved = [TSMessage: [ReferencedTSResource]]()
+                var attachmentsRemoved = [TSMessage: [ReferencedAttachment]]()
 
                 for item in items {
                     let message = item.message
-                    let referencedAttachment: ReferencedTSResource = item.attachmentStream
+                    let referencedAttachment: ReferencedAttachment = item.attachmentStream
 
                     try deps.tsResourceManager.removeBodyAttachment(
                         referencedAttachment.attachment,
@@ -865,7 +865,7 @@ class MediaGallery {
                 }
 
                 var messagesWithAllAttachmentsRemoved = [TSMessage]()
-                var messagesWithAttachmentsRemaining = [TSMessage: [ReferencedTSResource]]()
+                var messagesWithAttachmentsRemaining = [TSMessage: [ReferencedAttachment]]()
 
                 /// After removing attachments, we want to segment our affected
                 /// messages into those that have attachments still and those

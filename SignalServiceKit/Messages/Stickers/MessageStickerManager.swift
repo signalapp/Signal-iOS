@@ -156,7 +156,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
                 for: parentMessage,
                 tx: tx
             ),
-            let attachment = attachmentStore.fetch(attachmentReference.resourceId, tx: tx)
+            let attachment = attachmentStore.fetch(attachmentReference.attachmentRowId, tx: tx)
         else {
             throw OWSAssertionError("Could not find sticker attachment")
         }

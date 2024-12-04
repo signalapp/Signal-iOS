@@ -76,9 +76,9 @@ class OWSContactAvatar: NSObject, OWSContactField {
 
     let avatarImage: UIImage
     let avatarData: Data
-    let existingAttachment: ReferencedTSResource?
+    let existingAttachment: ReferencedAttachment?
 
-    init(avatarImage: UIImage, avatarData: Data, existingAttachment: ReferencedTSResource?) {
+    init(avatarImage: UIImage, avatarData: Data, existingAttachment: ReferencedAttachment?) {
         self.avatarImage = avatarImage
         self.avatarData = avatarData
         self.existingAttachment = existingAttachment

@@ -19,41 +19,41 @@ public protocol TSResourceStore {
     func allAttachments(
         for message: TSMessage,
         tx: DBReadTransaction
-    ) -> [TSResourceReference]
+    ) -> [AttachmentReference]
 
     /// Includes media, long text, and voice message attachments.
     /// Excludes stickers, quoted reply thumbnails, link preview images, contact avatars.
     func bodyAttachments(
         for message: TSMessage,
         tx: DBReadTransaction
-    ) -> [TSResourceReference]
+    ) -> [AttachmentReference]
 
     /// Includes media and voice message attachments.
     /// Excludes long text, stickers, quoted reply thumbnails, link preview images, contact avatars.
     func bodyMediaAttachments(
         for message: TSMessage,
         tx: DBReadTransaction
-    ) -> [TSResourceReference]
+    ) -> [AttachmentReference]
 
     func oversizeTextAttachment(
         for message: TSMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference?
+    ) -> AttachmentReference?
 
     func contactShareAvatarAttachment(
         for message: TSMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference?
+    ) -> AttachmentReference?
 
     func linkPreviewAttachment(
         for message: TSMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference?
+    ) -> AttachmentReference?
 
     func stickerAttachment(
         for message: TSMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference?
+    ) -> AttachmentReference?
 
     // MARK: - Quoted Messages
 
@@ -66,19 +66,19 @@ public protocol TSResourceStore {
     func attachmentToUseInQuote(
         originalMessage: TSMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference?
+    ) -> AttachmentReference?
 
     // MARK: - Story Message Attachment Fetching
 
     func mediaAttachment(
         for storyMessage: StoryMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference?
+    ) -> AttachmentReference?
 
     func linkPreviewAttachment(
         for storyMessage: StoryMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference?
+    ) -> AttachmentReference?
 }
 
 // MARK: - Convenience
@@ -105,7 +105,7 @@ extension TSResourceStore {
     public func quotedThumbnailAttachment(
         for message: TSMessage,
         tx: DBReadTransaction
-    ) -> TSResourceReference? {
+    ) -> AttachmentReference? {
         let ref = self.quotedAttachmentReference(for: message, tx: tx)
         switch ref {
         case .thumbnail(let attachmentRef):
@@ -120,36 +120,36 @@ extension TSResourceStore {
     public func referencedBodyAttachments(
         for message: TSMessage,
         tx: DBReadTransaction
-    ) -> [ReferencedTSResource] {
+    ) -> [ReferencedAttachment] {
         let references = self.bodyAttachments(for: message, tx: tx)
         let attachments = Dictionary(
-            grouping: self.fetch(references.map(\.resourceId), tx: tx),
+            grouping: self.fetch(references.map(\.attachmentRowId), tx: tx),
             by: \.id
         )
-        return references.compactMap { reference -> ReferencedTSResource? in
-            guard let attachment = attachments[reference.resourceId]?.first else {
+        return references.compactMap { reference -> ReferencedAttachment? in
+            guard let attachment = attachments[reference.attachmentRowId]?.first else {
                 owsFailDebug("Missing attachment!")
                 return nil
             }
-            return ReferencedTSResource(reference: reference, attachment: attachment)
+            return ReferencedAttachment(reference: reference, attachment: attachment)
         }
     }
 
     public func referencedBodyMediaAttachments(
         for message: TSMessage,
         tx: DBReadTransaction
-    ) -> [ReferencedTSResource] {
+    ) -> [ReferencedAttachment] {
         let references = self.bodyMediaAttachments(for: message, tx: tx)
         let attachments = Dictionary(
-            grouping: self.fetch(references.map(\.resourceId), tx: tx),
+            grouping: self.fetch(references.map(\.attachmentRowId), tx: tx),
             by: \.id
         )
-        return references.compactMap { reference -> ReferencedTSResource? in
-            guard let attachment = attachments[reference.resourceId]?.first else {
+        return references.compactMap { reference -> ReferencedAttachment? in
+            guard let attachment = attachments[reference.attachmentRowId]?.first else {
                 owsFailDebug("Missing attachment!")
                 return nil
             }
-            return ReferencedTSResource(reference: reference, attachment: attachment)
+            return ReferencedAttachment(reference: reference, attachment: attachment)
         }
     }
 }

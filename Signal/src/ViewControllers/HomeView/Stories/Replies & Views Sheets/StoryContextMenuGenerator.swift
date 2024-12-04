@@ -739,7 +739,7 @@ extension StoryContextMenuGenerator {
                 }
                 switch attachment {
                 case .file(let attachment):
-                    guard let attachment = try? attachment.asReferencedStream?.asShareableResource() else {
+                    guard let attachment = try? attachment.asReferencedStream?.asShareableAttachment() else {
                         completion(false)
                         return owsFailDebug("Unexpectedly tried to share undownloaded attachment")
                     }

@@ -206,7 +206,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             if mediaAlbumHasPendingAttachment {
                 let pendingManualDownloadAttachments = items
                     .lazy
-                    .compactMap { (item: CVMediaAlbumItem) -> ReferencedTSResource? in
+                    .compactMap { (item: CVMediaAlbumItem) -> ReferencedAttachment? in
                         switch item.attachment {
                         case .stream:
                             return nil
@@ -405,7 +405,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
     }
 
     public func albumItemView(
-        forAttachment attachment: ReferencedTSResource,
+        forAttachment attachment: ReferencedAttachment,
         componentView: CVComponentView
     ) -> UIView? {
         guard let componentView = componentView as? CVComponentViewBodyMedia else {

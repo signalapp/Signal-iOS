@@ -37,9 +37,8 @@ public struct TSResourceDataSource {
 
     public static func forwarding(
         existingAttachment: AttachmentStream,
-        with reference: TSResourceReference
+        with reference: AttachmentReference
     ) -> TSResourceDataSource {
-        let reference = reference.concreteType
         let v2 = AttachmentDataSource.forwarding(existingAttachment: existingAttachment, with: reference)
 
         let caption: MessageBody?

@@ -157,13 +157,13 @@ public class PreparedOutgoingMessage {
             var attachmentIds = DependenciesBridge.shared.tsResourceStore.allAttachments(
                 for: persisted.message,
                 tx: tx.asV2Read
-            ).map(\.resourceId)
+            ).map(\.attachmentRowId)
             return attachmentIds
         case .editMessage(let editMessage):
             return DependenciesBridge.shared.tsResourceStore.allAttachments(
                 for: editMessage.editedMessage,
                 tx: tx.asV2Read
-            ).map(\.resourceId)
+            ).map(\.attachmentRowId)
         case .contactSync:
             // These are pre-uploaded.
             return []
@@ -175,12 +175,12 @@ public class PreparedOutgoingMessage {
             case .file, .foreignReferenceAttachment:
                 return [
                     DependenciesBridge.shared.tsResourceStore
-                        .mediaAttachment(for: storyMessage, tx: tx.asV2Read)?.resourceId
+                        .mediaAttachment(for: storyMessage, tx: tx.asV2Read)?.attachmentRowId
                 ].compacted()
             case .text:
                 return [
                     DependenciesBridge.shared.tsResourceStore
-                        .linkPreviewAttachment(for: storyMessage, tx: tx.asV2Read)?.resourceId
+                        .linkPreviewAttachment(for: storyMessage, tx: tx.asV2Read)?.attachmentRowId
                 ].compacted()
             }
         case .transient:

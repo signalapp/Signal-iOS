@@ -64,7 +64,7 @@ public protocol TSResourceContentValidator {
     /// Throws an error if the provided attachment is non-visual, or if data reading/writing fails.
     func prepareQuotedReplyThumbnail(
         fromOriginalAttachment: AttachmentStream,
-        originalReference: TSResourceReference,
+        originalReference: AttachmentReference,
         originalMessageRowId: Int64
     ) throws -> QuotedReplyTSResourceDataSource
 }
@@ -145,12 +145,12 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
 
     public func prepareQuotedReplyThumbnail(
         fromOriginalAttachment originalAttachment: AttachmentStream,
-        originalReference: TSResourceReference,
+        originalReference: AttachmentReference,
         originalMessageRowId: Int64
     ) throws -> QuotedReplyTSResourceDataSource {
         return try attachmentValidator.prepareQuotedReplyThumbnail(
             fromOriginalAttachment: originalAttachment,
-            originalReference: originalReference.concreteType
+            originalReference: originalReference
         ).tsDataSource
     }
 }
@@ -192,7 +192,7 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
 
     open func prepareQuotedReplyThumbnail(
         fromOriginalAttachment originalAttachment: AttachmentStream,
-        originalReference: TSResourceReference,
+        originalReference: AttachmentReference,
         originalMessageRowId: Int64
     ) throws -> QuotedReplyTSResourceDataSource {
         throw OWSAssertionError("Unimplemented")
