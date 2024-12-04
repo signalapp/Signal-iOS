@@ -11,7 +11,7 @@ public class AudioWaveformManagerMock: AudioWaveformManager {
 
     public init() {}
 
-    public func audioWaveform(forAttachment attachment: TSResourceStream, highPriority: Bool) -> Task<AudioWaveform, Error> {
+    public func audioWaveform(forAttachment attachment: AttachmentStream, highPriority: Bool) -> Task<AudioWaveform, Error> {
         return Task {
             return AudioWaveform(decibelSamples: [])
         }

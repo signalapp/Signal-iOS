@@ -8,9 +8,9 @@ import Foundation
 public protocol TSResourceStore {
 
     func fetch(
-        _ ids: [TSResourceId],
+        _ ids: [Attachment.IDType],
         tx: DBReadTransaction
-    ) -> [TSResource]
+    ) -> [Attachment]
 
     // MARK: - Message Attachment fetching
 
@@ -86,9 +86,9 @@ public protocol TSResourceStore {
 extension TSResourceStore {
 
     public func fetch(
-        _ id: TSResourceId,
+        _ id: Attachment.IDType,
         tx: DBReadTransaction
-    ) -> TSResource? {
+    ) -> Attachment? {
         return fetch([id], tx: tx).first
     }
 
@@ -124,7 +124,7 @@ extension TSResourceStore {
         let references = self.bodyAttachments(for: message, tx: tx)
         let attachments = Dictionary(
             grouping: self.fetch(references.map(\.resourceId), tx: tx),
-            by: \.resourceId
+            by: \.id
         )
         return references.compactMap { reference -> ReferencedTSResource? in
             guard let attachment = attachments[reference.resourceId]?.first else {
@@ -142,7 +142,7 @@ extension TSResourceStore {
         let references = self.bodyMediaAttachments(for: message, tx: tx)
         let attachments = Dictionary(
             grouping: self.fetch(references.map(\.resourceId), tx: tx),
-            by: \.resourceId
+            by: \.id
         )
         return references.compactMap { reference -> ReferencedTSResource? in
             guard let attachment = attachments[reference.resourceId]?.first else {

@@ -46,7 +46,7 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
             name: TSResourceDownloads.attachmentDownloadProgressNotification,
             object: nil,
             userInfo: [
-                TSResourceDownloads.attachmentDownloadAttachmentIDKey: TSResourceId.v2(rowId: rowId),
+                TSResourceDownloads.attachmentDownloadAttachmentIDKey: rowId,
                 TSResourceDownloads.attachmentDownloadProgressKey: progress
             ]
         )
@@ -71,17 +71,11 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
         attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, priority: priority, tx: tx)
     }
 
-    public func cancelDownload(for attachmentId: TSResourceId, tx: DBWriteTransaction) {
-        switch attachmentId {
-        case .v2(let rowId):
-            attachmentDownloadManager.cancelDownload(for: rowId, tx: tx)
-        }
+    public func cancelDownload(for attachmentId: Attachment.IDType, tx: DBWriteTransaction) {
+        attachmentDownloadManager.cancelDownload(for: attachmentId, tx: tx)
     }
 
-    public func downloadProgress(for attachmentId: TSResourceId, tx: DBReadTransaction) -> CGFloat? {
-        switch attachmentId {
-        case .v2(let rowId):
-            return attachmentDownloadManager.downloadProgress(for: rowId, tx: tx)
-        }
+    public func downloadProgress(for attachmentId: Attachment.IDType, tx: DBReadTransaction) -> CGFloat? {
+        return attachmentDownloadManager.downloadProgress(for: attachmentId, tx: tx)
     }
 }

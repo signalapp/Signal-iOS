@@ -546,7 +546,7 @@ extension StoryThumbnailView.Attachment {
         case .text:
             return true
         case .file(let attachment):
-            guard let stream = attachment.attachment.asResourceStream() else {
+            guard let stream = attachment.attachment.asStream() else {
                 return false
             }
             return MimeTypeUtil.isSupportedVisualMediaMimeType(stream.mimeType)
@@ -561,15 +561,14 @@ extension StoryThumbnailView.Attachment {
         switch self {
         case .file(let fileAttachment):
             guard
-                let attachment = fileAttachment.attachment.asResourceStream(),
+                let attachment = fileAttachment.attachment.asStream(),
                 MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.mimeType)
             else { break }
 
             var mediaURL: URL?
             let shouldDeleteFileAfterComplete: Bool
-            let attachmentStream = attachment.concreteStreamType
             // Make a copy since we are about to send this off to the system anyway.
-            mediaURL = try? attachmentStream.makeDecryptedCopy(filename: fileAttachment.reference.sourceFilename)
+            mediaURL = try? attachment.makeDecryptedCopy(filename: fileAttachment.reference.sourceFilename)
             shouldDeleteFileAfterComplete = true
             guard let mediaURL else {
                 break

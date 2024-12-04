@@ -9,15 +9,15 @@ import Foundation
 /// since that's something we need to do very often.
 public class ReferencedTSResource {
     public let reference: TSResourceReference
-    public let attachment: TSResource
+    public let attachment: Attachment
 
-    public init(reference: TSResourceReference, attachment: TSResource) {
+    public init(reference: TSResourceReference, attachment: Attachment) {
         self.reference = reference
         self.attachment = attachment
     }
 
     public var asReferencedStream: ReferencedTSResourceStream? {
-        guard let resourceStream = attachment.asResourceStream() else {
+        guard let resourceStream = attachment.asStream() else {
             return nil
         }
         return .init(reference: reference, attachmentStream: resourceStream)
@@ -31,47 +31,47 @@ public class ReferencedTSResource {
     }
 
     public var asReferencedBackupThumbnail: ReferencedTSResourceBackupThumbnail? {
-        guard let resourceBackupThumbnail = attachment.asResourceBackupThumbnail() else {
+        guard let resourceBackupThumbnail = attachment.asBackupThumbnail() else {
             return nil
         }
         return .init(reference: reference, attachmentBackupThumbnail: resourceBackupThumbnail)
     }
 
     public func previewText() -> String {
-        let (reference, attachment) = (reference.concreteType, attachment.concreteType)
+        let reference = reference.concreteType
         return ReferencedAttachment(reference: reference, attachment: attachment).previewText()
     }
 
     public func previewEmoji() -> String {
-        let (reference, attachment) = (reference.concreteType, attachment.concreteType)
+        let (reference, attachment) = (reference.concreteType, attachment)
         return ReferencedAttachment(reference: reference, attachment: attachment).previewEmoji()
     }
 }
 
 public class ReferencedTSResourceStream: ReferencedTSResource {
-    public let attachmentStream: TSResourceStream
+    public let attachmentStream: AttachmentStream
 
-    public init(reference: TSResourceReference, attachmentStream: TSResourceStream) {
+    public init(reference: TSResourceReference, attachmentStream: AttachmentStream) {
         self.attachmentStream = attachmentStream
-        super.init(reference: reference, attachment: attachmentStream)
+        super.init(reference: reference, attachment: attachmentStream.attachment)
     }
 }
 
 public class ReferencedTSResourcePointer: ReferencedTSResource {
-    public let attachmentPointer: TSResourcePointer
+    public let attachmentPointer: AttachmentTransitPointer
 
-    public init(reference: TSResourceReference, attachmentPointer: TSResourcePointer) {
+    public init(reference: TSResourceReference, attachmentPointer: AttachmentTransitPointer) {
         self.attachmentPointer = attachmentPointer
-        super.init(reference: reference, attachment: attachmentPointer.resource)
+        super.init(reference: reference, attachment: attachmentPointer.attachment)
     }
 }
 
 public class ReferencedTSResourceBackupThumbnail: ReferencedTSResource {
-    public let attachmentBackupThumbnail: TSResourceBackupThumbnail
+    public let attachmentBackupThumbnail: AttachmentBackupThumbnail
 
-    public init(reference: TSResourceReference, attachmentBackupThumbnail: TSResourceBackupThumbnail) {
+    public init(reference: TSResourceReference, attachmentBackupThumbnail: AttachmentBackupThumbnail) {
         self.attachmentBackupThumbnail = attachmentBackupThumbnail
-        super.init(reference: reference, attachment: attachmentBackupThumbnail.resource)
+        super.init(reference: reference, attachment: attachmentBackupThumbnail.attachment)
     }
 }
 
@@ -92,7 +92,7 @@ extension ReferencedAttachmentStream {
 extension ReferencedAttachmentTransitPointer {
 
     var referencedTSResourcePointer: ReferencedTSResourcePointer {
-        return .init(reference: reference, attachmentPointer: attachmentPointer.asResourcePointer)
+        return .init(reference: reference, attachmentPointer: attachmentPointer)
     }
 }
 

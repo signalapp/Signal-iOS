@@ -53,10 +53,10 @@ public class ContactShareViewModel: NSObject {
                 for: parentMessage,
                 tx: transaction.asV2Read
             ),
-            let avatarAttachment = avatarAttachmentRef.fetch(tx: transaction)?.asResourceStream()
+            let avatarAttachment = avatarAttachmentRef.fetch(tx: transaction)?.asStream()
         {
             let avatarImageData: Data?
-            switch avatarAttachment.computeContentType() {
+            switch avatarAttachment.contentType {
             case .file, .invalid, .video, .animatedImage, .audio:
                 avatarImageData = nil
             case .image:
@@ -64,7 +64,7 @@ public class ContactShareViewModel: NSObject {
             }
             self.init(
                 contactShareRecord: contactShareRecord,
-                existingAvatarAttachment: .init(reference: avatarAttachmentRef, attachment: avatarAttachment),
+                existingAvatarAttachment: .init(reference: avatarAttachmentRef, attachment: avatarAttachment.attachment),
                 avatarImageData: avatarImageData
             )
         } else {

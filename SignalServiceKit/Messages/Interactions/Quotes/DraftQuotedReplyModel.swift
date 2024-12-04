@@ -50,7 +50,7 @@ public class DraftQuotedReplyModel {
         case attachment(
             MessageBody?,
             attachmentRef: TSResourceReference,
-            attachment: TSResource,
+            attachment: Attachment,
             thumbnailImage: UIImage?
         )
 
@@ -269,7 +269,7 @@ extension DraftQuotedReplyModel.Content: Equatable {
             .attachment(rhsBody, _, rhsAttachment, rhsThumbnailImage)
         ):
             return lhsBody == rhsBody
-                && lhsAttachment.resourceId == rhsAttachment.resourceId
+                && lhsAttachment.id == rhsAttachment.id
                 && lhsThumbnailImage == rhsThumbnailImage
         case
             (.giftBadge, _),

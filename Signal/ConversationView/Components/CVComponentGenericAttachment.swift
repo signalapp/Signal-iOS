@@ -14,8 +14,8 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
     private let genericAttachment: CVComponentState.GenericAttachment
     private var attachment: ReferencedTSResource { genericAttachment.attachment.attachment }
-    private var attachmentStream: TSResourceStream? { genericAttachment.attachmentStream }
-    private var attachmentPointer: TSResourcePointer? { genericAttachment.attachmentPointer }
+    private var attachmentStream: AttachmentStream? { genericAttachment.attachmentStream }
+    private var attachmentPointer: AttachmentTransitPointer? { genericAttachment.attachmentPointer }
 
     init(itemModel: CVItemModel, genericAttachment: CVComponentState.GenericAttachment) {
         self.genericAttachment = genericAttachment
@@ -142,7 +142,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         if let attachmentPointer = self.genericAttachment.attachmentPointer {
             var textComponents = [String]()
 
-            if let byteCount = attachmentPointer.resource.unencryptedResourceByteCount, byteCount > 0 {
+            if let byteCount = attachmentPointer.info.unencryptedByteCount, byteCount > 0 {
                 textComponents.append(OWSFormat.localizedFileSizeString(from: Int64(byteCount)))
             }
 
@@ -157,9 +157,8 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                 text = textComponents.joined(separator: " • ")
             }
         } else if let attachmentStream = attachmentStream {
-            if let fileSize = attachmentStream.unencryptedResourceByteCount {
-                text = OWSFormat.localizedFileSizeString(from: Int64(fileSize))
-            }
+            let fileSize = attachmentStream.unencryptedByteCount
+            text = OWSFormat.localizedFileSizeString(from: Int64(fileSize))
         } else if let _ = self.genericAttachment.attachmentBackupThumbnail {
             // TODO[Backups]: Handle similar to attachment pointers above
             owsFailDebug("Not implemented yet")
@@ -329,7 +328,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     public func createQLPreviewController() -> QLPreviewController? {
         guard #available(iOS 14.8, *) else { return nil }
 
-        guard let attachmentStream = attachmentStream?.concreteStreamType else {
+        guard let attachmentStream else {
             return nil
         }
 

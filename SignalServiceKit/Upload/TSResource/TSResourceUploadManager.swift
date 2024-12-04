@@ -15,7 +15,7 @@ public protocol TSResourceUploadManager {
     ///   - param attachmentId: The id of the TSResourceStream to upload
     ///   - param messageIds: A list of TSInteractions representing the message or
     ///   album this attachment is associated with
-    func uploadAttachment(attachmentId: TSResourceId, legacyMessageOwnerIds: [String]) async throws
+    func uploadAttachment(attachmentId: Attachment.IDType, legacyMessageOwnerIds: [String]) async throws
 }
 
 public class TSResourceUploadManagerImpl: TSResourceUploadManager {
@@ -52,11 +52,8 @@ public class TSResourceUploadManagerImpl: TSResourceUploadManager {
     ///
     /// It is assumed any errors that could be retried or otherwise handled will have happend at a lower level,
     /// so any error encountered here is considered unrecoverable and thrown to the caller.
-    public func uploadAttachment(attachmentId: TSResourceId, legacyMessageOwnerIds: [String]) async throws {
-        switch attachmentId {
-        case .v2(let rowId):
-            try await attachmentUploadManager.uploadTransitTierAttachment(attachmentId: rowId)
-        }
+    public func uploadAttachment(attachmentId: Attachment.IDType, legacyMessageOwnerIds: [String]) async throws {
+        try await attachmentUploadManager.uploadTransitTierAttachment(attachmentId: attachmentId)
     }
 
     @objc
@@ -72,7 +69,7 @@ public class TSResourceUploadManagerImpl: TSResourceUploadManager {
             object: nil,
             userInfo: [
                 Upload.Constants.uploadProgressKey: progress,
-                Upload.Constants.uploadResourceIDKey: TSResourceId.v2(rowId: attachmentId)
+                Upload.Constants.uploadResourceIDKey: attachmentId
             ]
         )
     }

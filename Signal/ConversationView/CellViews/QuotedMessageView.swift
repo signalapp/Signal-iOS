@@ -210,7 +210,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
 
         var isAudioAttachment: Bool {
-            switch quotedReplyModel.originalContent.attachmentCachedContentType {
+            switch quotedReplyModel.originalContent.attachmentContentType {
             case .file, .invalid, .image, .video, .animatedImage:
                 return false
             case .audio:
@@ -225,7 +225,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
 
         var isVideoAttachment: Bool {
-            switch quotedReplyModel.originalContent.attachmentCachedContentType {
+            switch quotedReplyModel.originalContent.attachmentContentType {
             case .file, .invalid, .image, .audio, .animatedImage:
                 return false
             case .video:
@@ -592,7 +592,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                         wrapper.addSubviewToCenterOnSuperviewWithDesiredSize(contentImageView)
                     }
                     return wrapper
-                } else if attachment.attachment.asResourceStream() == nil, attachment.attachment.asTransitTierPointer() != nil {
+                } else if attachment.attachment.asStream() == nil, attachment.attachment.asTransitTierPointer() != nil {
                     let wrapper = ManualLayoutViewWithLayer(name: "thumbnailDownloadFailedWrapper")
                     wrapper.backgroundColor = configurator.highlightColor
 

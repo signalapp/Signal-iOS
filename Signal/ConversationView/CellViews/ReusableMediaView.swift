@@ -254,17 +254,17 @@ class MediaViewAdapterBlurHash: MediaViewAdapterSwift {
 // MARK: - MediaViewAdapterLoopingVideo
 
 class MediaViewAdapterLoopingVideo: MediaViewAdapterSwift {
-    let attachmentStream: TSResourceStream
+    let attachmentStream: AttachmentStream
     let videoView = LoopingVideoView()
 
-    init(attachmentStream: TSResourceStream) {
+    init(attachmentStream: AttachmentStream) {
         self.attachmentStream = attachmentStream
     }
 
     let shouldBeRenderedByYY = false
     var mediaView: UIView { videoView }
     var isLoaded: Bool { videoView.video != nil }
-    var cacheKey: CVMediaCache.CacheKey { .attachment(attachmentStream.resourceId) }
+    var cacheKey: CVMediaCache.CacheKey { .attachment(attachmentStream.id) }
 
     func loadMedia() -> Promise<AnyObject> {
         guard let video = LoopingVideo(attachmentStream) else {
@@ -295,10 +295,10 @@ class MediaViewAdapterLoopingVideo: MediaViewAdapterSwift {
 class MediaViewAdapterAnimated: MediaViewAdapterSwift {
 
     public let shouldBeRenderedByYY = true
-    let attachmentStream: TSResourceStream
+    let attachmentStream: AttachmentStream
     let imageView = CVAnimatedImageView()
 
-    init(attachmentStream: TSResourceStream) {
+    init(attachmentStream: AttachmentStream) {
         self.attachmentStream = attachmentStream
     }
 
@@ -311,11 +311,11 @@ class MediaViewAdapterAnimated: MediaViewAdapterSwift {
     }
 
     var cacheKey: CVMediaCache.CacheKey {
-        .attachment(attachmentStream.resourceId)
+        .attachment(attachmentStream.id)
     }
 
     func loadMedia() -> Promise<AnyObject> {
-        guard attachmentStream.computeContentType().isAnimatedImage else {
+        guard attachmentStream.contentType.isAnimatedImage else {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
         guard let animatedImage = try? attachmentStream.decryptedYYImage() else {
@@ -346,12 +346,12 @@ class MediaViewAdapterAnimated: MediaViewAdapterSwift {
 class MediaViewAdapterStill: MediaViewAdapterSwift {
 
     public let shouldBeRenderedByYY = false
-    let attachmentStream: TSResourceStream
+    let attachmentStream: AttachmentStream
     let imageView = CVImageView()
     let thumbnailQuality: AttachmentThumbnailQuality
 
     init(
-        attachmentStream: TSResourceStream,
+        attachmentStream: AttachmentStream,
         thumbnailQuality: AttachmentThumbnailQuality
     ) {
         self.attachmentStream = attachmentStream
@@ -367,11 +367,11 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
     }
 
     var cacheKey: CVMediaCache.CacheKey {
-        .attachmentThumbnail(attachmentStream.resourceId, quality: thumbnailQuality)
+        .attachmentThumbnail(attachmentStream.id, quality: thumbnailQuality)
     }
 
     func loadMedia() -> Promise<AnyObject> {
-        guard attachmentStream.computeContentType().isImage else {
+        guard attachmentStream.contentType.isImage else {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
         return Promise.wrapAsync {
@@ -403,10 +403,10 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
 class MediaViewAdapterBackupThumbnail: MediaViewAdapterSwift {
 
     public let shouldBeRenderedByYY = false
-    let attachmentBackupThumbnail: TSResourceBackupThumbnail
+    let attachmentBackupThumbnail: AttachmentBackupThumbnail
     let imageView = CVImageView()
 
-    init(attachmentBackupThumbnail: TSResourceBackupThumbnail) {
+    init(attachmentBackupThumbnail: AttachmentBackupThumbnail) {
         self.attachmentBackupThumbnail = attachmentBackupThumbnail
     }
 
@@ -419,7 +419,7 @@ class MediaViewAdapterBackupThumbnail: MediaViewAdapterSwift {
     }
 
     var cacheKey: CVMediaCache.CacheKey {
-        .backupThumbnail(attachmentBackupThumbnail.resource.resourceId)
+        .backupThumbnail(attachmentBackupThumbnail.id)
     }
 
     func loadMedia() -> Promise<AnyObject> {
@@ -453,12 +453,12 @@ class MediaViewAdapterBackupThumbnail: MediaViewAdapterSwift {
 class MediaViewAdapterVideo: MediaViewAdapterSwift {
 
     public let shouldBeRenderedByYY = false
-    let attachmentStream: TSResourceStream
+    let attachmentStream: AttachmentStream
     let imageView = CVImageView()
     let thumbnailQuality: AttachmentThumbnailQuality
 
     init(
-        attachmentStream: TSResourceStream,
+        attachmentStream: AttachmentStream,
         thumbnailQuality: AttachmentThumbnailQuality
     ) {
         self.attachmentStream = attachmentStream
@@ -474,11 +474,11 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
     }
 
     var cacheKey: CVMediaCache.CacheKey {
-        .attachmentThumbnail(attachmentStream.resourceId, quality: thumbnailQuality)
+        .attachmentThumbnail(attachmentStream.id, quality: thumbnailQuality)
     }
 
     func loadMedia() -> Promise<AnyObject> {
-        guard attachmentStream.computeContentType().isVideo else {
+        guard attachmentStream.contentType.isVideo else {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
         return Promise.wrapAsync {
@@ -512,11 +512,11 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
 public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
 
     public let shouldBeRenderedByYY: Bool
-    let attachmentStream: TSResourceStream
+    let attachmentStream: AttachmentStream
     let imageView: UIImageView
 
-    public init(attachmentStream: TSResourceStream) {
-        self.shouldBeRenderedByYY = attachmentStream.computeContentType().isAnimatedImage
+    public init(attachmentStream: AttachmentStream) {
+        self.shouldBeRenderedByYY = attachmentStream.contentType.isAnimatedImage
         self.attachmentStream = attachmentStream
 
         if shouldBeRenderedByYY {
@@ -537,11 +537,11 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
     }
 
     public var cacheKey: CVMediaCache.CacheKey {
-        .attachment(attachmentStream.resourceId)
+        .attachment(attachmentStream.id)
     }
 
     public func loadMedia() -> Promise<AnyObject> {
-        switch attachmentStream.computeContentType() {
+        switch attachmentStream.contentType {
         case .image, .animatedImage:
             break
         case .video, .audio, .file, .invalid:

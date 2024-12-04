@@ -84,46 +84,39 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     private var mimeType: String { attachmentStream.attachmentStream.mimeType }
 
     var isVideo: Bool {
-        switch attachmentStream.attachmentStream.cachedContentType {
+        switch attachmentStream.attachmentStream.contentType {
         case .video:
             return  renderingFlag != .shouldLoop
         case .file, .invalid, .image, .animatedImage, .audio:
             return false
-        case nil:
-            return MimeTypeUtil.isSupportedVideoMimeType(mimeType) && renderingFlag != .shouldLoop
         }
     }
 
     var isAnimated: Bool {
-        switch attachmentStream.attachmentStream.cachedContentType {
+        switch attachmentStream.attachmentStream.contentType {
         case .animatedImage:
             return true
         case .video:
             return renderingFlag == .shouldLoop
         case .file, .invalid, .image, .audio:
             return false
-        case nil:
-            return MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) || renderingFlag == .shouldLoop
         }
     }
 
     var isImage: Bool {
-        switch attachmentStream.attachmentStream.cachedContentType {
+        switch attachmentStream.attachmentStream.contentType {
         case .image:
             return  true
         case .file, .invalid, .video, .animatedImage, .audio:
             return false
-        case nil:
-            return MimeTypeUtil.isSupportedImageMimeType(mimeType)
         }
     }
 
     var imageSizePoints: CGSize {
-        switch attachmentStream.attachmentStream.cachedContentType {
-        case .file, .invalid, .audio, .video, nil:
+        switch attachmentStream.attachmentStream.contentType {
+        case .file, .invalid, .audio, .video:
             return .zero
         case .image(let pixelSize), .animatedImage(let pixelSize):
-            guard let pixelSize = pixelSize.getCached() else { return .zero }
             return CGSize(
                 width: pixelSize.width / UIScreen.main.scale,
                 height: pixelSize.height / UIScreen.main.scale
@@ -149,14 +142,14 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     // MARK: Equatable
 
     static func == (lhs: MediaGalleryItem, rhs: MediaGalleryItem) -> Bool {
-        return lhs.attachmentStream.attachmentStream.resourceId == rhs.attachmentStream.attachmentStream.resourceId
+        return lhs.attachmentStream.attachmentStream.id == rhs.attachmentStream.attachmentStream.id
             && lhs.attachmentStream.reference.hasSameOwner(as: rhs.attachmentStream.reference)
     }
 
     // MARK: Hashable
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(attachmentStream.attachmentStream.resourceId)
+        hasher.combine(attachmentStream.attachmentStream.id)
         let attachmentReference = attachmentStream.reference.concreteType
         hasher.combine(attachmentReference.owner.id)
     }
@@ -495,7 +488,7 @@ class MediaGallery {
         spoilerState: SpoilerRenderState,
         transaction: SDSAnyReadTransaction
     ) -> MediaGalleryItem? {
-        guard let attachmentStream = attachment.attachment.asResourceStream() else {
+        guard let attachmentStream = attachment.attachment.asStream() else {
             owsFailDebug("gallery doesn't yet support showing undownloaded attachments")
             return nil
         }

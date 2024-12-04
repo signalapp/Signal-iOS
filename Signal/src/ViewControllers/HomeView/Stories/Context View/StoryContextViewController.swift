@@ -354,7 +354,7 @@ class StoryContextViewController: OWSViewController {
             owsFailDebug("Missing attachment for StoryMessage with timestamp \(message.timestamp)")
             return nil
         }
-        if attachment.attachment.asResourceStream() == nil, let attachmentPointer = attachment.attachment.asTransitTierPointer() {
+        if attachment.attachment.asStream() == nil, let attachmentPointer = attachment.attachment.asTransitTierPointer() {
             let transitTierDownloadState = attachmentPointer.downloadState(tx: transaction.asV2Read)
             let pointer = StoryItem.Attachment.Pointer(
                 reference: attachment.reference,
@@ -366,7 +366,7 @@ class StoryContextViewController: OWSViewController {
                 numberOfReplies: replyCount,
                 attachment: .pointer(pointer)
             )
-        } else if let attachmentStream = attachment.attachment.asResourceStream() {
+        } else if let attachmentStream = attachment.attachment.asStream() {
             let stream = StoryItem.Attachment.Stream(
                 attachment: .init(reference: attachment.reference, attachmentStream: attachmentStream)
             )
@@ -387,7 +387,7 @@ class StoryContextViewController: OWSViewController {
                 let attachment: StoryThumbnailView.Attachment
                 switch currentItem.attachment {
                 case .pointer(let pointer):
-                    attachment = .file(.init(reference: pointer.reference, attachment: pointer.attachment.resource))
+                    attachment = .file(.init(reference: pointer.reference, attachment: pointer.attachment.attachment))
                 case .stream(let stream):
                     attachment = .file(stream.attachment)
                 case .text(let textAttachment):

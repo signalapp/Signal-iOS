@@ -121,13 +121,13 @@ public protocol TSResourceManager {
 
     func buildProtoForSending(
         from reference: TSResourceReference,
-        pointer: TSResourcePointer
+        pointer: AttachmentTransitPointer
     ) -> SSKProtoAttachmentPointer?
 
     // MARK: - Removes and deletes
 
     func removeBodyAttachment(
-        _ attachment: TSResource,
+        _ attachment: Attachment,
         from message: TSMessage,
         tx: DBWriteTransaction
     ) throws
@@ -163,7 +163,7 @@ public protocol TSResourceManager {
     /// Marks a pointer as undownloaded and pending manual download.
     /// For v2 attachments, this does nothing, as its the default state of affairs.
     func markPointerAsPendingManualDownload(
-        _ pointer: TSResourcePointer,
+        _ pointer: AttachmentTransitPointer,
         tx: DBWriteTransaction
     )
 
@@ -187,7 +187,7 @@ public protocol TSResourceManager {
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>?
 
     func thumbnailImage(
-        attachment: TSResource,
+        attachment: Attachment,
         parentMessage: TSMessage,
         tx: DBReadTransaction
     ) -> UIImage?
@@ -196,14 +196,14 @@ public protocol TSResourceManager {
 extension TSResourceManager {
 
     public func newQuotedReplyMessageThumbnailBuilder(
-        originalAttachment: TSResource,
+        originalAttachment: Attachment,
         originalReference: TSResourceReference,
         fallbackQuoteProto: SSKProtoDataMessageQuote,
         originalMessageRowId: Int64,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
         let attachmentReference = originalReference.concreteType
-        let attachment = originalAttachment.concreteType
+        let attachment = originalAttachment
         return self.newQuotedReplyMessageThumbnailBuilder(
             from: QuotedReplyAttachmentDataSource.fromOriginalAttachment(
                 attachment,

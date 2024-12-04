@@ -109,7 +109,7 @@ public class QuotedReplyModel {
             }
         }
 
-        public var attachmentCachedContentType: TSResourceContentType? {
+        public var attachmentContentType: Attachment.ContentType? {
             switch self {
             case .text(_):
                 return nil
@@ -120,9 +120,9 @@ public class QuotedReplyModel {
             case .attachmentStub(_, _):
                 return nil
             case .attachment(_, let attachment, _):
-                return attachment.attachment.asResourceStream()?.cachedContentType
+                return attachment.attachment.asStream()?.contentType
             case .mediaStory(_, let attachment, _):
-                return attachment.attachment.asResourceStream()?.cachedContentType
+                return attachment.attachment.asStream()?.contentType
             case .textStory(_):
                 return nil
             case .expiredStory:
@@ -244,9 +244,9 @@ public class QuotedReplyModel {
             if let attachmentReference, let attachment {
                 referencedAttachment = .init(reference: attachmentReference, attachment: attachment)
 
-                if let stream = attachment.asResourceStream() {
+                if let stream = attachment.asStream() {
                     thumbnailImage = stream.thumbnailImageSync(quality: .small)
-                } else if let blurHash = attachment.resourceBlurHash {
+                } else if let blurHash = attachment.blurHash {
                     thumbnailImage = BlurHash.image(for: blurHash)
                 } else {
                     thumbnailImage = nil
@@ -370,7 +370,7 @@ public class QuotedReplyModel {
                 {
                     return image
                 } else if
-                    let blurHash = thumbnailAttachment?.resourceBlurHash,
+                    let blurHash = thumbnailAttachment?.blurHash,
                     let image = BlurHash.image(for: blurHash)
                 {
                     return image
@@ -462,11 +462,11 @@ extension QuotedReplyModel.OriginalContent: Equatable {
             return lhsBody == rhsBody && lhsStub == rhsStub
         case let (.attachment(lhsBody, lhsAttachment, lhsImage), .attachment(rhsBody, rhsAttachment, rhsImage)):
             return lhsBody == rhsBody
-                && lhsAttachment.attachment.resourceId == rhsAttachment.attachment.resourceId
+                && lhsAttachment.attachment.id == rhsAttachment.attachment.id
                 && lhsImage == rhsImage
         case let (.mediaStory(lhsBody, lhsAttachment, lhsImage), .mediaStory(rhsBody, rhsAttachment, rhsImage)):
             return lhsBody == rhsBody
-                && lhsAttachment.attachment.resourceId == rhsAttachment.attachment.resourceId
+                && lhsAttachment.attachment.id == rhsAttachment.attachment.id
                 && lhsImage == rhsImage
         case (.textStory(_), .textStory(_)):
             /// Defensively re-render every time.

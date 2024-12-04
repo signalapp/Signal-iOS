@@ -18,15 +18,8 @@ public class TSResourceStoreImpl: TSResourceStore {
         self.attachmentUploadStore = attachmentUploadStore
     }
 
-    public func fetch(_ ids: [TSResourceId], tx: DBReadTransaction) -> [TSResource] {
-        var v2Ids = [Attachment.IDType]()
-        ids.forEach {
-            switch $0 {
-            case .v2(let rowId):
-                v2Ids.append(rowId)
-            }
-        }
-        return attachmentStore.fetch(ids: v2Ids, tx: tx)
+    public func fetch(_ ids: [Attachment.IDType], tx: DBReadTransaction) -> [Attachment] {
+        return attachmentStore.fetch(ids: ids, tx: tx)
     }
 
     // MARK: - Message Attachment fetching
@@ -226,13 +219,12 @@ public class TSResourceStoreImpl: TSResourceStore {
 extension TSResourceStoreImpl: TSResourceUploadStore {
 
     public func updateAsUploaded(
-        attachmentStream: TSResourceStream,
+        attachmentStream: AttachmentStream,
         info: Attachment.TransitTierInfo,
         tx: DBWriteTransaction
     ) throws {
-        let attachment = attachmentStream.concreteStreamType
         try attachmentUploadStore.markUploadedToTransitTier(
-            attachmentStream: attachment,
+            attachmentStream: attachmentStream,
             info: info,
             tx: tx
         )

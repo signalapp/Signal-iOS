@@ -19,8 +19,11 @@ public class AttachmentStream {
 
     // MARK: - Convenience
 
+    public var id: Attachment.IDType { attachment.id }
+    public var mimeType: String { attachment.mimeType }
     public var contentHash: Data { info.sha256ContentHash }
     public var encryptedFileSha256Digest: Data { info.digestSHA256Ciphertext }
+    public var sha256ContentHash: Data { info.sha256ContentHash }
     public var encryptedByteCount: UInt32 { info.encryptedByteCount }
     public var unencryptedByteCount: UInt32 { info.unencryptedByteCount }
     public var contentType: Attachment.ContentType { info.contentType }

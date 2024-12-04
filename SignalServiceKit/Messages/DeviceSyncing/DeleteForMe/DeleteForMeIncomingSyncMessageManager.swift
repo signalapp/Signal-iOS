@@ -205,12 +205,17 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
                 return clientUuidMatch
             } else if
                 let encryptedDigest = attachmentIdentifier.encryptedDigest,
-                let encryptedDigestMatch = targetAttachmentCandidates.first(where: { $0.attachment.encryptedResourceSha256Digest == encryptedDigest})
+                let encryptedDigestMatch = targetAttachmentCandidates.first(where: {
+                    let attachmentDigest =
+                        $0.attachment.asStream()?.encryptedFileSha256Digest
+                        ?? $0.attachment.asTransitTierPointer()?.info.digestSHA256Ciphertext
+                    return attachmentDigest == encryptedDigest
+                })
             {
                 return encryptedDigestMatch
             } else if
                 let plaintextHash = attachmentIdentifier.plaintextHash,
-                let plaintextHashMatch = targetAttachmentCandidates.first(where: { $0.attachment.knownPlaintextResourceSha256Hash == plaintextHash })
+                let plaintextHashMatch = targetAttachmentCandidates.first(where: { $0.attachment.asStream()?.sha256ContentHash == plaintextHash })
             {
                 return plaintextHashMatch
             }

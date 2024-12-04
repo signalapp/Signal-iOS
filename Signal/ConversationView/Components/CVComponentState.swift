@@ -23,7 +23,7 @@ public enum CVAttachment: Equatable {
         }
     }
 
-    public var attachmentStream: TSResourceStream? {
+    public var attachmentStream: AttachmentStream? {
         switch self {
         case .stream(let stream):
             return stream.attachmentStream
@@ -32,7 +32,7 @@ public enum CVAttachment: Equatable {
         }
     }
 
-    public var attachmentPointer: TSResourcePointer? {
+    public var attachmentPointer: AttachmentTransitPointer? {
         switch self {
         case .stream, .backupThumbnail:
             return nil
@@ -41,7 +41,7 @@ public enum CVAttachment: Equatable {
         }
     }
 
-    public var attachmentBackupThumbnail: TSResourceBackupThumbnail? {
+    public var attachmentBackupThumbnail: AttachmentBackupThumbnail? {
         switch self {
         case .stream, .pointer:
             return nil
@@ -65,14 +65,14 @@ public enum CVAttachment: Equatable {
     public static func == (lhs: CVAttachment, rhs: CVAttachment) -> Bool {
         switch (lhs, rhs) {
         case (.stream(let lhsStream), .stream(let rhsStream)):
-            return lhsStream.attachment.resourceId == rhsStream.attachment.resourceId
+            return lhsStream.attachment.id == rhsStream.attachment.id
                 && lhsStream.reference.hasSameOwner(as: rhsStream.reference)
         case (.pointer(let lhsPointer, let lhsState), .pointer(let rhsPointer, let rhsState)):
-            return lhsPointer.attachment.resourceId == rhsPointer.attachment.resourceId
+            return lhsPointer.attachment.id == rhsPointer.attachment.id
                 && lhsPointer.reference.hasSameOwner(as: rhsPointer.reference)
                 && lhsState == rhsState
         case (.backupThumbnail(let lhsThumbnail), .backupThumbnail(let rhsThumbnail)):
-            return lhsThumbnail.attachment.resourceId == rhsThumbnail.attachment.resourceId
+            return lhsThumbnail.attachment.id == rhsThumbnail.attachment.id
                 && lhsThumbnail.reference.hasSameOwner(as: rhsThumbnail.reference)
         case
             (.stream, .pointer),
@@ -154,15 +154,15 @@ public class CVComponentState: Equatable {
     struct GenericAttachment: Equatable {
         let attachment: CVAttachment
 
-        var attachmentStream: TSResourceStream? {
+        var attachmentStream: AttachmentStream? {
             attachment.attachmentStream
         }
 
-        var attachmentPointer: TSResourcePointer? {
+        var attachmentPointer: AttachmentTransitPointer? {
             attachment.attachmentPointer
         }
 
-        var attachmentBackupThumbnail: TSResourceBackupThumbnail? {
+        var attachmentBackupThumbnail: AttachmentBackupThumbnail? {
             attachment.attachmentBackupThumbnail
         }
     }
@@ -260,13 +260,13 @@ public class CVComponentState: Equatable {
             switch (lhs, rhs) {
             case let (.available(lhsData, lhsStream), .available(rhsData, rhsStream)):
                 return lhsData.stickerInfo.asKey() == rhsData.stickerInfo.asKey()
-                    && lhsStream.attachment.resourceId == rhsStream.attachment.resourceId
+                    && lhsStream.attachment.id == rhsStream.attachment.id
                     && lhsStream.reference.hasSameOwner(as: rhsStream.reference)
             case let (.downloading(lhsPointer), .downloading(rhsPointer)):
-                return lhsPointer.attachment.resourceId == rhsPointer.attachment.resourceId
+                return lhsPointer.attachment.id == rhsPointer.attachment.id
                     && lhsPointer.reference.hasSameOwner(as: rhsPointer.reference)
             case let (.failedOrPending(lhsPointer, lhsState), .failedOrPending(rhsPointer, rhsState)):
-                return lhsPointer.attachment.resourceId == rhsPointer.attachment.resourceId
+                return lhsPointer.attachment.id == rhsPointer.attachment.id
                     && lhsPointer.reference.hasSameOwner(as: rhsPointer.reference)
                     && lhsState == rhsState
             case (.available, _), (.downloading, _), (.failedOrPending, _):
@@ -284,7 +284,7 @@ public class CVComponentState: Equatable {
     struct LinkPreview: Equatable {
         // TODO: convert OWSLinkPreview to Swift?
         let linkPreview: OWSLinkPreview
-        let linkPreviewAttachment: TSResource?
+        let linkPreviewAttachment: Attachment?
         let state: LinkPreviewState
 
         // MARK: - Equatable
@@ -404,10 +404,10 @@ public class CVComponentState: Equatable {
     let bottomButtons: BottomButtons?
 
     struct FailedOrPendingDownloads: Equatable {
-        let attachmentPointers: [TSResourcePointer]
+        let attachmentPointers: [AttachmentTransitPointer]
 
         static func == (lhs: CVComponentState.FailedOrPendingDownloads, rhs: CVComponentState.FailedOrPendingDownloads) -> Bool {
-            return lhs.attachmentPointers.map(\.resourceId) == rhs.attachmentPointers.map(\.resourceId)
+            return lhs.attachmentPointers.map(\.id) == rhs.attachmentPointers.map(\.id)
         }
     }
     let failedOrPendingDownloads: FailedOrPendingDownloads?
@@ -1047,7 +1047,7 @@ fileprivate extension CVComponentState.Builder {
                 // TODO
                 for attachment in bodyAttachments {
                     guard
-                        attachment.attachment.asResourceStream() == nil,
+                        attachment.attachment.asStream() == nil,
                         let pointer = attachment.attachment.asTransitTierPointer()
                     else {
                         continue
@@ -1124,7 +1124,7 @@ fileprivate extension CVComponentState.Builder {
                 }
             }
             return buildViewOnce(viewOnceState: viewOnceState)
-        } else if nil != message as? TSIncomingMessage {
+        } else if message is TSIncomingMessage {
             if message.isViewOnceComplete {
                 return buildViewOnce(viewOnceState: .incomingExpired)
             }
@@ -1151,8 +1151,8 @@ fileprivate extension CVComponentState.Builder {
                 return buildViewOnce(viewOnceState: .incomingInvalidContent)
             }
             let renderingFlag = mediaAttachment.reference.renderingFlag
-            if let attachmentStream = mediaAttachment.attachment.asResourceStream() {
-                if attachmentStream.computeIsValidVisualMedia()
+            if let attachmentStream = mediaAttachment.attachment.asStream() {
+                if attachmentStream.contentType.isVisualMedia
                     && (
                         MimeTypeUtil.isSupportedImageMimeType(attachmentStream.mimeType)
                         || MimeTypeUtil.isSupportedMaybeAnimatedMimeType(attachmentStream.mimeType)
@@ -1249,10 +1249,9 @@ fileprivate extension CVComponentState.Builder {
         else {
             throw OWSAssertionError("Missing sticker attachment.")
         }
-        if let attachmentStream = attachment.asResourceStream() {
-            switch attachmentStream.computeContentType() {
+        if let attachmentStream = attachment.asStream() {
+            switch attachmentStream.contentType {
             case .image(let pixelSize), .animatedImage(let pixelSize):
-                let pixelSize = pixelSize.compute()
                 guard pixelSize.isNonEmpty else {
                     fallthrough
                 }
@@ -1358,7 +1357,7 @@ fileprivate extension CVComponentState.Builder {
         for attachment in mediaAttachments {
             guard
                 // Use the validated content type and only fall back to the mime type.
-                (attachment.attachment.asResourceStream()?.cachedContentType)?.isVisualMedia
+                attachment.attachment.asStream()?.contentType.isVisualMedia
                 ?? MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.attachment.mimeType)
             else {
                 // Well behaving clients should not send a mix of visual media (like JPG) and non-visual media (like PDF's)
@@ -1399,7 +1398,7 @@ fileprivate extension CVComponentState.Builder {
                 continue
             case .stream(let attachmentStream):
                 let attachmentStream = attachmentStream.attachmentStream
-                guard attachmentStream.computeIsValidVisualMedia() else {
+                guard attachmentStream.contentType.isVisualMedia else {
                     Logger.warn("Filtering invalid media.")
                     mediaAlbumItems.append(CVMediaAlbumItem(
                         attachment: cvAttachment,
@@ -1412,9 +1411,8 @@ fileprivate extension CVComponentState.Builder {
                     continue
                 }
                 let mediaSizePixels: CGSize
-                switch attachmentStream.computeContentType() {
-                case let .image(pixelSize), let .video(_, pixelSize), let .animatedImage(pixelSize):
-                    let pixelSize = pixelSize.compute()
+                switch attachmentStream.contentType {
+                case let .image(pixelSize), let .video(_, pixelSize, _), let .animatedImage(pixelSize):
                     guard pixelSize.isNonEmpty else {
                         Logger.warn("Filtering media with invalid size.")
                         fallthrough
@@ -1479,7 +1477,7 @@ fileprivate extension CVComponentState.Builder {
 
         guard
             // Use the validated content type and only fall back to the mime type.
-            (attachment.attachment.asResourceStream()?.cachedContentType)?.isAudio
+            attachment.attachment.asStream()?.contentType.isAudio
             ?? MimeTypeUtil.isSupportedAudioMimeType(attachment.attachment.mimeType)
         else {
             buildGenericAttachment()
@@ -1596,7 +1594,7 @@ fileprivate extension CVComponentState.Builder {
                 state: state
             )
         } else {
-            let linkPreviewAttachment = { () -> TSResource? in
+            let linkPreviewAttachment = { () -> Attachment? in
                 guard
                     let linkPreviewAttachmentRef = DependenciesBridge.shared.tsResourceStore.linkPreviewAttachment(
                         for: message,
@@ -1614,14 +1612,14 @@ fileprivate extension CVComponentState.Builder {
                     owsFailDebug("Link preview attachment isn't an image.")
                     return nil
                 }
-                guard let attachmentStream = linkPreviewAttachment.asResourceStream() else {
+                guard let attachmentStream = linkPreviewAttachment.asStream() else {
                     return nil
                 }
-                guard attachmentStream.computeContentType().isImage else {
+                guard attachmentStream.contentType.isImage else {
                     owsFailDebug("Link preview image attachment isn't valid.")
                     return nil
                 }
-                return attachmentStream
+                return attachmentStream.attachment
             }()
 
             let state = LinkPreviewSent(
@@ -1664,7 +1662,7 @@ public extension CVComponentState {
     }
 
     static func displayableBodyText(
-        oversizeTextAttachment attachmentStream: TSResourceStream,
+        oversizeTextAttachment attachmentStream: AttachmentStream,
         ranges: MessageBodyRanges?,
         interaction: TSInteraction,
         transaction: SDSAnyReadTransaction

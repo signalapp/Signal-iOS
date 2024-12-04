@@ -46,10 +46,9 @@ extension ReferencedTSResourceStream {
     }
 }
 
-extension TSResourceStream {
+extension AttachmentStream {
 
     public func asShareableResource(sourceFilename: String?) throws -> ShareableTSResource? {
-        let attachment = concreteStreamType
-        return try attachment.asShareableAttachment(sourceFilename: sourceFilename).map { .v2($0) }
+        return try self.asShareableAttachment(sourceFilename: sourceFilename).map { .v2($0) }
     }
 }

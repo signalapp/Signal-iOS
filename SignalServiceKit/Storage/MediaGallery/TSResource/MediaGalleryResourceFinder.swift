@@ -131,7 +131,7 @@ public struct MediaGalleryResourceFinder {
         excluding deletedAttachmentIds: Set<MediaGalleryResourceId>,
         tx: DBReadTransaction
     ) -> MediaGalleryItemId? {
-        let attachmentStream = attachment.attachmentStream.concreteStreamType
+        let attachmentStream = attachment.attachmentStream
         let reference = attachment.reference.concreteType
         return attachmentFinder.galleryItemId(
             of: .init(reference: reference, attachmentStream: attachmentStream),

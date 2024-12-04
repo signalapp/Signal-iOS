@@ -55,12 +55,12 @@ struct MediaGalleryCellItemAudio {
     var metadata: MediaMetadata
 
     var size: UInt {
-        UInt(attachmentStream.attachmentStream.unencryptedResourceByteCount ?? 0)
+        UInt(attachmentStream.attachmentStream.unencryptedByteCount)
     }
     var duration: TimeInterval {
-        switch attachmentStream.attachmentStream.computeContentType() {
-        case .audio(let duration):
-            return duration.compute()
+        switch attachmentStream.attachmentStream.contentType {
+        case .audio(let duration, _):
+            return duration
         default:
             return 0
         }
@@ -103,7 +103,7 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
 
     private var videoDurationPromise: Promise<TimeInterval> {
         owsPrecondition(galleryItem.isVideo)
-        let attachment = galleryItem.attachmentStream.attachmentStream.concreteStreamType
+        let attachment = galleryItem.attachmentStream.attachmentStream
         switch attachment.contentType {
         case .file, .invalid, .image, .animatedImage, .audio:
             owsFailDebug("Non video type!")
@@ -122,7 +122,7 @@ extension MediaGalleryItem {
         return MediaMetadata(
             sender: sender?.name ?? "",
             abbreviatedSender: sender?.abbreviatedName ?? "",
-            byteSize: Int(attachmentStream.attachmentStream.unencryptedResourceByteCount ?? 0),
+            byteSize: Int(attachmentStream.attachmentStream.unencryptedByteCount),
             creationDate: receivedAtDate
         )
     }

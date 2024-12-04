@@ -150,7 +150,7 @@ class AudioMessagePresenter: AudioPresenter {
         )
     }
 
-    func audioWaveform(attachmentStream: SignalServiceKit.TSResourceStream?) -> Task<AudioWaveform, Error>? {
+    func audioWaveform(attachmentStream: SignalServiceKit.AttachmentStream?) -> Task<AudioWaveform, Error>? {
         return attachmentStream?.audioWaveform()
     }
 }

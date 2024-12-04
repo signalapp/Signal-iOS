@@ -45,7 +45,7 @@ class AudioCell: MediaTileListModeCell {
 
         let currentContentSizeCategory = UITraitCollection.current.preferredContentSizeCategory
         let displaysTopLabel = AudioAllMediaPresenter.hasAttachmentLabel(
-            attachment: audioItem.attachmentStream.attachmentStream,
+            attachment: audioItem.attachmentStream.attachment,
             isVoiceMessage: audioItem.isVoiceMessage
         )
 

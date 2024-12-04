@@ -12,7 +12,7 @@ import Foundation
 /// the full attachment.
 public protocol TSResourceReference {
 
-    var resourceId: TSResourceId { get }
+    var resourceId: Attachment.IDType { get }
 
     var concreteType: AttachmentReference { get }
 
@@ -57,7 +57,7 @@ extension TSResourceReference {
     /// Note: this takes an SDS transaction because its a convenience
     /// method that accesses globals. If you want a testable variant
     /// that lets you override the return value, use TSResourceStore.
-    public func fetch(tx: SDSAnyReadTransaction) -> TSResource? {
+    public func fetch(tx: SDSAnyReadTransaction) -> Attachment? {
         return DependenciesBridge.shared.tsResourceStore.fetch(self.resourceId, tx: tx.asV2Read)
     }
 
@@ -70,7 +70,7 @@ extension Array where Element == TSResourceReference {
     /// Note: this takes an SDS transaction because its a convenience
     /// method that accesses globals. If you want a testable variant
     /// that lets you override the return value, use TSResourceStore.
-    public func fetchAll(tx: SDSAnyReadTransaction) -> [TSResource] {
+    public func fetchAll(tx: SDSAnyReadTransaction) -> [Attachment] {
         return DependenciesBridge.shared.tsResourceStore.fetch(self.map(\.resourceId), tx: tx.asV2Read)
     }
 }

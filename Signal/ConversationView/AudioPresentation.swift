@@ -74,7 +74,7 @@ protocol AudioPresenter {
     func topLabelConfig(audioAttachment: AudioAttachment, isIncoming: Bool, conversationStyle: ConversationStyle?) -> CVLabelConfig?
 
     // The sampled waveform used to display the visual preview of the audio message.
-    func audioWaveform(attachmentStream: TSResourceStream?) -> Task<AudioWaveform, Error>?
+    func audioWaveform(attachmentStream: AttachmentStream?) -> Task<AudioWaveform, Error>?
 }
 
 extension AudioPresenter {

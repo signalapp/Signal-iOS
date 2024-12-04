@@ -418,7 +418,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             guard
                 let attachmentRef = attachmentStore.stickerAttachment(for: originalMessage, tx: tx),
                 let attachment = attachmentStore.fetch(attachmentRef.resourceId, tx: tx),
-                let stickerData = try? attachment.asResourceStream()?.decryptedRawData()
+                let stickerData = try? attachment.asStream()?.decryptedRawData()
             else {
                 owsFailDebug("Couldn't load sticker data")
                 return nil
@@ -483,9 +483,8 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         if let attachmentRef = attachmentStore.attachmentToUseInQuote(originalMessage: originalMessage, tx: tx) {
             let attachment = attachmentStore.fetch(attachmentRef.resourceId, tx: tx)
             if
-                let stream = attachment?.asResourceStream(),
-                stream.cachedContentType?.isVisualMedia
-                    ?? MimeTypeUtil.isSupportedVisualMediaMimeType(stream.mimeType),
+                let stream = attachment?.asStream(),
+                stream.contentType.isVisualMedia,
                 let thumbnailImage = stream.thumbnailImageSync(quality: .small)
             {
 
@@ -501,14 +500,14 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 return createDraftReply(content: .attachment(
                     originalMessageBody(),
                     attachmentRef: attachmentRef,
-                    attachment: stream,
+                    attachment: stream.attachment,
                     thumbnailImage: resizedThumbnailImage
                 ))
             } else if attachment?.mimeType == MimeType.textXSignalPlain.rawValue {
                 // If the attachment is "oversize text", try the quote as a reply to text, not as
                 // a reply to an attachment.
                 if
-                    let oversizeTextData = try? attachment?.asResourceStream()?.decryptedRawData(),
+                    let oversizeTextData = try? attachment?.asStream()?.decryptedRawData(),
                     let oversizeText = String(data: oversizeTextData, encoding: .utf8)
                 {
                     // We don't need to include the entire text body of the message, just
@@ -527,7 +526,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                     originalMessageBody(),
                     attachmentRef: attachmentRef,
                     attachment: attachment,
-                    thumbnailImage: attachment.resourceBlurHash.flatMap(BlurHash.image(for:))
+                    thumbnailImage: attachment.blurHash.flatMap(BlurHash.image(for:))
                 ))
             } else if
                 let stub = QuotedMessageAttachmentReference.Stub(
@@ -597,7 +596,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                                 messageBody,
                                 attachmentRef: attachmentRef,
                                 attachment: attachment,
-                                thumbnailImage: attachment.asResourceStream()?.thumbnailImageSync(quality: .small)
+                                thumbnailImage: attachment.asStream()?.thumbnailImageSync(quality: .small)
                             )
                         } else if let messageBody {
                             return .text(messageBody)
@@ -651,7 +650,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         let (originalMessage, originalAttachmentReference, originalAttachment): (
             TSMessage?,
             TSResourceReference?,
-            TSResource?
+            Attachment?
         ) = db.read { tx in
             guard
                 let originalMessageTimestamp = draft.originalMessageTimestamp,
@@ -691,13 +690,13 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 return nil
             }
             let isVisualMedia: Bool = {
-                if let cachedContentType = originalAttachment.asResourceStream()?.cachedContentType {
-                    return cachedContentType.isVisualMedia
+                if let contentType = originalAttachment.asStream()?.contentType {
+                    return contentType.isVisualMedia
                 } else {
                     return MimeTypeUtil.isSupportedVisualMediaMimeType(originalAttachment.mimeType)
                 }
             }()
-            guard isVisualMedia, let originalAttachmentStream = originalAttachment.asResourceStream() else {
+            guard isVisualMedia, let originalAttachmentStream = originalAttachment.asStream() else {
                 // Just return a stub for non-visual or undownloaded media.
                 return .stub(.init(mimeType: originalAttachment.mimeType, sourceFilename: originalAttachmentReference.sourceFilename))
             }

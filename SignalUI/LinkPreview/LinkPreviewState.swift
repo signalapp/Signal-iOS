@@ -16,11 +16,11 @@ public enum LinkPreviewImageState {
 // MARK: -
 
 public struct LinkPreviewImageCacheKey: Hashable, Equatable {
-    public let id: TSResourceId?
+    public let id: Attachment.IDType?
     public let urlString: String?
     public let thumbnailQuality: AttachmentThumbnailQuality
 
-    public init(id: TSResourceId?, urlString: String?, thumbnailQuality: AttachmentThumbnailQuality) {
+    public init(id: Attachment.IDType?, urlString: String?, thumbnailQuality: AttachmentThumbnailQuality) {
         self.id = id
         self.urlString = urlString
         self.thumbnailQuality = thumbnailQuality
@@ -216,13 +216,13 @@ public class LinkPreviewDraft: LinkPreviewState {
 public class LinkPreviewSent: LinkPreviewState {
 
     private let linkPreview: OWSLinkPreview
-    private let imageAttachment: TSResource?
+    private let imageAttachment: Attachment?
 
     public let conversationStyle: ConversationStyle?
 
     public init(
         linkPreview: OWSLinkPreview,
-        imageAttachment: TSResource?,
+        imageAttachment: Attachment?,
         conversationStyle: ConversationStyle?
     ) {
         self.linkPreview = linkPreview
@@ -254,10 +254,10 @@ public class LinkPreviewSent: LinkPreviewState {
         guard let imageAttachment = imageAttachment else {
             return .none
         }
-        guard let attachmentStream = imageAttachment.asResourceStream() else {
+        guard let attachmentStream = imageAttachment.asStream() else {
             return .loading
         }
-        switch attachmentStream.computeContentType() {
+        switch attachmentStream.contentType {
         case .image, .animatedImage:
             break
         default:
@@ -268,12 +268,12 @@ public class LinkPreviewSent: LinkPreviewState {
 
     public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality, completion: @escaping (UIImage) -> Void) {
         owsAssertDebug(imageState == .loaded)
-        guard let attachmentStream = imageAttachment?.asResourceStream() else {
+        guard let attachmentStream = imageAttachment?.asStream() else {
             owsFailDebug("Could not load image.")
             return
         }
         DispatchQueue.global().async {
-            switch attachmentStream.computeContentType() {
+            switch attachmentStream.contentType {
             case .animatedImage:
                 guard let image = try? attachmentStream.decryptedYYImage() else {
                     owsFailDebug("Could not load image")
@@ -296,35 +296,26 @@ public class LinkPreviewSent: LinkPreviewState {
     }
 
     public func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> LinkPreviewImageCacheKey? {
-        guard let attachmentStream = imageAttachment?.asResourceStream() else {
+        guard let attachmentStream = imageAttachment?.asStream() else {
             return nil
         }
-        return .init(id: attachmentStream.resourceId, urlString: nil, thumbnailQuality: thumbnailQuality)
+        return .init(id: attachmentStream.id, urlString: nil, thumbnailQuality: thumbnailQuality)
     }
 
-    private let imagePixelSizeCache = AtomicOptional<CGSize>(nil, lock: .sharedGlobal)
-
     public var imagePixelSize: CGSize {
-        if let cachedValue = imagePixelSizeCache.get() {
-            return cachedValue
-        }
         owsAssertDebug(imageState == .loaded)
-        guard let attachmentStream = imageAttachment?.asResourceStream() else {
+        guard let attachmentStream = imageAttachment?.asStream() else {
             return CGSize.zero
         }
 
-        let result: CGSize = {
-            switch attachmentStream.computeContentType() {
-            case .image(let pixelSize):
-                return pixelSize.compute()
-            case .animatedImage(let pixelSize):
-                return pixelSize.compute()
-            case .audio, .video, .file, .invalid:
-                return .zero
-            }
-        }()
-        imagePixelSizeCache.set(result)
-        return result
+        switch attachmentStream.contentType {
+        case .image(let pixelSize):
+            return pixelSize
+        case .animatedImage(let pixelSize):
+            return pixelSize
+        case .audio, .video, .file, .invalid:
+            return .zero
+        }
     }
 
     public var previewDescription: String? { linkPreview.previewDescription }

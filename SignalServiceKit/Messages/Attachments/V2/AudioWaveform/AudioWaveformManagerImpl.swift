@@ -15,16 +15,15 @@ public protocol AudioWaveformSamplingObserver: AnyObject {
 
 public class AudioWaveformManagerImpl: AudioWaveformManager {
 
-    private typealias AttachmentId = TSResourceId
+    private typealias AttachmentId = Attachment.IDType
 
     public init() {}
 
     public func audioWaveform(
-        forAttachment attachment: TSResourceStream,
+        forAttachment attachment: AttachmentStream,
         highPriority: Bool
     ) -> Task<AudioWaveform, Error> {
-        let attachmentStream = attachment.concreteStreamType
-        switch attachmentStream.info.contentType {
+        switch attachment.info.contentType {
         case .file, .invalid, .image, .video, .animatedImage:
             return Task {
                 throw OWSAssertionError("Invalid attachment type!")
@@ -36,7 +35,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
                     throw AudioWaveformError.invalidAudioFile
                 }
             }
-            let encryptionKey = attachmentStream.attachment.encryptionKey
+            let encryptionKey = attachment.attachment.encryptionKey
             return Task {
                 let fileURL = AttachmentStream.absoluteAttachmentFileURL(
                     relativeFilePath: relativeWaveformFilePath
@@ -124,10 +123,10 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
     }
 
     private enum WaveformId: Hashable {
-        case attachment(TSResourceId)
+        case attachment(Attachment.IDType)
         case file(UUID)
 
-        var cacheKey: TSResourceId? {
+        var cacheKey: Attachment.IDType? {
             switch self {
             case .attachment(let id):
                 return id

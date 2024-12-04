@@ -141,12 +141,11 @@ class VideoPlaybackControlView: UIView {
     weak var delegate: VideoPlaybackControlViewDelegate?
 
     func updateWithMediaItem(_ mediaItem: MediaGalleryItem) {
-        switch mediaItem.attachmentStream.attachmentStream.cachedContentType {
-        case .video(let videoDuration, _):
-            guard let videoDuration else { fallthrough }
+        switch mediaItem.attachmentStream.attachmentStream.contentType {
+        case .video(let videoDuration, _, _):
             updateDuration(videoDuration)
         default:
-            let attachmentStream = mediaItem.attachmentStream.attachmentStream.concreteStreamType
+            let attachmentStream = mediaItem.attachmentStream.attachmentStream
             switch attachmentStream.contentType {
             case .file, .invalid, .image, .animatedImage, .audio:
                 break

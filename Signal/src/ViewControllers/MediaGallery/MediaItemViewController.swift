@@ -206,14 +206,14 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         guard mediaView == nil else { return }
 
         let view: UIView
-        if attachmentStream.computeContentType().isVideo, galleryItem.renderingFlag == .shouldLoop {
-            if attachmentStream.computeContentType().isVideo, let loopingVideoPlayerView = buildLoopingVideoPlayerView() {
+        if attachmentStream.contentType.isVideo, galleryItem.renderingFlag == .shouldLoop {
+            if attachmentStream.contentType.isVideo, let loopingVideoPlayerView = buildLoopingVideoPlayerView() {
                 loopingVideoPlayerView.delegate = self
                 view = loopingVideoPlayerView
             } else {
                 view = buildPlaceholderView()
             }
-        } else if attachmentStream.computeContentType().isAnimatedImage {
+        } else if attachmentStream.contentType.isAnimatedImage {
             if let animatedGif = try? attachmentStream.decryptedYYImage() {
                 view = YYAnimatedImageView(image: animatedGif)
             } else {
@@ -223,7 +223,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
             // Still loading thumbnail.
             view = buildPlaceholderView()
         } else if isVideo {
-            if attachmentStream.computeContentType().isVideo, let videoPlayerView = buildVideoPlayerView() {
+            if attachmentStream.contentType.isVideo, let videoPlayerView = buildVideoPlayerView() {
                 videoPlayerView.delegate = self
                 videoPlayerView.videoPlayer?.delegate = self
 
@@ -322,7 +322,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     private var image: UIImage?
 
-    private var attachmentStream: TSResourceStream { galleryItem.attachmentStream.attachmentStream }
+    private var attachmentStream: AttachmentStream { galleryItem.attachmentStream.attachmentStream }
 
     // MARK: - Video Playback
 

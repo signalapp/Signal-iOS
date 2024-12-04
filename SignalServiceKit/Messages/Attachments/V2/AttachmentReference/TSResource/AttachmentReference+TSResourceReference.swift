@@ -6,8 +6,8 @@
 import Foundation
 
 extension AttachmentReference: TSResourceReference {
-    public var resourceId: TSResourceId {
-        return .v2(rowId: attachmentRowId)
+    public var resourceId: Attachment.IDType {
+        return attachmentRowId
     }
 
     public var concreteType: AttachmentReference { self }

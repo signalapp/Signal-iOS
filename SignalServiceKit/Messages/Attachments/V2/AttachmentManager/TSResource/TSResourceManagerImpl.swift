@@ -197,9 +197,9 @@ public class TSResourceManagerImpl: TSResourceManager {
 
     public func buildProtoForSending(
         from reference: TSResourceReference,
-        pointer: TSResourcePointer
+        pointer: AttachmentTransitPointer
     ) -> SSKProtoAttachmentPointer? {
-        let attachment = pointer.resource.concreteType
+        let attachment = pointer.attachment
         let attachmentReference = reference.concreteType
         guard let attachmentPointer = AttachmentTransitPointer(attachment: attachment) else {
             owsFailDebug("Invalid attachment type combination!")
@@ -214,11 +214,10 @@ public class TSResourceManagerImpl: TSResourceManager {
     // MARK: - Removes and Deletes
 
     public func removeBodyAttachment(
-        _ attachment: TSResource,
+        _ attachment: Attachment,
         from message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
-        let attachment = attachment.concreteType
         guard let messageRowId = message.sqliteRowId else {
             owsFailDebug("Removing attachment from uninserted message!")
             return
@@ -297,7 +296,7 @@ public class TSResourceManagerImpl: TSResourceManager {
     // MARK: - Updates
 
     public func markPointerAsPendingManualDownload(
-        _ pointer: TSResourcePointer,
+        _ pointer: AttachmentTransitPointer,
         tx: DBWriteTransaction
     ) {
         // Nothing to do; "pending manual download" is the default state.
@@ -396,11 +395,10 @@ public class TSResourceManagerImpl: TSResourceManager {
     }
 
     public func thumbnailImage(
-        attachment: TSResource,
+        attachment: Attachment,
         parentMessage: TSMessage,
         tx: DBReadTransaction
     ) -> UIImage? {
-        let attachment = attachment.concreteType
         guard let stream = attachment.asStream() else {
             return nil
         }

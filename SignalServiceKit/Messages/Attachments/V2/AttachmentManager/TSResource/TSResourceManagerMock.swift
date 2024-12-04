@@ -64,12 +64,12 @@ public class TSResourceManagerMock: TSResourceManager {
 
     public func buildProtoForSending(
         from reference: TSResourceReference,
-        pointer: TSResourcePointer
+        pointer: AttachmentTransitPointer
     ) -> SSKProtoAttachmentPointer? {
         return nil
     }
 
-    public func removeBodyAttachment(_ attachment: TSResource, from message: TSMessage, tx: DBWriteTransaction) throws {
+    public func removeBodyAttachment(_ attachment: Attachment, from message: TSMessage, tx: DBWriteTransaction) throws {
         // Do nothing
     }
 
@@ -86,7 +86,7 @@ public class TSResourceManagerMock: TSResourceManager {
     }
 
     public func markPointerAsPendingManualDownload(
-        _ pointer: TSResourcePointer,
+        _ pointer: AttachmentTransitPointer,
         tx: DBWriteTransaction
     ) {
         // Do nothing
@@ -101,7 +101,7 @@ public class TSResourceManagerMock: TSResourceManager {
     }
 
     public func thumbnailImage(
-        attachment: TSResource,
+        attachment: Attachment,
         parentMessage: TSMessage,
         tx: DBReadTransaction
     ) -> UIImage? {

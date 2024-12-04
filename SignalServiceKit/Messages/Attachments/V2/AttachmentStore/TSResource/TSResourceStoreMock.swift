@@ -13,10 +13,10 @@ public class TSResourceStoreMock: TSResourceStore {
 
     // TSMessage.rowId -> resource ref
     public var messageResourceReferences = [Int64: [TSResourceReference]]()
-    public var resources = [TSResource]()
+    public var resources = [Attachment]()
 
-    public func fetch(_ ids: [TSResourceId], tx: DBReadTransaction) -> [TSResource] {
-        return resources.filter { ids.contains($0.resourceId) }
+    public func fetch(_ ids: [Attachment.IDType], tx: DBReadTransaction) -> [Attachment] {
+        return resources.filter { ids.contains($0.id) }
     }
 
     public func allAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {

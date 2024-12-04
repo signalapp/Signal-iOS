@@ -11,6 +11,12 @@ public class AttachmentBackupThumbnail {
     /// Filepath to the encrypted thumbnail file on local disk.
     public let localRelativeFilePathThumbnail: String
 
+    public var id: Attachment.IDType { attachment.id }
+
+    // MARK: Convenience
+
+    public var image: UIImage? { try? UIImage.from(self) }
+
     // MARK: - Init
 
     private init(

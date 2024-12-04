@@ -27,11 +27,11 @@ open class TSResourceDownloadManagerMock: TSResourceDownloadManager {
         // Do nothing
     }
 
-    open func cancelDownload(for attachmentId: TSResourceId, tx: DBWriteTransaction) {
+    open func cancelDownload(for attachmentId: Attachment.IDType, tx: DBWriteTransaction) {
         // Do nothing
     }
 
-    open func downloadProgress(for attachmentId: TSResourceId, tx: DBReadTransaction) -> CGFloat? {
+    open func downloadProgress(for attachmentId: Attachment.IDType, tx: DBReadTransaction) -> CGFloat? {
         return nil
     }
 }

@@ -52,7 +52,7 @@ public class AudioPlayer: NSObject {
 
     private enum Source {
         case decryptedFile(URL)
-        case attachment(TSResourceStream)
+        case attachment(AttachmentStream)
 
         var description: String {
             switch self {
@@ -85,7 +85,7 @@ public class AudioPlayer: NSObject {
         self.init(source: .decryptedFile(url), audioBehavior: audioBehavior)
     }
 
-    public convenience init(attachment: TSResourceStream, audioBehavior: AudioBehavior) {
+    public convenience init(attachment: AttachmentStream, audioBehavior: AudioBehavior) {
         self.init(source: .attachment(attachment), audioBehavior: audioBehavior)
     }
 

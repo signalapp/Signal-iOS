@@ -5,16 +5,15 @@
 
 import Foundation
 
-extension TSResourceStream {
+extension AttachmentStream {
 
     public func asStickerMetadata(
         stickerInfo: StickerInfo,
         stickerType: StickerType,
         emojiString: String?
     ) -> (any StickerMetadata)? {
-        let attachment = self.concreteStreamType
         return EncryptedStickerMetadata.from(
-            attachment: attachment,
+            attachment: self,
             stickerInfo: stickerInfo,
             stickerType: stickerType,
             emojiString: emojiString

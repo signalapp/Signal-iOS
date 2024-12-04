@@ -481,11 +481,11 @@ struct CVItemModelBuilder: CVItemBuilding {
             let attachmentRef = DependenciesBridge.shared.tsResourceStore
                 .bodyMediaAttachments(for: nextMessage, tx: transaction.asV2Read).first,
             let attachment = attachmentRef.fetch(tx: transaction),
-            (attachment.asResourceStream()?.cachedContentType)?.isAudio
+            attachment.asStream()?.contentType.isAudio
                 ?? MimeTypeUtil.isSupportedAudioMimeType(attachment.mimeType)
         {
 
-            if let stream = attachment.asResourceStream() {
+            if let stream = attachment.asStream() {
                 itemViewState.nextAudioAttachment = AudioAttachment(
                     attachmentStream: .init(reference: attachmentRef, attachmentStream: stream),
                     owningMessage: nextMessage,

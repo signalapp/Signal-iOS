@@ -28,7 +28,7 @@ public class SignalTSResourceClonerImpl: SignalTSResourceCloner {
         return try attachmentCloner.cloneAsSignalAttachment(
             attachment: .init(
                 reference: attachment.reference.concreteType,
-                attachmentStream: attachment.attachmentStream.concreteStreamType
+                attachmentStream: attachment.attachmentStream
             )
         )
     }

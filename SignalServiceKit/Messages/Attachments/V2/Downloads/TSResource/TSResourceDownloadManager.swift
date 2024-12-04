@@ -30,9 +30,9 @@ public protocol TSResourceDownloadManager {
         tx: DBWriteTransaction
     )
 
-    func cancelDownload(for attachmentId: TSResourceId, tx: DBWriteTransaction)
+    func cancelDownload(for attachmentId: Attachment.IDType, tx: DBWriteTransaction)
 
-    func downloadProgress(for attachmentId: TSResourceId, tx: DBReadTransaction) -> CGFloat?
+    func downloadProgress(for attachmentId: Attachment.IDType, tx: DBReadTransaction) -> CGFloat?
 }
 
 extension TSResourceDownloadManager {

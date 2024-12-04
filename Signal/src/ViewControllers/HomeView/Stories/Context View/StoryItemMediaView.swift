@@ -853,7 +853,7 @@ class StoryItemMediaView: UIView {
             container.addSubview(backgroundImageView)
             backgroundImageView.autoPinEdgesToSuperviewEdges()
 
-            switch stream.attachment.attachmentStream.computeContentType() {
+            switch stream.attachment.attachmentStream.contentType {
             case .video:
                 let videoView = buildVideoView(attachment: stream.attachment)
                 container.addSubview(videoView)
@@ -923,7 +923,7 @@ class StoryItemMediaView: UIView {
     }
 
     private var yyImageView: YYAnimatedImageView?
-    private func buildYYImageView(attachment: TSResourceStream) -> UIView {
+    private func buildYYImageView(attachment: AttachmentStream) -> UIView {
         guard
             let image = try? attachment.decryptedYYImage()
         else {
@@ -945,7 +945,7 @@ class StoryItemMediaView: UIView {
         return animatedImageView
     }
 
-    private func buildImageView(attachment: TSResourceStream) -> UIView {
+    private func buildImageView(attachment: AttachmentStream) -> UIView {
         guard let image = try? attachment.decryptedImage() else {
             owsFailDebug("Could not load attachment.")
             return buildContentUnavailableView()
@@ -965,9 +965,9 @@ class StoryItemMediaView: UIView {
         return imageView
     }
 
-    private func buildBlurHashImageViewIfAvailable(pointer: TSResourcePointer) -> UIView? {
+    private func buildBlurHashImageViewIfAvailable(pointer: AttachmentTransitPointer) -> UIView? {
         guard
-            let blurHash = pointer.resource.resourceBlurHash,
+            let blurHash = pointer.attachment.blurHash,
             let blurHashImage = BlurHash.image(for: blurHash)
         else {
             return nil
@@ -996,7 +996,7 @@ class StoryItemMediaView: UIView {
 
     private static let mediaCache = CVMediaCache()
     private func buildDownloadStateView(
-        for pointer: TSResourcePointer,
+        for pointer: AttachmentTransitPointer,
         transitTierDownloadState: AttachmentDownloadState
     ) -> UIView {
         let progressView = CVAttachmentProgressView(
@@ -1030,13 +1030,13 @@ class StoryItem: NSObject {
     enum Attachment: Equatable {
         struct Pointer: Equatable {
             let reference: TSResourceReference
-            let attachment: TSResourcePointer
+            let attachment: AttachmentTransitPointer
             let transitTierDownloadState: AttachmentDownloadState
             var caption: String? { reference.storyMediaCaption?.text }
             var captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>] { reference.storyMediaCaption?.collapsedStyles ?? [] }
 
             static func == (lhs: StoryItem.Attachment.Pointer, rhs: StoryItem.Attachment.Pointer) -> Bool {
-                return lhs.attachment.resourceId == rhs.attachment.resourceId
+                return lhs.attachment.id == rhs.attachment.id
                     && lhs.reference.hasSameOwner(as: rhs.reference)
                     && lhs.transitTierDownloadState == rhs.transitTierDownloadState
             }
@@ -1049,7 +1049,7 @@ class StoryItem: NSObject {
             var captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>] { attachment.reference.storyMediaCaption?.collapsedStyles ?? [] }
 
             static func == (lhs: StoryItem.Attachment.Stream, rhs: StoryItem.Attachment.Stream) -> Bool {
-                return lhs.attachment.attachmentStream.resourceId == rhs.attachment.attachmentStream.resourceId
+                return lhs.attachment.attachmentStream.id == rhs.attachment.attachmentStream.id
                     && lhs.attachment.reference.hasSameOwner(as: rhs.attachment.reference)
             }
         }

@@ -10,9 +10,9 @@ public class CVMediaCache: NSObject {
 
     public enum CacheKey: Hashable, Equatable {
         case blurHash(String)
-        case attachment(TSResourceId)
-        case attachmentThumbnail(TSResourceId, quality: AttachmentThumbnailQuality)
-        case backupThumbnail(TSResourceId)
+        case attachment(Attachment.IDType)
+        case attachmentThumbnail(Attachment.IDType, quality: AttachmentThumbnailQuality)
+        case backupThumbnail(Attachment.IDType)
     }
 
     private let stillMediaCache = LRUCache<CacheKey, AnyObject>(maxSize: 16,

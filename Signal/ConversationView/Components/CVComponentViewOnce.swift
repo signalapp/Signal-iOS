@@ -9,10 +9,10 @@ public import SignalUI
 enum ViewOnceState: Equatable {
     case unknown
     case incomingExpired
-    case incomingDownloading(attachmentPointer: TSResourcePointer, renderingFlag: AttachmentReference.RenderingFlag)
+    case incomingDownloading(attachmentPointer: AttachmentTransitPointer, renderingFlag: AttachmentReference.RenderingFlag)
     case incomingFailed
     case incomingPending
-    case incomingAvailable(attachmentStream: TSResourceStream, renderingFlag: AttachmentReference.RenderingFlag)
+    case incomingAvailable(attachmentStream: AttachmentStream, renderingFlag: AttachmentReference.RenderingFlag)
     case incomingInvalidContent
     case outgoingSending
     case outgoingFailed
@@ -31,10 +31,10 @@ enum ViewOnceState: Equatable {
             (.outgoingSentExpired, .outgoingSentExpired):
             return true
         case let (.incomingDownloading(lhsPointer, lhsFlag), .incomingDownloading(rhsPointer, rhsFlag)):
-            return lhsPointer.resourceId == rhsPointer.resourceId
+            return lhsPointer.id == rhsPointer.id
                 && lhsFlag == rhsFlag
         case let (.incomingAvailable(lhsStream, lhsFlag), .incomingAvailable(rhsStream, rhsFlag)):
-            return lhsStream.resourceId == rhsStream.resourceId
+            return lhsStream.id == rhsStream.id
                 && lhsFlag == rhsFlag
         case
             (.unknown, _),
@@ -78,7 +78,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
             return false
         }
     }
-    private var attachmentStream: TSResourceStream? {
+    private var attachmentStream: AttachmentStream? {
         if case .incomingAvailable(let attachmentStream, _) = viewOnceState {
             return attachmentStream
         }
@@ -395,7 +395,7 @@ fileprivate extension CVComponentViewOnce {
     private var viewOnceMessageType: ViewOnceMessageType {
         switch viewOnceState {
         case let .incomingAvailable(attachmentStream, _):
-            switch attachmentStream.cachedContentType {
+            switch attachmentStream.contentType {
             case .file, .invalid, .audio:
                 owsFailDebug("Invalid view once type")
                 return .unknown
@@ -405,17 +405,6 @@ fileprivate extension CVComponentViewOnce {
                 return .video
             case .animatedImage:
                 return .photo
-            case nil:
-                let mimeType = attachmentStream.mimeType
-                if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
-                    return .video
-                } else {
-                    owsAssertDebug(
-                        MimeTypeUtil.isSupportedImageMimeType(mimeType)
-                        || MimeTypeUtil.isSupportedMaybeAnimatedMimeType(mimeType)
-                    )
-                    return .photo
-                }
             }
         case .unknown,
              .incomingExpired,

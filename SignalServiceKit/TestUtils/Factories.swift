@@ -461,7 +461,7 @@ public class ConversationFactory: NSObject {
             _ = try! unpreparedMessage.prepare(tx: asyncTransaction)
 
             for attachment in message.allAttachments(transaction: asyncTransaction) {
-                guard let stream = attachment.asResourceStream() else {
+                guard let stream = attachment.asStream() else {
                     continue
                 }
                 let transitTierInfo = Attachment.TransitTierInfo(

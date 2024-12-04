@@ -28,13 +28,13 @@ public extension TSMessage {
             .isEmpty.negated
     }
 
-    func oversizeTextAttachment(transaction: SDSAnyReadTransaction) -> TSResource? {
+    func oversizeTextAttachment(transaction: SDSAnyReadTransaction) -> Attachment? {
         return DependenciesBridge.shared.tsResourceStore
             .oversizeTextAttachment(for: self, tx: transaction.asV2Read)?
             .fetch(tx: transaction)
     }
 
-    func allAttachments(transaction: SDSAnyReadTransaction) -> [TSResource] {
+    func allAttachments(transaction: SDSAnyReadTransaction) -> [Attachment] {
         return DependenciesBridge.shared.tsResourceStore
             .allAttachments(for: self, tx: transaction.asV2Read)
             .fetchAll(tx: transaction)
@@ -44,32 +44,32 @@ public extension TSMessage {
     /// If you want a constant string representing the body of this message, this is it.
     @objc(rawBodyWithTransaction:)
     func rawBody(transaction: SDSAnyReadTransaction) -> String? {
-        if let oversizeText = try? self.oversizeTextAttachment(transaction: transaction)?.asResourceStream()?.decryptedLongText() {
+        if let oversizeText = try? self.oversizeTextAttachment(transaction: transaction)?.asStream()?.decryptedLongText() {
             return oversizeText
         }
         return self.body?.nilIfEmpty
     }
 
-    func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSResourcePointer] {
-        let attachments: [TSResource] = allAttachments(transaction: transaction)
+    func failedAttachments(transaction: SDSAnyReadTransaction) -> [AttachmentTransitPointer] {
+        let attachments: [Attachment] = allAttachments(transaction: transaction)
         let states: [AttachmentDownloadState] = [.failed]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states), tx: transaction)
     }
 
-    func failedOrPendingAttachments(transaction: SDSAnyReadTransaction) -> [TSResourcePointer] {
-        let attachments: [TSResource] = allAttachments(transaction: transaction)
+    func failedOrPendingAttachments(transaction: SDSAnyReadTransaction) -> [AttachmentTransitPointer] {
+        let attachments: [Attachment] = allAttachments(transaction: transaction)
         let states: [AttachmentDownloadState] = [.failed, .none]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states), tx: transaction)
     }
 
     private static func onlyAttachmentPointers(
-        attachments: [TSResource],
+        attachments: [Attachment],
         withStateIn states: Set<AttachmentDownloadState>,
         tx: SDSAnyReadTransaction
-    ) -> [TSResourcePointer] {
-        return attachments.compactMap { attachment -> TSResourcePointer? in
+    ) -> [AttachmentTransitPointer] {
+        return attachments.compactMap { attachment -> AttachmentTransitPointer? in
             guard
-                attachment.asResourceStream() == nil,
+                attachment.asStream() == nil,
                 let attachmentPointer = attachment.asTransitTierPointer()
             else {
                 return nil

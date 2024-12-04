@@ -240,14 +240,14 @@ public class StoryManager: NSObject {
     /// * We have not already exceeded the limit for how many unviewed stories we should download for this context
     private class func startAutomaticDownloadIfNecessary(for message: StoryMessage, transaction: SDSAnyWriteTransaction) {
 
-        let attachmentPointerToDownload: TSResourcePointer?
+        let attachmentPointerToDownload: AttachmentTransitPointer?
         switch message.attachment {
         case .file, .foreignReferenceAttachment:
             let attachment = DependenciesBridge.shared.tsResourceStore.mediaAttachment(
                 for: message,
                 tx: transaction.asV2Read
             )?.fetch(tx: transaction)
-            if attachment?.asResourceStream() != nil {
+            if attachment?.asStream() != nil {
                 // Already downloaded!
                 return
             } else {
@@ -262,7 +262,7 @@ public class StoryManager: NSObject {
 
         guard
             let attachmentPointer = attachmentPointerToDownload,
-            attachmentPointer.resource.asResourceStream() == nil
+            attachmentPointer.attachment.asStream() == nil
         else {
             // Already downloaded or couldn't find it, nothing to do.
             return
@@ -279,7 +279,7 @@ public class StoryManager: NSObject {
                     owsFailDebug("Missing attachment")
                     return
                 }
-                if attachment.attachment.asResourceStream() != nil {
+                if attachment.attachment.asStream() != nil {
                     unviewedDownloadedStoriesForContext += 1
                 } else if
                     let pointer = attachment.attachment.asTransitTierPointer(),

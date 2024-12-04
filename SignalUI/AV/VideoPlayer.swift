@@ -51,7 +51,7 @@ public class VideoPlayer {
     }
 
     public convenience init(
-        attachment: TSResourceStream,
+        attachment: AttachmentStream,
         shouldLoop: Bool,
         shouldMixAudioWithOthers: Bool = false
     ) throws {
@@ -64,7 +64,7 @@ public class VideoPlayer {
     }
 
     private convenience init(
-        attachment: TSResourceStream,
+        attachment: AttachmentStream,
         shouldLoop: Bool,
         shouldMixAudioWithOthers: Bool,
         audioDescription: String?

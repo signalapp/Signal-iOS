@@ -63,7 +63,7 @@ public protocol TSResourceContentValidator {
     /// Build a `QuotedReplyTSResourceDataSource` for a reply to a message with the provided attachment.
     /// Throws an error if the provided attachment is non-visual, or if data reading/writing fails.
     func prepareQuotedReplyThumbnail(
-        fromOriginalAttachment: TSResourceStream,
+        fromOriginalAttachment: AttachmentStream,
         originalReference: TSResourceReference,
         originalMessageRowId: Int64
     ) throws -> QuotedReplyTSResourceDataSource
@@ -144,12 +144,12 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
     }
 
     public func prepareQuotedReplyThumbnail(
-        fromOriginalAttachment originalAttachment: TSResourceStream,
+        fromOriginalAttachment originalAttachment: AttachmentStream,
         originalReference: TSResourceReference,
         originalMessageRowId: Int64
     ) throws -> QuotedReplyTSResourceDataSource {
         return try attachmentValidator.prepareQuotedReplyThumbnail(
-            fromOriginalAttachment: originalAttachment.concreteStreamType,
+            fromOriginalAttachment: originalAttachment,
             originalReference: originalReference.concreteType
         ).tsDataSource
     }
@@ -191,7 +191,7 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
     }
 
     open func prepareQuotedReplyThumbnail(
-        fromOriginalAttachment originalAttachment: TSResourceStream,
+        fromOriginalAttachment originalAttachment: AttachmentStream,
         originalReference: TSResourceReference,
         originalMessageRowId: Int64
     ) throws -> QuotedReplyTSResourceDataSource {

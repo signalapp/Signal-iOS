@@ -49,8 +49,8 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
         switch sticker {
         case .available(_, let attachmentStream):
-            let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.attachment.resourceId)
-            let isAnimated = attachmentStream.attachmentStream.computeContentType().isAnimatedImage
+            let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.attachment.id)
+            let isAnimated = attachmentStream.attachmentStream.contentType.isAnimatedImage
             let reusableMediaView: ReusableMediaView
             if let cachedView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
                 reusableMediaView = cachedView

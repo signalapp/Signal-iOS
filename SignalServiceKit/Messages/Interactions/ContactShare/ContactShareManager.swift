@@ -123,7 +123,7 @@ public class ContactShareManagerImpl: ContactShareManager {
         let avatarDataSource: TSResourceDataSource? = try {
             if
                 let existingAvatarAttachment = draft.existingAvatarAttachment,
-                let stream = existingAvatarAttachment.attachment.asResourceStream()
+                let stream = existingAvatarAttachment.attachment.asStream()
             {
                 return .forwarding(
                     existingAttachment: stream,

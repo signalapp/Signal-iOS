@@ -9,7 +9,7 @@ import Foundation
 public protocol TSResourceUploadStore: TSResourceStore {
 
     func updateAsUploaded(
-        attachmentStream: TSResourceStream,
+        attachmentStream: AttachmentStream,
         info: Attachment.TransitTierInfo,
         tx: DBWriteTransaction
     ) throws

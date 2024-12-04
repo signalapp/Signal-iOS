@@ -8,13 +8,13 @@ public import SignalServiceKit
 
 public class SharingThreadPickerProgressSheet: ActionSheetController {
 
-    private var attachmentIds: [TSResourceId]
+    private var attachmentIds: [Attachment.IDType]
     /// Note: progress for _all_ attachments, not just those in attachmentIds.
     /// Filter down to just attachmentIds for display purposes.
-    private var progressPerAttachment: [TSResourceId: Float] = [:]
+    private var progressPerAttachment: [Attachment.IDType: Float] = [:]
 
     public init(
-        attachmentIds: [TSResourceId],
+        attachmentIds: [Attachment.IDType],
         delegate: ShareViewDelegate?
     ) {
         self.attachmentIds = attachmentIds
@@ -44,7 +44,7 @@ public class SharingThreadPickerProgressSheet: ActionSheetController {
 
     // MARK: - API
 
-    public func updateSendingAttachmentIds(_ ids: [TSResourceId]) {
+    public func updateSendingAttachmentIds(_ ids: [Attachment.IDType]) {
         // the next upload progress update
         self.attachmentIds = ids
         renderProgress()
@@ -125,7 +125,7 @@ public class SharingThreadPickerProgressSheet: ActionSheetController {
     private func handleAttachmentProgressNotification(_ notification: NSNotification) {
         // We can safely show the progress for just the first message,
         // all the messages share the same attachment upload progress.
-        guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadResourceIDKey] as? TSResourceId else {
+        guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadResourceIDKey] as? Attachment.IDType else {
             owsFailDebug("Missing notificationAttachmentId.")
             return
         }

@@ -69,7 +69,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
             return configureForUndownloadedMedia(pointer.attachmentPointer)
         case .stream(let attachmentStream):
             let attachmentStream = attachmentStream.attachmentStream
-            switch attachmentStream.computeContentType() {
+            switch attachmentStream.contentType {
             case .image:
                 configureForStillImage(attachmentStream: attachmentStream)
             case .animatedImage:
@@ -85,13 +85,13 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         }
     }
 
-    private func configureForBackupThumbnailMedia(_ thumbnail: TSResourceBackupThumbnail) {
+    private func configureForBackupThumbnailMedia(_ thumbnail: AttachmentBackupThumbnail) {
         configureForBackupThumbnail(attachmentBackupThumbnail: thumbnail)
 
         _ = addProgressIfNecessary()
     }
 
-    private func configureForUndownloadedMedia(_ pointer: TSResourcePointer) {
+    private func configureForUndownloadedMedia(_ pointer: AttachmentTransitPointer) {
         tryToConfigureForBlurHash(pointer: pointer)
 
         _ = addProgressIfNecessary()
@@ -170,8 +170,8 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         applyReusableMediaView(reusableMediaView)
     }
 
-    private func tryToConfigureForBlurHash(pointer: TSResourcePointer) {
-        guard let blurHash = pointer.resource.resourceBlurHash?.nilIfEmpty else { return }
+    private func tryToConfigureForBlurHash(pointer: AttachmentTransitPointer) {
+        guard let blurHash = pointer.attachment.blurHash?.nilIfEmpty else { return }
         // NOTE: in the blurhash case, we use the blurHash itself as the
         // cachekey to avoid conflicts with the actual attachment contents.
         let cacheKey = CVMediaCache.CacheKey.blurHash(blurHash)
@@ -185,9 +185,9 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
     }
 
-    private func configureForLoopingVideo(attachmentStream: TSResourceStream) {
+    private func configureForLoopingVideo(attachmentStream: AttachmentStream) {
         if let reusableMediaView = mediaCache.getMediaView(
-            .attachment(attachmentStream.resourceId),
+            .attachment(attachmentStream.id),
             isAnimated: true
         ) {
             applyReusableMediaView(reusableMediaView)
@@ -199,9 +199,9 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         }
     }
 
-    private func configureForAnimatedImage(attachmentStream: TSResourceStream) {
-        let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.resourceId)
-        let isAnimated = attachmentStream.computeContentType().isAnimatedImage
+    private func configureForAnimatedImage(attachmentStream: AttachmentStream) {
+        let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.id)
+        let isAnimated = attachmentStream.contentType.isAnimatedImage
         if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
             applyReusableMediaView(reusableMediaView)
             return
@@ -211,9 +211,9 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
     }
 
-    private func configureForStillImage(attachmentStream: TSResourceStream) {
-        let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.resourceId)
-        let isAnimated = attachmentStream.computeContentType().isAnimatedImage
+    private func configureForStillImage(attachmentStream: AttachmentStream) {
+        let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.id)
+        let isAnimated = attachmentStream.contentType.isAnimatedImage
         if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
             applyReusableMediaView(reusableMediaView)
             return
@@ -224,9 +224,9 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
     }
 
-    private func configureForVideo(attachmentStream: TSResourceStream) {
-        let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.resourceId)
-        let isAnimated = attachmentStream.computeContentType().isAnimatedImage
+    private func configureForVideo(attachmentStream: AttachmentStream) {
+        let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.id)
+        let isAnimated = attachmentStream.contentType.isAnimatedImage
         if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
             applyReusableMediaView(reusableMediaView)
             return
@@ -237,8 +237,8 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         createNewReusableMediaView(mediaViewAdapter: mediaViewAdapter, isAnimated: isAnimated)
     }
 
-    private func configureForBackupThumbnail(attachmentBackupThumbnail: TSResourceBackupThumbnail) {
-        let cacheKey = CVMediaCache.CacheKey.backupThumbnail(attachmentBackupThumbnail.resource.resourceId)
+    private func configureForBackupThumbnail(attachmentBackupThumbnail: AttachmentBackupThumbnail) {
+        let cacheKey = CVMediaCache.CacheKey.backupThumbnail(attachmentBackupThumbnail.id)
         if let reusableMediaView = mediaCache.getMediaView(cacheKey, isAnimated: false) {
             applyReusableMediaView(reusableMediaView)
             return
@@ -274,7 +274,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     }
 
     private var hasBlurHash: Bool {
-        return BlurHash.isValidBlurHash(attachment.attachment.attachment.resourceBlurHash)
+        return BlurHash.isValidBlurHash(attachment.attachment.attachment.blurHash)
     }
 
     private func configure(forError error: MediaError) {

@@ -129,7 +129,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
             let attachment: ReferencedTSResourceStream? = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 guard
                     let reference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: storyMessage, tx: tx.asV2Read),
-                    let attachmentStream = reference.fetch(tx: tx)?.asResourceStream()
+                    let attachmentStream = reference.fetch(tx: tx)?.asStream()
                 else {
                     return nil
                 }
@@ -623,7 +623,7 @@ public struct ForwardMessageItem {
     let messageBody: MessageBody?
     let linkPreviewDraft: OWSLinkPreviewDraft?
     let stickerMetadata: (any StickerMetadata)?
-    let stickerAttachment: TSResourceStream?
+    let stickerAttachment: AttachmentStream?
     let textAttachment: TextAttachment?
 
     fileprivate class Builder {
@@ -634,7 +634,7 @@ public struct ForwardMessageItem {
         var messageBody: MessageBody?
         var linkPreviewDraft: OWSLinkPreviewDraft?
         var stickerMetadata: (any StickerMetadata)?
-        var stickerAttachment: TSResourceStream?
+        var stickerAttachment: AttachmentStream?
         var textAttachment: TextAttachment?
 
         init(interaction: TSInteraction? = nil) {
@@ -772,13 +772,13 @@ public struct ForwardMessageItem {
             let mimetype: String
 
             static func load(
-                attachmentId: TSResourceId,
+                attachmentId: Attachment.IDType,
                 transaction: SDSAnyReadTransaction
             ) -> LinkPreviewImage? {
                 guard
                     let attachment = DependenciesBridge.shared.tsResourceStore
                         .fetch(attachmentId, tx: transaction.asV2Read)?
-                        .asResourceStream()
+                        .asStream()
                 else {
                     owsFailDebug("Missing attachment.")
                     return nil

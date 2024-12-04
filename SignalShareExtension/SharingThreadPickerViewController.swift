@@ -335,7 +335,7 @@ extension SharingThreadPickerViewController {
         presentOrUpdateSendProgressSheet(attachmentIds: attachmentIds)
     }
 
-    private func presentOrUpdateSendProgressSheet(attachmentIds: [TSResourceId]) {
+    private func presentOrUpdateSendProgressSheet(attachmentIds: [Attachment.IDType]) {
         AssertIsOnMainThread()
 
         if let sendProgressSheet {

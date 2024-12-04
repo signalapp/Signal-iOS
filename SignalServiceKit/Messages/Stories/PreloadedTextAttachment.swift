@@ -9,9 +9,9 @@ import Foundation
 /// Doesn't load the preview's _image_, just the attachment database object.
 public struct PreloadedTextAttachment: Equatable {
     public let textAttachment: TextAttachment
-    public let linkPreviewAttachment: TSResource?
+    public let linkPreviewAttachment: Attachment?
 
-    private init(textAttachment: TextAttachment, linkPreviewAttachment: TSResource?) {
+    private init(textAttachment: TextAttachment, linkPreviewAttachment: Attachment?) {
         self.textAttachment = textAttachment
         self.linkPreviewAttachment = linkPreviewAttachment
     }
@@ -21,7 +21,7 @@ public struct PreloadedTextAttachment: Equatable {
         storyMessage: StoryMessage,
         tx: SDSAnyReadTransaction
     ) -> Self {
-        let linkPreviewAttachment: TSResource? = DependenciesBridge.shared.tsResourceStore
+        let linkPreviewAttachment: Attachment? = DependenciesBridge.shared.tsResourceStore
             .linkPreviewAttachment(
                 for: storyMessage,
                 tx: tx.asV2Read
@@ -32,6 +32,6 @@ public struct PreloadedTextAttachment: Equatable {
 
     public static func == (lhs: PreloadedTextAttachment, rhs: PreloadedTextAttachment) -> Bool {
         return lhs.textAttachment == rhs.textAttachment
-            && lhs.linkPreviewAttachment?.resourceId == rhs.linkPreviewAttachment?.resourceId
+            && lhs.linkPreviewAttachment?.id == rhs.linkPreviewAttachment?.id
     }
 }

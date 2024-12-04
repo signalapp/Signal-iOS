@@ -36,11 +36,11 @@ public struct TSResourceDataSource {
     }
 
     public static func forwarding(
-        existingAttachment: TSResourceStream,
+        existingAttachment: AttachmentStream,
         with reference: TSResourceReference
     ) -> TSResourceDataSource {
-        let (attachment, reference) = (existingAttachment.concreteStreamType, reference.concreteType)
-        let v2 = AttachmentDataSource.forwarding(existingAttachment: attachment, with: reference)
+        let reference = reference.concreteType
+        let v2 = AttachmentDataSource.forwarding(existingAttachment: existingAttachment, with: reference)
 
         let caption: MessageBody?
         let renderingFlag: AttachmentReference.RenderingFlag
@@ -65,8 +65,8 @@ public struct TSResourceDataSource {
             renderingFlag: renderingFlag,
             sourceFilename: v2.sourceFilename,
             dataSource: .existingV2Attachment(.init(
-                id: attachment.attachment.id,
-                mimeType: attachment.mimeType,
+                id: existingAttachment.attachment.id,
+                mimeType: existingAttachment.mimeType,
                 renderingFlag: reference.renderingFlag,
                 sourceFilename: reference.sourceFilename,
                 sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,

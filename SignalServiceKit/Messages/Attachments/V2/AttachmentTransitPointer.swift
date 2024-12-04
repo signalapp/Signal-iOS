@@ -14,6 +14,7 @@ public class AttachmentTransitPointer {
 
     public let info: Attachment.TransitTierInfo
 
+    public var id: Attachment.IDType { attachment.id }
     public var cdnNumber: UInt32 { info.cdnNumber }
     public var cdnKey: String { info.cdnKey }
     public var uploadTimestamp: UInt64 { info.uploadTimestamp }

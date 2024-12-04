@@ -151,7 +151,7 @@ public class PreparedOutgoingMessage {
         return messageForSendStateUpdates.uniqueThreadId
     }
 
-    public func attachmentIdsForUpload(tx: SDSAnyReadTransaction) -> [TSResourceId] {
+    public func attachmentIdsForUpload(tx: SDSAnyReadTransaction) -> [Attachment.IDType] {
         switch messageType {
         case .persisted(let persisted):
             var attachmentIds = DependenciesBridge.shared.tsResourceStore.allAttachments(
@@ -354,7 +354,7 @@ public class PreparedOutgoingMessage {
 
 extension Array where Element == PreparedOutgoingMessage {
 
-    public func attachmentIdsForUpload(tx: SDSAnyReadTransaction) -> [TSResourceId] {
+    public func attachmentIdsForUpload(tx: SDSAnyReadTransaction) -> [Attachment.IDType] {
         // Use a non-story message if we have one.
         // When we multisend N attachments to M message threads and S story threads,
         // we create M messages with N attachments each, and (N * S) story messages
@@ -371,11 +371,11 @@ extension Array where Element == PreparedOutgoingMessage {
                 storyMessages.append(preparedMessage)
             }
         }
-        var attachmentIds = Set<TSResourceId>()
+        var attachmentIds = Set<Attachment.IDType>()
         storyMessages.forEach { message in
             message.attachmentIdsForUpload(tx: tx).forEach { attachmentIds.insert($0) }
         }
-        return [TSResourceId](attachmentIds)
+        return [Attachment.IDType](attachmentIds)
     }
 }
 

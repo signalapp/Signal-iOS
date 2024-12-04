@@ -446,7 +446,7 @@ private class QuotedMessageSnippetView: UIView {
         }
     }
 
-    private func createAttachmentView(_ attachment: TSResource, thumbnailImage: UIImage?) -> UIView {
+    private func createAttachmentView(_ attachment: Attachment, thumbnailImage: UIImage?) -> UIView {
         let quotedAttachmentView: UIView
         if let thumbnailImage {
             let contentImageView = buildImageView(image: thumbnailImage)
