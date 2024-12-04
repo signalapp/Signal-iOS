@@ -68,7 +68,6 @@ public actor ProfileFetcherImpl: ProfileFetcher {
 
     public init(
         db: any DB,
-        deleteForMeSyncMessageSettingsStore: any DeleteForMeSyncMessageSettingsStore,
         disappearingMessagesConfigurationStore: any DisappearingMessagesConfigurationStore,
         identityManager: any OWSIdentityManager,
         paymentsHelper: any PaymentsHelper,
@@ -91,7 +90,6 @@ public actor ProfileFetcherImpl: ProfileFetcher {
                 serviceId: serviceId,
                 authedAccount: authedAccount,
                 db: db,
-                deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
                 disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
                 identityManager: identityManager,
                 paymentsHelper: paymentsHelper,

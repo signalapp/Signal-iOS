@@ -176,7 +176,6 @@ public extension DeleteForMeOutgoingSyncMessageManager {
 // MARK: -
 
 final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMessageManager {
-    private let deleteForMeSyncMessageSettingsStore: any DeleteForMeSyncMessageSettingsStore
     private let recipientDatabaseTable: any RecipientDatabaseTable
     private let syncMessageSender: any Shims.SyncMessageSender
     private let threadStore: any ThreadStore
@@ -184,12 +183,10 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
     private let logger = PrefixedLogger(prefix: "[DeleteForMe]")
 
     init(
-        deleteForMeSyncMessageSettingsStore: any DeleteForMeSyncMessageSettingsStore,
         recipientDatabaseTable: any RecipientDatabaseTable,
         syncMessageSender: any Shims.SyncMessageSender,
         threadStore: any ThreadStore
     ) {
-        self.deleteForMeSyncMessageSettingsStore = deleteForMeSyncMessageSettingsStore
         self.recipientDatabaseTable = recipientDatabaseTable
         self.syncMessageSender = syncMessageSender
         self.threadStore = threadStore
@@ -365,11 +362,6 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
         contents: DeleteForMeOutgoingSyncMessage.Contents,
         tx: any DBWriteTransaction
     ) {
-        guard deleteForMeSyncMessageSettingsStore.isSendingEnabled(tx: tx) else {
-            logger.warn("Skipping delete-for-me sync message, feature not enabled!")
-            return
-        }
-
         guard let localThread = threadStore.getOrCreateLocalThread(tx: tx) else {
             logger.error("Missing local thread!")
             return

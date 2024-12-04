@@ -610,9 +610,7 @@ public class AppSetup {
             threadStore: threadStore
         )
 
-        let deleteForMeSyncMessageSettingsStore = DeleteForMeSyncMessageSettingsStoreImpl()
         let deleteForMeOutgoingSyncMessageManager = DeleteForMeOutgoingSyncMessageManagerImpl(
-            deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
             recipientDatabaseTable: recipientDatabaseTable,
             syncMessageSender: DeleteForMeOutgoingSyncMessageManagerImpl.Wrappers.SyncMessageSender(messageSenderJobQueue),
             threadStore: threadStore
@@ -663,7 +661,6 @@ public class AppSetup {
 
         let threadSoftDeleteManager = ThreadSoftDeleteManagerImpl(
             deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
-            deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
             intentsManager: ThreadSoftDeleteManagerImpl.Wrappers.IntentsManager(),
             interactionDeleteManager: interactionDeleteManager,
             recipientDatabaseTable: recipientDatabaseTable,
@@ -991,7 +988,6 @@ public class AppSetup {
 
         let profileFetcher = ProfileFetcherImpl(
             db: db,
-            deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             identityManager: identityManager,
             paymentsHelper: paymentsHelper,
@@ -1269,7 +1265,6 @@ public class AppSetup {
             deletedCallRecordStore: deletedCallRecordStore,
             deleteForMeIncomingSyncMessageManager: deleteForMeIncomingSyncMessageManager,
             deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
-            deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
             deviceManager: deviceManager,
             deviceStore: deviceStore,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,

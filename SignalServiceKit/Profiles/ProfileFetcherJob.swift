@@ -20,7 +20,6 @@ public class ProfileFetcherJob {
     private let authedAccount: AuthedAccount
 
     private let db: any DB
-    private let deleteForMeSyncMessageSettingsStore: any DeleteForMeSyncMessageSettingsStore
     private let disappearingMessagesConfigurationStore: any DisappearingMessagesConfigurationStore
     private let identityManager: any OWSIdentityManager
     private let paymentsHelper: any PaymentsHelper
@@ -39,7 +38,6 @@ public class ProfileFetcherJob {
         serviceId: ServiceId,
         authedAccount: AuthedAccount,
         db: any DB,
-        deleteForMeSyncMessageSettingsStore: any DeleteForMeSyncMessageSettingsStore,
         disappearingMessagesConfigurationStore: any DisappearingMessagesConfigurationStore,
         identityManager: any OWSIdentityManager,
         paymentsHelper: any PaymentsHelper,
@@ -57,7 +55,6 @@ public class ProfileFetcherJob {
         self.serviceId = serviceId
         self.authedAccount = authedAccount
         self.db = db
-        self.deleteForMeSyncMessageSettingsStore = deleteForMeSyncMessageSettingsStore
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.identityManager = identityManager
         self.paymentsHelper = paymentsHelper
@@ -404,16 +401,6 @@ public class ProfileFetcherJob {
         let registrationState = tsAccountManager.registrationState(tx: tx)
 
         var shouldSendProfileSync = false
-
-        if
-            localIdentifiers.contains(serviceId: serviceId),
-            fetchedCapabilities.deleteSync,
-            !deleteForMeSyncMessageSettingsStore.isSendingEnabled(tx: tx)
-        {
-            deleteForMeSyncMessageSettingsStore.enableSending(tx: tx)
-
-            shouldSendProfileSync = true
-        }
 
         if
             localIdentifiers.contains(serviceId: serviceId),
