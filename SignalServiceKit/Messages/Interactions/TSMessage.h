@@ -83,8 +83,9 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 
 @interface TSMessage : TSInteraction <NSObject>
 
-// WARNING: do not use this getter directly. Use AttachmentStore instead.
-@property (nonatomic, readonly, nullable) NSArray<NSString *> *attachmentIds;
+/// DO NOT USE.
+@property (nonatomic, nullable) NSArray<NSString *> *deprecated_attachmentIds;
+
 @property (nonatomic, readonly, nullable) NSString *body;
 @property (nonatomic, readonly, nullable) MessageBodyRanges *bodyRanges;
 
@@ -166,10 +167,10 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
-                   attachmentIds:(nullable NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                     contactShare:(nullable OWSContact *)contactShare
+        deprecated_attachmentIds:(nullable NSArray<NSString *> *)deprecated_attachmentIds
                        editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
               expireTimerVersion:(nullable NSNumber *)expireTimerVersion
@@ -188,14 +189,11 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
               storyReactionEmoji:(nullable NSString *)storyReactionEmoji
                   storyTimestamp:(nullable NSNumber *)storyTimestamp
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:editState:expireStartedAt:expireTimerVersion:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isSmsMessageRestoredFromBackup:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:body:bodyRanges:contactShare:deprecated_attachmentIds:editState:expireStartedAt:expireTimerVersion:expiresAt:expiresInSeconds:giftBadge:isGroupStoryReply:isSmsMessageRestoredFromBackup:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-// TODO: can be deleted when legacy attachment support is dropped
-- (void)setLegacyBodyAttachmentIds:(nullable NSArray<NSString *> *)attachmentIds;
 
 - (BOOL)shouldStartExpireTimer;
 

@@ -315,10 +315,6 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
                 owsFailBeta("Error: \(error)")
             }
 
-            if !(message.attachmentIds ?? []).isEmpty {
-                mediaGalleryResourceManager.didRemove(message: message, tx: tx.asV2Write)
-            }
-
             message.removeAllAttachments(tx: tx)
             message.removeAllReactions(transaction: tx)
             message.removeAllMentions(transaction: tx)

@@ -18,8 +18,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @interface TSMessage ()
 
-/// These are body attachments.
-@property (nonatomic, nullable) NSArray<NSString *> *attachmentIds;
 @property (nonatomic, nullable) NSString *body;
 @property (nonatomic, nullable) MessageBodyRanges *bodyRanges;
 
@@ -83,7 +81,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     } else if (messageBuilder.messageBody != nil) {
         OWSFailDebug(@"Empty message body.");
     }
-    _attachmentIds = nil;
+    _deprecated_attachmentIds = nil;
     _editState = messageBuilder.editState;
     _expiresInSeconds = messageBuilder.expiresInSeconds;
     _expireStartedAt = messageBuilder.expireStartedAt;
@@ -121,10 +119,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
-                   attachmentIds:(nullable NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
                     contactShare:(nullable OWSContact *)contactShare
+        deprecated_attachmentIds:(nullable NSArray<NSString *> *)deprecated_attachmentIds
                        editState:(TSEditState)editState
                  expireStartedAt:(uint64_t)expireStartedAt
               expireTimerVersion:(nullable NSNumber *)expireTimerVersion
@@ -155,10 +153,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         return self;
     }
 
-    _attachmentIds = attachmentIds;
     _body = body;
     _bodyRanges = bodyRanges;
     _contactShare = contactShare;
+    _deprecated_attachmentIds = deprecated_attachmentIds;
     _editState = editState;
     _expireStartedAt = expireStartedAt;
     _expireTimerVersion = expireTimerVersion;
@@ -201,8 +199,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     if (_schemaVersion < 2) {
         // renamed _attachments to _attachmentIds
-        if (!_attachmentIds) {
-            _attachmentIds = [coder decodeObjectForKey:@"attachments"];
+        if (!_deprecated_attachmentIds) {
+            _deprecated_attachmentIds = [coder decodeObjectForKey:@"attachments"];
         }
     }
 
@@ -229,7 +227,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         // than building the logic to try to find and delete the redundant "dummy" text messages which users
         // have been seeing and interacting with, we delete the body field from the attachment message,
         // which iOS users have never seen directly.
-        if (_attachmentIds.count > 0) {
+        if (_deprecated_attachmentIds.count > 0) {
             _body = nil;
         }
     }
@@ -312,34 +310,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return self.storyAuthorUuidString != nil && self.storyTimestamp != nil;
 }
 
-#pragma mark - Attachments
-
-- (nullable NSArray<NSString *> *)attachmentIds
-{
-    return _attachmentIds;
-}
-
-- (void)setLegacyBodyAttachmentIds:(nullable NSArray<NSString *> *)attachmentIds
-{
-    _attachmentIds = attachmentIds;
-}
-
 - (NSString *)debugDescription
 {
-    BOOL hasAttachments = _attachmentIds && _attachmentIds.count;
-    if (hasAttachments > 0 && self.body.length > 0) {
-        NSString *attachmentId = self.attachmentIds[0];
-        return [NSString
-            stringWithFormat:@"Media Message with attachmentId: %@ and caption: '%@'", attachmentId, self.body];
-    } else if (hasAttachments) {
-        NSString *attachmentId = self.attachmentIds[0];
-        return [NSString stringWithFormat:@"Media Message with attachmentId: %@", attachmentId];
-    } else {
-        return [NSString stringWithFormat:@"%@ with body: %@ has mentions: %@",
-            [self class],
-            self.body,
-            self.bodyRanges.hasMentions ? @"YES" : @"NO"];
-    }
+    return [NSString stringWithFormat:@"%@ with body: %@ has mentions: %@",
+        [self class],
+        self.body,
+        self.bodyRanges.hasMentions ? @"YES" : @"NO"];
 }
 
 

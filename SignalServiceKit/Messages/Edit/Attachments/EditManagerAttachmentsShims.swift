@@ -31,12 +31,6 @@ public protocol _EditManagerAttachmentsImpl_TSMessageStoreShim {
         with linkPreview: OWSLinkPreview,
         tx: DBWriteTransaction
     )
-
-    func update(
-        _ message: TSMessage,
-        withLegacyBodyAttachmentIds: [String],
-        tx: DBWriteTransaction
-    )
 }
 
 public class _EditManagerAttachmentsImpl_TSMessageStoreWrapper: EditManagerAttachmentsImpl.Shims.TSMessageStore {
@@ -57,15 +51,5 @@ public class _EditManagerAttachmentsImpl_TSMessageStoreWrapper: EditManagerAttac
         tx: DBWriteTransaction
     ) {
         message.update(with: linkPreview, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func update(
-        _ message: TSMessage,
-        withLegacyBodyAttachmentIds attachmentIds: [String],
-        tx: DBWriteTransaction
-    ) {
-        message.anyUpdateMessage(transaction: SDSDB.shimOnlyBridge(tx)) { message in
-            message.setLegacyBodyAttachmentIds(attachmentIds)
-        }
     }
 }

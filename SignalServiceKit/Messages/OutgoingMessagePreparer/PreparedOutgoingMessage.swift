@@ -417,21 +417,4 @@ extension PreparedOutgoingMessage {
             return storyMessage.message
         }
     }
-
-    public func legacyBodyAttachmentIdsForMultisend() -> [String] {
-        switch messageType {
-        case .persisted(let persisted):
-            return persisted.message.attachmentIds ?? []
-        case .editMessage:
-            owsFailDebug("We shouldn't be multisending an edit?")
-            return []
-        case .contactSync:
-            return []
-        case .story:
-            owsFailDebug("Body attachment getter shouldn't be used for story messages")
-            return []
-        case .transient:
-            return []
-        }
-    }
 }

@@ -313,6 +313,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addEditStateToMessageAttachmentReference
         case removeVersionedDMTimerCapabilities
         case removeJobRecordTSAttachmentColumns
+        case deprecateAttachmentIdsColumn
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -374,7 +375,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 103
+    public static let grdbSchemaVersionLatest: UInt = 104
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3757,6 +3758,13 @@ public class GRDBSchemaMigrator: NSObject {
                 table.drop(column: "attachmentId")
                 table.drop(column: "attachmentIdMap")
                 table.drop(column: "unsavedMessagesToSend")
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.deprecateAttachmentIdsColumn) { tx in
+            try tx.database.alter(table: "model_TSInteraction") { table in
+                table.rename(column: "attachmentIds", to: "deprecated_attachmentIds")
             }
             return .success(())
         }

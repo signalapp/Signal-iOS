@@ -145,10 +145,6 @@ public class OutgoingMessageFactory: NSObject, Factory {
             messageSticker: messageStickerBuilder(),
             giftBadge: giftBadgeBuilder()
         ).build(transaction: transaction)
-        let attachmentIds = attachmentIdsBuilder(transaction)
-        if !attachmentIds.isEmpty {
-            message.setLegacyBodyAttachmentIds(attachmentIds)
-        }
         return message
     }
 
@@ -185,10 +181,6 @@ public class OutgoingMessageFactory: NSObject, Factory {
 
     public var editStateBuilder: () -> TSEditState = {
         return .none
-    }
-
-    public var attachmentIdsBuilder: (SDSAnyWriteTransaction) -> [String] = { _ in
-        return []
     }
 
     public var expiresInSecondsBuilder: () -> UInt32? = {
@@ -318,10 +310,6 @@ public class IncomingMessageFactory: NSObject, Factory {
             paymentNotification: paymentNotificationBuilder()
         )
         let item = builder.build()
-        let attachmentIds = attachmentIdsBuilder(transaction)
-        if !attachmentIds.isEmpty {
-            item.setLegacyBodyAttachmentIds(attachmentIds)
-        }
         item.anyInsert(transaction: transaction)
         return item
     }
@@ -367,10 +355,6 @@ public class IncomingMessageFactory: NSObject, Factory {
                 return CommonGenerator.address()
             }
         }().aci!
-    }
-
-    public var attachmentIdsBuilder: (SDSAnyWriteTransaction) -> [String] = { _ in
-        return []
     }
 
     public var expiresInSecondsBuilder: () -> UInt32 = {

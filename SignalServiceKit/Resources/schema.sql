@@ -54,7 +54,7 @@ CREATE
             ,"receivedAtTimestamp" INTEGER NOT NULL
             ,"timestamp" INTEGER NOT NULL
             ,"uniqueThreadId" TEXT NOT NULL
-            ,"attachmentIds" BLOB
+            ,"deprecated_attachmentIds" BLOB
             ,"authorId" TEXT
             ,"authorPhoneNumber" TEXT
             ,"authorUUID" TEXT
@@ -751,7 +751,7 @@ CREATE
 CREATE
     INDEX "index_model_TSInteraction_on_uniqueThreadId_and_attachmentIds"
         ON "model_TSInteraction"("uniqueThreadId"
-    ,"attachmentIds"
+    ,"deprecated_attachmentIds"
 )
 ;
 
