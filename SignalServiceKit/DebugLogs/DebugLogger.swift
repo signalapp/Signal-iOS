@@ -54,10 +54,6 @@ private final class DebugLogFileManager: DDLogFileManagerDefault {
         let cutoffDate = Date(timeIntervalSinceNow: -kDayInterval * Double(maximumNumberOfLogFiles))
 
         for logsDirPath in DebugLogger.allLogsDirPaths {
-            guard logsDirPath != logsDirectory else {
-                // Managed directly by the base class.
-                continue
-            }
             Self.deleteLogFiles(inDirectory: logsDirPath, olderThanDate: cutoffDate)
         }
     }
