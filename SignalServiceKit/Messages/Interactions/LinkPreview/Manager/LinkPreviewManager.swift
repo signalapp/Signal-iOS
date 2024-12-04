@@ -10,7 +10,6 @@ public protocol LinkPreviewManager {
     func validateAndBuildLinkPreview(
         from proto: SSKProtoPreview,
         dataMessage: SSKProtoDataMessage,
-        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
 
@@ -18,7 +17,6 @@ public protocol LinkPreviewManager {
         from proto: SSKProtoPreview,
         dataMessage: SSKProtoDataMessage,
         builder: Builder,
-        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
 
@@ -29,27 +27,23 @@ public protocol LinkPreviewManager {
 
     /// Uses the default builder.
     func buildDataSource(
-        from draft: OWSLinkPreviewDraft,
-        ownerType: TSResourceOwnerType
-    ) throws -> LinkPreviewTSResourceDataSource
+        from draft: OWSLinkPreviewDraft
+    ) throws -> LinkPreviewDataSource
 
     func buildDataSource<Builder: LinkPreviewBuilder>(
         from draft: OWSLinkPreviewDraft,
-        builder: Builder,
-        ownerType: TSResourceOwnerType
+        builder: Builder
     ) throws -> Builder.DataSource
 
     /// Uses the default builder.
     func buildLinkPreview(
-        from dataSource: LinkPreviewTSResourceDataSource,
-        ownerType: TSResourceOwnerType,
+        from dataSource: LinkPreviewDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
 
     func buildLinkPreview<Builder: LinkPreviewBuilder>(
         from dataSource: Builder.DataSource,
         builder: Builder,
-        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
 

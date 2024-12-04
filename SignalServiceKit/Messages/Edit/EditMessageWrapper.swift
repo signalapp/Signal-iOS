@@ -111,7 +111,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
 
         /// Copies the wrapped message's fields with edited fields overridden as
         /// appropriate. Attachment-related properties are zeroed-out, and
-        /// handled later by ``EditManagerTSResources/reconcileAttachments``.
+        /// handled later by ``EditManagerAttachments/reconcileAttachments``.
         return TSIncomingMessageBuilder(
             thread: thread,
             timestamp: timestamp,
@@ -189,7 +189,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
 
         /// Copies the wrapped message's fields with edited fields overridden as
         /// appropriate. Attachment-related properties are zeroed-out, and
-        /// handled later by ``EditManagerTSResources/reconcileAttachments``.
+        /// handled later by ``EditManagerAttachments/reconcileAttachments``.
         return TSOutgoingMessageBuilder(
             thread: thread,
             timestamp: timestamp,

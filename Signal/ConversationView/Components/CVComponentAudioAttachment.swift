@@ -176,7 +176,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         } else if audioAttachment.isDownloading, let pointerId = audioAttachment.attachmentPointer?.attachment.id {
             Logger.debug("Cancelling in-progress download because of user action: \(interaction.uniqueId):\(pointerId)")
             SSKEnvironment.shared.databaseStorageRef.write { tx in
-                DependenciesBridge.shared.tsResourceDownloadManager.cancelDownload(
+                DependenciesBridge.shared.attachmentDownloadManager.cancelDownload(
                     for: pointerId,
                     tx: tx.asV2Write
                 )

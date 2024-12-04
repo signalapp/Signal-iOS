@@ -333,13 +333,12 @@ class StoryContextViewController: OWSViewController {
         let attachment: ReferencedAttachment?
         switch message.attachment {
         case .file, .foreignReferenceAttachment:
-            let attachmentReference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: message, tx: transaction.asV2Read)
-            let attachmentValue = attachmentReference?.fetch(tx: transaction)
-            if let attachmentReference, let attachmentValue {
-                attachment = .init(reference: attachmentReference, attachment: attachmentValue)
-            } else {
-                attachment = nil
-            }
+            attachment = message.id.map {
+                return DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
+                    for: .storyMessageMedia(storyMessageRowId: $0),
+                    tx: transaction.asV2Read
+                )
+            } ?? nil
 
         case .text(let attachment):
             let preloadedAttachment = PreloadedTextAttachment.from(

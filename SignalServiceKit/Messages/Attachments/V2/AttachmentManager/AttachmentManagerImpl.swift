@@ -110,7 +110,42 @@ public class AttachmentManagerImpl: AttachmentManager {
         return _quotedReplyAttachmentInfo(originalMessageRowId: originalMessageRowId, tx: tx)?.info
     }
 
-    public func createQuotedReplyMessageThumbnail(
+    public func createQuotedReplyMessageThumbnailBuilder(
+        from dataSource: QuotedReplyAttachmentDataSource,
+        tx: DBWriteTransaction
+    ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo> {
+        let (info, isStub) = self._quotedReplyAttachmentInfo(
+            originalAttachmentMimeType: dataSource.originalAttachmentMimeType,
+            originalReferenceSourceFilename: dataSource.originalAttachmentSourceFilename,
+            originalReferenceRenderingFlag: dataSource.renderingFlag
+        )
+        if isStub {
+            return .withoutFinalizer(info)
+        }
+        return OwnedAttachmentBuilder<QuotedAttachmentInfo>(
+            info: info,
+            finalize: { [self, dataSource] ownerId, tx in
+                let replyMessageOwner: AttachmentReference.OwnerBuilder.MessageAttachmentBuilder
+                switch ownerId {
+                case .quotedReplyAttachment(let metadata):
+                    replyMessageOwner = metadata
+                default:
+                    owsFailDebug("Invalid owner sent to quoted reply builder!")
+                    return
+                }
+
+                try self.createQuotedReplyMessageThumbnail(
+                    consuming: .init(
+                        dataSource: dataSource,
+                        owner: replyMessageOwner
+                    ),
+                    tx: tx
+                )
+            }
+        )
+    }
+
+    private func createQuotedReplyMessageThumbnail(
         consuming dataSource: OwnedQuotedReplyAttachmentDataSource,
         tx: DBWriteTransaction
     ) throws {
@@ -766,26 +801,50 @@ public class AttachmentManagerImpl: AttachmentManager {
         return .init(
             originalAttachmentReference: originalReference,
             originalAttachment: originalAttachment,
-            info: {
-                guard MimeTypeUtil.isSupportedVisualMediaMimeType(originalAttachment.mimeType) else {
-                    // Can't make a thumbnail, just return a stub.
-                    return QuotedAttachmentInfo(
-                        info: .stub(
-                            withOriginalAttachmentMimeType: originalAttachment.mimeType,
-                            originalAttachmentSourceFilename: originalReference.sourceFilename
-                        ),
-                        renderingFlag: originalReference.renderingFlag
-                    )
-                }
+            info: self._quotedReplyAttachmentInfo(
+                originalAttachmentMimeType: originalAttachment.mimeType,
+                originalReferenceSourceFilename: originalReference.sourceFilename,
+                originalReferenceRenderingFlag: originalReference.renderingFlag
+            ).0
+        )
+    }
 
-                return QuotedAttachmentInfo(
-                    info: .forV2ThumbnailReference(
-                        withOriginalAttachmentMimeType: originalAttachment.mimeType,
-                        originalAttachmentSourceFilename: originalReference.sourceFilename
+    private func _quotedReplyAttachmentInfo(
+        originalAttachmentMimeType: String,
+        originalReferenceSourceFilename: String?,
+        originalReferenceRenderingFlag: AttachmentReference.RenderingFlag
+    ) -> (QuotedAttachmentInfo, isStub: Bool) {
+        let renderingFlag: AttachmentReference.RenderingFlag
+        switch originalReferenceRenderingFlag {
+        case .borderless:
+            // Not allowed in quoted
+            renderingFlag = .default
+        default:
+            renderingFlag = originalReferenceRenderingFlag
+        }
+        guard MimeTypeUtil.isSupportedVisualMediaMimeType(originalAttachmentMimeType) else {
+            // Can't make a thumbnail, just return a stub.
+            return (
+                QuotedAttachmentInfo(
+                    info: .stub(
+                        withOriginalAttachmentMimeType: originalAttachmentMimeType,
+                        originalAttachmentSourceFilename: originalReferenceSourceFilename
                     ),
-                    renderingFlag: originalReference.renderingFlag
-                )
-            }()
+                    renderingFlag: renderingFlag
+                ),
+                isStub: true
+            )
+        }
+
+        return (
+            QuotedAttachmentInfo(
+                info: .forV2ThumbnailReference(
+                    withOriginalAttachmentMimeType: originalAttachmentMimeType,
+                    originalAttachmentSourceFilename: originalReferenceSourceFilename
+                ),
+                renderingFlag: renderingFlag
+            ),
+            isStub: false
         )
     }
 

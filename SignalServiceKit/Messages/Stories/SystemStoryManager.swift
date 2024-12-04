@@ -37,7 +37,7 @@ public class OnboardingStoryManagerFilesystem: NSObject {
 public class OnboardingStoryManagerStoryMessageFactory: NSObject {
 
     public class func createFromSystemAuthor(
-        attachmentSource: TSResourceDataSource,
+        attachmentSource: AttachmentDataSource,
         timestamp: UInt64,
         transaction: SDSAnyWriteTransaction
     ) throws -> StoryMessage {
@@ -51,15 +51,13 @@ public class OnboardingStoryManagerStoryMessageFactory: NSObject {
     public class func validateAttachmentContents(
         dataSource: DataSource,
         mimeType: String
-    ) throws -> TSResourceDataSource {
-        return try DependenciesBridge.shared.tsResourceContentValidator.validateContents(
+    ) throws -> AttachmentDataSource {
+        return try DependenciesBridge.shared.attachmentContentValidator.validateContents(
             dataSource: dataSource,
             shouldConsume: true,
             mimeType: mimeType,
-            sourceFilename: nil,
-            caption: nil,
             renderingFlag: .default,
-            ownerType: .story
+            sourceFilename: nil
         )
     }
 }
@@ -432,13 +430,13 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
                 }
                 let urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForUpdates2()
                 return strongSelf.fetchFilenames(urlSession: urlSession)
-                    .then(on: queue) { [weak self] (fileNames: [String]) -> Promise<[TSResourceDataSource]> in
+                    .then(on: queue) { [weak self] (fileNames: [String]) -> Promise<[AttachmentDataSource]> in
                         let promises = fileNames.compactMap {
                             self?.downloadOnboardingAsset(urlSession: urlSession, url: $0)
                         }
                         return Promise.when(on: SyncScheduler(), fulfilled: promises)
                     }
-                    .then(on: queue) { [weak self] (attachmentSources: [TSResourceDataSource]) -> Promise<Void> in
+                    .then(on: queue) { [weak self] (attachmentSources: [AttachmentDataSource]) -> Promise<Void> in
                         guard let strongSelf = self else {
                             return .init(error: OWSAssertionError("SystemStoryManager unretained"))
                         }
@@ -575,7 +573,7 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
     private func downloadOnboardingAsset(
         urlSession: OWSURLSessionProtocol,
         url: String
-    ) -> Promise<TSResourceDataSource> {
+    ) -> Promise<AttachmentDataSource> {
         return Promise.wrapAsync {
             return try await urlSession.performDownload(url, method: .get)
         }.map(on: self.queue) { [fileSystem, storyMessageFactory] result in
@@ -602,7 +600,7 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
 
     /// Returns unique Ids for the created messages. Fails if any one message creation fails.
     private func createStoryMessages(
-        attachmentSources: [TSResourceDataSource],
+        attachmentSources: [AttachmentDataSource],
         transaction: SDSAnyWriteTransaction
     ) throws -> [String] {
         let baseTimestamp = Date().ows_millisecondsSince1970

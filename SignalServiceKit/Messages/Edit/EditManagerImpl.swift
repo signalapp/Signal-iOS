@@ -30,24 +30,24 @@ public class EditManagerImpl: EditManager {
     }
 
     public struct Context {
+        let attachmentStore: AttachmentStore
         let dataStore: EditManagerImpl.Shims.DataStore
-        let editManagerAttachments: EditManagerTSResources
+        let editManagerAttachments: EditManagerAttachments
         let editMessageStore: EditMessageStore
         let receiptManagerShim: EditManagerImpl.Shims.ReceiptManager
-        let tsResourceStore: TSResourceStore
 
         public init(
+            attachmentStore: AttachmentStore,
             dataStore: EditManagerImpl.Shims.DataStore,
-            editManagerAttachments: EditManagerTSResources,
+            editManagerAttachments: EditManagerAttachments,
             editMessageStore: EditMessageStore,
-            receiptManagerShim: EditManagerImpl.Shims.ReceiptManager,
-            tsResourceStore: TSResourceStore
+            receiptManagerShim: EditManagerImpl.Shims.ReceiptManager
         ) {
+            self.attachmentStore = attachmentStore
             self.dataStore = dataStore
             self.editManagerAttachments = editManagerAttachments
             self.editMessageStore = editMessageStore
             self.receiptManagerShim = receiptManagerShim
-            self.tsResourceStore = tsResourceStore
         }
     }
 
@@ -198,9 +198,9 @@ public class EditManagerImpl: EditManager {
         targetMessage: TSOutgoingMessage,
         thread: TSThread,
         edits: MessageEdits,
-        oversizeText: OversizeTextDataSource?,
+        oversizeText: AttachmentDataSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
-        linkPreview: LinkPreviewTSResourceDataSource?,
+        linkPreview: LinkPreviewDataSource?,
         tx: DBWriteTransaction
     ) throws -> OutgoingEditMessage {
         guard let threadRowId = thread.sqliteRowId else {
@@ -406,14 +406,14 @@ public class EditManagerImpl: EditManager {
             throw OWSAssertionError("Edit of message type not supported")
         }
 
-        let currentAttachmentRefs = context.tsResourceStore.bodyMediaAttachments(
-            for: targetMessage,
+        let firstAttachmentRef = context.attachmentStore.fetchFirstReference(
+            owner: .messageBodyAttachment(messageRowId: targetMessage.sqliteRowId!),
             tx: tx
         )
 
         // Voice memos only ever have one attachment; only need to check the first.
         if
-            let firstAttachmentRef = currentAttachmentRefs.first,
+            let firstAttachmentRef,
             firstAttachmentRef.renderingFlag == .voiceMessage
         {
             // This will bail if it finds a voice memo

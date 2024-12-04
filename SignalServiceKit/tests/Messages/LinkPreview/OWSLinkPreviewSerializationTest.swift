@@ -93,7 +93,6 @@ extension OWSLinkPreview {
             OWSLinkPreview.withoutImage(
                 urlString: "https://signal.org",
                 title: "Some Title",
-                ownerType: .message,
                 usesV2AttachmentReference: false
             ),
             Data(base64Encoded: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGmCwwVFhcYVSRudWxs1A0ODxAREhMUViRjbGFzc1V0aXRsZV8QD01UTE1vZGVsVmVyc2lvbll1cmxTdHJpbmeABYAEgAKAAxAAXxASaHR0cHM6Ly9zaWduYWwub3JnWlNvbWUgVGl0bGXSGRobHFokY2xhc3NuYW1lWCRjbGFzc2VzXxAfU2lnbmFsU2VydmljZUtpdC5PV1NMaW5rUHJldmlld6MdHh9fEB9TaWduYWxTZXJ2aWNlS2l0Lk9XU0xpbmtQcmV2aWV3WE1UTE1vZGVsWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBaAGAAaQBwAHYAiACSAJQAlgCYAJoAnACxALwAwQDMANUA9wD7AR0BJgAAAAAAAAIBAAAAAAAAACAAAAAAAAAAAAAAAAAAAAEv")!,

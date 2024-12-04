@@ -122,13 +122,12 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     }
 
     public func fileAttachment(tx: SDSAnyReadTransaction) -> ReferencedAttachment? {
-        guard
-            let reference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: self, tx: tx.asV2Read),
-            let attachment = reference.fetch(tx: tx)
-        else {
-            return nil
-        }
-        return .init(reference: reference, attachment: attachment)
+        guard let id else { return nil }
+        return DependenciesBridge.shared.attachmentStore
+            .fetchFirstReferencedAttachment(
+                for: .storyMessageMedia(storyMessageRowId: id),
+                tx: tx.asV2Read
+            )
     }
 
     public var replyCount: UInt64
@@ -239,24 +238,15 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
 
         let attachment: StoryMessageAttachment
-        let mediaAttachmentBuilder: OwnedAttachmentBuilder<TSResourceRetrievalInfo>?
+        let mediaAttachmentBuilder: OwnedAttachmentBuilder<Void>?
         let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
 
         if let fileAttachment = storyMessage.fileAttachment {
-            let attachmentBuilder = try DependenciesBridge.shared.tsResourceManager.createAttachmentPointerBuilder(
+            let attachmentBuilder = try DependenciesBridge.shared.attachmentManager.createAttachmentPointerBuilder(
                 from: fileAttachment,
-                ownerType: .story,
                 tx: transaction.asV2Write
             )
-            switch attachmentBuilder.info {
-            case .legacy(let attachmentUniqueId):
-                attachment = .file(StoryMessageFileAttachment(
-                    attachmentId: attachmentUniqueId,
-                    storyBodyRangeProtos: caption?.toProtoBodyRanges() ?? []
-                ))
-            case .v2:
-                attachment = .foreignReferenceAttachment
-            }
+            attachment = .foreignReferenceAttachment
             mediaAttachmentBuilder = attachmentBuilder
             linkPreviewBuilder = nil
         } else if let textAttachmentProto = storyMessage.textAttachment {
@@ -361,24 +351,15 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
 
         let attachment: StoryMessageAttachment
-        let mediaAttachmentBuilder: OwnedAttachmentBuilder<TSResourceRetrievalInfo>?
+        let mediaAttachmentBuilder: OwnedAttachmentBuilder<Void>?
         let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
 
         if let fileAttachment = storyMessage.fileAttachment {
-            let attachmentBuilder = try DependenciesBridge.shared.tsResourceManager.createAttachmentPointerBuilder(
+            let attachmentBuilder = try DependenciesBridge.shared.attachmentManager.createAttachmentPointerBuilder(
                 from: fileAttachment,
-                ownerType: .story,
                 tx: transaction.asV2Write
             )
-            switch attachmentBuilder.info {
-            case .legacy(let attachmentUniqueId):
-                attachment = .file(StoryMessageFileAttachment(
-                    attachmentId: attachmentUniqueId,
-                    storyBodyRangeProtos: caption?.toProtoBodyRanges() ?? []
-                ))
-            case .v2:
-                attachment = .foreignReferenceAttachment
-            }
+            attachment = .foreignReferenceAttachment
             mediaAttachmentBuilder = attachmentBuilder
             linkPreviewBuilder = nil
         } else if let textAttachmentProto = storyMessage.textAttachment {
@@ -455,7 +436,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     @discardableResult
     public static func createFromSystemAuthor(
-        attachmentSource: TSResourceDataSource,
+        attachmentSource: AttachmentDataSource,
         timestamp: UInt64,
         transaction: SDSAnyWriteTransaction
     ) throws -> StoryMessage {
@@ -473,21 +454,12 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         // If someday a system story caption has styles, they'd go here.
         let caption: StyleOnlyMessageBody? = nil
 
-        let attachmentBuilder = try DependenciesBridge.shared.tsResourceManager.createAttachmentStreamBuilder(
+        let attachmentBuilder = try DependenciesBridge.shared.attachmentManager.createAttachmentStreamBuilder(
             from: attachmentSource,
             tx: transaction.asV2Write
         )
 
-        let attachment: StoryMessageAttachment
-        switch attachmentBuilder.info {
-        case .legacy(let attachmentUniqueId):
-            attachment = .file(StoryMessageFileAttachment(
-                attachmentId: attachmentUniqueId,
-                captionStyles: caption?.collapsedStyles ?? []
-            ))
-        case .v2:
-            attachment = .foreignReferenceAttachment
-        }
+        let attachment: StoryMessageAttachment = .foreignReferenceAttachment
 
         let record = StoryMessage(
             // NOTE: As of now these only get created for the onboarding story, and that happens
@@ -826,7 +798,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     public func downloadIfNecessary(transaction: SDSAnyWriteTransaction) {
         switch attachment {
         case .file, .foreignReferenceAttachment:
-            DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(self, tx: transaction.asV2Write)
+            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(self, tx: transaction.asV2Write)
         case .text:
             return
         }
@@ -991,9 +963,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             DependenciesBridge.shared.interactionDeleteManager
                 .delete(reply, sideEffects: .default(), tx: transaction.asV2Write)
         }
-
-        // Delete all attachments for the message.
-        try? DependenciesBridge.shared.tsResourceManager.removeAttachments(from: self, tx: transaction.asV2Write)
 
         // Reload latest unexpired timestamp for the context.
         self.context.associatedData(transaction: transaction)?.recomputeLatestUnexpiredTimestamp(transaction: transaction)

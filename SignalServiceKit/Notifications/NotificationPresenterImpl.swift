@@ -690,8 +690,12 @@ public class NotificationPresenterImpl: NotificationPresenter {
         } else if message.contactShare != nil {
             notificationBody = String(format: NotificationStrings.incomingReactionContactShareMessageFormat, reaction.emoji)
         } else if
-            let mediaAttachments = DependenciesBridge.shared.tsResourceStore
-                .referencedBodyMediaAttachments(for: message, tx: transaction.asV2Read)
+            let messageRowId = message.sqliteRowId,
+            let mediaAttachments = DependenciesBridge.shared.attachmentStore
+                .fetchReferencedAttachments(
+                    for: .messageBodyAttachment(messageRowId: messageRowId),
+                    tx: transaction.asV2Read
+                )
                 .nilIfEmpty,
             let firstAttachment = mediaAttachments.first
         {

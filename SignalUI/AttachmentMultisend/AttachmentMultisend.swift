@@ -39,7 +39,7 @@ public class AttachmentMultisend {
                     approvedMessageBody,
                     to: conversations,
                     db: deps.databaseStorage,
-                    attachmentValidator: deps.tsResourceValidator
+                    attachmentValidator: deps.attachmentValidator
                 )
 
                 var hasNonStoryDestination = false
@@ -175,7 +175,6 @@ public class AttachmentMultisend {
         let imageQualityLevel: ImageQualityLevel.Type
         let messageSenderJobQueue: MessageSenderJobQueue
         let tsAccountManager: TSAccountManager
-        let tsResourceValidator: TSResourceContentValidator
     }
 
     private static var deps = Dependencies(
@@ -185,8 +184,7 @@ public class AttachmentMultisend {
         databaseStorage: SSKEnvironment.shared.databaseStorageRef,
         imageQualityLevel: ImageQualityLevel.self,
         messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef,
-        tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-        tsResourceValidator: DependenciesBridge.shared.tsResourceContentValidator
+        tsAccountManager: DependenciesBridge.shared.tsAccountManager
     )
 
     // MARK: - Segmenting Attachments
@@ -330,7 +328,7 @@ public class AttachmentMultisend {
                 return nil
             }
             return SignalAttachment.ForSending(
-                dataSource: original.tsDataSource,
+                dataSource: original,
                 isViewOnce: attachment.isViewOnce,
                 renderingFlag: attachment.renderingFlag
             )
@@ -464,7 +462,7 @@ public class AttachmentMultisend {
     }
 
     private class func prepareNonStoryMessage(
-        messageBody: ValidatedTSMessageBody?,
+        messageBody: ValidatedMessageBody?,
         attachments: [SignalAttachment.ForSending],
         thread: TSThread,
         tx: SDSAnyWriteTransaction

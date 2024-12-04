@@ -29,14 +29,14 @@ public protocol ContactShareManager {
 
 public class ContactShareManagerImpl: ContactShareManager {
 
-    private let attachmentManager: TSResourceManager
-    private let attachmentStore: TSResourceStore
-    private let attachmentValidator: TSResourceContentValidator
+    private let attachmentManager: AttachmentManager
+    private let attachmentStore: AttachmentStore
+    private let attachmentValidator: AttachmentContentValidator
 
     public init(
-        attachmentManager: TSResourceManager,
-        attachmentStore: TSResourceStore,
-        attachmentValidator: TSResourceContentValidator
+        attachmentManager: AttachmentManager,
+        attachmentStore: AttachmentStore,
+        attachmentValidator: AttachmentContentValidator
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
@@ -98,19 +98,11 @@ public class ContactShareManagerImpl: ContactShareManager {
         {
             let avatarAttachmentBuilder = try attachmentManager.createAttachmentPointerBuilder(
                 from: avatarAttachmentProto,
-                ownerType: .message,
                 tx: tx
             )
 
-            return avatarAttachmentBuilder.wrap { _ in
-                switch avatarAttachmentBuilder.info {
-                case .legacy(let attachmentUniqueId):
-                    contact.setLegacyAvatarAttachmentId(attachmentUniqueId)
-                    return contact
-                case .v2:
-                    // Nothing to change; the reference is foreign.
-                    return contact
-                }
+            return avatarAttachmentBuilder.wrap {
+                return contact
             }
         } else {
             return .withoutFinalizer(contact)
@@ -120,7 +112,7 @@ public class ContactShareManagerImpl: ContactShareManager {
     public func validateAndPrepare(
         draft: ContactShareDraft
     ) throws -> ContactShareDraft.ForSending {
-        let avatarDataSource: TSResourceDataSource? = try {
+        let avatarDataSource: AttachmentDataSource? = try {
             if
                 let existingAvatarAttachment = draft.existingAvatarAttachment,
                 let stream = existingAvatarAttachment.attachment.asStream()
@@ -137,10 +129,8 @@ public class ContactShareManagerImpl: ContactShareManager {
                 return try attachmentValidator.validateContents(
                     data: imageData,
                     mimeType: mimeType,
-                    sourceFilename: nil,
-                    caption: nil,
                     renderingFlag: .default,
-                    ownerType: .message
+                    sourceFilename: nil
                 )
             } else {
                 return nil
@@ -176,13 +166,8 @@ public class ContactShareManagerImpl: ContactShareManager {
         return try attachmentManager.createAttachmentStreamBuilder(
             from: avatarDataSource,
             tx: tx
-        ).wrap { attachmentInfo in
-            switch attachmentInfo {
-            case .legacy(uniqueId: let uniqueId):
-                return buildContact(legacyAttachmentId: uniqueId)
-            case .v2:
-                return buildContact()
-            }
+        ).wrap {
+            return buildContact()
         }
 
     }
@@ -223,20 +208,17 @@ public class ContactShareManagerImpl: ContactShareManager {
         contactBuilder.setAddress(contactShare.addresses.compactMap({ $0.proto() }))
 
         if
-            let avatarResourceRef = attachmentStore.contactShareAvatarAttachment(
-                for: parentMessage,
+            let parentMessageRowId = parentMessage.sqliteRowId,
+            let avatarAttachment = attachmentStore.fetchFirstReferencedAttachment(
+                for: .messageContactAvatar(messageRowId: parentMessageRowId),
                 tx: tx
             ),
-            let avatarResource = attachmentStore.fetch(
-                [avatarResourceRef.attachmentRowId],
-                tx: tx
-            ).first,
-            let avatarPointer = avatarResource.asTransitTierPointer(),
+            let avatarPointer = avatarAttachment.attachment.asTransitTierPointer()
+        {
             let attachmentProto = attachmentManager.buildProtoForSending(
-                from: avatarResourceRef,
+                from: avatarAttachment.reference,
                 pointer: avatarPointer
             )
-        {
             let avatarBuilder = SSKProtoDataMessageContactAvatar.builder()
             avatarBuilder.setAvatar(attachmentProto)
             contactBuilder.setAvatar(avatarBuilder.buildInfallibly())

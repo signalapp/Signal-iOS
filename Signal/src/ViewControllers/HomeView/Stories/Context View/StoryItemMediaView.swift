@@ -1096,7 +1096,7 @@ extension StoryItem {
             else {
                 return false
             }
-            DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
+            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
                 message,
                 priority: priority,
                 tx: tx.asV2Write

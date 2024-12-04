@@ -143,13 +143,6 @@ public class DependenciesBridge {
     public let threadSoftDeleteManager: ThreadSoftDeleteManager
     public let threadStore: ThreadStore
     public let tsAccountManager: TSAccountManager
-    public let tsResourceCloner: SignalTSResourceCloner
-    public let tsResourceContentValidator: TSResourceContentValidator
-    public let tsResourceDownloadManager: TSResourceDownloadManager
-    public let tsResourceManager: TSResourceManager
-    public let tsResourceStore: TSResourceStore
-    public let tsResourceUploadManager: TSResourceUploadManager
-    public let tsResourceViewOnceManager: TSResourceViewOnceManager
     public let usernameApiClient: UsernameApiClient
     public let usernameEducationManager: UsernameEducationManager
     public let usernameLinkManager: UsernameLinkManager
@@ -264,13 +257,6 @@ public class DependenciesBridge {
         threadSoftDeleteManager: ThreadSoftDeleteManager,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
-        tsResourceCloner: SignalTSResourceCloner,
-        tsResourceContentValidator: TSResourceContentValidator,
-        tsResourceDownloadManager: TSResourceDownloadManager,
-        tsResourceManager: TSResourceManager,
-        tsResourceStore: TSResourceStore,
-        tsResourceUploadManager: TSResourceUploadManager,
-        tsResourceViewOnceManager: TSResourceViewOnceManager,
         usernameApiClient: UsernameApiClient,
         usernameEducationManager: UsernameEducationManager,
         usernameLinkManager: UsernameLinkManager,
@@ -384,13 +370,6 @@ public class DependenciesBridge {
         self.threadSoftDeleteManager = threadSoftDeleteManager
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
-        self.tsResourceCloner = tsResourceCloner
-        self.tsResourceContentValidator = tsResourceContentValidator
-        self.tsResourceDownloadManager = tsResourceDownloadManager
-        self.tsResourceManager = tsResourceManager
-        self.tsResourceStore = tsResourceStore
-        self.tsResourceUploadManager = tsResourceUploadManager
-        self.tsResourceViewOnceManager = tsResourceViewOnceManager
         self.usernameApiClient = usernameApiClient
         self.usernameEducationManager = usernameEducationManager
         self.usernameLinkManager = usernameLinkManager

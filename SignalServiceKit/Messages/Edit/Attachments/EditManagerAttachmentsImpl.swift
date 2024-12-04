@@ -12,25 +12,19 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
     private let attachmentValidator: AttachmentContentValidator
     private let linkPreviewManager: LinkPreviewManager
     private let tsMessageStore: EditManagerAttachmentsImpl.Shims.TSMessageStore
-    private let tsResourceManager: TSResourceManager
-    private let tsResourceStore: TSResourceStore
 
     public init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
         linkPreviewManager: LinkPreviewManager,
-        tsMessageStore: EditManagerAttachmentsImpl.Shims.TSMessageStore,
-        tsResourceManager: TSResourceManager,
-        tsResourceStore: TSResourceStore
+        tsMessageStore: EditManagerAttachmentsImpl.Shims.TSMessageStore
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.attachmentValidator = attachmentValidator
         self.linkPreviewManager = linkPreviewManager
         self.tsMessageStore = tsMessageStore
-        self.tsResourceManager = tsResourceManager
-        self.tsResourceStore = tsResourceStore
     }
 
     public func reconcileAttachments<EditTarget: EditMessageWrapper>(
@@ -222,9 +216,8 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             break
         case .draft(let draft):
             let builder = try linkPreviewManager.buildLinkPreview(
-                from: draft.v2DataSource,
+                from: draft,
                 builder: builder,
-                ownerType: .message,
                 tx: tx
             )
             tsMessageStore.update(latestRevision, with: builder.info, tx: tx)
@@ -244,7 +237,6 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                     from: preview,
                     dataMessage: dataMessage,
                     builder: builder,
-                    ownerType: .message,
                     tx: tx
                 )
             } catch let error as LinkPreviewError {
@@ -324,7 +316,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         case .none:
             break
         case .dataSource(let dataSource):
-            let attachmentDataSource = dataSource.v2DataSource
+            let attachmentDataSource = dataSource
             try attachmentManager.createAttachmentStream(
                 consuming: .init(
                     dataSource: attachmentDataSource,

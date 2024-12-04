@@ -9,7 +9,7 @@ public struct MessageStickerDataSource {
     public let info: StickerInfo
     public let stickerType: StickerType
     public let emoji: String?
-    public let source: TSResourceDataSource
+    public let source: AttachmentDataSource
 }
 
 public protocol MessageStickerManager {
@@ -35,15 +35,15 @@ public protocol MessageStickerManager {
 
 public class MessageStickerManagerImpl: MessageStickerManager {
 
-    private let attachmentManager: TSResourceManager
-    private let attachmentStore: TSResourceStore
-    private let attachmentValidator: TSResourceContentValidator
+    private let attachmentManager: AttachmentManager
+    private let attachmentStore: AttachmentStore
+    private let attachmentValidator: AttachmentContentValidator
     private let stickerManager: Shims.StickerManager
 
     public init(
-        attachmentManager: TSResourceManager,
-        attachmentStore: TSResourceStore,
-        attachmentValidator: TSResourceContentValidator,
+        attachmentManager: AttachmentManager,
+        attachmentStore: AttachmentStore,
+        attachmentValidator: AttachmentContentValidator,
         stickerManager: Shims.StickerManager
     ) {
         self.attachmentManager = attachmentManager
@@ -69,13 +69,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
             tx: tx
         )
 
-        let messageSticker: MessageSticker
-        switch attachmentBuilder.info {
-        case .legacy(let uniqueId):
-            messageSticker = .withLegacyAttachment(info: stickerInfo, legacyAttachmentId: uniqueId, emoji: emoji)
-        case .v2:
-            messageSticker = .withForeignReferenceAttachment(info: stickerInfo, emoji: emoji)
-        }
+        let messageSticker: MessageSticker = .withForeignReferenceAttachment(info: stickerInfo, emoji: emoji)
         guard messageSticker.isValid else {
             throw StickerError.invalidInput
         }
@@ -86,7 +80,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
         dataProto: SSKProtoAttachmentPointer,
         stickerInfo: StickerInfo,
         tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
+    ) throws -> OwnedAttachmentBuilder<Void> {
         do {
             let proto: SSKProtoAttachmentPointer
             if dataProto.contentType == MimeType.applicationOctetStream.rawValue {
@@ -98,7 +92,6 @@ public class MessageStickerManagerImpl: MessageStickerManager {
             }
             return try attachmentManager.createAttachmentPointerBuilder(
                 from: proto,
-                ownerType: .message,
                 tx: tx
             )
         } catch {
@@ -110,16 +103,14 @@ public class MessageStickerManagerImpl: MessageStickerManager {
         let validatedDataSource = try attachmentValidator.validateContents(
             data: draft.stickerData,
             mimeType: draft.stickerType.mimeType,
-            sourceFilename: nil,
-            caption: nil,
             renderingFlag: .default,
-            ownerType: .message
+            sourceFilename: nil
         )
         return .init(
             info: draft.info,
             stickerType: draft.stickerType,
             emoji: draft.emoji,
-            source: validatedDataSource
+            source: .pendingAttachment(validatedDataSource)
         )
     }
 
@@ -132,13 +123,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
             tx: tx
         )
 
-        let messageSticker: MessageSticker
-        switch attachmentBuilder.info {
-        case .legacy(let uniqueId):
-            messageSticker = .withLegacyAttachment(info: dataSource.info, legacyAttachmentId: uniqueId, emoji: dataSource.emoji)
-        case .v2:
-            messageSticker = .withForeignReferenceAttachment(info: dataSource.info, emoji: dataSource.emoji)
-        }
+        let messageSticker: MessageSticker = .withForeignReferenceAttachment(info: dataSource.info, emoji: dataSource.emoji)
         guard messageSticker.isValid else {
             throw StickerError.invalidInput
         }
@@ -152,27 +137,23 @@ public class MessageStickerManagerImpl: MessageStickerManager {
     ) throws -> SSKProtoDataMessageSticker {
 
         guard
-            let attachmentReference = attachmentStore.stickerAttachment(
-                for: parentMessage,
+            let parentMessageRowId = parentMessage.sqliteRowId,
+            let attachment = attachmentStore.fetchFirstReferencedAttachment(
+                for: .messageSticker(messageRowId: parentMessageRowId),
                 tx: tx
-            ),
-            let attachment = attachmentStore.fetch(attachmentReference.attachmentRowId, tx: tx)
+            )
         else {
             throw OWSAssertionError("Could not find sticker attachment")
         }
 
-        guard let attachmentPointer = attachment.asTransitTierPointer() else {
+        guard let attachmentPointer = attachment.attachment.asTransitTierPointer() else {
             throw OWSAssertionError("Generating proto for non-uploaded attachment!")
         }
 
-        guard
-            let attachmentProto = attachmentManager.buildProtoForSending(
-                from: attachmentReference,
-                pointer: attachmentPointer
-            )
-        else {
-            throw OWSAssertionError("Could not build sticker attachment protobuf.")
-        }
+        let attachmentProto = attachmentManager.buildProtoForSending(
+            from: attachment.reference,
+            pointer: attachmentPointer
+        )
 
         let protoBuilder = SSKProtoDataMessageSticker.builder(
             packID: messageSticker.packId,

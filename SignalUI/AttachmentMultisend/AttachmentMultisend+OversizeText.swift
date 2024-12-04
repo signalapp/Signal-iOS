@@ -13,14 +13,14 @@ extension AttachmentMultisend {
         public let thread: TSThread
         // Message bodies are re-generated _per destination_,
         // as mentions must be hydrated based on participants.
-        public let messageBody: ValidatedTSMessageBody?
+        public let messageBody: ValidatedMessageBody?
     }
 
     public static func prepareForSending(
         _ messageBody: MessageBody?,
         to conversations: [ConversationItem],
         db: SDSDatabaseStorage,
-        attachmentValidator: TSResourceContentValidator
+        attachmentValidator: AttachmentContentValidator
     ) async throws -> [Destination] {
 
         // If the message body has no mentions, we can "hydrate" once across all threads
@@ -55,7 +55,7 @@ extension AttachmentMultisend {
 
         guard !canShareMessageBody else {
             // We only prepare the single shared body.
-            let validatedMessageBody: ValidatedTSMessageBody?
+            let validatedMessageBody: ValidatedMessageBody?
             if let messageBody {
                 validatedMessageBody = try attachmentValidator.prepareOversizeTextIfNeeded(
                     from: messageBody

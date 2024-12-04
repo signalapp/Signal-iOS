@@ -382,9 +382,9 @@ extension SendMessageFlow {
             }
         case .media(let signalAttachments, let messageBody):
             let conversations = selectedConversations
-            return TSResourceMultisend.sendApprovedMedia(
+            return AttachmentMultisend.sendApprovedMedia(
                 conversations: conversations,
-                approvalMessageBody: messageBody,
+                approvedMessageBody: messageBody,
                 approvedAttachments: signalAttachments
             ).enqueuedPromise
         }

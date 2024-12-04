@@ -10,20 +10,17 @@ public protocol LinkPreviewBuilder {
     associatedtype DataSource
 
     func buildDataSource(
-        _ draft: OWSLinkPreviewDraft,
-        ownerType: TSResourceOwnerType
+        _ draft: OWSLinkPreviewDraft
     ) throws -> DataSource
 
     func createLinkPreview(
         from dataSource: DataSource,
-        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
 
     func createLinkPreview(
         from proto: SSKProtoAttachmentPointer,
         metadata: OWSLinkPreview.Metadata,
-        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
 }

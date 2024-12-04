@@ -16,9 +16,9 @@ public class UnpreparedOutgoingMessage {
 
     public static func forMessage(
         _ message: TSOutgoingMessage,
-        unsavedBodyMediaAttachments: [TSResourceDataSource] = [],
-        oversizeTextDataSource: OversizeTextDataSource? = nil,
-        linkPreviewDraft: LinkPreviewTSResourceDataSource? = nil,
+        unsavedBodyMediaAttachments: [AttachmentDataSource] = [],
+        oversizeTextDataSource: AttachmentDataSource? = nil,
+        linkPreviewDraft: LinkPreviewDataSource? = nil,
         quotedReplyDraft: DraftQuotedReplyModel.ForSending? = nil,
         messageStickerDraft: MessageStickerDataSource? = nil,
         contactShareDraft: ContactShareDraft.ForSending? = nil
@@ -50,8 +50,8 @@ public class UnpreparedOutgoingMessage {
     public static func forEditMessage(
         targetMessage: TSOutgoingMessage,
         edits: MessageEdits,
-        oversizeTextDataSource: OversizeTextDataSource?,
-        linkPreviewDraft: LinkPreviewTSResourceDataSource?,
+        oversizeTextDataSource: AttachmentDataSource?,
+        linkPreviewDraft: LinkPreviewDataSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>
     ) -> UnpreparedOutgoingMessage {
         return .init(messageType: .editMessage(.init(
@@ -131,9 +131,9 @@ public class UnpreparedOutgoingMessage {
 
         struct Persistable {
             let message: TSOutgoingMessage
-            let unsavedBodyMediaAttachments: [TSResourceDataSource]
-            let oversizeTextDataSource: OversizeTextDataSource?
-            let linkPreviewDraft: LinkPreviewTSResourceDataSource?
+            let unsavedBodyMediaAttachments: [AttachmentDataSource]
+            let oversizeTextDataSource: AttachmentDataSource?
+            let linkPreviewDraft: LinkPreviewDataSource?
             let quotedReplyDraft: DraftQuotedReplyModel.ForSending?
             let messageStickerDraft: MessageStickerDataSource?
             let contactShareDraft: ContactShareDraft.ForSending?
@@ -142,8 +142,8 @@ public class UnpreparedOutgoingMessage {
         struct EditMessage {
             let targetMessage: TSOutgoingMessage
             let edits: MessageEdits
-            let oversizeTextDataSource: OversizeTextDataSource?
-            let linkPreviewDraft: LinkPreviewTSResourceDataSource?
+            let oversizeTextDataSource: AttachmentDataSource?
+            let linkPreviewDraft: LinkPreviewDataSource?
             let quotedReplyEdit: MessageEdits.Edit<Void>
         }
 
@@ -211,7 +211,6 @@ public class UnpreparedOutgoingMessage {
         let linkPreviewBuilder = try message.linkPreviewDraft.map {
             try DependenciesBridge.shared.linkPreviewManager.buildLinkPreview(
                 from: $0,
-                ownerType: .message,
                 tx: tx.asV2Write
             )
         }.map {
@@ -253,27 +252,43 @@ public class UnpreparedOutgoingMessage {
         }
 
         if let oversizeTextDataSource = message.oversizeTextDataSource {
-            try DependenciesBridge.shared.tsResourceManager.createOversizeTextAttachmentStream(
-                consuming: oversizeTextDataSource,
-                message: message.message,
+            try DependenciesBridge.shared.attachmentManager.createAttachmentStream(
+                consuming: .init(
+                    dataSource: oversizeTextDataSource,
+                    owner: .messageOversizeText(.init(
+                        messageRowId: messageRowId,
+                        receivedAtTimestamp: message.message.receivedAtTimestamp,
+                        threadRowId: threadRowId,
+                        isPastEditRevision: message.message.isPastEditRevision()
+                    ))
+                ),
                 tx: tx.asV2Write
             )
         }
         if message.unsavedBodyMediaAttachments.count > 0 {
             // Borderless is disallowed on any message with a quoted reply.
-            let unsavedBodyMediaAttachments: [TSResourceDataSource]
+            let unsavedBodyMediaAttachments: [AttachmentDataSource]
             if quotedReplyBuilder != nil {
                 unsavedBodyMediaAttachments = message.unsavedBodyMediaAttachments.map {
                     var attachment = $0
-                    attachment.removeBorderlessRenderingFlagIfPresent()
-                    return attachment
+                    return attachment.removeBorderlessRenderingFlagIfPresent()
                 }
             } else {
                 unsavedBodyMediaAttachments = message.unsavedBodyMediaAttachments
             }
-            try DependenciesBridge.shared.tsResourceManager.createBodyMediaAttachmentStreams(
-                consuming: unsavedBodyMediaAttachments,
-                message: message.message,
+            try DependenciesBridge.shared.attachmentManager.createAttachmentStreams(
+                consuming: unsavedBodyMediaAttachments.map { dataSource in
+                    return .init(
+                        dataSource: dataSource,
+                        owner: .messageBodyAttachment(.init(
+                            messageRowId: messageRowId,
+                            receivedAtTimestamp: message.message.receivedAtTimestamp,
+                            threadRowId: threadRowId,
+                            isViewOnce: message.message.isViewOnceMessage,
+                            isPastEditRevision: message.message.isPastEditRevision()
+                        ))
+                    )
+                },
                 tx: tx.asV2Write
             )
         }

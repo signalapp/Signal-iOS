@@ -83,7 +83,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 
 @interface TSMessage : TSInteraction <NSObject>
 
-// WARNING: do not use this getter directly. Use TSResourceStore instead.
+// WARNING: do not use this getter directly. Use AttachmentStore instead.
 @property (nonatomic, readonly, nullable) NSArray<NSString *> *attachmentIds;
 @property (nonatomic, readonly, nullable) NSString *body;
 @property (nonatomic, readonly, nullable) MessageBodyRanges *bodyRanges;

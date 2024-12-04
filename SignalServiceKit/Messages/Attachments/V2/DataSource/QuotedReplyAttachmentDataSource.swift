@@ -13,6 +13,46 @@ public struct QuotedReplyAttachmentDataSource {
     public let originalMessageRowId: Int64?
     public let source: Source
 
+    public var originalAttachmentMimeType: String {
+        switch source {
+        case .pendingAttachment(let pendingAttachmentSource):
+            return pendingAttachmentSource.originalAttachmentMimeType
+        case .originalAttachment(let originalAttachmentSource):
+            return originalAttachmentSource.mimeType
+        case .quotedAttachmentProto(let quotedAttachmentProtoSource):
+            return quotedAttachmentProtoSource.originalAttachmentMimeType
+        }
+    }
+
+    public var originalAttachmentSourceFilename: String? {
+        switch source {
+        case .pendingAttachment(let pendingAttachmentSource):
+            return pendingAttachmentSource.originalAttachmentSourceFilename
+        case .originalAttachment(let originalAttachmentSource):
+            return originalAttachmentSource.sourceFilename
+        case .quotedAttachmentProto(let quotedAttachmentProtoSource):
+            return quotedAttachmentProtoSource.originalAttachmentSourceFilename
+        }
+    }
+
+    public var renderingFlag: AttachmentReference.RenderingFlag {
+        let renderingFlag: AttachmentReference.RenderingFlag
+        switch source {
+        case .pendingAttachment(let pendingAttachmentSource):
+            renderingFlag = pendingAttachmentSource.pendingAttachment.renderingFlag
+        case .originalAttachment(let originalAttachmentSource):
+            renderingFlag = originalAttachmentSource.renderingFlag
+        case .quotedAttachmentProto(let quotedAttachmentProtoSource):
+            renderingFlag = .fromProto(quotedAttachmentProtoSource.thumbnail)
+        }
+        switch renderingFlag {
+        case .borderless:
+            return .default
+        default:
+            return renderingFlag
+        }
+    }
+
     public enum Source {
         /// We took the original message's attachment, transcoded/resized it as needed,
         /// and have prepared it for use as a totally independent attachment.

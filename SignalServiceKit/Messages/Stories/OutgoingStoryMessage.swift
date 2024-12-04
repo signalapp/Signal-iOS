@@ -133,22 +133,22 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         switch storyMessage.attachment {
         case .file, .foreignReferenceAttachment:
             guard
-                let attachmentReference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(
-                    for: storyMessage,
+                let storyMessageRowId = storyMessage.id,
+                let attachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
+                    for: .storyMessageMedia(storyMessageRowId: storyMessageRowId),
                     tx: transaction.asV2Read
                 ),
-                let attachment = attachmentReference.fetch(tx: transaction),
-                let pointer = attachment.asTransitTierPointer(),
-                let attachmentProto = DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
-                    from: attachmentReference,
-                    pointer: pointer
-                )
+                let pointer = attachment.attachment.asTransitTierPointer()
             else {
                 owsFailDebug("Missing attachment for outgoing story message")
                 return nil
             }
+            let attachmentProto = DependenciesBridge.shared.attachmentManager.buildProtoForSending(
+                from: attachment.reference,
+                pointer: pointer
+            )
             builder.setFileAttachment(attachmentProto)
-            if let storyMediaCaption = attachmentReference.storyMediaCaption {
+            if let storyMediaCaption = attachment.reference.storyMediaCaption {
                 builder.setBodyRanges(storyMediaCaption.toProtoBodyRanges())
             }
         case .text(let attachment):

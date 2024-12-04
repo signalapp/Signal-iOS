@@ -233,7 +233,6 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
                     return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
                         from: linkPreview,
                         dataMessage: dataMessage,
-                        ownerType: .message,
                         tx: tx
                     )
                 } catch let error as LinkPreviewError {

@@ -1219,8 +1219,8 @@ class DebugUIMessages: DebugUIPage {
     private enum FakeMessageContent {
         case incomingTextOnly(String)
         case outgoingTextOnly(String)
-        case outgoingAttachments([TSResourceDataSource])
-        case incomingAttachments([TSResourceDataSource])
+        case outgoingAttachments([AttachmentDataSource])
+        case incomingAttachments([AttachmentDataSource])
     }
 
     private static func createFakeMessageContents(
@@ -1244,32 +1244,28 @@ class DebugUIMessages: DebugUIPage {
             case 1:
                 contents.append(.outgoingTextOnly(randomText))
             case 2:
-                let attachmentDataSource = try DependenciesBridge.shared.tsResourceContentValidator.validateContents(
+                let attachmentDataSource = try DependenciesBridge.shared.attachmentContentValidator.validateContents(
                     data: UIImage.image(color: .blue, size: .square(100)).jpegData(compressionQuality: 0.1)!,
                     mimeType: "image/jpg",
-                    sourceFilename: "test.jpg",
-                    caption: nil,
                     renderingFlag: .default,
-                    ownerType: .message
+                    sourceFilename: "test.jpg"
                 )
-                contents.append(.incomingAttachments([attachmentDataSource]))
+                contents.append(.incomingAttachments([.from(pendingAttachment: attachmentDataSource)]))
             case 3:
                 let attachmentCount = Int.random(in: 0...SignalAttachment.maxAttachmentsAllowed)
-                var attachmentDataSources = [TSResourceDataSource]()
+                var attachmentDataSources = [AttachmentDataSource]()
                 for _ in (0..<attachmentCount) {
-                    let dataSource = try DependenciesBridge.shared.tsResourceContentValidator.validateContents(
+                    let dataSource = try DependenciesBridge.shared.attachmentContentValidator.validateContents(
                         dataSource: DataSourceValue(
                             ImageFactory().buildPNGData(),
                             fileExtension: "png"
                         ),
                         shouldConsume: true,
                         mimeType: "image/png",
-                        sourceFilename: "test.png",
-                        caption: nil,
                         renderingFlag: .default,
-                        ownerType: .message
+                        sourceFilename: "test.png"
                     )
-                    attachmentDataSources.append(dataSource)
+                    attachmentDataSources.append(.from(pendingAttachment: dataSource))
                 }
                 contents.append(.outgoingAttachments(attachmentDataSources))
             default:
@@ -1319,9 +1315,19 @@ class DebugUIMessages: DebugUIPage {
                 message.anyInsert(transaction: transaction)
                 message.debugonly_markAsReadNow(transaction: transaction)
 
-                try? DependenciesBridge.shared.tsResourceManager.createBodyMediaAttachmentStreams(
-                    consuming: dataSources,
-                    message: message,
+                try? DependenciesBridge.shared.attachmentManager.createAttachmentStreams(
+                    consuming: dataSources.map { dataSource in
+                        return .init(
+                            dataSource: dataSource,
+                            owner: .messageBodyAttachment(.init(
+                                messageRowId: message.sqliteRowId!,
+                                receivedAtTimestamp: message.receivedAtTimestamp,
+                                threadRowId: thread.sqliteRowId!,
+                                isViewOnce: message.isViewOnceMessage,
+                                isPastEditRevision: message.isPastEditRevision()
+                            ))
+                        )
+                    },
                     tx: transaction.asV2Write
                 )
 

@@ -98,7 +98,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
             let builder = Item.Builder(interaction: message)
 
             builder.attachments = try attachmentStreams.map { attachmentStream in
-                try DependenciesBridge.shared.tsResourceCloner.cloneAsSignalAttachment(
+                try DependenciesBridge.shared.attachmentCloner.cloneAsSignalAttachment(
                     attachment: attachmentStream
                 )
             }
@@ -128,18 +128,21 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         case .file, .foreignReferenceAttachment:
             let attachment: ReferencedAttachmentStream? = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 guard
-                    let reference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: storyMessage, tx: tx.asV2Read),
-                    let attachmentStream = reference.fetch(tx: tx)?.asStream()
+                    let rowId = storyMessage.id,
+                    let referencedStream = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
+                        for: .storyMessageMedia(storyMessageRowId: rowId),
+                        tx: tx.asV2Read
+                    )?.asReferencedStream
                 else {
                     return nil
                 }
-                return .init(reference: reference, attachmentStream: attachmentStream)
+                return referencedStream
             }
             do {
                 guard let attachment else {
                     throw OWSAssertionError("Missing attachment stream for forwarded story message")
                 }
-                let signalAttachment = try DependenciesBridge.shared.tsResourceCloner.cloneAsSignalAttachment(
+                let signalAttachment = try DependenciesBridge.shared.attachmentCloner.cloneAsSignalAttachment(
                     attachment: attachment
                 )
                 builder.attachments = [signalAttachment]
@@ -421,15 +424,15 @@ extension ForwardMessageViewController {
                   !attachments.isEmpty {
             // TODO: What about link previews in this case?
             let conversations = selectedConversations
-            return TSResourceMultisend.sendApprovedMedia(
+            return AttachmentMultisend.sendApprovedMedia(
                 conversations: conversations,
-                approvalMessageBody: item.messageBody,
+                approvedMessageBody: item.messageBody,
                 approvedAttachments: attachments
             ).enqueuedPromise.asVoid()
         } else if let textAttachment = item.textAttachment {
             // TODO: we want to reuse the uploaded link preview image attachment instead of re-uploading
             // if the original was sent recently (if not the image could be stale)
-            return TSResourceMultisend.sendTextAttachment(
+            return AttachmentMultisend.sendTextAttachment(
                 textAttachment.asUnsentAttachment(), to: selectedConversations
             ).enqueuedPromise.asVoid()
         } else if let messageBody = item.messageBody {
@@ -735,7 +738,7 @@ public struct ForwardMessageItem {
 
             if !attachmentStreams.isEmpty {
                 builder.attachments = try attachmentStreams.map { attachmentStream in
-                    try DependenciesBridge.shared.tsResourceCloner.cloneAsSignalAttachment(
+                    try DependenciesBridge.shared.attachmentCloner.cloneAsSignalAttachment(
                         attachment: attachmentStream
                     )
                 }
@@ -776,8 +779,8 @@ public struct ForwardMessageItem {
                 transaction: SDSAnyReadTransaction
             ) -> LinkPreviewImage? {
                 guard
-                    let attachment = DependenciesBridge.shared.tsResourceStore
-                        .fetch(attachmentId, tx: transaction.asV2Read)?
+                    let attachment = DependenciesBridge.shared.attachmentStore
+                        .fetch(id: attachmentId, tx: transaction.asV2Read)?
                         .asStream()
                 else {
                     owsFailDebug("Missing attachment.")
@@ -798,8 +801,9 @@ public struct ForwardMessageItem {
         }
         var linkPreviewImage: LinkPreviewImage?
         if
-            let imageAttachmentId = DependenciesBridge.shared.tsResourceStore.linkPreviewAttachment(
-                for: parentMessage,
+            let parentMessageRowId = parentMessage.sqliteRowId,
+            let imageAttachmentId = DependenciesBridge.shared.attachmentStore.fetchFirstReference(
+                owner: .messageLinkPreview(messageRowId: parentMessageRowId),
                 tx: transaction.asV2Read
             )?.attachmentRowId,
             let image = LinkPreviewImage.load(

@@ -230,11 +230,10 @@ extension SharingThreadPickerViewController {
                 return .failure(.init(outgoingMessages: [], error: OWSAssertionError("Missing body.")))
             }
 
-            let linkPreviewDataSource: LinkPreviewTSResourceDataSource?
+            let linkPreviewDataSource: LinkPreviewDataSource?
             if let linkPreviewDraft {
                 linkPreviewDataSource = try? DependenciesBridge.shared.linkPreviewManager.buildDataSource(
-                    from: linkPreviewDraft,
-                    ownerType: .message
+                    from: linkPreviewDraft
                 )
             } else {
                 linkPreviewDataSource = nil
@@ -303,9 +302,9 @@ extension SharingThreadPickerViewController {
             }
 
             // This method will also add threads to the profile whitelist.
-            let sendResult = TSResourceMultisend.sendApprovedMedia(
+            let sendResult = AttachmentMultisend.sendApprovedMedia(
                 conversations: selectedConversations,
-                approvalMessageBody: messageBody,
+                approvedMessageBody: messageBody,
                 approvedAttachments: attachments
             )
 
@@ -377,7 +376,7 @@ extension SharingThreadPickerViewController {
                 messageBody,
                 to: conversations,
                 db: SSKEnvironment.shared.databaseStorageRef,
-                attachmentValidator: DependenciesBridge.shared.tsResourceContentValidator
+                attachmentValidator: DependenciesBridge.shared.attachmentContentValidator
             )
 
             (preparedNonStoryMessages, nonStorySendPromises) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in

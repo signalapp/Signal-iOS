@@ -989,7 +989,6 @@ public final class MessageReceiver {
                 linkPreviewBuilder = try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
                     from: linkPreview,
                     dataMessage: dataMessage,
-                    ownerType: .message,
                     tx: tx.asV2Write
                 )
             } catch let error as LinkPreviewError {
@@ -1140,9 +1139,19 @@ public final class MessageReceiver {
         thread.anyReload(transaction: tx)
 
         do {
-            try DependenciesBridge.shared.tsResourceManager.createBodyAttachmentPointers(
-                from: dataMessage.attachments,
-                message: message,
+            try DependenciesBridge.shared.attachmentManager.createAttachmentPointers(
+                from: dataMessage.attachments.map { proto in
+                    return .init(
+                        proto: proto,
+                        owner: .messageBodyAttachment(.init(
+                            messageRowId: message.sqliteRowId!,
+                            receivedAtTimestamp: message.receivedAtTimestamp,
+                            threadRowId: thread.sqliteRowId!,
+                            isViewOnce: message.isViewOnceMessage,
+                            isPastEditRevision: message.isPastEditRevision()
+                        ))
+                    )
+                },
                 tx: tx.asV2Write
             )
 
@@ -1218,7 +1227,7 @@ public final class MessageReceiver {
             )
         }
 
-        DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForMessage(message, tx: tx.asV2Write)
+        DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(message, tx: tx.asV2Write)
         SSKEnvironment.shared.notificationPresenterRef.notifyUser(forIncomingMessage: message, thread: thread, transaction: tx)
 
         if CurrentAppContext().isMainApp {
@@ -1743,7 +1752,7 @@ public final class MessageReceiver {
         )
 
         // Start downloading any new attachments
-        DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForMessage(
+        DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
             message,
             tx: tx.asV2Write
         )

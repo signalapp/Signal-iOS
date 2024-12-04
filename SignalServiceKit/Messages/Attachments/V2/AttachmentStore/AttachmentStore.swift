@@ -359,4 +359,16 @@ extension AttachmentStore {
             return ReferencedAttachment(reference: reference, attachment: attachment)
         }
     }
+
+    public func allAttachments(
+        forMessageWithRowId messageRowId: Int64,
+        tx: DBReadTransaction
+    ) -> [AttachmentReference] {
+        return fetchReferences(
+            owners: AttachmentReference.MessageOwnerTypeRaw.allCases.map {
+                $0.with(messageRowId: messageRowId)
+            },
+            tx: tx
+        )
+    }
 }

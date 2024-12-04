@@ -16,7 +16,7 @@ public enum StorySharing {
 
         guard !storyConversations.isEmpty else { return nil }
 
-        return TSResourceMultisend.sendTextAttachment(
+        return AttachmentMultisend.sendTextAttachment(
             buildTextAttachment(with: messageBody, linkPreviewDraft: linkPreviewDraft),
             to: storyConversations
         )

@@ -267,10 +267,19 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let encryptionKey: Data
         let digestSHA256Ciphertext: Data
         let localRelativeFilePath: String
-        let renderingFlag: AttachmentReference.RenderingFlag
+        private(set) var renderingFlag: AttachmentReference.RenderingFlag
         let sourceFilename: String?
         let validatedContentType: Attachment.ContentType
         let orphanRecordId: OrphanedAttachmentRecord.IDType
+
+        mutating func removeBorderlessRenderingFlagIfPresent() {
+            switch renderingFlag {
+            case .borderless:
+                renderingFlag = .default
+            default:
+                return
+            }
+        }
     }
 
     private struct RevalidatedAttachmentImpl: RevalidatedAttachment {

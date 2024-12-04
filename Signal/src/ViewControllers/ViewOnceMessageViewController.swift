@@ -10,7 +10,7 @@ import YYImage
 
 class ViewOnceMessageViewController: OWSViewController {
 
-    typealias Content = TSViewOnceContent
+    typealias Content = ViewOnceContent
 
     // MARK: - Properties
 
@@ -53,7 +53,7 @@ class ViewOnceMessageViewController: OWSViewController {
         guard let message = interaction as? TSMessage else {
             return nil
         }
-        return DependenciesBridge.shared.tsResourceViewOnceManager.prepareViewOnceContentForDisplay(message)
+        return DependenciesBridge.shared.attachmentViewOnceManager.prepareViewOnceContentForDisplay(message)
     }
 
     // MARK: - View Lifecycle

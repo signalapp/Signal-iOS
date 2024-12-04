@@ -16,8 +16,8 @@ class OWSLinkPreviewTest: XCTestCase {
 
         mockDB = InMemoryDB()
         linkPreviewManager = LinkPreviewManagerImpl(
-            attachmentManager: TSResourceManagerMock(),
-            attachmentStore: TSResourceStoreMock(),
+            attachmentManager: AttachmentManagerMock(),
+            attachmentStore: AttachmentStoreMock(),
             attachmentValidator: AttachmentContentValidatorMock(),
             db: mockDB,
             linkPreviewSettingStore: LinkPreviewSettingStore.mock()
@@ -43,7 +43,6 @@ class OWSLinkPreviewTest: XCTestCase {
             let linkPreviewBuilder = try! linkPreviewManager.validateAndBuildLinkPreview(
                 from: dataMessage.preview.first!,
                 dataMessage: dataMessage,
-                ownerType: .message,
                 tx: tx
             )
             XCTAssertNotNil(linkPreviewBuilder)
@@ -73,7 +72,6 @@ class OWSLinkPreviewTest: XCTestCase {
             let linkPreviewBuilder = try! linkPreviewManager.validateAndBuildLinkPreview(
                 from: dataMessage.preview.first!,
                 dataMessage: dataMessage,
-                ownerType: .message,
                 tx: tx
             )
             XCTAssertNotNil(linkPreviewBuilder)
@@ -107,7 +105,6 @@ class OWSLinkPreviewTest: XCTestCase {
             let linkPreviewBuilder = try! linkPreviewManager.validateAndBuildLinkPreview(
                 from: dataMessage.preview.first!,
                 dataMessage: dataMessage,
-                ownerType: .message,
                 tx: tx
             )
             XCTAssertNotNil(linkPreviewBuilder)

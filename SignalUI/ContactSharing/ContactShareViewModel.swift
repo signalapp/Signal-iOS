@@ -49,22 +49,22 @@ public class ContactShareViewModel: NSObject {
         transaction: SDSAnyReadTransaction
     ) {
         if
-            let avatarAttachmentRef = DependenciesBridge.shared.tsResourceStore.contactShareAvatarAttachment(
-                for: parentMessage,
+            let parentMessageRowId = parentMessage.sqliteRowId,
+            let avatarAttachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
+                for: .messageContactAvatar(messageRowId: parentMessageRowId),
                 tx: transaction.asV2Read
-            ),
-            let avatarAttachment = avatarAttachmentRef.fetch(tx: transaction)?.asStream()
+            )?.asReferencedStream
         {
             let avatarImageData: Data?
-            switch avatarAttachment.contentType {
+            switch avatarAttachment.attachmentStream.contentType {
             case .file, .invalid, .video, .animatedImage, .audio:
                 avatarImageData = nil
             case .image:
-                avatarImageData = try? avatarAttachment.decryptedRawData()
+                avatarImageData = try? avatarAttachment.attachmentStream.decryptedRawData()
             }
             self.init(
                 contactShareRecord: contactShareRecord,
-                existingAvatarAttachment: .init(reference: avatarAttachmentRef, attachment: avatarAttachment.attachment),
+                existingAvatarAttachment: avatarAttachment,
                 avatarImageData: avatarImageData
             )
         } else {

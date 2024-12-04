@@ -35,12 +35,11 @@ public struct UnsentTextAttachment {
     }
 
     public func validateAndPrepareForSending() throws -> ForSending {
-        let validatedLinkPreview: LinkPreviewTSResourceDataSource?
+        let validatedLinkPreview: LinkPreviewDataSource?
         if let linkPreview = linkPreviewDraft {
             do {
                 validatedLinkPreview = try DependenciesBridge.shared.linkPreviewManager.buildDataSource(
-                    from: linkPreview,
-                    ownerType: .story
+                    from: linkPreview
                 )
             } catch LinkPreviewError.featureDisabled {
                 validatedLinkPreview = .init(
@@ -50,7 +49,7 @@ public struct UnsentTextAttachment {
                         previewDescription: nil,
                         date: nil
                     ),
-                    imageV2DataSource: nil
+                    imageDataSource: nil
                 )
             } catch {
                 Logger.error("Failed to generate link preview.")
@@ -81,7 +80,7 @@ public struct UnsentTextAttachment {
         public let textBackgroundColor: UIColor?
         public let background: TextAttachment.Background
 
-        public let linkPreviewDraft: LinkPreviewTSResourceDataSource?
+        public let linkPreviewDraft: LinkPreviewDataSource?
 
         public var textContent: TextAttachment.TextContent {
             return TextAttachment.textContent(body: body, textStyle: textStyle)
@@ -95,11 +94,10 @@ public struct UnsentTextAttachment {
                 do {
                     linkPreviewBuilder = try DependenciesBridge.shared.linkPreviewManager.buildLinkPreview(
                         from: linkPreview,
-                        ownerType: .story,
                         tx: transaction.asV2Write
                     )
                 } catch LinkPreviewError.featureDisabled {
-                    linkPreviewBuilder = .withoutFinalizer(.withoutImage(urlString: linkPreview.metadata.urlString, ownerType: .story))
+                    linkPreviewBuilder = .withoutFinalizer(.withoutImage(urlString: linkPreview.metadata.urlString))
                 } catch {
                     Logger.error("Failed to generate link preview.")
                 }

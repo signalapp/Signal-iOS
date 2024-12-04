@@ -154,14 +154,14 @@ public class PreparedOutgoingMessage {
     public func attachmentIdsForUpload(tx: SDSAnyReadTransaction) -> [Attachment.IDType] {
         switch messageType {
         case .persisted(let persisted):
-            var attachmentIds = DependenciesBridge.shared.tsResourceStore.allAttachments(
-                for: persisted.message,
+            let attachmentIds = DependenciesBridge.shared.attachmentStore.allAttachments(
+                forMessageWithRowId: persisted.rowId,
                 tx: tx.asV2Read
             ).map(\.attachmentRowId)
             return attachmentIds
         case .editMessage(let editMessage):
-            return DependenciesBridge.shared.tsResourceStore.allAttachments(
-                for: editMessage.editedMessage,
+            return DependenciesBridge.shared.attachmentStore.allAttachments(
+                forMessageWithRowId: editMessage.editedMessageRowId,
                 tx: tx.asV2Read
             ).map(\.attachmentRowId)
         case .contactSync:
@@ -174,13 +174,17 @@ public class PreparedOutgoingMessage {
             switch storyMessage.attachment {
             case .file, .foreignReferenceAttachment:
                 return [
-                    DependenciesBridge.shared.tsResourceStore
-                        .mediaAttachment(for: storyMessage, tx: tx.asV2Read)?.attachmentRowId
+                    DependenciesBridge.shared.attachmentStore.fetchFirstReference(
+                        owner: .storyMessageMedia(storyMessageRowId: story.storyMessageRowId),
+                        tx: tx.asV2Read
+                    )?.attachmentRowId
                 ].compacted()
             case .text:
                 return [
-                    DependenciesBridge.shared.tsResourceStore
-                        .linkPreviewAttachment(for: storyMessage, tx: tx.asV2Read)?.attachmentRowId
+                    DependenciesBridge.shared.attachmentStore.fetchFirstReference(
+                        owner: .storyMessageLinkPreview(storyMessageRowId: story.storyMessageRowId),
+                        tx: tx.asV2Read
+                    )?.attachmentRowId
                 ].compacted()
             }
         case .transient:
@@ -235,12 +239,10 @@ public class PreparedOutgoingMessage {
     }
 
     public func attachmentUploadOperations(tx: SDSAnyReadTransaction) -> [() async throws -> Void] {
-        let legacyMessageOwnerId = messageForSending.uniqueId
         return attachmentIdsForUpload(tx: tx).map { attachmentId in
             return {
-                try await DependenciesBridge.shared.tsResourceUploadManager.uploadAttachment(
-                    attachmentId: attachmentId,
-                    legacyMessageOwnerIds: [legacyMessageOwnerId]
+                try await DependenciesBridge.shared.attachmentUploadManager.uploadTransitTierAttachment(
+                    attachmentId: attachmentId
                 )
             }
         }

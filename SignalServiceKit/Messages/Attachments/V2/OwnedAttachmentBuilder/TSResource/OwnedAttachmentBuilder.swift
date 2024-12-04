@@ -116,6 +116,19 @@ extension OwnedAttachmentBuilder {
     }
 }
 
+extension OwnedAttachmentBuilder where InfoType == Void {
+
+    public convenience init(
+        finalize: @escaping FinalizeFn
+    ) {
+        self.init(info: (), finalize: finalize)
+    }
+
+    public static func withoutFinalizer() -> Self {
+        return Self.init(info: (), finalize: { _, _ in })
+    }
+}
+
 private protocol AnyOwnedAttachmentBuilder: AnyObject {
     var hasBeenFinalized: Bool { get set }
     var wrappee: AnyOwnedAttachmentBuilder? { get }

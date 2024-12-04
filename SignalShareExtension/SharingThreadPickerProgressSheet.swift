@@ -33,7 +33,7 @@ public class SharingThreadPickerProgressSheet: ActionSheetController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleAttachmentProgressNotification(_:)),
-            name: Upload.Constants.resourceUploadProgressNotification,
+            name: Upload.Constants.attachmentUploadProgressNotification,
             object: nil
         )
     }
@@ -125,7 +125,7 @@ public class SharingThreadPickerProgressSheet: ActionSheetController {
     private func handleAttachmentProgressNotification(_ notification: NSNotification) {
         // We can safely show the progress for just the first message,
         // all the messages share the same attachment upload progress.
-        guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadResourceIDKey] as? Attachment.IDType else {
+        guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadAttachmentIDKey] as? Attachment.IDType else {
             owsFailDebug("Missing notificationAttachmentId.")
             return
         }

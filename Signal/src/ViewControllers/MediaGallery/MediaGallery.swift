@@ -532,10 +532,12 @@ class MediaGallery {
             return nil
         }()
 
-        let itemsInAlbum = DependenciesBridge.shared.tsResourceStore.bodyMediaAttachments(
-            for: message,
-            tx: transaction.asV2Read
-        )
+        let itemsInAlbum = message.sqliteRowId.map {
+            DependenciesBridge.shared.attachmentStore.fetchReferences(
+                owner: .messageBodyAttachment(messageRowId: $0),
+                tx: transaction.asV2Read
+            )
+        } ?? []
         // Re-normalize the index in the album; albumOrder may have gaps but MediaGalleryItem.albumIndex
         // needs to have no gaps as its used to index _into_ the ordered attachments.
         let albumOrder = attachment.reference.orderInOwningMessage
@@ -805,10 +807,10 @@ class MediaGallery {
                     atIndexPaths: givenIndexPaths,
                     initiatedBy: initiatedBy,
                     deps: DeleteItemsDependencies(
+                        attachmentManager: DependenciesBridge.shared.attachmentManager,
                         deleteForMeOutgoingSyncMessageManager: DependenciesBridge.shared.deleteForMeOutgoingSyncMessageManager,
                         interactionDeleteManager: interactionDeleteManager,
-                        tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-                        tsResourceManager: DependenciesBridge.shared.tsResourceManager
+                        tsAccountManager: DependenciesBridge.shared.tsAccountManager
                     )
                 )
             }
@@ -816,10 +818,10 @@ class MediaGallery {
     }
 
     private struct DeleteItemsDependencies {
+        let attachmentManager: any AttachmentManager
         let deleteForMeOutgoingSyncMessageManager: any DeleteForMeOutgoingSyncMessageManager
         let interactionDeleteManager: any InteractionDeleteManager
         let tsAccountManager: any TSAccountManager
-        let tsResourceManager: any TSResourceManager
     }
 
     private func _deleteInternal(
@@ -852,11 +854,13 @@ class MediaGallery {
                     let message = item.message
                     let referencedAttachment: ReferencedAttachment = item.attachmentStream
 
-                    try deps.tsResourceManager.removeBodyAttachment(
-                        referencedAttachment.attachment,
-                        from: message,
-                        tx: tx.asV2Write
-                    )
+                    if let messageRowId = message.sqliteRowId {
+                        try deps.attachmentManager.removeAttachment(
+                            referencedAttachment.attachment,
+                            from: .messageBodyAttachment(messageRowId: messageRowId),
+                            tx: tx.asV2Write
+                        )
+                    }
 
                     attachmentsRemoved.append(
                         additionalElement: referencedAttachment,

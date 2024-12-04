@@ -494,19 +494,22 @@ extension TSOutgoingMessage {
 
     @objc
     func buildProtosForBodyAttachments(tx: SDSAnyReadTransaction) throws -> [SSKProtoAttachmentPointer] {
-        let references = DependenciesBridge.shared.tsResourceStore.bodyAttachments(for: self, tx: tx.asV2Read)
-        let attachments = DependenciesBridge.shared.tsResourceStore.fetch(references.map(\.attachmentRowId), tx: tx.asV2Read)
-        return references.compactMap { reference in
-            guard let attachment = attachments.first(where: { $0.id == reference.attachmentRowId }) else {
-                owsFailDebug("Missing attachment for sending!")
-                return nil
-            }
-            guard let pointer = attachment.asTransitTierPointer() else {
+        let attachments = sqliteRowId.map { sqliteRowId in
+            return DependenciesBridge.shared.attachmentStore.fetchReferencedAttachments(
+                owners: [
+                    .messageOversizeText(messageRowId: sqliteRowId),
+                    .messageBodyAttachment(messageRowId: sqliteRowId)
+                ],
+                tx: tx.asV2Read
+            )
+        } ?? []
+        return attachments.compactMap { attachment in
+            guard let pointer = attachment.attachment.asTransitTierPointer() else {
                 owsFailDebug("Generating proto for non-uploaded attachment!")
                 return nil
             }
-            return DependenciesBridge.shared.tsResourceManager.buildProtoForSending(
-                from: reference,
+            return DependenciesBridge.shared.attachmentManager.buildProtoForSending(
+                from: attachment.reference,
                 pointer: pointer
             )
         }

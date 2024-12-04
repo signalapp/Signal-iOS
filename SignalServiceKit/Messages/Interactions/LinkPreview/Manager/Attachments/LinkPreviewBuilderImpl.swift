@@ -26,8 +26,7 @@ public class LinkPreviewBuilderImpl: LinkPreviewBuilder {
     }
 
     public func buildDataSource(
-        _ draft: OWSLinkPreviewDraft,
-        ownerType: TSResourceOwnerType
+        _ draft: OWSLinkPreviewDraft
     ) throws -> LinkPreviewDataSource {
         let metadata = OWSLinkPreview.Metadata(
             urlString: draft.urlString,
@@ -49,14 +48,13 @@ public class LinkPreviewBuilderImpl: LinkPreviewBuilder {
 
     public func createLinkPreview(
         from dataSource: LinkPreviewDataSource,
-        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         guard let imageDataSource = dataSource.imageDataSource else {
-            return .withoutFinalizer(.withoutImage(metadata: dataSource.metadata, ownerType: ownerType))
+            return .withoutFinalizer(.withoutImage(metadata: dataSource.metadata))
         }
         return OwnedAttachmentBuilder<OWSLinkPreview>(
-            info: .withForeignReferenceImageAttachment(metadata: dataSource.metadata, ownerType: ownerType),
+            info: .withForeignReferenceImageAttachment(metadata: dataSource.metadata),
             finalize: { [attachmentManager] owner, innerTx in
                 return try attachmentManager.createAttachmentStream(
                     consuming: .init(dataSource: imageDataSource, owner: owner),
@@ -69,11 +67,10 @@ public class LinkPreviewBuilderImpl: LinkPreviewBuilder {
     public func createLinkPreview(
         from proto: SSKProtoAttachmentPointer,
         metadata: OWSLinkPreview.Metadata,
-        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return OwnedAttachmentBuilder<OWSLinkPreview>(
-            info: .withForeignReferenceImageAttachment(metadata: metadata, ownerType: ownerType),
+            info: .withForeignReferenceImageAttachment(metadata: metadata),
             finalize: { [attachmentManager] owner, innerTx in
                 return try attachmentManager.createAttachmentPointer(
                     from: .init(proto: proto, owner: owner),

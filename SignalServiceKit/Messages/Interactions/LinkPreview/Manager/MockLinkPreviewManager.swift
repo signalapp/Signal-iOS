@@ -14,7 +14,6 @@ public class MockLinkPreviewManager: LinkPreviewManager {
     public func validateAndBuildLinkPreview(
         from proto: SSKProtoPreview,
         dataMessage: SSKProtoDataMessage,
-        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return .withoutFinalizer(.init())
@@ -24,7 +23,6 @@ public class MockLinkPreviewManager: LinkPreviewManager {
         from proto: SSKProtoPreview,
         dataMessage: SSKProtoDataMessage,
         builder: Builder,
-        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return .withoutFinalizer(.init())
@@ -38,9 +36,8 @@ public class MockLinkPreviewManager: LinkPreviewManager {
     }
 
     public func buildDataSource(
-        from draft: OWSLinkPreviewDraft,
-        ownerType: TSResourceOwnerType
-    ) throws -> LinkPreviewTSResourceDataSource {
+        from draft: OWSLinkPreviewDraft
+    ) throws -> LinkPreviewDataSource {
         return .init(
             metadata: .init(
                 urlString: draft.urlString,
@@ -48,21 +45,19 @@ public class MockLinkPreviewManager: LinkPreviewManager {
                 previewDescription: draft.previewDescription,
                 date: draft.date
             ),
-            imageV2DataSource: nil
+            imageDataSource: nil
         )
     }
 
     public func buildDataSource<Builder: LinkPreviewBuilder>(
         from draft: OWSLinkPreviewDraft,
-        builder: Builder,
-        ownerType: TSResourceOwnerType
+        builder: Builder
     ) throws -> Builder.DataSource {
-        return try builder.buildDataSource(draft, ownerType: ownerType)
+        return try builder.buildDataSource(draft)
     }
 
     public func buildLinkPreview(
-        from dataSource: LinkPreviewTSResourceDataSource,
-        ownerType: TSResourceOwnerType,
+        from dataSource: LinkPreviewDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return .withoutFinalizer(.init())
@@ -71,7 +66,6 @@ public class MockLinkPreviewManager: LinkPreviewManager {
     public func buildLinkPreview<Builder: LinkPreviewBuilder>(
         from dataSource: Builder.DataSource,
         builder: Builder,
-        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return .withoutFinalizer(.init())

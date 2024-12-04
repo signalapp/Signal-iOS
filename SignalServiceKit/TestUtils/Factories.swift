@@ -446,7 +446,7 @@ public class ConversationFactory: NSObject {
 
     @discardableResult
     public func createSentMessage(
-        bodyAttachmentDataSources: [TSResourceDataSource],
+        bodyAttachmentDataSources: [AttachmentDataSource],
         transaction: SDSAnyWriteTransaction
     ) -> TSOutgoingMessage {
         let outgoingFactory = OutgoingMessageFactory()
@@ -475,7 +475,7 @@ public class ConversationFactory: NSObject {
                     incrementalMacInfo: nil,
                     lastDownloadAttemptTimestamp: nil
                 )
-                try! (DependenciesBridge.shared.tsResourceStore as? TSResourceUploadStore)?.updateAsUploaded(
+                try! (DependenciesBridge.shared.attachmentStore as? AttachmentUploadStore)?.markUploadedToTransitTier(
                     attachmentStream: stream,
                     info: transitTierInfo,
                     tx: asyncTransaction.asV2Write

@@ -7,7 +7,7 @@ extension AttachmentReference {
 
     /// Note: this takes an SDS transaction because its a convenience
     /// method that accesses globals. If you want a testable variant
-    /// that lets you override the return value, use TSResourceStore.
+    /// that lets you override the return value, use AttachmentStore.
     public func fetch(tx: SDSAnyReadTransaction) -> Attachment? {
         return DependenciesBridge.shared.attachmentStore.fetch(id: self.attachmentRowId, tx: tx.asV2Read)
     }
@@ -28,7 +28,7 @@ extension Array where Element == AttachmentReference {
     ///
     /// Note: this takes an SDS transaction because its a convenience
     /// method that accesses globals. If you want a testable variant
-    /// that lets you override the return value, use TSResourceStore.
+    /// that lets you override the return value, use AttachmentStore.
     public func fetchAll(tx: SDSAnyReadTransaction) -> [Attachment] {
         return DependenciesBridge.shared.attachmentStore.fetch(ids: self.map(\.attachmentRowId), tx: tx.asV2Read)
     }

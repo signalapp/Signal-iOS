@@ -137,13 +137,11 @@ public class OWSLinkPreview: MTLModel, Codable {
     }
 
     public static func withForeignReferenceImageAttachment(
-        metadata: Metadata,
-        ownerType: TSResourceOwnerType
+        metadata: Metadata
     ) -> OWSLinkPreview {
         let linkPreview = OWSLinkPreview.withoutImage(
             urlString: metadata.urlString,
-            title: metadata.title,
-            ownerType: ownerType
+            title: metadata.title
         )
         linkPreview.previewDescription = metadata.previewDescription
         linkPreview.date = metadata.date
@@ -153,7 +151,6 @@ public class OWSLinkPreview: MTLModel, Codable {
     public static func withoutImage(
         urlString: String,
         title: String? = nil,
-        ownerType: TSResourceOwnerType,
         usesV2AttachmentReference: Bool = true
     ) -> OWSLinkPreview {
         /// In legacy-world, we put nil on the attachment id to mark this as not having an attachment
@@ -168,13 +165,11 @@ public class OWSLinkPreview: MTLModel, Codable {
     }
 
     public static func withoutImage(
-        metadata: Metadata,
-        ownerType: TSResourceOwnerType
+        metadata: Metadata
     ) -> OWSLinkPreview {
         let linkPreview = OWSLinkPreview.withoutImage(
             urlString: metadata.urlString,
-            title: metadata.title,
-            ownerType: ownerType
+            title: metadata.title
         )
         linkPreview.previewDescription = metadata.previewDescription
         linkPreview.date = metadata.date

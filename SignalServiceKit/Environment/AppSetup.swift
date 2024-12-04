@@ -284,9 +284,6 @@ public class AppSetup {
             audioWaveformManager: audioWaveformManager,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner
         )
-        let tsResourceContentValidator = TSResourceContentValidatorImpl(
-            attachmentValidator: attachmentContentValidator
-        )
 
         let svrCredentialStorage = SVRAuthCredentialStorageImpl()
         let svrLocalStorage = SVRLocalStorageImpl()
@@ -398,26 +395,10 @@ public class AppSetup {
 
         let attachmentThumbnailService = AttachmentThumbnailServiceImpl()
 
-        let tsResourceStore = TSResourceStoreImpl(
-            attachmentStore: attachmentStore,
-            attachmentUploadStore: attachmentUploadStore
-        )
-        let tsResourceManager = TSResourceManagerImpl(
+        let quotedReplyManager = QuotedReplyManagerImpl(
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
-            threadStore: threadStore,
-            tsResourceStore: tsResourceStore
-        )
-
-        let tsResourceDownloadManager = TSResourceDownloadManagerImpl(
-            attachmentDownloadManager: attachmentDownloadManager,
-            tsResourceStore: tsResourceStore
-        )
-
-        let quotedReplyManager = QuotedReplyManagerImpl(
-            attachmentManager: tsResourceManager,
-            attachmentStore: tsResourceStore,
-            attachmentValidator: tsResourceContentValidator,
+            attachmentValidator: attachmentContentValidator,
             db: db,
             tsAccountManager: tsAccountManager
         )
@@ -480,8 +461,8 @@ public class AppSetup {
         )
 
         let linkPreviewManager = LinkPreviewManagerImpl(
-            attachmentManager: tsResourceManager,
-            attachmentStore: tsResourceStore,
+            attachmentManager: attachmentManager,
+            attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
             db: db,
             linkPreviewSettingStore: linkPreviewSettingStore
@@ -490,23 +471,17 @@ public class AppSetup {
         let editMessageStore = EditMessageStoreImpl()
         let editManager = EditManagerImpl(
             context: .init(
+                attachmentStore: attachmentStore,
                 dataStore: EditManagerImpl.Wrappers.DataStore(),
-                editManagerAttachments: EditManagerTSResourcesImpl(
-                    editManagerAttachments: EditManagerAttachmentsImpl(
-                        attachmentManager: attachmentManager,
-                        attachmentStore: attachmentStore,
-                        attachmentValidator: attachmentContentValidator,
-                        linkPreviewManager: linkPreviewManager,
-                        tsMessageStore: EditManagerAttachmentsImpl.Wrappers.TSMessageStore(),
-                        tsResourceManager: tsResourceManager,
-                        tsResourceStore: tsResourceStore
-                    ),
+                editManagerAttachments: EditManagerAttachmentsImpl(
+                    attachmentManager: attachmentManager,
+                    attachmentStore: attachmentStore,
+                    attachmentValidator: attachmentContentValidator,
                     linkPreviewManager: linkPreviewManager,
                     tsMessageStore: EditManagerAttachmentsImpl.Wrappers.TSMessageStore()
                 ),
                 editMessageStore: editMessageStore,
-                receiptManagerShim: EditManagerImpl.Wrappers.ReceiptManager(receiptManager: receiptManager),
-                tsResourceStore: tsResourceStore
+                receiptManagerShim: EditManagerImpl.Wrappers.ReceiptManager(receiptManager: receiptManager)
             )
         )
 
@@ -680,11 +655,11 @@ public class AppSetup {
         )
         let deleteForMeIncomingSyncMessageManager = DeleteForMeIncomingSyncMessageManagerImpl(
             addressableMessageFinder: deleteForMeAddressableMessageFinder,
+            attachmentManager: attachmentManager,
+            attachmentStore: attachmentStore,
             bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
             interactionDeleteManager: interactionDeleteManager,
-            threadSoftDeleteManager: threadSoftDeleteManager,
-            tsResourceManager: tsResourceManager,
-            tsResourceStore: tsResourceStore
+            threadSoftDeleteManager: threadSoftDeleteManager
         )
 
         let threadRemover = ThreadRemoverImpl(
@@ -882,20 +857,21 @@ public class AppSetup {
         )
 
         let messageStickerManager = MessageStickerManagerImpl(
-            attachmentManager: tsResourceManager,
-            attachmentStore: tsResourceStore,
-            attachmentValidator: tsResourceContentValidator,
+            attachmentManager: attachmentManager,
+            attachmentStore: attachmentStore,
+            attachmentValidator: attachmentContentValidator,
             stickerManager: MessageStickerManagerImpl.Wrappers.StickerManager()
         )
 
         let contactShareManager = ContactShareManagerImpl(
-            attachmentManager: tsResourceManager,
-            attachmentStore: tsResourceStore,
-            attachmentValidator: tsResourceContentValidator
+            attachmentManager: attachmentManager,
+            attachmentStore: attachmentStore,
+            attachmentValidator: attachmentContentValidator
         )
 
         let sentMessageTranscriptReceiver = SentMessageTranscriptReceiverImpl(
-            attachmentDownloads: tsResourceDownloadManager,
+            attachmentDownloads: attachmentDownloadManager,
+            attachmentManager: attachmentManager,
             disappearingMessagesJob: SentMessageTranscriptReceiverImpl.Wrappers.DisappearingMessagesJob(),
             earlyMessageManager: SentMessageTranscriptReceiverImpl.Wrappers.EarlyMessageManager(earlyMessageManager),
             groupManager: SentMessageTranscriptReceiverImpl.Wrappers.GroupManager(),
@@ -905,7 +881,6 @@ public class AppSetup {
             paymentsHelper: SentMessageTranscriptReceiverImpl.Wrappers.PaymentsHelper(paymentsHelper),
             signalProtocolStoreManager: signalProtocolStoreManager,
             tsAccountManager: tsAccountManager,
-            tsResourceManager: tsResourceManager,
             viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages()
         )
 
@@ -1177,21 +1152,12 @@ public class AppSetup {
             udManager: udManager
         )
 
-        let tsResourceUploadManager = TSResourceUploadManagerImpl(
-            attachmentUploadManager: attachmentUploadManager
-        )
-
         let attachmentCloner = SignalAttachmentClonerImpl()
-        let tsResourceCloner = SignalTSResourceClonerImpl(attachmentCloner: attachmentCloner)
 
         let attachmentViewOnceManager = AttachmentViewOnceManagerImpl(
             attachmentStore: attachmentStore,
             db: db,
             interactionStore: interactionStore
-        )
-        let tsResourceViewOnceManager = TSResourceViewOnceManagerImpl(
-            attachmentViewOnceManager: attachmentViewOnceManager,
-            db: db
         )
 
         let deviceManager = OWSDeviceManagerImpl()
@@ -1321,13 +1287,6 @@ public class AppSetup {
             threadSoftDeleteManager: threadSoftDeleteManager,
             threadStore: threadStore,
             tsAccountManager: tsAccountManager,
-            tsResourceCloner: tsResourceCloner,
-            tsResourceContentValidator: tsResourceContentValidator,
-            tsResourceDownloadManager: tsResourceDownloadManager,
-            tsResourceManager: tsResourceManager,
-            tsResourceStore: tsResourceStore,
-            tsResourceUploadManager: tsResourceUploadManager,
-            tsResourceViewOnceManager: tsResourceViewOnceManager,
             usernameApiClient: usernameApiClient,
             usernameEducationManager: usernameEducationManager,
             usernameLinkManager: usernameLinkManager,

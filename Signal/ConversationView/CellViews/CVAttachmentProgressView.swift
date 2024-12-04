@@ -266,7 +266,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(processUploadNotification(notification:)),
-                name: Upload.Constants.resourceUploadProgressNotification,
+                name: Upload.Constants.attachmentUploadProgressNotification,
                 object: nil
             )
 
@@ -282,7 +282,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
                 NotificationCenter.default.addObserver(
                     self,
                     selector: #selector(processDownloadNotification(notification:)),
-                    name: TSResourceDownloads.attachmentDownloadProgressNotification,
+                    name: AttachmentDownloads.attachmentDownloadProgressNotification,
                     object: nil
                 )
             }
@@ -292,7 +292,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
     @objc
     private func processDownloadNotification(notification: Notification) {
         guard
-            let attachmentId = notification.userInfo?[TSResourceDownloads.attachmentDownloadAttachmentIDKey] as? Attachment.IDType
+            let attachmentId = notification.userInfo?[AttachmentDownloads.attachmentDownloadAttachmentIDKey] as? Attachment.IDType
         else {
             owsFailDebug("Missing notificationAttachmentId.")
             return
@@ -300,7 +300,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
         guard attachmentId == self.attachmentId else {
             return
         }
-        let progress = notification.userInfo?[TSResourceDownloads.attachmentDownloadProgressKey] as? CGFloat
+        let progress = notification.userInfo?[AttachmentDownloads.attachmentDownloadProgressKey] as? CGFloat
         if progress == nil {
             Logger.warn("No progress for attachment progress notification.")
         }
@@ -335,7 +335,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
     @objc
     private func processUploadNotification(notification: Notification) {
-        guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadResourceIDKey] as? Attachment.IDType else {
+        guard let notificationAttachmentId = notification.userInfo?[Upload.Constants.uploadAttachmentIDKey] as? Attachment.IDType else {
             owsFailDebug("Missing notificationAttachmentId.")
             return
         }

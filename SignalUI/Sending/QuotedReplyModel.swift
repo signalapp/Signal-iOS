@@ -236,29 +236,31 @@ public class QuotedReplyModel {
 
         switch storyMessage.attachment {
         case .file, .foreignReferenceAttachment:
-            let attachmentReference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: storyMessage, tx: transaction.asV2Read)
-            let attachment = attachmentReference?.fetch(tx: transaction)
+            let referencedAttachment = storyMessage.id.map {
+                return DependenciesBridge.shared.attachmentStore
+                    .fetchFirstReferencedAttachment(
+                        for: .storyMessageMedia(storyMessageRowId: $0),
+                        tx: transaction.asV2Read
+                    )
+            } ?? nil
 
-            let referencedAttachment: ReferencedAttachment
             let thumbnailImage: UIImage?
-            if let attachmentReference, let attachment {
-                referencedAttachment = .init(reference: attachmentReference, attachment: attachment)
-
-                if let stream = attachment.asStream() {
+            if let referencedAttachment {
+                if let stream = referencedAttachment.attachment.asStream() {
                     thumbnailImage = stream.thumbnailImageSync(quality: .small)
-                } else if let blurHash = attachment.blurHash {
+                } else if let blurHash = referencedAttachment.attachment.blurHash {
                     thumbnailImage = BlurHash.image(for: blurHash)
                 } else {
                     thumbnailImage = nil
                 }
+                return buildQuotedReplyModel(originalContent: .mediaStory(
+                    body: referencedAttachment.reference.storyMediaCaption,
+                    attachment: referencedAttachment,
+                    thumbnailImage: thumbnailImage
+                ))
             } else {
                 return buildQuotedReplyModel(originalContent: .expiredStory)
             }
-            return buildQuotedReplyModel(originalContent: .mediaStory(
-                body: attachmentReference?.storyMediaCaption,
-                attachment: referencedAttachment,
-                thumbnailImage: thumbnailImage
-            ))
 
         case .text(let textAttachment):
             let preloadedTextAttachment = PreloadedTextAttachment.from(
@@ -343,7 +345,7 @@ public class QuotedReplyModel {
             )))
         }
 
-        let attachmentReference = DependenciesBridge.shared.tsResourceStore.quotedAttachmentReference(
+        let attachmentReference = DependenciesBridge.shared.attachmentStore.quotedAttachmentReference(
             for: message,
             tx: transaction.asV2Read
         )
@@ -355,18 +357,14 @@ public class QuotedReplyModel {
             return buildQuotedReplyModel(originalContent: .attachmentStub(originalMessageBody, stub))
         case .thumbnail(let attachmentRef):
             // Fetch the full attachment.
-            let thumbnailAttachment = DependenciesBridge.shared.tsResourceStore.fetch(
-                attachmentRef.attachmentRowId,
+            let thumbnailAttachment = DependenciesBridge.shared.attachmentStore.fetch(
+                id: attachmentRef.attachmentRowId,
                 tx: transaction.asV2Read
             )
             let image: UIImage? = {
                 if
                     let thumbnailAttachment,
-                    let image = DependenciesBridge.shared.tsResourceManager.thumbnailImage(
-                        attachment: thumbnailAttachment,
-                        parentMessage: message,
-                        tx: transaction.asV2Read
-                    )
+                    let image = thumbnailAttachment.asStream()?.thumbnailImageSync(quality: .small)
                 {
                     return image
                 } else if
@@ -387,13 +385,13 @@ public class QuotedReplyModel {
                     author: quotedMessage.authorAddress,
                     transaction: transaction
                 ),
-                let originalAttachmentReference = DependenciesBridge.shared.tsResourceStore
+                let originalAttachmentReference = DependenciesBridge.shared.attachmentStore
                     .attachmentToUseInQuote(
-                        originalMessage: originalMessage,
+                        originalMessageRowId: originalMessage.sqliteRowId!,
                         tx: transaction.asV2Read
                     ),
-                let originalAttachment = DependenciesBridge.shared.tsResourceStore.fetch(
-                    originalAttachmentReference.attachmentRowId,
+                let originalAttachment = DependenciesBridge.shared.attachmentStore.fetch(
+                    id: originalAttachmentReference.attachmentRowId,
                     tx: transaction.asV2Read
                 )
             {

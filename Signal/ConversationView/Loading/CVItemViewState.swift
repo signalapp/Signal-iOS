@@ -478,27 +478,27 @@ struct CVItemModelBuilder: CVItemBuilding {
 
         if
             let nextMessage = nextItem?.interaction as? TSMessage,
-            let attachmentRef = DependenciesBridge.shared.tsResourceStore
-                .bodyMediaAttachments(for: nextMessage, tx: transaction.asV2Read).first,
-            let attachment = attachmentRef.fetch(tx: transaction),
-            attachment.asStream()?.contentType.isAudio
-                ?? MimeTypeUtil.isSupportedAudioMimeType(attachment.mimeType)
+            let rowId = nextMessage.sqliteRowId,
+            let attachment = DependenciesBridge.shared.attachmentStore
+                .fetchFirstReferencedAttachment(for: .messageBodyAttachment(messageRowId: rowId), tx: transaction.asV2Read),
+            attachment.attachment.asStream()?.contentType.isAudio
+                ?? MimeTypeUtil.isSupportedAudioMimeType(attachment.attachment.mimeType)
         {
 
-            if let stream = attachment.asStream() {
+            if let stream = attachment.asReferencedStream {
                 itemViewState.nextAudioAttachment = AudioAttachment(
-                    attachmentStream: .init(reference: attachmentRef, attachmentStream: stream),
+                    attachmentStream: stream,
                     owningMessage: nextMessage,
                     metadata: nil,
                     receivedAtDate: nextMessage.receivedAtDate
                 )
-            } else if let pointer = attachment.asTransitTierPointer() {
+            } else if let pointer = attachment.asReferencedTransitPointer {
                 itemViewState.nextAudioAttachment = AudioAttachment(
-                    attachmentPointer: .init(reference: attachmentRef, attachmentPointer: pointer),
+                    attachmentPointer: pointer,
                     owningMessage: nextMessage,
                     metadata: nil,
                     receivedAtDate: nextMessage.receivedAtDate,
-                    transitTierDownloadState: pointer.downloadState(tx: transaction.asV2Read)
+                    transitTierDownloadState: pointer.attachmentPointer.downloadState(tx: transaction.asV2Read)
                 )
             } else {
                 owsFailDebug("Invalid attachment!")

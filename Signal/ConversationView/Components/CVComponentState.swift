@@ -1036,10 +1036,12 @@ fileprivate extension CVComponentState.Builder {
         }
 
         do {
-            let bodyAttachments = DependenciesBridge.shared.tsResourceStore.referencedBodyMediaAttachments(
-                for: message,
-                tx: transaction.asV2Read
-            )
+            let bodyAttachments = message.sqliteRowId.map {
+                DependenciesBridge.shared.attachmentStore.fetchReferencedAttachments(
+                    for: .messageBodyAttachment(messageRowId: $0),
+                    tx: transaction.asV2Read
+                )
+            } ?? []
             let mediaAlbumItems = buildMediaAlbumItems(for: bodyAttachments, message: message)
             if mediaAlbumItems.count > 0 {
                 var mediaAlbumHasFailedAttachment = false
@@ -1128,10 +1130,15 @@ fileprivate extension CVComponentState.Builder {
             if message.isViewOnceComplete {
                 return buildViewOnce(viewOnceState: .incomingExpired)
             }
-            let attachmentRefs = DependenciesBridge.shared.tsResourceStore.bodyAttachments(
-                for: message,
-                tx: transaction.asV2Read
-            )
+            let attachmentRefs = message.sqliteRowId.map {
+                DependenciesBridge.shared.attachmentStore.fetchReferences(
+                    owners: [
+                        .messageOversizeText(messageRowId: $0),
+                        .messageBodyAttachment(messageRowId: $0)
+                    ],
+                    tx: transaction.asV2Read
+                )
+            } ?? []
             let hasMoreThanOneAttachment: Bool = attachmentRefs.count > 1
             let hasBodyText: Bool = !(message.body?.isEmpty ?? true)
             if hasMoreThanOneAttachment || hasBodyText {
@@ -1140,11 +1147,13 @@ fileprivate extension CVComponentState.Builder {
                 owsFailDebug("Invalid content.")
                 return buildViewOnce(viewOnceState: .incomingInvalidContent)
             }
-            let mediaAttachments: [ReferencedAttachment] = DependenciesBridge.shared.tsResourceStore
-                .referencedBodyMediaAttachments(
-                    for: message,
-                    tx: transaction.asV2Read
-                )
+            let mediaAttachments: [ReferencedAttachment] = message.sqliteRowId.map {
+                DependenciesBridge.shared.attachmentStore
+                    .fetchReferencedAttachments(
+                        for: .messageBodyAttachment(messageRowId: $0),
+                        tx: transaction.asV2Read
+                    )
+            } ?? []
             // We currently only support single attachments for view-once messages.
             guard let mediaAttachment = mediaAttachments.first else {
                 owsFailDebug("Missing attachment.")
@@ -1241,16 +1250,16 @@ fileprivate extension CVComponentState.Builder {
     mutating func buildSticker(message: TSMessage, messageSticker: MessageSticker) throws -> CVComponentState {
 
         guard
-            let attachmentReference = DependenciesBridge.shared.tsResourceStore.stickerAttachment(
-                for: message,
+            let rowId = message.sqliteRowId,
+            let attachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
+                for: .messageSticker(messageRowId: rowId),
                 tx: transaction.asV2Read
-            ),
-            let attachment = attachmentReference.fetch(tx: transaction)
+            )
         else {
             throw OWSAssertionError("Missing sticker attachment.")
         }
-        if let attachmentStream = attachment.asStream() {
-            switch attachmentStream.contentType {
+        if let attachmentStream = attachment.asReferencedStream {
+            switch attachmentStream.attachmentStream.contentType {
             case .image(let pixelSize), .animatedImage(let pixelSize):
                 guard pixelSize.isNonEmpty else {
                     fallthrough
@@ -1258,9 +1267,9 @@ fileprivate extension CVComponentState.Builder {
             default:
                 throw OWSAssertionError("Invalid sticker.")
             }
-            let stickerType = StickerManager.stickerType(forContentType: attachmentStream.mimeType)
+            let stickerType = StickerManager.stickerType(forContentType: attachmentStream.attachment.mimeType)
             guard
-                let stickerMetadata = attachmentStream.asStickerMetadata(
+                let stickerMetadata = attachmentStream.attachmentStream.asStickerMetadata(
                     stickerInfo: messageSticker.info,
                     stickerType: stickerType,
                     emojiString: messageSticker.emoji
@@ -1270,20 +1279,17 @@ fileprivate extension CVComponentState.Builder {
             }
             self.sticker = .available(
                 stickerMetadata: stickerMetadata,
-                attachmentStream: .init(reference: attachmentReference, attachmentStream: attachmentStream)
+                attachmentStream: attachmentStream
             )
             return build()
-        } else if let attachmentPointer = attachment.asTransitTierPointer() {
-            let downloadState = attachmentPointer.downloadState(tx: transaction.asV2Read)
+        } else if let attachmentPointer = attachment.asReferencedTransitPointer {
+            let downloadState = attachmentPointer.attachmentPointer.downloadState(tx: transaction.asV2Read)
             switch downloadState {
             case .enqueuedOrDownloading:
-                self.sticker = .downloading(attachmentPointer: .init(
-                    reference: attachmentReference,
-                    attachmentPointer: attachmentPointer
-                ))
+                self.sticker = .downloading(attachmentPointer: attachmentPointer)
             case .failed, .none:
                 self.sticker = .failedOrPending(
-                    attachmentPointer: .init(reference: attachmentReference, attachmentPointer: attachmentPointer),
+                    attachmentPointer: attachmentPointer,
                     transitTierDownloadState: downloadState
                 )
             }
@@ -1596,26 +1602,23 @@ fileprivate extension CVComponentState.Builder {
         } else {
             let linkPreviewAttachment = { () -> Attachment? in
                 guard
-                    let linkPreviewAttachmentRef = DependenciesBridge.shared.tsResourceStore.linkPreviewAttachment(
-                        for: message,
-                        tx: transaction.asV2Read
-                    ),
-                    let linkPreviewAttachment = DependenciesBridge.shared.tsResourceStore.fetch(
-                        linkPreviewAttachmentRef.attachmentRowId,
+                    let rowId = message.sqliteRowId,
+                    let linkPreviewAttachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
+                        for: .messageLinkPreview(messageRowId: rowId),
                         tx: transaction.asV2Read
                     )
                 else {
                     return nil
                 }
 
-                guard MimeTypeUtil.isSupportedImageMimeType(linkPreviewAttachment.mimeType) else {
+                guard MimeTypeUtil.isSupportedImageMimeType(linkPreviewAttachment.attachment.mimeType) else {
                     owsFailDebug("Link preview attachment isn't an image.")
                     return nil
                 }
-                guard let attachmentStream = linkPreviewAttachment.asStream() else {
+                guard let attachmentStream = linkPreviewAttachment.asReferencedStream else {
                     return nil
                 }
-                guard attachmentStream.contentType.isImage else {
+                guard attachmentStream.attachmentStream.contentType.isImage else {
                     owsFailDebug("Link preview image attachment isn't valid.")
                     return nil
                 }

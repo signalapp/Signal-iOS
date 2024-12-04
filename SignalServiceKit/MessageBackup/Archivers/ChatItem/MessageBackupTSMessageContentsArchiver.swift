@@ -1502,14 +1502,12 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
 
         if linkPreviewProto.hasImage {
             let linkPreview = OWSLinkPreview.withForeignReferenceImageAttachment(
-                metadata: metadata,
-                ownerType: .message
+                metadata: metadata
             )
             return .success((linkPreview, linkPreviewProto.image))
         } else {
             let linkPreview = OWSLinkPreview.withoutImage(
-                metadata: metadata,
-                ownerType: .message
+                metadata: metadata
             )
             return .success((linkPreview, nil))
         }

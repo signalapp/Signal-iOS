@@ -226,7 +226,7 @@ extension ConversationViewController: CVComponentDelegate {
         AssertIsOnMainThread()
 
         SSKEnvironment.shared.databaseStorageRef.write { tx in
-            DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForMessage(
+            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
                 message,
                 priority: .userInitiated,
                 tx: tx.asV2Write

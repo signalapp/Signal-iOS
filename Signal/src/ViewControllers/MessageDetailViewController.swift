@@ -886,8 +886,11 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
                 return false
             }
             self.message = newMessage
-            self.bodyMediaAttachments = DependenciesBridge.shared.tsResourceStore
-                .referencedBodyMediaAttachments(for: newMessage, tx: transaction.asV2Read)
+            self.bodyMediaAttachments = DependenciesBridge.shared.attachmentStore
+                .fetchReferencedAttachments(
+                    for: .messageBodyAttachment(messageRowId: newMessage.sqliteRowId!),
+                    tx: transaction.asV2Read
+                )
             guard let renderItem = buildRenderItem(
                 message: newMessage,
                 spoilerState: spoilerState,

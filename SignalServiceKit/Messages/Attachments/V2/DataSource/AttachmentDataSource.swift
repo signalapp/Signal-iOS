@@ -17,10 +17,19 @@ public enum AttachmentDataSource {
         public let id: Attachment.IDType
         public let mimeType: String
         /// Note: these come from the AttachmentReference we are sourcing from.
-        public let renderingFlag: AttachmentReference.RenderingFlag
+        public private(set) var renderingFlag: AttachmentReference.RenderingFlag
         public let sourceFilename: String?
         public let sourceUnencryptedByteCount: UInt32?
         public let sourceMediaSizePixels: CGSize?
+
+        mutating func removeBorderlessRenderingFlagIfPresent() {
+            switch renderingFlag {
+            case .borderless:
+                self.renderingFlag = .default
+            default:
+                return
+            }
+        }
     }
 
     public var mimeType: String {
@@ -38,6 +47,15 @@ public enum AttachmentDataSource {
             return existingAttachmentSource.sourceFilename
         case .pendingAttachment(let pendingAttachment):
             return pendingAttachment.sourceFilename
+        }
+    }
+
+    public var renderingFlag: AttachmentReference.RenderingFlag {
+        switch self {
+        case .existingAttachment(let existingAttachmentSource):
+            return existingAttachmentSource.renderingFlag
+        case .pendingAttachment(let pendingAttachment):
+            return pendingAttachment.renderingFlag
         }
     }
 
@@ -59,6 +77,17 @@ public enum AttachmentDataSource {
         pendingAttachment: PendingAttachment
     ) -> AttachmentDataSource {
         return .pendingAttachment(pendingAttachment)
+    }
+
+    public func removeBorderlessRenderingFlagIfPresent() -> Self {
+        switch self {
+        case .existingAttachment(var existingAttachmentSource):
+            existingAttachmentSource.removeBorderlessRenderingFlagIfPresent()
+            return .existingAttachment(existingAttachmentSource)
+        case .pendingAttachment(var pendingAttachment):
+            pendingAttachment.removeBorderlessRenderingFlagIfPresent()
+            return .pendingAttachment(pendingAttachment)
+        }
     }
 }
 

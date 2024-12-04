@@ -148,7 +148,7 @@ public class StoryManager: NSObject {
         } else if existingStory == nil {
             let message = try StoryMessage.create(withSentTranscript: proto, transaction: transaction)
 
-            DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
+            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
 
             SSKEnvironment.shared.disappearingMessagesJobRef.scheduleRun(by: message.timestamp + storyLifetimeMillis)
 
@@ -243,10 +243,13 @@ public class StoryManager: NSObject {
         let attachmentPointerToDownload: AttachmentTransitPointer?
         switch message.attachment {
         case .file, .foreignReferenceAttachment:
-            let attachment = DependenciesBridge.shared.tsResourceStore.mediaAttachment(
-                for: message,
-                tx: transaction.asV2Read
-            )?.fetch(tx: transaction)
+            let attachment = message.id.map { rowId in
+                return DependenciesBridge.shared.attachmentStore
+                    .fetchFirstReferencedAttachment(
+                        for: .storyMessageMedia(storyMessageRowId: rowId),
+                        tx: transaction.asV2Read
+                    )?.attachment
+            } ?? nil
             if attachment?.asStream() != nil {
                 // Already downloaded!
                 return
@@ -256,7 +259,7 @@ public class StoryManager: NSObject {
         case .text:
             // We always auto-download non-file story attachments, this will generally only be link preview thumbnails.
             Logger.info("Automatically enqueueing download of non-file based story with timestamp \(message.timestamp)")
-            DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
+            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
             return
         }
 
@@ -296,10 +299,6 @@ public class StoryManager: NSObject {
 
         guard unviewedDownloadedStoriesForContext < perContextAutomaticDownloadLimit else {
             Logger.info("Skipping automatic download of attachments for story with timestamp \(message.timestamp), automatic download limit exceeded for context \(message.context)")
-            DependenciesBridge.shared.tsResourceManager.markPointerAsPendingManualDownload(
-                attachmentPointer,
-                tx: transaction.asV2Write
-            )
             return
         }
 
@@ -319,10 +318,6 @@ public class StoryManager: NSObject {
             Self.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
         } else {
             Logger.info("Skipping automatic download of attachments for story with timestamp \(message.timestamp), context \(message.context) not recently active")
-            DependenciesBridge.shared.tsResourceManager.markPointerAsPendingManualDownload(
-                attachmentPointer,
-                tx: transaction.asV2Write
-            )
         }
     }
 
@@ -331,7 +326,7 @@ public class StoryManager: NSObject {
         _ message: StoryMessage,
         tx: DBWriteTransaction
     ) {
-        DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
+        DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
             message,
             tx: tx
         )

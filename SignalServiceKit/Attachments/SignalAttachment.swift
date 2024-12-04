@@ -302,10 +302,9 @@ public class SignalAttachment: NSObject {
     }
 
     public func buildAttachmentDataSource(
-        message: TSMessage? = nil,
-        ownerType: TSResourceOwnerType
-    ) throws -> TSResourceDataSource {
-        return try buildOutgoingAttachmentInfo(message: message).asAttachmentDataSource(ownerType: ownerType)
+        message: TSMessage? = nil
+    ) throws -> AttachmentDataSource {
+        return try buildOutgoingAttachmentInfo(message: message).asAttachmentDataSource()
     }
 
     public func staticThumbnail() -> UIImage? {

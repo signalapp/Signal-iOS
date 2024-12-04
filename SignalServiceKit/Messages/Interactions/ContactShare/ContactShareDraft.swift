@@ -152,7 +152,7 @@ public class ContactShareDraft {
         public let addresses: [OWSContactAddress]
         public let emails: [OWSContactEmail]
         public let phoneNumbers: [OWSContactPhoneNumber]
-        public let avatar: TSResourceDataSource?
+        public let avatar: AttachmentDataSource?
 
         public var ows_isValid: Bool {
             return OWSContact.isValid(

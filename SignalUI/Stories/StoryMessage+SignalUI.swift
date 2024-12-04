@@ -26,7 +26,11 @@ extension StoryMessage {
 
         case .file, .foreignReferenceAttachment:
             guard
-                let attachmentPointer = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: self, tx: transaction.asV2Read)
+                let rowId = self.id,
+                let attachmentPointer = DependenciesBridge.shared.attachmentStore.fetchFirstReference(
+                    owner: .storyMessageMedia(storyMessageRowId: rowId),
+                    tx: transaction.asV2Read
+                )
             else {
                 owsFailDebug("Missing attachment for story message \(timestamp)")
                 return nil
