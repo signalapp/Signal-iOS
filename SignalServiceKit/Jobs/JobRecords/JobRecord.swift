@@ -24,7 +24,6 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
 
         // MARK: Values originally from SDSRecordType
 
-        case tsAttachmentMultisend = 58
         case incomingContactSync = 61
         case legacyMessageDecrypt = 53
         case localUserLeaveGroup = 74
@@ -49,7 +48,6 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
         }
 
         switch jobRecordType {
-        case .tsAttachmentMultisend: return TSAttachmentMultisendJobRecord.self
         case .incomingContactSync: return IncomingContactSyncJobRecord.self
         case .legacyMessageDecrypt: return LegacyMessageDecryptJobRecord.self
         case .localUserLeaveGroup: return LocalUserLeaveGroupJobRecord.self
@@ -67,9 +65,6 @@ extension JobRecord.JobRecordType {
     var jobRecordLabel: String {
         // These values are persisted and must not change, even if they're misspelled.
         switch self {
-        case .tsAttachmentMultisend:
-            // label is serialized and must remain unchanged.
-            return "BroadcastMediaMessage"
         case .incomingContactSync:
             return "IncomingContactSync"
         case .legacyMessageDecrypt:

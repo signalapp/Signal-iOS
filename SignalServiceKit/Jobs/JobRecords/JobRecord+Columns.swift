@@ -49,19 +49,10 @@ extension JobRecord {
         case ICSJR_digest
         case ICSJR_plaintextLength
 
-        // MARK: IncomingContactSyncJobRecord & IncomingGroupSyncJobRecord
-
-        case legacyAttachmentId = "attachmentId"
-
         // MARK: LocalUserLeaveGroupJobRecord
 
         case replacementAdminAciString = "replacementAdminUuid"
         case waitForMessageProcessing
-
-        // MARK: TSAttachmentMultisendJobRecord
-
-        case attachmentIdMap
-        case unsavedMessagesToSend
 
         // MARK: SessionResetJobRecord
 

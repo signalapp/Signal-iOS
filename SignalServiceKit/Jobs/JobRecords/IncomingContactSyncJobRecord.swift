@@ -9,8 +9,6 @@ import GRDB
 public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializableFromRecordType {
     override class var jobRecordType: JobRecordType { .incomingContactSync }
 
-    private let legacyAttachmentId: String?
-
     private let cdnNumber: UInt32?
     private let cdnKey: String?
     private let encryptionKey: Data?
@@ -19,7 +17,6 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
 
     public enum DownloadInfo {
         case invalid
-        case legacy(attachmentId: String)
         case transient(AttachmentDownloads.DownloadMetadata)
     }
 
@@ -50,64 +47,21 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
             && plaintextLength == nil,
             "Either all fields should be set or none!"
         )
-        if let legacyAttachmentId {
-            return .legacy(attachmentId: legacyAttachmentId)
-        }
         return .invalid
     }
 
     public let isCompleteContactSync: Bool
 
-    public static func legacy(
-        legacyAttachmentId: String?,
-        isCompleteContactSync: Bool,
-        failureCount: UInt = 0,
-        status: Status = .ready
-    ) -> IncomingContactSyncJobRecord {
-        return IncomingContactSyncJobRecord(
-            legacyAttachmentId: legacyAttachmentId,
-            cdnNumber: nil,
-            cdnKey: nil,
-            encryptionKey: nil,
-            digest: nil,
-            plaintextLength: nil,
-            isCompleteContactSync: isCompleteContactSync,
-            failureCount: failureCount,
-            status: status
-        )
-    }
-
-    public convenience init(
+    public init(
         cdnNumber: UInt32,
         cdnKey: String,
         encryptionKey: Data,
         digest: Data,
         plaintextLength: UInt32?,
-        isCompleteContactSync: Bool
-    ) {
-        self.init(
-            legacyAttachmentId: nil,
-            cdnNumber: cdnNumber,
-            cdnKey: cdnKey,
-            encryptionKey: encryptionKey,
-            digest: digest,
-            plaintextLength: plaintextLength,
-            isCompleteContactSync: isCompleteContactSync
-        )
-    }
-
-    private init(
-        legacyAttachmentId: String?,
-        cdnNumber: UInt32?,
-        cdnKey: String?,
-        encryptionKey: Data?,
-        digest: Data?,
-        plaintextLength: UInt32?,
         isCompleteContactSync: Bool,
         failureCount: UInt = 0,
         status: Status = .ready
     ) {
-        self.legacyAttachmentId = legacyAttachmentId
         self.isCompleteContactSync = isCompleteContactSync
 
         self.cdnNumber = cdnNumber
@@ -122,10 +76,34 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
         )
     }
 
+    #if TESTABLE_BUILD
+    public init(
+        cdnNumber: UInt32?,
+        cdnKey: String?,
+        encryptionKey: Data?,
+        digest: Data?,
+        plaintextLength: UInt32?,
+        isCompleteContactSync: Bool,
+        failureCount: UInt = 0,
+        status: Status = .ready
+    ) {
+        self.isCompleteContactSync = isCompleteContactSync
+
+        self.cdnNumber = cdnNumber
+        self.cdnKey = cdnKey
+        self.encryptionKey = encryptionKey
+        self.digest = digest
+        self.plaintextLength = plaintextLength
+
+        super.init(
+            failureCount: failureCount,
+            status: status
+        )
+    }
+    #endif
+
     required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        legacyAttachmentId = try container.decodeIfPresent(String.self, forKey: .legacyAttachmentId)
 
         cdnNumber = try container.decodeIfPresent(UInt32.self, forKey: .ICSJR_cdnNumber)
         cdnKey = try container.decodeIfPresent(String.self, forKey: .ICSJR_cdnKey)
@@ -142,8 +120,6 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try super.encode(to: container.superEncoder())
-
-        try container.encodeIfPresent(legacyAttachmentId, forKey: .legacyAttachmentId)
 
         try container.encodeIfPresent(cdnNumber, forKey: .ICSJR_cdnNumber)
         try container.encodeIfPresent(cdnKey, forKey: .ICSJR_cdnKey)

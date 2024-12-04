@@ -312,6 +312,7 @@ public class GRDBSchemaMigrator: NSObject {
         case tsMessageAttachmentMigration3
         case addEditStateToMessageAttachmentReference
         case removeVersionedDMTimerCapabilities
+        case removeJobRecordTSAttachmentColumns
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -373,7 +374,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 102
+    public static let grdbSchemaVersionLatest: UInt = 103
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3744,6 +3745,19 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.removeVersionedDMTimerCapabilities) { tx in
             try tx.database.drop(table: "VersionedDMTimerCapabilities")
+            return .success(())
+        }
+
+        migrator.registerMigration(.removeJobRecordTSAttachmentColumns) { tx in
+            // Remove TSAttachmentMultisend records.
+            try tx.database.execute(sql: """
+                DELETE FROM model_SSKJobRecord WHERE recordType = 58;
+                """)
+            try tx.database.alter(table: "model_SSKJobRecord") { table in
+                table.drop(column: "attachmentId")
+                table.drop(column: "attachmentIdMap")
+                table.drop(column: "unsavedMessagesToSend")
+            }
             return .success(())
         }
 

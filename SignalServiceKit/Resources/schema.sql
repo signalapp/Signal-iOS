@@ -206,14 +206,12 @@ CREATE
             ,"failureCount" INTEGER NOT NULL
             ,"label" TEXT NOT NULL
             ,"status" INTEGER NOT NULL
-            ,"attachmentIdMap" BLOB
             ,"contactThreadId" TEXT
             ,"envelopeData" BLOB
             ,"invisibleMessage" BLOB
             ,"messageId" TEXT
             ,"removeMessageAfterSending" INTEGER
             ,"threadId" TEXT
-            ,"attachmentId" TEXT
             ,"isMediaMessage" BOOLEAN
             ,"serverDeliveryTimestamp" INTEGER
             ,"exclusiveProcessIdentifier" TEXT
@@ -228,7 +226,6 @@ CREATE
             ,"receiptCredentialPresentation" BLOB
             ,"amount" NUMERIC
             ,"currencyCode" TEXT
-            ,"unsavedMessagesToSend" BLOB
             ,"messageText" TEXT
             ,"paymentIntentClientSecret" TEXT
             ,"paymentMethodId" TEXT

@@ -66,7 +66,6 @@ public enum SDSRecordType: UInt, CaseIterable {
     case experienceUpgrade = 55
     case baseModel = 56
     case contactQuery = 57
-    case tsAttachmentMultisendJobRecord = 58
     case testModel = 59
     case incomingGroupSyncJobRecord = 60
     case incomingContactSyncJobRecord = 61

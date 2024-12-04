@@ -91,16 +91,9 @@ private class IncomingContactSyncJobRunner: JobRunner {
 
     private func _runJob(_ jobRecord: IncomingContactSyncJobRecord) async throws {
         let fileUrl: URL
-        let legacyAttachmentId: String?
         switch jobRecord.downloadInfo {
         case .invalid:
             owsFailDebug("Invalid contact sync job!")
-            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                jobRecord.anyRemove(transaction: tx)
-            }
-            return
-        case .legacy(let attachmentId):
-            owsFailDebug("Legacy jobs no longer supported")
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 jobRecord.anyRemove(transaction: tx)
             }
@@ -109,7 +102,6 @@ private class IncomingContactSyncJobRunner: JobRunner {
             fileUrl = try await DependenciesBridge.shared.attachmentDownloadManager.downloadTransientAttachment(
                 metadata: downloadMetadata
             ).awaitable()
-            legacyAttachmentId = nil
         }
 
         let insertedThreads = try await firstly(on: DispatchQueue.global()) {

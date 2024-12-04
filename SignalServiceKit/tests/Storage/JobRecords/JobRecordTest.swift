@@ -16,7 +16,6 @@ class JobRecordTest: XCTestCase {
         forRecordType recordType: JobRecord.JobRecordType
     ) -> any (JobRecord & ValidatableModel).Type {
         switch recordType {
-        case .tsAttachmentMultisend: return TSAttachmentMultisendJobRecord.self
         case .incomingContactSync: return IncomingContactSyncJobRecord.self
         case .legacyMessageDecrypt: return LegacyMessageDecryptJobRecord.self
         case .localUserLeaveGroup: return LocalUserLeaveGroupJobRecord.self
@@ -125,45 +124,15 @@ extension ValidatableModel where Self: JobRecord {
 
 // MARK: - Job records
 
-extension TSAttachmentMultisendJobRecord: ValidatableModel {
-    static let constants: [(TSAttachmentMultisendJobRecord, jsonData: Data)] = [
-        (
-            TSAttachmentMultisendJobRecord(
-                attachmentIdMap: ["once": ["upon", "a"]],
-                // The encoded object below has a non-story message, which is invalid in the real app.
-                storyMessagesToSend: [],
-                failureCount: 3,
-                status: .running
-            ),
-            Data(#"{"super":{"failureCount":3,"label":"BroadcastMediaMessage","status":2,"uniqueId":"F5B3380C-B4DB-45DE-BB07-CC6BCAE97FDB","recordType":58},"attachmentIdMap":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGoCwwVFhscHSNVJG51bGzTDQ4PEBIUV05TLmtleXNaTlMub2JqZWN0c1YkY2xhc3OhEYACoROAA4AHVG9uY2XSDg8XGqIYGYAEgAWABlR1cG9uUWHSHh8gIVokY2xhc3NuYW1lWCRjbGFzc2VzV05TQXJyYXmiICJYTlNPYmplY3TSHh8kJVxOU0RpY3Rpb25hcnmiJiJcTlNEaWN0aW9uYXJ5CBEaJCkyN0lMUVNcYmlxfIOFh4mLjZKXmpyeoKWnrLfAyMvU2ebpAAAAAAAAAQEAAAAAAAAAJwAAAAAAAAAAAAAAAAAAAPY=","unsavedMessagesToSend":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGqCwwSRkdISUpLV1UkbnVsbNINDg8RWk5TLm9iamVjdHNWJGNsYXNzoRCAAoAJ3xAaExQVFg4XGBkaGxwdHh8gISIjJCUmJygpKissLS0sMC0sMy0sLSwsLCwtLSwtLCxBQiwtLV8QE3JlY2VpdmVkQXRUaW1lc3RhbXBfEBJpc1ZpZXdPbmNlQ29tcGxldGVfEBxzdG9yZWRTaG91bGRTdGFydEV4cGlyZVRpbWVyXxAPZXhwaXJlU3RhcnRlZEF0XxARaXNWaWV3T25jZU1lc3NhZ2VfEA9NVExNb2RlbFZlcnNpb25edW5pcXVlVGhyZWFkSWRfEBVoYXNMZWdhY3lNZXNzYWdlU3RhdGVWc29ydElkXxASaXNGcm9tTGlua2VkRGV2aWNlXxAcb3V0Z29pbmdNZXNzYWdlU2NoZW1hVmVyc2lvbl8QEGV4cGlyZXNJblNlY29uZHNfEBBncm91cE1ldGFNZXNzYWdlXxASbGVnYWN5TWVzc2FnZVN0YXRlXxASbGVnYWN5V2FzRGVsaXZlcmVkXmlzVm9pY2VNZXNzYWdlWWV4cGlyZXNBdF8QEWlzR3JvdXBTdG9yeVJlcGx5XXNjaGVtYVZlcnNpb25ZZWRpdFN0YXRlWXRpbWVzdGFtcFh1bmlxdWVJZF8QEnN0b3JlZE1lc3NhZ2VTdGF0ZV8QEndhc1JlbW90ZWx5RGVsZXRlZF8QE2hhc1N5bmNlZFRyYW5zY3JpcHSAA4AEgASAA4AIgASAA4AFgASAA4AEgAOAA4ADgAOABIAEgAOABIADgAOAB4AGgAOABIAEEAAIW2luIGEgZ2FsYXh5VHRpbWUTAAABjDc01WXSTE1OT1okY2xhc3NuYW1lWCRjbGFzc2VzXxARVFNPdXRnb2luZ01lc3NhZ2WnUFFSU1RVVl8QEVRTT3V0Z29pbmdNZXNzYWdlWVRTTWVzc2FnZV1UU0ludGVyYWN0aW9uWUJhc2VNb2RlbF8QE1RTWWFwRGF0YWJhc2VPYmplY3RYTVRMTW9kZWxYTlNPYmplY3TSTE1YWVdOU0FycmF5olhWAAgAEQAaACQAKQAyADcASQBMAFEAUwBeAGQAaQB0AHsAfQB\/AIEAuADOAOMBAgEUASgBOgFJAWEBaAF9AZwBrwHCAdcB7AH7AgUCGQInAjECOwJEAlkCbgKEAoYCiAKKAowCjgKQApIClAKWApgCmgKcAp4CoAKiAqQCpgKoAqoCrAKuArACsgK0ArYCuAK6ArsCxwLMAtUC2gLlAu4DAgMKAx4DKAM2A0ADVgNfA2gDbQN1AAAAAAAAAgEAAAAAAAAAWgAAAAAAAAAAAAAAAAAAA3g="}"#.utf8)
-        ),
-        (
-            TSAttachmentMultisendJobRecord(
-                attachmentIdMap: ["once": ["upon", "a"]],
-                storyMessagesToSend: nil,
-                failureCount: 3,
-                status: .running
-            ),
-            Data(#"{"super":{"failureCount":3,"label":"BroadcastMediaMessage","status":2,"uniqueId":"3EB90435-904A-46DA-951D-AF577B38ADD7","recordType":58},"attachmentIdMap":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGoCwwVFhscHSNVJG51bGzTDQ4PEBIUV05TLmtleXNaTlMub2JqZWN0c1YkY2xhc3OhEYACoROAA4AHVG9uY2XSDg8XGqIYGYAEgAWABlR1cG9uUWHSHh8gIVokY2xhc3NuYW1lWCRjbGFzc2VzV05TQXJyYXmiICJYTlNPYmplY3TSHh8kJVxOU0RpY3Rpb25hcnmiJiJcTlNEaWN0aW9uYXJ5CBEaJCkyN0lMUVNcYmlxfIOFh4mLjZKXmpyeoKWnrLfAyMvU2ebpAAAAAAAAAQEAAAAAAAAAJwAAAAAAAAAAAAAAAAAAAPY="}"#.utf8)
-        )
-    ]
-
-    func validate(against: TSAttachmentMultisendJobRecord) throws {
-        guard
-            attachmentIdMap == against.attachmentIdMap,
-            storyMessagesToSend?.count == against.storyMessagesToSend?.count,
-            storyMessagesToSend?.first?.uniqueId == against.storyMessagesToSend?.first?.uniqueId
-        else {
-            throw ValidatableModelError.failedToValidate
-        }
-    }
-}
-
 extension IncomingContactSyncJobRecord: ValidatableModel {
     static let constants: [(IncomingContactSyncJobRecord, jsonData: Data)] = [
         (
-            IncomingContactSyncJobRecord.legacy(
-                legacyAttachmentId: "darth revan",
+            IncomingContactSyncJobRecord(
+                cdnNumber: nil,
+                cdnKey: nil,
+                encryptionKey: nil,
+                digest: nil,
+                plaintextLength: nil,
                 isCompleteContactSync: true,
                 failureCount: 12,
                 status: .ready
@@ -171,8 +140,12 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
             Data(#"{"super":{"failureCount":12,"label":"IncomingContactSync","status":1,"uniqueId":"FF3753B3-B1FD-4B4A-96C3-2398EB120136","recordType":61},"isCompleteContactSync":true,"attachmentId":"darth revan"}"#.utf8)
         ),
         (
-            IncomingContactSyncJobRecord.legacy(
-                legacyAttachmentId: nil,
+            IncomingContactSyncJobRecord(
+                cdnNumber: nil,
+                cdnKey: nil,
+                encryptionKey: nil,
+                digest: nil,
+                plaintextLength: nil,
                 isCompleteContactSync: false,
                 failureCount: 6,
                 status: .permanentlyFailed
@@ -201,19 +174,13 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
         switch (downloadInfo, against.downloadInfo) {
         case (.invalid, .invalid):
             break
-        case let (.legacy(lhsId), .legacy(rhsId)):
-            guard
-                lhsId == rhsId
-            else {
-                throw ValidatableModelError.failedToValidate
-            }
         case let (.transient(lhsInfo), .transient(rhsInfo)):
             guard
                 lhsInfo == rhsInfo
             else {
                 throw ValidatableModelError.failedToValidate
             }
-        case (.invalid, _), (.legacy, _), (.transient, _):
+        case (.invalid, _), (.transient, _):
             throw ValidatableModelError.failedToValidate
         }
 

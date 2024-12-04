@@ -259,7 +259,6 @@ public class SSKEnvironment: NSObject {
             self.localUserLeaveGroupJobQueueRef.start(appContext: CurrentAppContext())
             self.callRecordDeleteAllJobQueueRef.start(appContext: CurrentAppContext())
             self.bulkDeleteInteractionJobQueueRef.start(appContext: CurrentAppContext())
-            self.smJobQueuesRef.tsAttachmentMultisendJobQueue.start(appContext: CurrentAppContext())
             self.smJobQueuesRef.incomingContactSyncJobQueue.start(appContext: CurrentAppContext())
             self.smJobQueuesRef.receiptCredentialJobQueue.start(appContext: CurrentAppContext())
             self.smJobQueuesRef.sendGiftBadgeJobQueue.start(appContext: CurrentAppContext())
