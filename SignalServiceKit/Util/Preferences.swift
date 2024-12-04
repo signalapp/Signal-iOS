@@ -50,7 +50,6 @@ public class Preferences: NSObject {
         case lastRecordedPushToken = "LastRecordedPushToken"
         case callsHideIPAddress = "CallsHideIPAddress"
         case hasDeclinedNoContactsView = "hasDeclinedNoContactsView"
-        case hasGeneratedThumbnails = "OWSPreferencesKeyHasGeneratedThumbnails"
         case shouldShowUnidentifiedDeliveryIndicators = "OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators"
         case shouldNotifyOfNewAccountKey = "OWSPreferencesKeyShouldNotifyOfNewAccountKey"
         case iOSUpgradeNagDate = "iOSUpgradeNagDate"
@@ -190,14 +189,6 @@ public class Preferences: NSObject {
 
     public func setHasDeclinedNoContactsView(_ value: Bool) {
         setBool(value, forKey: .hasDeclinedNoContactsView)
-    }
-
-    public var hasGeneratedThumbnails: Bool {
-        bool(forKey: .hasGeneratedThumbnails, defaultValue: false)
-    }
-
-    public func setHasGeneratedThumbnails(_ value: Bool) {
-        setBool(value, forKey: .hasGeneratedThumbnails)
     }
 
     public var iOSUpgradeNagDate: Date? {

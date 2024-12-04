@@ -52,14 +52,4 @@ public final class OutgoingAttachmentInfo {
             ownerType: ownerType
         )
     }
-
-    public func asLegacyAttachmentDataSource() -> TSAttachmentDataSource {
-        return .init(
-            mimeType: contentType,
-            caption: caption.map { MessageBody(text: $0, ranges: .empty) },
-            renderingFlag: renderingFlag,
-            sourceFilename: dataSource.sourceFilename,
-            dataSource: .dataSource(dataSource, shouldCopy: false)
-        )
-    }
 }

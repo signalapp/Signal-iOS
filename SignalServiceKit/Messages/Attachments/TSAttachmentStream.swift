@@ -9,23 +9,11 @@ extension TSAttachmentStream {
 
     @objc
     internal func anyDidInsertSwift(tx: SDSAnyWriteTransaction) {
-        DependenciesBridge.shared.mediaGalleryResourceManager.didInsert(
-            attachmentStream: ReferencedTSResourceStream(
-                reference: TSAttachmentReference(uniqueId: self.uniqueId, attachment: self),
-                attachmentStream: self
-            ),
-            tx: tx.asV2Write
-        )
+        owsFailDebug("TSAttachment is obsoleted")
     }
 
     @objc
     internal func anyDidRemoveSwift(tx: SDSAnyWriteTransaction) {
-        DependenciesBridge.shared.mediaGalleryResourceManager.didRemove(
-            attachmentStream: ReferencedTSResourceStream(
-                reference: TSAttachmentReference(uniqueId: self.uniqueId, attachment: self),
-                attachmentStream: self
-            ),
-            tx: tx.asV2Write
-        )
+        owsFailDebug("TSAttachment is obsoleted")
     }
 }

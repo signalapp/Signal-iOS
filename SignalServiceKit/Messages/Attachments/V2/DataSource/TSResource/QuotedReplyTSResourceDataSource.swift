@@ -14,10 +14,6 @@ public struct QuotedReplyTSResourceDataSource {
     public let source: Source
 
     public enum Source {
-        /// A TSAttachment on the original message to use as the source
-        /// for the thumbnail of the new attachment.
-        case originalLegacyAttachment(uniqueId: String)
-
         /// A v2 source that can _only_ be used to create v2 quoted replies.
         /// Note that v1->v2 is one-way. Given a v1 attachment we can _try_
         /// and quote it as a v2 attachment, but cannot quote a v2 as a v1.
@@ -29,16 +25,6 @@ public struct QuotedReplyTSResourceDataSource {
     fileprivate init(originalMessageRowId: Int64?, source: Source) {
         self.originalMessageRowId = originalMessageRowId
         self.source = source
-    }
-
-    public static func fromLegacyOriginalAttachment(
-        _ originalAttachment: TSAttachment,
-        originalMessageRowId: Int64
-    ) -> Self {
-        return .init(
-            originalMessageRowId: originalMessageRowId,
-            source: .originalLegacyAttachment(uniqueId: originalAttachment.uniqueId)
-        )
     }
 }
 

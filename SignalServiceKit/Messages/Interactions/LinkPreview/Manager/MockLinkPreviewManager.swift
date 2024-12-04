@@ -48,8 +48,7 @@ public class MockLinkPreviewManager: LinkPreviewManager {
                 previewDescription: draft.previewDescription,
                 date: draft.date
             ),
-            imageV2DataSource: nil,
-            imageLegacyDataSource: nil
+            imageV2DataSource: nil
         )
     }
 

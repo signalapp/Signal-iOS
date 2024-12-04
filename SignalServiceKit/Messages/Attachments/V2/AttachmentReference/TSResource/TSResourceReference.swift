@@ -14,7 +14,7 @@ public protocol TSResourceReference {
 
     var resourceId: TSResourceId { get }
 
-    var concreteType: ConcreteTSResourceReference { get }
+    var concreteType: AttachmentReference { get }
 
     /// Filename from the sender, used for rendering as a file attachment.
     /// NOT the same as the file name on disk.
@@ -58,9 +58,6 @@ extension TSResourceReference {
     /// method that accesses globals. If you want a testable variant
     /// that lets you override the return value, use TSResourceStore.
     public func fetch(tx: SDSAnyReadTransaction) -> TSResource? {
-        // Always re-fetch. Legacy TSAttachmentReferences already have the attachment object,
-        // but its better to have the API expectation be that the object you get back from this
-        // fetch method is always fresh.
         return DependenciesBridge.shared.tsResourceStore.fetch(self.resourceId, tx: tx.asV2Read)
     }
 

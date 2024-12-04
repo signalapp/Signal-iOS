@@ -55,21 +55,21 @@ public final class MediaGalleryResourceManagerImpl: MediaGalleryResourceManager 
         attachmentStream: ReferencedTSResourceStream,
         tx: DBWriteTransaction
     ) {
-        MediaGalleryRecordManager.didInsert(attachmentStream: attachmentStream, transaction: SDSDB.shimOnlyBridge(tx))
+        // Do nothing
     }
 
     public func didRemove(
         attachmentStream: ReferencedTSResourceStream,
         tx: DBWriteTransaction
     ) {
-        MediaGalleryRecordManager.didRemove(attachmentStream: attachmentStream, transaction: SDSDB.shimOnlyBridge(tx))
+        // Do nothing
     }
 
     public func didRemove(
         message: TSMessage,
         tx: DBWriteTransaction
     ) {
-        MediaGalleryRecordManager.didRemove(message: message, transaction: SDSDB.shimOnlyBridge(tx))
+        // Do nothing
     }
 }
 

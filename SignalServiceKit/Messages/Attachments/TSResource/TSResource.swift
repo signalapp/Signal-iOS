@@ -51,7 +51,7 @@ public protocol TSResource {
 
     // MARK: - Converters
 
-    var concreteType: ConcreteTSResource { get }
+    var concreteType: Attachment { get }
 
     func asResourceStream() -> TSResourceStream?
 

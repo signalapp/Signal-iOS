@@ -10,7 +10,7 @@ extension AttachmentReference: TSResourceReference {
         return .v2(rowId: attachmentRowId)
     }
 
-    public var concreteType: ConcreteTSResourceReference { .v2(self) }
+    public var concreteType: AttachmentReference { self }
 
     public var renderingFlag: RenderingFlag {
         switch owner {
@@ -74,22 +74,6 @@ extension AttachmentReference: TSResourceReference {
             return metadata.idInOwner
         default:
             return nil
-        }
-    }
-}
-
-extension AttachmentReference.RenderingFlag {
-
-    public var tsAttachmentType: TSAttachmentType {
-        switch self {
-        case .default:
-            return .default
-        case .voiceMessage:
-            return .voiceMessage
-        case .borderless:
-            return .borderless
-        case .shouldLoop:
-            return .GIF
         }
     }
 }

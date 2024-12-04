@@ -50,8 +50,7 @@ public struct UnsentTextAttachment {
                         previewDescription: nil,
                         date: nil
                     ),
-                    imageV2DataSource: nil,
-                    imageLegacyDataSource: nil
+                    imageV2DataSource: nil
                 )
             } catch {
                 Logger.error("Failed to generate link preview.")

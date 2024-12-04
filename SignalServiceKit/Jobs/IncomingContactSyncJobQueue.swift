@@ -100,27 +100,11 @@ private class IncomingContactSyncJobRunner: JobRunner {
             }
             return
         case .legacy(let attachmentId):
-            guard let attachment = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                return TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
-            }) else {
-                throw OWSAssertionError("missing attachment")
+            owsFailDebug("Legacy jobs no longer supported")
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                jobRecord.anyRemove(transaction: tx)
             }
-
-            let attachmentStream: TSAttachmentStream
-            switch attachment {
-            case let attachmentPointer as TSAttachmentPointer:
-                attachmentStream = try await TSAttachmentDownloadManager(appReadiness: appReadiness)
-                    .enqueueContactSyncDownload(attachmentPointer: attachmentPointer)
-            case let attachmentStreamValue as TSAttachmentStream:
-                attachmentStream = attachmentStreamValue
-            default:
-                throw OWSAssertionError("unexpected attachment type: \(attachment)")
-            }
-            guard let url = attachmentStream.originalMediaURL else {
-                throw OWSAssertionError("fileUrl was unexpectedly nil")
-            }
-            fileUrl = url
-            legacyAttachmentId = attachmentStream.uniqueId
+            return
         case .transient(let downloadMetadata):
             fileUrl = try await DependenciesBridge.shared.attachmentDownloadManager.downloadTransientAttachment(
                 metadata: downloadMetadata
@@ -132,9 +116,6 @@ private class IncomingContactSyncJobRunner: JobRunner {
             try self.processContactSync(decryptedFileUrl: fileUrl, isComplete: jobRecord.isCompleteContactSync)
         }.awaitable()
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            if let legacyAttachmentId {
-                TSAttachmentStream.anyFetch(uniqueId: legacyAttachmentId, transaction: tx)?.anyRemove(transaction: tx)
-            }
             jobRecord.anyRemove(transaction: tx)
         }
         NotificationCenter.default.post(name: .incomingContactSyncDidComplete, object: self, userInfo: [

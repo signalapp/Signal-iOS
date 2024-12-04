@@ -12,24 +12,12 @@ extension TSResourceStream {
         stickerType: StickerType,
         emojiString: String?
     ) -> (any StickerMetadata)? {
-        switch self.concreteStreamType {
-        case .legacy(let tsAttachment):
-            guard let url = tsAttachment.originalMediaURL else {
-                return nil
-            }
-            return DecryptedStickerMetadata(
-                stickerInfo: stickerInfo,
-                stickerType: stickerType,
-                stickerDataUrl: url,
-                emojiString: emojiString
-            )
-        case .v2(let attachment):
-            return EncryptedStickerMetadata.from(
-                attachment: attachment,
-                stickerInfo: stickerInfo,
-                stickerType: stickerType,
-                emojiString: emojiString
-            )
-        }
+        let attachment = self.concreteStreamType
+        return EncryptedStickerMetadata.from(
+            attachment: attachment,
+            stickerInfo: stickerInfo,
+            stickerType: stickerType,
+            emojiString: emojiString
+        )
     }
 }

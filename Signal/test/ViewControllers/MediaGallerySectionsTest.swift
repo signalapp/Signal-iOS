@@ -52,7 +52,7 @@ private struct FakeItem: MediaGallerySectionItem, Equatable {
     private static var _nextRowID = Int64(0)
     private static func allocateItemID() -> MediaGalleryItemId {
         defer { _nextRowID += 1 }
-        return .legacy(mediaGalleryRecordId: _nextRowID)
+        return .v2(.init(ownerId: .messageBodyAttachment(messageRowId: _nextRowID), orderInOwner: nil))
     }
     var itemId: MediaGalleryItemId
     var attachmentId: MediaGalleryResourceId
@@ -65,13 +65,13 @@ private struct FakeItem: MediaGallerySectionItem, Equatable {
     /// The item's unique ID will be randomly generated.
     init(_ compressedDate: UInt32) {
         self.itemId = FakeItem.allocateItemID()
-        self.attachmentId = .legacy(attachmentUniqueId: UUID().uuidString)
+        self.attachmentId = .v2(.init(ownerId: .messageBodyAttachment(messageRowId: .random(in: 0...Int64.max)), orderInOwner: nil))
         self.timestamp = Date(compressedDate: compressedDate)
     }
 
     init(_ compressedDate: UInt32, attachmentId: MediaGalleryResourceId?, itemId: MediaGalleryItemId) {
         self.itemId = itemId
-        self.attachmentId = attachmentId ?? .legacy(attachmentUniqueId: UUID().uuidString)
+        self.attachmentId = attachmentId ?? .v2(.init(ownerId: .messageBodyAttachment(messageRowId: .random(in: 0...Int64.max)), orderInOwner: nil))
         self.timestamp = Date(compressedDate: compressedDate)
     }
 }
@@ -673,11 +673,11 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssertFalse(wrapper.sections.hasFetchedOldest)
         XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
         XCTAssertEqual(
-            [3, 4].map { MediaGalleryItemId.legacy(mediaGalleryRecordId: $0) },
+            [3, 4].map { MediaGalleryItemId.v2(.init(ownerId: .messageBodyAttachment(messageRowId: $0), orderInOwner: nil)) },
             wrapper.sections.itemsBySection[0].value.map { $0.itemId }
         )
         XCTAssertEqual(
-            [5, 6, 7, 8, 9].map { MediaGalleryItemId.legacy(mediaGalleryRecordId: $0) },
+            [5, 6, 7, 8, 9].map { MediaGalleryItemId.v2(.init(ownerId: .messageBodyAttachment(messageRowId: $0), orderInOwner: nil)) },
             wrapper.sections.itemsBySection[1].value.map { $0.itemId }
         )
 
@@ -1326,7 +1326,7 @@ class MediaGallerySectionsTest: SignalBaseTest {
             // Keep January unmodified, drop all of April, and drop one value from September.
             [0, 1, 2, 5, 6, 8, 9]
                 .lazy
-                .map({ MediaGalleryItemId.legacy(mediaGalleryRecordId: $0) })
+                .map({ MediaGalleryItemId.v2(.init(ownerId: .messageBodyAttachment(messageRowId: $0), orderInOwner: nil)) })
                 .contains($0.itemId)
         }
 

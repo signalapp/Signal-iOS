@@ -20,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSLinkPreview;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
-@class TSAttachment;
-@class TSAttachmentStream;
 @class TSMessageBuilder;
 @class TSQuotedMessage;
 

@@ -26,8 +26,8 @@ extension Attachment: TSResource {
         .v2(rowId: id)
     }
 
-    public var concreteType: ConcreteTSResource {
-        return .v2(self)
+    public var concreteType: Attachment {
+        return self
     }
 
     public func asResourceStream() -> TSResourceStream? {
@@ -67,8 +67,8 @@ extension AttachmentBackupThumbnail: TSResourceBackupThumbnail {
 
 extension AttachmentStream: TSResourceStream {
 
-    public var concreteStreamType: ConcreteTSResourceStream {
-        return .v2(self)
+    public var concreteStreamType: AttachmentStream {
+        return self
     }
 
     public var cachedContentType: TSResourceContentType? {
@@ -111,7 +111,7 @@ extension AttachmentStream: TSResource {
 
     public var mimeType: String { attachment.mimeType }
 
-    public var concreteType: ConcreteTSResource { attachment.concreteType }
+    public var concreteType: Attachment { attachment.concreteType }
 
     public func asResourceStream() -> TSResourceStream? { self }
 
@@ -126,28 +126,5 @@ extension AttachmentTransitPointer {
 
     var asResourcePointer: TSResourcePointer {
         return TSResourcePointer(resource: attachment, cdnNumber: cdnNumber, cdnKey: cdnKey)
-    }
-}
-
-// MARK: - AttachmentThumbnailQuality
-
-extension AttachmentThumbnailQuality {
-
-    var tsQuality: TSAttachmentThumbnailQuality {
-        switch self {
-        case .small:
-            return .small
-        case .medium:
-            return .medium
-        case .mediumLarge:
-            return .mediumLarge
-        case .large:
-            return .large
-        case .backupThumbnail:
-            // legacy attachments don't use backup thumbnail size,
-            // but small is close enough.
-            owsFailDebug("Shouldn't use backup size for tsAttachments")
-            return .small
-        }
     }
 }

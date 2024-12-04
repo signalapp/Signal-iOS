@@ -31,7 +31,7 @@ public protocol TSResourceStream: TSResource {
     /// Throws an error if reading/decrypting the file fails or the data is incompatible with AVAsset.
     func decryptedAVAsset() throws -> AVAsset
 
-    var concreteStreamType: ConcreteTSResourceStream { get }
+    var concreteStreamType: AttachmentStream { get }
 
     // MARK: - Cached media properties
 

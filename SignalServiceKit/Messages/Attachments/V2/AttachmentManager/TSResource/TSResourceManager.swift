@@ -202,28 +202,16 @@ extension TSResourceManager {
         originalMessageRowId: Int64,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
-        switch (originalReference.concreteType, originalAttachment.concreteType) {
-
-        case (.legacy(_), .legacy(let tsAttachment)):
-            return self.newQuotedReplyMessageThumbnailBuilder(
-                from: .fromLegacyOriginalAttachment(tsAttachment, originalMessageRowId: originalMessageRowId),
-                fallbackQuoteProto: fallbackQuoteProto,
-                tx: tx
-            )
-        case (.v2(let attachmentReference), .v2(let attachment)):
-            return self.newQuotedReplyMessageThumbnailBuilder(
-                from: QuotedReplyAttachmentDataSource.fromOriginalAttachment(
-                    attachment,
-                    originalReference: attachmentReference,
-                    thumbnailPointerFromSender: fallbackQuoteProto.attachments.first?.thumbnail
-                ).tsDataSource,
-                fallbackQuoteProto: fallbackQuoteProto,
-                tx: tx
-            )
-
-        case (.v2, .legacy), (.legacy, .v2):
-            owsFailDebug("Invalid combination!")
-            return nil
-        }
+        let attachmentReference = originalReference.concreteType
+        let attachment = originalAttachment.concreteType
+        return self.newQuotedReplyMessageThumbnailBuilder(
+            from: QuotedReplyAttachmentDataSource.fromOriginalAttachment(
+                attachment,
+                originalReference: attachmentReference,
+                thumbnailPointerFromSender: fallbackQuoteProto.attachments.first?.thumbnail
+            ).tsDataSource,
+            fallbackQuoteProto: fallbackQuoteProto,
+            tx: tx
+        )
     }
 }

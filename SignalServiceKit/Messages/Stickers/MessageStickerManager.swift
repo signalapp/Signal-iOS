@@ -106,60 +106,6 @@ public class MessageStickerManagerImpl: MessageStickerManager {
         }
     }
 
-    private func tsAttachmentForInstalledSticker(
-        dataProto: SSKProtoAttachmentPointer,
-        stickerInfo: StickerInfo,
-        tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<TSResourceRetrievalInfo>? {
-        guard
-            let installedSticker = stickerManager.fetchInstalledSticker(
-                stickerInfo: stickerInfo,
-                tx: tx
-            )
-        else {
-            // Sticker is not installed.
-            return nil
-        }
-        guard let stickerDataUrl = StickerManager.stickerDataUrl(forInstalledSticker: installedSticker,
-                                                                 verifyExists: true) else {
-            owsFailDebug("Missing data for installed sticker.")
-            return nil
-        }
-        guard OWSFileSystem.fileSize(of: stickerDataUrl) != nil else {
-            owsFailDebug("Could not determine file size for installed sticker.")
-            return nil
-        }
-        do {
-            let dataSource = try DataSourcePath(fileUrl: stickerDataUrl, shouldDeleteOnDeallocation: false)
-            let mimeType: String
-            let imageMetadata = Data.imageMetadata(withPath: stickerDataUrl.path, mimeType: nil)
-            if imageMetadata.imageFormat != .unknown,
-               let mimeTypeFromMetadata = imageMetadata.mimeType {
-                mimeType = mimeTypeFromMetadata
-            } else if let dataMimeType = dataProto.contentType, !dataMimeType.isEmpty {
-                mimeType = dataMimeType
-            } else {
-                mimeType = MimeType.imageWebp.rawValue
-            }
-
-            let attachmentDataSource = TSAttachmentDataSource(
-                mimeType: mimeType,
-                caption: nil,
-                renderingFlag: .default,
-                sourceFilename: nil,
-                dataSource: .dataSource(dataSource, shouldCopy: true)
-            )
-
-            return try attachmentManager.createAttachmentStreamBuilder(
-                from: attachmentDataSource.tsDataSource,
-                tx: tx
-            )
-        } catch {
-            owsFailDebug("Could not write data source for path: \(stickerDataUrl.path), error: \(error)")
-            return nil
-        }
-    }
-
     public func buildDataSource(fromDraft draft: MessageStickerDraft) throws -> MessageStickerDataSource {
         let validatedDataSource = try attachmentValidator.validateContents(
             data: draft.stickerData,

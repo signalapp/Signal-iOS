@@ -14,7 +14,6 @@ private enum Constants {
 
 private struct OWSOrphanData {
     let interactionIds: Set<String>
-    let attachmentIds: Set<String>
     let filePaths: Set<String>
     let reactionIds: Set<String>
     let mentionIds: Set<String>
@@ -159,73 +158,6 @@ enum OWSOrphanDataCleaner {
         }
     }
 
-    private static func findJobRecordAttachmentIds(transaction: SDSAnyReadTransaction) -> [String]? {
-        var attachmentIds = [String]()
-        var shouldAbort = false
-
-        func findAttachmentIds<JobRecordType: JobRecord>(
-            transaction: SDSAnyReadTransaction,
-            jobRecordAttachmentIds: (JobRecordType) -> some Sequence<String>
-        ) {
-            do {
-                try JobRecordFinderImpl<JobRecordType>(db: DependenciesBridge.shared.db).enumerateJobRecords(
-                    transaction: transaction.asV2Read,
-                    block: { jobRecord, stop in
-                        guard isMainAppAndActive else {
-                            shouldAbort = true
-                            stop = true
-                            return
-                        }
-                        attachmentIds.append(contentsOf: jobRecordAttachmentIds(jobRecord))
-                    }
-                )
-            } catch {
-                Logger.warn("Couldn't enumerate job records: \(error)")
-            }
-        }
-
-        findAttachmentIds(
-            transaction: transaction,
-            jobRecordAttachmentIds: { (jobRecord: MessageSenderJobRecord) -> [String] in
-                guard let message = fetchMessage(for: jobRecord, transaction: transaction) else {
-                    return []
-                }
-                return Self.legacyAttachmentUniqueIds(message)
-            }
-        )
-
-        if shouldAbort {
-            return nil
-        }
-
-        findAttachmentIds(
-            transaction: transaction,
-            jobRecordAttachmentIds: { (jobRecord: TSAttachmentMultisendJobRecord) in jobRecord.attachmentIdMap.keys }
-        )
-
-        if shouldAbort {
-            return nil
-        }
-
-        findAttachmentIds(
-            transaction: transaction,
-            jobRecordAttachmentIds: { (jobRecord: IncomingContactSyncJobRecord) -> [String] in
-                switch jobRecord.downloadInfo {
-                case .invalid, .transient:
-                    return []
-                case .legacy(let attachmentId):
-                    return [attachmentId]
-                }
-            }
-        )
-
-        if shouldAbort {
-            return nil
-        }
-
-        return attachmentIds
-    }
-
     private static func fetchMessage(
         for jobRecord: MessageSenderJobRecord,
         transaction: SDSAnyReadTransaction
@@ -251,18 +183,8 @@ enum OWSOrphanDataCleaner {
     ///
     /// The follow items are considered orphan data:
     /// * Orphan `TSInteraction`s (with no thread).
-    /// * Orphan `TSAttachment`s (with no message).
-    /// * Orphan attachment files (with no corresponding `TSAttachment`).
     /// * Orphan profile avatars.
     /// * Temporary files (all).
-    ///
-    /// It also finds but we don't clean these up:
-    /// * Missing attachment files (cannot be cleaned up).
-    ///   These are attachments which have no file on disk. The should be extremely rare -
-    ///   the only cases I have seen are probably due to debugging.
-    ///   They can't be cleaned up - we don't want to delete the TSAttachmentStream or
-    ///   its corresponding message. Better that the broken message shows up in the
-    ///   conversation view.
     private static func findOrphanData(withRetries remainingRetries: Int,
                                        success: @escaping OrphanDataBlock,
                                        failure: @escaping () -> Void) {
@@ -295,15 +217,6 @@ enum OWSOrphanDataCleaner {
     private static func findOrphanDataSync() -> OWSOrphanData? {
         var shouldAbort = false
 
-        let legacyAttachmentsDirPath = TSAttachmentStream.legacyAttachmentsDirPath()
-        let sharedDataAttachmentsDirPath = TSAttachmentStream.sharedDataAttachmentsDirPath()
-        guard let legacyAttachmentFilePaths = filePaths(inDirectorySafe: legacyAttachmentsDirPath), isMainAppAndActive else {
-            return nil
-        }
-        guard let sharedDataAttachmentFilePaths = filePaths(inDirectorySafe: sharedDataAttachmentsDirPath), isMainAppAndActive else {
-            return nil
-        }
-
         let legacyProfileAvatarsDirPath = OWSUserProfile.legacyProfileAvatarsDirPath
         let sharedDataProfileAvatarsDirPath = OWSUserProfile.sharedDataProfileAvatarsDirPath
         guard let legacyProfileAvatarsFilePaths = filePaths(inDirectorySafe: legacyProfileAvatarsDirPath), isMainAppAndActive else {
@@ -324,8 +237,6 @@ enum OWSOrphanDataCleaner {
 
         let allOnDiskFilePaths: Set<String> = {
             var result: Set<String> = []
-            result.formUnion(legacyAttachmentFilePaths)
-            result.formUnion(sharedDataAttachmentFilePaths)
             result.formUnion(legacyProfileAvatarsFilePaths)
             result.formUnion(sharedDataProfileAvatarFilePaths)
             result.formUnion(allGroupAvatarFilePaths)
@@ -402,44 +313,14 @@ enum OWSOrphanDataCleaner {
             return nil
         }
 
-        // Attachments
-        var attachmentStreamCount: Int = 0
-        var allAttachmentFilePaths: Set<String> = []
-        var allAttachmentIds: Set<String> = []
         var allReactionIds: Set<String> = []
         var allMentionIds: Set<String> = []
         var orphanInteractionIds: Set<String> = []
-        var allMessageAttachmentIds: Set<String> = []
-        var allStoryAttachmentIds: Set<String> = []
         var allMessageReactionIds: Set<String> = []
         var allMessageMentionIds: Set<String> = []
         var activeStickerFilePaths: Set<String> = []
         var hasOrphanedPacksOrStickers = false
         databaseStorage.read { transaction in
-            TSAttachmentStream.anyEnumerate(transaction: transaction, batched: true) { attachment, stop in
-                guard isMainAppAndActive else {
-                    shouldAbort = true
-                    stop.pointee = true
-                    return
-                }
-                guard let attachmentStream = attachment as? TSAttachmentStream else {
-                    return
-                }
-                allAttachmentIds.insert(attachment.uniqueId)
-                attachmentStreamCount += 1
-                if let filePath = attachmentStream.originalFilePath {
-                    allAttachmentFilePaths.insert(filePath)
-                } else {
-                    owsFailDebug("attachment has no file path.")
-                }
-
-                allAttachmentFilePaths.formUnion(attachmentStream.allSecondaryFilePaths())
-            }
-
-            if shouldAbort {
-                return
-            }
-
             let threadIds: Set<String> = Set(TSThread.anyAllUniqueIds(transaction: transaction))
 
             var allInteractionIds: Set<String> = []
@@ -454,10 +335,6 @@ enum OWSOrphanDataCleaner {
                 }
 
                 allInteractionIds.insert(interaction.uniqueId)
-                guard let message = interaction as? TSMessage else {
-                    return
-                }
-                allMessageAttachmentIds.formUnion(legacyAttachmentUniqueIds(message))
             }
 
             if shouldAbort {
@@ -496,28 +373,6 @@ enum OWSOrphanDataCleaner {
                 return
             }
 
-            StoryMessage.anyEnumerate(transaction: transaction, batchingPreference: .batched()) { message, stop in
-                guard isMainAppAndActive else {
-                    shouldAbort = true
-                    stop.pointee = true
-                    return
-                }
-                if let attachmentUniqueId = legacyAttachmentUniqueId(message) {
-                    allStoryAttachmentIds.insert(attachmentUniqueId)
-                }
-            }
-
-            if shouldAbort {
-                return
-            }
-
-            guard let jobRecordAttachmentIds = findJobRecordAttachmentIds(transaction: transaction) else {
-                shouldAbort = true
-                return
-            }
-
-            allMessageAttachmentIds.formUnion(jobRecordAttachmentIds)
-
             activeStickerFilePaths.formUnion(StickerManager.filePathsForAllInstalledStickers(transaction: transaction))
 
             hasOrphanedPacksOrStickers = StickerManager.hasOrphanedData(tx: transaction)
@@ -527,18 +382,9 @@ enum OWSOrphanDataCleaner {
         }
 
         var orphanFilePaths = allOnDiskFilePaths
-        orphanFilePaths.subtract(allAttachmentFilePaths)
         orphanFilePaths.subtract(profileAvatarFilePaths)
         orphanFilePaths.subtract(groupAvatarFilePaths)
         orphanFilePaths.subtract(activeStickerFilePaths)
-        var missingAttachmentFilePaths = allAttachmentFilePaths
-        missingAttachmentFilePaths.subtract(allOnDiskFilePaths)
-
-        var orphanAttachmentIds = allAttachmentIds
-        orphanAttachmentIds.subtract(allMessageAttachmentIds)
-        orphanAttachmentIds.subtract(allStoryAttachmentIds)
-        var missingAttachmentIds = allMessageAttachmentIds
-        missingAttachmentIds.subtract(allAttachmentIds)
 
         var orphanReactionIds = allReactionIds
         orphanReactionIds.subtract(allMessageReactionIds)
@@ -554,7 +400,6 @@ enum OWSOrphanDataCleaner {
         orphanFileAndDirectoryPaths.formUnion(voiceMessageDraftOrphanedPaths)
 
         return OWSOrphanData(interactionIds: orphanInteractionIds,
-                             attachmentIds: orphanAttachmentIds,
                              filePaths: orphanFilePaths,
                              reactionIds: orphanReactionIds,
                              mentionIds: orphanMentionIds,
@@ -703,36 +548,6 @@ enum OWSOrphanDataCleaner {
             }
             Logger.info("Deleted orphan interactions: \(interactionsRemoved)")
 
-            var attachmentsRemoved: UInt = 0
-            for attachmentId in orphanData.attachmentIds {
-                guard isMainAppAndActive else {
-                    shouldAbort = true
-                    return
-                }
-                guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
-                    // This can happen on launch since we sync contacts/groups, especially if you have a lot of attachments
-                    // to churn through, it's likely it's been deleted since starting this job.
-                    Logger.warn("Could not load attachment: \(attachmentId)")
-                    continue
-                }
-                guard let attachmentStream = attachment as? TSAttachmentStream else {
-                    continue
-                }
-                // Don't delete attachments which were created in the last N minutes.
-                let creationDate = attachmentStream.creationTimestamp
-                guard creationDate <= thresholdDate else {
-                    Logger.info("Skipping orphan attachment due to age: \(creationDate.timeIntervalSinceNow)")
-                    continue
-                }
-                Logger.info("Removing orphan attachmentStream: \(attachmentStream.uniqueId)")
-                attachmentsRemoved += 1
-                guard shouldRemoveOrphans else {
-                    continue
-                }
-                attachmentStream.anyRemove(transaction: transaction)
-            }
-            Logger.info("Deleted orphan attachments: \(attachmentsRemoved)")
-
             var reactionsRemoved: UInt = 0
             for reactionId in orphanData.reactionIds {
                 guard isMainAppAndActive else {
@@ -877,22 +692,6 @@ enum OWSOrphanDataCleaner {
     }
 
     // MARK: - Helpers
-
-    private static func legacyAttachmentUniqueIds(_ message: TSMessage) -> [String] {
-        let ids = TSAttachmentStore().allAttachmentIds(for: message)
-        return Array(ids)
-    }
-
-    private static func legacyAttachmentUniqueId(_ storyMessage: StoryMessage) -> String? {
-        switch storyMessage.attachment {
-        case .file(let file):
-            return file.attachmentId
-        case .text(let textAttachment):
-            return textAttachment.preview?.legacyImageAttachmentId
-        case .foreignReferenceAttachment:
-            return nil
-        }
-    }
 
     private static func filePaths(inDirectorySafe dirPath: String) -> Set<String>? {
         guard FileManager.default.fileExists(atPath: dirPath) else {

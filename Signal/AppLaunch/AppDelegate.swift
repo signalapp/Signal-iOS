@@ -677,20 +677,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             object: nil
         )
 
-        if !SSKEnvironment.shared.preferencesRef.hasGeneratedThumbnails {
-            SSKEnvironment.shared.databaseStorageRef.asyncRead(
-                block: { transaction in
-                    // TODO: remove this one TSAttachment is killed.
-                    TSAttachment.anyEnumerate(transaction: transaction, batched: true) { (_, _) in
-                        // no-op. It's sufficient to initWithCoder: each object.
-                    }
-                },
-                completion: {
-                    SSKEnvironment.shared.preferencesRef.setHasGeneratedThumbnails(true)
-                }
-            )
-        }
-
         checkDatabaseIntegrityIfNecessary(isRegistered: tsRegistrationState.isRegistered)
 
         SignalApp.shared.showLaunchInterface(

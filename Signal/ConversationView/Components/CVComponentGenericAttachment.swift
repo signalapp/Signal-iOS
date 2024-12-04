@@ -329,27 +329,20 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     public func createQLPreviewController() -> QLPreviewController? {
         guard #available(iOS 14.8, *) else { return nil }
 
-        switch attachmentStream?.concreteStreamType {
-        case nil:
+        guard let attachmentStream = attachmentStream?.concreteStreamType else {
             return nil
-        case .legacy(let tsAttachmentStream):
-            guard
-                let url = tsAttachmentStream.originalMediaURL,
-                QLPreviewController.canPreview(url as NSURL)
-            else {
-                return nil
-            }
-        case .v2(let attachmentStream):
-            let sourceFilename = genericAttachment.attachment.attachment.reference.sourceFilename
-            guard let url = try? attachmentStream.makeDecryptedCopy(filename: sourceFilename) else {
-                return nil
-            }
-            guard QLPreviewController.canPreview(url as NSURL) else {
-                try? OWSFileSystem.deleteFile(url: url)
-                return nil
-            }
-            self.qlPreviewTmpFileUrl = url
         }
+
+        let sourceFilename = genericAttachment.attachment.attachment.reference.sourceFilename
+        guard let url = try? attachmentStream.makeDecryptedCopy(filename: sourceFilename) else {
+            return nil
+        }
+        guard QLPreviewController.canPreview(url as NSURL) else {
+            try? OWSFileSystem.deleteFile(url: url)
+            return nil
+        }
+        self.qlPreviewTmpFileUrl = url
+
         let previewController = QLPreviewController()
         previewController.dataSource = self
         previewController.delegate = self
@@ -419,12 +412,9 @@ extension CVComponentGenericAttachment: QLPreviewControllerDataSource, QLPreview
         owsAssertDebug(index == 0)
 
         let url: URL? = {
-            switch attachmentStream?.concreteStreamType {
-            case .legacy(let tsAttachmentStream):
-                return tsAttachmentStream.originalMediaURL
-            case .v2:
+            if attachmentStream != nil {
                 return qlPreviewTmpFileUrl
-            case nil:
+            } else {
                 return nil
             }
         }()

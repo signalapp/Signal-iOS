@@ -5,8 +5,6 @@
 
 #import "TSMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
-#import "TSAttachment.h"
-#import "TSAttachmentStream.h"
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
 #import <SignalServiceKit/NSDate+OWS.h>

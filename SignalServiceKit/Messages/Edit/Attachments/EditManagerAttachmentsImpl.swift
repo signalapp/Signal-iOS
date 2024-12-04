@@ -324,9 +324,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         case .none:
             break
         case .dataSource(let dataSource):
-            guard let attachmentDataSource = dataSource.v2DataSource else {
-                throw OWSAssertionError("Missing v2 data source")
-            }
+            let attachmentDataSource = dataSource.v2DataSource
             try attachmentManager.createAttachmentStream(
                 consuming: .init(
                     dataSource: attachmentDataSource,

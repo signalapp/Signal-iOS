@@ -23,9 +23,5 @@ enum LaunchJobs {
         // calls that were not connected, failed or hung up before the app existed
         // should be marked as missed.
         await IncompleteCallsJob().run(databaseStorage: databaseStorage)
-        // Mark all "downloading" attachments as "failed", i.e. any incoming
-        // attachments that were not successfully downloaded before the app exited
-        // should be marked as failures.
-        await FailedAttachmentDownloadsJob().run(databaseStorage: databaseStorage)
     }
 }

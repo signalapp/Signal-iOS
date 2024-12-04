@@ -9,7 +9,6 @@ public class TSResourceStoreImpl: TSResourceStore {
 
     private let attachmentStore: AttachmentStoreImpl
     private let attachmentUploadStore: AttachmentUploadStore
-    private let tsAttachmentStore: TSAttachmentStore
 
     public init(
         attachmentStore: AttachmentStoreImpl,
@@ -17,28 +16,17 @@ public class TSResourceStoreImpl: TSResourceStore {
     ) {
         self.attachmentStore = attachmentStore
         self.attachmentUploadStore = attachmentUploadStore
-        self.tsAttachmentStore = TSAttachmentStore()
     }
 
     public func fetch(_ ids: [TSResourceId], tx: DBReadTransaction) -> [TSResource] {
-        var legacyIds = [String]()
         var v2Ids = [Attachment.IDType]()
         ids.forEach {
             switch $0 {
-            case .legacy(let uniqueId):
-                legacyIds.append(uniqueId)
             case .v2(let rowId):
                 v2Ids.append(rowId)
             }
         }
-        var resources: [TSResource] = tsAttachmentStore.attachments(
-            withAttachmentIds: legacyIds,
-            tx: SDSDB.shimOnlyBridge(tx)
-        )
-        if v2Ids.isEmpty.negated {
-            resources.append(contentsOf: attachmentStore.fetch(ids: v2Ids, tx: tx))
-        }
-        return resources
+        return attachmentStore.fetch(ids: v2Ids, tx: tx)
     }
 
     // MARK: - Message Attachment fetching
@@ -58,17 +46,7 @@ public class TSResourceStoreImpl: TSResourceStore {
                 tx: tx
             )
 
-        let legacyReferences: [TSResourceReference] = tsAttachmentStore.allAttachments(
-            for: message,
-            tx: SDSDB.shimOnlyBridge(tx)
-        )
-
-        if !v2References.isEmpty && !legacyReferences.isEmpty {
-            // This isn't broken per se, things _should_ work, but it is unexpected.
-            owsFailDebug("Have both legacy and v2 references on the same attachment!")
-        }
-
-        return v2References + legacyReferences
+        return v2References
     }
 
     public func bodyAttachments(for message: TSMessage, tx: DBReadTransaction) -> [TSResourceReference] {
@@ -86,11 +64,7 @@ public class TSResourceStoreImpl: TSResourceStore {
                 tx: tx
             )
         } else {
-            let attachments = tsAttachmentStore.attachments(withAttachmentIds: message.attachmentIds ?? [], tx: SDSDB.shimOnlyBridge(tx))
-            let attachmentMap = Dictionary(uniqueKeysWithValues: attachments.map { ($0.uniqueId, $0) })
-            return message.attachmentIds?.map { uniqueId in
-                TSAttachmentReference(uniqueId: uniqueId, attachment: attachmentMap[uniqueId])
-            } ?? []
+            return []
         }
     }
 
@@ -102,40 +76,16 @@ public class TSResourceStoreImpl: TSResourceStore {
             }
             return attachmentStore.fetchReferences(owner: .messageBodyAttachment(messageRowId: messageRowId), tx: tx)
         } else {
-            let attachments = tsAttachmentStore.attachments(
-                withAttachmentIds: message.attachmentIds ?? [],
-                ignoringContentType: MimeType.textXSignalPlain.rawValue,
-                tx: SDSDB.shimOnlyBridge(tx)
-            )
-            // If we fail to fetch any attachments, we don't know if theyre media or
-            // oversize text, so we can't return them even as a reference.
-            return attachments.map {
-                TSAttachmentReference(uniqueId: $0.uniqueId, attachment: $0)
-            }
+            return []
         }
     }
 
     public func oversizeTextAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
-        if message.attachmentIds?.isEmpty != false {
-            guard let messageRowId = message.sqliteRowId else {
-                owsFailDebug("Fetching attachments for an un-inserted message!")
-                return nil
-            }
-            return attachmentStore.fetchFirstReference(owner: .messageOversizeText(messageRowId: messageRowId), tx: tx)
-        } else {
-            guard
-                let attachment = tsAttachmentStore.attachments(
-                    withAttachmentIds: message.attachmentIds ?? [],
-                    matchingContentType: MimeType.textXSignalPlain.rawValue,
-                    tx: SDSDB.shimOnlyBridge(tx)
-                ).first
-            else {
-                /// We can't tell from the unique id if its an oversized text attachment, so if the attachment
-                /// lookup fails for any reason, we return nil.
-                return nil
-            }
-            return TSAttachmentReference(uniqueId: attachment.uniqueId, attachment: attachment)
+        guard let messageRowId = message.sqliteRowId else {
+            owsFailDebug("Fetching attachments for an un-inserted message!")
+            return nil
         }
+        return attachmentStore.fetchFirstReference(owner: .messageOversizeText(messageRowId: messageRowId), tx: tx)
     }
 
     public func contactShareAvatarAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
@@ -149,7 +99,7 @@ public class TSResourceStoreImpl: TSResourceStore {
             }
             return attachmentStore.fetchFirstReference(owner: .messageContactAvatar(messageRowId: messageRowId), tx: tx)
         }
-        return legacyReference(uniqueId: message.contactShare?.legacyAvatarAttachmentId, tx: tx)
+        return nil
     }
 
     public func linkPreviewAttachment(for message: TSMessage, tx: DBReadTransaction) -> TSResourceReference? {
@@ -163,7 +113,7 @@ public class TSResourceStoreImpl: TSResourceStore {
             }
             return attachmentStore.fetchFirstReference(owner: .messageLinkPreview(messageRowId: messageRowId), tx: tx)
         } else {
-            return legacyReference(uniqueId: linkPreview.legacyImageAttachmentId, tx: tx)
+            return nil
         }
     }
 
@@ -172,7 +122,7 @@ public class TSResourceStoreImpl: TSResourceStore {
             return nil
         }
         if let legacyAttachmentId = messageSticker.legacyAttachmentId {
-            return legacyReference(uniqueId: legacyAttachmentId, tx: tx)
+            return nil
         } else {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Fetching attachments for an un-inserted message!")
@@ -199,9 +149,7 @@ public class TSResourceStoreImpl: TSResourceStore {
         case .unset, .original, .originalForSend, .thumbnail, .untrustedPointer:
             fallthrough
         @unknown default:
-            if let reference = self.legacyReference(uniqueId: info.attachmentId, tx: tx) {
-                return .thumbnail(reference)
-            } else if let stub = TSQuotedMessageResourceReference.Stub(info) {
+            if let stub = TSQuotedMessageResourceReference.Stub(info) {
                 return .stub(stub)
             } else {
                 return nil
@@ -219,15 +167,7 @@ public class TSResourceStoreImpl: TSResourceStore {
         {
             return attachment
         } else {
-            guard
-                let attachment = tsAttachmentStore.attachmentToUseInQuote(
-                    originalMessage: originalMessage,
-                    tx: SDSDB.shimOnlyBridge(tx)
-                )
-            else {
-                return nil
-            }
-            return TSAttachmentReference(uniqueId: attachment.uniqueId, attachment: attachment)
+            return nil
         }
     }
 
@@ -241,7 +181,7 @@ public class TSResourceStoreImpl: TSResourceStore {
         case .text:
             return nil
         case .file(let storyMessageFileAttachment):
-            return tsAttachmentStore.storyAttachmentReference(storyMessageFileAttachment, tx: SDSDB.shimOnlyBridge(tx))
+            return nil
         case .foreignReferenceAttachment:
             guard let storyMessageRowId = storyMessage.id else {
                 owsFailDebug("Fetching attachments for an un-inserted story message!")
@@ -275,7 +215,7 @@ public class TSResourceStoreImpl: TSResourceStore {
                     tx: tx
                 )
             } else {
-                return legacyReference(uniqueId: linkPreview.legacyImageAttachmentId, tx: tx)
+                return nil
             }
         }
     }
@@ -290,35 +230,11 @@ extension TSResourceStoreImpl: TSResourceUploadStore {
         info: Attachment.TransitTierInfo,
         tx: DBWriteTransaction
     ) throws {
-        switch attachmentStream.concreteStreamType {
-        case .legacy(let tSAttachment):
-            tSAttachment.updateAsUploaded(
-                withEncryptionKey: info.encryptionKey,
-                digest: info.digestSHA256Ciphertext,
-                serverId: 0, // Only used in cdn0 uploads, which aren't supported here.
-                cdnKey: info.cdnKey,
-                cdnNumber: info.cdnNumber,
-                uploadTimestamp: info.uploadTimestamp,
-                transaction: SDSDB.shimOnlyBridge(tx)
-            )
-        case .v2(let attachment):
-            try attachmentUploadStore.markUploadedToTransitTier(
-                attachmentStream: attachment,
-                info: info,
-                tx: tx
-            )
-        }
-    }
-}
-
-// MARK: - Helpers
-extension TSResourceStoreImpl {
-
-    private func legacyReference(uniqueId: String?, tx: DBReadTransaction) -> TSResourceReference? {
-        guard let uniqueId else {
-            return nil
-        }
-        let attachment = tsAttachmentStore.attachments(withAttachmentIds: [uniqueId], tx: SDSDB.shimOnlyBridge(tx)).first
-        return TSAttachmentReference(uniqueId: uniqueId, attachment: attachment)
+        let attachment = attachmentStream.concreteStreamType
+        try attachmentUploadStore.markUploadedToTransitTier(
+            attachmentStream: attachment,
+            info: info,
+            tx: tx
+        )
     }
 }

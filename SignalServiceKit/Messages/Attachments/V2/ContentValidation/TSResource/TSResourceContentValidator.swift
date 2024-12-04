@@ -6,15 +6,10 @@
 import Foundation
 
 public struct OversizeTextDataSource {
-    public let v2DataSource: AttachmentDataSource?
-    public let legacyDataSource: TSAttachmentDataSource
+    public let v2DataSource: AttachmentDataSource
 
     public var dataSource: TSResourceDataSource {
-        if let v2DataSource {
-            return v2DataSource.tsDataSource
-        } else {
-            return legacyDataSource.tsDataSource
-        }
+        return v2DataSource.tsDataSource
     }
 }
 
@@ -123,68 +118,23 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
     public func prepareOversizeTextIfNeeded(
         from messageBody: MessageBody
     ) throws -> ValidatedTSMessageBody? {
-        let legacyOnly = Self.prepareLegacyOversizeTextIfNeeded(from: messageBody)
-
         let truncatedBody: MessageBody
-        let legacyDataSource: TSAttachmentDataSource
-        switch legacyOnly {
+
+        let v2DataSource: AttachmentDataSource
+        let result = try attachmentValidator.prepareOversizeTextIfNeeded(
+            from: messageBody
+        )
+        switch result {
         case nil:
             return nil
         case .inline(let messageBody):
             return .inline(messageBody)
         case .oversize(let truncated, let fullsize):
             truncatedBody = truncated
-            legacyDataSource = fullsize.legacyDataSource
-        }
-
-        let v2DataSource: AttachmentDataSource?
-        let result = try attachmentValidator.prepareOversizeTextIfNeeded(
-            from: messageBody
-        )
-        switch result {
-        case .inline, nil:
-            owsFailDebug("Got no oversize text for v2 even though we have one for v1")
-            v2DataSource = nil
-        case .oversize(_, let fullsize):
             v2DataSource = .from(pendingAttachment: fullsize)
         }
         let dataSource = OversizeTextDataSource.init(
-            v2DataSource: v2DataSource,
-            legacyDataSource: legacyDataSource
-        )
-
-        return .oversize(
-            truncated: truncatedBody,
-            fullsize: dataSource
-        )
-    }
-
-    // For legacy attachments, don't validate but still truncate.
-    public static func prepareLegacyOversizeTextIfNeeded(
-        from messageBody: MessageBody
-    ) -> ValidatedTSMessageBody? {
-        guard !messageBody.text.isEmpty else {
-            return nil
-        }
-        let truncatedText = messageBody.text.trimmedIfNeeded(maxByteCount: Int(kOversizeTextMessageSizeThreshold))
-        guard let truncatedText else {
-            // No need to truncate
-            return .inline(messageBody)
-        }
-        let truncatedBody = MessageBody(text: truncatedText, ranges: messageBody.ranges)
-
-        let dataSource = OversizeTextDataSource.init(
-            v2DataSource: nil,
-            legacyDataSource: .init(
-                mimeType: MimeType.textXSignalPlain.rawValue,
-                caption: nil,
-                renderingFlag: .default,
-                sourceFilename: nil,
-                dataSource: .dataSource(
-                    DataSourceValue(oversizeText: messageBody.text),
-                    shouldCopy: false
-                )
-            )
+            v2DataSource: v2DataSource
         )
 
         return .oversize(
@@ -198,87 +148,10 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
         originalReference: TSResourceReference,
         originalMessageRowId: Int64
     ) throws -> QuotedReplyTSResourceDataSource {
-        switch (originalAttachment.concreteStreamType, originalReference.concreteType) {
-        case (.v2, .legacy), (.legacy, .v2):
-            throw OWSAssertionError("Invalid attachment + reference combination")
-
-        case (.v2(let attachment), .v2(let attachmentReference)):
-            return try attachmentValidator.prepareQuotedReplyThumbnail(
-                fromOriginalAttachment: attachment,
-                originalReference: attachmentReference
-            ).tsDataSource
-        case (.legacy(let tsAttachment), .legacy):
-            // We have a legacy attachment, but we want to clone it as a v2 attachment.
-            // This is doable; we can read the attachment data in and clone that directly.
-            return try prepareV2QuotedReplyThumbnail(
-                fromLegacyAttachment: tsAttachment,
-                originalMessageRowId: originalMessageRowId
-            ).tsDataSource
-        }
-    }
-
-    private func prepareV2QuotedReplyThumbnail(
-        fromLegacyAttachment originalAttachment: TSAttachment,
-        originalMessageRowId: Int64
-    ) throws -> QuotedReplyAttachmentDataSource {
-        let isVisualMedia: Bool = {
-            if let contentType = originalAttachment.asResourceStream()?.cachedContentType {
-                return contentType.isVisualMedia
-            } else {
-                return MimeTypeUtil.isSupportedVisualMediaMimeType(originalAttachment.mimeType)
-            }
-        }()
-        guard isVisualMedia else {
-            throw OWSAssertionError("Non visual media target")
-        }
-        guard let stream = originalAttachment as? TSAttachmentStream else {
-            // If we don't have a stream, the best we can do is try to create
-            // a pointer proto out of the cdn info of the original.
-            if let phonyThumbnailAttachmentProto = TSResourceManagerImpl.buildProtoAsIfWeReceivedThisAttachment(originalAttachment) {
-                return .fromQuotedAttachmentProto(
-                    thumbnail: phonyThumbnailAttachmentProto,
-                    originalAttachmentMimeType: originalAttachment.mimeType,
-                    originalAttachmentSourceFilename: originalAttachment.sourceFilename
-                )
-            } else {
-                Logger.error("Unable to create v2 quote attachment from v1 attachment")
-                class CannotCreateV2FromV1AttachmentError: Error {}
-                throw CannotCreateV2FromV1AttachmentError()
-            }
-        }
-
-        guard
-            let imageData = stream
-                .thumbnailImageSmallSync()?
-                .resized(maxDimensionPoints: AttachmentThumbnailQuality.thumbnailDimensionPointsForQuotedReply)?
-                .jpegData(compressionQuality: 0.8)
-        else {
-            throw OWSAssertionError("Unable to create thumbnail")
-        }
-
-        let renderingFlagForThumbnail: AttachmentReference.RenderingFlag
-        switch originalAttachment.attachmentType.asRenderingFlag {
-        case .borderless:
-            // Preserve borderless flag from the original
-            renderingFlagForThumbnail = .borderless
-        case .default, .voiceMessage, .shouldLoop:
-            // Other cases become default for the still image.
-            renderingFlagForThumbnail = .default
-        }
-
-        let pendingAttachment: PendingAttachment = try attachmentValidator.validateContents(
-            data: imageData,
-            mimeType: MimeType.imageJpeg.rawValue,
-            renderingFlag: renderingFlagForThumbnail,
-            sourceFilename: originalAttachment.sourceFilename
-        )
-
-        return .fromPendingAttachment(
-            pendingAttachment,
-            originalAttachmentMimeType: originalAttachment.mimeType,
-            originalAttachmentSourceFilename: originalAttachment.sourceFilename,
-            originalMessageRowId: originalMessageRowId
-        )
+        return try attachmentValidator.prepareQuotedReplyThumbnail(
+            fromOriginalAttachment: originalAttachment.concreteStreamType,
+            originalReference: originalReference.concreteType
+        ).tsDataSource
     }
 }
 
@@ -297,13 +170,7 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
         renderingFlag: AttachmentReference.RenderingFlag,
         ownerType: TSResourceOwnerType
     ) throws -> TSResourceDataSource {
-        return TSAttachmentDataSource(
-            mimeType: mimeType,
-            caption: caption,
-            renderingFlag: renderingFlag,
-            sourceFilename: dataSource.sourceFilename,
-            dataSource: .dataSource(dataSource, shouldCopy: !shouldConsume)
-        ).tsDataSource
+        throw OWSAssertionError("Unimplemented")
     }
 
     open func validateContents(
@@ -314,13 +181,7 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
         renderingFlag: AttachmentReference.RenderingFlag,
         ownerType: TSResourceOwnerType
     ) throws -> TSResourceDataSource {
-        return TSAttachmentDataSource(
-            mimeType: mimeType,
-            caption: caption,
-            renderingFlag: renderingFlag,
-            sourceFilename: sourceFilename,
-            dataSource: .data(data)
-        ).tsDataSource
+        throw OWSAssertionError("Unimplemented")
     }
 
     open func prepareOversizeTextIfNeeded(
@@ -334,17 +195,7 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
         originalReference: TSResourceReference,
         originalMessageRowId: Int64
     ) throws -> QuotedReplyTSResourceDataSource {
-        switch originalAttachment.concreteType {
-        case .legacy(let tsAttachment):
-            return .fromLegacyOriginalAttachment(tsAttachment, originalMessageRowId: originalMessageRowId)
-        case .v2(_):
-            switch originalReference.concreteType {
-            case .legacy(_):
-                fatalError("Invalid combination")
-            case .v2(_):
-                throw OWSAssertionError("Unimplemented")
-            }
-        }
+        throw OWSAssertionError("Unimplemented")
     }
 }
 

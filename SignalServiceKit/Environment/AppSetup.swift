@@ -410,7 +410,6 @@ public class AppSetup {
         )
 
         let tsResourceDownloadManager = TSResourceDownloadManagerImpl(
-            appReadiness: appReadiness,
             attachmentDownloadManager: attachmentDownloadManager,
             tsResourceStore: tsResourceStore
         )
@@ -1178,21 +1177,8 @@ public class AppSetup {
             udManager: udManager
         )
 
-        let tsAttachmentUploadManager = TSAttachmentUploadManagerImpl(
-            db: db,
-            interactionStore: interactionStore,
-            networkManager: networkManager,
-            chatConnectionManager: chatConnectionManager,
-            signalService: signalService,
-            attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
-            blurHash: TSAttachmentUpload.Wrappers.BlurHash(),
-            fileSystem: Upload.Wrappers.FileSystem(),
-            tsResourceStore: tsResourceStore
-        )
-
         let tsResourceUploadManager = TSResourceUploadManagerImpl(
-            attachmentUploadManager: attachmentUploadManager,
-            tsAttachmentUploadManager: tsAttachmentUploadManager
+            attachmentUploadManager: attachmentUploadManager
         )
 
         let attachmentCloner = SignalAttachmentClonerImpl()

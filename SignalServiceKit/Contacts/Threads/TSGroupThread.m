@@ -4,7 +4,6 @@
 //
 
 #import "TSGroupThread.h"
-#import "TSAttachmentStream.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

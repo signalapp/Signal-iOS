@@ -8,8 +8,6 @@ import Foundation
 /// Uniquely and stably identifies an item for the all media view
 /// (either a MediaGalleryRecord or an AttachmentReference).
 public enum MediaGalleryItemId: Equatable, Hashable {
-    /// Row Id for a ``MediaGalleryRecord``
-    case legacy(mediaGalleryRecordId: Int64)
     case v2(AttachmentReferenceId)
 }
 
@@ -23,18 +21,13 @@ public enum MediaGalleryItemId: Equatable, Hashable {
 /// the item id tracks the rowId of the MediaGalleryRecord,
 /// this tracks the id of the TSAttachment.
 public enum MediaGalleryResourceId: Equatable, Hashable {
-    case legacy(attachmentUniqueId: String)
     case v2(AttachmentReferenceId)
 }
 
 extension TSResourceReference {
 
     public var mediaGalleryResourceId: MediaGalleryResourceId {
-        switch self.concreteType {
-        case .legacy(let tsAttachmentReference):
-            return .legacy(attachmentUniqueId: tsAttachmentReference.uniqueId)
-        case .v2(let attachmentReference):
-            return .v2(attachmentReference.referenceId)
-        }
+        let attachmentReference = self.concreteType
+        return .v2(attachmentReference.referenceId)
     }
 }

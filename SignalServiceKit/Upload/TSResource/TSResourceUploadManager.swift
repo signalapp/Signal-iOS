@@ -21,14 +21,11 @@ public protocol TSResourceUploadManager {
 public class TSResourceUploadManagerImpl: TSResourceUploadManager {
 
     private let attachmentUploadManager: AttachmentUploadManager
-    private let tsAttachmentUploadManager: TSAttachmentUploadManager
 
     public init(
-        attachmentUploadManager: AttachmentUploadManager,
-        tsAttachmentUploadManager: TSAttachmentUploadManager
+        attachmentUploadManager: AttachmentUploadManager
     ) {
         self.attachmentUploadManager = attachmentUploadManager
-        self.tsAttachmentUploadManager = tsAttachmentUploadManager
 
         NotificationCenter.default.addObserver(
             self,
@@ -57,8 +54,6 @@ public class TSResourceUploadManagerImpl: TSResourceUploadManager {
     /// so any error encountered here is considered unrecoverable and thrown to the caller.
     public func uploadAttachment(attachmentId: TSResourceId, legacyMessageOwnerIds: [String]) async throws {
         switch attachmentId {
-        case .legacy(let uniqueId):
-            try await tsAttachmentUploadManager.uploadAttachment(attachmentId: uniqueId, messageIds: legacyMessageOwnerIds)
         case .v2(let rowId):
             try await attachmentUploadManager.uploadTransitTierAttachment(attachmentId: rowId)
         }

@@ -5150,32 +5150,11 @@ public class GRDBSchemaMigrator: NSObject {
 // MARK: -
 
 public func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throws {
-    try Bench(title: "createInitialGalleryRecords", logInProduction: true) {
-        try MediaGalleryRecord.deleteAll(transaction.database)
-        let scope = AttachmentRecord.filter(sql: "\(attachmentColumn: .recordType) = \(SDSRecordType.attachmentStream.rawValue)")
-
-        let totalCount = try scope.fetchCount(transaction.database)
-        let cursor = try scope.fetchCursor(transaction.database)
-        var i = 0
-        try Batching.loop(batchSize: 500) { stopPtr in
-            guard let record = try cursor.next() else {
-                stopPtr.pointee = true
-                return
-            }
-
-            i+=1
-            if (i % 100) == 0 {
-                Logger.info("migrated \(i) / \(totalCount)")
-            }
-
-            guard let attachmentStream = try TSAttachment.fromRecord(record) as? TSAttachmentStream else {
-                owsFailDebug("unexpected record: \(record.recordType)")
-                return
-            }
-
-            try MediaGalleryRecordManager.insertForMigration(attachmentStream: attachmentStream, transaction: transaction)
-        }
-    }
+    /// This method used to insert `media_gallery_record` rows for every message attachment.
+    /// Since the writing of this method, the table has been obsoleted. In between the original migration and its
+    /// obsoletion, no other migration referenced the table. This migration used to reference live application code
+    /// that no longer exists. Therefore, it is safe (if still not ideal) to no-op this migration, as the rows it inserts
+    /// will just be removed by a later migration before they're ever used.
 }
 
 private func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {

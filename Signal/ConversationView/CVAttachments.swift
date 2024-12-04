@@ -69,8 +69,8 @@ public class AudioAttachment {
         case .audio(let duration):
             var duration = duration.compute()
             // TODO: Remove & replace with a full fix to recompute the duration for invalid files.
-            if duration <= 0, case .v2(let attachment) = attachmentStream.attachmentStream.concreteStreamType {
-                duration = Self.cachedAudioDuration(forAttachment: attachment)
+            if duration <= 0 {
+                duration = Self.cachedAudioDuration(forAttachment: attachmentStream.attachmentStream.concreteStreamType)
             }
             if duration <= 0 {
                 fallthrough

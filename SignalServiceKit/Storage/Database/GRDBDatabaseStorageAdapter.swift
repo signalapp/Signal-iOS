@@ -766,8 +766,6 @@ private struct GRDBStorage {
                 db.trace { dbQueryLog("\($0)") }
             #endif
             #endif
-
-            MediaGalleryRecordManager.setupDatabaseFunction(database: db)
         }
         configuration.defaultTransactionKind = .immediate
         configuration.allowsUnsafeTransactions = true

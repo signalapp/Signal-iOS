@@ -87,7 +87,7 @@ extension SignalAttachment {
             return .init(error: OWSAssertionError("Failed to start export session for segmentation"))
         }
 
-        // tmp url is ok, it gets moved when converted to a TSAttachment later anyway.
+        // tmp url is ok, it gets moved when converted to a Attachment later anyway.
         let outputUrl = OWSFileSystem.temporaryFileUrl(
             fileExtension: asset.url.pathExtension,
             isAvailableWhileDeviceLocked: true

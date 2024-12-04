@@ -103,19 +103,13 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
 
     private var videoDurationPromise: Promise<TimeInterval> {
         owsPrecondition(galleryItem.isVideo)
-        switch galleryItem.attachmentStream.attachmentStream.concreteStreamType {
-        case .legacy(let tSAttachment):
-            return TSAttachmentVideoDurationHelper.shared.promisedDuration(
-                attachment: tSAttachment
-            )
-        case .v2(let attachment):
-            switch attachment.contentType {
-            case .file, .invalid, .image, .animatedImage, .audio:
-                owsFailDebug("Non video type!")
-                return .value(0)
-            case .video(let duration, _, _):
-                return .value(duration)
-            }
+        let attachment = galleryItem.attachmentStream.attachmentStream.concreteStreamType
+        switch attachment.contentType {
+        case .file, .invalid, .image, .animatedImage, .audio:
+            owsFailDebug("Non video type!")
+            return .value(0)
+        case .video(let duration, _, _):
+            return .value(duration)
         }
     }
     var mediaMetadata: MediaMetadata? {

@@ -11,7 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class MessageBodyRanges;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
-@class TSAttachmentStream;
 @class TSGroupModelV2;
 
 extern NSString *const TSGroupThreadAvatarChangedNotification;

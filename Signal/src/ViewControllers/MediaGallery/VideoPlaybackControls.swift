@@ -146,30 +146,12 @@ class VideoPlaybackControlView: UIView {
             guard let videoDuration else { fallthrough }
             updateDuration(videoDuration)
         default:
-            switch mediaItem.attachmentStream.attachmentStream.concreteStreamType {
-            case .v2(let attachmentStream):
-                switch attachmentStream.contentType {
-                case .file, .invalid, .image, .animatedImage, .audio:
-                    break
-                case .video(let duration, _, _):
-                    updateDuration(duration)
-                }
-            case .legacy(let tsAttachmentStream):
-                showRewindAndFastForward = false
-                self.mediaItem = mediaItem
-
-                TSAttachmentVideoDurationHelper.shared.promisedDuration(
-                    attachment: tsAttachmentStream
-                ).observe { [weak self] result in
-                    guard let self, self.mediaItem === mediaItem, case .success(let duration) = result else {
-                        self?.mediaItem = nil
-                        return
-                    }
-                    self.updateDuration(duration)
-
-                    // Only hold on to mediaItem for as long as it is necessary.
-                    self.mediaItem = nil
-                }
+            let attachmentStream = mediaItem.attachmentStream.attachmentStream.concreteStreamType
+            switch attachmentStream.contentType {
+            case .file, .invalid, .image, .animatedImage, .audio:
+                break
+            case .video(let duration, _, _):
+                updateDuration(duration)
             }
         }
     }

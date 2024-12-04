@@ -157,12 +157,8 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(attachmentStream.attachmentStream.resourceId)
-        switch attachmentStream.reference.concreteType {
-        case .legacy:
-            break
-        case .v2(let attachmentReference):
-            hasher.combine(attachmentReference.owner.id)
-        }
+        let attachmentReference = attachmentStream.reference.concreteType
+        hasher.combine(attachmentReference.owner.id)
     }
 
     // MARK: Sorting

@@ -567,15 +567,10 @@ extension StoryThumbnailView.Attachment {
 
             var mediaURL: URL?
             let shouldDeleteFileAfterComplete: Bool
-            switch attachment.concreteStreamType {
-            case .legacy(let tsAttachmentStream):
-                mediaURL = tsAttachmentStream.originalMediaURL
-                shouldDeleteFileAfterComplete = false
-            case .v2(let attachmentStream):
-                // Make a copy since we are about to send this off to the system anyway.
-                mediaURL = try? attachmentStream.makeDecryptedCopy(filename: fileAttachment.reference.sourceFilename)
-                shouldDeleteFileAfterComplete = true
-            }
+            let attachmentStream = attachment.concreteStreamType
+            // Make a copy since we are about to send this off to the system anyway.
+            mediaURL = try? attachmentStream.makeDecryptedCopy(filename: fileAttachment.reference.sourceFilename)
+            shouldDeleteFileAfterComplete = true
             guard let mediaURL else {
                 break
             }

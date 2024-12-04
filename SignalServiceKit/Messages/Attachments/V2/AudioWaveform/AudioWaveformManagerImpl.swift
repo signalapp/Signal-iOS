@@ -23,71 +23,33 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         forAttachment attachment: TSResourceStream,
         highPriority: Bool
     ) -> Task<AudioWaveform, Error> {
-        switch attachment.concreteStreamType {
-        case .legacy(let tsAttachmentStream):
-            return _audioWaveform(forAttachment: tsAttachmentStream, highPriority: highPriority)
-        case .v2(let attachmentStream):
-            switch attachmentStream.info.contentType {
-            case .file, .invalid, .image, .video, .animatedImage:
+        let attachmentStream = attachment.concreteStreamType
+        switch attachmentStream.info.contentType {
+        case .file, .invalid, .image, .video, .animatedImage:
+            return Task {
+                throw OWSAssertionError("Invalid attachment type!")
+            }
+        case .audio(_, let relativeWaveformFilePath):
+            guard let relativeWaveformFilePath else {
                 return Task {
-                    throw OWSAssertionError("Invalid attachment type!")
+                    // We could not generate a waveform at write time; don't retry now.
+                    throw AudioWaveformError.invalidAudioFile
                 }
-            case .audio(_, let relativeWaveformFilePath):
-                guard let relativeWaveformFilePath else {
-                    return Task {
-                        // We could not generate a waveform at write time; don't retry now.
-                        throw AudioWaveformError.invalidAudioFile
-                    }
-                }
-                let encryptionKey = attachmentStream.attachment.encryptionKey
-                return Task {
-                    let fileURL = AttachmentStream.absoluteAttachmentFileURL(
-                        relativeFilePath: relativeWaveformFilePath
+            }
+            let encryptionKey = attachmentStream.attachment.encryptionKey
+            return Task {
+                let fileURL = AttachmentStream.absoluteAttachmentFileURL(
+                    relativeFilePath: relativeWaveformFilePath
+                )
+                // waveform is validated at creation time; no need to revalidate every read.
+                let data = try Cryptography.decryptFileWithoutValidating(
+                    at: fileURL,
+                    metadata: .init(
+                        key: encryptionKey
                     )
-                    // waveform is validated at creation time; no need to revalidate every read.
-                    let data = try Cryptography.decryptFileWithoutValidating(
-                        at: fileURL,
-                        metadata: .init(
-                            key: encryptionKey
-                        )
-                    )
-                    return try AudioWaveform(archivedData: data)
-                }
+                )
+                return try AudioWaveform(archivedData: data)
             }
-        }
-    }
-
-    private func _audioWaveform(
-        forAttachment attachment: TSAttachmentStream,
-        highPriority: Bool
-    ) -> Task<AudioWaveform, Error> {
-        let attachmentId = attachment.resourceId
-        let mimeType = attachment.mimeType
-        let audioWaveformPath = attachment.audioWaveformPath
-        let originalFilePath = attachment.originalFilePath
-
-        return Task {
-            guard MimeTypeUtil.isSupportedAudioMimeType(mimeType) else {
-                owsFailDebug("Not audio.")
-                throw AudioWaveformError.invalidAudioFile
-            }
-
-            guard let audioWaveformPath else {
-                owsFailDebug("Missing audioWaveformPath.")
-                throw AudioWaveformError.invalidAudioFile
-            }
-
-            guard let originalFilePath else {
-                owsFailDebug("Missing originalFilePath.")
-                throw AudioWaveformError.invalidAudioFile
-            }
-
-            return try await self.buildAudioWaveForm(
-                source: .unencryptedFile(path: originalFilePath),
-                waveformPath: audioWaveformPath,
-                identifier: .attachment(attachmentId),
-                highPriority: highPriority
-            ).value
         }
     }
 

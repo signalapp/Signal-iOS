@@ -10,7 +10,6 @@ public class TSResourceManagerImpl: TSResourceManager {
     private let attachmentManager: AttachmentManagerImpl
     private let attachmentStore: AttachmentStore
     private let threadStore: ThreadStore
-    private let tsAttachmentManager: TSAttachmentManager
     private let tsResourceStore: TSResourceStore
 
     public init(
@@ -22,7 +21,6 @@ public class TSResourceManagerImpl: TSResourceManager {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.threadStore = threadStore
-        self.tsAttachmentManager = TSAttachmentManager()
         self.tsResourceStore = tsResourceStore
     }
 
@@ -98,34 +96,26 @@ public class TSResourceManagerImpl: TSResourceManager {
         message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
-        if let attachmentDataSource = dataSource.v2DataSource {
-            guard let messageRowId = message.sqliteRowId else {
-                owsFailDebug("Adding attachments to an uninserted message!")
-                return
-            }
-            guard let threadRowId = threadStore.fetchThread(uniqueId: message.uniqueThreadId, tx: tx)?.sqliteRowId else {
-                owsFailDebug("Adding attachments to an message without a thread")
-                return
-            }
-            try attachmentManager.createAttachmentStream(
-                consuming: .init(
-                    dataSource: attachmentDataSource,
-                    owner: .messageOversizeText(.init(
-                        messageRowId: messageRowId,
-                        receivedAtTimestamp: message.receivedAtTimestamp,
-                        threadRowId: threadRowId,
-                        isPastEditRevision: message.isPastEditRevision()
-                    ))
-                ),
-                tx: tx
-            )
-        } else {
-            try tsAttachmentManager.createBodyAttachmentStreams(
-                consuming: [dataSource.legacyDataSource],
-                message: message,
-                tx: SDSDB.shimOnlyBridge(tx)
-            )
+        guard let messageRowId = message.sqliteRowId else {
+            owsFailDebug("Adding attachments to an uninserted message!")
+            return
         }
+        guard let threadRowId = threadStore.fetchThread(uniqueId: message.uniqueThreadId, tx: tx)?.sqliteRowId else {
+            owsFailDebug("Adding attachments to an message without a thread")
+            return
+        }
+        try attachmentManager.createAttachmentStream(
+            consuming: .init(
+                dataSource: dataSource.v2DataSource,
+                owner: .messageOversizeText(.init(
+                    messageRowId: messageRowId,
+                    receivedAtTimestamp: message.receivedAtTimestamp,
+                    threadRowId: threadRowId,
+                    isPastEditRevision: message.isPastEditRevision()
+                ))
+            ),
+            tx: tx
+        )
     }
 
     public func createBodyMediaAttachmentStreams(
@@ -133,12 +123,9 @@ public class TSResourceManagerImpl: TSResourceManager {
         message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
-        var legacyDataSources = [TSAttachmentDataSource]()
         var v2DataSources = [(AttachmentDataSource, AttachmentReference.RenderingFlag)]()
         for dataSource in dataSources {
             switch dataSource.concreteType {
-            case .legacy(let tsAttachmentDataSource):
-                legacyDataSources.append(tsAttachmentDataSource)
             case .v2(let attachmentDataSource, let renderingFlag):
                 v2DataSources.append((attachmentDataSource, renderingFlag))
             }
@@ -166,13 +153,6 @@ public class TSResourceManagerImpl: TSResourceManager {
                     )
                 },
                 tx: tx
-            )
-        }
-        if !legacyDataSources.isEmpty {
-            try tsAttachmentManager.createBodyAttachmentStreams(
-                consuming: legacyDataSources,
-                message: message,
-                tx: SDSDB.shimOnlyBridge(tx)
             )
         }
     }
@@ -210,12 +190,6 @@ public class TSResourceManagerImpl: TSResourceManager {
                     )
                 }
             )
-        case .legacy(let tsAttachmentDataSource):
-            let attachmentId = try tsAttachmentManager.createAttachmentStream(
-                from: tsAttachmentDataSource,
-                tx: SDSDB.shimOnlyBridge(tx)
-            )
-            return .withoutFinalizer(.legacy(uniqueId: attachmentId))
         }
     }
 
@@ -225,28 +199,16 @@ public class TSResourceManagerImpl: TSResourceManager {
         from reference: TSResourceReference,
         pointer: TSResourcePointer
     ) -> SSKProtoAttachmentPointer? {
-        switch pointer.resource.concreteType {
-        case .legacy(let tsAttachment):
-            guard let stream = tsAttachment as? TSAttachmentStream else {
-                return nil
-            }
-            return stream.buildProto()
-        case .v2(let attachment):
-            switch reference.concreteType {
-            case .legacy:
-                owsFailDebug("Invalid attachment type combination!")
-                return nil
-            case .v2(let attachmentReference):
-                guard let attachmentPointer = AttachmentTransitPointer(attachment: attachment) else {
-                    owsFailDebug("Invalid attachment type combination!")
-                    return nil
-                }
-                return attachmentManager.buildProtoForSending(
-                    from: attachmentReference,
-                    pointer: attachmentPointer
-                )
-            }
+        let attachment = pointer.resource.concreteType
+        let attachmentReference = reference.concreteType
+        guard let attachmentPointer = AttachmentTransitPointer(attachment: attachment) else {
+            owsFailDebug("Invalid attachment type combination!")
+            return nil
         }
+        return attachmentManager.buildProtoForSending(
+            from: attachmentReference,
+            pointer: attachmentPointer
+        )
     }
 
     // MARK: - Removes and Deletes
@@ -256,20 +218,16 @@ public class TSResourceManagerImpl: TSResourceManager {
         from message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
-        switch attachment.concreteType {
-        case .legacy(let legacyAttachment):
-            tsAttachmentManager.removeBodyAttachment(legacyAttachment, from: message, tx: SDSDB.shimOnlyBridge(tx))
-        case .v2(let attachment):
-            guard let messageRowId = message.sqliteRowId else {
-                owsFailDebug("Removing attachment from uninserted message!")
-                return
-            }
-            try attachmentManager.removeAttachment(
-                attachment,
-                from: .messageBodyAttachment(messageRowId: messageRowId),
-                tx: tx
-            )
+        let attachment = attachment.concreteType
+        guard let messageRowId = message.sqliteRowId else {
+            owsFailDebug("Removing attachment from uninserted message!")
+            return
         }
+        try attachmentManager.removeAttachment(
+            attachment,
+            from: .messageBodyAttachment(messageRowId: messageRowId),
+            tx: tx
+        )
     }
 
     public func removeAttachments(
@@ -282,65 +240,34 @@ public class TSResourceManagerImpl: TSResourceManager {
         var v2Owners = [AttachmentReference.MessageOwnerTypeRaw]()
 
         if types.contains(.bodyAttachment) || types.contains(.oversizeText) {
-            if (message.attachmentIds ?? []).count > 0 {
-                tsAttachmentManager.removeBodyAttachments(
-                    from: message,
-                    removeMedia: types.contains(.bodyAttachment),
-                    removeOversizeText: types.contains(.oversizeText),
-                    tx: SDSDB.shimOnlyBridge(tx)
-                )
-            } else {
-                if types.contains(.bodyAttachment) {
-                    v2Owners.append(.bodyAttachment)
-                }
-                if types.contains(.oversizeText) {
-                    v2Owners.append(.oversizeText)
-                }
+            if types.contains(.bodyAttachment) {
+                v2Owners.append(.bodyAttachment)
+            }
+            if types.contains(.oversizeText) {
+                v2Owners.append(.oversizeText)
             }
         }
 
         if types.contains(.linkPreview), let linkPreview = message.linkPreview {
-            if linkPreview.usesV2AttachmentReference {
-                v2Owners.append(.linkPreview)
-            } else if let attachmentId = linkPreview.legacyImageAttachmentId?.nilIfEmpty {
-                tsAttachmentManager.removeAttachment(
-                    attachmentId: attachmentId,
-                    tx: SDSDB.shimOnlyBridge(tx)
-                )
-            }
+            v2Owners.append(.linkPreview)
         }
 
         if types.contains(.sticker), let messageSticker = message.messageSticker {
-            if let legacyAttachmentId = messageSticker.legacyAttachmentId {
-                tsAttachmentManager.removeAttachment(attachmentId: legacyAttachmentId, tx: SDSDB.shimOnlyBridge(tx))
-            } else {
-                v2Owners.append(.sticker)
-            }
+            v2Owners.append(.sticker)
         }
 
         if
             types.contains(.quotedReply),
             let quoteAttachmentInfo = message.quotedMessage?.attachmentInfo()
         {
-            if quoteAttachmentInfo.attachmentType == OWSAttachmentInfoReference.V2 {
-                v2Owners.append(.quotedReplyAttachment)
-            } else if let id = quoteAttachmentInfo.attachmentId {
-                tsAttachmentManager.removeAttachment(attachmentId: id, tx: SDSDB.shimOnlyBridge(tx))
-            }
+            v2Owners.append(.quotedReplyAttachment)
         }
 
         if
             types.contains(.contactAvatar),
             let contactShare = message.contactShare
         {
-            if let legacyAvatarAttachmentId = contactShare.legacyAvatarAttachmentId {
-                tsAttachmentManager.removeAttachment(
-                    attachmentId: legacyAvatarAttachmentId,
-                    tx: SDSDB.shimOnlyBridge(tx)
-                )
-            } else {
-                v2Owners.append(.contactAvatar)
-            }
+            v2Owners.append(.contactAvatar)
         }
 
         guard let messageRowId = message.sqliteRowId else {
@@ -354,22 +281,6 @@ public class TSResourceManagerImpl: TSResourceManager {
     }
 
     public func removeAttachments(from storyMessage: StoryMessage, tx: DBWriteTransaction) throws {
-        switch storyMessage.attachment {
-        case .file(let storyMessageFileAttachment):
-            tsAttachmentManager.removeAttachment(
-                attachmentId: storyMessageFileAttachment.attachmentId,
-                tx: SDSDB.shimOnlyBridge(tx)
-            )
-        case .text(let textAttachment):
-            if let attachmentId = textAttachment.preview?.legacyImageAttachmentId {
-                tsAttachmentManager.removeAttachment(
-                    attachmentId: attachmentId,
-                    tx: SDSDB.shimOnlyBridge(tx)
-                )
-            }
-        case .foreignReferenceAttachment:
-            break
-        }
         guard let storyMessageRowId = storyMessage.id else {
             owsFailDebug("Removing attachments from an un-inserted message")
             return
@@ -389,18 +300,8 @@ public class TSResourceManagerImpl: TSResourceManager {
         _ pointer: TSResourcePointer,
         tx: DBWriteTransaction
     ) {
-        switch pointer.resource.concreteType {
-        case .legacy(let tsAttachment):
-            if let pointer = tsAttachment as? TSAttachmentPointer {
-                pointer.updateAttachmentPointerState(.pendingManualDownload, transaction: SDSDB.shimOnlyBridge(tx))
-            } else {
-                // This just means its already a stream and the state is irrelevant.
-                return
-            }
-        case .v2:
-            // Nothing to do; "pending manual download" is the default state.
-            return
-        }
+        // Nothing to do; "pending manual download" is the default state.
+        return
     }
 
     // MARK: - Quoted reply thumbnails
@@ -411,53 +312,6 @@ public class TSResourceManagerImpl: TSResourceManager {
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
         switch dataSource.source {
-        case .originalLegacyAttachment(let attachmentUniqueId):
-            guard
-                let attachment = tsResourceStore.fetch(
-                    [.legacy(uniqueId: attachmentUniqueId)],
-                    tx: tx
-                ).first as? TSAttachment
-            else {
-                return nil
-            }
-            // We are in a conundrum. New messages should be using v2 attachments, but
-            // we are quoting a legacy message attachment.
-            // The process of cloning a legacy attachment as a v2 attachment is asynchronous
-            // and cannot be done in this write transaction.
-            // So we will try the following in order:
-            // 1. Use the provided fallback proto (meaning the user will need to download
-            //    the quote thumbnail from the sender's cdn upload, even though we already
-            //    technically have the original source locally. Not a big deal.)
-            // 2. Otherwise try and use the cdn info from the v1 attachment, if it still exists,
-            //    and use that to create a new v2 attachment (even if the v1 is already downloaded).
-            // 3. Give up. Omit the thumbnail.
-            if
-                let quoteAttachmentProto = fallbackQuoteProto?.attachments.first,
-                let quoteAttachmentContentType = quoteAttachmentProto.contentType,
-                let quoteAttachmentThumnail = quoteAttachmentProto.thumbnail
-            {
-                return newV2QuotedReplyMessageThumbnailBuilder(
-                    from: .quotedAttachmentProto(.init(
-                        thumbnail: quoteAttachmentThumnail,
-                        originalAttachmentMimeType: quoteAttachmentContentType,
-                        originalAttachmentSourceFilename: quoteAttachmentProto.fileName
-                    )),
-                    originalMessageRowId: dataSource.originalMessageRowId,
-                    tx: tx
-                )
-            } else if let phonyThumbnailAttachmentProto = Self.buildProtoAsIfWeReceivedThisAttachment(attachment) {
-                return newV2QuotedReplyMessageThumbnailBuilder(
-                    from: .quotedAttachmentProto(.init(
-                        thumbnail: phonyThumbnailAttachmentProto,
-                        originalAttachmentMimeType: attachment.mimeType,
-                        originalAttachmentSourceFilename: attachment.sourceFilename
-                    )),
-                    originalMessageRowId: dataSource.originalMessageRowId,
-                    tx: tx
-                )
-            } else {
-                return nil
-            }
         case .v2Source(let v2DataSource):
             return newV2QuotedReplyMessageThumbnailBuilder(
                 from: v2DataSource,
@@ -546,75 +400,12 @@ public class TSResourceManagerImpl: TSResourceManager {
         parentMessage: TSMessage,
         tx: DBReadTransaction
     ) -> UIImage? {
-        switch attachment.concreteType {
-        case .v2(let attachment):
-            guard let stream = attachment.asStream() else {
-                return nil
-            }
-            // If it is an attachment stream, it should already be pointing at the resized
-            // thumbnail image, no copying needed.
-            return stream.thumbnailImageSync(quality: .small)
-        case .legacy(let tsAttachment):
-            guard let info = parentMessage.quotedMessage?.attachmentInfo() else {
-                return nil
-            }
-            return tsAttachmentManager.thumbnailImage(
-                attachment: tsAttachment,
-                info: info,
-                parentMessage: parentMessage,
-                tx: SDSDB.shimOnlyBridge(tx)
-            )
-        }
-    }
-
-    public static func buildProtoAsIfWeReceivedThisAttachment(_ attachment: TSAttachment) -> SSKProtoAttachmentPointer? {
-        guard
-            attachment.cdnNumber >= 3,
-            attachment.cdnKey.isEmpty.negated,
-            let encryptionKey = attachment.encryptionKey
-        else {
+        let attachment = attachment.concreteType
+        guard let stream = attachment.asStream() else {
             return nil
         }
-        let builder = SSKProtoAttachmentPointer.builder()
-
-        builder.setCdnNumber(attachment.cdnNumber)
-        builder.setCdnKey(attachment.cdnKey)
-
-        builder.setContentType(attachment.mimeType)
-
-        attachment.sourceFilename.map(builder.setFileName(_:))
-
-        if let flags = attachment.attachmentType.asRenderingFlag.toProto() {
-            builder.setFlags(UInt32(flags.rawValue))
-        } else {
-            builder.setFlags(0)
-        }
-        attachment.caption.map(builder.setCaption(_:))
-
-        if
-            attachment.isVisualMediaMimeType,
-            let imageSizePixels = (attachment as? TSAttachmentStream)?.imageSizePixels,
-            let imageWidth = UInt32(exactly: imageSizePixels.width.rounded()),
-            let imageHeight = UInt32(exactly: imageSizePixels.height.rounded())
-        {
-            builder.setWidth(imageWidth)
-            builder.setHeight(imageHeight)
-        }
-
-        if attachment.byteCount > 0 {
-            builder.setSize(attachment.byteCount)
-        }
-        builder.setKey(encryptionKey)
-        if let blurHash = attachment.blurHash?.nilIfEmpty {
-            builder.setBlurHash(blurHash)
-        }
-        if
-            let digest = (attachment as? TSAttachmentPointer)?.digest
-                ?? (attachment as? TSAttachmentStream)?.digest
-        {
-            builder.setDigest(digest)
-        }
-
-        return builder.buildInfallibly()
+        // If it is an attachment stream, it should already be pointing at the resized
+        // thumbnail image, no copying needed.
+        return stream.thumbnailImageSync(quality: .small)
     }
 }
