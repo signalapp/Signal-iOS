@@ -68,35 +68,14 @@ public class MessageSticker: MTLModel {
         return info.stickerId
     }
 
-    // MTLModel requires default values.
-    @objc
-    private var attachmentId: String?
-
-    public var legacyAttachmentId: String? {
-        return attachmentId?.nilIfEmpty
-    }
-
     @objc
     public var emoji: String?
 
-    private init(info: StickerInfo, legacyAttachmentId: String?, emoji: String?) {
+    public init(info: StickerInfo, emoji: String?) {
         self.info = info
-        self.attachmentId = legacyAttachmentId
         self.emoji = emoji
 
         super.init()
-    }
-
-    public static func withLegacyAttachment(
-        info: StickerInfo,
-        legacyAttachmentId: String,
-        emoji: String?
-    ) -> MessageSticker {
-        return MessageSticker(info: info, legacyAttachmentId: legacyAttachmentId, emoji: emoji)
-    }
-
-    public static func withForeignReferenceAttachment(info: StickerInfo, emoji: String?) -> MessageSticker {
-        return MessageSticker(info: info, legacyAttachmentId: nil, emoji: emoji)
     }
 
     @objc

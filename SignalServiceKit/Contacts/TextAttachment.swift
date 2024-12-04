@@ -97,7 +97,7 @@ public struct UnsentTextAttachment {
                         tx: transaction.asV2Write
                     )
                 } catch LinkPreviewError.featureDisabled {
-                    linkPreviewBuilder = .withoutFinalizer(.withoutImage(urlString: linkPreview.metadata.urlString))
+                    linkPreviewBuilder = .withoutFinalizer(OWSLinkPreview(urlString: linkPreview.metadata.urlString))
                 } catch {
                     Logger.error("Failed to generate link preview.")
                 }

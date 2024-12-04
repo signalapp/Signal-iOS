@@ -242,7 +242,7 @@ public class StoryManager: NSObject {
 
         let attachmentPointerToDownload: AttachmentTransitPointer?
         switch message.attachment {
-        case .file, .foreignReferenceAttachment:
+        case .media:
             let attachment = message.id.map { rowId in
                 return DependenciesBridge.shared.attachmentStore
                     .fetchFirstReferencedAttachment(
@@ -277,7 +277,7 @@ public class StoryManager: NSObject {
             switch otherMessage.attachment {
             case .text:
                 unviewedDownloadedStoriesForContext += 1
-            case .file, .foreignReferenceAttachment:
+            case .media:
                 guard let attachment = otherMessage.fileAttachment(tx: transaction) else {
                     owsFailDebug("Missing attachment")
                     return

@@ -125,7 +125,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     ) {
         let builder = Item.Builder()
         switch storyMessage.attachment {
-        case .file, .foreignReferenceAttachment:
+        case .media:
             let attachment: ReferencedAttachmentStream? = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 guard
                     let rowId = storyMessage.id,

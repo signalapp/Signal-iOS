@@ -107,7 +107,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             owsFailDebug("Cloning attachment for un-inserted message")
             return nil
         }
-        return _quotedReplyAttachmentInfo(originalMessageRowId: originalMessageRowId, tx: tx)?.info
+        return _quotedReplyAttachmentInfo(originalMessageRowId: originalMessageRowId, tx: tx).0?.info
     }
 
     public func createQuotedReplyMessageThumbnailBuilder(
@@ -154,10 +154,10 @@ public class AttachmentManagerImpl: AttachmentManager {
             // If the goal is to capture the original message's attachment,
             // ensure we can actually capture its info.
             if let originalMessageRowId = dataSource.source.originalMessageRowId {
+                let (info, isStub) = _quotedReplyAttachmentInfo(originalMessageRowId: originalMessageRowId, tx: tx)
                 guard
-                    let info = _quotedReplyAttachmentInfo(originalMessageRowId: originalMessageRowId, tx: tx),
-                    // Not a stub! Stubs would be .unset
-                    info.info.info.attachmentType == .V2
+                    let info,
+                    !isStub
                 else {
                     return
                 }
@@ -788,7 +788,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     private func _quotedReplyAttachmentInfo(
         originalMessageRowId: Int64,
         tx: DBReadTransaction
-    ) -> WrappedQuotedAttachmentInfo? {
+    ) -> (WrappedQuotedAttachmentInfo?, isStub: Bool) {
         guard
             let originalReference = attachmentStore.attachmentToUseInQuote(
                 originalMessageRowId: originalMessageRowId,
@@ -796,16 +796,20 @@ public class AttachmentManagerImpl: AttachmentManager {
             ),
             let originalAttachment = attachmentStore.fetch(id: originalReference.attachmentRowId, tx: tx)
         else {
-            return nil
+            return (nil, true)
         }
-        return .init(
-            originalAttachmentReference: originalReference,
-            originalAttachment: originalAttachment,
-            info: self._quotedReplyAttachmentInfo(
-                originalAttachmentMimeType: originalAttachment.mimeType,
-                originalReferenceSourceFilename: originalReference.sourceFilename,
-                originalReferenceRenderingFlag: originalReference.renderingFlag
-            ).0
+        let (info, isStub) = self._quotedReplyAttachmentInfo(
+            originalAttachmentMimeType: originalAttachment.mimeType,
+            originalReferenceSourceFilename: originalReference.sourceFilename,
+            originalReferenceRenderingFlag: originalReference.renderingFlag
+        )
+        return (
+            .init(
+                originalAttachmentReference: originalReference,
+                originalAttachment: originalAttachment,
+                info: info
+            ),
+            isStub
         )
     }
 
@@ -838,7 +842,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
         return (
             QuotedAttachmentInfo(
-                info: .forV2ThumbnailReference(
+                info: .forThumbnailReference(
                     withOriginalAttachmentMimeType: originalAttachmentMimeType,
                     originalAttachmentSourceFilename: originalReferenceSourceFilename
                 ),

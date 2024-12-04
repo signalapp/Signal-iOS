@@ -200,7 +200,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
         )
 
         guard let protoImage = proto.image else {
-            return .withoutFinalizer(.withoutImage(metadata: metadata))
+            return .withoutFinalizer(OWSLinkPreview(metadata: metadata))
         }
         return try builder.createLinkPreview(
             from: protoImage,

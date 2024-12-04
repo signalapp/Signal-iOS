@@ -131,7 +131,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 )
                 attachmentBuilder = thumbnailAttachmentBuilder.wrap {
                     return QuotedAttachmentInfo(
-                        info: .forV2ThumbnailReference(
+                        info: .forThumbnailReference(
                             withOriginalAttachmentMimeType: mimeType,
                             originalAttachmentSourceFilename: sourceFilename
                         ),

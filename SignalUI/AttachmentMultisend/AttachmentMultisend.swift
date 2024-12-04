@@ -670,7 +670,7 @@ public class AttachmentMultisend {
         return segmentedAttachments.map { attachmentDataSource, isLoopingVideo in
             let attachmentManager = deps.attachmentManager
             let attachmentBuilder = OwnedAttachmentBuilder<StoryMessageAttachment>(
-                info: .foreignReferenceAttachment,
+                info: .media,
                 finalize: { owner, tx in
                     try attachmentManager.createAttachmentStream(
                         consuming: .init(dataSource: attachmentDataSource, owner: owner),

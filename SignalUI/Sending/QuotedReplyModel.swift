@@ -235,7 +235,7 @@ public class QuotedReplyModel {
         }
 
         switch storyMessage.attachment {
-        case .file, .foreignReferenceAttachment:
+        case .media:
             let referencedAttachment = storyMessage.id.map {
                 return DependenciesBridge.shared.attachmentStore
                     .fetchFirstReferencedAttachment(

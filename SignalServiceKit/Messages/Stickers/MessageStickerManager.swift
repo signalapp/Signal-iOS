@@ -69,7 +69,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
             tx: tx
         )
 
-        let messageSticker: MessageSticker = .withForeignReferenceAttachment(info: stickerInfo, emoji: emoji)
+        let messageSticker = MessageSticker(info: stickerInfo, emoji: emoji)
         guard messageSticker.isValid else {
             throw StickerError.invalidInput
         }
@@ -123,7 +123,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
             tx: tx
         )
 
-        let messageSticker: MessageSticker = .withForeignReferenceAttachment(info: dataSource.info, emoji: dataSource.emoji)
+        let messageSticker = MessageSticker(info: dataSource.info, emoji: dataSource.emoji)
         guard messageSticker.isValid else {
             throw StickerError.invalidInput
         }
@@ -178,7 +178,7 @@ public class MockMessageStickerManager: MessageStickerManager {
         from proto: SSKProtoDataMessageSticker,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<MessageSticker> {
-        return .withoutFinalizer(.withForeignReferenceAttachment(
+        return .withoutFinalizer(MessageSticker(
             info: .init(packId: proto.packID, packKey: proto.packKey, stickerId: proto.stickerID),
             emoji: proto.emoji
         ))
@@ -192,7 +192,7 @@ public class MockMessageStickerManager: MessageStickerManager {
         from dataSource: MessageStickerDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<MessageSticker> {
-        return .withoutFinalizer(.withForeignReferenceAttachment(info: dataSource.info, emoji: dataSource.emoji))
+        return .withoutFinalizer(MessageSticker(info: dataSource.info, emoji: dataSource.emoji))
     }
 
     public func buildProtoForSending(

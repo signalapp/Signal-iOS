@@ -14,7 +14,7 @@ class StoryThumbnailView: UIView {
 
         static func from(_ storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) -> Self {
             switch storyMessage.attachment {
-            case .file, .foreignReferenceAttachment:
+            case .media:
                 guard
                     let attachment = storyMessage.fileAttachment(tx: transaction)
                 else {

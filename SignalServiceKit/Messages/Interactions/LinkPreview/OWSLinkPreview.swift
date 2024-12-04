@@ -70,110 +70,31 @@ public class OWSLinkPreview: MTLModel, Codable {
     @objc
     public var title: String?
 
-    // For Legacy image attachments only.
-    @objc
-    private var imageAttachmentId: String?
-
-    @objc
-    private var usesV2AttachmentReferenceValue: NSNumber?
-
     @objc
     public var previewDescription: String?
 
     @objc
     public var date: Date?
 
-    private init(
+    public init(
         urlString: String,
-        title: String?,
-        legacyImageAttachmentId: String?,
-        usesV2AttachmentReference: Bool
+        title: String? = nil
     ) {
         self.urlString = urlString
         self.title = title
-        self.imageAttachmentId = legacyImageAttachmentId
-        self.usesV2AttachmentReferenceValue = NSNumber(value: usesV2AttachmentReference)
 
         super.init()
     }
 
-    public static func withLegacyImageAttachment(
-        urlString: String,
-        title: String? = nil,
-        attachmentId: String
-    ) -> OWSLinkPreview {
-        return .init(
-            urlString: urlString,
-            title: title,
-            legacyImageAttachmentId: attachmentId,
-            usesV2AttachmentReference: false
-        )
-    }
-
-    public static func withLegacyImageAttachment(
-        metadata: Metadata,
-        attachmentId: String
-    ) -> OWSLinkPreview {
-        let linkPreview = OWSLinkPreview.withLegacyImageAttachment(
-            urlString: metadata.urlString,
-            title: metadata.title,
-            attachmentId: attachmentId
-        )
-        linkPreview.previewDescription = metadata.previewDescription
-        linkPreview.date = metadata.date
-        return linkPreview
-    }
-
-    public static func withForeignReferenceImageAttachment(
-        urlString: String,
-        title: String? = nil
-    ) -> OWSLinkPreview {
-        return .init(
-            urlString: urlString,
-            title: title,
-            legacyImageAttachmentId: nil,
-            usesV2AttachmentReference: true
-        )
-    }
-
-    public static func withForeignReferenceImageAttachment(
+    public convenience init(
         metadata: Metadata
-    ) -> OWSLinkPreview {
-        let linkPreview = OWSLinkPreview.withoutImage(
+    ) {
+        self.init(
             urlString: metadata.urlString,
             title: metadata.title
         )
-        linkPreview.previewDescription = metadata.previewDescription
-        linkPreview.date = metadata.date
-        return linkPreview
-    }
-
-    public static func withoutImage(
-        urlString: String,
-        title: String? = nil,
-        usesV2AttachmentReference: Bool = true
-    ) -> OWSLinkPreview {
-        /// In legacy-world, we put nil on the attachment id to mark this as not having an attachment
-        /// In v2-world, the existence of an AttachmentReference is what determines if a link preview has an image or not.
-        /// In either case, the legacy attachment id is nil, but fetching ends up different, so mark it down at write time.
-        return .init(
-            urlString: urlString,
-            title: title,
-            legacyImageAttachmentId: nil,
-            usesV2AttachmentReference: usesV2AttachmentReference
-        )
-    }
-
-    public static func withoutImage(
-        metadata: Metadata
-    ) -> OWSLinkPreview {
-        let linkPreview = OWSLinkPreview.withoutImage(
-            urlString: metadata.urlString,
-            title: metadata.title
-        )
-        linkPreview.previewDescription = metadata.previewDescription
-        linkPreview.date = metadata.date
-        return linkPreview
+        self.previewDescription = metadata.previewDescription
+        self.date = metadata.date
     }
 
     public override init() {
@@ -186,14 +107,6 @@ public class OWSLinkPreview: MTLModel, Codable {
 
     public required init(dictionary dictionaryValue: [String: Any]!) throws {
         try super.init(dictionary: dictionaryValue)
-    }
-
-    public var legacyImageAttachmentId: String? {
-        return imageAttachmentId
-    }
-
-    internal var usesV2AttachmentReference: Bool {
-        return usesV2AttachmentReferenceValue?.boolValue ?? false
     }
 
     @objc
@@ -223,9 +136,6 @@ public class OWSLinkPreview: MTLModel, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         urlString = try container.decodeIfPresent(String.self, forKey: .urlString)
         title = try container.decodeIfPresent(String.self, forKey: .title)
-        let usesV2AttachmentReferenceValue = try container.decodeIfPresent(Int.self, forKey: .usesV2AttachmentReferenceValue)
-        self.usesV2AttachmentReferenceValue = usesV2AttachmentReferenceValue.map(NSNumber.init(integerLiteral:))
-        imageAttachmentId = try container.decodeIfPresent(String.self, forKey: .imageAttachmentId)
         previewDescription = try container.decodeIfPresent(String.self, forKey: .previewDescription)
         date = try container.decodeIfPresent(Date.self, forKey: .date)
         super.init()
@@ -238,10 +148,6 @@ public class OWSLinkPreview: MTLModel, Codable {
         }
         if let title = title {
             try container.encode(title, forKey: .title)
-        }
-        try container.encode(usesV2AttachmentReferenceValue?.intValue, forKey: .usesV2AttachmentReferenceValue)
-        if let imageAttachmentId = imageAttachmentId {
-            try container.encode(imageAttachmentId, forKey: .imageAttachmentId)
         }
         if let previewDescription = previewDescription {
             try container.encode(previewDescription, forKey: .previewDescription)

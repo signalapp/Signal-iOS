@@ -131,7 +131,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         }
 
         switch storyMessage.attachment {
-        case .file, .foreignReferenceAttachment:
+        case .media:
             guard
                 let storyMessageRowId = storyMessage.id,
                 let attachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(

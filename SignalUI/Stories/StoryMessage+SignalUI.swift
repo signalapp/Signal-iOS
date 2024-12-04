@@ -24,7 +24,7 @@ extension StoryMessage {
                 return MessageBody(text: urlString, ranges: .empty)
             }
 
-        case .file, .foreignReferenceAttachment:
+        case .media:
             guard
                 let rowId = self.id,
                 let attachmentPointer = DependenciesBridge.shared.attachmentStore.fetchFirstReference(

@@ -184,7 +184,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
         let ownerId: AttachmentReference.OwnerBuilder
         switch attachmentBuilder.info {
-        case .file, .foreignReferenceAttachment:
+        case .media:
             ownerId = .storyMessageMedia(.init(
                 storyMessageRowId: id,
                 caption: mediaCaption
@@ -246,7 +246,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 from: fileAttachment,
                 tx: transaction.asV2Write
             )
-            attachment = .foreignReferenceAttachment
+            attachment = .media
             mediaAttachmentBuilder = attachmentBuilder
             linkPreviewBuilder = nil
         } else if let textAttachmentProto = storyMessage.textAttachment {
@@ -359,7 +359,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 from: fileAttachment,
                 tx: transaction.asV2Write
             )
-            attachment = .foreignReferenceAttachment
+            attachment = .media
             mediaAttachmentBuilder = attachmentBuilder
             linkPreviewBuilder = nil
         } else if let textAttachmentProto = storyMessage.textAttachment {
@@ -459,8 +459,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             tx: transaction.asV2Write
         )
 
-        let attachment: StoryMessageAttachment = .foreignReferenceAttachment
-
         let record = StoryMessage(
             // NOTE: As of now these only get created for the onboarding story, and that happens
             // when you first launch the app. That's probably okay, but if we need something more
@@ -470,7 +468,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             authorAci: Self.systemStoryAuthor,
             groupId: nil,
             manifest: manifest,
-            attachment: attachment,
+            attachment: .media,
             replyCount: 0
         )
         record.anyInsert(transaction: transaction)
@@ -797,7 +795,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     public func downloadIfNecessary(transaction: SDSAnyWriteTransaction) {
         switch attachment {
-        case .file, .foreignReferenceAttachment:
+        case .media:
             DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(self, tx: transaction.asV2Write)
         case .text:
             return

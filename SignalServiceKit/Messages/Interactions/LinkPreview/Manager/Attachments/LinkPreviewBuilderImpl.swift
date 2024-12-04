@@ -51,10 +51,10 @@ public class LinkPreviewBuilderImpl: LinkPreviewBuilder {
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         guard let imageDataSource = dataSource.imageDataSource else {
-            return .withoutFinalizer(.withoutImage(metadata: dataSource.metadata))
+            return .withoutFinalizer(OWSLinkPreview(metadata: dataSource.metadata))
         }
         return OwnedAttachmentBuilder<OWSLinkPreview>(
-            info: .withForeignReferenceImageAttachment(metadata: dataSource.metadata),
+            info: OWSLinkPreview(metadata: dataSource.metadata),
             finalize: { [attachmentManager] owner, innerTx in
                 return try attachmentManager.createAttachmentStream(
                     consuming: .init(dataSource: imageDataSource, owner: owner),
@@ -70,7 +70,7 @@ public class LinkPreviewBuilderImpl: LinkPreviewBuilder {
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return OwnedAttachmentBuilder<OWSLinkPreview>(
-            info: .withForeignReferenceImageAttachment(metadata: metadata),
+            info: OWSLinkPreview(metadata: metadata),
             finalize: { [attachmentManager] owner, innerTx in
                 return try attachmentManager.createAttachmentPointer(
                     from: .init(proto: proto, owner: owner),

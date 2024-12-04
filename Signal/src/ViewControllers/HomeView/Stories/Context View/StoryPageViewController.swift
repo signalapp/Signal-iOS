@@ -562,7 +562,7 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
     private func storyThumbnailSize(for presentingMessage: StoryMessage) throws -> CGSize? {
         let attachment: Attachment?
         switch presentingMessage.attachment {
-        case .file, .foreignReferenceAttachment:
+        case .media:
             attachment = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return presentingMessage.fileAttachment(tx: tx)
             }?.attachment
@@ -583,7 +583,7 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
     private func storyView(for presentingMessage: StoryMessage) -> UIView? {
         let storyView: UIView
         switch presentingMessage.attachment {
-        case .file, .foreignReferenceAttachment:
+        case .media:
             guard let attachment = SSKEnvironment.shared.databaseStorageRef.read(block: { presentingMessage.fileAttachment(tx: $0) })?.attachment else {
                 // Can happen if the story was deleted by the sender while in the viewer.
                 return nil

@@ -332,7 +332,7 @@ class StoryContextViewController: OWSViewController {
 
         let attachment: ReferencedAttachment?
         switch message.attachment {
-        case .file, .foreignReferenceAttachment:
+        case .media:
             attachment = message.id.map {
                 return DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
                     for: .storyMessageMedia(storyMessageRowId: $0),

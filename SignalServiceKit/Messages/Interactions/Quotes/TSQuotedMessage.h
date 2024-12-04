@@ -33,29 +33,9 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
     TSQuotedMessageContentSourceStory
 };
 
-/// Indicates the sort of attachment ID included in the attachment info
-typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
-    OWSAttachmentInfoReferenceUnset = 0,
-    /// An original attachment for a quoted reply draft. This needs to be thumbnailed before it is sent.
-    OWSAttachmentInfoReferenceOriginalForSend = 1,
-    /// A reference to an original attachment in a quoted reply we've received. If this ever manifests as a stream
-    /// we should clone it as a private thumbnail
-    OWSAttachmentInfoReferenceOriginal,
-    /// A private thumbnail that we (the quoted reply) have ownership of
-    OWSAttachmentInfoReferenceThumbnail,
-    /// An untrusted pointer to a thumbnail. This was included in the proto of a message we've received.
-    OWSAttachmentInfoReferenceUntrustedPointer,
-    /// A v2 attachment; the reference is kept in the AttachmentReferences table.
-    /// TODO: eliminate other reference types
-    OWSAttachmentInfoReferenceV2,
-};
-
 @interface OWSAttachmentInfo : MTLModel
 @property (class, nonatomic, readonly) NSUInteger currentSchemaVersion;
 @property (nonatomic, readonly) NSUInteger schemaVersion;
-
-@property (nonatomic) OWSAttachmentInfoReference attachmentType;
-@property (nonatomic) NSString *rawAttachmentId;
 
 /// rawAttachmentId, above, is Mantel-decoded and transforms nil values into empty strings
 /// (Mantle provides "reasonable" defaults). This undoes that; empty string values are reverted to nil.
@@ -91,24 +71,16 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 + (instancetype)stubWithOriginalAttachmentMimeType:(NSString *)originalAttachmentMimeType
                   originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename;
 
-+ (instancetype)forV2ThumbnailReferenceWithOriginalAttachmentMimeType:(NSString *)originalAttachmentMimeType
-                                     originalAttachmentSourceFilename:
-                                         (NSString *_Nullable)originalAttachmentSourceFilename;
-
-+ (instancetype)withLegacyAttachmentId:(NSString *)attachmentId
-                                ofType:(OWSAttachmentInfoReference)attachmentType
-            originalAttachmentMimeType:(NSString *)originalAttachmentMimeType
-      originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename;
++ (instancetype)forThumbnailReferenceWithOriginalAttachmentMimeType:(NSString *)originalAttachmentMimeType
+                                   originalAttachmentSourceFilename:
+                                       (NSString *_Nullable)originalAttachmentSourceFilename;
 
 #if TESTABLE_BUILD
 /// Do not use this constructor directly! Instead, use the static constructors.
-///
 /// Legacy data may contain a `nil` content type, so this constructor is exposed
 /// to facilitate testing the deserialization of that legacy data.
-- (instancetype)initWithAttachmentId:(NSString *_Nullable)attachmentId
-                              ofType:(OWSAttachmentInfoReference)attachmentType
-          originalAttachmentMimeType:(NSString *_Nullable)originalAttachmentMimeType
-    originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename;
++ (instancetype)stubWithNullableOriginalAttachmentMimeType:(NSString *_Nullable)originalAttachmentMimeType
+                          originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename;
 #endif
 
 @end
@@ -138,8 +110,6 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 #pragma mark - Attachments
 
 - (nullable OWSAttachmentInfo *)attachmentInfo;
-
-- (void)setLegacyThumbnailAttachmentStream:(TSAttachment *)thumbnailAttachmentStream;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

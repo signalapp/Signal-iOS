@@ -549,11 +549,6 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             proto.fileName = sourceFilename
         }
 
-        guard attachmentInfo.attachmentType == .V2 else {
-            // If its just a stub, early return with no thumbnail image
-            return .success(proto)
-        }
-
         let imageResult = attachmentsArchiver.archiveQuotedReplyThumbnailAttachment(
             messageId: interactionUniqueId,
             messageRowId: messageRowId,
@@ -1421,7 +1416,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             let sourceFilename = quotedAttachmentProto.fileName.nilIfEmpty
 
             if quotedAttachmentProto.hasThumbnail {
-                quotedAttachmentInfo = .forV2ThumbnailReference(
+                quotedAttachmentInfo = .forThumbnailReference(
                     withOriginalAttachmentMimeType: mimeType,
                     originalAttachmentSourceFilename: sourceFilename
                 )
@@ -1501,12 +1496,12 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         )
 
         if linkPreviewProto.hasImage {
-            let linkPreview = OWSLinkPreview.withForeignReferenceImageAttachment(
+            let linkPreview = OWSLinkPreview(
                 metadata: metadata
             )
             return .success((linkPreview, linkPreviewProto.image))
         } else {
-            let linkPreview = OWSLinkPreview.withoutImage(
+            let linkPreview = OWSLinkPreview(
                 metadata: metadata
             )
             return .success((linkPreview, nil))
@@ -1569,7 +1564,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
         let stickerProto = stickerMessage.sticker
-        let messageSticker = MessageSticker.withForeignReferenceAttachment(
+        let messageSticker = MessageSticker(
             info: .init(
                 packId: stickerProto.packID,
                 packKey: stickerProto.packKey,

@@ -172,7 +172,7 @@ public class PreparedOutgoingMessage {
                 return []
             }
             switch storyMessage.attachment {
-            case .file, .foreignReferenceAttachment:
+            case .media:
                 return [
                     DependenciesBridge.shared.attachmentStore.fetchFirstReference(
                         owner: .storyMessageMedia(storyMessageRowId: story.storyMessageRowId),
