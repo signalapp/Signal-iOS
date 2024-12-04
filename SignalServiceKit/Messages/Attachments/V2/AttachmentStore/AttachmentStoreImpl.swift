@@ -652,4 +652,15 @@ public class AttachmentStoreImpl: AttachmentStore {
     public func removeAllThreadOwners(tx: DBWriteTransaction) throws {
         try ThreadAttachmentReferenceRecord.deleteAll(tx.databaseConnection)
     }
+
+    public func updateMessageAttachmentThreadRowIdsForThreadMerge(
+        fromThreadRowId: Int64,
+        intoThreadRowId: Int64,
+        tx: DBWriteTransaction
+    ) throws {
+        let threadRowIdColumn = GRDB.Column(AttachmentReference.MessageAttachmentReferenceRecord.CodingKeys.threadRowId)
+        try AttachmentReference.MessageAttachmentReferenceRecord
+            .filter(threadRowIdColumn == fromThreadRowId)
+            .updateAll(tx.databaseConnection, threadRowIdColumn.set(to: intoThreadRowId))
+    }
 }

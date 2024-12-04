@@ -323,6 +323,7 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
         mergeInteractions(threadPair, tx: SDSDB.shimOnlyBridge(tx))
         mergeReceiptsPendingMessageRequest(threadPair, tx: SDSDB.shimOnlyBridge(tx))
         mergeMessageSendLogPayloads(threadPair, tx: SDSDB.shimOnlyBridge(tx))
+        mergeMessageAttachmentReferences(threadPair, tx: tx)
         // We might have changed something in the cache -- evacuate it.
         SSKEnvironment.shared.modelReadCachesRef.evacuateAllCaches()
     }
@@ -359,6 +360,20 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
         let threadUniqueIdPair = threadPair.map { $0.uniqueId }
         let messageSendLog = SSKEnvironment.shared.messageSendLogRef
         messageSendLog.mergePayloads(from: threadUniqueIdPair.fromValue, into: threadUniqueIdPair.intoValue, tx: tx)
+    }
+
+    private func mergeMessageAttachmentReferences(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
+        guard
+            let fromThreadRowId = threadPair.fromValue.sqliteRowId,
+            let intoThreadRowId = threadPair.intoValue.sqliteRowId
+        else {
+            return
+        }
+        try? DependenciesBridge.shared.attachmentStore.updateMessageAttachmentThreadRowIdsForThreadMerge(
+            fromThreadRowId: fromThreadRowId,
+            intoThreadRowId: intoThreadRowId,
+            tx: tx
+        )
     }
 }
 

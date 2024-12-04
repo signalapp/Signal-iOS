@@ -178,6 +178,14 @@ public protocol AttachmentStore {
     /// Remove all owners of thread types (wallpaper and global wallpaper owners).
     /// Will also delete any attachments that become unowned, like any other deletion.
     func removeAllThreadOwners(tx: DBWriteTransaction) throws
+
+    // MARK: - Thread Merging
+
+    func updateMessageAttachmentThreadRowIdsForThreadMerge(
+        fromThreadRowId: Int64,
+        intoThreadRowId: Int64,
+        tx: DBWriteTransaction
+    ) throws
 }
 
 // MARK: - Convenience

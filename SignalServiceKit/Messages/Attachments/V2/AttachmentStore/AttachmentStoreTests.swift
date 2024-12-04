@@ -911,6 +911,119 @@ class AttachmentStoreTests: XCTestCase {
         }
     }
 
+    // MARK: - Thread merging
+
+    func testThreadMerging() throws {
+        var threadId1: Int64!
+        var threadId2: Int64!
+        var threadId3: Int64!
+        var messageId1: Int64!
+        var messageId2: Int64!
+        var messageId3: Int64!
+        db.write { tx in
+            let thread1 = insertThread(tx: tx)
+            threadId1 = thread1.sqliteRowId!
+            messageId1 = insertInteraction(thread: thread1, tx: tx)
+            messageId2 = insertInteraction(thread: thread1, tx: tx)
+            let thread2 = insertThread(tx: tx)
+            threadId2 = thread2.sqliteRowId!
+            messageId3 = insertInteraction(thread: thread2, tx: tx)
+            let thread3 = insertThread(tx: tx)
+            threadId3 = thread3.sqliteRowId!
+        }
+
+        try db.write { tx in
+            for (threadRowId, messageRowId) in [
+                (threadId1, messageId1),
+                (threadId1, messageId2),
+                (threadId2, messageId3)
+            ] {
+                // Create an attachment and reference for each message.
+                let attachmentParams = Attachment.ConstructionParams.mockStream()
+                try attachmentStore.insert(
+                    attachmentParams,
+                    reference: AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                        messageRowId: messageRowId!,
+                        threadRowId: threadRowId!
+                    ),
+                    tx: tx
+                )
+            }
+        }
+
+        var (reference1, reference2, reference3) = db.read { tx in
+            let reference1 = attachmentStore.fetchReferences(
+                owners: [.messageBodyAttachment(messageRowId: messageId1)],
+                tx: tx
+            ).first!
+            let reference2 = attachmentStore.fetchReferences(
+                owners: [.messageBodyAttachment(messageRowId: messageId2)],
+                tx: tx
+            ).first!
+            let reference3 = attachmentStore.fetchReferences(
+                owners: [.messageBodyAttachment(messageRowId: messageId3)],
+                tx: tx
+            ).first!
+            return (reference1, reference2, reference3)
+        }
+
+        func checkThreadRowId(of reference: AttachmentReference, matches threadId: Int64) {
+            switch reference.owner {
+            case .message(let messageSource):
+                switch messageSource {
+                case .bodyAttachment(let metadata):
+                    XCTAssertEqual(metadata.threadRowId, threadId)
+                case .oversizeText(let metadata):
+                    XCTAssertEqual(metadata.threadRowId, threadId)
+                case .linkPreview(let metadata):
+                    XCTAssertEqual(metadata.threadRowId, threadId)
+                case .quotedReply(let metadata):
+                    XCTAssertEqual(metadata.threadRowId, threadId)
+                case .sticker(let metadata):
+                    XCTAssertEqual(metadata.threadRowId, threadId)
+                case .contactAvatar(let metadata):
+                    XCTAssertEqual(metadata.threadRowId, threadId)
+                }
+            default:
+                XCTFail("Unexpected reference type")
+            }
+        }
+
+        checkThreadRowId(of: reference1, matches: threadId1)
+        checkThreadRowId(of: reference2, matches: threadId1)
+        checkThreadRowId(of: reference3, matches: threadId2)
+
+        try db.write { tx in
+            // Merge threads
+            try attachmentStore.updateMessageAttachmentThreadRowIdsForThreadMerge(
+                fromThreadRowId: threadId1,
+                intoThreadRowId: threadId3,
+                tx: tx
+            )
+        }
+
+        (reference1, reference2, reference3) = db.read { tx in
+            let reference1 = attachmentStore.fetchReferences(
+                owners: [.messageBodyAttachment(messageRowId: messageId1)],
+                tx: tx
+            ).first!
+            let reference2 = attachmentStore.fetchReferences(
+                owners: [.messageBodyAttachment(messageRowId: messageId2)],
+                tx: tx
+            ).first!
+            let reference3 = attachmentStore.fetchReferences(
+                owners: [.messageBodyAttachment(messageRowId: messageId3)],
+                tx: tx
+            ).first!
+            return (reference1, reference2, reference3)
+        }
+
+        // The ones that were thread 1 are now thread 3.
+        checkThreadRowId(of: reference1, matches: threadId3)
+        checkThreadRowId(of: reference2, matches: threadId3)
+        checkThreadRowId(of: reference3, matches: threadId2)
+    }
+
     // MARK: - UInt64 Field verification
 
     func testUInt64RecordFields_Attachment() {
