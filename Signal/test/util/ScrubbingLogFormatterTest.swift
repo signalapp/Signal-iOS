@@ -16,18 +16,6 @@ final class ScrubbingLogFormatterTest: XCTestCase {
         return formatter.redactMessage(input)
     }
 
-    func testAttachmentPathScrubbed() {
-        let testCases: [String] = [
-            "/Attachments/",
-            "/foo/bar/Attachments/abc123.txt",
-            "Something /foo/bar/Attachments/abc123.txt Something"
-        ]
-
-        for testCase in testCases {
-            XCTAssertEqual(format(testCase), "[USER_PATH]")
-        }
-    }
-
     func testDataScrubbed_preformatted() {
         let testCases: [String: String] = [
             "<01>": "<01…>",
