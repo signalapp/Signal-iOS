@@ -17,7 +17,7 @@ public final class ECKeyPair: NSObject, NSSecureCoding {
 
     /**
      * Build a keypair from existing key data.
-     * If you need a *new* keypair, user `ECKeyPair.generateKeyPair` instead.
+     * If you need a *new* keypair, use `ECKeyPair.generateKeyPair` instead.
      */
     convenience init(publicKeyData: Data, privateKeyData: Data) throws {
         let publicKey = try PublicKey(keyData: publicKeyData)
