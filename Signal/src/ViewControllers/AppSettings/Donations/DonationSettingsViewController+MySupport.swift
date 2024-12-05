@@ -197,12 +197,12 @@ extension DonationSettingsViewController {
                         {
                             return .previouslyActiveSubscriptionLapsed(
                                 chargeFailureCode: chargeFailure.code,
-                                paymentMethod: subscription.paymentMethod
+                                paymentMethod: subscription.donationPaymentMethod
                             )
                         } else if let chargeFailure = subscription.chargeFailure {
                             return .paymentFailed(
                                 chargeFailureCode: chargeFailure.code,
-                                paymentMethod: subscription.paymentMethod
+                                paymentMethod: subscription.donationPaymentMethod
                             )
                         }
 

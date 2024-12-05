@@ -213,6 +213,7 @@ CREATE
             ,"BDIJR_fullThreadDeletionAnchorMessageRowId" INTEGER
             ,"BDIJR_threadUniqueId" TEXT
             ,"receiptCredential" BLOB
+            ,"BRCRJR_state" BLOB
         )
 ;
 

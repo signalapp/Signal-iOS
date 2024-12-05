@@ -944,10 +944,16 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let backupReceiptCredentialRedemptionJobQueue = BackupReceiptCredentialRedemptionJobQueue(
+            db: db,
+            networkManager: networkManager,
+            reachabilityManager: reachabilityManager
+        )
         let backupSubscriptionManager = BackupSubscriptionManagerImpl(
             dateProvider: dateProvider,
             db: db,
             networkManager: networkManager,
+            receiptCredentialRedemptionJobQueue: backupReceiptCredentialRedemptionJobQueue,
             storageServiceManager: storageServiceManager,
             tsAccountManager: tsAccountManager
         )
@@ -1343,6 +1349,10 @@ public class AppSetup {
             db: db,
             reachabilityManager: reachabilityManager
         )
+        let donationReceiptCredentialRedemptionJobQueue = DonationReceiptCredentialRedemptionJobQueue(
+            db: db,
+            reachabilityManager: reachabilityManager
+        )
 
         let groupCallPeekClient = GroupCallPeekClient(db: db, groupsV2: groupsV2)
         let groupCallManager = GroupCallManager(
@@ -1406,7 +1416,9 @@ public class AppSetup {
             messageSenderJobQueue: messageSenderJobQueue,
             localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue,
             callRecordDeleteAllJobQueue: callRecordDeleteAllJobQueue,
-            bulkdDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
+            bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
+            backupReceiptCredentialRedemptionJobQueue: backupReceiptCredentialRedemptionJobQueue,
+            donationReceiptCredentialRedemptionJobQueue: donationReceiptCredentialRedemptionJobQueue,
             preferences: preferences,
             proximityMonitoringManager: proximityMonitoringManager,
             avatarBuilder: avatarBuilder,

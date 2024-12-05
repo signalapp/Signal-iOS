@@ -13,14 +13,19 @@ protocol SubscriptionRedemptionNecessityCheckerStore {
     func setLastSubscriptionRenewalDate(_ renewalDate: Date, tx: DBWriteTransaction)
 }
 
-struct SubscriptionRedemptionNecessityChecker {
-    typealias EnqueueRedemptionBlock = (
+struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
+    typealias EnqueueRedemptionJobBlock = (
         _ subscriberId: Data,
-        _ subscription: Subscription
-    ) async -> Void
+        _ subscription: Subscription,
+        _ tx: DBWriteTransaction
+    ) throws -> RedemptionJobRecord
+
+    typealias StartRedemptionJobBlock = (
+        _ jobRecord: RedemptionJobRecord
+    ) async throws -> Void
 
     private enum Constants {
-        static let intervalBetweenChecks: TimeInterval = 3 * kDayInterval
+        static var intervalBetweenChecks: TimeInterval { 3 * kDayInterval }
     }
 
     private let checkerStore: SubscriptionRedemptionNecessityCheckerStore
@@ -46,7 +51,10 @@ struct SubscriptionRedemptionNecessityChecker {
         self.tsAccountManager = tsAccountManager
     }
 
-    func enqueueRedemptionIfNecessary(enqueueRedemptionBlock: EnqueueRedemptionBlock) async throws {
+    func redeemSubscriptionIfNecessary(
+        enqueueRedemptionJobBlock: EnqueueRedemptionJobBlock,
+        startRedemptionJobBlock: StartRedemptionJobBlock
+    ) async throws {
         let (
             registrationState,
             subscriberId,
@@ -100,19 +108,16 @@ struct SubscriptionRedemptionNecessityChecker {
             networkManager: networkManager
         ).awaitable()
 
-        /// Record that we attempted redemption, optionally reusing the same
-        /// transaction to persist additional state.
-        func recordRedemptionAttempt(additionalTxBlock: ((DBWriteTransaction) -> Void)? = nil) async {
-            await db.awaitableWrite { tx in
-                checkerStore.setLastRedemptionNecessaryCheck(dateProvider(), tx: tx)
-                additionalTxBlock?(tx)
-            }
-        }
-
         guard let subscription else {
             logger.warn("No subscription for this subscriber ID!")
 
-            await recordRedemptionAttempt()
+            /// No need to check again...ever, really. We could auto-delete the
+            /// subscriber ID here, but we historically only do that in response
+            /// to a user-initiated cancel-subscription.
+            await db.awaitableWrite { tx in
+                checkerStore.setLastRedemptionNecessaryCheck(dateProvider(), tx: tx)
+            }
+
             return
         }
 
@@ -123,7 +128,10 @@ struct SubscriptionRedemptionNecessityChecker {
             lastSubscriptionRenewalDate == currentSubscriptionRenewalDate
         {
             logger.info("Renewal date has not changed since last redemption; bailing out.")
-            await recordRedemptionAttempt()
+
+            await db.awaitableWrite { tx in
+                checkerStore.setLastRedemptionNecessaryCheck(dateProvider(), tx: tx)
+            }
         } else if
             case .pastDue = subscription.status
         {
@@ -136,7 +144,10 @@ struct SubscriptionRedemptionNecessityChecker {
             /// we don't expect to succeed now, but failure doesn't yet mean
             /// much as we may succeed in the future if the payment recovers.
             logger.warn("Subscription failed to renew, but payment processor is retrying. Not yet attempting receipt credential redemption for this period.")
-            await recordRedemptionAttempt()
+
+            await db.awaitableWrite { tx in
+                checkerStore.setLastRedemptionNecessaryCheck(dateProvider(), tx: tx)
+            }
         } else {
             /// When a subscription renews (i.e., there's a new payment to be
             /// redeemed) the "end of period" changes to reflect a later date.
@@ -148,12 +159,21 @@ struct SubscriptionRedemptionNecessityChecker {
                 logger.info("Attempting to redeem subscription renewal. No last renewal, current renewal \(currentSubscriptionRenewalDate)")
             }
 
-            await enqueueRedemptionBlock(subscriberId, subscription)
+            let jobRecord: RedemptionJobRecord = try await db.awaitableWrite { tx in
+                /// Enqueue a redemption job, importantly in the same transaction
+                /// as we record the last-redeemed subscription details.
+                let jobRecord = try enqueueRedemptionJobBlock(subscriberId, subscription, tx)
 
-            /// Save the new renewal date so we can tell when it *next* renews.
-            await recordRedemptionAttempt { tx in
+                checkerStore.setLastRedemptionNecessaryCheck(dateProvider(), tx: tx)
+
+                /// Save the new renewal date so we can tell when it *next* renews.
                 checkerStore.setLastSubscriptionRenewalDate(currentSubscriptionRenewalDate, tx: tx)
+
+                return jobRecord
             }
+
+            /// Now that we've enqueued the durable job, kick-start it.
+            try await startRedemptionJobBlock(jobRecord)
         }
     }
 

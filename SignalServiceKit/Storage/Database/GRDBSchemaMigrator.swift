@@ -316,6 +316,7 @@ public class GRDBSchemaMigrator: NSObject {
         case deprecateAttachmentIdsColumn
         case dropTSAttachmentTable
         case dropMediaGalleryItemTable
+        case addBackupsReceiptCredentialStateToJobRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -3772,6 +3773,14 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.dropMediaGalleryItemTable) { tx in
             try tx.database.drop(table: "media_gallery_items")
+            return .success(())
+        }
+
+        migrator.registerMigration(.addBackupsReceiptCredentialStateToJobRecord) { tx in
+            try tx.database.alter(table: "model_SSKJobRecord") { table in
+                table.add(column: "BRCRJR_state", .blob)
+            }
+
             return .success(())
         }
 

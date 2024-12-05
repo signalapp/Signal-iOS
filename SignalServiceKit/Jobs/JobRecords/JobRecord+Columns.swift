@@ -108,5 +108,9 @@ extension JobRecord {
         case BDIJR_anchorMessageRowId = "BDIJR_anchorMessageRowId"
         case BDIJR_fullThreadDeletionAnchorMessageRowId = "BDIJR_fullThreadDeletionAnchorMessageRowId"
         case BDIJR_threadUniqueId = "BDIJR_threadUniqueId"
+
+        // MARK: BackupReceiptCredentialRedemptionJobRecord
+
+        case BRCRJR_state = "BRCRJR_state"
     }
 }

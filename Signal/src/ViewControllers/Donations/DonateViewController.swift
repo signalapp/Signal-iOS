@@ -530,21 +530,27 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                         to: selectedSubscriptionLevel,
                         currencyCode: monthly.selectedCurrencyCode
                     )
-                }.then(on: DispatchQueue.sharedUserInitiated) { subscription -> Promise<Void> in
+                }.then(on: DispatchQueue.sharedUserInitiated) { subscription throws -> Promise<Void> in
+                    guard let donationPaymentProcessor = subscription.donationPaymentProcessor else {
+                        throw OWSAssertionError("Missing donation payment processor while updating monthly donation!")
+                    }
+
                     // Treat updates like new subscriptions
-                    let redemptionJob = DonationSubscriptionManager.requestAndRedeemReceipt(
-                        subscriberId: subscriberID,
-                        subscriptionLevel: selectedSubscriptionLevel.level,
-                        priorSubscriptionLevel: currentSubscription.level,
-                        paymentProcessor: currentSubscription.paymentProcessor,
-                        paymentMethod: currentSubscription.paymentMethod,
-                        isNewSubscription: true,
-                        shouldSuppressPaymentAlreadyRedeemed: false
-                    )
+                    let redemptionPromise = Promise.wrapAsync {
+                        try await DonationSubscriptionManager.requestAndRedeemReceipt(
+                            subscriberId: subscriberID,
+                            subscriptionLevel: selectedSubscriptionLevel.level,
+                            priorSubscriptionLevel: subscription.level,
+                            paymentProcessor: donationPaymentProcessor,
+                            paymentMethod: subscription.donationPaymentMethod,
+                            isNewSubscription: true,
+                            shouldSuppressPaymentAlreadyRedeemed: false
+                        )
+                    }
 
                     return DonationViewsUtil.waitForRedemptionJob(
-                        redemptionJob,
-                        paymentMethod: subscription.paymentMethod
+                        redemptionPromise,
+                        paymentMethod: subscription.donationPaymentMethod
                     )
                 }
             ).done(on: DispatchQueue.main) {

@@ -119,20 +119,14 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         /// This value corresponds to our IAP config set up in App Store
         /// Connect, and must not change!
         static let paidTierBackupsProductId = "backups.mediatier"
-
-        /// A "receipt level" baked by the server into the receipt credentials
-        /// used for Backups, representing the free (messages) tier.
-        static let freeTierBackupsReceiptLevel = 200
-        /// A "receipt level" baked by the server into the receipt credentials
-        /// used for Backups, representing the paid (media) tier.
-        static let paidTierBackupsReceiptLevel = 201
     }
 
-    private let logger = PrefixedLogger(prefix: "[BkpSubMgr]")
+    private let logger = PrefixedLogger(prefix: "[MessageBackup][Sub]")
 
     private let dateProvider: DateProvider
     private let db: any DB
     private let networkManager: NetworkManager
+    private let receiptCredentialRedemptionJobQueue: BackupReceiptCredentialRedemptionJobQueue
     private let storageServiceManager: StorageServiceManager
     private let store: Store
     private let tsAccountManager: TSAccountManager
@@ -141,12 +135,14 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         dateProvider: @escaping DateProvider,
         db: any DB,
         networkManager: NetworkManager,
+        receiptCredentialRedemptionJobQueue: BackupReceiptCredentialRedemptionJobQueue,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager
     ) {
         self.dateProvider = dateProvider
         self.db = db
         self.networkManager = networkManager
+        self.receiptCredentialRedemptionJobQueue = receiptCredentialRedemptionJobQueue
         self.storageServiceManager = storageServiceManager
         self.store = Store()
         self.tsAccountManager = tsAccountManager
@@ -297,17 +293,8 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         /// restoring subscriber data.
         try? await storageServiceManager.waitForPendingRestores().awaitable()
 
-        let (
-            persistedIAPSubscriberData,
-            inProgressRedemptionState
-        ): (
-            IAPSubscriberData?,
-            RedemptionAttemptState
-        ) = try db.read { tx in
-            return (
-                store.getIAPSubscriberData(tx: tx),
-                try store.getInProgressRedemptionState(tx: tx)
-            )
+        let persistedIAPSubscriberData: IAPSubscriberData? = db.read { tx in
+            return store.getIAPSubscriberData(tx: tx)
         }
 
         let localEntitlingTransaction = await latestEntitlingTransaction()
@@ -353,7 +340,9 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             return
         }
 
-        let necessityChecker = SubscriptionRedemptionNecessityChecker(
+        let subscriptionRedemptionNecessaryChecker = SubscriptionRedemptionNecessityChecker<
+            BackupReceiptCredentialRedemptionJobRecord
+        >(
             checkerStore: store,
             dateProvider: dateProvider,
             db: db,
@@ -362,16 +351,17 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             tsAccountManager: tsAccountManager
         )
 
-        try await necessityChecker.enqueueRedemptionIfNecessary { subscriberId, subscription in
-            do {
-                return try await redeemSubscription(
+        try await subscriptionRedemptionNecessaryChecker.redeemSubscriptionIfNecessary(
+            enqueueRedemptionJobBlock: { subscriberId, _, tx -> BackupReceiptCredentialRedemptionJobRecord in
+                return receiptCredentialRedemptionJobQueue.saveBackupRedemptionJob(
                     subscriberId: subscriberId,
-                    inProgressRedemptionState: inProgressRedemptionState
+                    tx: tx
                 )
-            } catch {
-                owsFailDebug("Failed to redeem subscription!")
+            },
+            startRedemptionJobBlock: { jobRecord async throws in
+                try await receiptCredentialRedemptionJobQueue.runBackupRedemptionJob(jobRecord: jobRecord)
             }
-        }
+        )
     }
 
     /// Generate a new subscriber ID, and register it with the server to be
@@ -432,163 +422,6 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         storageServiceManager.recordPendingLocalAccountUpdates()
     }
 
-    /// Performs the steps required to redeem a Backup subscription for the
-    /// period covered by the given `Transaction`.
-    ///
-    /// Specifically, performs the following steps:
-    /// 1. Generates a "receipt credential request".
-    /// 2. Sends the receipt credential request to the service, receiving in
-    ///    return a receipt credential presentation.
-    /// 3. Redeems the receipt credential presentation with the service, which
-    ///    enables or extends the server-side flag enabling paid-tier Backups
-    ///    for our account.
-    ///
-    /// - Note
-    /// This method functions as a state machine, starting with the given
-    /// redemption state. As we move through each step we persist updated state,
-    /// then recursively call this method with the new state.
-    ///
-    /// It's important that we persist the intermediate states so that we can
-    /// resume if interrupted, since we may be mutating remote state in such a
-    /// way that's only safe to retry with the same inputs.
-    private func redeemSubscription(
-        subscriberId: Data,
-        inProgressRedemptionState: RedemptionAttemptState
-    ) async throws {
-
-        switch inProgressRedemptionState {
-        case .unattempted:
-            logger.info("Generating receipt credential request.")
-
-            let (
-                receiptCredentialRequestContext,
-                receiptCredentialRequest
-            ) = DonationSubscriptionManager.generateReceiptRequest()
-
-            let nextRedemptionState: RedemptionAttemptState = .receiptCredentialRequesting(
-                request: receiptCredentialRequest,
-                context: receiptCredentialRequestContext
-            )
-
-            try await db.awaitableWrite { tx throws in
-                try store.setInProgressRedemptionState(nextRedemptionState, tx: tx)
-            }
-
-            return try await redeemSubscription(
-                subscriberId: subscriberId,
-                inProgressRedemptionState: nextRedemptionState
-            )
-        case .receiptCredentialRequesting(
-            let receiptCredentialRequest,
-            let receiptCredentialRequestContext
-        ):
-            logger.info("Requesting receipt credential.")
-
-            let receiptCredential: ReceiptCredential
-            do {
-                receiptCredential = try await DonationSubscriptionManager.requestReceiptCredential(
-                    subscriberId: subscriberId,
-                    isValidReceiptLevelPredicate: { receiptLevel -> Bool in
-                        /// We'll accept either receipt level here to handle
-                        /// things like clock skew, although we're generally
-                        /// expecting a paid-tier receipt credential.
-                        return (
-                            receiptLevel == Constants.paidTierBackupsReceiptLevel
-                            || receiptLevel == Constants.freeTierBackupsReceiptLevel
-                        )
-                    },
-                    context: receiptCredentialRequestContext,
-                    request: receiptCredentialRequest,
-                    logger: logger
-                ).awaitable()
-            } catch let error as DonationSubscriptionManager.KnownReceiptCredentialRequestError {
-                switch error.errorCode {
-                case .paymentIntentRedeemed:
-                    logger.warn("Subscription had already been redeemed for this period!")
-
-                    /// This error (a 409) indicates that we've already redeemed
-                    /// a receipt credential for the current "invoice", or
-                    /// subscription period.
-                    ///
-                    /// We end up here if for whatever reason we don't know that
-                    /// we've already redeemed for this subscription period. For
-                    /// example, we may have redeemed on a previous install and
-                    /// are missing the latest-redeemed transaction ID on this
-                    /// install.
-                    ///
-                    /// Regardless, we now know that we've redeemed for this
-                    /// subscription period, so there's nothing left to do and
-                    /// we can treat this as a success.
-                    return
-                case
-                        .paymentStillProcessing,
-                        .paymentFailed,
-                        .localValidationFailed,
-                        .serverValidationFailed,
-                        .paymentNotFound:
-                    throw error
-                }
-            }
-
-            let nextRedemptionState: RedemptionAttemptState = .receiptCredentialRedemption(
-                receiptCredential
-            )
-
-            try await db.awaitableWrite { tx in
-                try store.setInProgressRedemptionState(nextRedemptionState, tx: tx)
-            }
-
-            return try await redeemSubscription(
-                subscriberId: subscriberId,
-                inProgressRedemptionState: nextRedemptionState
-            )
-        case .receiptCredentialRedemption(let receiptCredential):
-            logger.info("Redeeming receipt credential.")
-
-            let presentation = try DonationSubscriptionManager.generateReceiptCredentialPresentation(
-                receiptCredential: receiptCredential
-            )
-
-            let response = try await networkManager.makePromise(
-                request: .backupRedeemReceiptCredential(
-                    receiptCredentialPresentation: presentation
-                )
-            ).awaitable()
-
-            switch response.responseStatusCode {
-            case 400:
-                /// This indicates that our receipt credential presentation has
-                /// expired. This is a weird scenario, because it indicates that
-                /// so much time has elapsed since we got the receipt credential
-                /// presentation and attempted to redeem it that it expired.
-                /// Weird, but not impossible!
-                ///
-                /// We can handle this by throwing away the expired receipt
-                /// credential and starting over.
-                logger.warn("Receipt credential was expired!")
-
-                let nextRedemptionState: RedemptionAttemptState = .unattempted
-
-                try await db.awaitableWrite { tx in
-                    try store.setInProgressRedemptionState(nextRedemptionState, tx: tx)
-                }
-
-                return try await redeemSubscription(
-                    subscriberId: subscriberId,
-                    inProgressRedemptionState: nextRedemptionState
-                )
-            case 204:
-                logger.info("Receipt credential redeemed successfully.")
-                return
-            default:
-                throw OWSAssertionError(
-                    "Unexpected response status code: \(response.responseStatusCode)",
-                    logger: logger
-                )
-            }
-        }
-    }
-
     // MARK: - Persistence
 
     private struct Store: SubscriptionRedemptionNecessityCheckerStore {
@@ -601,12 +434,6 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
             /// - SeeAlso ``BackupSubscription/IAPSubscriberData/subscriptionId``
             static let purchaseToken = "purchaseToken"
-
-            /// The latest state of any in-progress attempts at redeeming a StoreKit
-            /// subscription with Signal servers.
-            ///
-            /// See ``RedemptionAttemptState`` for more details.
-            static let inProgressRedemptionAttemptState = "redemptionAttemptState"
 
             /// The renewal date of the last subscription period for which we
             /// affirmatively redeemed the subscription.
@@ -662,27 +489,6 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             }
         }
 
-        // MARK: -
-
-        func getInProgressRedemptionState(tx: DBReadTransaction) throws -> RedemptionAttemptState {
-            guard let persistedValue: RedemptionAttemptState = try? kvStore.getCodableValue(
-                forKey: Keys.inProgressRedemptionAttemptState,
-                transaction: tx
-            ) else {
-                return .unattempted
-            }
-
-            return persistedValue
-        }
-
-        func setInProgressRedemptionState(_ state: RedemptionAttemptState, tx: DBWriteTransaction) throws {
-            try kvStore.setCodable(
-                state,
-                key: Keys.inProgressRedemptionAttemptState,
-                transaction: tx
-            )
-        }
-
         // MARK: - SubscriptionRedemptionNecessityCheckerStore
 
         func subscriberId(tx: any DBReadTransaction) -> Data? {
@@ -702,104 +508,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         }
 
         func setLastSubscriptionRenewalDate(_ renewalDate: Date, tx: DBWriteTransaction) {
-            /// Since this method is called on redemption success, also clear
-            /// our in-progress redemption state.
-            kvStore.removeValue(forKey: Keys.inProgressRedemptionAttemptState, transaction: tx)
-
             kvStore.setDate(renewalDate, key: Keys.lastSubscriptionRenewalDate, transaction: tx)
-        }
-    }
-
-    // MARK: -
-
-    /// Represents the state of an in-progress attempt at redeeming a StoreKit
-    /// subscription.
-    ///
-    /// It's important that we store this, because (generally) once we've made a
-    /// receipt-credential-related request to the server, remote state has been
-    /// set corresponding to the state we put in the request. If the app exits
-    /// between making two requests, we need to have stored the data we sent in
-    /// the first request so we can retry the second.
-    ///
-    /// Broadly, there are two network requests required to redeem a receipt
-    /// credential for a StoreKit subscription.
-    ///
-    /// The first is to "request a receipt credential", which takes a
-    /// locally-generated "receipt credential request" and returns us data we
-    /// can use to construct a "receipt credential presentation". Once we have
-    /// the receipt credential presentation, we can discard the receipt
-    /// credential request.
-    ///
-    /// The second is to "redeem the receipt credential", which sends the
-    /// receipt credential presentation from the first request to the service,
-    /// which validates it and subsequently records that our account is now
-    /// eligible (or has extended its eligibility) for paid-tier Backups. When
-    /// this completes, the attempt is complete.
-    private enum RedemptionAttemptState: Codable {
-        /// This attempt is at a clean slate.
-        case unattempted
-
-        /// We need to request a receipt credential, using the associated
-        /// request and context objects.
-        ///
-        /// Note that it is safe to request a receipt credential multiple times,
-        /// as long as the request/context are the same across retries. Receipt
-        /// credential requests do not expire, and the returned receipt
-        /// credential will always correspond to the latest entitling
-        /// transaction.
-        case receiptCredentialRequesting(
-            request: ReceiptCredentialRequest,
-            context: ReceiptCredentialRequestContext
-        )
-
-        /// We have a receipt credential, and need to redeem it.
-        ///
-        /// Note that it is safe to attempt to redeem a receipt credential
-        /// multiple times for the same subscription period.
-        case receiptCredentialRedemption(ReceiptCredential)
-
-        // MARK: Codable
-
-        private enum CodingKeys: String, CodingKey {
-            case receiptCredentialRequest
-            case receiptCredentialRequestContext
-            case receiptCredential
-        }
-
-        init(from decoder: any Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-
-            if
-                let requestData = try container.decodeIfPresent(Data.self, forKey: .receiptCredentialRequest),
-                let contextData = try container.decodeIfPresent(Data.self, forKey: .receiptCredentialRequestContext)
-            {
-                self = .receiptCredentialRequesting(
-                    request: try ReceiptCredentialRequest(contents: [UInt8](requestData)),
-                    context: try ReceiptCredentialRequestContext(contents: [UInt8](contextData))
-                )
-            } else
-                if let credentialData = try container.decodeIfPresent(Data.self, forKey: .receiptCredential)
-            {
-                self = .receiptCredentialRedemption(
-                    try ReceiptCredential(contents: [UInt8](credentialData))
-                )
-            } else {
-                self = .unattempted
-            }
-        }
-
-        func encode(to encoder: any Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-
-            switch self {
-            case .receiptCredentialRequesting(let request, let context):
-                try container.encode(request.serialize().asData, forKey: .receiptCredentialRequest)
-                try container.encode(context.serialize().asData, forKey: .receiptCredentialRequestContext)
-            case .receiptCredentialRedemption(let credential):
-                try container.encode(credential.serialize().asData, forKey: .receiptCredential)
-            case .unattempted:
-                break
-            }
         }
     }
 }
@@ -823,18 +532,5 @@ private extension TSRequest {
         request.shouldHaveAuthorizationHeaders = false
         request.applyRedactionStrategy(.redactURLForSuccessResponses())
         return request
-    }
-
-    static func backupRedeemReceiptCredential(
-        receiptCredentialPresentation: ReceiptCredentialPresentation
-    ) -> TSRequest {
-        return TSRequest(
-            url: URL(string: "v1/archives/redeem-receipt")!,
-            method: "POST",
-            parameters: [
-                "receiptCredentialPresentation": receiptCredentialPresentation
-                    .serialize().asData.base64EncodedString(),
-            ]
-        )
     }
 }

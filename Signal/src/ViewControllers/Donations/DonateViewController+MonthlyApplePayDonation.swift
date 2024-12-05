@@ -73,15 +73,17 @@ extension DonateViewController {
 
             Logger.info("[Donations] Redeeming monthly receipt for Apple Pay donation")
 
-            let redemptionPromise = DonationSubscriptionManager.requestAndRedeemReceipt(
-                subscriberId: subscriberID,
-                subscriptionLevel: selectedSubscriptionLevel.level,
-                priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
-                paymentProcessor: .stripe,
-                paymentMethod: .applePay,
-                isNewSubscription: true,
-                shouldSuppressPaymentAlreadyRedeemed: false
-            )
+            let redemptionPromise = Promise.wrapAsync {
+                try await DonationSubscriptionManager.requestAndRedeemReceipt(
+                    subscriberId: subscriberID,
+                    subscriptionLevel: selectedSubscriptionLevel.level,
+                    priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
+                    paymentProcessor: .stripe,
+                    paymentMethod: .applePay,
+                    isNewSubscription: true,
+                    shouldSuppressPaymentAlreadyRedeemed: false
+                )
+            }
 
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,

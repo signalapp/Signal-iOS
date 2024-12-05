@@ -274,13 +274,16 @@ public final class DonationViewsUtil {
         amount: FiatMoney,
         paymentMethod: DonationPaymentMethod
     ) -> Promise<Void> {
-        let redemptionJob = DonationSubscriptionManager.requestAndRedeemReceipt(
-            boostPaymentIntentId: paymentIntentId,
-            amount: amount,
-            paymentProcessor: .stripe,
-            paymentMethod: paymentMethod
-        )
-        return DonationViewsUtil.waitForRedemptionJob(redemptionJob, paymentMethod: paymentMethod)
+        let redemptionPromise = Promise.wrapAsync {
+            try await DonationSubscriptionManager.requestAndRedeemReceipt(
+                boostPaymentIntentId: paymentIntentId,
+                amount: amount,
+                paymentProcessor: .stripe,
+                paymentMethod: paymentMethod
+            )
+        }
+
+        return DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: paymentMethod)
     }
 
     public static func finalizeAndRedeemSubscription(
@@ -302,16 +305,19 @@ public final class DonationViewsUtil {
         }.then(on: DispatchQueue.sharedUserInitiated) { _ in
             Logger.info("[Donations] Redeeming monthly receipts")
 
-            let redemptionJob = DonationSubscriptionManager.requestAndRedeemReceipt(
-                subscriberId: subscriberId,
-                subscriptionLevel: newSubscriptionLevel.level,
-                priorSubscriptionLevel: priorSubscriptionLevel?.level,
-                paymentProcessor: paymentType.paymentProcessor,
-                paymentMethod: paymentType.paymentMethod,
-                isNewSubscription: true,
-                shouldSuppressPaymentAlreadyRedeemed: false
-            )
-            return DonationViewsUtil.waitForRedemptionJob(redemptionJob, paymentMethod: paymentType.paymentMethod)
+            let redemptionPromise = Promise.wrapAsync {
+                try await DonationSubscriptionManager.requestAndRedeemReceipt(
+                    subscriberId: subscriberId,
+                    subscriptionLevel: newSubscriptionLevel.level,
+                    priorSubscriptionLevel: priorSubscriptionLevel?.level,
+                    paymentProcessor: paymentType.paymentProcessor,
+                    paymentMethod: paymentType.paymentMethod,
+                    isNewSubscription: true,
+                    shouldSuppressPaymentAlreadyRedeemed: false
+                )
+            }
+
+            return DonationViewsUtil.waitForRedemptionJob(redemptionPromise, paymentMethod: paymentType.paymentMethod)
         }
     }
 

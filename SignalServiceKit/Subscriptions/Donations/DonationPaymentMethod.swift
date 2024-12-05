@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-/// Payment methods that a user could pay with.
+/// Payment methods that a user could donate with.
 ///
 /// May be confused with ``Stripe.PaymentMethod``, which represents a payment
 /// method that's ready to submit to Stripe.
