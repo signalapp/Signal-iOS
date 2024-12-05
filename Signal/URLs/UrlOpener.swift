@@ -177,17 +177,7 @@ class UrlOpener {
                 return
             }
 
-            let navigationController = AppSettingsViewController.inModalNavigationController(appReadiness: appReadiness)
-            navigationController.setViewControllers(
-                [
-                    LinkedDevicesHostingController(
-                        presentationOnFirstAppear: .linkNewDevice(preknownProvisioningUrl: provisioningUrl)
-                    )
-                ],
-                animated: false
-            )
-
-            rootViewController.presentFormSheet(navigationController, animated: false)
+            SignalApp.shared.showAppSettings(mode: .linkNewDevice(provisioningUrl: provisioningUrl))
 
         case .completeIDEALDonation(let donationType):
             DonationViewsUtil.attemptToContinueActiveIDEALDonation(

@@ -1294,25 +1294,35 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
     }
 
     func qrCodeFound(string qrCodeString: String?, data qrCodeData: Data?) {
-        guard
-            let qrCodeString,
-            let url = URL(string: qrCodeString),
-            let usernameLink = Usernames.UsernameLink(usernameLinkUrl: url)
-        else {
-            // Not a username link QR code
+        guard let qrCodeString else {
             return
         }
 
-        qrCodeScanned = true
+        if
+            let url = URL(string: qrCodeString),
+            let usernameLink = Usernames.UsernameLink(usernameLinkUrl: url)
+        {
+            qrCodeScanned = true
 
-        SSKEnvironment.shared.databaseStorageRef.read { tx in
-            UsernameQuerier().queryForUsernameLink(
-                link: usernameLink,
-                fromViewController: self,
-                tx: tx,
-                failureSheetDismissalDelegate: self,
-                onSuccess: self.showUsernameLinkSheet(username:aci:)
-            )
+            SSKEnvironment.shared.databaseStorageRef.read { tx in
+                UsernameQuerier().queryForUsernameLink(
+                    link: usernameLink,
+                    fromViewController: self,
+                    tx: tx,
+                    failureSheetDismissalDelegate: self,
+                    onSuccess: self.showUsernameLinkSheet(username:aci:)
+                )
+            }
+        } else if
+            let provisioningUrl = DeviceProvisioningURL(urlString: qrCodeString)
+        {
+            qrCodeScanned = true
+
+            self.dismiss(animated: true) {
+                SignalApp.shared.showAppSettings(
+                    mode: .linkNewDevice(provisioningUrl: provisioningUrl)
+                )
+            }
         }
     }
 
