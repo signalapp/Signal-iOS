@@ -162,11 +162,18 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             return errorResult
         }
 
+        let expireStartDate: UInt64?
+        if outgoingMessage.expireStartedAt > 0 {
+            expireStartDate = outgoingMessage.expireStartedAt
+        } else {
+            expireStartDate = nil
+        }
+
         let details = Details(
             author: context.recipientContext.localRecipientId,
             directionalDetails: .outgoing(outgoingDetails),
             dateCreated: outgoingMessage.timestamp,
-            expireStartDate: outgoingMessage.expireStartedAt,
+            expireStartDate: expireStartDate,
             expiresInMs: UInt64(outgoingMessage.expiresInSeconds) * 1000,
             isSealedSender: wasAnySendSealedSender,
             chatItemType: chatItemType,

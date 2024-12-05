@@ -131,11 +131,18 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
             editRecord: editRecord
         )
 
+        let expireStartDate: UInt64?
+        if incomingMessage.expireStartedAt > 0 {
+            expireStartDate = incomingMessage.expireStartedAt
+        } else {
+            expireStartDate = nil
+        }
+
         let details = Details(
             author: author,
             directionalDetails: .incoming(incomingMessageDetails),
             dateCreated: incomingMessage.timestamp,
-            expireStartDate: incomingMessage.expireStartedAt,
+            expireStartDate: expireStartDate,
             expiresInMs: UInt64(incomingMessage.expiresInSeconds) * 1000,
             isSealedSender: incomingMessage.wasReceivedByUD.negated,
             chatItemType: chatItemType,

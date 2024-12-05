@@ -97,20 +97,6 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
         builder: Builder
     ) -> MessageBackup.ArchiveInteractionResult<Details>
     {
-        if message.hasPerConversationExpiration {
-            // Check that it expires in less than 24 hours; if so we skip this message.
-            let now = dateProvider().ows_millisecondsSince1970
-            let remainingDurationMs: UInt64
-            if now >= message.expiresAt {
-                remainingDurationMs = 0
-            } else {
-                remainingDurationMs = message.expiresAt - now
-            }
-            if remainingDurationMs <= kDayInMs {
-                return .skippableChatUpdate(.soonToExpireMessage)
-            }
-        }
-
         var partialErrors = [ArchiveFrameError]()
 
         let shouldArchiveEditHistory: Bool
