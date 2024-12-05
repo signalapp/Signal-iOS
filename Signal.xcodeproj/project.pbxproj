@@ -218,7 +218,6 @@
 		342FFEB227249C9A000AC89F /* popcorn.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6B2044AAB500CD42F8 /* popcorn.aifc */; };
 		343417F12530A7480034FE0C /* CVComponentReactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343417F02530A7480034FE0C /* CVComponentReactions.swift */; };
 		3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3434AE1B22AEDE7D002EE04E /* ViewOnceMessageViewController.swift */; };
-		3437F63A2512835300AC1767 /* LinkedDevicesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */; };
 		3440426B273AB186008C9FA4 /* RegistrationUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3440426A273AB186008C9FA4 /* RegistrationUtils.swift */; };
 		34429B3D273440420050D3EA /* DebugUIMisc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34429B3C273440420050D3EA /* DebugUIMisc.swift */; };
 		3444E6BB264EDFF300B32E3B /* CVColorOrGradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */; };
@@ -3859,7 +3858,6 @@
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		343417F02530A7480034FE0C /* CVComponentReactions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentReactions.swift; sourceTree = "<group>"; };
 		3434AE1B22AEDE7D002EE04E /* ViewOnceMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnceMessageViewController.swift; sourceTree = "<group>"; };
-		3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LinkedDevicesTableViewController.swift; sourceTree = "<group>"; };
 		3440426A273AB186008C9FA4 /* RegistrationUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationUtils.swift; sourceTree = "<group>"; };
 		34429B3C273440420050D3EA /* DebugUIMisc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIMisc.swift; sourceTree = "<group>"; };
 		3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVColorOrGradientView.swift; sourceTree = "<group>"; };
@@ -10796,7 +10794,6 @@
 			children = (
 				505C2ED32997015800C23FB2 /* LinkDeviceViewController.swift */,
 				B99287FA2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift */,
-				3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */,
 				B9E322E82CD191CF006DAF3B /* LinkedDevicesView.swift */,
 				B9A53B942CF799590000578B /* LinkOrSyncPickerSheet.swift */,
 			);
@@ -16800,7 +16797,6 @@
 				660FA9112CE58CD7006F9C34 /* LinkAndSyncLoadingViewController.swift in Sources */,
 				505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */,
 				B99287FB2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift in Sources */,
-				3437F63A2512835300AC1767 /* LinkedDevicesTableViewController.swift in Sources */,
 				B9E322E92CD191CF006DAF3B /* LinkedDevicesView.swift in Sources */,
 				B9A53B952CF799590000578B /* LinkOrSyncPickerSheet.swift in Sources */,
 				76C87FE128BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift in Sources */,

@@ -23,7 +23,7 @@ class LinkedDevicesViewModel: ObservableObject {
 
     fileprivate enum Presentation {
         case newDeviceToast(deviceName: String)
-        case linkDeviceAuthentication
+        case linkDeviceAuthentication(preknownProvisioningUrl: DeviceProvisioningURL?)
         case unlinkDeviceConfirmation(displayableDevice: DisplayableDevice)
         case updateFailureAlert(Error)
         case unlinkFailureAlert(device: OWSDevice, error: Error)
@@ -251,13 +251,20 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
 // MARK: - LinkedDevicesHostingController
 
 class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
+    enum PresentationOnFirstAppear {
+        case linkNewDevice(preknownProvisioningUrl: DeviceProvisioningURL)
+    }
+
     private let viewModel = LinkedDevicesViewModel()
 
+    private var presentationOnFirstAppear: PresentationOnFirstAppear?
     private var subscriptions = Set<AnyCancellable>()
 
     private weak var finishLinkingSheet: HeroSheetViewController?
 
-    init() {
+    init(presentationOnFirstAppear: PresentationOnFirstAppear? = nil) {
+        self.presentationOnFirstAppear = presentationOnFirstAppear
+
         super.init(wrappedView: LinkedDevicesView(viewModel: viewModel))
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
@@ -275,8 +282,8 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
                 }
             case let .updateFailureAlert(error):
                 self.showUpdateFailureAlert(error: error)
-            case .linkDeviceAuthentication:
-                self.didTapLinkDeviceButton()
+            case .linkDeviceAuthentication(let preknownProvisioingUrl):
+                self.didTapLinkDeviceButton(preknownProvisioningUrl: preknownProvisioingUrl)
             case let .unlinkDeviceConfirmation(displayableDevice):
                 self.showUnlinkDeviceConfirmAlert(displayableDevice: displayableDevice)
             case let .unlinkFailureAlert(device, error):
@@ -317,7 +324,14 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if viewModel.shouldShowFinishLinkingSheet {
+        if let presentationOnFirstAppear {
+            self.presentationOnFirstAppear = nil
+
+            switch presentationOnFirstAppear {
+            case .linkNewDevice(let preknownProvisioningUrl):
+                viewModel.present.send(.linkDeviceAuthentication(preknownProvisioningUrl: preknownProvisioningUrl))
+            }
+        } else if viewModel.shouldShowFinishLinkingSheet {
             // Only show the sheet once even if viewDidAppear is
             // called multiple times while waiting for the link.
             viewModel.shouldShowFinishLinkingSheet = false
@@ -346,7 +360,6 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
     // MARK: Device linking
 
     private func showNewDeviceToast(deviceName: String) {
-        guard FeatureFlags.biometricLinkedDeviceFlow else { return }
         presentToast(text: String(
             format: OWSLocalizedString(
                 "DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST",
@@ -378,24 +391,28 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
         presentActionSheet(alert)
     }
 
-    private func showLinkNewDeviceView() {
+    private func showLinkNewDeviceView(preknownProvisioningUrl: DeviceProvisioningURL?) {
         AssertIsOnMainThread()
 
-        let linkView = LinkDeviceViewController()
-        linkView.delegate = viewModel
-        navigationController?.pushViewController(linkView, animated: true)
-    }
+        func presentLinkView(_ linkView: LinkDeviceViewController) {
+            linkView.delegate = viewModel
+            navigationController?.pushViewController(linkView, animated: true)
+        }
 
-    private func getCameraPermissionsThenShowLinkNewDeviceView() {
-        self.ows_askForCameraPermissions { granted in
-            guard granted else {
-                return
+        if let preknownProvisioningUrl {
+            presentLinkView(LinkDeviceViewController(preknownProvisioningUrl: preknownProvisioningUrl))
+        } else {
+            self.ows_askForCameraPermissions { granted in
+                guard granted else {
+                    return
+                }
+
+                presentLinkView(LinkDeviceViewController(preknownProvisioningUrl: nil))
             }
-            self.showLinkNewDeviceView()
         }
     }
 
-    private func didTapLinkDeviceButton() {
+    private func didTapLinkDeviceButton(preknownProvisioningUrl: DeviceProvisioningURL?) {
         let context = DeviceOwnerAuthenticationType.localAuthenticationContext()
 
         var error: NSError?
@@ -409,7 +426,7 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
             case .canceled:
                 break
             case .continueWithoutAuthentication:
-                self.getCameraPermissionsThenShowLinkNewDeviceView()
+                self.showLinkNewDeviceView(preknownProvisioningUrl: preknownProvisioningUrl)
             }
             return
         }
@@ -428,7 +445,10 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
         ) { [weak self, context] in
             self?.dismiss(animated: true)
             Task {
-                await self?.authenticateThenShowLinkNewDeviceView(context: context)
+                await self?.authenticateThenShowLinkNewDeviceView(
+                    context: context,
+                    preknownProvisioningUrl: preknownProvisioningUrl
+                )
             }
         }
 
@@ -437,7 +457,10 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
 
     // MARK: Authentication
 
-    private func authenticateThenShowLinkNewDeviceView(context: LAContext) async {
+    private func authenticateThenShowLinkNewDeviceView(
+        context: LAContext,
+        preknownProvisioningUrl: DeviceProvisioningURL?
+    ) async {
         do {
             try await context.evaluatePolicy(
                 .deviceOwnerAuthentication,
@@ -446,7 +469,7 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
                     comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking."
                 )
             )
-            self.getCameraPermissionsThenShowLinkNewDeviceView()
+            self.showLinkNewDeviceView(preknownProvisioningUrl: preknownProvisioningUrl)
         } catch {
             let result = self.handleAuthenticationError(error)
             switch result {
@@ -455,7 +478,7 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
             case .canceled:
                 break
             case .continueWithoutAuthentication:
-                self.getCameraPermissionsThenShowLinkNewDeviceView()
+                self.showLinkNewDeviceView(preknownProvisioningUrl: preknownProvisioningUrl)
             }
         }
     }
@@ -601,7 +624,7 @@ struct LinkedDevicesView: View {
                         .multilineTextAlignment(.center)
 
                     Button {
-                        viewModel.present.send(.linkDeviceAuthentication)
+                        viewModel.present.send(.linkDeviceAuthentication(preknownProvisioningUrl: nil))
                     } label: {
                         Text(OWSLocalizedString(
                             "LINK_NEW_DEVICE_TITLE",

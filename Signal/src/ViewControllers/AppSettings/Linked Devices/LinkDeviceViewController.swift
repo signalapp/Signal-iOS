@@ -15,26 +15,23 @@ class LinkDeviceViewController: OWSViewController {
 
     weak var delegate: LinkDeviceViewControllerDelegate?
 
-    private lazy var scanningInstructionsLabel: UILabel = {
-        let label = UILabel()
-        label.text = NSLocalizedString(
-            "LINK_DEVICE_SCANNING_INSTRUCTIONS",
-            comment: "QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes"
-        )
-        label.textColor = Theme.secondaryTextAndIconColor
-        label.font = .dynamicTypeBody2
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-        label.textAlignment = .center
-        return label
-    }()
-
-    var selectedAttachment: ImagePickerAttachment?
+    private let preknownProvisioningUrl: DeviceProvisioningURL?
 
     private var hasShownEducationSheet = false
     private weak var educationSheet: HeroSheetViewController?
 
     private lazy var qrCodeScanViewController = QRCodeScanViewController(appearance: .framed)
+
+    init(preknownProvisioningUrl: DeviceProvisioningURL?) {
+        self.preknownProvisioningUrl = preknownProvisioningUrl
+        super.init()
+    }
+
+    // MARK: QRCodeScanOrPickDelegate
+
+    var selectedAttachment: ImagePickerAttachment?
+
+    // MARK: -
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,39 +46,17 @@ class LinkDeviceViewController: OWSViewController {
             action: #selector(manuallyEnterLinkURL)
         )
 #endif
-        qrCodeScanViewController.delegate = self
+        if preknownProvisioningUrl != nil {
+            // No need to set up the QR code scanner.
+            view.backgroundColor = .black
+        } else {
+            qrCodeScanViewController.delegate = self
 
-        addChild(qrCodeScanViewController)
-        view.addSubview(qrCodeScanViewController.view)
+            addChild(qrCodeScanViewController)
+            view.addSubview(qrCodeScanViewController.view)
 
-        if FeatureFlags.biometricLinkedDeviceFlow {
             qrCodeScanViewController.view.autoPinEdgesToSuperviewEdges()
             qrCodeScanViewController.didMove(toParent: self)
-        } else {
-            view.backgroundColor = Theme.backgroundColor
-
-            qrCodeScanViewController.view.autoPinWidthToSuperview()
-            qrCodeScanViewController.view.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-            qrCodeScanViewController.view.autoPinToSquareAspectRatio()
-
-            let bottomView = UIView()
-            bottomView.preservesSuperviewLayoutMargins = true
-            view.addSubview(bottomView)
-            bottomView.autoPinEdge(.top, to: .bottom, of: qrCodeScanViewController.view)
-            bottomView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-
-            let heroImage = UIImage(imageLiteralResourceName: "ic_devices_ios")
-            let imageView = UIImageView(image: heroImage)
-            imageView.autoSetDimensions(to: heroImage.size)
-
-            let bottomStack = UIStackView(arrangedSubviews: [ imageView, scanningInstructionsLabel ])
-            bottomStack.axis = .vertical
-            bottomStack.alignment = .center
-            bottomStack.spacing = 8
-            bottomView.addSubview(bottomStack)
-            bottomStack.autoPinWidthToSuperviewMargins()
-            bottomStack.autoPinHeightToSuperviewMargins(relation: .lessThanOrEqual)
-            bottomStack.autoVCenterInSuperview()
         }
     }
 
@@ -92,7 +67,9 @@ class LinkDeviceViewController: OWSViewController {
             UIDevice.current.ows_setOrientation(.portrait)
         }
 
-        if !hasShownEducationSheet, FeatureFlags.biometricLinkedDeviceFlow {
+        if let preknownProvisioningUrl {
+            confirmProvisioningWithUrl(preknownProvisioningUrl)
+        } else if !hasShownEducationSheet {
             let animationName = if traitCollection.userInterfaceStyle == .dark {
                 "linking-device-dark"
             } else {
@@ -125,15 +102,6 @@ class LinkDeviceViewController: OWSViewController {
         UIDevice.current.isIPad ? .all : .portrait
     }
 
-    override func themeDidChange() {
-        super.themeDidChange()
-
-        if !FeatureFlags.biometricLinkedDeviceFlow {
-            view.backgroundColor = Theme.backgroundColor
-            scanningInstructionsLabel.textColor = Theme.secondaryTextAndIconColor
-        }
-    }
-
     private func dismissEducationSheetIfNecessary(completion: @escaping () -> Void) {
         if let educationSheet {
             educationSheet.dismiss(animated: true, completion: completion)
@@ -150,7 +118,7 @@ class LinkDeviceViewController: OWSViewController {
 
     // MARK: -
 
-    func confirmProvisioningWithUrl(_ deviceProvisioningUrl: DeviceProvisioningURL) {
+    private func confirmProvisioningWithUrl(_ deviceProvisioningUrl: DeviceProvisioningURL) {
         if FeatureFlags.linkAndSync, deviceProvisioningUrl.capabilities.contains(.linknsync) {
             let linkOrSyncSheet = LinkOrSyncPickerSheet {
                 self.popToLinkedDeviceList()
@@ -380,6 +348,8 @@ extension LinkDeviceViewController: QRCodeScanOrPickDelegate {
         qrCodeData: Data?,
         qrCodeString: String?
     ) -> QRCodeScanOutcome {
+        owsPrecondition(preknownProvisioningUrl == nil)
+
         AssertIsOnMainThread()
 
         guard let qrCodeString else {
