@@ -171,23 +171,23 @@ class UrlOpener {
         case .signalProxy(let url):
             rootViewController.present(ProxyLinkSheetViewController(url: url)!, animated: true)
 
-        case .linkDevice(let deviceProvisioningURL):
+        case .linkDevice(let provisioningUrl):
             guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
-                return owsFailDebug("Ignoring URL; not primary device.")
+                owsFailDebug("Ignoring URL; not primary device.")
+                return
             }
-            let linkedDevicesViewController = LinkedDevicesTableViewController()
-            let linkDeviceViewController = LinkDeviceViewController()
-            linkDeviceViewController.delegate = linkedDevicesViewController
 
             let navigationController = AppSettingsViewController.inModalNavigationController(appReadiness: appReadiness)
-            var viewControllers = navigationController.viewControllers
-            viewControllers.append(linkedDevicesViewController)
-            viewControllers.append(linkDeviceViewController)
-            navigationController.setViewControllers(viewControllers, animated: false)
+            navigationController.setViewControllers(
+                [
+                    LinkedDevicesHostingController(
+                        presentationOnFirstAppear: .linkNewDevice(preknownProvisioningUrl: provisioningUrl)
+                    )
+                ],
+                animated: false
+            )
 
-            rootViewController.presentFormSheet(navigationController, animated: false) {
-                linkDeviceViewController.confirmProvisioningWithUrl(deviceProvisioningURL)
-            }
+            rootViewController.presentFormSheet(navigationController, animated: false)
 
         case .completeIDEALDonation(let donationType):
             DonationViewsUtil.attemptToContinueActiveIDEALDonation(

@@ -47,9 +47,6 @@ public enum FeatureFlags {
     public static let backupsMemorySamplerRatio: Float = build.includes(.internal) ? 0.1 : 0
     public static let messageBackupQuickRestoreFlow = false
 
-    public static let linkedDevicesRedesign = true
-    public static let biometricLinkedDeviceFlow = true
-
     public static let storageServiceRecordIkmMigration = false
 }
 
