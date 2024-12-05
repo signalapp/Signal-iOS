@@ -344,6 +344,17 @@ class MediaPageViewController: UIPageViewController {
                 self?.deleteCurrentMedia()
             }
         ))
+
+        contextMenuActions.append(UIAction(
+            title: OWSLocalizedString(
+                "MEDIA_VIEWER_JUMP_TO_CONVERSATION",
+                comment: "Context menu item in media viewer. Jumps to position in conversation."
+            ),
+            image: Theme.iconImage(.arrowUp),
+            handler: { [weak self] _ in
+                self?.jumpToConversation()
+            }
+        ))
         contextMenuButton.setActions(actions: contextMenuActions)
     }
 
@@ -491,6 +502,16 @@ class MediaPageViewController: UIPageViewController {
         }
         let sender = fromNavigationBar ? barButtonShareMedia : bottomMediaPanel
         AttachmentSharing.showShareUI(for: attachmentStream, sender: sender)
+    }
+    
+    private func jumpToConversation() {
+        SignalApp.shared.presentConversationForThread(
+            mediaGallery.thread,
+            focusMessageId: currentViewController?.galleryItem.message.uniqueId,
+            animated: true,
+            forceReload: true
+        )
+        self.dismiss(animated: false)
     }
 
     private func deleteCurrentMedia() {
@@ -870,3 +891,4 @@ extension MediaPageViewController: UINavigationBarDelegate {
         dismissSelf(animated: true)
     }
 }
+
