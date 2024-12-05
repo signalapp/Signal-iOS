@@ -109,7 +109,8 @@ extension TSAttachmentMigration {
                 throw OWSAssertionError("Non visual media target")
             case .image, .animatedImage:
                 guard let image = UIImage(contentsOfFile: localFilePath) else {
-                    throw OWSAssertionError("Unable to read image")
+                    Logger.error("Unable to read image")
+                    return nil
                 }
                 originalImage = image
             case .video:
