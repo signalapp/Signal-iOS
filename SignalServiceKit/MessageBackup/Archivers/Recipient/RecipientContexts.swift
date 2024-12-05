@@ -123,6 +123,7 @@ extension MessageBackup {
         private let callLinkIdMap = SharedMap<CallLinkRecordId, RecipientId>()
 
         init(
+            backupPurpose: MessageBackupPurpose,
             currentBackupAttachmentUploadEra: String?,
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             localIdentifiers: LocalIdentifiers,
@@ -146,6 +147,7 @@ extension MessageBackup {
             }
 
             super.init(
+                backupPurpose: backupPurpose,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 backupAttachmentUploadManager: backupAttachmentUploadManager,
                 tx: tx

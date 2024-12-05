@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import LibSignalClient
 
 extension MessageBackup {
 
@@ -21,15 +22,21 @@ extension MessageBackup {
 
         public var tx: DBReadTransaction { _tx }
 
+        /// The purpose for this backup. Determines minor behavior variations, such as
+        /// whether we include expiring messages or not.
+        public let backupPurpose: MessageBackupPurpose
+
         /// Nil if not a paid backups account.
         private let currentBackupAttachmentUploadEra: String?
         private let backupAttachmentUploadManager: BackupAttachmentUploadManager
 
         init(
+            backupPurpose: MessageBackupPurpose,
             currentBackupAttachmentUploadEra: String?,
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             tx: DBWriteTransaction
         ) {
+            self.backupPurpose = backupPurpose
             self.currentBackupAttachmentUploadEra = currentBackupAttachmentUploadEra
             self.backupAttachmentUploadManager = backupAttachmentUploadManager
             self._tx = tx

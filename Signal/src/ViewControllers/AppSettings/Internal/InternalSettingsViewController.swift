@@ -257,12 +257,14 @@ private extension InternalSettingsViewController {
                 }
                 let metadata = try await messageBackupManager.exportEncryptedBackup(
                     localIdentifiers: localIdentifiers,
-                    backupKey: backupKey
+                    backupKey: backupKey,
+                    backupPurpose: .remoteBackup
                 ).task.value
                 try await messageBackupManager.validateEncryptedBackup(
                     fileUrl: metadata.fileUrl,
                     localIdentifiers: localIdentifiers,
-                    backupKey: backupKey
+                    backupKey: backupKey,
+                    backupPurpose: .remoteBackup
                 )
                 try? FileManager.default.removeItem(at: metadata.fileUrl)
                 await MainActor.run {
@@ -365,7 +367,8 @@ private extension InternalSettingsViewController {
 
         let metadata = try await messageBackupManager.exportEncryptedBackup(
             localIdentifiers: localIdentifiers,
-            backupKey: backupKey
+            backupKey: backupKey,
+            backupPurpose: .remoteBackup
         ).task.value
 
         let messageBackupKey = try backupKey.asMessageBackupKey(for: localIdentifiers.aci)
@@ -406,7 +409,8 @@ private extension InternalSettingsViewController {
 
         let metadata = try await messageBackupManager.exportEncryptedBackup(
             localIdentifiers: localIdentifiers,
-            backupKey: backupKey
+            backupKey: backupKey,
+            backupPurpose: .remoteBackup
         ).task.value
         _ = try await messageBackupManager.uploadEncryptedBackup(
             metadata: metadata,

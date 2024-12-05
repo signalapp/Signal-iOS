@@ -27,12 +27,14 @@ public protocol MessageBackupManager {
     /// - SeeAlso ``uploadEncryptedBackup(metadata:localIdentifiers:auth:)``
     func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
-        backupKey: BackupKey
+        backupKey: BackupKey,
+        backupPurpose: MessageBackupPurpose
     ) async throws -> ProgressReportingTask<Upload.EncryptedBackupUploadMetadata, Error>
 
     /// Export a plaintext backup binary at the returned file URL.
     func exportPlaintextBackup(
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
+        backupPurpose: MessageBackupPurpose
     ) async throws -> ProgressReportingTask<URL, Error>
 
     // MARK: - Import
@@ -57,6 +59,7 @@ public protocol MessageBackupManager {
     func validateEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        backupKey: BackupKey
+        backupKey: BackupKey,
+        backupPurpose: MessageBackupPurpose
     ) async throws
 }

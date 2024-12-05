@@ -201,12 +201,14 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         do {
             let metadata = try await messageBackupManager.exportEncryptedBackup(
                 localIdentifiers: localIdentifiers,
-                backupKey: ephemeralBackupKey
+                backupKey: ephemeralBackupKey,
+                backupPurpose: .deviceTransfer
             ).task.value
             try await messageBackupManager.validateEncryptedBackup(
                 fileUrl: metadata.fileUrl,
                 localIdentifiers: localIdentifiers,
-                backupKey: ephemeralBackupKey
+                backupKey: ephemeralBackupKey,
+                backupPurpose: .deviceTransfer
             )
             return metadata
         } catch let error {

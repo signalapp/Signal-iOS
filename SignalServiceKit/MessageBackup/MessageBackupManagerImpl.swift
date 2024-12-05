@@ -184,7 +184,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     public func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
-        backupKey: BackupKey
+        backupKey: BackupKey,
+        backupPurpose: MessageBackupPurpose
     ) async throws -> ProgressReportingTask<Upload.EncryptedBackupUploadMetadata, Error> {
         guard
             FeatureFlags.messageBackupFileAlpha
@@ -229,6 +230,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         try self._exportBackup(
                             outputStream: outputStream,
                             localIdentifiers: localIdentifiers,
+                            backupPurpose: backupPurpose,
                             tx: tx
                         )
 
@@ -245,7 +247,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     }
 
     public func exportPlaintextBackup(
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
+        backupPurpose: MessageBackupPurpose
     ) async throws -> ProgressReportingTask<URL, Error> {
         guard FeatureFlags.messageBackupFileAlpha else {
             owsFailDebug("Should not be able to use backups!")
@@ -285,6 +288,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                             try self._exportBackup(
                                 outputStream: outputStream,
                                 localIdentifiers: localIdentifiers,
+                                backupPurpose: backupPurpose,
                                 tx: tx
                             )
 
@@ -304,6 +308,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private func _exportBackup(
         outputStream stream: MessageBackupProtoOutputStream,
         localIdentifiers: LocalIdentifiers,
+        backupPurpose: MessageBackupPurpose,
         tx: DBWriteTransaction
     ) throws {
         let startTimeMs = Date().ows_millisecondsSince1970
@@ -324,6 +329,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         let customChatColorContext = MessageBackup.CustomChatColorArchivingContext(
+            backupPurpose: backupPurpose,
             currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             tx: tx
@@ -355,6 +361,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         let recipientArchivingContext = MessageBackup.RecipientArchivingContext(
+            backupPurpose: backupPurpose,
             currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             localIdentifiers: localIdentifiers,
@@ -428,6 +435,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         let chatArchivingContext = MessageBackup.ChatArchivingContext(
+            backupPurpose: backupPurpose,
             currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             customChatColorContext: customChatColorContext,
@@ -463,6 +471,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         let archivingContext = MessageBackup.ArchivingContext(
+            backupPurpose: backupPurpose,
             currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             tx: tx
@@ -950,13 +959,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     public func validateEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        backupKey: BackupKey
+        backupKey: BackupKey,
+        backupPurpose: MessageBackupPurpose
     ) async throws {
         let key = try backupKey.asMessageBackupKey(for: localIdentifiers.aci)
         let fileSize = OWSFileSystem.fileSize(ofPath: fileUrl.path)?.uint64Value ?? 0
 
         do {
-            let result = try validateMessageBackup(key: key, purpose: .remoteBackup, length: fileSize) {
+            let result = try validateMessageBackup(key: key, purpose: backupPurpose, length: fileSize) {
                 return try FileHandle(forReadingFrom: fileUrl)
             }
             if result.fields.count > 0 {

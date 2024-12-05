@@ -317,7 +317,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         ).task.value
 
         let exportedBackupUrl = try await deps.messageBackupManager
-            .exportPlaintextBackup(localIdentifiers: localIdentifiers)
+            .exportPlaintextBackup(localIdentifiers: localIdentifiers, backupPurpose: .remoteBackup)
             .task.value
 
         try compareViaLibsignal(

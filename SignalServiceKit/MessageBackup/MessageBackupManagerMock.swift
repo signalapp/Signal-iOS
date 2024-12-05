@@ -36,7 +36,8 @@ open class MessageBackupManagerMock: MessageBackupManager {
 
     public func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
-        backupKey: BackupKey
+        backupKey: BackupKey,
+        backupPurpose: MessageBackupPurpose
     ) async throws -> ProgressReportingTask<Upload.EncryptedBackupUploadMetadata, Error> {
         return ProgressReportingTask(
             task: Task {
@@ -52,7 +53,8 @@ open class MessageBackupManagerMock: MessageBackupManager {
     }
 
     public func exportPlaintextBackup(
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
+        backupPurpose: MessageBackupPurpose
     ) async throws -> ProgressReportingTask<URL, Error> {
         return ProgressReportingTask(task: Task { URL(string: "file://")! }, progress: Progress(totalUnitCount: 0))
     }
@@ -73,7 +75,8 @@ open class MessageBackupManagerMock: MessageBackupManager {
     public func validateEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        backupKey: BackupKey
+        backupKey: BackupKey,
+        backupPurpose: MessageBackupPurpose
     ) async throws {}
 }
 

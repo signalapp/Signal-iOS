@@ -104,6 +104,7 @@ extension MessageBackup {
         private let threadCache = SharedMap<ChatId, CachedThreadInfo>()
 
         internal init(
+            backupPurpose: MessageBackupPurpose,
             currentBackupAttachmentUploadEra: String?,
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             customChatColorContext: CustomChatColorArchivingContext,
@@ -113,6 +114,7 @@ extension MessageBackup {
             self.customChatColorContext = customChatColorContext
             self.recipientContext = recipientContext
             super.init(
+                backupPurpose: backupPurpose,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 backupAttachmentUploadManager: backupAttachmentUploadManager,
                 tx: tx
@@ -322,11 +324,13 @@ extension MessageBackup {
         private let map = SharedMap<CustomChatColor.Key, CustomChatColorId>()
 
         internal override init(
+            backupPurpose: MessageBackupPurpose,
             currentBackupAttachmentUploadEra: String?,
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             tx: DBWriteTransaction
         ) {
             super.init(
+                backupPurpose: backupPurpose,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 backupAttachmentUploadManager: backupAttachmentUploadManager,
                 tx: tx
