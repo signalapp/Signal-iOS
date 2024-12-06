@@ -44,7 +44,7 @@ public protocol AppVersion {
 }
 
 extension AppVersion {
-    var currentAppVersion4: AppVersionNumber4 {
+    public var currentAppVersion4: AppVersionNumber4 {
         return try! AppVersionNumber4(AppVersionNumber(currentAppVersion))
     }
 }

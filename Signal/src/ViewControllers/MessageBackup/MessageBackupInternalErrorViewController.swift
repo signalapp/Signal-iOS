@@ -157,6 +157,8 @@ private class MessageBackupInternalErrorViewController: OWSViewController {
             Feel free to edit to remove any private info before sending.\n\n
             """)
 
+        text.append("\n" + AppVersionImpl.shared.currentAppVersion4.debugDescription + "\n")
+
         if let errorString, let validationErrorString {
             text.append("Hit both iOS and validator errors\n\n")
             text.append("------Validator error------\n")
