@@ -201,10 +201,6 @@ public enum OWSRequestFactory {
 
     // MARK: - Devices
 
-    static func getDevicesRequest() -> TSRequest {
-        return TSRequest(url: URL(string: "v1/devices/")!, method: "GET", parameters: [:])
-    }
-
     static func deviceProvisioningCode() -> TSRequest {
         return TSRequest(
             url: URL(string: "v1/devices/provisioning/code")!,
@@ -221,16 +217,6 @@ public enum OWSRequestFactory {
             url: .init(pathComponents: ["v1", "provisioning", ephemeralDeviceId])!,
             method: "PUT",
             parameters: ["body": messageBody.base64EncodedString()]
-        )
-    }
-
-    static func deleteDeviceRequest(
-        _ device: OWSDevice
-    ) -> TSRequest {
-        return TSRequest(
-            url: URL(string: "/v1/devices/\(device.deviceId)")!,
-            method: HTTPMethod.delete.methodName,
-            parameters: nil
         )
     }
 

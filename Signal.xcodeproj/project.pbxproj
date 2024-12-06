@@ -3368,7 +3368,7 @@
 		F9C5CDB3289453B400548EEE /* GiphyImageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CADF289453B200548EEE /* GiphyImageInfo.swift */; };
 		F9C5CDB4289453B400548EEE /* HTTPUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE0289453B200548EEE /* HTTPUtils.swift */; };
 		F9C5CDB5289453B400548EEE /* OWSRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE2289453B200548EEE /* OWSRequestFactory.swift */; };
-		F9C5CDBA289453B400548EEE /* OWSDevicesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE7289453B200548EEE /* OWSDevicesService.swift */; };
+		F9C5CDBA289453B400548EEE /* OWSDeviceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE7289453B200548EEE /* OWSDeviceService.swift */; };
 		F9C5CDBB289453B400548EEE /* SignalServiceProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAE8289453B200548EEE /* SignalServiceProfile.swift */; };
 		F9C5CDBE289453B400548EEE /* RESTNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAEB289453B200548EEE /* RESTNetworkManager.swift */; };
 		F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAEF289453B200548EEE /* HTTPEntities.swift */; };
@@ -7155,7 +7155,7 @@
 		F9C5CADF289453B200548EEE /* GiphyImageInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyImageInfo.swift; sourceTree = "<group>"; };
 		F9C5CAE0289453B200548EEE /* HTTPUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPUtils.swift; sourceTree = "<group>"; };
 		F9C5CAE2289453B200548EEE /* OWSRequestFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSRequestFactory.swift; sourceTree = "<group>"; };
-		F9C5CAE7289453B200548EEE /* OWSDevicesService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDevicesService.swift; sourceTree = "<group>"; };
+		F9C5CAE7289453B200548EEE /* OWSDeviceService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDeviceService.swift; sourceTree = "<group>"; };
 		F9C5CAE8289453B200548EEE /* SignalServiceProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceProfile.swift; sourceTree = "<group>"; };
 		F9C5CAEB289453B200548EEE /* RESTNetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RESTNetworkManager.swift; sourceTree = "<group>"; };
 		F9C5CAEF289453B200548EEE /* HTTPEntities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPEntities.swift; sourceTree = "<group>"; };
@@ -10896,7 +10896,6 @@
 				F94D12FD28BD0DD900B2C478 /* Accessibility */,
 				5045F44129E0DAA400058E5F /* AppLaunch */,
 				661AEE462C2088DF0046B1D8 /* Attachments */,
-				D945319F2CE6720E004DAB30 /* BackupSubscription */,
 				D9E43BE12CC194140001536E /* Calls */,
 				50B6BCAF2AEC4F3B0010FB3B /* Contacts */,
 				3448BFC01EDF0EA7005B2D69 /* ConversationView */,
@@ -13412,6 +13411,7 @@
 				F9C5CA1A289453B100548EEE /* OWSDevice.swift */,
 				D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */,
 				F9C5CA0B289453B100548EEE /* OWSDeviceProvisioner.swift */,
+				F9C5CAE7289453B200548EEE /* OWSDeviceService.swift */,
 				D9C0AE632BD7103100FCB05E /* OWSDeviceStore.swift */,
 				F9C5CA1F289453B100548EEE /* OWSLinkedDeviceReadReceipt.h */,
 				F9C5CA2A289453B100548EEE /* OWSLinkedDeviceReadReceipt.m */,
@@ -13660,7 +13660,6 @@
 				F9C5CAEF289453B200548EEE /* HTTPEntities.swift */,
 				F9C5CAE0289453B200548EEE /* HTTPUtils.swift */,
 				F9C5CADA289453B200548EEE /* NetworkManager.swift */,
-				F9C5CAE7289453B200548EEE /* OWSDevicesService.swift */,
 				F9C5CAEB289453B200548EEE /* RESTNetworkManager.swift */,
 				F9C5CAE8289453B200548EEE /* SignalServiceProfile.swift */,
 			);
@@ -15969,7 +15968,6 @@
 				4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */,
 				32C584A825B81C6600256804 /* AvatarViewController.swift in Sources */,
 				B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */,
-				D94531A12CE6721F004DAB30 /* BackupSubscriptionView.swift in Sources */,
 				32E035242739059C0081EE11 /* BadgeCollectionView.swift in Sources */,
 				32E03522273901710081EE11 /* BadgeConfigurationViewController.swift in Sources */,
 				881BB28A2743531D00B609B8 /* BadgeDetailsSheet.swift in Sources */,
@@ -17315,7 +17313,7 @@
 				F9C5CCFD289453B300548EEE /* OWSDevice.swift in Sources */,
 				D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */,
 				F9C5CCEF289453B300548EEE /* OWSDeviceProvisioner.swift in Sources */,
-				F9C5CDBA289453B400548EEE /* OWSDevicesService.swift in Sources */,
+				F9C5CDBA289453B400548EEE /* OWSDeviceService.swift in Sources */,
 				D9C0AE652BD7103100FCB05E /* OWSDeviceStore.swift in Sources */,
 				F9C5CBFC289453B300548EEE /* OWSDisappearingConfigurationUpdateInfoMessage+SDS.swift in Sources */,
 				F9C5CC02289453B300548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.m in Sources */,

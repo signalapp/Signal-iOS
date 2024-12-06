@@ -47,8 +47,8 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
             dateProvider: { self.mockDateProvider() },
             db: mockDB,
             deviceNameDecrypter: mockDeviceNameDecrypter,
+            deviceService: mockDevicesService,
             deviceStore: mockDeviceStore,
-            devicesService: mockDevicesService,
             remoteConfigProvider: MockRemoteConfigProvider(),
             tsAccountManager: mockTSAccountManager
         )
@@ -197,14 +197,30 @@ private class MockDeviceStore: OWSDeviceStore {
     func fetchAll(tx: DBReadTransaction) -> [OWSDevice] {
         return devices
     }
+
+    func replaceAll(with newDevices: [OWSDevice], tx: any DBWriteTransaction) -> Bool {
+        let isChanging = devices.count == newDevices.count
+        devices = newDevices
+        return isChanging
+    }
+
+    func remove(_ device: OWSDevice, tx: any DBWriteTransaction) {
+        devices.removeAll { _device in
+            device.deviceId == _device.deviceId
+        }
+    }
 }
 
-private class MockDevicesService: InactiveLinkedDeviceFinderImpl.Shims.OWSDevicesService {
+private class MockDevicesService: OWSDeviceService {
     var shouldFail: Bool = false
     var refreshCount: Int = 0
 
-    func refreshDevices() async throws {
+    func refreshDevices() async throws -> Bool {
         refreshCount += 1
         if shouldFail { throw OWSGenericError("") }
+
+        return true
     }
+
+    func unlinkDevice(_ device: OWSDevice) async throws {}
 }

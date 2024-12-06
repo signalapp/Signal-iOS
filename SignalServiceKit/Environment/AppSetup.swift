@@ -1165,12 +1165,18 @@ public class AppSetup {
 
         let deviceManager = OWSDeviceManagerImpl()
         let deviceStore = OWSDeviceStoreImpl()
+        let deviceService = OWSDeviceServiceImpl(
+            db: db,
+            deviceManager: deviceManager,
+            deviceStore: deviceStore,
+            networkManager: networkManager
+        )
         let inactiveLinkedDeviceFinder = InactiveLinkedDeviceFinderImpl(
             dateProvider: dateProvider,
             db: db,
             deviceNameDecrypter: InactiveLinkedDeviceFinderImpl.Wrappers.OWSDeviceNameDecrypter(identityManager: identityManager),
+            deviceService: deviceService,
             deviceStore: deviceStore,
-            devicesService: InactiveLinkedDeviceFinderImpl.Wrappers.OWSDevicesService(),
             remoteConfigProvider: remoteConfigManager,
             tsAccountManager: tsAccountManager
         )
@@ -1221,6 +1227,7 @@ public class AppSetup {
             deleteForMeIncomingSyncMessageManager: deleteForMeIncomingSyncMessageManager,
             deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
             deviceManager: deviceManager,
+            deviceService: deviceService,
             deviceStore: deviceStore,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             donationReceiptCredentialResultStore: donationReceiptCredentialResultStore,

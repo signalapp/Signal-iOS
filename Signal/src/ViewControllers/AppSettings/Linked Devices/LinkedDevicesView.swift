@@ -43,34 +43,20 @@ class LinkedDevicesViewModel: ObservableObject {
     }
     fileprivate var shouldShowFinishLinkingSheet = false
 
+    private let databaseChangeObserver: DatabaseChangeObserver
+    private let db: any DB
+    private let deviceService: OWSDeviceService
+    private let deviceStore: OWSDeviceStore
+    private let messageBackupErrorPresenter: MessageBackupErrorPresenter
+
     init() {
-        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
+        databaseChangeObserver = DependenciesBridge.shared.databaseChangeObserver
+        db = DependenciesBridge.shared.db
+        deviceService = DependenciesBridge.shared.deviceService
+        deviceStore = DependenciesBridge.shared.deviceStore
+        messageBackupErrorPresenter = DependenciesBridge.shared.messageBackupErrorPresenter
 
-        NotificationCenter.default.publisher(
-            for: OWSDevicesService.deviceListUpdateFailed
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] notification in
-            guard let error = notification.object as? Error else {
-                owsFailDebug("Missing error.")
-                return
-            }
-            if error.isNetworkFailureOrTimeout {
-                return
-            }
-
-            self?.present.send(.updateFailureAlert(error))
-        }
-        .store(in: &subscriptions)
-
-        NotificationCenter.default.publisher(
-            for: OWSDevicesService.deviceListUpdateModifiedDeviceList
-        )
-        .sink { [weak self] _ in
-            self?.pollingRefreshTimer?.invalidate()
-            self?.pollingRefreshTimer = nil
-        }
-        .store(in: &subscriptions)
+        databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
     @MainActor
@@ -79,7 +65,18 @@ class LinkedDevicesViewModel: ObservableObject {
             self.isLoading = true
         }
 
-        try? await OWSDevicesService.refreshDevices().awaitable()
+        do {
+            let didAddOrRemove = try await deviceService.refreshDevices()
+
+            if didAddOrRemove {
+                pollingRefreshTimer?.invalidate()
+                pollingRefreshTimer = nil
+            }
+        } catch let error where error.isNetworkFailureOrTimeout {
+            // Ignore
+        } catch let error {
+            present.send(.updateFailureAlert(error))
+        }
 
         if !isExpectingMoreDevices {
             self.isLoading = false
@@ -134,23 +131,25 @@ class LinkedDevicesViewModel: ObservableObject {
     }
 
     func unlinkDevice(_ device: OWSDevice) {
-        OWSDevicesService.unlinkDevice(
-            device,
-            success: { [weak self] in
-                Logger.info("Removing unlinked device with deviceId: \(device.deviceId)")
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    device.anyRemove(transaction: transaction)
-                }
-                DispatchQueue.main.async {
-                    self?.updateDeviceList()
-                }
-            },
-            failure: { [weak self] (error) in
-                DispatchQueue.main.async {
-                    self?.present.send(.unlinkFailureAlert(device: device, error: error))
+        Task { [deviceService] in
+            do {
+                try await deviceService.unlinkDevice(device)
+            } catch let error {
+                return await MainActor.run {
+                    present.send(.unlinkFailureAlert(device: device, error: error))
                 }
             }
-        )
+
+            Logger.info("Removing unlinked device with deviceId: \(device.deviceId)")
+
+            await db.awaitableWrite { tx in
+                deviceStore.remove(device, tx: tx)
+            }
+
+            await MainActor.run {
+                updateDeviceList()
+            }
+        }
     }
 
     struct DisplayableDevice: Hashable, Identifiable {
