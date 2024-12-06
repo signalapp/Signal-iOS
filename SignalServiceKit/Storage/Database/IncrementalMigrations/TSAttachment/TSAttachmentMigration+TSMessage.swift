@@ -385,86 +385,94 @@ extension TSAttachmentMigration {
             var migratedMessageRowIds = [Int64: Bool]()
             var deletedAttachments = [TSAttachmentMigration.V1Attachment]()
             while migratedMessageRowIds.count < batchSize ?? Int.max, let reservedFileIds = try reservedFileIdsCursor.next() {
-                guard let messageRowId = reservedFileIds.interactionRowId else {
-                    continue
-                }
-                if migratedMessageRowIds[messageRowId] != nil {
-                    continue
-                }
+                try autoreleasepool {
+                    guard let messageRowId = reservedFileIds.interactionRowId else {
+                        return
+                    }
+                    if migratedMessageRowIds[messageRowId] != nil {
+                        return
+                    }
 
-                let messageRow: GRDB.Row?
-                do {
-                    messageRow = try Row.fetchOne(
-                        tx.database,
-                        sql: "SELECT * FROM model_TSInteraction WHERE id = ?;",
-                        arguments: [messageRowId]
-                    )
-                } catch {
-                    throw OWSAssertionError("Failed to fetch interaction row")
-                }
-                guard let messageRow else {
-                    // The message got deleted. Still, count this in the batch
-                    // size so we don't iterate over deleted rows unbounded.
-                    migratedMessageRowIds[messageRowId] = true
-                    try reservedFileIds.cleanUpFiles()
-                    continue
-                }
+                    let messageRow: GRDB.Row?
+                    do {
+                        messageRow = try Row.fetchOne(
+                            tx.database,
+                            sql: "SELECT * FROM model_TSInteraction WHERE id = ?;",
+                            arguments: [messageRowId]
+                        )
+                    } catch {
+                        throw OWSAssertionError("Failed to fetch interaction row")
+                    }
+                    guard let messageRow else {
+                        // The message got deleted. Still, count this in the batch
+                        // size so we don't iterate over deleted rows unbounded.
+                        migratedMessageRowIds[messageRowId] = true
+                        try reservedFileIds.cleanUpFiles()
+                        return
+                    }
 
-                // We _have_ to migrate everything on a given TSMessage at once.
-                // Fetch all the reserved ids for the message.
-                let reservedFileIdsForMessage = try TSAttachmentMigration.V1AttachmentReservedFileIds
-                    .filter(Column("interactionRowId") == messageRowId)
-                    .fetchAll(tx.database)
+                    // We _have_ to migrate everything on a given TSMessage at once.
+                    // Fetch all the reserved ids for the message.
+                    let reservedFileIdsForMessage = try TSAttachmentMigration.V1AttachmentReservedFileIds
+                        .filter(Column("interactionRowId") == messageRowId)
+                        .fetchAll(tx.database)
 
-                let deletedAttachmentsForMessage = try Self.migrateMessageAttachments(
-                    reservedFileIds: reservedFileIdsForMessage,
-                    messageRow: messageRow,
-                    messageRowId: messageRowId,
-                    isRunningIteratively: isRunningIteratively,
-                    tx: tx
-                )
-                if let deletedAttachmentsForMessage {
-                    migratedMessageRowIds[messageRowId] = true
-                    deletedAttachments.append(contentsOf: deletedAttachmentsForMessage)
-                } else {
-                    migratedMessageRowIds[messageRowId] = false
-                }
-            }
-
-            // Delete our reserved rows, and re-reserve for those that didn't finish.
-            for migratedMessageRowId in migratedMessageRowIds {
-                let didMigrate = migratedMessageRowId.value
-                let messageRowId = migratedMessageRowId.key
-                try TSAttachmentMigration.V1AttachmentReservedFileIds
-                    .filter(Column("interactionRowId") == messageRowId)
-                    .deleteAll(tx.database)
-
-                if
-                    isRunningIteratively,
-                    !didMigrate,
-                    let messageRow: GRDB.Row = try {
-                        do {
-                            return try Row.fetchOne(
-                                tx.database,
-                                sql: "SELECT * FROM model_TSInteraction WHERE id = ?;",
-                                arguments: [messageRowId]
-                            )
-                        } catch {
-                            throw OWSAssertionError("Failed to fetch interaction row")
-                        }
-                    }()
-                {
-                    // Re-reserve new rows; we will migrate in the next batch.
-                    _ = try Self.prepareTSMessageForMigration(
+                    let deletedAttachmentsForMessage = try Self.migrateMessageAttachments(
+                        reservedFileIds: reservedFileIdsForMessage,
                         messageRow: messageRow,
                         messageRowId: messageRowId,
+                        isRunningIteratively: isRunningIteratively,
                         tx: tx
                     )
+                    // No need to delete one by one if running non-iteratively;
+                    // we nuke the whole migration table and attachment folder at the end.
+                    if isRunningIteratively {
+                        if let deletedAttachmentsForMessage {
+                            migratedMessageRowIds[messageRowId] = true
+                            deletedAttachments.append(contentsOf: deletedAttachmentsForMessage)
+                        } else {
+                            migratedMessageRowIds[messageRowId] = false
+                        }
+                    }
                 }
             }
 
-            tx.addAsyncCompletion(queue: .global()) {
-                deletedAttachments.forEach { try? $0.deleteFiles() }
+            // No need to delete one by one if running non-iteratively;
+            // we nuke the whole migration table at the end.
+            if isRunningIteratively {
+                // Delete our reserved rows, and re-reserve for those that didn't finish.
+                for migratedMessageRowId in migratedMessageRowIds {
+                    let didMigrate = migratedMessageRowId.value
+                    let messageRowId = migratedMessageRowId.key
+                    try TSAttachmentMigration.V1AttachmentReservedFileIds
+                        .filter(Column("interactionRowId") == messageRowId)
+                        .deleteAll(tx.database)
+
+                    if
+                        !didMigrate,
+                        let messageRow: GRDB.Row = try {
+                            do {
+                                return try Row.fetchOne(
+                                    tx.database,
+                                    sql: "SELECT * FROM model_TSInteraction WHERE id = ?;",
+                                    arguments: [messageRowId]
+                                )
+                            } catch {
+                                throw OWSAssertionError("Failed to fetch interaction row")
+                            }
+                        }()
+                    {
+                        // Re-reserve new rows; we will migrate in the next batch.
+                        _ = try Self.prepareTSMessageForMigration(
+                            messageRow: messageRow,
+                            messageRowId: messageRowId,
+                            tx: tx
+                        )
+                    }
+                }
+                tx.addAsyncCompletion(queue: .global()) {
+                    deletedAttachments.forEach { try? $0.deleteFiles() }
+                }
             }
 
             return migratedMessageRowIds.count
