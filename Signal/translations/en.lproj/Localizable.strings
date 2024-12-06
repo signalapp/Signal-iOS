@@ -4096,6 +4096,18 @@
 /* Title above the list of currently-linked devices */
 "LINKED_DEVICES_LIST_TITLE" = "Linked Devices";
 
+/* Button title for renaming a linked device */
+"LINKED_DEVICES_RENAME_BUTTON" = "Rename";
+
+/* Message on a sheet indicating the device rename attempt received an error. */
+"LINKED_DEVICES_RENAME_FAILURE_MESSAGE" = "Unable to change device name. Try again later.";
+
+/* Message on a toast indicating the device was renamed. */
+"LINKED_DEVICES_RENAME_SUCCESS_MESSAGE" = "Device name updated";
+
+/* Title for the screen for renaming a linked device */
+"LINKED_DEVICES_RENAME_TITLE" = "Edit Device Name";
+
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Linked Devices";
 

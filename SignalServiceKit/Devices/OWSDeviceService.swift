@@ -11,6 +11,17 @@ public protocol OWSDeviceService {
 
     /// Unlink the given device.
     func unlinkDevice(_ device: OWSDevice) async throws
+
+    /// Renames a device with the given encrypted name.
+    func renameDevice(
+        device: OWSDevice,
+        toEncryptedName encryptedName: String
+    ) async throws
+}
+
+public enum DeviceRenameError: Error {
+    case encryptionFailed
+    case unspecified
 }
 
 // MARK: -
@@ -111,6 +122,19 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
             .deleteDevice(device)
         )
     }
+
+    func renameDevice(
+        device: OWSDevice,
+        toEncryptedName encryptedName: String
+    ) async throws {
+        let response = try await self.networkManager.asyncRequest(
+            .renameDevice(device: device, encryptedName: encryptedName)
+        )
+
+        guard response.responseStatusCode == 204 else {
+            throw DeviceRenameError.unspecified
+        }
+    }
 }
 
 // MARK: -
@@ -132,5 +156,25 @@ private extension TSRequest {
             method: "DELETE",
             parameters: nil
         )
+    }
+
+    static func renameDevice(
+        device: OWSDevice,
+        encryptedName: String
+    ) -> TSRequest {
+        var urlComponents = URLComponents(string: "v1/accounts/name")!
+        urlComponents.queryItems = [URLQueryItem(
+            name: "deviceId",
+            value: "\(device.deviceId)"
+        )]
+        let request = TSRequest(
+            url: urlComponents.url!,
+            method: "PUT",
+            parameters: [
+                "deviceName": encryptedName,
+            ]
+        )
+        request.applyRedactionStrategy(.redactURLForSuccessResponses())
+        return request
     }
 }

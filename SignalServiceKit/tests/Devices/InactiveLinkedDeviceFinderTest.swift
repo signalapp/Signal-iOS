@@ -209,6 +209,10 @@ private class MockDeviceStore: OWSDeviceStore {
             device.deviceId == _device.deviceId
         }
     }
+
+    func setEncryptedName(_ encryptedName: String, for device: OWSDevice, tx: any DBWriteTransaction) {
+        device.encryptedName = encryptedName
+    }
 }
 
 private class MockDevicesService: OWSDeviceService {
@@ -223,4 +227,6 @@ private class MockDevicesService: OWSDeviceService {
     }
 
     func unlinkDevice(_ device: OWSDevice) async throws {}
+
+    func renameDevice(device: OWSDevice, toEncryptedName encryptedName: String) async throws {}
 }

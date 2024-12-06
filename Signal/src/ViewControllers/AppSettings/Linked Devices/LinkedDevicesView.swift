@@ -24,6 +24,7 @@ class LinkedDevicesViewModel: ObservableObject {
     fileprivate enum Presentation {
         case newDeviceToast(deviceName: String)
         case linkDeviceAuthentication(preknownProvisioningUrl: DeviceProvisioningURL?)
+        case renameDevice(displayableDevice: DisplayableDevice)
         case unlinkDeviceConfirmation(displayableDevice: DisplayableDevice)
         case updateFailureAlert(Error)
         case unlinkFailureAlert(device: OWSDevice, error: Error)
@@ -48,13 +49,22 @@ class LinkedDevicesViewModel: ObservableObject {
     private let deviceService: OWSDeviceService
     private let deviceStore: OWSDeviceStore
     private let messageBackupErrorPresenter: MessageBackupErrorPresenter
+    private let identityManager: OWSIdentityManager
 
-    init() {
+#if DEBUG
+    private let isPreview: Bool
+#endif
+
+    init(isPreview: Bool = false) {
+#if DEBUG
+        self.isPreview = isPreview
+#endif
         databaseChangeObserver = DependenciesBridge.shared.databaseChangeObserver
         db = DependenciesBridge.shared.db
         deviceService = DependenciesBridge.shared.deviceService
         deviceStore = DependenciesBridge.shared.deviceStore
         messageBackupErrorPresenter = DependenciesBridge.shared.messageBackupErrorPresenter
+        identityManager = DependenciesBridge.shared.identityManager
 
         databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
@@ -64,6 +74,20 @@ class LinkedDevicesViewModel: ObservableObject {
         if displayableDevices.isEmpty {
             self.isLoading = true
         }
+
+#if DEBUG
+        if isPreview {
+            try? await Task.sleep(nanoseconds: NSEC_PER_SEC)
+            withAnimation {
+                self.displayableDevices = [
+                    .init(device: .previewItem(id: 1), displayName: "iPad"),
+                    .init(device: .previewItem(id: 2), displayName: "macOS"),
+                ]
+            }
+            self.isLoading = false
+            return
+        }
+#endif
 
         do {
             let didAddOrRemove = try await deviceService.refreshDevices()
@@ -131,6 +155,14 @@ class LinkedDevicesViewModel: ObservableObject {
     }
 
     func unlinkDevice(_ device: OWSDevice) {
+#if DEBUG
+        guard !isPreview else {
+            withAnimation {
+                displayableDevices.removeAll { $0.device.deviceId == device.deviceId }
+            }
+            return
+        }
+#endif
         Task { [deviceService] in
             do {
                 try await deviceService.unlinkDevice(device)
@@ -151,6 +183,39 @@ class LinkedDevicesViewModel: ObservableObject {
             }
         }
     }
+
+    func renameDevice(
+        _ displayableDevice: DisplayableDevice,
+        to newName: String
+    ) async throws {
+        let identityKeyPair = db.read { tx in
+            identityManager.identityKeyPair(for: .aci, tx: tx)
+        }
+
+        guard let identityKeyPair else {
+            throw DeviceRenameError.encryptionFailed
+        }
+
+        let encryptedName = try DeviceNames.encryptDeviceName(
+            plaintext: newName,
+            identityKeyPair: identityKeyPair.keyPair
+        ).base64EncodedString()
+
+        try await deviceService.renameDevice(
+            device: displayableDevice.device,
+            toEncryptedName: encryptedName
+        )
+
+        await db.awaitableWrite { tx in
+            deviceStore.setEncryptedName(
+                encryptedName,
+                for: displayableDevice.device,
+                tx: tx
+            )
+        }
+    }
+
+    // MARK: DisplayableDevice
 
     struct DisplayableDevice: Hashable, Identifiable {
         var id: Int { device.deviceId }
@@ -254,15 +319,19 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
         case linkNewDevice(preknownProvisioningUrl: DeviceProvisioningURL)
     }
 
-    private let viewModel = LinkedDevicesViewModel()
+    private let viewModel: LinkedDevicesViewModel
 
     private var presentationOnFirstAppear: PresentationOnFirstAppear?
     private var subscriptions = Set<AnyCancellable>()
 
     private weak var finishLinkingSheet: HeroSheetViewController?
 
-    init(presentationOnFirstAppear: PresentationOnFirstAppear? = nil) {
+    init(
+        presentationOnFirstAppear: PresentationOnFirstAppear? = nil,
+        isPreview: Bool = false
+    ) {
         self.presentationOnFirstAppear = presentationOnFirstAppear
+        self.viewModel = LinkedDevicesViewModel(isPreview: isPreview)
 
         super.init(wrappedView: LinkedDevicesView(viewModel: viewModel))
 
@@ -283,6 +352,8 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
                 self.showUpdateFailureAlert(error: error)
             case .linkDeviceAuthentication(let preknownProvisioingUrl):
                 self.didTapLinkDeviceButton(preknownProvisioningUrl: preknownProvisioingUrl)
+            case let .renameDevice(displayableDevice):
+                self.showRenameDeviceView(device: displayableDevice)
             case let .unlinkDeviceConfirmation(displayableDevice):
                 self.showUnlinkDeviceConfirmAlert(displayableDevice: displayableDevice)
             case let .unlinkFailureAlert(device, error):
@@ -536,6 +607,22 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
         return .failed(owsError)
     }
 
+    // MARK: Renaming
+
+    private func showRenameDeviceView(device: LinkedDevicesViewModel.DisplayableDevice) {
+        let viewController = EditDeviceNameViewController(
+            oldName: device.displayName
+        ) { [weak viewModel] newName in
+            try await viewModel?.renameDevice(device, to: newName)
+            self.presentToast(text: OWSLocalizedString(
+                "LINKED_DEVICES_RENAME_SUCCESS_MESSAGE",
+                value: "Device name updated",
+                comment: "Message on a toast indicating the device was renamed."
+            ))
+        }
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
+
     // MARK: Unlinking
 
     private func showUnlinkDeviceConfirmAlert(displayableDevice: LinkedDevicesViewModel.DisplayableDevice) {
@@ -671,10 +758,7 @@ struct LinkedDevicesView: View {
                 ForEach(viewModel.displayableDevices, id: \.self) { device in
                     DeviceView(device: device)
                         .swipeActions {
-                            Button(OWSLocalizedString(
-                                "UNLINK_ACTION",
-                                comment: "button title for unlinking a device"
-                            )) {
+                            Button(Self.unlinkString) {
                                 viewModel.present.send(.unlinkDeviceConfirmation(displayableDevice: device))
                             }
                             .tint(.red)
@@ -720,11 +804,14 @@ struct LinkedDevicesView: View {
             await viewModel.refreshDevices()
         }
         .environment(\.editMode, self.$viewModel.editMode)
+        .environmentObject(viewModel)
     }
 
     // MARK: DeviceView
 
     private struct DeviceView: View {
+        @EnvironmentObject private var viewModel: LinkedDevicesViewModel
+
         var device: LinkedDevicesViewModel.DisplayableDevice?
 
         private var deviceName: String {
@@ -791,14 +878,91 @@ struct LinkedDevicesView: View {
                     .foregroundStyle(.secondary)
                     .font(.subheadline)
                 }
+
+                Spacer(minLength: 0)
+
+                Menu {
+                    Button {
+                        guard let device else { return }
+                        viewModel.present.send(
+                            .unlinkDeviceConfirmation(displayableDevice: device)
+                        )
+                    } label: {
+                        Label(LinkedDevicesView.unlinkString, image: "link-slash")
+                    }
+
+                    Button {
+                        guard let device else { return }
+                        viewModel.present.send(
+                            .renameDevice(displayableDevice: device)
+                        )
+                    } label: {
+                        Label(
+                            OWSLocalizedString(
+                                "LINKED_DEVICES_RENAME_BUTTON",
+                                comment: "Button title for renaming a linked device"
+                            ),
+                            image: "edit"
+                        )
+                    }
+                } label: {
+                    VStack(spacing: 0) {
+                        Label(CommonStrings.editButton, image: "more-vertical")
+                            .labelStyle(.iconOnly)
+                        Spacer(minLength: 0)
+                    }
+                }
+                .padding(.top, 9)
+                .foregroundStyle(.primary)
             }
         }
+    }
+
+    private static let unlinkString = OWSLocalizedString(
+        "UNLINK_ACTION",
+        comment: "button title for unlinking a device"
+    )
+}
+
+// MARK: - EditDeviceNameViewController
+
+class EditDeviceNameViewController: NameEditorViewController {
+    override class var nameByteLimit: Int { 225 }
+    override class var nameGlyphLimit: Int { 50 }
+
+    override var placeholderText: String? {
+        OWSLocalizedString(
+            "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER",
+            comment: "text field placeholder"
+        )
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        self.title = OWSLocalizedString(
+            "LINKED_DEVICES_RENAME_TITLE",
+            comment: "Title for the screen for renaming a linked device"
+        )
+    }
+
+    override func handleError(_ error: any Error) {
+        OWSActionSheets.showErrorAlert(
+            message: OWSLocalizedString(
+                "LINKED_DEVICES_RENAME_FAILURE_MESSAGE",
+                comment: "Message on a sheet indicating the device rename attempt received an error."
+            )
+        )
     }
 }
 
 // MARK: - Previews
 
+#if DEBUG
 @available(iOS 17, *)
 #Preview {
-    LinkedDevicesHostingController()
+    MockSSKEnvironment.activate()
+    let viewController = LinkedDevicesHostingController(isPreview: true)
+    return OWSNavigationController(rootViewController: viewController)
 }
+#endif
