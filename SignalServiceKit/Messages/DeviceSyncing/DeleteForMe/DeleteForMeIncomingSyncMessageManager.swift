@@ -230,8 +230,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
 
         do {
             try attachmentManager.removeAttachment(
-                targetAttachment.attachment,
-                from: .messageBodyAttachment(messageRowId: targetMessage.sqliteRowId!),
+                reference: targetAttachment.reference,
                 tx: tx
             )
         } catch {

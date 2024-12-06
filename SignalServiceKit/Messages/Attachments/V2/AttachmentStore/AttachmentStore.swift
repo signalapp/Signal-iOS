@@ -160,9 +160,23 @@ public protocol AttachmentStore {
         tx: DBWriteTransaction
     ) throws
 
-    func removeOwner(
-        _ owner: AttachmentReference.OwnerId,
+    /// Removes all owner edges to the provided attachment that
+    /// have the provided owner type and id.
+    /// Will delete multiple instances if the same owner has multiple
+    /// edges of the given type to the given attachment (e.g. an image
+    /// appears twice as a body attachment on a given message).
+    func removeAllOwners(
+        withId owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,
+        tx: DBWriteTransaction
+    ) throws
+
+    /// Removes a single owner edge to the provided attachment that
+    /// have the provided owner metadata.
+    /// Will delete only delete the one given edge even if the same owner
+    /// has multiple edges to the same attachment.
+    func removeOwner(
+        reference: AttachmentReference,
         tx: DBWriteTransaction
     ) throws
 

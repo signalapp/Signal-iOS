@@ -75,8 +75,7 @@ public protocol AttachmentManager {
     /// Will only delete the attachment if this is the last owner.
     /// Typically because the owner has been deleted.
     func removeAttachment(
-        _ attachment: Attachment,
-        from owner: AttachmentReference.OwnerId,
+        reference: AttachmentReference,
         tx: DBWriteTransaction
     ) throws
 

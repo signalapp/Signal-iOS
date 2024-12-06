@@ -488,15 +488,60 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
-    public func removeOwner(
-        _ owner: AttachmentReference.OwnerId,
+    public func removeAllOwners(
+        withId owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,
         tx: DBWriteTransaction
     ) throws {
         try AttachmentReference.recordTypes.forEach { recordType in
             try removeOwner(
                 owner,
+                idInOwner: nil,
                 for: attachmentId,
+                recordType: recordType,
+                tx: tx
+            )
+        }
+    }
+
+    public func removeOwner(
+        reference: AttachmentReference,
+        tx: DBWriteTransaction
+    ) throws {
+        let idInOwner: UUID?
+        switch reference.owner {
+        case .message(let messageSource):
+            switch messageSource {
+            case .bodyAttachment(let metadata):
+                idInOwner = metadata.idInOwner
+            case
+                    .oversizeText,
+                    .linkPreview,
+                    .quotedReply,
+                    .sticker,
+                    .contactAvatar:
+                idInOwner = nil
+            }
+        case .storyMessage(let storyMessageSource):
+            switch storyMessageSource {
+            case
+                    .media,
+                    .textStoryLinkPreview:
+                idInOwner = nil
+            }
+        case .thread(let threadSource):
+            switch threadSource {
+            case
+                    .threadWallpaperImage,
+                    .globalThreadWallpaperImage:
+                idInOwner = nil
+            }
+        }
+        try AttachmentReference.recordTypes.forEach { recordType in
+            try removeOwner(
+                reference.owner.id,
+                idInOwner: idInOwner,
+                for: reference.attachmentRowId,
                 recordType: recordType,
                 tx: tx
             )
@@ -505,6 +550,7 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     private func removeOwner<RecordType: FetchableAttachmentReferenceRecord>(
         _ owner: AttachmentReference.OwnerId,
+        idInOwner: UUID?,
         for attachmentId: Attachment.IDType,
         recordType: RecordType.Type,
         tx: DBWriteTransaction
@@ -529,6 +575,12 @@ public class AttachmentStoreImpl: AttachmentStore {
             sql += "AND (\(typeColumn.name) = ? AND \(recordType.ownerRowIdColumn.name) = ?)"
             _ = arguments.append(contentsOf: [ownerType, ownerRowId])
         }
+
+        if let idInOwner, let idInOwnerColumn = recordType.idInOwnerColumn {
+            sql += " AND \(idInOwnerColumn.name) = ?"
+            _ = arguments.append(contentsOf: [idInOwner.uuidString])
+        }
+
         sql += ";"
         try tx.databaseConnection.execute(
             sql: sql,

@@ -1777,8 +1777,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     }
                     try references.forEach { reference in
                         try self.attachmentStore.removeOwner(
-                            reference.owner.id,
-                            for: attachmentId,
+                            reference: reference,
                             tx: tx
                         )
                         let newOwnerParams = AttachmentReference.ConstructionParams(
@@ -1839,8 +1838,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 }
 
                 try self.attachmentStore.removeOwner(
-                    firstReference.owner.id,
-                    for: firstReference.attachmentRowId,
+                    reference: firstReference,
                     tx: tx
                 )
 
@@ -1950,8 +1948,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     : references
                 try referencesToUpdate.forEach { reference in
                     try self.attachmentStore.removeOwner(
-                        reference.owner.id,
-                        for: reference.attachmentRowId,
+                        reference: reference,
                         tx: tx
                     )
                     let newOwnerParams = AttachmentReference.ConstructionParams(
@@ -2014,8 +2011,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 }
 
                 try self.attachmentStore.removeOwner(
-                    firstReference.owner.id,
-                    for: firstReference.attachmentRowId,
+                    reference: firstReference,
                     tx: tx
                 )
 
@@ -2121,8 +2117,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     : references
                 try referencesToUpdate.forEach { reference in
                     try self.attachmentStore.removeOwner(
-                        reference.owner.id,
-                        for: reference.attachmentRowId,
+                        reference: reference,
                         tx: tx
                     )
                     let newOwnerParams = AttachmentReference.ConstructionParams(

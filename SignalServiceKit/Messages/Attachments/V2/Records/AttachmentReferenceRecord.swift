@@ -24,6 +24,8 @@ internal protocol FetchableAttachmentReferenceRecord: Codable, PersistableRecord
 
     static var ownerRowIdColumn: Column { get }
 
+    static var idInOwnerColumn: Column? { get }
+
     static var attachmentRowIdColumn: Column { get }
 
     static var orderInOwnerKey: KeyPath<Self, UInt32?>? { get }
@@ -106,6 +108,8 @@ extension AttachmentReference {
         // MARK: FetchableAttachmentReferenceRecord
 
         static var ownerRowIdColumn: Column { Column(CodingKeys.ownerRowId) }
+
+        static var idInOwnerColumn: Column? { Column(CodingKeys.idInMessage) }
 
         static var attachmentRowIdColumn: Column { Column(CodingKeys.attachmentRowId) }
 
@@ -346,6 +350,8 @@ extension AttachmentReference {
 
         static var ownerRowIdColumn: Column { Column(CodingKeys.ownerRowId) }
 
+        static var idInOwnerColumn: Column? { nil }
+
         static var attachmentRowIdColumn: Column { Column(CodingKeys.attachmentRowId) }
 
         static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> FetchableRecordColumnFilter {
@@ -482,6 +488,8 @@ extension AttachmentReference {
         // MARK: FetchableAttachmentReferenceRecord
 
         static var ownerRowIdColumn: Column { Column(CodingKeys.ownerRowId) }
+
+        static var idInOwnerColumn: Column? { nil }
 
         static var attachmentRowIdColumn: Column { Column(CodingKeys.attachmentRowId) }
 

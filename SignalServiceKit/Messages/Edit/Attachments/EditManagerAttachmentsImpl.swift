@@ -145,8 +145,8 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             // Drop the quoted reply on the latest revision.
             if let attachmentReferencePriorToEdit {
                 // Break the owner edge from the latest revision.
-                try attachmentStore.removeOwner(
-                    .quotedReplyAttachment(messageRowId: latestRevisionRowId),
+                try attachmentStore.removeAllOwners(
+                    withId: .quotedReplyAttachment(messageRowId: latestRevisionRowId),
                     for: attachmentReferencePriorToEdit.attachmentRowId,
                     tx: tx
                 )
@@ -199,8 +199,8 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
 
             // Break the owner edge from the latest revision since we always
             // either drop the link preview or create a new one.
-            try attachmentStore.removeOwner(
-                .messageLinkPreview(messageRowId: latestRevisionRowId),
+            try attachmentStore.removeAllOwners(
+                withId: .messageLinkPreview(messageRowId: latestRevisionRowId),
                 for: attachmentReferencePriorToEdit.attachmentRowId,
                 tx: tx
             )
@@ -304,8 +304,8 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
 
             // Break the owner edge from the latest revision since we always
             // either drop the oversize text or create a new one.
-            try attachmentStore.removeOwner(
-                .messageOversizeText(messageRowId: latestRevisionRowId),
+            try attachmentStore.removeAllOwners(
+                withId: .messageOversizeText(messageRowId: latestRevisionRowId),
                 for: oversizeTextReferencePriorToEdit.attachmentRowId,
                 tx: tx
             )

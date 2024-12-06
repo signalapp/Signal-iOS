@@ -711,8 +711,7 @@ class AttachmentStoreTests: XCTestCase {
         try db.write { tx in
             // Remove the first reference.
             try attachmentStore.removeOwner(
-                reference1.owner.id,
-                for: reference1.attachmentRowId,
+                reference: reference1,
                 tx: tx
             )
 
@@ -724,8 +723,7 @@ class AttachmentStoreTests: XCTestCase {
 
             // Remove the second reference.
             try attachmentStore.removeOwner(
-                reference2.owner.id,
-                for: reference2.attachmentRowId,
+                reference: reference2,
                 tx: tx
             )
 
@@ -734,6 +732,89 @@ class AttachmentStoreTests: XCTestCase {
                 ids: [reference1.attachmentRowId],
                 tx: tx
             ).first)
+        }
+    }
+
+    func testRemoveOwner_sameOwnerMultipleReferences() throws {
+        let (threadId1, messageId1) = insertThreadAndInteraction()
+
+        let referenceUUID1 = UUID()
+        let referenceUUID2 = UUID()
+
+        // Create two references to the same attachment on the same message.
+        let attachmentParams = Attachment.ConstructionParams.mockStream()
+
+        try db.write { tx in
+            try attachmentStore.insert(
+                attachmentParams,
+                reference: AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                    messageRowId: messageId1,
+                    threadRowId: threadId1,
+                    orderInOwner: 0,
+                    idInOwner: referenceUUID1
+                ),
+                tx: tx
+            )
+            let attachmentId = tx.db.lastInsertedRowID
+            try attachmentStore.addOwner(
+                AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
+                    messageRowId: messageId1,
+                    threadRowId: threadId1,
+                    orderInOwner: 1,
+                    idInOwner: referenceUUID2
+                ),
+                for: attachmentId,
+                tx: tx
+            )
+        }
+
+        let (reference1, reference2) = db.read { tx in
+            let references = attachmentStore.fetchReferences(
+                owners: [.messageBodyAttachment(messageRowId: messageId1)],
+                tx: tx
+            ).sorted(by: {
+                $0.orderInOwningMessage! < $1.orderInOwningMessage!
+            })
+            return (references[0], references[1])
+        }
+
+        func checkIdInOwner(of reference: AttachmentReference, matches uuid: UUID) {
+            switch reference.owner {
+            case .message(let messageSource):
+                switch messageSource {
+                case .bodyAttachment(let metadata):
+                    XCTAssertEqual(metadata.idInOwner, uuid)
+                default:
+                    XCTFail("Unexpected reference type")
+                }
+            default:
+                XCTFail("Unexpected reference type")
+            }
+        }
+
+        checkIdInOwner(of: reference1, matches: referenceUUID1)
+        checkIdInOwner(of: reference2, matches: referenceUUID2)
+
+        try db.write { tx in
+            // Remove the first reference.
+            try attachmentStore.removeOwner(
+                reference: reference1,
+                tx: tx
+            )
+
+            // The attachment should still exist.
+            XCTAssertNotNil(attachmentStore.fetch(
+                ids: [reference1.attachmentRowId],
+                tx: tx
+            ).first)
+
+            // Refetch references
+            let references = attachmentStore.fetchReferences(
+                owners: [.messageBodyAttachment(messageRowId: messageId1)],
+                tx: tx
+            )
+            XCTAssertEqual(references.count, 1)
+            checkIdInOwner(of: references[0], matches: referenceUUID2)
         }
     }
 

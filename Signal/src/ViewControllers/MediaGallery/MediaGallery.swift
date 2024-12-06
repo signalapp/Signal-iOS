@@ -854,13 +854,10 @@ class MediaGallery {
                     let message = item.message
                     let referencedAttachment: ReferencedAttachment = item.attachmentStream
 
-                    if let messageRowId = message.sqliteRowId {
-                        try deps.attachmentManager.removeAttachment(
-                            referencedAttachment.attachment,
-                            from: .messageBodyAttachment(messageRowId: messageRowId),
-                            tx: tx.asV2Write
-                        )
-                    }
+                    try deps.attachmentManager.removeAttachment(
+                        reference: referencedAttachment.reference,
+                        tx: tx.asV2Write
+                    )
 
                     attachmentsRemoved.append(
                         additionalElement: referencedAttachment,

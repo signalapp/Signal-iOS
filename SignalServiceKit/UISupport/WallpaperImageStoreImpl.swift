@@ -83,7 +83,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
 
         // If the toThread had a wallpaper, remove it.
         if let toReference = attachmentStore.fetchFirstReference(owner: .threadWallpaperImage(threadRowId: toRowId), tx: tx) {
-            try attachmentStore.removeOwner(.threadWallpaperImage(threadRowId: toRowId), for: toReference.attachmentRowId, tx: tx)
+            try attachmentStore.removeOwner(reference: toReference, tx: tx)
         }
 
         switch fromReference.owner {
@@ -128,7 +128,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
         try db.write { tx in
             // First remove any existing wallpaper.
             if let existingReference = self.attachmentStore.fetchFirstReference(owner: owner.id, tx: tx) {
-                try self.attachmentStore.removeOwner(owner.id, for: existingReference.attachmentRowId, tx: tx)
+                try self.attachmentStore.removeOwner(reference: existingReference, tx: tx)
             }
             // Set the new image if any.
             if let dataSource {

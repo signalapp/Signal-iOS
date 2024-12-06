@@ -174,13 +174,11 @@ public class AttachmentManagerImpl: AttachmentManager {
     // MARK: Removing Attachments
 
     public func removeAttachment(
-        _ attachment: Attachment,
-        from owner: AttachmentReference.OwnerId,
+        reference: AttachmentReference,
         tx: DBWriteTransaction
     ) throws {
         try attachmentStore.removeOwner(
-            owner,
-            for: attachment.id,
+            reference: reference,
             tx: tx
         )
     }
@@ -191,8 +189,8 @@ public class AttachmentManagerImpl: AttachmentManager {
     ) throws {
         try attachmentStore.fetchReferences(owners: owners, tx: tx)
             .forEach { reference in
-                try attachmentStore.removeOwner(
-                    reference.owner.id,
+                try attachmentStore.removeAllOwners(
+                    withId: reference.owner.id,
                     for: reference.attachmentRowId,
                     tx: tx
                 )
