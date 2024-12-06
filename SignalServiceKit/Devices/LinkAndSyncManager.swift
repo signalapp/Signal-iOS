@@ -29,6 +29,23 @@ public enum PrimaryLinkNSyncError: Error {
     case networkError
 }
 
+/// Used as the label for OWSProgress.
+public enum PrimaryLinkNSyncProgressPhase: String {
+    case waitingForLinking
+    case exportingBackup
+    case uploadingBackup
+    case finishing
+
+    var percentOfTotalProgress: UInt32 {
+        return switch self {
+        case .waitingForLinking: 20
+        case .exportingBackup: 35
+        case .uploadingBackup: 35
+        case .finishing: 10
+        }
+    }
+}
+
 /// Link'n'Sync errors thrown on the secondary device.
 public enum SecondaryLinkNSyncError: Error {
     case timedOutWaitingForBackup
@@ -36,6 +53,21 @@ public enum SecondaryLinkNSyncError: Error {
     case errorDownloadingBackup
     case errorRestoringBackup
     case networkError
+}
+
+/// Used as the label for OWSProgress.
+public enum SecondaryLinkNSyncProgressPhase: String {
+    case waitingForBackup
+    case downloadingBackup
+    case importingBackup
+
+    var percentOfTotalProgress: UInt32 {
+        return switch self {
+        case .waitingForBackup: 20
+        case .downloadingBackup: 40
+        case .importingBackup: 40
+        }
+    }
 }
 
 public protocol LinkAndSyncManager {
@@ -53,7 +85,8 @@ public protocol LinkAndSyncManager {
     /// the primary's role is complete and the user can exit.
     func waitForLinkingAndUploadBackup(
         ephemeralBackupKey: BackupKey,
-        tokenId: DeviceProvisioningTokenId
+        tokenId: DeviceProvisioningTokenId,
+        progress: OWSProgressSink
     ) async throws(PrimaryLinkNSyncError)
 
     /// **Call this on the secondary/linked device!**
@@ -64,7 +97,7 @@ public protocol LinkAndSyncManager {
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
         ephemeralBackupKey: BackupKey,
-        progressBlock: @escaping (Float) -> Void
+        progress: OWSProgressSink
     ) async throws(SecondaryLinkNSyncError)
 }
 
@@ -103,7 +136,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
 
     public func waitForLinkingAndUploadBackup(
         ephemeralBackupKey: BackupKey,
-        tokenId: DeviceProvisioningTokenId
+        tokenId: DeviceProvisioningTokenId,
+        progress: OWSProgressSink
     ) async throws(PrimaryLinkNSyncError) {
         guard FeatureFlags.linkAndSync else {
             owsFailDebug("link'n'sync not available")
@@ -123,15 +157,39 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             owsFailDebug("Non-primary device waiting for secondary linking")
             return
         }
-        let waitForLinkResponse = try await waitForDeviceToLink(tokenId: tokenId)
+
+        // Proportion progress percentages up front.
+        let waitForLinkingProgress = await progress.addChild(
+            withLabel: PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue,
+            unitCount: PrimaryLinkNSyncProgressPhase.waitingForLinking.percentOfTotalProgress
+        )
+        let exportingBackupProgress = await progress.addChild(
+            withLabel: PrimaryLinkNSyncProgressPhase.exportingBackup.rawValue,
+            unitCount: PrimaryLinkNSyncProgressPhase.exportingBackup.percentOfTotalProgress
+        )
+        let uploadingBackupProgress = await progress.addChild(
+            withLabel: PrimaryLinkNSyncProgressPhase.uploadingBackup.rawValue,
+            unitCount: PrimaryLinkNSyncProgressPhase.uploadingBackup.percentOfTotalProgress
+        )
+        let markUploadedProgress = await progress.addChild(
+            withLabel: PrimaryLinkNSyncProgressPhase.finishing.rawValue,
+            unitCount: PrimaryLinkNSyncProgressPhase.finishing.percentOfTotalProgress
+        )
+
+        let waitForLinkResponse = try await waitForDeviceToLink(tokenId: tokenId, progress: waitForLinkingProgress)
         let backupMetadata = try await generateBackup(
             ephemeralBackupKey: ephemeralBackupKey,
-            localIdentifiers: localIdentifiers
+            localIdentifiers: localIdentifiers,
+            progress: exportingBackupProgress
         )
-        let uploadResult = try await uploadEphemeralBackup(metadata: backupMetadata)
+        let uploadResult = try await uploadEphemeralBackup(
+            metadata: backupMetadata,
+            progress: uploadingBackupProgress
+        )
         try await markEphemeralBackupUploaded(
             waitForDeviceToLinkResponse: waitForLinkResponse,
-            metadata: uploadResult
+            metadata: uploadResult,
+            progress: markUploadedProgress
         )
     }
 
@@ -139,71 +197,110 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
         ephemeralBackupKey: BackupKey,
-        progressBlock: @escaping (Float) -> Void
+        progress: OWSProgressSink
     ) async throws(SecondaryLinkNSyncError) {
         guard FeatureFlags.linkAndSync else {
             owsFailDebug("link'n'sync not available")
             return
         }
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice != true)
-        let backupUploadResponse = try await waitForPrimaryToUploadBackup(auth: auth)
+
+        // Proportion progress percentages up front.
+        let waitForBackupProgress = await progress.addChild(
+            withLabel: SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue,
+            unitCount: SecondaryLinkNSyncProgressPhase.waitingForBackup.percentOfTotalProgress
+        )
+        let downloadBackupProgress = await progress.addChild(
+            withLabel: SecondaryLinkNSyncProgressPhase.downloadingBackup.rawValue,
+            unitCount: SecondaryLinkNSyncProgressPhase.downloadingBackup.percentOfTotalProgress
+        )
+        let importBackupProgress = await progress.addChild(
+            withLabel: SecondaryLinkNSyncProgressPhase.importingBackup.rawValue,
+            unitCount: SecondaryLinkNSyncProgressPhase.importingBackup.percentOfTotalProgress
+        )
+
+        let backupUploadResponse = try await waitForPrimaryToUploadBackup(
+            auth: auth,
+            progress: waitForBackupProgress
+        )
         let downloadedFileUrl = try await downloadEphemeralBackup(
             waitForBackupResponse: backupUploadResponse,
-            ephemeralBackupKey: ephemeralBackupKey
+            ephemeralBackupKey: ephemeralBackupKey,
+            progress: downloadBackupProgress
         )
         try await restoreEphemeralBackup(
             fileUrl: downloadedFileUrl,
             localIdentifiers: localIdentifiers,
             ephemeralBackupKey: ephemeralBackupKey,
-            progressBlock: progressBlock
+            progress: importBackupProgress
         )
     }
 
     // MARK: Primary device steps
 
     private func waitForDeviceToLink(
+        tokenId: DeviceProvisioningTokenId,
+        progress: OWSProgressSink
+    ) async throws(PrimaryLinkNSyncError) -> Requests.WaitForDeviceToLinkResponse {
+        let progressSource = await progress.addSource(
+            withLabel: PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue,
+            // Unit count is irrelevant as there's just one child source and we use a timer.
+            unitCount: 100
+        )
+        return try await progressSource.updatePeriodically(
+            estimatedTimeToCompletion: 5,
+            work: { () async throws(PrimaryLinkNSyncError) -> Requests.WaitForDeviceToLinkResponse in
+                try await self._waitForDeviceToLink(tokenId: tokenId)
+            }
+        )
+    }
+
+    private func _waitForDeviceToLink(
         tokenId: DeviceProvisioningTokenId
     ) async throws(PrimaryLinkNSyncError) -> Requests.WaitForDeviceToLinkResponse {
+        let response: HTTPResponse
         do {
-            let response = try await networkManager.asyncRequest(
+            response = try await networkManager.asyncRequest(
                 Requests.waitForDeviceToLink(tokenId: tokenId)
             )
-
-            switch Requests.WaitForDeviceToLinkResponseCodes(rawValue: response.responseStatusCode) {
-            case .success:
-                guard
-                    let data = response.responseBodyData,
-                    let response = try? JSONDecoder().decode(
-                        Requests.WaitForDeviceToLinkResponse.self,
-                        from: data
-                    )
-                else {
-                    throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
-                }
-                return response
-            case .timeout:
-                throw PrimaryLinkNSyncError.timedOutWaitingForLinkedDevice
-            case .invalidParameters, .rateLimited:
-                throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
-            case nil:
-                owsFailDebug("Unexpected response")
-                throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
-            }
         } catch {
             throw PrimaryLinkNSyncError.networkError
+        }
+
+        switch Requests.WaitForDeviceToLinkResponseCodes(rawValue: response.responseStatusCode) {
+        case .success:
+            guard
+                let data = response.responseBodyData,
+                let response = try? JSONDecoder().decode(
+                    Requests.WaitForDeviceToLinkResponse.self,
+                    from: data
+                )
+            else {
+                throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
+            }
+            return response
+        case .timeout:
+            throw PrimaryLinkNSyncError.timedOutWaitingForLinkedDevice
+        case .invalidParameters, .rateLimited:
+            throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
+        case nil:
+            owsFailDebug("Unexpected response")
+            throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
         }
     }
 
     private func generateBackup(
         ephemeralBackupKey: BackupKey,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
+        progress: OWSProgressSink
     ) async throws(PrimaryLinkNSyncError) -> Upload.EncryptedBackupUploadMetadata {
         do {
             let metadata = try await messageBackupManager.exportEncryptedBackup(
                 localIdentifiers: localIdentifiers,
                 backupKey: ephemeralBackupKey,
-                backupPurpose: .deviceTransfer
-            ).task.value
+                backupPurpose: .deviceTransfer,
+                progress: progress
+            )
             try await messageBackupManager.validateEncryptedBackup(
                 fileUrl: metadata.fileUrl,
                 localIdentifiers: localIdentifiers,
@@ -218,6 +315,24 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     }
 
     private func uploadEphemeralBackup(
+        metadata: Upload.EncryptedBackupUploadMetadata,
+        progress: OWSProgressSink
+    ) async throws(PrimaryLinkNSyncError) -> Upload.Result<Upload.LinkNSyncUploadMetadata> {
+        // TODO: hook into AttachmentUploadManager progress reporting
+        let progressSource = await progress.addSource(
+            withLabel: PrimaryLinkNSyncProgressPhase.uploadingBackup.rawValue,
+            // Unit count is irrelevant as there's just one child source and we use a timer.
+            unitCount: 100
+        )
+        return try await progressSource.updatePeriodically(
+            estimatedTimeToCompletion: 10,
+            work: { () async throws(PrimaryLinkNSyncError) -> Upload.Result<Upload.LinkNSyncUploadMetadata> in
+                try await self._uploadEphemeralBackup(metadata: metadata)
+            }
+        )
+    }
+
+    private func _uploadEphemeralBackup(
         metadata: Upload.EncryptedBackupUploadMetadata
     ) async throws(PrimaryLinkNSyncError) -> Upload.Result<Upload.LinkNSyncUploadMetadata> {
         do {
@@ -237,6 +352,27 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     }
 
     private func markEphemeralBackupUploaded(
+        waitForDeviceToLinkResponse: Requests.WaitForDeviceToLinkResponse,
+        metadata: Upload.Result<Upload.LinkNSyncUploadMetadata>,
+        progress: OWSProgressSink
+    ) async throws(PrimaryLinkNSyncError) -> Void {
+        let progressSource = await progress.addSource(
+            withLabel: PrimaryLinkNSyncProgressPhase.finishing.rawValue,
+            // Unit count is irrelevant as there's just one child source and we use a timer.
+            unitCount: 100
+        )
+        return try await progressSource.updatePeriodically(
+            estimatedTimeToCompletion: 1,
+            work: { () async throws(PrimaryLinkNSyncError) -> Void in
+                try await self._markEphemeralBackupUploaded(
+                    waitForDeviceToLinkResponse: waitForDeviceToLinkResponse,
+                    metadata: metadata
+                )
+            }
+        )
+    }
+
+    private func _markEphemeralBackupUploaded(
         waitForDeviceToLinkResponse: Requests.WaitForDeviceToLinkResponse,
         metadata: Upload.Result<Upload.LinkNSyncUploadMetadata>
     ) async throws(PrimaryLinkNSyncError) -> Void {
@@ -264,39 +400,79 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     // MARK: Linked device steps
 
     private func waitForPrimaryToUploadBackup(
+        auth: ChatServiceAuth,
+        progress: OWSProgressSink
+    ) async throws(SecondaryLinkNSyncError) -> Requests.WaitForLinkNSyncBackupUploadResponse {
+        let progressSource = await progress.addSource(
+            withLabel: SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue,
+            // Unit count is irrelevant as there's just one child source and we use a timer.
+            unitCount: 100
+        )
+        return try await progressSource.updatePeriodically(
+            estimatedTimeToCompletion: 20,
+            work: { () async throws(SecondaryLinkNSyncError) -> Requests.WaitForLinkNSyncBackupUploadResponse in
+                try await self._waitForPrimaryToUploadBackup(auth: auth)
+            }
+        )
+    }
+
+    private func _waitForPrimaryToUploadBackup(
         auth: ChatServiceAuth
     ) async throws(SecondaryLinkNSyncError) -> Requests.WaitForLinkNSyncBackupUploadResponse {
+        let response: HTTPResponse
         do {
-            let response = try await networkManager.asyncRequest(
+            response = try await networkManager.asyncRequest(
                 Requests.waitForLinkNSyncBackupUpload(auth: auth)
             )
-
-            switch Requests.WaitForLinkNSyncBackupUploadResponseCodes(rawValue: response.responseStatusCode) {
-            case .success:
-                guard
-                    let data = response.responseBodyData,
-                    let response = try? JSONDecoder().decode(
-                        Requests.WaitForLinkNSyncBackupUploadResponse.self,
-                        from: data
-                    )
-                else {
-                    throw SecondaryLinkNSyncError.errorWaitingForBackup
-                }
-                return response
-            case .timeout:
-                throw SecondaryLinkNSyncError.timedOutWaitingForBackup
-            case .invalidParameters, .rateLimited:
-                throw SecondaryLinkNSyncError.errorWaitingForBackup
-            case nil:
-                owsFailDebug("Unexpected response")
-                throw SecondaryLinkNSyncError.errorWaitingForBackup
-            }
         } catch {
             throw SecondaryLinkNSyncError.networkError
+        }
+
+        switch Requests.WaitForLinkNSyncBackupUploadResponseCodes(rawValue: response.responseStatusCode) {
+        case .success:
+            guard
+                let data = response.responseBodyData,
+                let response = try? JSONDecoder().decode(
+                    Requests.WaitForLinkNSyncBackupUploadResponse.self,
+                    from: data
+                )
+            else {
+                throw SecondaryLinkNSyncError.errorWaitingForBackup
+            }
+            return response
+        case .timeout:
+            throw SecondaryLinkNSyncError.timedOutWaitingForBackup
+        case .invalidParameters, .rateLimited:
+            throw SecondaryLinkNSyncError.errorWaitingForBackup
+        case nil:
+            owsFailDebug("Unexpected response")
+            throw SecondaryLinkNSyncError.errorWaitingForBackup
         }
     }
 
     private func downloadEphemeralBackup(
+        waitForBackupResponse: Requests.WaitForLinkNSyncBackupUploadResponse,
+        ephemeralBackupKey: BackupKey,
+        progress: OWSProgressSink
+    ) async throws(SecondaryLinkNSyncError) -> URL {
+        // TODO: hook into AttachmentDownloadManager progress reporting
+        let progressSource = await progress.addSource(
+            withLabel: SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue,
+            // Unit count is irrelevant as there's just one child source and we use a timer.
+            unitCount: 100
+        )
+        return try await progressSource.updatePeriodically(
+            estimatedTimeToCompletion: 10,
+            work: { () async throws(SecondaryLinkNSyncError) -> URL in
+                try await self._downloadEphemeralBackup(
+                    waitForBackupResponse: waitForBackupResponse,
+                    ephemeralBackupKey: ephemeralBackupKey
+                )
+            }
+        )
+    }
+
+    private func _downloadEphemeralBackup(
         waitForBackupResponse: Requests.WaitForLinkNSyncBackupUploadResponse,
         ephemeralBackupKey: BackupKey
     ) async throws(SecondaryLinkNSyncError) -> URL {
@@ -322,20 +498,15 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
         ephemeralBackupKey: BackupKey,
-        progressBlock: @escaping (Float) -> Void
+        progress: OWSProgressSink
     ) async throws(SecondaryLinkNSyncError) {
         do {
-            let task = try await messageBackupManager.importEncryptedBackup(
+            try await messageBackupManager.importEncryptedBackup(
                 fileUrl: fileUrl,
                 localIdentifiers: localIdentifiers,
-                backupKey: ephemeralBackupKey
+                backupKey: ephemeralBackupKey,
+                progress: progress
             )
-            var observation: NSKeyValueObservation? = task.progress.observe(\.fractionCompleted, changeHandler: { progress, _ in
-                progressBlock(Float(progress.fractionCompleted))
-            })
-            try await task.task.value
-            owsAssertDebug(observation != nil)
-            observation = nil
         } catch {
             owsFailDebug("Unable to restore link'n'sync backup: \(error)")
             throw SecondaryLinkNSyncError.errorRestoringBackup

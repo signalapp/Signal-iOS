@@ -243,11 +243,24 @@ class LinkDeviceViewController: OWSViewController {
             Logger.info("Successfully provisioned device.")
             let linkNSyncTask: Task<Void, Error>?
             if let ephemeralBackupKey {
+                // TODO: display progress in a less hacky way.
+                let loadingViewController = LinkAndSyncLoadingViewController()
+                loadingViewController.modalPresentationStyle = .overFullScreen
+                UIApplication.shared.frontmostViewController?.present(loadingViewController, animated: false)
+                let progress = OWSProgress.createSink { progress in
+                    Task { @MainActor in
+                        loadingViewController.percentCompleted = progress.percentComplete
+                    }
+                }
                 linkNSyncTask = Task {
                     try await DependenciesBridge.shared.linkAndSyncManager.waitForLinkingAndUploadBackup(
                         ephemeralBackupKey: ephemeralBackupKey,
-                        tokenId: tokenId
+                        tokenId: tokenId,
+                        progress: progress
                     )
+                    Task { @MainActor in
+                        loadingViewController.dismiss(animated: false)
+                    }
                 }
             } else {
                 linkNSyncTask = nil

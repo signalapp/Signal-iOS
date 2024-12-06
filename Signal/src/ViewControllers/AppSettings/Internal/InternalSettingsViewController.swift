@@ -258,8 +258,9 @@ private extension InternalSettingsViewController {
                 let metadata = try await messageBackupManager.exportEncryptedBackup(
                     localIdentifiers: localIdentifiers,
                     backupKey: backupKey,
-                    backupPurpose: .remoteBackup
-                ).task.value
+                    backupPurpose: .remoteBackup,
+                    progress: nil
+                )
                 try await messageBackupManager.validateEncryptedBackup(
                     fileUrl: metadata.fileUrl,
                     localIdentifiers: localIdentifiers,
@@ -368,8 +369,9 @@ private extension InternalSettingsViewController {
         let metadata = try await messageBackupManager.exportEncryptedBackup(
             localIdentifiers: localIdentifiers,
             backupKey: backupKey,
-            backupPurpose: .remoteBackup
-        ).task.value
+            backupPurpose: .remoteBackup,
+            progress: nil
+        )
 
         let messageBackupKey = try backupKey.asMessageBackupKey(for: localIdentifiers.aci)
         let keyString = "AES key: \(Data(messageBackupKey.aesKey).base64EncodedString())"
@@ -410,8 +412,9 @@ private extension InternalSettingsViewController {
         let metadata = try await messageBackupManager.exportEncryptedBackup(
             localIdentifiers: localIdentifiers,
             backupKey: backupKey,
-            backupPurpose: .remoteBackup
-        ).task.value
+            backupPurpose: .remoteBackup,
+            progress: nil
+        )
         _ = try await messageBackupManager.uploadEncryptedBackup(
             metadata: metadata,
             localIdentifiers: localIdentifiers,

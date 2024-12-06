@@ -28,14 +28,16 @@ public protocol MessageBackupManager {
     func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
         backupKey: BackupKey,
-        backupPurpose: MessageBackupPurpose
-    ) async throws -> ProgressReportingTask<Upload.EncryptedBackupUploadMetadata, Error>
+        backupPurpose: MessageBackupPurpose,
+        progress: OWSProgressSink?
+    ) async throws -> Upload.EncryptedBackupUploadMetadata
 
     /// Export a plaintext backup binary at the returned file URL.
     func exportPlaintextBackup(
         localIdentifiers: LocalIdentifiers,
-        backupPurpose: MessageBackupPurpose
-    ) async throws -> ProgressReportingTask<URL, Error>
+        backupPurpose: MessageBackupPurpose,
+        progress: OWSProgressSink?
+    ) async throws -> URL
 
     // MARK: - Import
 
@@ -44,14 +46,16 @@ public protocol MessageBackupManager {
     func importEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        backupKey: BackupKey
-    ) async throws -> ProgressReportingTask<Void, Error>
+        backupKey: BackupKey,
+        progress: OWSProgressSink?
+    ) async throws
 
     /// Import a backup from the plaintext binary file at the given local URL.
     func importPlaintextBackup(
         fileUrl: URL,
-        localIdentifiers: LocalIdentifiers
-    ) async throws -> ProgressReportingTask<Void, Error>
+        localIdentifiers: LocalIdentifiers,
+        progress: OWSProgressSink?
+    ) async throws
 
     // MARK: -
 

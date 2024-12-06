@@ -307,18 +307,18 @@ class MessageBackupIntegrationTests: XCTestCase {
         /// to "anchor" them with an unchanging timestamp. To that end, we'll
         /// extract the `backupTimeMs` field from the Backup header, and use
         /// that as our "now" during import.
-        let backupTimeMs = try readBackupTimeMs(testCaseFileUrl: testCaseFileUrl)
+        let backupTimeMs = try await readBackupTimeMs(testCaseFileUrl: testCaseFileUrl)
 
         await initializeApp(dateProvider: { Date(millisecondsSince1970: backupTimeMs) })
 
         try await deps.messageBackupManager.importPlaintextBackup(
             fileUrl: testCaseFileUrl,
-            localIdentifiers: localIdentifiers
-        ).task.value
+            localIdentifiers: localIdentifiers,
+            progress: nil
+        )
 
         let exportedBackupUrl = try await deps.messageBackupManager
-            .exportPlaintextBackup(localIdentifiers: localIdentifiers, backupPurpose: .remoteBackup)
-            .task.value
+            .exportPlaintextBackup(localIdentifiers: localIdentifiers, backupPurpose: .remoteBackup, progress: nil)
 
         try compareViaLibsignal(
             sharedTestCaseBackupUrl: testCaseFileUrl,
@@ -389,10 +389,10 @@ class MessageBackupIntegrationTests: XCTestCase {
 
     /// Read the `backupTimeMs` field from the header of the Backup file at the
     /// given local URL.
-    private func readBackupTimeMs(testCaseFileUrl: URL) throws -> UInt64 {
+    private func readBackupTimeMs(testCaseFileUrl: URL) async throws -> UInt64 {
         let plaintextStreamProvider = MessageBackupPlaintextProtoStreamProviderImpl()
 
-        let progress = try MessageBackupImportProgress.prepare(fileUrl: testCaseFileUrl)
+        let progress = try await MessageBackupImportProgress.prepare(sink: nil, fileUrl: testCaseFileUrl)
 
         class FakeMemorySampler: MemorySampler {
             init() {}

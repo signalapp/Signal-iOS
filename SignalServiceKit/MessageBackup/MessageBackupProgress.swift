@@ -9,13 +9,19 @@
 /// more work and time to process. But this is just an estimate for UX display.
 public struct MessageBackupExportProgress {
 
-    public let progress: Progress
+    public let progressSource: OWSProgressSource?
 
-    private init(progress: Progress) {
-        self.progress = progress
+    private init(progressSource: OWSProgressSource?) {
+        self.progressSource = progressSource
     }
 
-    public static func prepare(db: any DB) throws -> Self {
+    public static func prepare(
+        sink: OWSProgressSink?,
+        db: any DB
+    ) async throws -> Self {
+        guard let sink else {
+            return .init(progressSource: nil)
+        }
         var estimatedFrameCount = try db.read { tx in
             // Get all the major things we iterate over. It doesn't have
             // to be perfect; we'll skip some of these and besides they're
@@ -33,15 +39,18 @@ public struct MessageBackupExportProgress {
         // * account data frame
         // * release notes channel
         estimatedFrameCount += 4
-        return .init(progress: Progress(totalUnitCount: Int64(estimatedFrameCount)))
+
+        let progressSource = await sink.addSource(withLabel: "Backup Export", unitCount: UInt32(estimatedFrameCount))
+        return .init(progressSource: progressSource)
     }
 
     public func didExportFrame() {
-        progress.completedUnitCount = min(progress.totalUnitCount, progress.completedUnitCount + 1)
+        progressSource?.incrementCompletedUnitCount(by: 1)
     }
 
     public func didFinishExport() {
-        progress.completedUnitCount = progress.totalUnitCount
+        guard let progressSource else { return }
+        progressSource.incrementCompletedUnitCount(by: progressSource.totalUnitCount)
     }
 }
 
@@ -51,27 +60,37 @@ public struct MessageBackupExportProgress {
 /// more work and time to process. But this is just an estimate for UX display.
 public struct MessageBackupImportProgress {
 
-    public let progress: Progress
+    public let progressSource: OWSProgressSource?
 
-    private init(progress: Progress) {
-        self.progress = progress
+    private init(progressSource: OWSProgressSource?) {
+        self.progressSource = progressSource
     }
 
-    public static func prepare(fileUrl: URL) throws -> Self {
-        guard let totalByteCount = OWSFileSystem.fileSize(of: fileUrl)?.int64Value else {
+    public static func prepare(
+        sink: OWSProgressSink?,
+        fileUrl: URL
+    ) async throws -> Self {
+        guard let sink else {
+            return .init(progressSource: nil)
+        }
+        guard let totalByteCount = OWSFileSystem.fileSize(of: fileUrl)?.uint32Value else {
             throw OWSAssertionError("Unable to read file size")
         }
-        return .init(progress: Progress(totalUnitCount: totalByteCount))
+        let progressSource = await sink.addSource(withLabel: "Backup Import", unitCount: totalByteCount)
+        return .init(progressSource: progressSource)
     }
 
     public func didReadBytes(byteLength: Int64) {
-        progress.completedUnitCount = min(
-            progress.totalUnitCount,
-            progress.completedUnitCount + byteLength
-        )
+        guard let progressSource else { return }
+        guard let byteLength = UInt32(exactly: byteLength) else {
+            owsFailDebug("How did we get such a huge byte length?")
+            return
+        }
+        progressSource.incrementCompletedUnitCount(by: byteLength)
     }
 
     public func didFinishImport() {
-        progress.completedUnitCount = progress.totalUnitCount
+        guard let progressSource else { return }
+        progressSource.incrementCompletedUnitCount(by: progressSource.totalUnitCount)
     }
 }

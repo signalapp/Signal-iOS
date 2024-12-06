@@ -471,8 +471,9 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             try await self.deps.messageBackupManager.importEncryptedBackup(
                 fileUrl: fileUrl,
                 localIdentifiers: identity.localIdentifiers,
-                backupKey: backupKey
-            ).task.value
+                backupKey: backupKey,
+                progress: nil
+            )
             self.inMemoryState.hasRestoredFromLocalMessageBackup = true
             Logger.info("Finished restore")
         }.recover(on: schedulers.main) { error in

@@ -37,40 +37,45 @@ open class MessageBackupManagerMock: MessageBackupManager {
     public func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
         backupKey: BackupKey,
-        backupPurpose: MessageBackupPurpose
-    ) async throws -> ProgressReportingTask<Upload.EncryptedBackupUploadMetadata, Error> {
-        return ProgressReportingTask(
-            task: Task {
-                return Upload.EncryptedBackupUploadMetadata(
-                    fileUrl: URL(string: "file://")!,
-                    digest: Data(),
-                    encryptedDataLength: 0,
-                    plaintextDataLength: 0
-                )
-            },
-            progress: Progress(totalUnitCount: 0)
+        backupPurpose: MessageBackupPurpose,
+        progress: OWSProgressSink?
+    ) async throws -> Upload.EncryptedBackupUploadMetadata {
+        let source = await progress?.addSource(withLabel: "", unitCount: 1)
+        source?.incrementCompletedUnitCount(by: 1)
+        return Upload.EncryptedBackupUploadMetadata(
+            fileUrl: URL(string: "file://")!,
+            digest: Data(),
+            encryptedDataLength: 0,
+            plaintextDataLength: 0
         )
     }
 
     public func exportPlaintextBackup(
         localIdentifiers: LocalIdentifiers,
-        backupPurpose: MessageBackupPurpose
-    ) async throws -> ProgressReportingTask<URL, Error> {
-        return ProgressReportingTask(task: Task { URL(string: "file://")! }, progress: Progress(totalUnitCount: 0))
+        backupPurpose: MessageBackupPurpose,
+        progress: OWSProgressSink?
+    ) async throws -> URL {
+        let source = await progress?.addSource(withLabel: "", unitCount: 1)
+        source?.incrementCompletedUnitCount(by: 1)
+        return URL(string: "file://")!
     }
 
     public func importEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        backupKey: BackupKey
-    ) async throws -> ProgressReportingTask<Void, Error> {
-        return ProgressReportingTask(task: Task {}, progress: Progress(totalUnitCount: 0))
+        backupKey: BackupKey,
+        progress: OWSProgressSink?
+    ) async throws {
+        let source = await progress?.addSource(withLabel: "", unitCount: 1)
+        source?.incrementCompletedUnitCount(by: 1)
     }
     public func importPlaintextBackup(
         fileUrl: URL,
-        localIdentifiers: LocalIdentifiers
-    ) async throws -> ProgressReportingTask<Void, Error> {
-        return ProgressReportingTask(task: Task {}, progress: Progress(totalUnitCount: 0))
+        localIdentifiers: LocalIdentifiers,
+        progress: OWSProgressSink?
+    ) async throws {
+        let source = await progress?.addSource(withLabel: "", unitCount: 1)
+        source?.incrementCompletedUnitCount(by: 1)
     }
     public func validateEncryptedBackup(
         fileUrl: URL,

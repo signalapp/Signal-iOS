@@ -250,16 +250,17 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             let ephemeralBackupKey = BackupKey(provisioningMessage: provisionMessage)
         {
             // TODO: display progress in a less hacky way.
-            let progressBlock: (Float) -> Void = await Task { @MainActor in
+            let loadingViewController = await Task { @MainActor in
                 let vc = LinkAndSyncLoadingViewController()
                 vc.modalPresentationStyle = .overFullScreen
                 UIApplication.shared.frontmostViewController?.present(vc, animated: false)
-                return {  [vc] (progress: Float) in
-                    DispatchQueue.main.asyncIfNecessary {
-                        vc.percentCompleted = progress
-                    }
-                }
+                return vc
             }.value
+            let progress = OWSProgress.createSink { progress in
+                Task { @MainActor in
+                    loadingViewController.percentCompleted = progress.percentComplete
+                }
+            }
             do {
                 try await self.linkAndSyncManager.waitForBackupAndRestore(
                     localIdentifiers: LocalIdentifiers(
@@ -269,13 +270,16 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                     ),
                     auth: authedDevice.authedAccount.chatServiceAuth,
                     ephemeralBackupKey: ephemeralBackupKey,
-                    progressBlock: progressBlock
+                    progress: progress
                 )
             } catch {
                 owsFailDebug("Failed link'n'sync \(error)")
             }
             await Task { @MainActor in
-                UIApplication.shared.frontmostViewController?.dismiss(animated: false)
+                // TODO: remove this hack and instead show loading until we're actually done.
+                // Wait a second before dismissing
+                try? await Task.sleep(nanoseconds: NSEC_PER_SEC)
+                loadingViewController.dismiss(animated: false)
             }.value
         }
 

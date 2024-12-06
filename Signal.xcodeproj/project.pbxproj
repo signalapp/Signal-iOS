@@ -1005,7 +1005,6 @@
 		669379F52C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */; };
 		669379F72C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F62C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift */; };
 		66937A032C3F4EFC00EED7A0 /* TSAttachmentMigration+StoryMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66937A022C3F4EFC00EED7A0 /* TSAttachmentMigration+StoryMessageAttachment.swift */; };
-		6694BAB12CE570B00015633F /* ProgressReportingTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BAB02CE570A30015633F /* ProgressReportingTask.swift */; };
 		6694BAB32CE5792B0015633F /* MessageBackupProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BAB22CE579270015633F /* MessageBackupProgress.swift */; };
 		6694BF682B36484900B18764 /* PinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF672B36484800B18764 /* PinnedThreadManager.swift */; };
 		6694BF6A2B3650E400B18764 /* PinnedThreadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF692B3650E400B18764 /* PinnedThreadStore.swift */; };
@@ -4752,7 +4751,6 @@
 		669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+ImageMetadata.swift"; sourceTree = "<group>"; };
 		669379F62C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+AttachmentValidator.swift"; sourceTree = "<group>"; };
 		66937A022C3F4EFC00EED7A0 /* TSAttachmentMigration+StoryMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+StoryMessageAttachment.swift"; sourceTree = "<group>"; };
-		6694BAB02CE570A30015633F /* ProgressReportingTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressReportingTask.swift; sourceTree = "<group>"; };
 		6694BAB22CE579270015633F /* MessageBackupProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupProgress.swift; sourceTree = "<group>"; };
 		6694BF672B36484800B18764 /* PinnedThreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadManager.swift; sourceTree = "<group>"; };
 		6694BF692B3650E400B18764 /* PinnedThreadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadStore.swift; sourceTree = "<group>"; };
@@ -13792,7 +13790,6 @@
 				F9C5CB58289453B200548EEE /* Platform.swift */,
 				768F720C2A22CEAC002C4E7D /* Preferences.swift */,
 				D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */,
-				6694BAB02CE570A30015633F /* ProgressReportingTask.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				F9C5CB42289453B200548EEE /* ReadyFlag.swift */,
 				F9C5CB46289453B200548EEE /* Refinery.swift */,
@@ -17487,7 +17484,6 @@
 				72901D2D2C9B129B000406DC /* ProfileManagerProtocol.swift in Sources */,
 				B93296692BBB3FF200B8BD39 /* ProfileName.swift in Sources */,
 				50F77AA02AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift in Sources */,
-				6694BAB12CE570B00015633F /* ProgressReportingTask.swift in Sources */,
 				668A01322C2B6088007B8808 /* Promise.swift in Sources */,
 				72901D2F2C9B1918000406DC /* ProtoUtils.swift in Sources */,
 				F9C5CC9D289453B300548EEE /* Provisioning.pb.swift in Sources */,
