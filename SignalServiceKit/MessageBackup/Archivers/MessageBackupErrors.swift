@@ -60,6 +60,8 @@ extension MessageBackup {
             /// An incoming message has an invalid or missing author address information,
             /// causing the message to be skipped.
             case invalidIncomingMessageAuthor
+            /// An incoming message came from the self recipient.
+            case incomingMessageFromSelf
             /// An outgoing message has an invalid or missing recipient address information,
             /// causing the message to be skipped.
             case invalidOutgoingMessageRecipient
@@ -257,6 +259,7 @@ extension MessageBackup {
                     .distributionListMissingDeletionTimestamp,
                     .invalidDistributionListMemberAddress,
                     .invalidIncomingMessageAuthor,
+                    .incomingMessageFromSelf,
                     .invalidOutgoingMessageRecipient,
                     .invalidQuoteAuthor,
                     .linkPreviewMissingUrl,
@@ -373,6 +376,10 @@ extension MessageBackup {
             case .linkPreviewUrlNotInBody:
                 // We've seen real world databases with invalid link previews; we
                 // just drop these on export and just issue a warning.
+                return .warning
+            case .incomingMessageFromSelf:
+                // We've seen real world databases with messages from self; we
+                // fudge these into outgoing messages on export and issue a warning.
                 return .warning
             }
         }

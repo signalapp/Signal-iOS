@@ -126,10 +126,32 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
             return errorResult
         }
 
-        let incomingMessageDetails: BackupProto_ChatItem.IncomingMessageDetails = buildIncomingMessageDetails(
-            incomingMessage,
-            editRecord: editRecord
-        )
+        let directionalDetails: BackupProto_ChatItem.OneOf_DirectionalDetails
+        if author == context.recipientContext.localRecipientId {
+            // Incoming messages from self are not allowed in backups
+            // but have been observed in real-world databases.
+            // If we encounter these, fudge them a bit and pretend
+            // they were outgoing messages.
+            var outgoingDetails = BackupProto_ChatItem.OutgoingMessageDetails()
+            var sendStatus = BackupProto_SendStatus()
+            sendStatus.recipientID = context.recipientContext.localRecipientId.value
+            sendStatus.timestamp = incomingMessage.receivedAtTimestamp
+            var viewedStatus = BackupProto_SendStatus.Viewed()
+            viewedStatus.sealedSender = incomingMessage.wasReceivedByUD
+            sendStatus.deliveryStatus = .viewed(viewedStatus)
+            outgoingDetails.sendStatus = [sendStatus]
+            directionalDetails = .outgoing(outgoingDetails)
+            partialErrors.append(.archiveFrameError(
+                .incomingMessageFromSelf,
+                incomingMessage.uniqueInteractionId
+            ))
+        } else {
+            let incomingMessageDetails: BackupProto_ChatItem.IncomingMessageDetails = buildIncomingMessageDetails(
+                incomingMessage,
+                editRecord: editRecord
+            )
+            directionalDetails = .incoming(incomingMessageDetails)
+        }
 
         let expireStartDate: UInt64?
         if incomingMessage.expireStartedAt > 0 {
@@ -140,7 +162,7 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
 
         let details = Details(
             author: author,
-            directionalDetails: .incoming(incomingMessageDetails),
+            directionalDetails: directionalDetails,
             dateCreated: incomingMessage.timestamp,
             expireStartDate: expireStartDate,
             expiresInMs: UInt64(incomingMessage.expiresInSeconds) * 1000,
