@@ -701,18 +701,12 @@ extension CallDrawerSheet: UITableViewDelegate {
             return
         }
 
-        let editNameViewController = EditCallLinkNameViewController(
-            oldCallName: callLinkAdminManager.callLinkState?.name ?? "",
-            setNewCallName: { name in
+        EditCallLinkNameViewController(
+            oldName: callLinkAdminManager.callLinkState?.name ?? "",
+            setNewName: { name in
                 try await callLinkAdminManager.updateName(name)
             }
-        )
-        editNameViewController.forceDarkMode = true
-
-        let navigationController = OWSNavigationController(rootViewController: editNameViewController)
-        navigationController.overrideUserInterfaceStyle = .dark
-
-        self.presentFormSheet(navigationController, animated: true)
+        ).presentInNavController(from: self, forceDarkMode: true)
     }
 }
 

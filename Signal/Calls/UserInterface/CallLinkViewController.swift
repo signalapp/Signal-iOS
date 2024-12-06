@@ -146,14 +146,10 @@ final class CallLinkViewController: OWSTableViewController2 {
                 name: callLinkAdminManager.editCallNameButtonTitle,
                 accessoryType: .disclosureIndicator,
                 actionBlock: { [unowned self] in
-                    let editNameViewController = EditCallLinkNameViewController(
-                        oldCallName: self.callLinkState?.name ?? "",
-                        setNewCallName: callLinkAdminManager.updateName(_:)
-                    )
-                    self.presentFormSheet(
-                        OWSNavigationController(rootViewController: editNameViewController),
-                        animated: true
-                    )
+                    EditCallLinkNameViewController(
+                        oldName: self.callLinkState?.name ?? "",
+                        setNewName: callLinkAdminManager.updateName(_:)
+                    ).presentInNavController(from: self)
                 }
             ))
             settingItems.append(.switch(

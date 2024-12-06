@@ -1612,6 +1612,7 @@
 		B9A0807A2B07D76A000FDB5B /* HomeTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */; };
 		B9A53B932CF7928A0000578B /* SheetPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B922CF7928A0000578B /* SheetPreviewViewController.swift */; };
 		B9A53B952CF799590000578B /* LinkOrSyncPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B942CF799590000578B /* LinkOrSyncPickerSheet.swift */; };
+		B9A53B992D0250FC0000578B /* EditCallLinkNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B982D0250FC0000578B /* EditCallLinkNameViewController.swift */; };
 		B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */; };
 		B9A87A382A9E34BD009FCA13 /* Hatsuishi-UPM800.otf in Resources */ = {isa = PBXBuildFile; fileRef = B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */; };
 		B9B2AA942BC598B60060B56C /* ContactNoteSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */; };
@@ -2596,7 +2597,7 @@
 		D9E43BF82CC194140001536E /* CallsListViewController+ViewModelLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BA92CC194140001536E /* CallsListViewController+ViewModelLoader.swift */; };
 		D9E43BF92CC194140001536E /* CallUIAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAA2CC194140001536E /* CallUIAdapter.swift */; };
 		D9E43BFA2CC194140001536E /* CreateCallLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAB2CC194140001536E /* CreateCallLinkViewController.swift */; };
-		D9E43BFB2CC194140001536E /* EditCallLinkNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAC2CC194140001536E /* EditCallLinkNameViewController.swift */; };
+		D9E43BFB2CC194140001536E /* NameEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAC2CC194140001536E /* NameEditorViewController.swift */; };
 		D9E43BFC2CC194140001536E /* FlipCameraTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAD2CC194140001536E /* FlipCameraTooltip.swift */; };
 		D9E43BFD2CC194140001536E /* GroupCallErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAE2CC194140001536E /* GroupCallErrorView.swift */; };
 		D9E43BFE2CC194140001536E /* GroupCallNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43BAF2CC194140001536E /* GroupCallNotificationView.swift */; };
@@ -5357,6 +5358,7 @@
 		B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabViewController.swift; sourceTree = "<group>"; };
 		B9A53B922CF7928A0000578B /* SheetPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetPreviewViewController.swift; sourceTree = "<group>"; };
 		B9A53B942CF799590000578B /* LinkOrSyncPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkOrSyncPickerSheet.swift; sourceTree = "<group>"; };
+		B9A53B982D0250FC0000578B /* EditCallLinkNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCallLinkNameViewController.swift; sourceTree = "<group>"; };
 		B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSticker.swift; sourceTree = "<group>"; };
 		B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hatsuishi-UPM800.otf"; sourceTree = "<group>"; };
 		B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactNoteSheet.swift; sourceTree = "<group>"; };
@@ -6366,7 +6368,7 @@
 		D9E43BA92CC194140001536E /* CallsListViewController+ViewModelLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallsListViewController+ViewModelLoader.swift"; sourceTree = "<group>"; };
 		D9E43BAA2CC194140001536E /* CallUIAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallUIAdapter.swift; sourceTree = "<group>"; };
 		D9E43BAB2CC194140001536E /* CreateCallLinkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCallLinkViewController.swift; sourceTree = "<group>"; };
-		D9E43BAC2CC194140001536E /* EditCallLinkNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCallLinkNameViewController.swift; sourceTree = "<group>"; };
+		D9E43BAC2CC194140001536E /* NameEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameEditorViewController.swift; sourceTree = "<group>"; };
 		D9E43BAD2CC194140001536E /* FlipCameraTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipCameraTooltip.swift; sourceTree = "<group>"; };
 		D9E43BAE2CC194140001536E /* GroupCallErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallErrorView.swift; sourceTree = "<group>"; };
 		D9E43BAF2CC194140001536E /* GroupCallNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallNotificationView.swift; sourceTree = "<group>"; };
@@ -8239,6 +8241,7 @@
 				4CFF4C0920F55BBA005DA313 /* MessageActionsToolbar.swift */,
 				34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */,
 				881218EF238CA51600E6F271 /* MessageReactionPicker.swift */,
+				D9E43BAC2CC194140001536E /* NameEditorViewController.swift */,
 				34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */,
 				887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */,
 				881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */,
@@ -12261,7 +12264,7 @@
 				D9E43BA72CC194140001536E /* CallsListViewController.swift */,
 				D9E43BAA2CC194140001536E /* CallUIAdapter.swift */,
 				D9E43BAB2CC194140001536E /* CreateCallLinkViewController.swift */,
-				D9E43BAC2CC194140001536E /* EditCallLinkNameViewController.swift */,
+				B9A53B982D0250FC0000578B /* EditCallLinkNameViewController.swift */,
 				D9E43BAD2CC194140001536E /* FlipCameraTooltip.swift */,
 				D9E43BAE2CC194140001536E /* GroupCallErrorView.swift */,
 				D9E43BAF2CC194140001536E /* GroupCallNotificationView.swift */,
@@ -16259,7 +16262,7 @@
 				F90B731D2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift in Sources */,
 				F9DD70B92811AF82000C5960 /* DonationViewsUtil.swift in Sources */,
 				05572BC42BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift in Sources */,
-				D9E43BFB2CC194140001536E /* EditCallLinkNameViewController.swift in Sources */,
+				B9A53B992D0250FC0000578B /* EditCallLinkNameViewController.swift in Sources */,
 				C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */,
 				3428577D26BD8777005A2A96 /* Emoji+Available.swift in Sources */,
 				3428577726BD8777005A2A96 /* Emoji+Category.swift in Sources */,
@@ -16392,6 +16395,7 @@
 				50BF51042BB1FE5D00C2C309 /* NameCollisionFinder.swift in Sources */,
 				32CBF07D258C939800D56903 /* NameCollisionResolutionViewController.swift in Sources */,
 				3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */,
+				D9E43BFB2CC194140001536E /* NameEditorViewController.swift in Sources */,
 				329D42A725AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift in Sources */,
 				D9E43C092CC194140001536E /* NewCallViewController.swift in Sources */,
 				3465947E2434CCC100E5C510 /* NewGroupConfirmViewController.swift in Sources */,
