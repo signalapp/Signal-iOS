@@ -132,6 +132,70 @@ public protocol OWSProgressSource {
     func incrementCompletedUnitCount(by increment: UInt32)
 }
 
+extension OWSProgressSource {
+
+    /// Given some block of asynchronous work, update progress
+    /// on the current source periodically (every ``timeInterval`` seconds)
+    /// until the work block completes.
+    /// Returns with the result of the work block when it completes.
+    func updatePeriodically<T, E>(
+        timeInterval: TimeInterval = 0.1,
+        estimatedTimeToCompletion: TimeInterval,
+        work: @escaping () async throws(E) -> T
+    ) async throws(E) -> T {
+        let sleepDurationMillis = UInt64(timeInterval * 1000)
+        let source = self
+        let didComplete = AtomicBool(false, lock: .init())
+        let startDate = Date()
+        var lastCompletedUnitCount = source.completedUnitCount
+        // Minus one so the timer can never complete it.
+        let maxTimerCompletedUnitCount = source.totalUnitCount - 1
+        let timeToUnitsMultiplier = Double(source.totalUnitCount) / estimatedTimeToCompletion
+        let result = await withTaskGroup(of: Optional<Result<T, E>>.self) { taskGroup in
+            taskGroup.addTask {
+                while !didComplete.get() {
+                    try? await Task.sleep(nanoseconds: sleepDurationMillis * NSEC_PER_MSEC)
+                    let date = Date()
+                    var units = UInt32(date.timeIntervalSince(startDate) * timeToUnitsMultiplier)
+                    units = min(maxTimerCompletedUnitCount, units)
+                    defer { lastCompletedUnitCount = units }
+                    let incrementalUnits = units - lastCompletedUnitCount
+                    if incrementalUnits > 0 {
+                        source.incrementCompletedUnitCount(by: units)
+                    }
+                }
+                return nil
+            }
+            taskGroup.addTask {
+                let result: Result<T, E>
+                do {
+                    result = .success(try await work())
+                } catch let error as E {
+                    return .failure(error)
+                } catch {
+                    // Impossible; work only throws E
+                    fatalError()
+                }
+                didComplete.set(true)
+                source.incrementCompletedUnitCount(by: source.totalUnitCount)
+                return result
+            }
+            while let result = await taskGroup.next() {
+                switch result {
+                case .none:
+                    break
+                case .some(let value):
+                    return value
+                }
+            }
+            // Impossible to get here; the second task in the group
+            // always returns some result.
+            fatalError()
+        }
+        return try result.get()
+    }
+}
+
 /// Root node for OWSProgress. Does not itself have a unit count or concept of progress;
 /// its children define units entirely.
 private actor OWSProgressRootNode: OWSProgressSink {

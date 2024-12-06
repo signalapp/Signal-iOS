@@ -206,4 +206,109 @@ class OWSProgressTest: XCTestCase {
         XCTAssertGreaterThanOrEqual(outputs.count, 1)
         XCTAssertEqual(outputs.last!.percentComplete, 0.5)
     }
+
+    func testUpdatePeriodically_estimatedTimeFinishesFirst() async {
+        let outputs: [UInt32] = await withCheckedContinuation { outputsContinuation in
+            Task {
+                var outputs = [UInt32]()
+                let sink = OWSProgress.createSink { progress in
+                    outputs.append(progress.completedUnitCount)
+                    if progress.isFinished {
+                        outputsContinuation.resume(returning: outputs)
+                    }
+                }
+                let source = await sink.addSource(withLabel: "1", unitCount: 100)
+                let inputTask = Task {
+                    try await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
+                }
+                try await source.updatePeriodically(
+                    timeInterval: 0.001,
+                    estimatedTimeToCompletion: 50,
+                    work: { try await inputTask.value }
+                )
+            }
+        }
+        XCTAssertLessThanOrEqual(outputs.count, 52)
+        XCTAssertEqual(outputs.last, 100)
+    }
+
+    func testUpdatePeriodically_WorkFinishesFirst() async {
+        let outputs: [UInt32] = await withCheckedContinuation { outputsContinuation in
+            Task {
+                var outputs = [UInt32]()
+                let sink = OWSProgress.createSink { progress in
+                    outputs.append(progress.completedUnitCount)
+                    if progress.isFinished {
+                        outputsContinuation.resume(returning: outputs)
+                    }
+                }
+                let source = await sink.addSource(withLabel: "1", unitCount: 100)
+                let inputTask = Task {
+                    try await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
+                }
+                try await source.updatePeriodically(
+                    timeInterval: 0.001,
+                    estimatedTimeToCompletion: 200,
+                    work: { try await inputTask.value }
+                )
+            }
+        }
+        XCTAssertLessThanOrEqual(outputs.count, 102)
+        XCTAssertEqual(outputs.last, 100)
+    }
+
+    func testUpdatePeriodically_NonThrowing() async {
+        let outputs: [UInt32] = await withCheckedContinuation { outputsContinuation in
+            Task {
+                var outputs = [UInt32]()
+                let sink = OWSProgress.createSink { progress in
+                    outputs.append(progress.completedUnitCount)
+                    if progress.isFinished {
+                        outputsContinuation.resume(returning: outputs)
+                    }
+                }
+                let source = await sink.addSource(withLabel: "1", unitCount: 100)
+                // If the task doesn't throw the updatePeriodically call shouldn't throw either.
+                let inputTask = Task {
+                    try? await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
+                    return "Hello, World!"
+                }
+                let stringResult = await source.updatePeriodically(
+                    timeInterval: 0.001,
+                    estimatedTimeToCompletion: 200,
+                    work: { await inputTask.value }
+                )
+                XCTAssertEqual(stringResult, "Hello, World!")
+            }
+        }
+        XCTAssertLessThanOrEqual(outputs.count, 102)
+        XCTAssertEqual(outputs.last, 100)
+    }
+
+    func testUpdatePeriodically_OptionalResult() async {
+        let outputs: [UInt32] = await withCheckedContinuation { outputsContinuation in
+            Task {
+                var outputs = [UInt32]()
+                let sink = OWSProgress.createSink { progress in
+                    outputs.append(progress.completedUnitCount)
+                    if progress.isFinished {
+                        outputsContinuation.resume(returning: outputs)
+                    }
+                }
+                let source = await sink.addSource(withLabel: "1", unitCount: 100)
+                let inputTask: Task<String?, Never> = Task {
+                    try? await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
+                    return nil
+                }
+                let stringResult = await source.updatePeriodically(
+                    timeInterval: 0.001,
+                    estimatedTimeToCompletion: 200,
+                    work: { await inputTask.value }
+                )
+                XCTAssertNil(stringResult)
+            }
+        }
+        XCTAssertLessThanOrEqual(outputs.count, 102)
+        XCTAssertEqual(outputs.last, 100)
+    }
 }
