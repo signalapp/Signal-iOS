@@ -273,7 +273,8 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                     progress: progress
                 )
             } catch {
-                owsFailDebug("Failed link'n'sync \(error)")
+                // TODO: handle errors; for now just log and continue
+                Logger.error("Failed link'n'sync \(error)")
             }
             await Task { @MainActor in
                 // TODO: remove this hack and instead show loading until we're actually done.
