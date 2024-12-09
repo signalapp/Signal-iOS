@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-/// Preset color options for the username link QR code.
+/// Preset color options for the Signal-branded QR code.
 ///
 /// Exposes a set of colors to use for various parts of the QR code rendering.
-public extension Usernames {
+public extension SignalBrandedQRCodes {
     enum QRCodeColor: String, UnknownEnumCodable, CaseIterable {
         case blue
         case white
@@ -17,7 +17,7 @@ public extension Usernames {
         case pink
         case purple
 
-        public static var unknown: Usernames.QRCodeColor { .blue }
+        public static var unknown: SignalBrandedQRCodes.QRCodeColor { .blue }
 
         /// Background color for the QR code.
         public var background: UIColor {

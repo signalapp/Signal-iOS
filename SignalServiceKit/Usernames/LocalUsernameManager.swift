@@ -45,11 +45,11 @@ public protocol LocalUsernameManager {
     func clearLocalUsername(tx: DBWriteTransaction)
 
     /// Returns the color to be used for the local user's username link QR code.
-    func usernameLinkQRCodeColor(tx: DBReadTransaction) -> Usernames.QRCodeColor
+    func usernameLinkQRCodeColor(tx: DBReadTransaction) -> SignalBrandedQRCodes.QRCodeColor
 
     /// Sets the color to be used for the local user's username link QR code.
     func setUsernameLinkQRCodeColor(
-        color: Usernames.QRCodeColor,
+        color: SignalBrandedQRCodes.QRCodeColor,
         tx: DBWriteTransaction
     )
 
@@ -236,7 +236,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             return nil
         }
 
-        func usernameLinkColor(tx: DBReadTransaction) -> Usernames.QRCodeColor {
+        func usernameLinkColor(tx: DBReadTransaction) -> SignalBrandedQRCodes.QRCodeColor {
             return (try? kvStore.getCodableValue(
                 forKey: Constants.usernameLinkQRCodeColorKey,
                 transaction: tx
@@ -252,7 +252,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             kvStore.setData(usernameLink?.entropy, key: Constants.usernameLinkEntropyKey, transaction: tx)
         }
 
-        func setUsernameLinkColor(color: Usernames.QRCodeColor, tx: DBWriteTransaction) {
+        func setUsernameLinkColor(color: SignalBrandedQRCodes.QRCodeColor, tx: DBWriteTransaction) {
             try? kvStore.setCodable(color, key: Constants.usernameLinkQRCodeColorKey, transaction: tx)
         }
     }
@@ -366,12 +366,12 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
 
     func usernameLinkQRCodeColor(
         tx: DBReadTransaction
-    ) -> Usernames.QRCodeColor {
+    ) -> SignalBrandedQRCodes.QRCodeColor {
         return usernameStore.usernameLinkColor(tx: tx)
     }
 
     func setUsernameLinkQRCodeColor(
-        color: Usernames.QRCodeColor,
+        color: SignalBrandedQRCodes.QRCodeColor,
         tx: DBWriteTransaction
     ) {
         usernameStore.setUsernameLinkColor(color: color, tx: tx)

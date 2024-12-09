@@ -2405,7 +2405,7 @@
 		D93830742A703969006CDCDE /* LocalUsernameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830732A703968006CDCDE /* LocalUsernameManager.swift */; };
 		D938307A2A704123006CDCDE /* UsernameLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830792A704123006CDCDE /* UsernameLinkManager.swift */; };
 		D938307C2A704338006CDCDE /* LocalUsernameManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830752A70396E006CDCDE /* LocalUsernameManagerTests.swift */; };
-		D938307E2A70441D006CDCDE /* Usernames+QRCodeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938307D2A70441D006CDCDE /* Usernames+QRCodeColor.swift */; };
+		D938307E2A70441D006CDCDE /* SignalBrandedQRCodes+QRCodeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938307D2A70441D006CDCDE /* SignalBrandedQRCodes+QRCodeColor.swift */; };
 		D93830802A705D64006CDCDE /* UsernameLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938307F2A705D64006CDCDE /* UsernameLogger.swift */; };
 		D93830812A7065C7006CDCDE /* UsernameValidationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */; };
 		D93830832A708E95006CDCDE /* UsernameChangeDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830822A708E95006CDCDE /* UsernameChangeDelegate.swift */; };
@@ -2567,7 +2567,7 @@
 		D9DCFDA52A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */; };
 		D9DCFDAB2A39402F00C73C0B /* SettingsHeaderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */; };
 		D9DCFDAE2A3BB25200C73C0B /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAD2A3BB25200C73C0B /* QRCodeGenerator.swift */; };
-		D9DCFDB02A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAF2A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift */; };
+		D9DCFDB02A3BC4A400C73C0B /* SignalBrandedQRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAF2A3BC4A400C73C0B /* SignalBrandedQRCodeGenerator.swift */; };
 		D9DCFDB22A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDB12A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift */; };
 		D9DCFDB42A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDB32A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift */; };
 		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
@@ -2688,6 +2688,7 @@
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E1447D8F2CCACFFD004D8FA2 /* MessageBackupCallLinkRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1447D8E2CCACFFA004D8FA2 /* MessageBackupCallLinkRecipientArchiver.swift */; };
 		E14EDF6E2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */; };
+		E15066C32CED49C800F6F9AF /* RegistrationQuickRestoreQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E15066C22CED498600F6F9AF /* RegistrationQuickRestoreQRCodeViewController.swift */; };
 		E16026042CE7D2490032EA77 /* chat_item_group_change_chat_update_13.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E16025DA2CE7D2490032EA77 /* chat_item_group_change_chat_update_13.binproto */; };
 		E16026052CE7D2490032EA77 /* chat_item_group_change_chat_update_33.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = E16026032CE7D2490032EA77 /* chat_item_group_change_chat_update_33.txtproto */; };
 		E16026062CE7D2490032EA77 /* chat_item_group_change_chat_update_15.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E16025DE2CE7D2490032EA77 /* chat_item_group_change_chat_update_15.binproto */; };
@@ -2814,6 +2815,7 @@
 		E19B35492CD2E8C40078A678 /* ad_hoc_call_02.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E19B35442CD2E8C40078A678 /* ad_hoc_call_02.binproto */; };
 		E19B354A2CD2E8C40078A678 /* ad_hoc_call_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E19B35402CD2E8C40078A678 /* ad_hoc_call_00.binproto */; };
 		E19B354B2CD2E8C40078A678 /* ad_hoc_call_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E19B35422CD2E8C40078A678 /* ad_hoc_call_01.binproto */; };
+		E19C3D942CF6B36500F2C496 /* SignalBrandedQRCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19C3D932CF6B35A00F2C496 /* SignalBrandedQRCodes.swift */; };
 		E1A090382A4B909B00F2BE8B /* RecipientHidingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */; };
 		E1B32F842CA6162A002141F4 /* LinkPreviewCallLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1CFAAA22C9DD2B1003145C3 /* LinkPreviewCallLink.swift */; };
 		E1B628DA2CCC59E600C4DC7F /* chat_item_view_once_11.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E1B628D22CCC59E600C4DC7F /* chat_item_view_once_11.binproto */; };
@@ -6157,7 +6159,7 @@
 		D93830752A70396E006CDCDE /* LocalUsernameManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUsernameManagerTests.swift; sourceTree = "<group>"; };
 		D93830772A70399C006CDCDE /* ConsumableMockPromise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsumableMockPromise.swift; sourceTree = "<group>"; };
 		D93830792A704123006CDCDE /* UsernameLinkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsernameLinkManager.swift; sourceTree = "<group>"; };
-		D938307D2A70441D006CDCDE /* Usernames+QRCodeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+QRCodeColor.swift"; sourceTree = "<group>"; };
+		D938307D2A70441D006CDCDE /* SignalBrandedQRCodes+QRCodeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalBrandedQRCodes+QRCodeColor.swift"; sourceTree = "<group>"; };
 		D938307F2A705D64006CDCDE /* UsernameLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsernameLogger.swift; sourceTree = "<group>"; };
 		D93830822A708E95006CDCDE /* UsernameChangeDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameChangeDelegate.swift; sourceTree = "<group>"; };
 		D93830842A784210006CDCDE /* UsernameApiClientImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameApiClientImpl.swift; sourceTree = "<group>"; };
@@ -6338,7 +6340,7 @@
 		D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkPresentQRCodeViewController.swift; sourceTree = "<group>"; };
 		D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHeaderButton.swift; sourceTree = "<group>"; };
 		D9DCFDAD2A3BB25200C73C0B /* QRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeGenerator.swift; sourceTree = "<group>"; };
-		D9DCFDAF2A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeGenerator.swift; sourceTree = "<group>"; };
+		D9DCFDAF2A3BC4A400C73C0B /* SignalBrandedQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalBrandedQRCodeGenerator.swift; sourceTree = "<group>"; };
 		D9DCFDB12A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportableQRCodeGenerator.swift; sourceTree = "<group>"; };
 		D9DCFDB32A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicDisplayQRCodeGenerator.swift; sourceTree = "<group>"; };
 		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
@@ -6458,6 +6460,7 @@
 		D9FD2DF42CD959B000099627 /* StorageServiceRecordIkmCapabilityStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceRecordIkmCapabilityStore.swift; sourceTree = "<group>"; };
 		E1447D8E2CCACFFA004D8FA2 /* MessageBackupCallLinkRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupCallLinkRecipientArchiver.swift; sourceTree = "<group>"; };
 		E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientContextMenuHelper.swift; sourceTree = "<group>"; };
+		E15066C22CED498600F6F9AF /* RegistrationQuickRestoreQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationQuickRestoreQRCodeViewController.swift; sourceTree = "<group>"; };
 		E16025C02CE7D2490032EA77 /* chat_item_group_change_chat_update_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_group_change_chat_update_00.binproto; sourceTree = "<group>"; };
 		E16025C12CE7D2490032EA77 /* chat_item_group_change_chat_update_00.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_group_change_chat_update_00.txtproto; sourceTree = "<group>"; };
 		E16025C22CE7D2490032EA77 /* chat_item_group_change_chat_update_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_group_change_chat_update_01.binproto; sourceTree = "<group>"; };
@@ -6584,6 +6587,7 @@
 		E19B35432CD2E8C40078A678 /* ad_hoc_call_01.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = ad_hoc_call_01.txtproto; sourceTree = "<group>"; };
 		E19B35442CD2E8C40078A678 /* ad_hoc_call_02.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = ad_hoc_call_02.binproto; sourceTree = "<group>"; };
 		E19B35452CD2E8C40078A678 /* ad_hoc_call_02.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = ad_hoc_call_02.txtproto; sourceTree = "<group>"; };
+		E19C3D932CF6B35A00F2C496 /* SignalBrandedQRCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalBrandedQRCodes.swift; sourceTree = "<group>"; };
 		E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientHidingManager.swift; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E1B628BC2CCC59E600C4DC7F /* chat_item_view_once_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_view_once_00.binproto; sourceTree = "<group>"; };
@@ -9586,6 +9590,7 @@
 				F9D47A4729D1D5DB00E6E080 /* RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.swift */,
 				F9E3006029A02D8800DCA219 /* RegistrationPinViewController.swift */,
 				F9EECB00299EC9D8005FDD52 /* RegistrationProfileViewController.swift */,
+				E15066C22CED498600F6F9AF /* RegistrationQuickRestoreQRCodeViewController.swift */,
 				F9440E7129C0FA490016FE95 /* RegistrationReglockTimeoutViewController.swift */,
 				C1F09BA02BB32E5900F9E7F5 /* RegistrationRestoreFromBackupViewController.swift */,
 				F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */,
@@ -11810,7 +11815,6 @@
 				D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */,
 				D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */,
 				D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */,
-				D938307D2A70441D006CDCDE /* Usernames+QRCodeColor.swift */,
 				D925F552298349EF00158EE4 /* Usernames+UsernameLink.swift */,
 				D99840BE297A04EB00F7ED6D /* Usernames.swift */,
 				C15837EE29A592BA00176927 /* UsernameValidationManager.swift */,
@@ -12214,7 +12218,7 @@
 				D9DCFDB12A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift */,
 				D9DCFDAD2A3BB25200C73C0B /* QRCodeGenerator.swift */,
 				88A4CC11246CE2F50082211F /* QRCodeView.swift */,
-				D9DCFDAF2A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift */,
+				D9DCFDAF2A3BC4A400C73C0B /* SignalBrandedQRCodeGenerator.swift */,
 			);
 			path = QRCodes;
 			sourceTree = "<group>";
@@ -12367,6 +12371,15 @@
 				D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */,
 			);
 			path = SDSCodableModel;
+			sourceTree = "<group>";
+		};
+		E19C3D922CF6B34200F2C496 /* QRCodes */ = {
+			isa = PBXGroup;
+			children = (
+				D938307D2A70441D006CDCDE /* SignalBrandedQRCodes+QRCodeColor.swift */,
+				E19C3D932CF6B35A00F2C496 /* SignalBrandedQRCodes.swift */,
+			);
+			path = QRCodes;
 			sourceTree = "<group>";
 		};
 		E75DD3DC2810CD3500E32C36 /* subscriptions */ = {
@@ -12841,6 +12854,7 @@
 				668A01282C2B6088007B8808 /* PromiseKit */,
 				F9C5CA00289453B100548EEE /* Protocols */,
 				F9C5C9A1289453B100548EEE /* Protos */,
+				E19C3D922CF6B34200F2C496 /* QRCodes */,
 				668A00D32C2B5E4C007B8808 /* Randomness */,
 				6600F352298C8FBB00B1EDB7 /* Registration */,
 				F9C5C9C6289453B100548EEE /* RemoteAttestation */,
@@ -16507,6 +16521,7 @@
 				F9D47A4829D1D5DB00E6E080 /* RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController.swift in Sources */,
 				F9E3006129A02D8800DCA219 /* RegistrationPinViewController.swift in Sources */,
 				F9EECB01299EC9D8005FDD52 /* RegistrationProfileViewController.swift in Sources */,
+				E15066C32CED49C800F6F9AF /* RegistrationQuickRestoreQRCodeViewController.swift in Sources */,
 				F9440E7229C0FA490016FE95 /* RegistrationReglockTimeoutViewController.swift in Sources */,
 				C1F09BA12BB32E5900F9E7F5 /* RegistrationRestoreFromBackupViewController.swift in Sources */,
 				F933FC3F2992E77300D78DB0 /* RegistrationSplashViewController.swift in Sources */,
@@ -16543,6 +16558,7 @@
 				886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */,
 				F915A77029CB6D4C00EB6F68 /* ShareActivityUtil.swift in Sources */,
 				880D90302481E617003D2B14 /* SignalApp.swift in Sources */,
+				D9DCFDB02A3BC4A400C73C0B /* SignalBrandedQRCodeGenerator.swift in Sources */,
 				D9E43C2D2CC194140001536E /* SignalCall.swift in Sources */,
 				8822558D26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift in Sources */,
 				D9E43C0F2CC194140001536E /* SimulatorCallUIAdaptee.swift in Sources */,
@@ -16611,7 +16627,6 @@
 				D9DCFDA52A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift in Sources */,
 				D9317FDC2A4CE48D00075A92 /* UsernameLinkQRCodeColorPickerViewController.swift in Sources */,
 				D9CAFAE62A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift in Sources */,
-				D9DCFDB02A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift in Sources */,
 				B9FF37362B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift in Sources */,
 				D9CAFAE42A538BDF00B32BDE /* UsernameLinkScanQRCodeViewController.swift in Sources */,
 				D99840CE2981A09900F7ED6D /* UsernameLinkShareSheetViewController.swift in Sources */,
@@ -17601,6 +17616,8 @@
 				7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */,
 				7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */,
 				664E8D882BD6D87700C4968A /* SignalAttachmentCloner.swift in Sources */,
+				D938307E2A70441D006CDCDE /* SignalBrandedQRCodes+QRCodeColor.swift in Sources */,
+				E19C3D942CF6B36500F2C496 /* SignalBrandedQRCodes.swift in Sources */,
 				F9C5CC8F289453B300548EEE /* SignalIOS.pb.swift in Sources */,
 				F9C5CC9E289453B300548EEE /* SignalIOSProto.swift in Sources */,
 				725465382BA01FAA00EABFD2 /* SignalMessagingJobQueues.swift in Sources */,
@@ -17853,7 +17870,6 @@
 				7255A4C42B98D81000E95368 /* Usernames+BetterIdentifierChecker.swift in Sources */,
 				D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */,
 				D925F561298D8F9400158EE4 /* Usernames+ParsedUsername.swift in Sources */,
-				D938307E2A70441D006CDCDE /* Usernames+QRCodeColor.swift in Sources */,
 				D925F560298D8F9400158EE4 /* Usernames+UsernameLink.swift in Sources */,
 				D925F563298D8F9400158EE4 /* Usernames.swift in Sources */,
 				C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */,

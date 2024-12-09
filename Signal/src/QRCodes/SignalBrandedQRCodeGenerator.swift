@@ -6,12 +6,12 @@
 import SignalServiceKit
 import SignalUI
 
-/// A generator producing styled QR codes for username links.
+/// A generator producing styled QR codes.
 ///
 /// The QR codes have a configurable foreground and background, and contain
 /// aesthetic features such as an overlaid Signal logo and rounded "pixels".
 /// They are scaled up so as to appropriately render the rounded shapes.
-class UsernameLinkQRCodeGenerator: QRCodeGenerator {
+class SignalBrandedQRCodeGenerator: QRCodeGenerator {
     /// For the following constants:
     /// - "Point" refers to a coordinate ("pixel") in the QR code.
     /// - "Pixel" refers to a pixel in the image returned by the generator.

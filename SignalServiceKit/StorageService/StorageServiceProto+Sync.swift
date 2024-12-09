@@ -1411,7 +1411,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                 )
 
                 localUsernameManager.setUsernameLinkQRCodeColor(
-                    color: Usernames.QRCodeColor(proto: remoteUsernameLinkProto.color),
+                    color: SignalBrandedQRCodes.QRCodeColor(proto: remoteUsernameLinkProto.color),
                     tx: transaction.asV2Write
                 )
             } else {
@@ -1990,7 +1990,7 @@ extension StorageServiceProtoOptionalBool {
     }
 }
 
-private extension Usernames.QRCodeColor {
+private extension SignalBrandedQRCodes.QRCodeColor {
     var asProto: StorageServiceProtoAccountRecordUsernameLinkColor {
         switch self {
         case .blue: return .blue

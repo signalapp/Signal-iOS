@@ -426,7 +426,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
     }
 }
 
-private extension Usernames.QRCodeColor {
+private extension SignalBrandedQRCodes.QRCodeColor {
     var backupProtoColor: BackupProto_AccountData.UsernameLink.Color {
         switch self {
         case .blue: return .blue
@@ -442,7 +442,7 @@ private extension Usernames.QRCodeColor {
 }
 
 private extension BackupProto_AccountData.UsernameLink.Color {
-    var qrCodeColor: Usernames.QRCodeColor {
+    var qrCodeColor: SignalBrandedQRCodes.QRCodeColor {
         switch self {
         case .blue: return .blue
         case .white: return .white
