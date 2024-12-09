@@ -22,24 +22,29 @@ class LinkedDevicesViewModel: ObservableObject {
     @Published fileprivate var isLoading: Bool = false
 
     fileprivate enum Presentation {
-        case newDeviceToast(deviceName: String)
+        case newDeviceToast(deviceName: String, didSync: Bool)
         case linkDeviceAuthentication(preknownProvisioningUrl: DeviceProvisioningURL?)
         case renameDevice(displayableDevice: DisplayableDevice)
         case unlinkDeviceConfirmation(displayableDevice: DisplayableDevice)
         case updateFailureAlert(Error)
         case unlinkFailureAlert(device: OWSDevice, error: Error)
-        case activityIndicator(ModalActivityIndicatorViewController)
+        case activityIndicator(UIViewController)
         case linkedDeviceEducation
     }
 
     fileprivate var present = PassthroughSubject<Presentation, Never>()
 
+    private enum NewDeviceExpectation {
+        case link
+        case linkAndSync
+    }
+
     private var subscriptions = Set<AnyCancellable>()
     private var pollingRefreshTimer: Timer?
     private var oldDeviceList: [DisplayableDevice] = []
-    private var isExpectingMoreDevices = false {
+    private var newDeviceExpectation: NewDeviceExpectation? {
         didSet {
-            shouldShowFinishLinkingSheet = isExpectingMoreDevices
+            shouldShowFinishLinkingSheet = newDeviceExpectation != nil
         }
     }
     fileprivate var shouldShowFinishLinkingSheet = false
@@ -102,7 +107,7 @@ class LinkedDevicesViewModel: ObservableObject {
             present.send(.updateFailureAlert(error))
         }
 
-        if !isExpectingMoreDevices {
+        if newDeviceExpectation == nil {
             self.isLoading = false
         }
     }
@@ -131,12 +136,15 @@ class LinkedDevicesViewModel: ObservableObject {
 
         if oldDeviceList != displayableDevices {
             if
-                isExpectingMoreDevices,
+                let newDeviceExpectation,
                 let newDevice = displayableDevices.last,
                 newDevice != oldDeviceList.last
             {
-                present.send(.newDeviceToast(deviceName: newDevice.displayName))
-                isExpectingMoreDevices = false
+                present.send(.newDeviceToast(
+                    deviceName: newDevice.displayName,
+                    didSync: newDeviceExpectation == .linkAndSync
+                ))
+                self.newDeviceExpectation = nil
                 withAnimation {
                     self.isLoading = false
                 }
@@ -268,39 +276,60 @@ extension LinkedDevicesViewModel: DatabaseChangeDelegate {
 // MARK: LinkDeviceViewControllerDelegate
 
 extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
-    func didFinishLinking(linkNSyncTask: Task<Void, Error>?) {
-        guard let linkNSyncTask else {
-            expectMoreDevices()
+    func didFinishLinking(
+        _ linkNSyncData: LinkNSyncData?,
+        from linkDeviceViewController: LinkDeviceViewController
+    ) {
+        guard let linkNSyncData else {
+            linkDeviceViewController.popToLinkedDeviceList { [weak self] in
+                self?.expectMoreDevices()
+            }
             return
         }
+
+        // Don't wait for the view pop to start the linking process
+        let linkAndSyncProgressModal = LinkAndSyncProgressModal()
+        linkDeviceViewController.popToLinkedDeviceList { [weak self] in
+            self?.present.send(.activityIndicator(linkAndSyncProgressModal))
+        }
+
+        let progress = OWSProgress.createSink { progress in
+            Task { @MainActor in
+                linkAndSyncProgressModal.progress = progress.percentComplete
+            }
+        }
+
         Task { @MainActor in
-            // TODO: use the appropriate UX for loading, and show percent progress
-            let loadingViewController = ModalActivityIndicatorViewController(canCancel: false, presentationDelay: 0)
-            loadingViewController.modalPresentationStyle = .overFullScreen
-            self.present.send(.activityIndicator(loadingViewController))
             do {
-                try await linkNSyncTask.value
+                try await DependenciesBridge.shared.linkAndSyncManager.waitForLinkingAndUploadBackup(
+                    ephemeralBackupKey: linkNSyncData.ephemeralBackupKey,
+                    tokenId: linkNSyncData.tokenId,
+                    progress: progress
+                )
+                Task { @MainActor in
+                    linkAndSyncProgressModal.dismiss(animated: true)
+                }
             } catch {
-                loadingViewController.dismiss(animated: false) {
+                linkAndSyncProgressModal.dismiss(animated: true) {
                     DependenciesBridge.shared.messageBackupErrorPresenter.presentOverTopmostViewController(completion: {})
                 }
                 self.expectMoreDevices()
                 return
             }
+            self.newDeviceExpectation = .linkAndSync
             await self.refreshDevices()
-            loadingViewController.dismiss(animated: false)
         }
     }
 
     private func expectMoreDevices() {
         AssertIsOnMainThread()
 
-        isExpectingMoreDevices = true
+        newDeviceExpectation = .link
         editMode = .inactive
 
         pollingRefreshTimer?.invalidate()
         pollingRefreshTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] timer in
-            guard let self, self.isExpectingMoreDevices else {
+            guard let self, self.newDeviceExpectation != nil else {
                 timer.invalidate()
                 return
             }
@@ -340,13 +369,13 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
         viewModel.present.sink { [weak self] presentation in
             guard let self else { return }
             switch presentation {
-            case let .newDeviceToast(deviceName):
+            case let .newDeviceToast(deviceName, didSync):
                 if let finishLinkingSheet {
                     finishLinkingSheet.dismiss(animated: true) {
-                        self.showNewDeviceToast(deviceName: deviceName)
+                        self.showNewDeviceToast(deviceName: deviceName, didSync: didSync)
                     }
                 } else {
-                    self.showNewDeviceToast(deviceName: deviceName)
+                    self.showNewDeviceToast(deviceName: deviceName, didSync: didSync)
                 }
             case let .updateFailureAlert(error):
                 self.showUpdateFailureAlert(error: error)
@@ -359,7 +388,7 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
             case let .unlinkFailureAlert(device, error):
                 self.showUnlinkFailedAlert(device: device, error: error)
             case let .activityIndicator(modal):
-                self.present(modal, animated: false)
+                self.present(modal, animated: true)
             case .linkedDeviceEducation:
                 self.present(LinkedDevicesEducationSheet(), animated: true)
             }
@@ -429,14 +458,20 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
 
     // MARK: Device linking
 
-    private func showNewDeviceToast(deviceName: String) {
-        presentToast(text: String(
-            format: OWSLocalizedString(
+    private func showNewDeviceToast(deviceName: String, didSync: Bool) {
+        let title: String = if didSync {
+            OWSLocalizedString(
+                "DEVICE_LIST_UPDATE_NEW_DEVICE_SYNCED_TOAST",
+                comment: "Message appearing on a toast indicating a new device was successfully linked and synced."
+            )
+        } else {
+            OWSLocalizedString(
                 "DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST",
                 comment: "Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }}"
-            ),
-            deviceName
-        ))
+            )
+        }
+
+        presentToast(text: String(format: title, deviceName))
     }
 
     private func showUpdateFailureAlert(error: Error) {

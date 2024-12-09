@@ -8,7 +8,8 @@ import SignalServiceKit
 import SignalUI
 
 protocol LinkDeviceViewControllerDelegate: AnyObject {
-    func didFinishLinking(linkNSyncTask: Task<Void, Error>?)
+    typealias LinkNSyncData = (ephemeralBackupKey: BackupKey, tokenId: DeviceProvisioningTokenId)
+    func didFinishLinking(_ linkNSyncData: LinkNSyncData?, from linkDeviceViewController: LinkDeviceViewController)
 }
 
 class LinkDeviceViewController: OWSViewController {
@@ -241,33 +242,10 @@ class LinkDeviceViewController: OWSViewController {
 
         deviceProvisioner.provision().map(on: DispatchQueue.main) { tokenId in
             Logger.info("Successfully provisioned device.")
-            let linkNSyncTask: Task<Void, Error>?
-            if let ephemeralBackupKey {
-                // TODO: display progress in a less hacky way.
-                let loadingViewController = LinkAndSyncLoadingViewController()
-                loadingViewController.modalPresentationStyle = .overFullScreen
-                UIApplication.shared.frontmostViewController?.present(loadingViewController, animated: false)
-                let progress = OWSProgress.createSink { progress in
-                    Task { @MainActor in
-                        loadingViewController.percentCompleted = progress.percentComplete
-                    }
-                }
-                linkNSyncTask = Task {
-                    try await DependenciesBridge.shared.linkAndSyncManager.waitForLinkingAndUploadBackup(
-                        ephemeralBackupKey: ephemeralBackupKey,
-                        tokenId: tokenId,
-                        progress: progress
-                    )
-                    Task { @MainActor in
-                        loadingViewController.dismiss(animated: false)
-                    }
-                }
-            } else {
-                linkNSyncTask = nil
-            }
-            self.popToLinkedDeviceList {
-                self.delegate?.didFinishLinking(linkNSyncTask: linkNSyncTask)
-            }
+            self.delegate?.didFinishLinking(
+                ephemeralBackupKey.map { ($0, tokenId) },
+                from: self
+            )
         }.catch(on: DispatchQueue.main) { error in
             Logger.error("Failed to provision device with error: \(error)")
             let actionSheet = self.retryActionSheetController(error: error, retryBlock: { [weak self] in
@@ -313,7 +291,7 @@ class LinkDeviceViewController: OWSViewController {
         }
     }
 
-    private func popToLinkedDeviceList(_ completion: (() -> Void)? = nil) {
+    func popToLinkedDeviceList(_ completion: (() -> Void)? = nil) {
         dismissEducationSheetIfNecessary { [weak navigationController] in
             navigationController?.popViewController(animated: true)
             // The method for adding a completion handler to popViewController in
