@@ -61,9 +61,9 @@ import Foundation
 /// OWSProgress lets you add children lazily and renormalizes disparate units at each level of the tree.
 public struct OWSProgress: Equatable {
     /// The completed unit count across all direct children.
-    public let completedUnitCount: UInt32
+    public let completedUnitCount: UInt64
     /// The total unit count of all direct children.
-    public let totalUnitCount: UInt32
+    public let totalUnitCount: UInt64
     /// The chain of labels (ending with the source's label) from the root
     /// sink to the source with the highest percentage completion.
     /// In case of ties, sources added later are preferred.
@@ -105,7 +105,7 @@ public protocol OWSProgressSink {
     /// results in undefined behavior; old progress values are not renormalized to new total unit counts.
     /// Adding grandchildren is allowed; typically you want to "reserve" proportional unit counts
     /// by adding a child up-front and then adding a grandchild to that child later.
-    func addChild(withLabel label: String, unitCount: UInt32) async -> OWSProgressSink
+    func addChild(withLabel label: String, unitCount: UInt64) async -> OWSProgressSink
 
     /// Add a source, returning it.
     /// Sources contribute to the total unit count of their parent.
@@ -116,20 +116,20 @@ public protocol OWSProgressSink {
     /// results in undefined behavior; old progress values are not renormalized to new total unit counts.
     /// Adding grandchildren is allowed; typically you want to "reserve" proportional unit counts
     /// by adding a child up-front and then adding a source to that child later.
-    func addSource(withLabel label: String, unitCount: UInt32) async -> OWSProgressSource
+    func addSource(withLabel label: String, unitCount: UInt64) async -> OWSProgressSource
 }
 
 /// Sources are **NOT** thread-safe and should only be updated from a single thread or locking context.
 public protocol OWSProgressSource {
 
-    var completedUnitCount: UInt32 { get }
-    var totalUnitCount: UInt32 { get }
+    var completedUnitCount: UInt64 { get }
+    var totalUnitCount: UInt64 { get }
 
     /// Increment the completed unit count (which can only go up).
     /// You can pass 0, though that does nothing.
     /// You can also continue to increment past the total unit count; the value
     /// will be internally capped to the total and further updates no-op.
-    func incrementCompletedUnitCount(by increment: UInt32)
+    func incrementCompletedUnitCount(by increment: UInt64)
 }
 
 extension OWSProgressSource {
@@ -156,7 +156,7 @@ extension OWSProgressSource {
                 while !didComplete.get() {
                     try? await Task.sleep(nanoseconds: sleepDurationMillis * NSEC_PER_MSEC)
                     let date = Date()
-                    var units = UInt32(date.timeIntervalSince(startDate) * timeToUnitsMultiplier)
+                    var units = UInt64(date.timeIntervalSince(startDate) * timeToUnitsMultiplier)
                     units = min(maxTimerCompletedUnitCount, units)
                     defer { lastCompletedUnitCount = units }
                     let incrementalUnits = units - lastCompletedUnitCount
@@ -203,7 +203,7 @@ private actor OWSProgressRootNode: OWSProgressSink {
     private var latestEmittedProgress: OWSProgress?
     private let observer: Observer
 
-    private var totalDirectChildUnitCount: UInt32 = 0
+    private var totalDirectChildUnitCount: UInt64 = 0
     /// Children hold strong references to their parent, so parents hold weak references to children.
     /// If callers release children, they can't be updated anyway so no point retaining them.
     private var directChildren = [Weak<OWSProgressChildNode>]()
@@ -228,7 +228,7 @@ private actor OWSProgressRootNode: OWSProgressSink {
         self.observer = observer
     }
 
-    func addChild(withLabel label: String, unitCount: UInt32) async -> OWSProgressSink {
+    func addChild(withLabel label: String, unitCount: UInt64) async -> OWSProgressSink {
         owsAssertDebug(unitCount > 0)
         self.totalDirectChildUnitCount += unitCount
         let child = OWSProgressSinkNode(
@@ -246,7 +246,7 @@ private actor OWSProgressRootNode: OWSProgressSink {
         return child
     }
 
-    func addSource(withLabel label: String, unitCount: UInt32) async -> OWSProgressSource {
+    func addSource(withLabel label: String, unitCount: UInt64) async -> OWSProgressSource {
         owsAssertDebug(unitCount > 0)
         self.totalDirectChildUnitCount += unitCount
         let source = OWSProgressSourceNode(
@@ -304,7 +304,7 @@ private actor OWSProgressRootNode: OWSProgressSink {
         }
         let progress = OWSProgress(
             // Round up optimistically.
-            completedUnitCount: UInt32(ceil(completedUnitCount)),
+            completedUnitCount: UInt64(ceil(completedUnitCount)),
             totalUnitCount: totalDirectChildUnitCount,
             currentLabels: currentLabels
         )
@@ -330,7 +330,7 @@ private actor OWSProgressRootNode: OWSProgressSink {
 
 /// Covers both child sinks and sources. Only the root sink is not a child node.
 private protocol OWSProgressChildNode {
-    var totalUnitCount: UInt32 { get }
+    var totalUnitCount: UInt64 { get }
 
     /// This is all implementation details (this protocol is fileprivate) but
     /// read on if you want the nitty-gritty.
@@ -378,13 +378,13 @@ private actor OWSProgressSinkNode: OWSProgressSink, OWSProgressChildNode {
     fileprivate nonisolated let labels: [String]
     /// The unit count of this node. Note that child sinks don't have completedUnitCounts
     /// of their own; instead its children determine the unit count as proportion of this total.
-    fileprivate nonisolated let totalUnitCount: UInt32
+    fileprivate nonisolated let totalUnitCount: UInt64
 
     /// See ``OWSProgressChildNode/updateCompletedUnitCountMultiplier``.
     /// This gets set immediately after initialization before it can possibly be read.
     fileprivate var completedUnitCountMultiplier: Float = 1
 
-    private var totalDirectChildUnitCount: UInt32 = 0
+    private var totalDirectChildUnitCount: UInt64 = 0
     private var directChildren = [Weak<OWSProgressChildNode>]()
 
     /// Children hold strong referenced to their parents; as long as callers
@@ -398,7 +398,7 @@ private actor OWSProgressSinkNode: OWSProgressSink, OWSProgressChildNode {
     fileprivate init(
         label: String,
         parentLabels: [String],
-        unitCount: UInt32,
+        unitCount: UInt64,
         parent: OWSProgressSink,
         rootNode: OWSProgressRootNode
     ) {
@@ -408,7 +408,7 @@ private actor OWSProgressSinkNode: OWSProgressSink, OWSProgressChildNode {
         self.rootNode = rootNode
     }
 
-    func addChild(withLabel label: String, unitCount: UInt32) async -> OWSProgressSink {
+    func addChild(withLabel label: String, unitCount: UInt64) async -> OWSProgressSink {
         owsAssertDebug(unitCount > 0)
         self.totalDirectChildUnitCount += unitCount
         let child = OWSProgressSinkNode(
@@ -424,7 +424,7 @@ private actor OWSProgressSinkNode: OWSProgressSink, OWSProgressChildNode {
         return child
     }
 
-    func addSource(withLabel label: String, unitCount: UInt32) async -> OWSProgressSource {
+    func addSource(withLabel label: String, unitCount: UInt64) async -> OWSProgressSource {
         owsAssertDebug(unitCount > 0)
         self.totalDirectChildUnitCount += unitCount
         let source = OWSProgressSourceNode(
@@ -465,8 +465,8 @@ private class OWSProgressSourceNode: OWSProgressSource, OWSProgressChildNode {
 
     /// The chain of labels starting at the root (no label) and ending in this node's label.
     fileprivate let labels: [String]
-    var completedUnitCount: UInt32 = 0
-    let totalUnitCount: UInt32
+    var completedUnitCount: UInt64 = 0
+    let totalUnitCount: UInt64
 
     /// See ``OWSProgressChildNode/updateCompletedUnitCountMultiplier``.
     /// This gets set immediately after initialization before it can possibly be read.
@@ -483,7 +483,7 @@ private class OWSProgressSourceNode: OWSProgressSource, OWSProgressChildNode {
     init(
         label: String,
         parentLabels: [String],
-        totalUnitCount: UInt32,
+        totalUnitCount: UInt64,
         parent: OWSProgressSink,
         rootNode: OWSProgressRootNode
     ) {
@@ -493,7 +493,7 @@ private class OWSProgressSourceNode: OWSProgressSource, OWSProgressChildNode {
         self.rootNode = rootNode
     }
 
-    func incrementCompletedUnitCount(by increment: UInt32) {
+    func incrementCompletedUnitCount(by increment: UInt64) {
         owsAssertDebug(increment > 0)
         completedUnitCount = min(
             totalUnitCount,

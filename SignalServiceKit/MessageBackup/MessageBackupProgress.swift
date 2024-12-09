@@ -40,7 +40,7 @@ public struct MessageBackupExportProgress {
         // * release notes channel
         estimatedFrameCount += 4
 
-        let progressSource = await sink.addSource(withLabel: "Backup Export", unitCount: UInt32(estimatedFrameCount))
+        let progressSource = await sink.addSource(withLabel: "Backup Export", unitCount: UInt64(estimatedFrameCount))
         return .init(progressSource: progressSource)
     }
 
@@ -73,7 +73,7 @@ public struct MessageBackupImportProgress {
         guard let sink else {
             return .init(progressSource: nil)
         }
-        guard let totalByteCount = OWSFileSystem.fileSize(of: fileUrl)?.uint32Value else {
+        guard let totalByteCount = OWSFileSystem.fileSize(of: fileUrl)?.uint64Value else {
             throw OWSAssertionError("Unable to read file size")
         }
         let progressSource = await sink.addSource(withLabel: "Backup Import", unitCount: totalByteCount)
@@ -82,7 +82,7 @@ public struct MessageBackupImportProgress {
 
     public func didReadBytes(byteLength: Int64) {
         guard let progressSource else { return }
-        guard let byteLength = UInt32(exactly: byteLength) else {
+        guard let byteLength = UInt64(exactly: byteLength) else {
             owsFailDebug("How did we get such a huge byte length?")
             return
         }

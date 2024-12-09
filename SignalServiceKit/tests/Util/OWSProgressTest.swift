@@ -9,9 +9,9 @@ import XCTest
 class OWSProgressTest: XCTestCase {
 
     func testSimpleSourceSink() async {
-        let outputs: [UInt32] = await withCheckedContinuation { outputsContinuation in
+        let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
-                var outputs = [UInt32]()
+                var outputs = [UInt64]()
                 let sink = OWSProgress.createSink { progress in
                     outputs.append(progress.completedUnitCount)
                     if progress.isFinished {
@@ -36,9 +36,9 @@ class OWSProgressTest: XCTestCase {
     }
 
     func testTwoSources() async {
-        let outputs: [UInt32] = await withCheckedContinuation { outputsContinuation in
+        let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
-                var outputs = [UInt32]()
+                var outputs = [UInt64]()
                 let sink = OWSProgress.createSink { progress in
                     outputs.append(progress.completedUnitCount)
                     if progress.isFinished {
@@ -72,9 +72,9 @@ class OWSProgressTest: XCTestCase {
     }
 
     func testTwoLayers() async {
-        let outputs: [UInt32] = await withCheckedContinuation { outputsContinuation in
+        let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
-                var outputs = [UInt32]()
+                var outputs = [UInt64]()
                 let sink = OWSProgress.createSink { progress in
                     outputs.append(progress.completedUnitCount)
                     if progress.isFinished {
@@ -105,21 +105,21 @@ class OWSProgressTest: XCTestCase {
     func testMultipleLayers() async {
         // A1 -> A -> root
         let multiplierA1: Float = (1 / 200) * 100
-        let unitCountA1: UInt32 = UInt32(ceil(multiplierA1 * 100))
+        let unitCountA1: UInt64 = UInt64(ceil(multiplierA1 * 100))
         // B1 -> B -> root
         let multiplierB1: Float = (1 / 200) * 100
-        let unitCountB1: UInt32 = UInt32(ceil(multiplierB1 * 50))
+        let unitCountB1: UInt64 = UInt64(ceil(multiplierB1 * 50))
         // BZ1 -> BZ -> B -> root
         let multiplierBZ1: Float = (1 / 30) * (50 / 200) * 100
-        let unitCountBZ1: UInt32 = UInt32(ceil(multiplierBZ1 * 10))
+        let unitCountBZ1: UInt64 = UInt64(ceil(multiplierBZ1 * 10))
         // BZ2 -> BZ -> B -> root
         let multiplierBZ2: Float = (1 / 30) * (50 / 200) * 100
-        let unitCountBZ2: UInt32 = UInt32(ceil(multiplierBZ2 * 1))
+        let unitCountBZ2: UInt64 = UInt64(ceil(multiplierBZ2 * 1))
         // C2 -> C -> root
         let multiplierC2: Float = (1 / 11) * 200
-        let unitCountC2: UInt32 = UInt32(ceil(multiplierC2 * 5))
+        let unitCountC2: UInt64 = UInt64(ceil(multiplierC2 * 5))
 
-        let expectedCompletedUnitCount: UInt32 =
+        let expectedCompletedUnitCount: UInt64 =
             unitCountA1
             + unitCountB1
             + unitCountBZ1
@@ -208,9 +208,9 @@ class OWSProgressTest: XCTestCase {
     }
 
     func testUpdatePeriodically_estimatedTimeFinishesFirst() async {
-        let outputs: [UInt32] = await withCheckedContinuation { outputsContinuation in
+        let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
-                var outputs = [UInt32]()
+                var outputs = [UInt64]()
                 let sink = OWSProgress.createSink { progress in
                     outputs.append(progress.completedUnitCount)
                     if progress.isFinished {
@@ -233,9 +233,9 @@ class OWSProgressTest: XCTestCase {
     }
 
     func testUpdatePeriodically_WorkFinishesFirst() async {
-        let outputs: [UInt32] = await withCheckedContinuation { outputsContinuation in
+        let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
-                var outputs = [UInt32]()
+                var outputs = [UInt64]()
                 let sink = OWSProgress.createSink { progress in
                     outputs.append(progress.completedUnitCount)
                     if progress.isFinished {
@@ -258,9 +258,9 @@ class OWSProgressTest: XCTestCase {
     }
 
     func testUpdatePeriodically_NonThrowing() async {
-        let outputs: [UInt32] = await withCheckedContinuation { outputsContinuation in
+        let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
-                var outputs = [UInt32]()
+                var outputs = [UInt64]()
                 let sink = OWSProgress.createSink { progress in
                     outputs.append(progress.completedUnitCount)
                     if progress.isFinished {
@@ -286,9 +286,9 @@ class OWSProgressTest: XCTestCase {
     }
 
     func testUpdatePeriodically_OptionalResult() async {
-        let outputs: [UInt32] = await withCheckedContinuation { outputsContinuation in
+        let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
-                var outputs = [UInt32]()
+                var outputs = [UInt64]()
                 let sink = OWSProgress.createSink { progress in
                     outputs.append(progress.completedUnitCount)
                     if progress.isFinished {

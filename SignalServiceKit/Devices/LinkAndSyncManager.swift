@@ -36,7 +36,7 @@ public enum PrimaryLinkNSyncProgressPhase: String {
     case uploadingBackup
     case finishing
 
-    var percentOfTotalProgress: UInt32 {
+    var percentOfTotalProgress: UInt64 {
         return switch self {
         case .waitingForLinking: 20
         case .exportingBackup: 35
@@ -62,7 +62,7 @@ public enum SecondaryLinkNSyncProgressPhase: String {
     case downloadingBackup
     case importingBackup
 
-    var percentOfTotalProgress: UInt32 {
+    var percentOfTotalProgress: UInt64 {
         return switch self {
         case .waitingForBackup: 20
         case .downloadingBackup: 40
