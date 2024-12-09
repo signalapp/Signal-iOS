@@ -216,4 +216,9 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
 
         observers.elements.forEach { $0.groupCallEnded(self, reason: reason) }
     }
+
+    @MainActor
+    func groupCall(onSpeakingNotification groupCall: SignalRingRTC.GroupCall, event: SpeechEvent) {
+
+    }
 }
