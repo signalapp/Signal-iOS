@@ -71,7 +71,8 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     func completeProvisioning(
         provisionMessage: ProvisionMessage,
         deviceName: String,
-        progressViewModel: LinkAndSyncProgressViewModel
+        progressViewModel: LinkAndSyncProgressViewModel,
+        shouldRetry: @escaping (SecondaryLinkNSyncError) async -> Bool
     ) async -> CompleteProvisioningResult {
         // * Primary devices that are re-registering can provision instead as long as either
         // the phone number or aci matches.
@@ -255,20 +256,39 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                     progressViewModel.progress = progress.percentComplete
                 }
             }
+
+            let localIdentifiers = LocalIdentifiers(
+                aci: aci,
+                pni: pni,
+                e164: phoneNumber
+            )
+
             do {
                 try await self.linkAndSyncManager.waitForBackupAndRestore(
-                    localIdentifiers: LocalIdentifiers(
-                        aci: aci,
-                        pni: pni,
-                        e164: phoneNumber
-                    ),
+                    localIdentifiers: localIdentifiers,
                     auth: authedDevice.authedAccount.chatServiceAuth,
                     ephemeralBackupKey: ephemeralBackupKey,
                     progress: progress
                 )
-            } catch {
-                // TODO: handle errors; for now just log and continue
-                Logger.error("Failed link'n'sync \(error)")
+            } catch let firstAttemptError {
+                Logger.error("Failed link'n'sync \(firstAttemptError)")
+
+                var currentError = firstAttemptError
+
+                while await shouldRetry(currentError) {
+                    do {
+                        try await self.linkAndSyncManager.waitForBackupAndRestore(
+                            localIdentifiers: localIdentifiers,
+                            auth: authedDevice.authedAccount.chatServiceAuth,
+                            ephemeralBackupKey: ephemeralBackupKey,
+                            progress: progress
+                        )
+                        break
+                    } catch {
+                        currentError = error
+                        Logger.error("Failed link'n'sync \(error)")
+                    }
+                }
             }
         }
 

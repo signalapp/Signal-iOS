@@ -370,7 +370,11 @@ class ProvisioningController: NSObject {
             Task { @MainActor in
                 let progressViewController = LinkAndSyncProvisioningProgressViewController(viewModel: progressViewModel)
                 viewController.present(progressViewController, animated: false)
-                let result = await self.completeLinking(deviceName: deviceName, progressViewModel: progressViewModel).awaitable()
+                let result = await self.completeLinking(
+                    deviceName: deviceName,
+                    progressViewModel: progressViewModel,
+                    viewController: progressViewController
+                ).awaitable()
                 let errorActionSheet = resultHandler(result)
                 if let errorActionSheet {
                     progressViewController.dismiss(animated: true) {
@@ -387,7 +391,11 @@ class ProvisioningController: NSObject {
                 fromViewController: viewController,
                 canCancel: false,
                 backgroundBlock: { modal in
-                    self.completeLinking(deviceName: deviceName, progressViewModel: progressViewModel).done { result in
+                    self.completeLinking(
+                        deviceName: deviceName,
+                        progressViewModel: progressViewModel,
+                        viewController: modal
+                    ).done { result in
                         let errorActionSheet = resultHandler(result)
                         modal.dismiss {
                             if let errorActionSheet {
@@ -434,7 +442,8 @@ class ProvisioningController: NSObject {
 
     private func completeLinking(
         deviceName: String,
-        progressViewModel: LinkAndSyncProgressViewModel
+        progressViewModel: LinkAndSyncProgressViewModel,
+        viewController: UIViewController
     ) -> Guarantee<CompleteProvisioningResult> {
         return awaitProvisionMessage.then { [weak self] provisionMessage -> Promise<CompleteProvisioningResult> in
             guard let self = self else { throw PromiseError.cancelled }
@@ -443,11 +452,63 @@ class ProvisioningController: NSObject {
                 await self.provisioningCoordinator.completeProvisioning(
                     provisionMessage: provisionMessage,
                     deviceName: deviceName,
-                    progressViewModel: progressViewModel
+                    progressViewModel: progressViewModel,
+                    shouldRetry: { [weak viewController] error in
+                        guard let viewController else { return false }
+                        return await self.showError(error: error, viewController: viewController)
+                    }
                 )
             }
         }.recover {
             return .value(.genericError($0))
+        }
+    }
+
+    @MainActor
+    private func showError(error: SecondaryLinkNSyncError, viewController: UIViewController) async -> Bool {
+        await withCheckedContinuation { continuation in
+            let promptToRetry: Bool
+            let errorMessage: String
+            switch error {
+            case .timedOutWaitingForBackup, .errorDownloadingBackup, .networkError:
+                promptToRetry = true
+                errorMessage = OWSLocalizedString(
+                    "SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE",
+                    comment: "Message for action sheet when secondary device fails to sync messages due to network error."
+                )
+            case .primaryFailedBackupExport, .errorWaitingForBackup, .errorRestoringBackup:
+                promptToRetry = false
+                errorMessage = OWSLocalizedString(
+                    "SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE",
+                    comment: "Message for action sheet when secondary device fails to sync messages due to an unspecified error."
+                )
+            }
+
+            let retryActionSheet = ActionSheetController(
+                title: OWSLocalizedString(
+                    "SECONDARY_LINKING_SYNCING_ERROR_TITLE",
+                    comment: "Title for action sheet when secondary device fails to sync messages."
+                ),
+                message: errorMessage
+            )
+            retryActionSheet.isCancelable = false
+
+            if promptToRetry {
+                retryActionSheet.addAction(.init(
+                    title: CommonStrings.retryButton
+                ) { _ in
+                    continuation.resume(returning: true)
+                })
+            }
+
+            retryActionSheet.addAction(.init(
+                title: CommonStrings.cancelButton,
+                style: .cancel
+            ) { _ in
+                continuation.resume(returning: false)
+            })
+
+            viewController.presentActionSheet(retryActionSheet)
         }
     }
 

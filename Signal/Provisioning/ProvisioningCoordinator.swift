@@ -27,7 +27,8 @@ protocol ProvisioningCoordinator {
     func completeProvisioning(
         provisionMessage: ProvisionMessage,
         deviceName: String,
-        progressViewModel: LinkAndSyncProgressViewModel
+        progressViewModel: LinkAndSyncProgressViewModel,
+        shouldRetry: @escaping (SecondaryLinkNSyncError) async -> Bool
     ) async -> CompleteProvisioningResult
 }
 
