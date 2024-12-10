@@ -77,8 +77,10 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE",
-                                  comment: "Title for the 'change phone number' views in settings.")
+        title = OWSLocalizedString(
+            "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE",
+            comment: "Title for the 'change phone number' views in settings."
+        )
 
         navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
             self?.presenter?.exitRegistration()
@@ -120,22 +122,23 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         section.headerTitle = valueViews.sectionHeaderTitle
 
-        let countryCodeFormat = OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT",
-                                                  comment: "Format for the 'country code' in the 'change phone number' settings. Embeds: {{ %1$@ the numeric country code prefix, %2$@ the country code abbreviation }}.")
+        let countryCodeFormat = OWSLocalizedString(
+            "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT",
+            comment: "Format for the 'country code' in the 'change phone number' settings. Embeds: {{ %1$@ the numeric country code prefix, %2$@ the country code abbreviation }}."
+        )
         let countryCodeFormatted = String(format: countryCodeFormat, valueViews.plusPrefixedCallingCode, valueViews.countryCode)
-        section.add(.item(name: OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD",
-                                                  comment: "Label for the 'country code' row in the 'change phone number' settings."),
-                          textColor: Theme.primaryTextColor,
-                          accessoryText: countryCodeFormatted,
-                          accessoryType: .disclosureIndicator,
-                          accessibilityIdentifier: valueViews.accessibilityIdentifier_PhoneNumber) { [weak self] in
-            self?.showCountryCodePicker(valueViews: valueViews)
-        })
-        section.add(.item(name: OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD",
-                                                  comment: "Label for the 'phone number' row in the 'change phone number' settings."),
-                          textColor: Theme.primaryTextColor,
-                          accessoryContentView: valueViews.phoneNumberTextField,
-                          accessibilityIdentifier: valueViews.accessibilityIdentifier_CountryCode))
+        section.add(.item(
+            name: OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD", comment: "Label for the 'country code' row in the 'change phone number' settings."),
+            textColor: Theme.primaryTextColor,
+            accessoryText: countryCodeFormatted,
+            accessoryType: .disclosureIndicator,
+            actionBlock: { [weak self] in self?.showCountryCodePicker(valueViews: valueViews) }
+        ))
+        section.add(.item(
+            name: OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD", comment: "Label for the 'phone number' row in the 'change phone number' settings."),
+            textColor: Theme.primaryTextColor,
+            accessoryContentView: valueViews.phoneNumberTextField
+        ))
 
         switch valueViews.type {
         case .newNumber:
@@ -327,7 +330,6 @@ private class ChangePhoneNumberValueViews: NSObject {
 
         super.init()
 
-        phoneNumberTextField.accessibilityIdentifier = self.accessibilityIdentifier_PhoneNumberTextfield
         phoneNumberTextField.delegate = self
         phoneNumberTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         phoneNumberTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidBegin)
@@ -410,18 +412,6 @@ private class ChangePhoneNumberValueViews: NSObject {
         case .newNumber:
             return "new"
         }
-    }
-
-    var accessibilityIdentifier_PhoneNumberTextfield: String {
-        accessibilityIdentifierPrefix + "_phone_number_textfield"
-    }
-
-    var accessibilityIdentifier_PhoneNumber: String {
-        accessibilityIdentifierPrefix + "_phone_number"
-    }
-
-    var accessibilityIdentifier_CountryCode: String {
-        accessibilityIdentifierPrefix + "_country_code"
     }
 
     enum ParsedValue {
