@@ -6,7 +6,7 @@
 import Foundation
 
 public protocol ProvisioningSocketDelegate: AnyObject {
-    func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveDeviceId deviceID: String)
+    func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveProvisioningUuid provisioningUuid: String)
     func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveEnvelope envelope: ProvisioningProtoProvisionEnvelope)
     func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didError error: Error)
 }
@@ -14,8 +14,10 @@ public protocol ProvisioningSocketDelegate: AnyObject {
 // MARK: -
 
 public class ProvisioningSocket {
-    let socket: SSKWebSocket
+    public let id = UUID()
     public weak var delegate: ProvisioningSocketDelegate?
+
+    let socket: SSKWebSocket
 
     public init(webSocketFactory: WebSocketFactory) {
         // TODO: Should we (sometimes?) use the unidentified service?
@@ -95,7 +97,7 @@ extension ProvisioningSocket: SSKWebSocketDelegate {
                 throw OWSAssertionError("body was unexpectedly nil")
             }
             let uuidProto = try ProvisioningProtoProvisioningUuid(serializedData: body)
-            delegate?.provisioningSocket(self, didReceiveDeviceId: uuidProto.uuid)
+            delegate?.provisioningSocket(self, didReceiveProvisioningUuid: uuidProto.uuid)
         case ("PUT", "/v1/message"):
             guard let body = request.body else {
                 throw OWSAssertionError("body was unexpectedly nil")

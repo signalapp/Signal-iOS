@@ -24,16 +24,39 @@ class ProvisioningNavigationController: OWSNavigationController {
 
 class ProvisioningController: NSObject {
 
+    private struct ProvisioningUrlParams {
+        let uuid: String
+        let cipher: ProvisioningCipher
+    }
+
+    private struct DecryptableProvisionEnvelope {
+        let cipher: ProvisioningCipher
+        let envelope: ProvisioningProtoProvisionEnvelope
+
+        func decrypt() throws -> ProvisionMessage {
+            return try cipher.decrypt(envelope: envelope)
+        }
+    }
+
+    /// Represents an attempt to communicate with the primary.
+    private struct ProvisioningUrlCommunicationAttempt {
+        /// The socket from which we hope to receive a provisioning envelope
+        /// from a primary.
+        let socket: ProvisioningSocket
+        /// The cipher to be used in encrypting the provisioning envelope.
+        let cipher: ProvisioningCipher
+        /// A continuation waiting for us to fetch the parameters necessary for
+        /// us to construct a provisioning URL, which we will present to the
+        /// primary via QR code. The provisioning URL will contain the necessary
+        /// data for the primary to send us a provisioning envelope over our
+        /// provisioning socket, via the server.
+        var fetchProvisioningUrlParamsContinuation: CheckedContinuation<ProvisioningUrlParams, Error>?
+    }
+
+    private var urlCommunicationAttempts: AtomicValue<[ProvisioningUrlCommunicationAttempt]> = AtomicValue([], lock: .init())
+    private var awaitProvisionEnvelopeContinuation: AtomicValue<CheckedContinuation<DecryptableProvisionEnvelope?, Never>?> = AtomicValue(nil, lock: .init())
+
     private let appReadiness: AppReadinessSetter
-
-    private let provisioningCipher: ProvisioningCipher
-    private let provisioningSocket: ProvisioningSocket
-
-    private var deviceIdPromise: Promise<String>
-    private var deviceIdFuture: Future<String>
-
-    private var provisionEnvelopePromise: Promise<ProvisioningProtoProvisionEnvelope>
-    private var provisionEnvelopeFuture: Future<ProvisioningProtoProvisionEnvelope>
 
     private lazy var provisioningCoordinator: ProvisioningCoordinator = {
         return ProvisioningCoordinatorImpl(
@@ -60,22 +83,8 @@ class ProvisioningController: NSObject {
 
     private init(appReadiness: AppReadinessSetter) {
         self.appReadiness = appReadiness
-        provisioningCipher = ProvisioningCipher.generate()
-
-        (self.deviceIdPromise, self.deviceIdFuture) = Promise.pending()
-        (self.provisionEnvelopePromise, self.provisionEnvelopeFuture) = Promise.pending()
-
-        provisioningSocket = ProvisioningSocket()
 
         super.init()
-
-        provisioningSocket.delegate = self
-    }
-
-    func resetPromises() {
-        _awaitProvisionMessage = nil
-        (self.deviceIdPromise, self.deviceIdFuture) = Promise.pending()
-        (self.provisionEnvelopePromise, self.provisionEnvelopeFuture) = Promise.pending()
     }
 
     static func presentProvisioningFlow(appReadiness: AppReadinessSetter) {
@@ -96,9 +105,14 @@ class ProvisioningController: NSObject {
 
         let vc = ProvisioningQRCodeViewController(provisioningController: provisioningController)
         navController.setViewControllers([vc], animated: false)
-
-        provisioningController.awaitProvisioning(from: vc, navigationController: navController)
         CurrentAppContext().mainWindow?.rootViewController = navController
+
+        Task {
+            await provisioningController.awaitProvisioning(
+                from: vc,
+                navigationController: navController
+            )
+        }
     }
 
     private func setUpDebugLogsGesture(
@@ -229,67 +243,101 @@ class ProvisioningController: NSObject {
         let qrCodeViewController = ProvisioningQRCodeViewController(provisioningController: self)
         navigationController.pushViewController(qrCodeViewController, animated: true)
 
-        awaitProvisioning(from: qrCodeViewController, navigationController: navigationController)
+        Task {
+            await awaitProvisioning(
+                from: qrCodeViewController,
+                navigationController: navigationController
+            )
+        }
     }
 
-    private func awaitProvisioning(from viewController: ProvisioningQRCodeViewController,
-                                   navigationController: UINavigationController) {
+    private func awaitProvisioning(
+        from viewController: ProvisioningQRCodeViewController,
+        navigationController: UINavigationController
+    ) async {
+        let decryptableProvisionEnvelope: DecryptableProvisionEnvelope? = await withCheckedContinuation { newContinuation in
+            awaitProvisionEnvelopeContinuation.update { existingContinuation in
+                guard existingContinuation == nil else {
+                    newContinuation.resume(returning: nil)
+                    return
+                }
 
-        awaitProvisionMessage.done { [weak self, weak navigationController] message in
-            guard let self = self else { throw PromiseError.cancelled }
-            guard let navigationController = navigationController else { throw PromiseError.cancelled }
+                existingContinuation = newContinuation
+            }
+        }
 
-            // Verify the primary device is new enough to link us. Right now this is a simple check
-            // of >= the latest version, but when we bump the version we may need to be more specific
-            // if we have some backwards compatible support and allow a limited linking with an old
-            // version of the app.
-            guard let provisioningVersion = message.provisioningVersion,
-                provisioningVersion >= OWSDeviceProvisionerConstant.provisioningVersion else {
-                    OWSActionSheets.showActionSheet(
-                        title: OWSLocalizedString("SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE",
-                                                 comment: "alert title for outdated linking device"),
-                        message: OWSLocalizedString("SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE",
-                                                   comment: "alert message for outdated linking device")
-                    ) { _ in
-                        self.resetPromises()
+        guard let decryptableProvisionEnvelope else {
+            owsFailDebug("Attempted to await provisioning multiple times!")
+            return
+        }
+
+        await MainActor.run {
+            let provisionMessage: ProvisionMessage
+            do {
+                provisionMessage = try decryptableProvisionEnvelope.decrypt()
+            } catch let error {
+                Logger.error("Failed to decrypt provision envelope: \(error)")
+
+                let alert = ActionSheetController(
+                    title: OWSLocalizedString(
+                        "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN",
+                        comment: "alert title"
+                    ),
+                    message: error.userErrorDescription
+                )
+                alert.addAction(ActionSheetAction(
+                    title: CommonStrings.cancelButton,
+                    style: .cancel,
+                    handler: { _ in
                         navigationController.popViewController(animated: true)
                     }
+                ))
+
+                navigationController.presentActionSheet(alert)
                 return
             }
 
-            if FeatureFlags.linkAndSync, message.ephemeralBackupKey != nil {
+            /// Ensure the primary is new enough to link us.
+            guard
+                let provisioningVersion = provisionMessage.provisioningVersion,
+                provisioningVersion >= OWSDeviceProvisionerConstant.provisioningVersion
+            else {
+                OWSActionSheets.showActionSheet(
+                    title: OWSLocalizedString(
+                        "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE",
+                        comment: "alert title for outdated linking device"
+                    ),
+                    message: OWSLocalizedString(
+                        "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE",
+                        comment: "alert message for outdated linking device"
+                    )
+                ) { _ in
+                    navigationController.popViewController(animated: true)
+                }
+                return
+            }
+
+            if FeatureFlags.linkAndSync, provisionMessage.ephemeralBackupKey != nil {
                 // Don't confirm the name in link'n'sync, just keep going.
-                self.didSetDeviceName(
+                didSetDeviceName(
                     UIDevice.current.name,
+                    provisionMessage: provisionMessage,
                     from: viewController,
                     willLinkAndSync: true
                 )
             } else {
-                let confirmVC = ProvisioningSetDeviceNameViewController(provisioningController: self)
+                let confirmVC = ProvisioningSetDeviceNameViewController(
+                    provisionMessage: provisionMessage,
+                    provisioningController: self
+                )
                 navigationController.pushViewController(confirmVC, animated: true)
-            }
-        }.catch { error in
-            switch error {
-            case PromiseError.cancelled:
-                Logger.info("cancelled")
-            default:
-                Logger.warn("error: \(error)")
-                let alert = ActionSheetController(title: OWSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title"),
-                                                  message: error.userErrorDescription)
-                alert.addAction(ActionSheetAction(title: CommonStrings.retryButton,
-                                                  accessibilityIdentifier: "alert.retry",
-                                                  style: .default,
-                                                  handler: { _ in
-                                                    self.resetPromises()
-                                                    navigationController.popViewController(animated: true)
-                }))
-                navigationController.presentActionSheet(alert)
             }
         }
     }
 
     func didSetDeviceName(
         _ deviceName: String,
+        provisionMessage: ProvisionMessage,
         from viewController: UIViewController,
         willLinkAndSync: Bool
     ) {
@@ -357,7 +405,12 @@ class ProvisioningController: NSObject {
                     accessibilityIdentifier: "alert.retry",
                     style: .default,
                     handler: { _ in
-                        self.didSetDeviceName(deviceName, from: viewController, willLinkAndSync: willLinkAndSync)
+                        self.didSetDeviceName(
+                            deviceName,
+                            provisionMessage: provisionMessage,
+                            from: viewController,
+                            willLinkAndSync: willLinkAndSync
+                        )
                     }
                 ))
             }
@@ -372,9 +425,10 @@ class ProvisioningController: NSObject {
                 viewController.present(progressViewController, animated: false)
                 let result = await self.completeLinking(
                     deviceName: deviceName,
+                    provisionMessage: provisionMessage,
                     progressViewModel: progressViewModel,
                     viewController: progressViewController
-                ).awaitable()
+                )
                 let errorActionSheet = resultHandler(result)
                 if let errorActionSheet {
                     progressViewController.dismiss(animated: true) {
@@ -389,24 +443,24 @@ class ProvisioningController: NSObject {
         } else {
             ModalActivityIndicatorViewController.present(
                 fromViewController: viewController,
-                canCancel: false,
-                backgroundBlock: { modal in
-                    self.completeLinking(
-                        deviceName: deviceName,
-                        progressViewModel: progressViewModel,
-                        viewController: modal
-                    ).done { result in
-                        let errorActionSheet = resultHandler(result)
-                        modal.dismiss {
-                            if let errorActionSheet {
-                                viewController.presentActionSheet(errorActionSheet)
-                            } else {
-                                self.provisioningDidComplete(from: viewController)
-                            }
-                        }
+                canCancel: false
+            ) { modal async -> Void in
+                let result = await self.completeLinking(
+                    deviceName: deviceName,
+                    provisionMessage: provisionMessage,
+                    progressViewModel: progressViewModel,
+                    viewController: modal
+                )
+
+                let errorActionSheet = resultHandler(result)
+                modal.dismiss {
+                    if let errorActionSheet {
+                        viewController.presentActionSheet(errorActionSheet)
+                    } else {
+                        self.provisioningDidComplete(from: viewController)
                     }
                 }
-            )
+            }
         }
     }
 
@@ -421,47 +475,38 @@ class ProvisioningController: NSObject {
         SignalApp.resetAppDataWithUI()
     }
 
-    func getProvisioningURL() -> Promise<URL> {
-        return getDeviceId().map { [weak self] deviceId in
-            guard let self = self else { throw PromiseError.cancelled }
+    func getProvisioningURL() async throws -> URL {
+        let provisioningUrlParams: ProvisioningUrlParams = try await withCheckedThrowingContinuation { paramsContinuation in
+            let newAttempt = ProvisioningUrlCommunicationAttempt(
+                socket: ProvisioningSocket(),
+                cipher: .generate(),
+                fetchProvisioningUrlParamsContinuation: paramsContinuation
+            )
 
-            return try self.buildProvisioningUrl(deviceId: deviceId)
-        }
-    }
+            urlCommunicationAttempts.update { $0.append(newAttempt) }
 
-    private var _awaitProvisionMessage: Promise<ProvisionMessage>?
-    private var awaitProvisionMessage: Promise<ProvisionMessage> {
-        if _awaitProvisionMessage == nil {
-            _awaitProvisionMessage = provisionEnvelopePromise.map { [weak self] envelope in
-                guard let self = self else { throw PromiseError.cancelled }
-                return try self.provisioningCipher.decrypt(envelope: envelope)
-            }
+            newAttempt.socket.delegate = self
+            newAttempt.socket.connect()
         }
-        return _awaitProvisionMessage!
+
+        return try Self.buildProvisioningUrl(params: provisioningUrlParams)
     }
 
     private func completeLinking(
         deviceName: String,
+        provisionMessage: ProvisionMessage,
         progressViewModel: LinkAndSyncProgressViewModel,
         viewController: UIViewController
-    ) -> Guarantee<CompleteProvisioningResult> {
-        return awaitProvisionMessage.then { [weak self] provisionMessage -> Promise<CompleteProvisioningResult> in
-            guard let self = self else { throw PromiseError.cancelled }
-
-            return Promise.wrapAsync {
-                await self.provisioningCoordinator.completeProvisioning(
-                    provisionMessage: provisionMessage,
-                    deviceName: deviceName,
-                    progressViewModel: progressViewModel,
-                    shouldRetry: { [weak viewController] error in
-                        guard let viewController else { return false }
-                        return await self.showError(error: error, viewController: viewController)
-                    }
-                )
+    ) async -> CompleteProvisioningResult {
+        await self.provisioningCoordinator.completeProvisioning(
+            provisionMessage: provisionMessage,
+            deviceName: deviceName,
+            progressViewModel: progressViewModel,
+            shouldRetry: { [weak viewController] error in
+                guard let viewController else { return false }
+                return await self.showError(error: error, viewController: viewController)
             }
-        }.recover {
-            return .value(.genericError($0))
-        }
+        )
     }
 
     @MainActor
@@ -514,9 +559,9 @@ class ProvisioningController: NSObject {
 
     // MARK: -
 
-    private func buildProvisioningUrl(deviceId: String) throws -> URL {
+    private static func buildProvisioningUrl(params: ProvisioningUrlParams) throws -> URL {
         let base64PubKey: String = Data(
-            provisioningCipher.secondaryDevicePublicKey.serialize()
+            params.cipher.secondaryDevicePublicKey.serialize()
         ).base64EncodedString()
         guard let encodedPubKey = base64PubKey.encodeURIComponent else {
             throw OWSAssertionError("Failed to url encode query params")
@@ -554,7 +599,7 @@ class ProvisioningController: NSObject {
         var urlString = UrlOpener.Constants.sgnlPrefix
         urlString.append("://")
         urlString.append(DeviceProvisioningURL.Constants.linkDeviceHost)
-        urlString.append("?\(DeviceProvisioningURL.ephemeralDeviceIdParamName)=\(deviceId)")
+        urlString.append("?\(DeviceProvisioningURL.uuidParamName)=\(params.uuid)")
         urlString.append("&\(DeviceProvisioningURL.publicKeyParamName)=\(encodedPubKey)")
         urlString.append("&\(DeviceProvisioningURL.capabilitiesParamName)=\(capabilities.joined(separator: ","))")
         guard let url = URL(string: urlString) else {
@@ -563,36 +608,96 @@ class ProvisioningController: NSObject {
 
         return url
     }
-
-    private func getDeviceId() -> Promise<String> {
-        assert(provisioningSocket.state != .open)
-        // TODO send Keep-Alive or ping frames at regular intervals
-        // iOS uses ping frames elsewhere, but moxie seemed surprised we weren't
-        // using the keepalive endpoint. Waiting to here back from him before proceeding.
-        // (If it's sufficient, my preference would be to do like we do elsewhere and
-        // use the ping frames)
-        provisioningSocket.connect()
-        return deviceIdPromise
-    }
 }
 
 extension ProvisioningController: ProvisioningSocketDelegate {
-    func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveDeviceId deviceId: String) {
-        owsAssertDebug(!deviceIdPromise.isSealed)
-        deviceIdFuture.resolve(deviceId)
+    func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveProvisioningUuid provisioningUuid: String) {
+        urlCommunicationAttempts.update { attempts in
+            let matchingAttemptIndex = attempts.firstIndex {
+                $0.socket.id == provisioningSocket.id
+            }
+
+            guard
+                let matchingAttemptIndex,
+                let fetchParamsContinuation = attempts[matchingAttemptIndex].fetchProvisioningUrlParamsContinuation
+            else {
+                owsFailDebug("Got provisioning UUID for unknown socket!")
+                return
+            }
+
+            attempts[matchingAttemptIndex].fetchProvisioningUrlParamsContinuation = nil
+
+            fetchParamsContinuation.resume(
+                returning: ProvisioningUrlParams(
+                    uuid: provisioningUuid,
+                    cipher: attempts[matchingAttemptIndex].cipher
+                )
+            )
+        }
     }
 
     func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveEnvelope envelope: ProvisioningProtoProvisionEnvelope) {
-        // After receiving the provisioning message, there's nothing else to retrieve from the provisioning socket
-        provisioningSocket.disconnect(code: .normalClosure)
+        var cipherForSocket: ProvisioningCipher?
 
-        owsAssertDebug(!provisionEnvelopePromise.isSealed)
-        return provisionEnvelopeFuture.resolve(envelope)
+        /// We've gotten a provisioning message, from one of our attempts'
+        /// sockets. (We don't care which one – it's whichever one the primary
+        /// scanned and sent an envelope through!)
+        for attempt in urlCommunicationAttempts.get() {
+            /// After we get a provisioning message, we don't expect anything
+            /// from this or any other socket.
+            attempt.socket.disconnect(code: .normalClosure)
+
+            if provisioningSocket.id == attempt.socket.id {
+                owsAssertDebug(
+                    cipherForSocket == nil,
+                    "Extracting cipher, but unexpectedly already set from previous match!"
+                )
+
+                cipherForSocket = attempt.cipher
+            }
+        }
+
+        guard let cipherForSocket else {
+            owsFailDebug("Missing cipher for socket that received envelope!")
+            return
+        }
+
+        awaitProvisionEnvelopeContinuation.update { continuation in
+            guard continuation != nil else {
+                owsFailDebug("Got provision envelope, but missing continuation or cipher!")
+                return
+            }
+
+            continuation!.resume(returning: DecryptableProvisionEnvelope(
+                cipher: cipherForSocket,
+                envelope: envelope
+            ))
+            continuation = nil
+        }
     }
 
     func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didError error: Error) {
-        Logger.warn("\(error)")
-        deviceIdFuture.reject(error)
-        provisionEnvelopeFuture.reject(error)
+        if
+            let webSocketError = error as? WebSocketError,
+            case .closeError = webSocketError
+        {
+            Logger.info("Provisioning socket closed...")
+        } else {
+            Logger.error("\(error)")
+        }
+
+        urlCommunicationAttempts.update { attempts in
+            let matchingAttemptIndex = attempts.firstIndex {
+                $0.socket.id == provisioningSocket.id
+            }
+
+            guard let matchingAttemptIndex else {
+                owsFailDebug("Got provisioning UUID for unknown socket!")
+                return
+            }
+
+            attempts[matchingAttemptIndex].fetchProvisioningUrlParamsContinuation?.resume(throwing: error)
+            attempts[matchingAttemptIndex].fetchProvisioningUrlParamsContinuation = nil
+        }
     }
 }

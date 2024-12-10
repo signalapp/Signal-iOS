@@ -8,6 +8,16 @@ import SignalUI
 
 class ProvisioningSetDeviceNameViewController: ProvisioningBaseViewController {
 
+    private let provisionMessage: ProvisionMessage
+
+    init(
+        provisionMessage: ProvisionMessage,
+        provisioningController: ProvisioningController
+    ) {
+        self.provisionMessage = provisionMessage
+        super.init(provisioningController: provisioningController)
+    }
+
     // MARK: UIViewController overrides
 
     override public func loadView() {
@@ -157,9 +167,9 @@ class ProvisioningSetDeviceNameViewController: ProvisioningBaseViewController {
 
         provisioningController.didSetDeviceName(
             String(deviceName),
+            provisionMessage: provisionMessage,
             from: self,
             willLinkAndSync: false
         )
     }
-
 }

@@ -8,7 +8,7 @@ import SignalServiceKit
 
 class DeviceProvisioningURL {
 
-    public static let ephemeralDeviceIdParamName = "uuid"
+    public static let uuidParamName = "uuid"
     public static let publicKeyParamName = "pub_key"
     public static let capabilitiesParamName = "capabilities"
 
@@ -40,7 +40,7 @@ class DeviceProvisioningURL {
         var capabilities: [Capability] = []
         for queryItem in queryItems {
             switch queryItem.name {
-            case Self.ephemeralDeviceIdParamName:
+            case Self.uuidParamName:
                 ephemeralDeviceId = queryItem.value
             case Self.publicKeyParamName:
                 publicKey = Self.decodePublicKey(queryItem.value)
