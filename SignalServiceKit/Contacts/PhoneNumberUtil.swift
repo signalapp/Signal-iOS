@@ -183,7 +183,7 @@ extension PhoneNumberUtil {
         return countryCodes
     }
 
-    public func format(_ phoneNumber: NBPhoneNumber, numberFormat: NBEPhoneNumberFormat) throws -> String {
+    private func format(_ phoneNumber: NBPhoneNumber, numberFormat: NBEPhoneNumberFormat) throws -> String {
         try nbPhoneNumberUtil.format(phoneNumber, numberFormat: numberFormat)
     }
 
@@ -203,13 +203,10 @@ extension PhoneNumberUtil {
             func findExamplePhoneNumber() -> NBPhoneNumber? {
                 let types: [NBEPhoneNumberType] = [.MOBILE, .FIXED_LINE_OR_MOBILE]
                 for type in types {
-                    let phoneNumber = PhoneNumberUtil.getExampleNumber(
-                        forType: countryCode,
-                        type: type,
-                        nbPhoneNumberUtil: nbPhoneNumberUtil
-                    )
-                    if let phoneNumber {
-                        return phoneNumber
+                    do {
+                        return try nbPhoneNumberUtil.getExampleNumber(forType: countryCode, type: type)
+                    } catch {
+                        owsFailDebug("Error: \(error)")
                     }
                 }
                 return nil
@@ -223,10 +220,6 @@ extension PhoneNumberUtil {
             owsFailDebug("Error: \(error)")
             return nil
         }
-    }
-
-    public func isPossibleNumber(_ number: NBPhoneNumber) -> Bool {
-        return nbPhoneNumberUtil.isPossibleNumber(number)
     }
 
     public func getRegionCodeForCountryCode(_ countryCallingCode: Int) -> String {
@@ -312,7 +305,7 @@ extension PhoneNumberUtil {
     private func parsePhoneNumber(_ numberToParse: String, regionCode: String) -> PhoneNumber? {
         do {
             let phoneNumber = try parse(numberToParse, defaultRegion: regionCode)
-            guard isPossibleNumber(phoneNumber) else {
+            guard nbPhoneNumberUtil.isPossibleNumber(phoneNumber) else {
                 return nil
             }
             let phoneNumberE164 = try format(phoneNumber, numberFormat: .E164)
@@ -825,13 +818,4 @@ extension PhoneNumberUtil {
         "TA", // 0
         "UM", // 0
     ]
-
-    private static func getExampleNumber(forType regionCode: String, type: NBEPhoneNumberType, nbPhoneNumberUtil: NBPhoneNumberUtil) -> NBPhoneNumber? {
-        do {
-            return try nbPhoneNumberUtil.getExampleNumber(forType: regionCode, type: type)
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return nil
-        }
-    }
 }

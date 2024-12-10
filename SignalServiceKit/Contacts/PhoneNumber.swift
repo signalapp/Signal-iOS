@@ -34,9 +34,7 @@ public struct PhoneNumber {
     }
 
     private static func bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(_ input: String, regionCode: String) -> String {
-        guard let formatter = NBAsYouTypeFormatter(regionCode: regionCode) else {
-            owsFail("failed to create NBAsYouTypeFormatter for region code \(regionCode)")
-        }
+        let formatter: NBAsYouTypeFormatter = NBAsYouTypeFormatter(regionCode: regionCode)
         var result = input
         // Note that the objc code this was converted from would've performed this in UTF-16 code units.
         // We assume NBAsYouTypeFormatter can handle Character types given the API takes String.

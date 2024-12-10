@@ -114,38 +114,10 @@ class PhoneNumberUtilTestSwift: XCTestCase {
         }
     }
 
-    func test_format() {
-        let phoneNumber1 = try! phoneNumberUtilRef.parse("+13334445555", defaultRegion: "US")
-        let phoneNumber2 = try! phoneNumberUtilRef.parse("+441752395464", defaultRegion: "US")
-
-        XCTAssertEqual("+13334445555", try! phoneNumberUtilRef.format(phoneNumber1, numberFormat: .E164))
-        XCTAssertEqual("(333) 444-5555", try! phoneNumberUtilRef.format(phoneNumber1, numberFormat: .NATIONAL))
-        XCTAssertEqual("+1 333-444-5555", try! phoneNumberUtilRef.format(phoneNumber1, numberFormat: .INTERNATIONAL))
-        XCTAssertEqual("tel:+1-333-444-5555", try! phoneNumberUtilRef.format(phoneNumber1, numberFormat: .RFC3966))
-
-        XCTAssertEqual("+441752395464", try! phoneNumberUtilRef.format(phoneNumber2, numberFormat: .E164))
-        XCTAssertEqual("01752 395464", try! phoneNumberUtilRef.format(phoneNumber2, numberFormat: .NATIONAL))
-        XCTAssertEqual("+44 1752 395464", try! phoneNumberUtilRef.format(phoneNumber2, numberFormat: .INTERNATIONAL))
-        XCTAssertEqual("tel:+44-1752-395464", try! phoneNumberUtilRef.format(phoneNumber2, numberFormat: .RFC3966))
-    }
-
     func test_examplePhoneNumberForCountryCode() {
         XCTAssertEqual("+12015550123", phoneNumberUtilRef.examplePhoneNumber(forCountryCode: "US"))
         XCTAssertEqual("+447400123456", phoneNumberUtilRef.examplePhoneNumber(forCountryCode: "GB"))
         XCTAssertEqual("+59894231234", phoneNumberUtilRef.examplePhoneNumber(forCountryCode: "UY"))
-    }
-
-    func test_isPossibleNumber() {
-        let phoneNumber1 = try! phoneNumberUtilRef.parse("+13334445555", defaultRegion: "US")
-        let phoneNumber2 = try! phoneNumberUtilRef.parse("+441752395464", defaultRegion: "US")
-        // Invalid numbers.
-        let phoneNumber3 = try! phoneNumberUtilRef.parse("+44175239546", defaultRegion: "US")
-        let phoneNumber4 = try! phoneNumberUtilRef.parse("44", defaultRegion: "US")
-
-        XCTAssertEqual(true, phoneNumberUtilRef.isPossibleNumber(phoneNumber1))
-        XCTAssertEqual(true, phoneNumberUtilRef.isPossibleNumber(phoneNumber2))
-        XCTAssertEqual(true, phoneNumberUtilRef.isPossibleNumber(phoneNumber3))
-        XCTAssertEqual(false, phoneNumberUtilRef.isPossibleNumber(phoneNumber4))
     }
 
     func test_getRegionCodeForCountryCode() {
