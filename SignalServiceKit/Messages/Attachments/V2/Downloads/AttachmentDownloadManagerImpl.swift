@@ -1316,10 +1316,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             continuation.resume()
         }
 
+        private struct ResumeData {
+            let expectedDownloadSizeBytes: UInt?
+            let data: Data?
+        }
+
         private nonisolated func performDownloadAttempt(
             downloadState: DownloadState,
             maxDownloadSizeBytes: UInt,
-            resumeData: Data?,
+            resumeData: ResumeData?,
             attemptCount: UInt
         ) async throws -> URL {
             guard downloadState.isExpired().negated else {
@@ -1342,18 +1347,36 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 attachmentId = id
             }
 
+            var expectedDownloadSizeBytes: UInt? = resumeData?.expectedDownloadSizeBytes
             let progress = { (task: URLSessionTask, progress: Progress) in
                 self.handleDownloadProgress(
                     downloadState: downloadState,
                     task: task,
                     progress: progress,
+                    expectedDownloadSizeBytes: expectedDownloadSizeBytes,
                     attachmentId: attachmentId
                 )
             }
 
             do {
+                if expectedDownloadSizeBytes == nil {
+                    // Perform a HEAD request just to get the byte length from cdn.
+                    let request = try urlSession.endpoint.buildRequest(urlPath, method: .head, headers: headers)
+                    let response = try await urlSession.performRequest(request: request, ignoreAppExpiry: true)
+                    guard
+                        let contentLengthRaw =
+                            response.responseHeaders["Content-Length"]
+                            ?? response.responseHeaders["content-length"],
+                        let contentLengthBytes = UInt(contentLengthRaw)
+                    else {
+                        Logger.error("Missing content length from cdn")
+                        throw OWSUnretryableError()
+                    }
+                    expectedDownloadSizeBytes = contentLengthBytes
+                }
+
                 let downloadResponse: OWSUrlDownloadResponse
-                if let resumeData = resumeData {
+                if let resumeData = resumeData?.data {
                     let request = try urlSession.endpoint.buildRequest(urlPath, method: .get, headers: headers)
                     guard let requestUrl = request.url else {
                         throw OWSAssertionError("Request missing url.")
@@ -1403,7 +1426,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return try await self.performDownloadAttempt(
                     downloadState: downloadState,
                     maxDownloadSizeBytes: maxDownloadSizeBytes,
-                    resumeData: newResumeData,
+                    resumeData: .init(
+                        expectedDownloadSizeBytes: expectedDownloadSizeBytes,
+                        data: newResumeData
+                    ),
                     attemptCount: attemptCount + 1
                 )
             }
@@ -1413,6 +1439,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             downloadState: DownloadState,
             task: URLSessionTask,
             progress: Progress,
+            expectedDownloadSizeBytes: UInt?,
             attachmentId: Attachment.IDType?
         ) {
             if let attachmentId, progressStates.consumeCancellation(of: attachmentId) {
@@ -1422,15 +1449,20 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return
             }
 
-            // Don't do anything until we've received at least one byte of data.
-            guard progress.completedUnitCount > 0 else {
-                return
-            }
-
             // Use a slightly non-zero value to ensure that the progress
             // indicator shows up as quickly as possible.
             let progressTheta: Double = 0.001
-            let fractionCompleted = max(progressTheta, progress.fractionCompleted)
+
+            let fractionCompleted: Double
+            if progress.completedUnitCount > 0 {
+                fractionCompleted = max(progressTheta, progress.fractionCompleted)
+            } else if expectedDownloadSizeBytes != nil {
+                fractionCompleted = progressTheta
+            } else {
+                // Don't do anything until we've received at least one byte of data,
+                // or estimated the download size.
+                return
+            }
 
             switch downloadState.type {
             case .backup, .transientAttachment:
