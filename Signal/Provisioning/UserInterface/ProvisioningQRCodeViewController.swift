@@ -7,11 +7,11 @@ import SafariServices
 import SignalServiceKit
 import SignalUI
 
-public class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
+class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
 
     let qrCodeView = QRCodeView()
 
-    override public func loadView() {
+    override func loadView() {
         view = UIView()
         view.addSubview(primaryView)
         primaryView.autoPinEdgesToSuperviewEdges()
@@ -67,7 +67,7 @@ public class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
         stackView.autoPinEdgesToSuperviewMargins()
     }
 
-    override public func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchAndSetQRCode()
     }
@@ -114,7 +114,7 @@ public class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
 
     private var hasFetchedAndSetQRCode = false
     private var qrCodeURL: URL?
-    public func fetchAndSetQRCode() {
+    func fetchAndSetQRCode() {
         guard !hasFetchedAndSetQRCode else { return }
         hasFetchedAndSetQRCode = true
 

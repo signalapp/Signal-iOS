@@ -5,9 +5,9 @@
 
 import Foundation
 import LibSignalClient
-public import SignalServiceKit
+import SignalServiceKit
 
-public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
+class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
     private let chatConnectionManager: ChatConnectionManager
     private let db: any DB
@@ -28,7 +28,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let tsAccountManager: TSAccountManager
     private let udManager: Shims.UDManager
 
-    public init(
+    init(
         chatConnectionManager: ChatConnectionManager,
         db: any DB,
         identityManager: OWSIdentityManager,
@@ -68,9 +68,10 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         self.udManager = udManager
     }
 
-    public func completeProvisioning(
+    func completeProvisioning(
         provisionMessage: ProvisionMessage,
-        deviceName: String
+        deviceName: String,
+        progressViewModel: LinkAndSyncProgressViewModel
     ) async -> CompleteProvisioningResult {
         // * Primary devices that are re-registering can provision instead as long as either
         // the phone number or aci matches.
@@ -249,16 +250,9 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             FeatureFlags.linkAndSync,
             let ephemeralBackupKey = BackupKey(provisioningMessage: provisionMessage)
         {
-            // TODO: display progress in a less hacky way.
-            let loadingViewController = await Task { @MainActor in
-                let vc = LinkAndSyncLoadingViewController()
-                vc.modalPresentationStyle = .overFullScreen
-                UIApplication.shared.frontmostViewController?.present(vc, animated: false)
-                return vc
-            }.value
             let progress = OWSProgress.createSink { progress in
                 Task { @MainActor in
-                    loadingViewController.percentCompleted = progress.percentComplete
+                    progressViewModel.progress = progress.percentComplete
                 }
             }
             do {
@@ -276,12 +270,6 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 // TODO: handle errors; for now just log and continue
                 Logger.error("Failed link'n'sync \(error)")
             }
-            await Task { @MainActor in
-                // TODO: remove this hack and instead show loading until we're actually done.
-                // Wait a second before dismissing
-                try? await Task.sleep(nanoseconds: NSEC_PER_SEC)
-                loadingViewController.dismiss(animated: false)
-            }.value
         }
 
         let hasBackedUpMasterKey = self.db.read { tx in

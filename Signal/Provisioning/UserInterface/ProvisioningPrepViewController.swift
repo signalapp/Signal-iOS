@@ -7,17 +7,17 @@ import Lottie
 import SignalServiceKit
 import SignalUI
 
-public class ProvisioningPrepViewController: ProvisioningBaseViewController {
+class ProvisioningPrepViewController: ProvisioningBaseViewController {
 
     lazy var animationView = LottieAnimationView(name: isTransferring ? "launchApp-iPad" : "launchApp-iPhone")
     let isTransferring: Bool
 
-    public init(provisioningController: ProvisioningController, isTransferring: Bool) {
+    init(provisioningController: ProvisioningController, isTransferring: Bool) {
         self.isTransferring = isTransferring
         super.init(provisioningController: provisioningController)
     }
 
-    override public func loadView() {
+    override func loadView() {
         view = UIView()
         view.addSubview(primaryView)
         primaryView.autoPinEdgesToSuperviewEdges()
@@ -77,7 +77,7 @@ public class ProvisioningPrepViewController: ProvisioningBaseViewController {
         stackView.autoPinEdgesToSuperviewMargins()
     }
 
-    override public func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         animationView.play()
     }

@@ -4,7 +4,7 @@
 //
 
 import Foundation
-public import SignalServiceKit
+import SignalServiceKit
 
 /**
  * Manages the series of network requests and state changes required to provision
@@ -22,15 +22,16 @@ public import SignalServiceKit
  * Eventually, it would be nice to mirror RegistrationCoordinator and have this
  * class behave like a state machine that handles the preceding steps as well.
  */
-public protocol ProvisioningCoordinator {
+protocol ProvisioningCoordinator {
 
     func completeProvisioning(
         provisionMessage: ProvisionMessage,
-        deviceName: String
+        deviceName: String,
+        progressViewModel: LinkAndSyncProgressViewModel
     ) async -> CompleteProvisioningResult
 }
 
-public enum CompleteProvisioningResult {
+enum CompleteProvisioningResult {
     case success
     /// This device was previously linked (or was previously a registered primary)
     /// but the new linking was being done with a different account, which is disallowed.

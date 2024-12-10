@@ -6,11 +6,11 @@
 import SafariServices
 import SignalServiceKit
 import SignalUI
-public import UIKit
+import UIKit
 
-public class ProvisioningSplashViewController: ProvisioningBaseViewController {
+class ProvisioningSplashViewController: ProvisioningBaseViewController {
 
-    public override var primaryLayoutMargins: UIEdgeInsets {
+    override var primaryLayoutMargins: UIEdgeInsets {
         var defaultMargins = super.primaryLayoutMargins
         // we want the hero image a bit closer to the top than most
         // onboarding content
@@ -18,7 +18,7 @@ public class ProvisioningSplashViewController: ProvisioningBaseViewController {
         return defaultMargins
     }
 
-    override public func loadView() {
+    override func loadView() {
         view = UIView()
         view.addSubview(primaryView)
         primaryView.autoPinEdgesToSuperviewEdges()

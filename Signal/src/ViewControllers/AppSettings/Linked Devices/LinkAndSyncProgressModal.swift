@@ -7,11 +7,17 @@ import SwiftUI
 import SignalUI
 import SignalServiceKit
 
+// MARK: View Model
+
+class LinkAndSyncProgressViewModel: ObservableObject {
+    @Published var progress: Float = 0
+}
+
 // MARK: Hosting Controller
 
 class LinkAndSyncProgressModal: HostingController<LinkAndSyncProgressView> {
 
-    private let viewModel = LinkAndSyncProgressView.ViewModel()
+    private let viewModel = LinkAndSyncProgressViewModel()
 
     var progress: Float {
         get { viewModel.progress }
@@ -39,11 +45,7 @@ class LinkAndSyncProgressModal: HostingController<LinkAndSyncProgressView> {
 
 struct LinkAndSyncProgressView: View {
 
-    class ViewModel: ObservableObject {
-        @Published var progress: Float = 0
-    }
-
-    @ObservedObject var viewModel: ViewModel
+    @ObservedObject fileprivate var viewModel: LinkAndSyncProgressViewModel
 
     var body: some View {
         VStack(spacing: 8) {

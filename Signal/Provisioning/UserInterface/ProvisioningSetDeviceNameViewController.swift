@@ -155,7 +155,11 @@ class ProvisioningSetDeviceNameViewController: ProvisioningBaseViewController {
             return
         }
 
-        provisioningController.didSetDeviceName(String(deviceName), from: self)
+        provisioningController.didSetDeviceName(
+            String(deviceName),
+            from: self,
+            willLinkAndSync: false
+        )
     }
 
 }

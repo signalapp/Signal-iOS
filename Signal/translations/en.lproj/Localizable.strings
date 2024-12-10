@@ -4123,8 +4123,20 @@
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Linking Device Failed";
 
+/* Progress label when the message loading has nearly completed during the device linking process */
+"LINKING_SYNCING_FINALIZING" = "Finalizing message transfer…";
+
+/* Footer text when loading messages during linking process. */
+"LINKING_SYNCING_FOOTER" = "Messages and chat info are protected by end-to-end encryption, including the sync process.";
+
 /* Title shown when loading messages during linking process */
 "LINKING_SYNCING_MESSAGES_TITLE" = "Syncing messages";
+
+/* Progress label when the message loading has not yet started during the device linking process */
+"LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Preparing to download…";
+
+/* Label below the progress bar when loading messages during linking process */
+"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes depending on the size of your message history";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";

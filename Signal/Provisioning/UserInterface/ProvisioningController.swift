@@ -3,18 +3,18 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
-public class ProvisioningNavigationController: OWSNavigationController {
+class ProvisioningNavigationController: OWSNavigationController {
     private(set) var provisioningController: ProvisioningController
 
-    public init(provisioningController: ProvisioningController) {
+    init(provisioningController: ProvisioningController) {
         self.provisioningController = provisioningController
         super.init()
     }
 
-    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         let superOrientations = super.supportedInterfaceOrientations
         let provisioningOrientations: UIInterfaceOrientationMask = UIDevice.current.isIPad ? .all : .portrait
 
@@ -22,7 +22,7 @@ public class ProvisioningNavigationController: OWSNavigationController {
     }
 }
 
-public class ProvisioningController: NSObject {
+class ProvisioningController: NSObject {
 
     private let appReadiness: AppReadinessSetter
 
@@ -72,13 +72,13 @@ public class ProvisioningController: NSObject {
         provisioningSocket.delegate = self
     }
 
-    public func resetPromises() {
+    func resetPromises() {
         _awaitProvisionMessage = nil
         (self.deviceIdPromise, self.deviceIdFuture) = Promise.pending()
         (self.provisionEnvelopePromise, self.provisionEnvelopeFuture) = Promise.pending()
     }
 
-    public static func presentProvisioningFlow(appReadiness: AppReadinessSetter) {
+    static func presentProvisioningFlow(appReadiness: AppReadinessSetter) {
         let provisioningController = ProvisioningController(appReadiness: appReadiness)
         let navController = ProvisioningNavigationController(provisioningController: provisioningController)
         provisioningController.setUpDebugLogsGesture(on: navController)
@@ -89,7 +89,7 @@ public class ProvisioningController: NSObject {
         CurrentAppContext().mainWindow?.rootViewController = navController
     }
 
-    public static func presentRelinkingFlow(appReadiness: AppReadinessSetter) {
+    static func presentRelinkingFlow(appReadiness: AppReadinessSetter) {
         let provisioningController = ProvisioningController(appReadiness: appReadiness)
         let navController = ProvisioningNavigationController(provisioningController: provisioningController)
         provisioningController.setUpDebugLogsGesture(on: navController)
@@ -117,7 +117,7 @@ public class ProvisioningController: NSObject {
 
     // MARK: - Transitions
 
-    public func provisioningSplashRequestedModeSwitch(viewController: UIViewController) {
+    func provisioningSplashRequestedModeSwitch(viewController: UIViewController) {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -126,7 +126,7 @@ public class ProvisioningController: NSObject {
         viewController.navigationController?.pushViewController(view, animated: true)
     }
 
-    public func switchToPrimaryRegistration(viewController: UIViewController) {
+    func switchToPrimaryRegistration(viewController: UIViewController) {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -135,7 +135,7 @@ public class ProvisioningController: NSObject {
     }
 
     @MainActor
-    public func provisioningSplashDidComplete(viewController: UIViewController) async {
+    func provisioningSplashDidComplete(viewController: UIViewController) async {
         Logger.info("")
         await pushPermissionsViewOrSkipToRegistration(onto: viewController)
     }
@@ -158,7 +158,7 @@ public class ProvisioningController: NSObject {
         }
     }
 
-    public func provisioningPermissionsDidComplete(viewController: UIViewController) {
+    func provisioningPermissionsDidComplete(viewController: UIViewController) {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -259,7 +259,11 @@ public class ProvisioningController: NSObject {
 
             if FeatureFlags.linkAndSync, message.ephemeralBackupKey != nil {
                 // Don't confirm the name in link'n'sync, just keep going.
-                self.didSetDeviceName(UIDevice.current.name, from: viewController)
+                self.didSetDeviceName(
+                    UIDevice.current.name,
+                    from: viewController,
+                    willLinkAndSync: true
+                )
             } else {
                 let confirmVC = ProvisioningSetDeviceNameViewController(provisioningController: self)
                 navigationController.pushViewController(confirmVC, animated: true)
@@ -284,76 +288,121 @@ public class ProvisioningController: NSObject {
         }
     }
 
-    func didSetDeviceName(_ deviceName: String, from viewController: UIViewController) {
-        let backgroundBlock: (ModalActivityIndicatorViewController) -> Void = { modal in
-            self.completeLinking(deviceName: deviceName).done { result in
-                let alert: ActionSheetController
-                switch result {
-                case .success:
-                    modal.dismiss {
-                        self.provisioningDidComplete(from: viewController)
+    func didSetDeviceName(
+        _ deviceName: String,
+        from viewController: UIViewController,
+        willLinkAndSync: Bool
+    ) {
+        let resultHandler: (CompleteProvisioningResult) -> (ActionSheetController?) = { result in
+            let alert: ActionSheetController
+            switch result {
+            case .success:
+                return nil
+            case .previouslyLinkedWithDifferentAccount:
+                Logger.warn("was previously linked/registered on different account!")
+                let title = OWSLocalizedString(
+                    "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE",
+                    comment: "Title for error alert indicating that re-linking failed because the account did not match."
+                )
+                let message = OWSLocalizedString(
+                    "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE",
+                    comment: "Message for error alert indicating that re-linking failed because the account did not match."
+                )
+                alert = ActionSheetController(title: title, message: message)
+                alert.addAction(ActionSheetAction(
+                    title: OWSLocalizedString(
+                        "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE",
+                        comment: "Label for the 'reset device' action in the 're-linking failed because the account did not match' alert."
+                    ),
+                    accessibilityIdentifier: "alert.reset_device",
+                    style: .default,
+                    handler: { _ in
+                        Self.resetDeviceState()
                     }
-                    return
-                case .previouslyLinkedWithDifferentAccount:
-                    Logger.warn("was previously linked/registered on different account!")
-                    let title = OWSLocalizedString("SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE",
-                                                  comment: "Title for error alert indicating that re-linking failed because the account did not match.")
-                    let message = OWSLocalizedString("SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE",
-                                                    comment: "Message for error alert indicating that re-linking failed because the account did not match.")
-                    alert = ActionSheetController(title: title, message: message)
-                    alert.addAction(ActionSheetAction(
-                        title: OWSLocalizedString(
-                            "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE",
-                            comment: "Label for the 'reset device' action in the 're-linking failed because the account did not match' alert."
-                        ),
-                        accessibilityIdentifier: "alert.reset_device",
-                        style: .default,
-                        handler: { _ in
-                            Self.resetDeviceState()
-                        }
-                    ))
-                case .deviceLimitExceededError(let error):
-                    alert = ActionSheetController(title: error.errorDescription, message: error.recoverySuggestion)
-                    alert.addAction(ActionSheetAction(title: CommonStrings.okButton))
-                case .obsoleteLinkedDeviceError:
-                    Logger.warn("obsolete device error")
-                    let title = OWSLocalizedString("SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE",
-                                                  comment: "Title for error alert indicating that a linked device must be upgraded before it can be linked.")
-                    let message = OWSLocalizedString("SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE",
-                                                    comment: "Message for error alert indicating that a linked device must be upgraded before it can be linked.")
-                    alert = ActionSheetController(title: title, message: message)
+                ))
+            case .deviceLimitExceededError(let error):
+                alert = ActionSheetController(title: error.errorDescription, message: error.recoverySuggestion)
+                alert.addAction(ActionSheetAction(title: CommonStrings.okButton))
+            case .obsoleteLinkedDeviceError:
+                Logger.warn("obsolete device error")
+                let title = OWSLocalizedString(
+                    "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE",
+                    comment: "Title for error alert indicating that a linked device must be upgraded before it can be linked."
+                )
+                let message = OWSLocalizedString(
+                    "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE",
+                    comment: "Message for error alert indicating that a linked device must be upgraded before it can be linked."
+                )
+                alert = ActionSheetController(title: title, message: message)
 
-                    let updateButtonText = OWSLocalizedString("APP_UPDATE_NAG_ALERT_UPDATE_BUTTON", comment: "Label for the 'update' button in the 'new app version available' alert.")
-                    let updateAction = ActionSheetAction(title: updateButtonText,
-                                                         accessibilityIdentifier: "alert.update",
-                                                         style: .default) { _ in
-                                                            let url = TSConstants.appStoreUrl
-                                                            UIApplication.shared.open(url, options: [:])
+                let updateButtonText = OWSLocalizedString(
+                    "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON",
+                    comment: "Label for the 'update' button in the 'new app version available' alert."
+                )
+                let updateAction = ActionSheetAction(
+                    title: updateButtonText,
+                    accessibilityIdentifier: "alert.update",
+                    style: .default
+                ) { _ in
+                    let url = TSConstants.appStoreUrl
+                    UIApplication.shared.open(url, options: [:])
+                }
+                alert.addAction(updateAction)
+            case .genericError(let error):
+                let title = OWSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title")
+                let message = error.userErrorDescription
+                alert = ActionSheetController(title: title, message: message)
+                alert.addAction(ActionSheetAction(
+                    title: CommonStrings.retryButton,
+                    accessibilityIdentifier: "alert.retry",
+                    style: .default,
+                    handler: { _ in
+                        self.didSetDeviceName(deviceName, from: viewController, willLinkAndSync: willLinkAndSync)
                     }
-                    alert.addAction(updateAction)
-                case .genericError(let error):
-                    let title = OWSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title")
-                    let message = error.userErrorDescription
-                    alert = ActionSheetController(title: title, message: message)
-                    alert.addAction(ActionSheetAction(title: CommonStrings.retryButton,
-                                                      accessibilityIdentifier: "alert.retry",
-                                                      style: .default,
-                                                      handler: { _ in
-                                                        self.didSetDeviceName(deviceName, from: viewController)
-                    }))
-                }
-                modal.dismiss {
-                    viewController.presentActionSheet(alert)
-                }
+                ))
             }
+            return alert
         }
 
-        ModalActivityIndicatorViewController.present(fromViewController: viewController,
-                                                     canCancel: false,
-                                                     backgroundBlock: backgroundBlock)
+        let progressViewModel = LinkAndSyncProgressViewModel()
+
+        if willLinkAndSync {
+            Task { @MainActor in
+                let progressViewController = LinkAndSyncProvisioningProgressViewController(viewModel: progressViewModel)
+                viewController.present(progressViewController, animated: false)
+                let result = await self.completeLinking(deviceName: deviceName, progressViewModel: progressViewModel).awaitable()
+                let errorActionSheet = resultHandler(result)
+                if let errorActionSheet {
+                    progressViewController.dismiss(animated: true) {
+                        viewController.presentActionSheet(errorActionSheet)
+                    }
+                } else {
+                    // Don't dismiss the progress view or it will quickly jump
+                    // to that before jumping again to the chat list.
+                    self.provisioningDidComplete(from: viewController)
+                }
+            }
+        } else {
+            ModalActivityIndicatorViewController.present(
+                fromViewController: viewController,
+                canCancel: false,
+                backgroundBlock: { modal in
+                    self.completeLinking(deviceName: deviceName, progressViewModel: progressViewModel).done { result in
+                        let errorActionSheet = resultHandler(result)
+                        modal.dismiss {
+                            if let errorActionSheet {
+                                viewController.presentActionSheet(errorActionSheet)
+                            } else {
+                                self.provisioningDidComplete(from: viewController)
+                            }
+                        }
+                    }
+                }
+            )
+        }
     }
 
-    public func provisioningDidComplete(from viewController: UIViewController) {
+    func provisioningDidComplete(from viewController: UIViewController) {
         SignalApp.shared.showConversationSplitView(appReadiness: appReadiness)
     }
 
@@ -364,7 +413,7 @@ public class ProvisioningController: NSObject {
         SignalApp.resetAppDataWithUI()
     }
 
-    public func getProvisioningURL() -> Promise<URL> {
+    func getProvisioningURL() -> Promise<URL> {
         return getDeviceId().map { [weak self] deviceId in
             guard let self = self else { throw PromiseError.cancelled }
 
@@ -383,14 +432,18 @@ public class ProvisioningController: NSObject {
         return _awaitProvisionMessage!
     }
 
-    private func completeLinking(deviceName: String) -> Guarantee<CompleteProvisioningResult> {
+    private func completeLinking(
+        deviceName: String,
+        progressViewModel: LinkAndSyncProgressViewModel
+    ) -> Guarantee<CompleteProvisioningResult> {
         return awaitProvisionMessage.then { [weak self] provisionMessage -> Promise<CompleteProvisioningResult> in
             guard let self = self else { throw PromiseError.cancelled }
 
             return Promise.wrapAsync {
                 await self.provisioningCoordinator.completeProvisioning(
                     provisionMessage: provisionMessage,
-                    deviceName: deviceName
+                    deviceName: deviceName,
+                    progressViewModel: progressViewModel
                 )
             }
         }.recover {
@@ -463,12 +516,12 @@ public class ProvisioningController: NSObject {
 }
 
 extension ProvisioningController: ProvisioningSocketDelegate {
-    public func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveDeviceId deviceId: String) {
+    func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveDeviceId deviceId: String) {
         owsAssertDebug(!deviceIdPromise.isSealed)
         deviceIdFuture.resolve(deviceId)
     }
 
-    public func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveEnvelope envelope: ProvisioningProtoProvisionEnvelope) {
+    func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveEnvelope envelope: ProvisioningProtoProvisionEnvelope) {
         // After receiving the provisioning message, there's nothing else to retrieve from the provisioning socket
         provisioningSocket.disconnect(code: .normalClosure)
 
@@ -476,7 +529,7 @@ extension ProvisioningController: ProvisioningSocketDelegate {
         return provisionEnvelopeFuture.resolve(envelope)
     }
 
-    public func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didError error: Error) {
+    func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didError error: Error) {
         Logger.warn("\(error)")
         deviceIdFuture.reject(error)
         provisionEnvelopeFuture.reject(error)

@@ -753,7 +753,7 @@
 		66076B5D2BC06CA70043D547 /* MockEditManagerAttachments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B592BC06CA70043D547 /* MockEditManagerAttachments.swift */; };
 		66076B5E2BC06CA70043D547 /* EditManagerAttachmentsImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B5A2BC06CA70043D547 /* EditManagerAttachmentsImpl.swift */; };
 		66076B5F2BC06CA70043D547 /* EditManagerAttachments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B5B2BC06CA70043D547 /* EditManagerAttachments.swift */; };
-		660FA9112CE58CD7006F9C34 /* LinkAndSyncLoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660FA9102CE58CD0006F9C34 /* LinkAndSyncLoadingViewController.swift */; };
+		660FA9112CE58CD7006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660FA9102CE58CD0006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift */; };
 		661170C12ABA459D00A1B16D /* RegistrationIdGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */; };
 		661170C42ABA4D9900A1B16D /* TSAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C32ABA4D9900A1B16D /* TSAccountManager.swift */; };
 		661170C62ABA4E9C00A1B16D /* MockTSAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C52ABA4E9C00A1B16D /* MockTSAccountManager.swift */; };
@@ -1610,10 +1610,10 @@
 		B99288002CF124AC000D62C4 /* Text+Links.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99287FF2CF124AC000D62C4 /* Text+Links.swift */; };
 		B99B155D2A71BA5200E26DAC /* StoryContextViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */; };
 		B9A0807A2B07D76A000FDB5B /* HomeTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */; };
+		B9A53B912CF507FB0000578B /* LinkAndSyncProgressModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B902CF507FB0000578B /* LinkAndSyncProgressModal.swift */; };
 		B9A53B932CF7928A0000578B /* SheetPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B922CF7928A0000578B /* SheetPreviewViewController.swift */; };
 		B9A53B952CF799590000578B /* LinkOrSyncPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B942CF799590000578B /* LinkOrSyncPickerSheet.swift */; };
 		B9A53B992D0250FC0000578B /* EditCallLinkNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B982D0250FC0000578B /* EditCallLinkNameViewController.swift */; };
-		B9A53B912CF507FB0000578B /* LinkAndSyncProgressModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B902CF507FB0000578B /* LinkAndSyncProgressModal.swift */; };
 		B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */; };
 		B9A87A382A9E34BD009FCA13 /* Hatsuishi-UPM800.otf in Resources */ = {isa = PBXBuildFile; fileRef = B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */; };
 		B9B2AA942BC598B60060B56C /* ContactNoteSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */; };
@@ -4500,7 +4500,7 @@
 		66076B592BC06CA70043D547 /* MockEditManagerAttachments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockEditManagerAttachments.swift; sourceTree = "<group>"; };
 		66076B5A2BC06CA70043D547 /* EditManagerAttachmentsImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditManagerAttachmentsImpl.swift; sourceTree = "<group>"; };
 		66076B5B2BC06CA70043D547 /* EditManagerAttachments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditManagerAttachments.swift; sourceTree = "<group>"; };
-		660FA9102CE58CD0006F9C34 /* LinkAndSyncLoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkAndSyncLoadingViewController.swift; sourceTree = "<group>"; };
+		660FA9102CE58CD0006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkAndSyncProvisioningProgressViewController.swift; sourceTree = "<group>"; };
 		661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationIdGenerator.swift; sourceTree = "<group>"; };
 		661170C32ABA4D9900A1B16D /* TSAccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManager.swift; sourceTree = "<group>"; };
 		661170C52ABA4E9C00A1B16D /* MockTSAccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTSAccountManager.swift; sourceTree = "<group>"; };
@@ -5359,10 +5359,10 @@
 		B99287FF2CF124AC000D62C4 /* Text+Links.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Text+Links.swift"; sourceTree = "<group>"; };
 		B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextViewState.swift; sourceTree = "<group>"; };
 		B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabViewController.swift; sourceTree = "<group>"; };
+		B9A53B902CF507FB0000578B /* LinkAndSyncProgressModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkAndSyncProgressModal.swift; sourceTree = "<group>"; };
 		B9A53B922CF7928A0000578B /* SheetPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetPreviewViewController.swift; sourceTree = "<group>"; };
 		B9A53B942CF799590000578B /* LinkOrSyncPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkOrSyncPickerSheet.swift; sourceTree = "<group>"; };
 		B9A53B982D0250FC0000578B /* EditCallLinkNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCallLinkNameViewController.swift; sourceTree = "<group>"; };
-		B9A53B902CF507FB0000578B /* LinkAndSyncProgressModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkAndSyncProgressModal.swift; sourceTree = "<group>"; };
 		B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSticker.swift; sourceTree = "<group>"; };
 		B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hatsuishi-UPM800.otf"; sourceTree = "<group>"; };
 		B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactNoteSheet.swift; sourceTree = "<group>"; };
@@ -8742,7 +8742,7 @@
 		50E7E1CD2BACBE7D00A94861 /* UserInterface */ = {
 			isa = PBXGroup;
 			children = (
-				660FA9102CE58CD0006F9C34 /* LinkAndSyncLoadingViewController.swift */,
+				660FA9102CE58CD0006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift */,
 				66AA0BA32A819FFA00F7DC80 /* ProvisioningBaseViewController.swift */,
 				4C3A2BC62356620E004B3986 /* ProvisioningController.swift */,
 				6605D4EF2A82DCC7004DC345 /* ProvisioningModeSwitchConfirmationViewController.swift */,
@@ -16353,8 +16353,8 @@
 				45C845AD291466C0005F6EA5 /* JournalingOrderedDictionary.swift in Sources */,
 				5045F44229E0DB7100058E5F /* LaunchJobs.swift in Sources */,
 				D9C30DDB2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift in Sources */,
-				660FA9112CE58CD7006F9C34 /* LinkAndSyncLoadingViewController.swift in Sources */,
 				B9A53B912CF507FB0000578B /* LinkAndSyncProgressModal.swift in Sources */,
+				660FA9112CE58CD7006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift in Sources */,
 				505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */,
 				B99287FB2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift in Sources */,
 				B9E322E92CD191CF006DAF3B /* LinkedDevicesView.swift in Sources */,
