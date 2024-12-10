@@ -162,9 +162,13 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             return
         }
 
-        appContext.ensureSleepBlocking(true, blockingObjectsDescription: Constants.sleepBlockingDescription)
+        await MainActor.run {
+            appContext.ensureSleepBlocking(true, blockingObjectsDescription: Constants.sleepBlockingDescription)
+        }
         defer {
-            appContext.ensureSleepBlocking(false, blockingObjectsDescription: Constants.sleepBlockingDescription)
+            Task { @MainActor in
+                appContext.ensureSleepBlocking(false, blockingObjectsDescription: Constants.sleepBlockingDescription)
+            }
         }
 
         // Proportion progress percentages up front.
@@ -240,9 +244,13 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             return
         }
 
-        appContext.ensureSleepBlocking(true, blockingObjectsDescription: Constants.sleepBlockingDescription)
+        await MainActor.run {
+            appContext.ensureSleepBlocking(true, blockingObjectsDescription: Constants.sleepBlockingDescription)
+        }
         defer {
-            appContext.ensureSleepBlocking(false, blockingObjectsDescription: Constants.sleepBlockingDescription)
+            Task { @MainActor in
+                appContext.ensureSleepBlocking(false, blockingObjectsDescription: Constants.sleepBlockingDescription)
+            }
         }
 
         // Proportion progress percentages up front.
