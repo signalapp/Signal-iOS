@@ -148,7 +148,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
     func performUpload<Metadata: UploadMetadata>(
         startPoint: Int,
         attempt: Upload.Attempt<Metadata>,
-        progress progressBlock: @escaping UploadEndpointProgress
+        progress: OWSProgressSource?
     ) async throws {
         let totalDataLength = attempt.encryptedDataLength
         var headers = [String: String]()
@@ -191,7 +191,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
                 method: .put,
                 headers: headers,
                 fileUrl: fileUrl,
-                progressBlock: progressBlock
+                progress: progress
             )
             switch response.responseStatusCode {
             case 200, 201:

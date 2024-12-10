@@ -373,29 +373,13 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         metadata: Upload.EncryptedBackupUploadMetadata,
         progress: OWSProgressSink
     ) async throws(PrimaryLinkNSyncError) -> Upload.Result<Upload.LinkNSyncUploadMetadata> {
-        // TODO: hook into AttachmentUploadManager progress reporting
-        let progressSource = await progress.addSource(
-            withLabel: PrimaryLinkNSyncProgressPhase.uploadingBackup.rawValue,
-            // Unit count is irrelevant as there's just one child source and we use a timer.
-            unitCount: 100
-        )
-        return try await progressSource.updatePeriodically(
-            estimatedTimeToCompletion: 10,
-            work: { () async throws(PrimaryLinkNSyncError) -> Upload.Result<Upload.LinkNSyncUploadMetadata> in
-                try await self._uploadEphemeralBackup(metadata: metadata)
-            }
-        )
-    }
-
-    private func _uploadEphemeralBackup(
-        metadata: Upload.EncryptedBackupUploadMetadata
-    ) async throws(PrimaryLinkNSyncError) -> Upload.Result<Upload.LinkNSyncUploadMetadata> {
         do {
             return try await attachmentUploadManager.uploadLinkNSyncAttachment(
                 dataSource: try DataSourcePath(
                     fileUrl: metadata.fileUrl,
                     shouldDeleteOnDeallocation: true
-                )
+                ),
+                progress: progress
             )
         } catch {
             if error.isNetworkFailureOrTimeout {
@@ -520,29 +504,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         ephemeralBackupKey: BackupKey,
         progress: OWSProgressSink
     ) async throws(SecondaryLinkNSyncError) -> URL {
-        // TODO: hook into AttachmentDownloadManager progress reporting
-        let progressSource = await progress.addSource(
-            withLabel: SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue,
-            // Unit count is irrelevant as there's just one child source and we use a timer.
-            unitCount: 100
-        )
-        return try await progressSource.updatePeriodically(
-            estimatedTimeToCompletion: 10,
-            work: { () async throws(SecondaryLinkNSyncError) -> URL in
-                try await self._downloadEphemeralBackup(
-                    cdnNumber: cdnNumber,
-                    cdnKey: cdnKey,
-                    ephemeralBackupKey: ephemeralBackupKey
-                )
-            }
-        )
-    }
-
-    private func _downloadEphemeralBackup(
-        cdnNumber: UInt32,
-        cdnKey: String,
-        ephemeralBackupKey: BackupKey
-    ) async throws(SecondaryLinkNSyncError) -> URL {
         do {
             return try await attachmentDownloadManager.downloadTransientAttachment(
                 metadata: AttachmentDownloads.DownloadMetadata(
@@ -550,7 +511,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                     cdnNumber: cdnNumber,
                     encryptionKey: ephemeralBackupKey.serialize().asData,
                     source: .linkNSyncBackup(cdnKey: cdnKey)
-                )
+                ),
+                progress: progress
             ).awaitable()
         } catch {
             if error.isNetworkFailureOrTimeout {

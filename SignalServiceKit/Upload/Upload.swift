@@ -6,8 +6,6 @@
 import Foundation
 
 public enum Upload {
-    public typealias ProgressBlock = (Progress) -> Void
-
     public static let uploadQueue = ConcurrentTaskQueue(concurrentLimit: CurrentAppContext().isNSE ? 2 : 8)
 
     public enum Constants {

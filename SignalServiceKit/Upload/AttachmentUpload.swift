@@ -19,16 +19,19 @@ public struct AttachmentUpload {
     public static func start<Metadata: UploadMetadata>(
         attempt: Upload.Attempt<Metadata>,
         dateProvider: @escaping DateProvider,
-        progress: Upload.ProgressBlock?
+        progress: OWSProgressSink?
     ) async throws -> Upload.Result<Metadata> {
         try Task.checkCancellation()
 
-        progress?(AttachmentUpload.buildProgress(done: 0, total: attempt.encryptedDataLength))
+        let progressSource = await progress?.addSource(
+            withLabel: "upload",
+            unitCount: UInt64(attempt.encryptedDataLength)
+        )
 
         return try await attemptUpload(
             attempt: attempt,
             dateProvider: dateProvider,
-            progress: progress
+            progress: progressSource
         )
     }
 
@@ -46,7 +49,7 @@ public struct AttachmentUpload {
     private static func attemptUpload<Metadata: UploadMetadata>(
         attempt: Upload.Attempt<Metadata>,
         dateProvider: @escaping DateProvider,
-        progress: Upload.ProgressBlock?
+        progress: OWSProgressSource?
     ) async throws -> Upload.Result<Metadata> {
         attempt.logger.info("Begin upload.")
         try await performResumableUpload(
@@ -91,14 +94,14 @@ public struct AttachmentUpload {
     private static func performResumableUpload<Metadata: UploadMetadata>(
         attempt: Upload.Attempt<Metadata>,
         count: UInt = 0,
-        progress: Upload.ProgressBlock?
+        progress: OWSProgressSource?
     ) async throws {
         guard count < Upload.Constants.uploadMaxRetries else {
             throw Upload.Error.uploadFailure(recovery: .noMoreRetries)
         }
 
         let totalDataLength = attempt.encryptedDataLength
-        var bytesAlreadyUploaded = 0
+        let bytesAlreadyUploaded: Int
 
         // Only check remote upload progress if we think progress was made locally
         if attempt.isResumedUpload || count > 0 {
@@ -106,6 +109,9 @@ public struct AttachmentUpload {
             switch uploadProgress {
             case .complete:
                 attempt.logger.info("Complete upload reported by endpoint.")
+
+                progress?.incrementCompletedUnitCount(by: UInt64(totalDataLength))
+
                 return
             case .uploaded(let updatedBytesAlreadUploaded):
                 attempt.logger.info("Endpoint reported \(updatedBytesAlreadUploaded)/\(attempt.encryptedDataLength) uploaded.")
@@ -115,26 +121,21 @@ public struct AttachmentUpload {
                 let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count + 1)
                 throw Upload.Error.uploadFailure(recovery: .restart(.afterDelay(backoff)))
             }
+        } else {
+            bytesAlreadyUploaded = 0
         }
 
-        // Wrap the progress block.
-        let wrappedProgressBlock = { (_: URLSessionTask, wrappedProgress: Progress) in
-            // Total progress is (progress from previous attempts/slices +
-            // progress from this attempt/slice).
-            let totalCompleted: Int = bytesAlreadyUploaded + Int(wrappedProgress.completedUnitCount)
-            owsAssertDebug(totalCompleted >= 0)
-            owsAssertDebug(totalCompleted <= totalDataLength)
-
-            // When resuming, we'll only upload a slice of the data.
-            // We need to massage the progress to reflect the bytes already uploaded.
-            progress?(buildProgress(done: totalCompleted, total: totalDataLength))
+        // Total progress is (progress from previous attempts/slices +
+        // progress from this attempt/slice).
+        if let progress, progress.completedUnitCount < bytesAlreadyUploaded {
+            progress.incrementCompletedUnitCount(by: UInt64(bytesAlreadyUploaded) - progress.completedUnitCount)
         }
 
         do {
             try await attempt.endpoint.performUpload(
                 startPoint: bytesAlreadyUploaded,
                 attempt: attempt,
-                progress: wrappedProgressBlock
+                progress: progress
             )
             attempt.logger.info("Attachment uploaded successfully.")
         } catch {
@@ -294,13 +295,6 @@ public struct AttachmentUpload {
             isResumedUpload: existingSessionUrl != nil,
             logger: logger
         )
-    }
-
-    private static func buildProgress(done: Int, total: UInt32) -> Progress {
-        let progress = Progress(parent: nil, userInfo: nil)
-        progress.totalUnitCount = Int64(total)
-        progress.completedUnitCount = Int64(done)
-        return progress
     }
 }
 

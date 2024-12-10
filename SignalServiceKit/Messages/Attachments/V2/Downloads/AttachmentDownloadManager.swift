@@ -35,6 +35,19 @@ public enum AttachmentDownloads {
                 innerEncryptionMetadata: MediaTierEncryptionMetadata
             )
             case linkNSyncBackup(cdnKey: String)
+
+            var asQueuedDownloadSource: QueuedAttachmentDownloadRecord.SourceType {
+                switch self {
+                case .transitTier:
+                    return .transitTier
+                case .mediaTierFullsize:
+                    return .mediaTierFullsize
+                case .mediaTierThumbnail:
+                    return .mediaTierThumbnail
+                case .linkNSyncBackup:
+                    return .transitTier
+                }
+            }
         }
 
         public var digest: Data? {
@@ -92,11 +105,13 @@ public enum AttachmentDownloads {
 public protocol AttachmentDownloadManager {
 
     func downloadBackup(
-        metadata: BackupReadCredential
+        metadata: BackupReadCredential,
+        progress: OWSProgressSink?
     ) -> Promise<URL>
 
     func downloadTransientAttachment(
-        metadata: AttachmentDownloads.DownloadMetadata
+        metadata: AttachmentDownloads.DownloadMetadata,
+        progress: OWSProgressSink?
     ) -> Promise<URL>
 
     func enqueueDownloadOfAttachmentsForMessage(
@@ -121,7 +136,8 @@ public protocol AttachmentDownloadManager {
     func downloadAttachment(
         id: Attachment.IDType,
         priority: AttachmentDownloadPriority,
-        source: QueuedAttachmentDownloadRecord.SourceType
+        source: QueuedAttachmentDownloadRecord.SourceType,
+        progress: OWSProgressSink?
     ) async throws
 
     /// Starts downloading off the persisted queue, if there's anything to download
@@ -135,6 +151,24 @@ public protocol AttachmentDownloadManager {
 
 extension AttachmentDownloadManager {
 
+    public func downloadBackup(
+        metadata: BackupReadCredential
+    ) -> Promise<URL> {
+        return downloadBackup(
+            metadata: metadata,
+            progress: nil
+        )
+    }
+
+    public func downloadTransientAttachment(
+        metadata: AttachmentDownloads.DownloadMetadata
+    ) -> Promise<URL> {
+        return downloadTransientAttachment(
+            metadata: metadata,
+            progress: nil
+        )
+    }
+
     public func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         tx: DBWriteTransaction
@@ -147,5 +181,18 @@ extension AttachmentDownloadManager {
         tx: DBWriteTransaction
     ) {
         enqueueDownloadOfAttachmentsForStoryMessage(message, priority: .default, tx: tx)
+    }
+
+    public func downloadAttachment(
+        id: Attachment.IDType,
+        priority: AttachmentDownloadPriority,
+        source: QueuedAttachmentDownloadRecord.SourceType
+    ) async throws {
+        try await downloadAttachment(
+            id: id,
+            priority: priority,
+            source: source,
+            progress: nil
+        )
     }
 }

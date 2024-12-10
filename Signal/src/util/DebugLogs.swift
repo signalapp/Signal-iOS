@@ -393,7 +393,7 @@ private enum DebugLogUploader {
                 mimeType: mimeType,
                 textParts: textParts,
                 ignoreAppExpiry: true,
-                progressBlock: nil
+                progress: nil
             )
 
             let statusCode = response.responseStatusCode

@@ -78,7 +78,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
     func performUpload<Metadata: UploadMetadata>(
         startPoint: Int,
         attempt: Upload.Attempt<Metadata>,
-        progress progressBlock: @escaping UploadEndpointProgress
+        progress: OWSProgressSource?
     ) async throws {
         let urlSession = signalService.urlSessionForCdn(cdnNumber: uploadForm.cdnNumber, maxResponseSize: nil)
         let totalDataLength = attempt.encryptedDataLength
@@ -139,7 +139,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
                 method: method,
                 headers: headers,
                 fileUrl: temporaryFileUrl,
-                progressBlock: progressBlock
+                progress: progress
             )
 
             switch response.responseStatusCode {
