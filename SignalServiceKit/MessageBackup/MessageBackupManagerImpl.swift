@@ -17,6 +17,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         static let keyValueStoreCollectionName = "MessageBackupManager"
         static let keyValueStoreHasReservedBackupKey = "HasReservedBackupKey"
         static let keyValueStoreHasReservedMediaBackupKey = "HasReservedMediaBackupKey"
+        static let keyValueStoreHasRestoredBackupKey = "HasRestoredBackup"
 
         static let supportedBackupVersion: UInt64 = 1
     }
@@ -531,6 +532,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     // MARK: - Import
 
+    public func hasRestoredFromBackup(tx: DBReadTransaction) -> Bool {
+        return kvStore.getBool(
+            Constants.keyValueStoreHasRestoredBackupKey,
+            defaultValue: false,
+            transaction: tx
+        )
+    }
+
     public func importEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
@@ -655,6 +664,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         tx: DBWriteTransaction
     ) throws {
         let startTimeMs = Date().ows_millisecondsSince1970
+
+        guard !hasRestoredFromBackup(tx: tx) else {
+            throw OWSAssertionError("Restoring from backup twice!")
+        }
 
         var frameErrors = [LoggableErrorAndProto]()
         defer {
@@ -926,6 +939,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let endTimeMs = Date().ows_millisecondsSince1970
         Logger.info("Imported \(stream.numberOfReadFrames) in \(endTimeMs - startTimeMs)ms")
+
+        kvStore.setBool(true, key: Constants.keyValueStoreHasRestoredBackupKey, transaction: tx)
     }
 
     // MARK: -

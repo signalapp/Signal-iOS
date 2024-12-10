@@ -41,6 +41,10 @@ public protocol MessageBackupManager {
 
     // MARK: - Import
 
+    /// Returns true if this device has ever successfully restored from a backup
+    /// and committed the contents to the database.
+    func hasRestoredFromBackup(tx: DBReadTransaction) -> Bool
+
     /// Import a backup from the encrypted binary file at the given local URL.
     /// - SeeAlso ``downloadEncryptedBackup(localIdentifiers:auth:)``
     func importEncryptedBackup(

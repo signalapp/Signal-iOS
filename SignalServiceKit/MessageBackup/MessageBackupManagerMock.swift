@@ -60,6 +60,10 @@ open class MessageBackupManagerMock: MessageBackupManager {
         return URL(string: "file://")!
     }
 
+    public func hasRestoredFromBackup(tx: DBReadTransaction) -> Bool {
+        false
+    }
+
     public func importEncryptedBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,

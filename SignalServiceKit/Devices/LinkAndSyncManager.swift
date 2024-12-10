@@ -233,6 +233,13 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         }
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice != true)
 
+        let hasPreviouslyRestored = db.read { messageBackupManager.hasRestoredFromBackup(tx: $0) }
+        if hasPreviouslyRestored {
+            // Assume this was from a link'n'sync that was subsequently interrupted
+            Logger.info("Skipping link'n'sync; already restored from backup")
+            return
+        }
+
         appContext.ensureSleepBlocking(true, blockingObjectsDescription: Constants.sleepBlockingDescription)
         defer {
             appContext.ensureSleepBlocking(false, blockingObjectsDescription: Constants.sleepBlockingDescription)
