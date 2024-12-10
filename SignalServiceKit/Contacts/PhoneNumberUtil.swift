@@ -4,7 +4,7 @@
 //
 
 import Foundation
-public import libPhoneNumber_iOS
+import libPhoneNumber_iOS
 
 // MARK: -
 
@@ -186,7 +186,7 @@ extension PhoneNumberUtil {
         try nbPhoneNumberUtil.format(phoneNumber, numberFormat: numberFormat)
     }
 
-    public func parse(_ numberToParse: String, defaultRegion: String) throws -> NBPhoneNumber {
+    private func parse(_ numberToParse: String, defaultRegion: String) throws -> NBPhoneNumber {
         let hashKey = "numberToParse:\(numberToParse), defaultRegion:\(defaultRegion)"
         if let cachedValue = parsedPhoneNumberCache[hashKey] {
             return cachedValue
