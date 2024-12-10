@@ -30,6 +30,7 @@ class LinkedDevicesViewModel: ObservableObject {
         case unlinkFailureAlert(device: OWSDevice, error: Error)
         case activityIndicator(UIViewController)
         case linkedDeviceEducation
+        case linkAndSyncFailureAlert
     }
 
     fileprivate var present = PassthroughSubject<Presentation, Never>()
@@ -311,7 +312,7 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
                 }
             } catch {
                 linkAndSyncProgressModal.dismiss(animated: true) {
-                    DependenciesBridge.shared.messageBackupErrorPresenter.presentOverTopmostViewController(completion: {})
+                    self.present.send(.linkAndSyncFailureAlert)
                 }
                 self.expectMoreDevices()
                 return
@@ -391,6 +392,8 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
                 self.present(modal, animated: true)
             case .linkedDeviceEducation:
                 self.present(LinkedDevicesEducationSheet(), animated: true)
+            case .linkAndSyncFailureAlert:
+                self.showLinkAndSyncFailureAlert()
             }
         }.store(in: &subscriptions)
 
@@ -560,6 +563,27 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
         self.present(sheet, animated: true)
     }
 
+    private func showLinkAndSyncFailureAlert() {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "LINK_NEW_DEVICE_SYNC_FAILED_TITLE",
+                comment: "Title for a sheet indicating that a newly linked device failed to sync messages."
+            ),
+            message: OWSLocalizedString(
+                "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE",
+                comment: "Message for a sheet indicating that a newly linked device failed to sync messages."
+            )
+        )
+        actionSheet.addAction(.init(title: CommonStrings.learnMore) { _ in
+            UIApplication.shared.open(URL(string: "https://support.signal.org/hc/articles/360007320551")!)
+        })
+        actionSheet.addAction(.init(title: CommonStrings.continueButton, style: .cancel))
+        actionSheet.onDismiss = {
+            DependenciesBridge.shared.messageBackupErrorPresenter.presentOverTopmostViewController(completion: {})
+        }
+        presentActionSheet(actionSheet)
+    }
+
     // MARK: Authentication
 
     private func authenticateThenShowLinkNewDeviceView(
@@ -686,7 +710,7 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
         presentActionSheet(alert)
     }
 
-    func showUnlinkFailedAlert(device: OWSDevice, error: Error) {
+    private func showUnlinkFailedAlert(device: OWSDevice, error: Error) {
         AssertIsOnMainThread()
 
         let title = OWSLocalizedString(
