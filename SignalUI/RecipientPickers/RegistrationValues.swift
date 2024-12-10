@@ -10,13 +10,13 @@ public struct RegistrationCountryState: Equatable {
     // e.g. France
     public let countryName: String
     // e.g. +33
-    public let callingCode: String
+    public let plusPrefixedCallingCode: String
     // e.g. FR
     public let countryCode: String
 
-    public init(countryName: String, callingCode: String, countryCode: String) {
+    public init(countryName: String, plusPrefixedCallingCode: String, countryCode: String) {
         self.countryName = countryName
-        self.callingCode = callingCode
+        self.plusPrefixedCallingCode = plusPrefixedCallingCode
         self.countryCode = countryCode
     }
 
@@ -25,17 +25,17 @@ public struct RegistrationCountryState: Equatable {
 
         let countryCode: String = PhoneNumberUtil.defaultCountryCode()
         let callingCodeNumber = SSKEnvironment.shared.phoneNumberUtilRef.getCallingCode(forRegion: countryCode)
-        let callingCode = "\(PhoneNumber.countryCodePrefix)\(callingCodeNumber)"
+        let plusPrefixedCallingCode = "\(PhoneNumber.countryCodePrefix)\(callingCodeNumber)"
         let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode)
 
-        return RegistrationCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
+        return RegistrationCountryState(countryName: countryName, plusPrefixedCallingCode: plusPrefixedCallingCode, countryCode: countryCode)
     }
 
     // MARK: -
 
     public static func countryState(forE164 e164: String) -> RegistrationCountryState? {
         for countryState in allCountryStates {
-            if e164.hasPrefix(countryState.callingCode) {
+            if e164.hasPrefix(countryState.plusPrefixedCallingCode) {
                 return countryState
             }
         }
@@ -58,7 +58,7 @@ public struct RegistrationCountryState: Equatable {
                 owsFailDebug("Invalid countryCode.")
                 return nil
             }
-            guard let callingCode = SSKEnvironment.shared.phoneNumberUtilRef.callingCode(fromCountryCode: countryCode)?.strippedOrNil else {
+            guard let plusPrefixedCallingCode = SSKEnvironment.shared.phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: countryCode) else {
                 owsFailDebug("Invalid callingCode.")
                 return nil
             }
@@ -66,14 +66,14 @@ public struct RegistrationCountryState: Equatable {
                 owsFailDebug("Invalid countryName.")
                 return nil
             }
-            guard callingCode != "+0" else {
+            guard plusPrefixedCallingCode != "+0" else {
                 owsFailDebug("Invalid callingCode.")
                 return nil
             }
 
             return RegistrationCountryState(
                 countryName: countryName,
-                callingCode: callingCode,
+                plusPrefixedCallingCode: plusPrefixedCallingCode,
                 countryCode: countryCode
             )
         }
@@ -90,7 +90,7 @@ public struct RegistrationPhoneNumber {
     public init(countryState: RegistrationCountryState, nationalNumber: String) {
         self.countryState = countryState
         self.nationalNumber = nationalNumber
-        self.e164 = E164("\(countryState.callingCode)\(nationalNumber)")
+        self.e164 = E164("\(countryState.plusPrefixedCallingCode)\(nationalNumber)")
     }
 }
 

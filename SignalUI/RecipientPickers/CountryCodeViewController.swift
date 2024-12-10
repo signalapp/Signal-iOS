@@ -70,11 +70,14 @@ public class CountryCodeViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         for countryState in countryStates {
             let accessibilityIdentifier = "country.\(countryState.countryCode)"
-            section.add(OWSTableItem.item(name: countryState.countryName,
-                                          accessoryText: countryState.callingCode,
-                                          accessibilityIdentifier: accessibilityIdentifier) { [weak self] in
-                self?.countryWasSelected(countryState: countryState)
-            })
+            section.add(OWSTableItem.item(
+                name: countryState.countryName,
+                accessoryText: countryState.plusPrefixedCallingCode,
+                accessibilityIdentifier: accessibilityIdentifier,
+                actionBlock: { [weak self] in
+                    self?.countryWasSelected(countryState: countryState)
+                }
+            ))
         }
         contents.add(section)
 

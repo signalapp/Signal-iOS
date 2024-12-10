@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 
 class DeleteAccountConfirmationViewController: OWSTableViewController2 {
-    private var callingCode = "+1"
+    private var plusPrefixedCallingCode = "+1"
     private var countryCode = "US"
     private let phoneNumberTextField = UITextField()
     private let nameLabel = UILabel()
@@ -82,7 +82,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
                 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE",
                 comment: "Title for the 'country code' row of the 'delete account confirmation' view controller."
             ),
-            accessoryText: "\(callingCode) (\(countryCode))",
+            accessoryText: "\(plusPrefixedCallingCode) (\(countryCode))",
             actionBlock: { [weak self] in
                 guard let self = self else { return }
                 let countryCodeController = CountryCodeViewController()
@@ -165,7 +165,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         phoneNumberTextField.font = OWSTableItem.accessoryLabelFont
         phoneNumberTextField.placeholder = TextFieldFormatting.examplePhoneNumber(
             forCountryCode: countryCode,
-            callingCode: callingCode,
+            plusPrefixedCallingCode: plusPrefixedCallingCode,
             includeExampleLabel: false
         )
 
@@ -360,7 +360,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
         guard let phoneNumberText = phoneNumberTextField.text else { return false }
 
-        let possiblePhoneNumber = callingCode + phoneNumberText
+        let possiblePhoneNumber = plusPrefixedCallingCode + phoneNumberText
         let possibleNumbers = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumbers(
             userSpecifiedText: possiblePhoneNumber,
             localPhoneNumber: localNumber
@@ -371,10 +371,8 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 }
 
 extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDelegate {
-    public func countryCodeViewController(_ vc: CountryCodeViewController,
-                                          didSelectCountry countryState: RegistrationCountryState) {
-        updateCountry(callingCode: countryState.callingCode,
-                      countryCode: countryState.countryCode)
+    public func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountry countryState: RegistrationCountryState) {
+        updateCountry(plusPrefixedCallingCode: countryState.plusPrefixedCallingCode, countryCode: countryState.countryCode)
     }
 
     func populateDefaultCountryCode() {
@@ -396,21 +394,21 @@ extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDele
             )
         }
 
-        var callingCode: String?
+        var plusPrefixedCallingCode: String?
         if let callingCodeInt = callingCodeInt {
-            callingCode = PhoneNumber.countryCodePrefix + "\(callingCodeInt)"
-            countryCode = SSKEnvironment.shared.phoneNumberUtilRef.probableCountryCode(forCallingCode: callingCode!)
+            plusPrefixedCallingCode = PhoneNumber.countryCodePrefix + "\(callingCodeInt)"
+            countryCode = SSKEnvironment.shared.phoneNumberUtilRef.probableCountryCode(forPlusPrefixedCallingCode: plusPrefixedCallingCode!)
         }
 
-        updateCountry(callingCode: callingCode, countryCode: countryCode)
+        updateCountry(plusPrefixedCallingCode: plusPrefixedCallingCode, countryCode: countryCode)
     }
 
-    func updateCountry(callingCode: String?, countryCode: String?) {
-        guard let callingCode = callingCode, !callingCode.isEmpty, let countryCode = countryCode, !countryCode.isEmpty else {
+    private func updateCountry(plusPrefixedCallingCode: String?, countryCode: String?) {
+        guard let plusPrefixedCallingCode = plusPrefixedCallingCode?.nilIfEmpty, let countryCode = countryCode?.nilIfEmpty else {
             return owsFailDebug("missing calling code for selected country")
         }
 
-        self.callingCode = callingCode
+        self.plusPrefixedCallingCode = plusPrefixedCallingCode
         self.countryCode = countryCode
         updateTableContents()
     }
@@ -423,7 +421,7 @@ extension DeleteAccountConfirmationViewController: UITextFieldDelegate {
     }
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        TextFieldFormatting.phoneNumberTextField(textField, changeCharactersIn: range, replacementString: string, callingCode: callingCode)
+        TextFieldFormatting.phoneNumberTextField(textField, changeCharactersIn: range, replacementString: string, plusPrefixedCallingCode: plusPrefixedCallingCode)
         return false
     }
 }

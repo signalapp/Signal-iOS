@@ -18,7 +18,7 @@ public class TextFieldFormatting {
         _ textField: UITextField,
         shouldChangeCharactersIn range: NSRange,
         replacementString insertionText: String,
-        callingCode: String
+        plusPrefixedCallingCode: String
     ) -> Bool {
 
         let isDeletion = insertionText.isEmpty
@@ -28,12 +28,12 @@ public class TextFieldFormatting {
         // parens and spaces when finding a character to delete.
 
         // Let's tell UIKit to not apply the edit and just apply it ourselves.
-        phoneNumberTextField(textField, changeCharactersIn: range, replacementString: insertionText, callingCode: callingCode)
+        phoneNumberTextField(textField, changeCharactersIn: range, replacementString: insertionText, plusPrefixedCallingCode: plusPrefixedCallingCode)
         return false
     }
 
     // Reformats the text in a UITextField to apply phone number formatting
-    public static func reformatPhoneNumberTextField(_ textField: UITextField, callingCode: String) {
+    public static func reformatPhoneNumberTextField(_ textField: UITextField, plusPrefixedCallingCode: String) {
 
         let originalCursorOffset: Int
         if let selectedTextRange = textField.selectedTextRange {
@@ -44,7 +44,7 @@ public class TextFieldFormatting {
 
         let originalText = textField.text ?? ""
         let trimmedText = originalText.digitsOnly().phoneNumberTrimmedToMaxLength
-        let updatedText = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(trimmedText, countryCodeString: callingCode)
+        let updatedText = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(trimmedText, plusPrefixedCallingCode: plusPrefixedCallingCode)
 
         let updatedCursorOffset = PhoneNumberUtil.translateCursorPosition(
             UInt(originalCursorOffset),
@@ -68,7 +68,7 @@ public class TextFieldFormatting {
         _ textField: UITextField,
         changeCharactersIn range: NSRange,
         replacementString insertionText: String,
-        callingCode: String
+        plusPrefixedCallingCode: String
     ) {
         // Phone numbers takes many forms.
         //
@@ -117,7 +117,7 @@ public class TextFieldFormatting {
         // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
         let cursorPositionAfterChange = min(left.utf16.count + center.utf16.count, textAfterChange.utf16.count)
 
-        let formattedText = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(textAfterChange, countryCodeString: callingCode)
+        let formattedText = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(textAfterChange, plusPrefixedCallingCode: plusPrefixedCallingCode)
         let cursorPositionAfterReformat = PhoneNumberUtil.translateCursorPosition(
             UInt(cursorPositionAfterChange),
             from: textAfterChange,
@@ -173,28 +173,27 @@ public class TextFieldFormatting {
 
     public static func examplePhoneNumber(
         forCountryCode countryCode: String,
-        callingCode: String,
+        plusPrefixedCallingCode: String,
         includeExampleLabel: Bool
     ) -> String? {
-
         owsAssertDebug(!countryCode.isEmpty)
-        owsAssertDebug(!callingCode.isEmpty)
+        owsAssertDebug(!plusPrefixedCallingCode.isEmpty)
 
         guard var examplePhoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.examplePhoneNumber(forCountryCode: countryCode) else {
             owsFailDebug("examplePhoneNumber == nil")
             return nil
         }
-        guard examplePhoneNumber.hasPrefix(callingCode) else {
+        guard examplePhoneNumber.hasPrefix(plusPrefixedCallingCode) else {
             owsFailDebug("Incorrect calling code in \(examplePhoneNumber) for country code \(countryCode)")
             return nil
         }
 
-        let formattedPhoneNumber = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(examplePhoneNumber, countryCodeString: countryCode)
+        let formattedPhoneNumber = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(examplePhoneNumber)
         if !formattedPhoneNumber.isEmpty {
             examplePhoneNumber = formattedPhoneNumber
         }
 
-        examplePhoneNumber = String(examplePhoneNumber.dropFirst(callingCode.count))
+        examplePhoneNumber = String(examplePhoneNumber.dropFirst(plusPrefixedCallingCode.count))
 
         guard includeExampleLabel else {
             return examplePhoneNumber

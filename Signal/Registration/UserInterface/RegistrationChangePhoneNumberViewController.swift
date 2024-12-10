@@ -122,7 +122,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
 
         let countryCodeFormat = OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT",
                                                   comment: "Format for the 'country code' in the 'change phone number' settings. Embeds: {{ %1$@ the numeric country code prefix, %2$@ the country code abbreviation }}.")
-        let countryCodeFormatted = String(format: countryCodeFormat, valueViews.callingCode, valueViews.countryCode)
+        let countryCodeFormatted = String(format: countryCodeFormat, valueViews.plusPrefixedCallingCode, valueViews.countryCode)
         section.add(.item(name: OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD",
                                                   comment: "Label for the 'country code' row in the 'change phone number' settings."),
                           textColor: Theme.primaryTextColor,
@@ -160,17 +160,17 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
         // their phone number _without_ a country calling code (e.g. +1 or +44) but _with_ area code, etc.
         func tryToFormatPhoneNumber(_ phoneNumber: String) -> String? {
             guard let formatted = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(
-                phoneNumber, countryCodeString: valueViews.countryCode).nilIfEmpty else {
-                owsFailDebug("Invalid phone number. phoneNumber: \(phoneNumber), callingCode: \(valueViews.callingCode).")
+                phoneNumber).nilIfEmpty else {
+                owsFailDebug("Invalid phone number. phoneNumber: \(phoneNumber), callingCode: \(valueViews.plusPrefixedCallingCode).")
                 return nil
             }
             // Remove the "country calling code".
-            guard formatted.hasPrefix(valueViews.callingCode) else {
-                owsFailDebug("Example phone number missing calling code. phoneNumber: \(phoneNumber), callingCode: \(valueViews.callingCode).")
+            guard formatted.hasPrefix(valueViews.plusPrefixedCallingCode) else {
+                owsFailDebug("Example phone number missing calling code. phoneNumber: \(phoneNumber), callingCode: \(valueViews.plusPrefixedCallingCode).")
                 return nil
             }
-            guard let formattedWithoutCallingCode = String(formatted.dropFirst(valueViews.callingCode.count)).nilIfEmpty else {
-                owsFailDebug("Invalid phone number. phoneNumber: \(phoneNumber), callingCode: \(valueViews.callingCode).")
+            guard let formattedWithoutCallingCode = String(formatted.dropFirst(valueViews.plusPrefixedCallingCode.count)).nilIfEmpty else {
+                owsFailDebug("Invalid phone number. phoneNumber: \(phoneNumber), callingCode: \(valueViews.plusPrefixedCallingCode).")
                 return nil
             }
             return formattedWithoutCallingCode
@@ -346,7 +346,7 @@ private class ChangePhoneNumberValueViews: NSObject {
     }
 
     var countryName: String { countryState.countryName }
-    var callingCode: String { countryState.callingCode }
+    var plusPrefixedCallingCode: String { countryState.plusPrefixedCallingCode }
     var countryCode: String { countryState.countryCode }
 
     private enum InlineError {
@@ -389,7 +389,7 @@ private class ChangePhoneNumberValueViews: NSObject {
 
     private func applyPhoneNumberFormatting() {
         AssertIsOnMainThread()
-        TextFieldFormatting.reformatPhoneNumberTextField(phoneNumberTextField, callingCode: callingCode)
+        TextFieldFormatting.reformatPhoneNumberTextField(phoneNumberTextField, plusPrefixedCallingCode: plusPrefixedCallingCode)
     }
 
     var sectionHeaderTitle: String {
@@ -438,7 +438,7 @@ private class ChangePhoneNumberValueViews: NSObject {
         guard
             let phoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumber(
                 userSpecifiedText: phoneNumberWithoutCallingCode,
-                callingCode: callingCode
+                callingCode: String(plusPrefixedCallingCode.dropFirst())
             ),
             let e164String = phoneNumber.e164.strippedOrNil,
             let e164 = E164(e164String),
@@ -469,7 +469,8 @@ extension ChangePhoneNumberValueViews: UITextFieldDelegate {
                 textField,
                 shouldChangeCharactersIn: range,
                 replacementString: string,
-                callingCode: callingCode)
+                plusPrefixedCallingCode: plusPrefixedCallingCode
+            )
 
             textFieldDidChange(textField)
 

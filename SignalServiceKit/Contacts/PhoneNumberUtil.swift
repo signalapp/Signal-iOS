@@ -110,7 +110,7 @@ public class PhoneNumberUtil: NSObject {
 
 extension PhoneNumberUtil {
     // country code -> calling code
-    public func callingCode(fromCountryCode countryCode: String) -> String? {
+    public func plusPrefixedCallingCode(fromCountryCode countryCode: String) -> String? {
         guard let countryCode = countryCode.nilIfEmpty else {
             return "+0"
         }
@@ -165,21 +165,20 @@ extension PhoneNumberUtil {
 
     // Returns a list of country codes for a calling code in descending
     // order of population.
-    public func countryCodes(fromCallingCode callingCode: String) -> [String] {
-        guard let callingCode = callingCode.nilIfEmpty else {
+    public func countryCodes(fromPlusPrefixedCallingCode plusPrefixedCallingCode: String) -> [String] {
+        guard let plusPrefixedCallingCode = plusPrefixedCallingCode.nilIfEmpty else {
             return []
         }
-        if let cachedValue = countryCodesFromCallingCodeCache[callingCode] {
+        if let cachedValue = countryCodesFromCallingCodeCache[plusPrefixedCallingCode] {
             return cachedValue
         }
         let countryCodes: [String] = Self.countryCodesSortedByPopulationDescending.compactMap { (countryCode: String) -> String? in
-            let callingCodeForCountryCode: String? = self.callingCode(fromCountryCode: countryCode)
-            guard callingCode == callingCodeForCountryCode else {
+            guard plusPrefixedCallingCode == self.plusPrefixedCallingCode(fromCountryCode: countryCode) else {
                 return nil
             }
             return countryCode
         }
-        countryCodesFromCallingCodeCache[callingCode] = countryCodes
+        countryCodesFromCallingCodeCache[plusPrefixedCallingCode] = countryCodes
         return countryCodes
     }
 
@@ -240,8 +239,8 @@ extension PhoneNumberUtil {
 
     /// Returns the most likely country code for a calling code based on population.
     /// If no country codes are found, returns the empty string.
-    public func probableCountryCode(forCallingCode callingCode: String) -> String {
-        return countryCodes(fromCallingCode: callingCode).first ?? ""
+    public func probableCountryCode(forPlusPrefixedCallingCode plusPrefixedCallingCode: String) -> String {
+        return countryCodes(fromPlusPrefixedCallingCode: plusPrefixedCallingCode).first ?? ""
     }
 
     private class func does(_ string: String, matchQuery query: String) -> Bool {
@@ -266,8 +265,7 @@ extension PhoneNumberUtil {
 
         let codes = NSLocale.isoCountryCodes.filter { countryCode in
             guard
-                let callingCode = callingCode(fromCountryCode: countryCode),
-                !callingCode.isEmpty,
+                let callingCode = plusPrefixedCallingCode(fromCountryCode: countryCode),
                 callingCode != "+0"
             else {
                 return false
@@ -452,7 +450,7 @@ extension PhoneNumberUtil {
         // For example, a French person living in Italy might have an Italian phone
         // number but use French region/language for their phone. They're likely to
         // have both Italian and French contacts.
-        let localCountryCode = probableCountryCode(forCallingCode: callingCodePrefix)
+        let localCountryCode = probableCountryCode(forPlusPrefixedCallingCode: callingCodePrefix)
         if localCountryCode != defaultCountryCode {
             tryParsing(callingCodePrefix + text, countryCode: localCountryCode)
         }
@@ -554,7 +552,7 @@ extension PhoneNumberUtil {
             guard let callingCode = parseE164(phoneNumber)?.getCallingCode() else {
                 return nil
             }
-            return probableCountryCode(forCallingCode: "+\(callingCode)").nilIfEmpty
+            return probableCountryCode(forPlusPrefixedCallingCode: "+\(callingCode)").nilIfEmpty
         }()
         phoneNumberCountryCodeCache[phoneNumber] = countryCode
         return countryCode

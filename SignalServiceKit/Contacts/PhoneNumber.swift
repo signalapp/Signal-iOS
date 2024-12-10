@@ -29,8 +29,8 @@ public struct PhoneNumber {
         bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(input, regionCode: PhoneNumberUtil.defaultCountryCode())
     }
 
-    public static func bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(_ input: String, countryCodeString: String) -> String {
-        bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(input, regionCode: regionCode(from: countryCodeString))
+    public static func bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(_ input: String, plusPrefixedCallingCode: String) -> String {
+        bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(input, regionCode: regionCode(from: plusPrefixedCallingCode))
     }
 
     private static func bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(_ input: String, regionCode: String) -> String {
@@ -53,17 +53,17 @@ public struct PhoneNumber {
             Logger.warn("could not parse phone number")
             return e164
         }
-        guard let callingCode = parsedPhoneNumber.getCallingCode() else {
+        guard parsedPhoneNumber.getCallingCode() != nil else {
             Logger.warn("parsed phone number has no calling code")
             return e164
         }
-        return bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(e164, regionCode: String(callingCode))
+        return bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(e164)
     }
 
-    private static func regionCode(from countryCodeString: String) -> String {
+    private static func regionCode(from plusPrefixedCallingCode: String) -> String {
         // Int(String) could be used here except it doesn't skip whitespace and so would be a change
         // from the objc NSString.integerValue behavior...
-        let countryCallingCode = (countryCodeString.dropFirst() as NSString).integerValue
-        return SSKEnvironment.shared.phoneNumberUtilRef.getRegionCodeForCountryCode(countryCallingCode)
+        let callingCode = (plusPrefixedCallingCode.dropFirst() as NSString).integerValue
+        return SSKEnvironment.shared.phoneNumberUtilRef.getRegionCodeForCountryCode(callingCode)
     }
 }

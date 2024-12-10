@@ -15,7 +15,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
     let buttonText: String?
     let requiresRegisteredNumber: Bool
 
-    var callingCode: String = "+1"
+    var plusPrefixedCallingCode: String = "+1"
     let countryCodeLabel = UILabel()
     private lazy var phoneNumberTextField = OWSTextField(
         keyboardType: .numberPad,
@@ -205,7 +205,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
             return nil
         }
         let possiblePhoneNumbers = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumbers(
-            userSpecifiedText: callingCode + userSpecifiedText,
+            userSpecifiedText: plusPrefixedCallingCode + userSpecifiedText,
             localPhoneNumber: localNumber
         )
         let possibleValidPhoneNumbers = possiblePhoneNumbers.map { $0.e164 }.filter { !$0.isEmpty }
@@ -278,10 +278,8 @@ extension FindByPhoneNumberViewController: SheetDismissalDelegate {
 // MARK: - Country
 
 extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
-    public func countryCodeViewController(_ vc: CountryCodeViewController,
-                                          didSelectCountry countryState: RegistrationCountryState) {
-        updateCountry(callingCode: countryState.callingCode,
-                      countryCode: countryState.countryCode)
+    public func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountry countryState: RegistrationCountryState) {
+        updateCountry(plusPrefixedCallingCode: countryState.plusPrefixedCallingCode, countryCode: countryState.countryCode)
     }
 
     private func didTapCountryRow() {
@@ -307,29 +305,29 @@ extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
             callingCodeInt = SSKEnvironment.shared.phoneNumberUtilRef.getCallingCode(forRegion: PhoneNumberUtil.defaultCountryCode())
         }
 
-        var callingCode: String?
+        var plusPrefixedCallingCode: String?
         if let callingCodeInt = callingCodeInt {
-            callingCode = PhoneNumber.countryCodePrefix + "\(callingCodeInt)"
-            countryCode = SSKEnvironment.shared.phoneNumberUtilRef.probableCountryCode(forCallingCode: callingCode!)
+            plusPrefixedCallingCode = PhoneNumber.countryCodePrefix + "\(callingCodeInt)"
+            countryCode = SSKEnvironment.shared.phoneNumberUtilRef.probableCountryCode(forPlusPrefixedCallingCode: plusPrefixedCallingCode!)
         }
 
-        updateCountry(callingCode: callingCode, countryCode: countryCode)
+        updateCountry(plusPrefixedCallingCode: plusPrefixedCallingCode, countryCode: countryCode)
     }
 
-    func updateCountry(callingCode: String?, countryCode: String?) {
-        guard let callingCode = callingCode, !callingCode.isEmpty, let countryCode = countryCode, !countryCode.isEmpty else {
+    func updateCountry(plusPrefixedCallingCode: String?, countryCode: String?) {
+        guard let plusPrefixedCallingCode = plusPrefixedCallingCode?.nilIfEmpty, let countryCode = countryCode?.nilIfEmpty else {
             return owsFailDebug("missing calling code for selected country")
         }
 
-        self.callingCode = callingCode
+        self.plusPrefixedCallingCode = plusPrefixedCallingCode
         let labelFormat = CurrentAppContext().isRTL ? "(%2$@) %1$@" : "%1$@ (%2$@)"
-        countryCodeLabel.text = String(format: labelFormat, callingCode, countryCode.localizedUppercase)
+        countryCodeLabel.text = String(format: labelFormat, plusPrefixedCallingCode, countryCode.localizedUppercase)
     }
 }
 
 extension FindByPhoneNumberViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        TextFieldFormatting.phoneNumberTextField(textField, changeCharactersIn: range, replacementString: string, callingCode: callingCode)
+        TextFieldFormatting.phoneNumberTextField(textField, changeCharactersIn: range, replacementString: string, plusPrefixedCallingCode: plusPrefixedCallingCode)
         updateButtonState()
         return false
     }

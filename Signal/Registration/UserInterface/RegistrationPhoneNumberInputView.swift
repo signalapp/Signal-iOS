@@ -149,7 +149,7 @@ class RegistrationPhoneNumberInputView: UIStackView {
         dividerView.backgroundColor = Theme.primaryIconColor
         nationalNumberView.textColor = Theme.primaryTextColor
 
-        countryCodeLabel.text = countryState.callingCode
+        countryCodeLabel.text = countryState.plusPrefixedCallingCode
         nationalNumberView.isEnabled = isEnabled
     }
 
@@ -229,7 +229,7 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
     }
 
     private func formatNationalNumber(input: String) -> String {
-        return PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(input, countryCodeString: countryState.callingCode)
+        return PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(input, plusPrefixedCallingCode: countryState.plusPrefixedCallingCode)
     }
 }
 
@@ -242,7 +242,7 @@ extension RegistrationPhoneNumberInputView: CountryCodeViewControllerDelegate {
     ) {
         countryState = newCountryState
 
-        nationalNumberView.text = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(nationalNumber, countryCodeString: countryState.callingCode)
+        nationalNumberView.text = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(nationalNumber, plusPrefixedCallingCode: countryState.plusPrefixedCallingCode)
 
         delegate?.didChange()
     }
