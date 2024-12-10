@@ -221,8 +221,8 @@ extension PhoneNumberUtil {
         }
     }
 
-    public func getRegionCodeForCountryCode(_ countryCallingCode: Int) -> String {
-        return nbPhoneNumberUtil.getRegionCode(forCountryCode: NSNumber(value: countryCallingCode))
+    public func getRegionCodeForCallingCode(_ callingCode: Int) -> String {
+        return nbPhoneNumberUtil.getRegionCode(forCountryCode: NSNumber(value: callingCode))
     }
 
     public func getCallingCode(forRegion regionCode: String) -> Int {
@@ -326,7 +326,7 @@ extension PhoneNumberUtil {
         if userSpecifiedText.isEmpty {
             return nil
         }
-        let regionCode = getRegionCodeForCountryCode((callingCode as NSString).integerValue)
+        let regionCode = getRegionCodeForCallingCode((callingCode as NSString).integerValue)
         if regionCode == NB_UNKNOWN_REGION {
             return parsePhoneNumber(userSpecifiedText: callingCode.appending(userSpecifiedText))
         }

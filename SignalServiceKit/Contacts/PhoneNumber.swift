@@ -64,6 +64,6 @@ public struct PhoneNumber {
         // Int(String) could be used here except it doesn't skip whitespace and so would be a change
         // from the objc NSString.integerValue behavior...
         let callingCode = (plusPrefixedCallingCode.dropFirst() as NSString).integerValue
-        return SSKEnvironment.shared.phoneNumberUtilRef.getRegionCodeForCountryCode(callingCode)
+        return SSKEnvironment.shared.phoneNumberUtilRef.getRegionCodeForCallingCode(callingCode)
     }
 }

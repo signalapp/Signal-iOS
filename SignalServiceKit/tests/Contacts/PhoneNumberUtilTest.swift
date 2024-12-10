@@ -124,12 +124,12 @@ class PhoneNumberUtilTestSwift: XCTestCase {
     }
 
     func test_getRegionCodeForCountryCode() {
-        XCTAssertEqual("US", phoneNumberUtilRef.getRegionCodeForCountryCode(1))
-        XCTAssertEqual("GB", phoneNumberUtilRef.getRegionCodeForCountryCode(44))
-        XCTAssertEqual("UY", phoneNumberUtilRef.getRegionCodeForCountryCode(598))
-        XCTAssertEqual("ZZ", phoneNumberUtilRef.getRegionCodeForCountryCode(0))
-        XCTAssertEqual("ZZ", phoneNumberUtilRef.getRegionCodeForCountryCode(99999))
-        XCTAssertEqual("ZZ", phoneNumberUtilRef.getRegionCodeForCountryCode(-1))
+        XCTAssertEqual("US", phoneNumberUtilRef.getRegionCodeForCallingCode(1))
+        XCTAssertEqual("GB", phoneNumberUtilRef.getRegionCodeForCallingCode(44))
+        XCTAssertEqual("UY", phoneNumberUtilRef.getRegionCodeForCallingCode(598))
+        XCTAssertEqual("ZZ", phoneNumberUtilRef.getRegionCodeForCallingCode(0))
+        XCTAssertEqual("ZZ", phoneNumberUtilRef.getRegionCodeForCallingCode(99999))
+        XCTAssertEqual("ZZ", phoneNumberUtilRef.getRegionCodeForCallingCode(-1))
     }
 
     func test_getCallingCodeForRegion() {
