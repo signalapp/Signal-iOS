@@ -646,6 +646,17 @@ public final class MessageReceiver {
                 deleteForMeProto: deleteForMe,
                 tx: tx.asV2Write
             )
+        } else if let deviceNameChange = syncMessage.deviceNameChange {
+            Task {
+                let deviceService = DependenciesBridge.shared.deviceService
+
+                /// Opportunistically try and refresh our device list. If this
+                /// fails that's ok – there are other places we'll do this
+                /// refresh as well.
+                try await Retry.performWithBackoff(maxAttempts: 4) {
+                    _ = try await deviceService.refreshDevices()
+                }
+            }
         } else {
             Logger.warn("Ignoring unsupported sync message.")
         }
@@ -2066,6 +2077,9 @@ extension SSKProtoSyncMessage {
         }
         if deleteForMe != nil {
             parts.append("deleteForMe")
+        }
+        if deviceNameChange != nil {
+            parts.append("deviceNameChange")
         }
         if hasUnknownFields {
             parts.append("unknown fields")

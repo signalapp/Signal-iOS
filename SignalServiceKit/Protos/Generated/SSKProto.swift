@@ -14816,6 +14816,151 @@ extension SSKProtoSyncMessageDeleteForMeBuilder {
 
 #endif
 
+// MARK: - SSKProtoSyncMessageDeviceNameChange
+
+@objc
+public class SSKProtoSyncMessageDeviceNameChange: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.DeviceNameChange
+
+    @objc
+    public var deviceID: UInt32 {
+        return proto.deviceID
+    }
+    @objc
+    public var hasDeviceID: Bool {
+        return proto.hasDeviceID
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.DeviceNameChange) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.DeviceNameChange(serializedBytes: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.DeviceNameChange) {
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoSyncMessageDeviceNameChange {
+    @objc
+    public static func builder() -> SSKProtoSyncMessageDeviceNameChangeBuilder {
+        return SSKProtoSyncMessageDeviceNameChangeBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessageDeviceNameChangeBuilder {
+        let builder = SSKProtoSyncMessageDeviceNameChangeBuilder()
+        if hasDeviceID {
+            builder.setDeviceID(deviceID)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoSyncMessageDeviceNameChangeBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_SyncMessage.DeviceNameChange()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    public func setDeviceID(_ valueParam: UInt32) {
+        proto.deviceID = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageDeviceNameChange {
+        return SSKProtoSyncMessageDeviceNameChange(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoSyncMessageDeviceNameChange(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoSyncMessageDeviceNameChange {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageDeviceNameChangeBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessageDeviceNameChange? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessage
 
 @objc
@@ -14881,6 +15026,9 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
     public let deleteForMe: SSKProtoSyncMessageDeleteForMe?
 
     @objc
+    public let deviceNameChange: SSKProtoSyncMessageDeviceNameChange?
+
+    @objc
     public var padding: Data? {
         guard hasPadding else {
             return nil
@@ -14919,7 +15067,8 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
                  callEvent: SSKProtoSyncMessageCallEvent?,
                  callLinkUpdate: SSKProtoSyncMessageCallLinkUpdate?,
                  callLogEvent: SSKProtoSyncMessageCallLogEvent?,
-                 deleteForMe: SSKProtoSyncMessageDeleteForMe?) {
+                 deleteForMe: SSKProtoSyncMessageDeleteForMe?,
+                 deviceNameChange: SSKProtoSyncMessageDeviceNameChange?) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -14940,6 +15089,7 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
         self.callLinkUpdate = callLinkUpdate
         self.callLogEvent = callLogEvent
         self.deleteForMe = deleteForMe
+        self.deviceNameChange = deviceNameChange
     }
 
     @objc
@@ -15043,6 +15193,11 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
             deleteForMe = SSKProtoSyncMessageDeleteForMe(proto.deleteForMe)
         }
 
+        var deviceNameChange: SSKProtoSyncMessageDeviceNameChange?
+        if proto.hasDeviceNameChange {
+            deviceNameChange = SSKProtoSyncMessageDeviceNameChange(proto.deviceNameChange)
+        }
+
         self.init(proto: proto,
                   sent: sent,
                   contacts: contacts,
@@ -15062,7 +15217,8 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
                   callEvent: callEvent,
                   callLinkUpdate: callLinkUpdate,
                   callLogEvent: callLogEvent,
-                  deleteForMe: deleteForMe)
+                  deleteForMe: deleteForMe,
+                  deviceNameChange: deviceNameChange)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -15164,6 +15320,9 @@ extension SSKProtoSyncMessage {
         }
         if let _value = deleteForMe {
             builder.setDeleteForMe(_value)
+        }
+        if let _value = deviceNameChange {
+            builder.setDeviceNameChange(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -15395,6 +15554,17 @@ public class SSKProtoSyncMessageBuilder: NSObject {
 
     public func setDeleteForMe(_ valueParam: SSKProtoSyncMessageDeleteForMe) {
         proto.deleteForMe = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setDeviceNameChange(_ valueParam: SSKProtoSyncMessageDeviceNameChange?) {
+        guard let valueParam = valueParam else { return }
+        proto.deviceNameChange = valueParam.proto
+    }
+
+    public func setDeviceNameChange(_ valueParam: SSKProtoSyncMessageDeviceNameChange) {
+        proto.deviceNameChange = valueParam.proto
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

@@ -2561,6 +2561,15 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
   /// Clears the value of `deleteForMe`. Subsequent reads from it will return its default value.
   mutating func clearDeleteForMe() {_uniqueStorage()._deleteForMe = nil}
 
+  var deviceNameChange: SignalServiceProtos_SyncMessage.DeviceNameChange {
+    get {return _storage._deviceNameChange ?? SignalServiceProtos_SyncMessage.DeviceNameChange()}
+    set {_uniqueStorage()._deviceNameChange = newValue}
+  }
+  /// Returns true if `deviceNameChange` has been explicitly set.
+  var hasDeviceNameChange: Bool {return _storage._deviceNameChange != nil}
+  /// Clears the value of `deviceNameChange`. Subsequent reads from it will return its default value.
+  mutating func clearDeviceNameChange() {_uniqueStorage()._deviceNameChange = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   struct Sent: Sendable {
@@ -3982,6 +3991,27 @@ struct SignalServiceProtos_SyncMessage: @unchecked Sendable {
     }
 
     init() {}
+  }
+
+  struct DeviceNameChange: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var deviceID: UInt32 {
+      get {return _deviceID ?? 0}
+      set {_deviceID = newValue}
+    }
+    /// Returns true if `deviceID` has been explicitly set.
+    var hasDeviceID: Bool {return self._deviceID != nil}
+    /// Clears the value of `deviceID`. Subsequent reads from it will return its default value.
+    mutating func clearDeviceID() {self._deviceID = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _deviceID: UInt32? = nil
   }
 
   init() {}
@@ -7298,6 +7328,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     20: .same(proto: "callLinkUpdate"),
     21: .same(proto: "callLogEvent"),
     22: .same(proto: "deleteForMe"),
+    23: .same(proto: "deviceNameChange"),
   ]
 
   fileprivate class _StorageClass {
@@ -7321,6 +7352,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _callLinkUpdate: SignalServiceProtos_SyncMessage.CallLinkUpdate? = nil
     var _callLogEvent: SignalServiceProtos_SyncMessage.CallLogEvent? = nil
     var _deleteForMe: SignalServiceProtos_SyncMessage.DeleteForMe? = nil
+    var _deviceNameChange: SignalServiceProtos_SyncMessage.DeviceNameChange? = nil
 
     #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
@@ -7355,6 +7387,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _callLinkUpdate = source._callLinkUpdate
       _callLogEvent = source._callLogEvent
       _deleteForMe = source._deleteForMe
+      _deviceNameChange = source._deviceNameChange
     }
   }
 
@@ -7393,6 +7426,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 20: try { try decoder.decodeSingularMessageField(value: &_storage._callLinkUpdate) }()
         case 21: try { try decoder.decodeSingularMessageField(value: &_storage._callLogEvent) }()
         case 22: try { try decoder.decodeSingularMessageField(value: &_storage._deleteForMe) }()
+        case 23: try { try decoder.decodeSingularMessageField(value: &_storage._deviceNameChange) }()
         default: break
         }
       }
@@ -7465,6 +7499,9 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._deleteForMe {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 22)
       } }()
+      try { if let v = _storage._deviceNameChange {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 23)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7494,6 +7531,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._callLinkUpdate != rhs_storage._callLinkUpdate {return false}
         if _storage._callLogEvent != rhs_storage._callLogEvent {return false}
         if _storage._deleteForMe != rhs_storage._deleteForMe {return false}
+        if _storage._deviceNameChange != rhs_storage._deviceNameChange {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -8980,6 +9018,42 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelet
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete, rhs: SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete) -> Bool {
     if lhs._conversation != rhs._conversation {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.DeviceNameChange: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".DeviceNameChange"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    2: .same(proto: "deviceId"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self._deviceID) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._deviceID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.DeviceNameChange, rhs: SignalServiceProtos_SyncMessage.DeviceNameChange) -> Bool {
+    if lhs._deviceID != rhs._deviceID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
