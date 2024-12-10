@@ -1053,6 +1053,7 @@ public class AppSetup {
                 udManager: MessageBackup.AccountData.Wrappers.UDManager(udManager: udManager),
                 usernameEducationManager: usernameEducationManager
             ),
+            appVersion: appVersion,
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,

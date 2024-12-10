@@ -27,6 +27,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private typealias LoggableErrorAndProto = MessageBackup.LoggableErrorAndProto
 
     private let accountDataArchiver: MessageBackupAccountDataArchiver
+    private let appVersion: AppVersion
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentUploadManager: AttachmentUploadManager
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
@@ -59,6 +60,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     public init(
         accountDataArchiver: MessageBackupAccountDataArchiver,
+        appVersion: AppVersion,
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadManager: AttachmentUploadManager,
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
@@ -89,6 +91,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         adHocCallArchiver: MessageBackupAdHocCallArchiver
     ) {
         self.accountDataArchiver = accountDataArchiver
+        self.appVersion = appVersion
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentUploadManager = attachmentUploadManager
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
@@ -204,6 +207,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let progress = try await MessageBackupExportProgress.prepare(sink: progress, db: db)
 
+        let currentAppVersion = appVersion.currentAppVersion
+        let firstAppVersion = appVersion.firstBackupAppVersion ?? appVersion.firstAppVersion
+
         let result: Result<Upload.EncryptedBackupUploadMetadata, Error>
         result = await db.awaitableWriteWithTxCompletion { tx in
             do {
@@ -232,6 +238,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         outputStream: outputStream,
                         localIdentifiers: localIdentifiers,
                         backupPurpose: backupPurpose,
+                        currentAppVersion: currentAppVersion,
+                        firstAppVersion: firstAppVersion,
                         tx: tx
                     )
 
@@ -262,6 +270,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let progress = try await MessageBackupExportProgress.prepare(sink: progress, db: db)
 
+        let currentAppVersion = appVersion.currentAppVersion
+        let firstAppVersion = appVersion.firstBackupAppVersion ?? appVersion.firstAppVersion
+
         let result: Result<URL, Error>
         result = await db.awaitableWriteWithTxCompletion { tx in
             do {
@@ -288,6 +299,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                             outputStream: outputStream,
                             localIdentifiers: localIdentifiers,
                             backupPurpose: backupPurpose,
+                            currentAppVersion: currentAppVersion,
+                            firstAppVersion: firstAppVersion,
                             tx: tx
                         )
 
@@ -306,6 +319,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         outputStream stream: MessageBackupProtoOutputStream,
         localIdentifiers: LocalIdentifiers,
         backupPurpose: MessageBackupPurpose,
+        currentAppVersion: String,
+        firstAppVersion: String,
         tx: DBWriteTransaction
     ) throws {
         let startTimeMs = Date().ows_millisecondsSince1970
@@ -315,7 +330,12 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         try autoreleasepool {
-            try writeHeader(stream: stream, tx: tx)
+            try writeHeader(
+                stream: stream,
+                currentAppVersion: currentAppVersion,
+                firstAppVersion: firstAppVersion,
+                tx: tx
+            )
         }
 
         let currentBackupAttachmentUploadEra: String?
@@ -515,12 +535,20 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         Logger.info("Exported \(stream.numberOfWrittenFrames) in \(endTimeMs - startTimeMs)ms")
     }
 
-    private func writeHeader(stream: MessageBackupProtoOutputStream, tx: DBWriteTransaction) throws {
+    private func writeHeader(
+        stream: MessageBackupProtoOutputStream,
+        currentAppVersion: String,
+        firstAppVersion: String,
+        tx: DBWriteTransaction
+    ) throws {
         var backupInfo = BackupProto_BackupInfo()
         backupInfo.version = Constants.supportedBackupVersion
         backupInfo.backupTimeMs = dateProvider().ows_millisecondsSince1970
 
         backupInfo.mediaRootBackupKey = mrbkStore.getOrGenerateMediaRootBackupKey(tx: tx)
+
+        backupInfo.currentAppVersion = currentAppVersion
+        backupInfo.firstAppVersion = firstAppVersion
 
         switch stream.writeHeader(backupInfo) {
         case .success:
@@ -558,7 +586,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let progress = try await MessageBackupImportProgress.prepare(sink: progress, fileUrl: fileUrl)
 
-        let result: Result<Void, Error>
+        let result: Result<BackupProto_BackupInfo, Error>
         result = await db.awaitableWriteWithTxCompletion { tx in
             do {
                 return try Bench(
@@ -566,7 +594,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     memorySamplerRatio: FeatureFlags.backupsMemorySamplerRatio,
                     logInProduction: false
                 ) { memorySampler in
-                    try self.databaseChangeObserver.disable(tx: tx) { tx in
+                    let backupInfo = try self.databaseChangeObserver.disable(tx: tx) { tx in
                         let inputStream: MessageBackupProtoInputStream
                         switch self.encryptedStreamProvider.openEncryptedInputFileStream(
                             fileUrl: fileUrl,
@@ -586,19 +614,24 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                             throw OWSAssertionError("HMAC validation failed on encrypted file!")
                         }
 
-                        try self._importBackup(
+                        return try self._importBackup(
                             inputStream: inputStream,
                             localIdentifiers: localIdentifiers,
                             tx: tx
                         )
                     }
-                    return .commit(.success(()))
+                    return .commit(.success(backupInfo))
                 }
             } catch let error {
                 return .rollback(.failure(error))
             }
         }
-        return try result.get()
+        let backupInfo = try result.get()
+
+        appVersion.didRestoreFromBackup(
+            backupCurrentAppVersion: backupInfo.currentAppVersion.nilIfEmpty,
+            backupFirstAppVersion: backupInfo.firstAppVersion.nilIfEmpty
+        )
     }
 
     public func importPlaintextBackup(
@@ -618,7 +651,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let progress = try await MessageBackupImportProgress.prepare(sink: progress, fileUrl: fileUrl)
 
-        let result: Result<Void, Error>
+        let result: Result<BackupProto_BackupInfo, Error>
         result = await db.awaitableWriteWithTxCompletion { tx in
             do {
                 return try Bench(
@@ -626,7 +659,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     memorySamplerRatio: FeatureFlags.backupsMemorySamplerRatio,
                     logInProduction: false
                 ) { memorySampler in
-                    try self.databaseChangeObserver.disable(tx: tx) { tx in
+                    let backupInfo = try self.databaseChangeObserver.disable(tx: tx) { tx in
                         let inputStream: MessageBackupProtoInputStream
                         switch self.plaintextStreamProvider.openPlaintextInputFileStream(
                             fileUrl: fileUrl,
@@ -643,26 +676,31 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                             throw OWSAssertionError("HMAC validation failed: how did this happen for a plaintext backup?")
                         }
 
-                        try self._importBackup(
+                        return try self._importBackup(
                             inputStream: inputStream,
                             localIdentifiers: localIdentifiers,
                             tx: tx
                         )
                     }
-                    return .commit(.success(()))
+                    return .commit(.success(backupInfo))
                 }
             } catch let error {
                 return .rollback(.failure(error))
             }
         }
-        return try result.get()
+        let backupInfo = try result.get()
+
+        appVersion.didRestoreFromBackup(
+            backupCurrentAppVersion: backupInfo.currentAppVersion.nilIfEmpty,
+            backupFirstAppVersion: backupInfo.firstAppVersion.nilIfEmpty
+        )
     }
 
     private func _importBackup(
         inputStream stream: MessageBackupProtoInputStream,
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
-    ) throws {
+    ) throws -> BackupProto_BackupInfo {
         let startTimeMs = Date().ows_millisecondsSince1970
 
         guard !hasRestoredFromBackup(tx: tx) else {
@@ -899,6 +937,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoAdHocCall) })
                         throw BackupError()
                     }
+                case .notificationProfile:
+                    // Notification profiles are unsupported on iOS and
+                    // we do not even round trip them per spec.
+                    break
+                case .chatFolder:
+                    // Chat folders are unsupported on iOS and
+                    // we do not even round trip them per spec.
+                    break
                 case nil:
                     if hasMoreFrames {
                         owsFailDebug("Frame missing item!")
@@ -938,9 +984,15 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         let endTimeMs = Date().ows_millisecondsSince1970
+        Logger.info("Imported backup generated at \(backupInfo.backupTimeMs)")
+        Logger.info("Backup version \(backupInfo.version)")
+        Logger.info("Backup app version: \(backupInfo.currentAppVersion)")
+        Logger.info("Backup first app version \(backupInfo.firstAppVersion)")
         Logger.info("Imported \(stream.numberOfReadFrames) in \(endTimeMs - startTimeMs)ms")
 
         kvStore.setBool(true, key: Constants.keyValueStoreHasRestoredBackupKey, transaction: tx)
+
+        return backupInfo
     }
 
     // MARK: -
