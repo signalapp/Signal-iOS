@@ -104,6 +104,7 @@ public protocol LinkAndSyncManager {
 
 public class LinkAndSyncManagerImpl: LinkAndSyncManager {
 
+    private let appContext: AppContext
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentUploadManager: AttachmentUploadManager
     private let db: any DB
@@ -113,6 +114,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private let tsAccountManager: TSAccountManager
 
     public init(
+        appContext: AppContext,
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadManager: AttachmentUploadManager,
         db: any DB,
@@ -120,6 +122,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         networkManager: NetworkManager,
         tsAccountManager: TSAccountManager
     ) {
+        self.appContext = appContext
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentUploadManager = attachmentUploadManager
         self.db = db
@@ -157,6 +160,11 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         guard registrationState.isPrimaryDevice == true else {
             owsFailDebug("Non-primary device waiting for secondary linking")
             return
+        }
+
+        appContext.ensureSleepBlocking(true, blockingObjectsDescription: Constants.sleepBlockingDescription)
+        defer {
+            appContext.ensureSleepBlocking(false, blockingObjectsDescription: Constants.sleepBlockingDescription)
         }
 
         // Proportion progress percentages up front.
@@ -224,6 +232,11 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             return
         }
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice != true)
+
+        appContext.ensureSleepBlocking(true, blockingObjectsDescription: Constants.sleepBlockingDescription)
+        defer {
+            appContext.ensureSleepBlocking(false, blockingObjectsDescription: Constants.sleepBlockingDescription)
+        }
 
         // Proportion progress percentages up front.
         let waitForBackupProgress = await progress.addChild(
@@ -561,6 +574,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     }
 
     fileprivate enum Constants {
+        static let sleepBlockingDescription = "Link'n'Sync"
+
         static let enabledOnPrimaryKey = "enabledOnPrimaryKey"
 
         static let waitForDeviceLinkTimeoutSeconds: UInt32 = FeatureFlags.linkAndSyncTimeoutSeconds

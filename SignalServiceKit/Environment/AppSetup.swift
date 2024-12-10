@@ -1182,6 +1182,7 @@ public class AppSetup {
         )
 
         let linkAndSyncManager = LinkAndSyncManagerImpl(
+            appContext: appContext,
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
             db: db,
