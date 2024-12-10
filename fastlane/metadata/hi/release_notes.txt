@@ -1,2 +1,2 @@
-• Fans of big emotions (or emoji) will be happy to hear that a small space or line break between two emoji characters will no longer prevent those emoji from appearing in their jumbo form.
-• We also fixed a bug that sometimes caused the tab bar to cover the text input field, and another one that caused edited attachments to appear in the media gallery multiple times — so now you can change the past without feeling like you're repeating it.
+• इमोशंस (या इमोजी) की कद्र करने वाले लोगों को सुनकर खुशी होगी कि अब दो कैरेक्टर के बीच एक छोटे स्पेस या लाइन ब्रेक होने पर वे इमोजी अपने बड़े रूप में दिखाई देंगे।
+• हमने वह गड़बड़ी भी ठीक कर दी है जिसकी वजह से टैब बार टेक्स्ट इनपुट फ़ील्ड को छिपा देता था, और एक दूसरी गड़बड़ी जिसकी वजह से संपादित किए गए अटैचमेंट मीडिया गैलरी में एक से ज़्यादा बार दिखाई देते थे — तो अब आप अतीत को बदल सकते हैं, बिना यह महसूस किए कि आप इसे दोहरा रहे हैं।

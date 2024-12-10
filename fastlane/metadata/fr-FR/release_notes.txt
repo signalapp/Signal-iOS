@@ -1,2 +1,2 @@
-• Fans of big emotions (or emoji) will be happy to hear that a small space or line break between two emoji characters will no longer prevent those emoji from appearing in their jumbo form.
-• We also fixed a bug that sometimes caused the tab bar to cover the text input field, and another one that caused edited attachments to appear in the media gallery multiple times — so now you can change the past without feeling like you're repeating it.
+• Bonne nouvelle pour les fans d'émojis et toutes les personnes qui vivent des émotions intenses (hypersensibles, on pense à vous !) : une espace ou un saut de ligne entre deux émojis ne les empêcheront plus de s'afficher en format XXL.
+• La barre d'onglets recouvrait parfois le champ de saisie. Cette mise à jour vous rend votre liberté d'expression. Et lorsqu'on modifiait des pièces jointes, elles s'affichaient plusieurs fois dans la galerie. On peut vouloir changer le passé sans nécessairement vouloir qu'il se répète.

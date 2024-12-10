@@ -1,2 +1,2 @@
-• Fans of big emotions (or emoji) will be happy to hear that a small space or line break between two emoji characters will no longer prevent those emoji from appearing in their jumbo form.
-• We also fixed a bug that sometimes caused the tab bar to cover the text input field, and another one that caused edited attachments to appear in the media gallery multiple times — so now you can change the past without feeling like you're repeating it.
+• Si te gusta expresarte a lo grande (emojis incluidos), te alegrará saber que un simple espacio o salto de línea entre dos emojis ya no impedirá que aparezcan en formato gigante.
+• También hemos corregido un error que hacía que la barra de pestañas tapase el campo de entrada de texto y otro que duplicaba en la galería los archivos multimedia editados (así que ahora puedes cambiar el pasado sin sentir que lo estás repitiendo).

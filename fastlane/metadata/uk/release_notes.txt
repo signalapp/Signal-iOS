@@ -1,2 +1,2 @@
-• Fans of big emotions (or emoji) will be happy to hear that a small space or line break between two emoji characters will no longer prevent those emoji from appearing in their jumbo form.
-• We also fixed a bug that sometimes caused the tab bar to cover the text input field, and another one that caused edited attachments to appear in the media gallery multiple times — so now you can change the past without feeling like you're repeating it.
+• Не любите стримувати емоції (чи емоджі)? Тоді вам сподобається це оновлення: тепер емоджі з'являтимуться у великому форматі, навіть якщо між двома емоджі є пробіл або розрив рядка.
+• Також ми виправили дві помилки: панель навігації більше не закриватиме поле для введення тексту, а після внесення змін вкладення не з'являтимуться в галереї медіафайлів повторно, тож ви можете змінювати минуле без відчуття того, що «це ж було вже».
