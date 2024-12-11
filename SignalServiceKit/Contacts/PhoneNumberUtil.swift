@@ -400,8 +400,8 @@ extension PhoneNumberUtil {
         var results = [PhoneNumber]()
         var phoneNumbers = Set<String>()
 
-        func tryParsing(_ text: String, countryCode: String) {
-            guard let phoneNumber = parsePhoneNumber(text, regionCode: countryCode) else {
+        func tryParsing(_ text: String) {
+            guard let phoneNumber = parsePhoneNumber(text, regionCode: Self.defaultCountryCode()) else {
                 return
             }
             guard phoneNumbers.insert(phoneNumber.e164).inserted else {
@@ -410,9 +410,7 @@ extension PhoneNumberUtil {
             results.append(phoneNumber)
         }
 
-        let defaultCountryCode = Self.defaultCountryCode()
-
-        tryParsing(text, countryCode: defaultCountryCode)
+        tryParsing(text)
 
         if text.hasPrefix("+") {
             // If the text starts with "+", don't try prepending
@@ -421,7 +419,7 @@ extension PhoneNumberUtil {
         }
 
         // Try just adding "+" and parsing it.
-        tryParsing("+" + text, countryCode: defaultCountryCode)
+        tryParsing("+" + text)
 
         // Order matters; better results should appear first so prefer
         // matches with the same country code as this client's phone number.
@@ -430,30 +428,20 @@ extension PhoneNumberUtil {
             return results
         }
 
-        // Note that NBPhoneNumber uses "country code" to refer to what we call a
-        // "calling code" (i.e. 44 in +44123123).  Within SSK we use "country code"
-        // (and sometimes "region code") to refer to a country's ISO 2-letter code
-        // (ISO 3166-1 alpha-2).
         guard let callingCodeForLocalNumber = parseE164(localPhoneNumber)?.getCallingCode() else {
             owsFailDebug("callingCodeForLocalNumber is missing")
             return results
         }
 
-        let callingCodePrefix = "+\(callingCodeForLocalNumber)"
-
-        tryParsing(callingCodePrefix + text, countryCode: defaultCountryCode)
-
-        // Try to determine what the country code is for the local phone number and
-        // also try parsing the phone number using that country code if it differs
-        // from the device's region code.
+        // Parse the number as a national number with the same calling code as the
+        // local user's phone number.
         //
         // For example, a French person living in Italy might have an Italian phone
         // number but use French region/language for their phone. They're likely to
-        // have both Italian and French contacts.
-        let localCountryCode = probableCountryCode(forPlusPrefixedCallingCode: callingCodePrefix)
-        if localCountryCode != defaultCountryCode {
-            tryParsing(callingCodePrefix + text, countryCode: localCountryCode)
-        }
+        // have both Italian and French contacts (though I don't know why they
+        // wouldn't prepend the correct international prefix...).
+        let callingCodePrefix = "+\(callingCodeForLocalNumber)"
+        tryParsing(callingCodePrefix + text)
 
         let phoneNumberWithAreaCodeIfMissing = Self.phoneNumberWithAreaCodeIfMissing(
             normalizedText: text,
@@ -461,7 +449,8 @@ extension PhoneNumberUtil {
             localPhoneNumber: localPhoneNumber
         )
         if let phoneNumberWithAreaCodeIfMissing {
-            tryParsing(phoneNumberWithAreaCodeIfMissing, countryCode: localCountryCode)
+            owsAssertDebug(phoneNumberWithAreaCodeIfMissing.hasPrefix("+"))
+            tryParsing(phoneNumberWithAreaCodeIfMissing)
         }
 
         return results

@@ -22,6 +22,10 @@ public struct PhoneNumber {
     }
 
     public func getCallingCode() -> Int? {
+        // Note that NBPhoneNumber uses "countryCode" to refer to what we call a
+        // "callingCode" (e.g., the "44" in "+44123123"). Elsewhere, we use use
+        // "country code" (and sometimes "region code") to refer to a country's
+        // 2-letter code (e.g., "US").
         return nbPhoneNumber.countryCode?.intValue
     }
 
