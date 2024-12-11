@@ -160,9 +160,8 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
         nationalNumberTextField.textColor = Theme.primaryTextColor
         nationalNumberTextField.font = OWSTableItem.accessoryLabelFont
-        nationalNumberTextField.placeholder = TextFieldFormatting.examplePhoneNumber(
+        nationalNumberTextField.placeholder = TextFieldFormatting.exampleNationalNumber(
             forCountryCode: country.countryCode,
-            plusPrefixedCallingCode: country.plusPrefixedCallingCode,
             includeExampleLabel: false
         )
 

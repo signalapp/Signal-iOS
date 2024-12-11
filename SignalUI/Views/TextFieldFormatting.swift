@@ -171,39 +171,27 @@ public class TextFieldFormatting {
         }
     }
 
-    public static func examplePhoneNumber(
-        forCountryCode countryCode: String,
-        plusPrefixedCallingCode: String,
-        includeExampleLabel: Bool
-    ) -> String? {
+    // The purpose of the example phone number is to indicate to the user that they should enter
+    // their phone number _without_ a country calling code (e.g. +1 or +44) but _with_ area code, etc.
+    public static func exampleNationalNumber(forCountryCode countryCode: String, includeExampleLabel: Bool) -> String? {
         owsAssertDebug(!countryCode.isEmpty)
-        owsAssertDebug(!plusPrefixedCallingCode.isEmpty)
 
-        guard var examplePhoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.examplePhoneNumber(forCountryCode: countryCode) else {
+        let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
+        let countryCodeForParsing = phoneNumberUtil.countryCodeForParsing(fromCountryCode: countryCode)
+        guard let nationalNumber = phoneNumberUtil.exampleNationalNumber(forCountryCode: countryCodeForParsing) else {
             owsFailDebug("examplePhoneNumber == nil")
             return nil
         }
-        guard examplePhoneNumber.hasPrefix(plusPrefixedCallingCode) else {
-            owsFailDebug("Incorrect calling code in \(examplePhoneNumber) for country code \(countryCode)")
-            return nil
-        }
-
-        let formattedPhoneNumber = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(examplePhoneNumber)
-        if !formattedPhoneNumber.isEmpty {
-            examplePhoneNumber = formattedPhoneNumber
-        }
-
-        examplePhoneNumber = String(examplePhoneNumber.dropFirst(plusPrefixedCallingCode.count))
 
         guard includeExampleLabel else {
-            return examplePhoneNumber
+            return nationalNumber
         }
 
         let formatString = OWSLocalizedString(
             "PHONE_NUMBER_EXAMPLE_FORMAT",
             comment: "A format for a label showing an example phone number. Embeds {{the example phone number}}."
         )
-        return String(format: formatString, examplePhoneNumber)
+        return String(format: formatString, nationalNumber)
     }
 }
 

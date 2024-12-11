@@ -160,31 +160,10 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
             break
         }
 
-        // The purpose of the example phone number is to indicate to the user that they should enter
-        // their phone number _without_ a country calling code (e.g. +1 or +44) but _with_ area code, etc.
-        func tryToFormatPhoneNumber(_ phoneNumber: String) -> String? {
-            guard let formatted = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(
-                phoneNumber).nilIfEmpty else {
-                owsFailDebug("Invalid phone number. phoneNumber: \(phoneNumber), callingCode: \(valueViews.plusPrefixedCallingCode).")
-                return nil
-            }
-            // Remove the "country calling code".
-            guard formatted.hasPrefix(valueViews.plusPrefixedCallingCode) else {
-                owsFailDebug("Example phone number missing calling code. phoneNumber: \(phoneNumber), callingCode: \(valueViews.plusPrefixedCallingCode).")
-                return nil
-            }
-            guard let formattedWithoutCallingCode = String(formatted.dropFirst(valueViews.plusPrefixedCallingCode.count)).nilIfEmpty else {
-                owsFailDebug("Invalid phone number. phoneNumber: \(phoneNumber), callingCode: \(valueViews.plusPrefixedCallingCode).")
-                return nil
-            }
-            return formattedWithoutCallingCode
-        }
-        if let examplePhoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.examplePhoneNumber(forCountryCode: valueViews.countryCode),
-           let formattedPhoneNumber = tryToFormatPhoneNumber(examplePhoneNumber) {
-            let exampleFormat = OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT",
-                                                      comment: "Format for 'example phone numbers' in the 'change phone number' settings. Embeds: {{ the example phone number }}")
-            section.footerTitle = String(format: exampleFormat, formattedPhoneNumber)
-        }
+        section.footerTitle = TextFieldFormatting.exampleNationalNumber(
+            forCountryCode: valueViews.countryCode,
+            includeExampleLabel: true
+        )
 
         return section
     }

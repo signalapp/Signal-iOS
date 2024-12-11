@@ -178,7 +178,7 @@ extension PhoneNumberUtil {
         return result
     }
 
-    public func examplePhoneNumber(forCountryCode countryCode: String) -> String? {
+    public func exampleNationalNumber(forCountryCode countryCode: String) -> String? {
         // Signal users are very likely using mobile devices, so prefer that kind of example.
         do {
             func findExamplePhoneNumber() -> NBPhoneNumber? {
@@ -196,7 +196,7 @@ extension PhoneNumberUtil {
                 owsFailDebug("Could not find example phone number for: \(countryCode)")
                 return nil
             }
-            return try nbPhoneNumberUtil.format(nbPhoneNumber, numberFormat: .E164)
+            return try nbPhoneNumberUtil.format(nbPhoneNumber, numberFormat: .NATIONAL)
         } catch {
             owsFailDebug("Error: \(error)")
             return nil

@@ -42,9 +42,9 @@ class PhoneNumberUtilTestSwift: XCTestCase {
     }
 
     func test_examplePhoneNumberForCountryCode() {
-        XCTAssertEqual("+12015550123", phoneNumberUtilRef.examplePhoneNumber(forCountryCode: "US"))
-        XCTAssertEqual("+447400123456", phoneNumberUtilRef.examplePhoneNumber(forCountryCode: "GB"))
-        XCTAssertEqual("+59894231234", phoneNumberUtilRef.examplePhoneNumber(forCountryCode: "UY"))
+        XCTAssertEqual("(201) 555-0123", phoneNumberUtilRef.exampleNationalNumber(forCountryCode: "US"))
+        XCTAssertEqual("07400 123456", phoneNumberUtilRef.exampleNationalNumber(forCountryCode: "GB"))
+        XCTAssertEqual("094 231 234", phoneNumberUtilRef.exampleNationalNumber(forCountryCode: "UY"))
     }
 
     func test_getRegionCodeForCountryCode() {
