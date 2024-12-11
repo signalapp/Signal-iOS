@@ -320,7 +320,7 @@ private class ChangePhoneNumberValueViews: NSObject {
 
     public init(e164: E164?, type: `Type`) {
         let phoneNumber = e164.flatMap({ RegistrationPhoneNumberParser(phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef).parseE164($0) })
-        self.countryState = phoneNumber?.countryState ?? .defaultValue
+        self.country = phoneNumber?.country ?? .defaultValue
         self.type = type
 
         super.init()
@@ -333,9 +333,9 @@ private class ChangePhoneNumberValueViews: NSObject {
         nationalNumber = phoneNumber?.nationalNumber ?? ""
     }
 
-    var countryState: RegistrationCountryState
-    var plusPrefixedCallingCode: String { countryState.plusPrefixedCallingCode }
-    var countryCode: String { countryState.countryCode }
+    var country: PhoneNumberCountry
+    var plusPrefixedCallingCode: String { country.plusPrefixedCallingCode }
+    var countryCode: String { country.countryCode }
 
     private enum InlineError {
         case invalidNumber
@@ -412,7 +412,7 @@ private class ChangePhoneNumberValueViews: NSObject {
         nationalNumber = nationalNumber.asciiDigitsOnly
 
         guard
-            let e164 = RegistrationPhoneNumber(countryState: countryState, nationalNumber: nationalNumber).e164,
+            let e164 = RegistrationPhoneNumber(country: country, nationalNumber: nationalNumber).e164,
             let phoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(e164),
             PhoneNumberValidator().isValidForRegistration(phoneNumber: phoneNumber)
         else {
@@ -464,9 +464,8 @@ extension ChangePhoneNumberValueViews: UITextFieldDelegate {
 // MARK: -
 
 extension ChangePhoneNumberValueViews: CountryCodeViewControllerDelegate {
-    public func countryCodeViewController(_ vc: CountryCodeViewController,
-                                          didSelectCountry countryState: RegistrationCountryState) {
-        self.countryState = countryState
+    public func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountry country: PhoneNumberCountry) {
+        self.country = country
         delegate?.valueDidUpdateCountryState(valueViews: self)
     }
 }

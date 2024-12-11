@@ -7,8 +7,7 @@ import Foundation
 import SignalServiceKit
 
 public protocol CountryCodeViewControllerDelegate: AnyObject {
-    func countryCodeViewController(_ vc: CountryCodeViewController,
-                                   didSelectCountry: RegistrationCountryState)
+    func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountry: PhoneNumberCountry)
 }
 
 // MARK: -
@@ -64,18 +63,16 @@ public class CountryCodeViewController: OWSTableViewController2 {
     private func updateTableContents() {
         AssertIsOnMainThread()
 
-        let countryStates = RegistrationCountryState.buildCountryStates(searchText: searchBar.text)
+        let countries = PhoneNumberCountry.buildCountries(searchText: searchBar.text)
 
         let contents = OWSTableContents()
         let section = OWSTableSection()
-        for countryState in countryStates {
-            let accessibilityIdentifier = "country.\(countryState.countryCode)"
+        for country in countries {
             section.add(OWSTableItem.item(
-                name: countryState.countryName,
-                accessoryText: countryState.plusPrefixedCallingCode,
-                accessibilityIdentifier: accessibilityIdentifier,
+                name: country.countryName,
+                accessoryText: country.plusPrefixedCallingCode,
                 actionBlock: { [weak self] in
-                    self?.countryWasSelected(countryState: countryState)
+                    self?.countryWasSelected(country)
                 }
             ))
         }
@@ -84,10 +81,10 @@ public class CountryCodeViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    private func countryWasSelected(countryState: RegistrationCountryState) {
+    private func countryWasSelected(_ country: PhoneNumberCountry) {
         AssertIsOnMainThread()
 
-        countryCodeDelegate?.countryCodeViewController(self, didSelectCountry: countryState)
+        countryCodeDelegate?.countryCodeViewController(self, didSelectCountry: country)
         searchBar.resignFirstResponder()
         self.dismiss(animated: true)
     }

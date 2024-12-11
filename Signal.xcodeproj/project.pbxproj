@@ -566,6 +566,7 @@
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */; };
 		501AD1C42AF17A16001B796A /* ECKeyPairTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */; };
+		501E78622CFE3E2700FD56C4 /* PhoneNumberCountry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501E78612CFE3E2700FD56C4 /* PhoneNumberCountry.swift */; };
 		501F11002C7FD688008FC0DD /* CallLinkRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501F10FF2C7FD688008FC0DD /* CallLinkRecord.swift */; };
 		501F11022C7FD999008FC0DD /* CallLinkRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501F11012C7FD999008FC0DD /* CallLinkRecordStore.swift */; };
 		5020EFA22BA8A5390038C2D5 /* CanonicalPhoneNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5020EFA12BA8A5390038C2D5 /* CanonicalPhoneNumber.swift */; };
@@ -4304,6 +4305,7 @@
 		5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthedDevice.swift; sourceTree = "<group>"; };
 		501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPairTest.swift; sourceTree = "<group>"; };
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
+		501E78612CFE3E2700FD56C4 /* PhoneNumberCountry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberCountry.swift; sourceTree = "<group>"; };
 		501F10FF2C7FD688008FC0DD /* CallLinkRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkRecord.swift; sourceTree = "<group>"; };
 		501F11012C7FD999008FC0DD /* CallLinkRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkRecordStore.swift; sourceTree = "<group>"; };
 		5020EFA12BA8A5390038C2D5 /* CanonicalPhoneNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanonicalPhoneNumber.swift; sourceTree = "<group>"; };
@@ -10460,6 +10462,7 @@
 				34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */,
 				3465947B2433B77700E5C510 /* NewMembersBar.swift */,
 				34A9550A271B510400B05242 /* NonContactTableViewCell.swift */,
+				501E78612CFE3E2700FD56C4 /* PhoneNumberCountry.swift */,
 				E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */,
 				506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */,
 				8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */,
@@ -15813,6 +15816,7 @@
 				3465F4D627287677001663AF /* PaymentsProcessor.swift in Sources */,
 				3465F4D527287677001663AF /* PaymentsReconciliation.swift in Sources */,
 				3402AA79271D9E180084CBAE /* PermissiveGestureRecognizer.swift in Sources */,
+				501E78622CFE3E2700FD56C4 /* PhoneNumberCountry.swift in Sources */,
 				32FAB92A2727A57100FB76A6 /* PrimaryImageView.swift in Sources */,
 				B92E76AB2B6871520095C4DF /* ProfileDetailLabel.swift in Sources */,
 				764FE0452A2F0C0F004D2804 /* QuotedReplyModel.swift in Sources */,

@@ -31,7 +31,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
                     return result
                 }
                 return RegistrationPhoneNumber(
-                    countryState: .defaultValue,
+                    country: .defaultValue,
                     nationalNumber: ""
                 )
             case let .reregistration(state):
