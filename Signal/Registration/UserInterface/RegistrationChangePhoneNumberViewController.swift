@@ -137,7 +137,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
         section.add(.item(
             name: OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD", comment: "Label for the 'phone number' row in the 'change phone number' settings."),
             textColor: Theme.primaryTextColor,
-            accessoryContentView: valueViews.phoneNumberTextField
+            accessoryContentView: valueViews.nationalNumberTextField
         ))
 
         switch valueViews.type {
@@ -248,8 +248,8 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
             return
         }
 
-        oldValueViews.phoneNumberTextField.resignFirstResponder()
-        newValueViews.phoneNumberTextField.resignFirstResponder()
+        oldValueViews.nationalNumberTextField.resignFirstResponder()
+        newValueViews.nationalNumberTextField.resignFirstResponder()
 
         presenter?.submitProspectiveChangeNumberE164(newE164: newE164)
     }
@@ -311,8 +311,6 @@ private class ChangePhoneNumberValueViews: NSObject {
 
     weak var delegate: ChangePhoneNumberValueViewsDelegate?
 
-    var phoneNumber: RegistrationPhoneNumber
-
     enum `Type` {
         case oldNumber
         case newNumber
@@ -321,33 +319,21 @@ private class ChangePhoneNumberValueViews: NSObject {
     fileprivate let type: `Type`
 
     public init(e164: E164?, type: `Type`) {
-        if let e164, let number = RegistrationPhoneNumberParser(phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef).parseE164(e164) {
-            self.phoneNumber = number
-        } else {
-            self.phoneNumber = RegistrationPhoneNumber(countryState: .defaultValue, nationalNumber: "")
-        }
+        let phoneNumber = e164.flatMap({ RegistrationPhoneNumberParser(phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef).parseE164($0) })
+        self.countryState = phoneNumber?.countryState ?? .defaultValue
         self.type = type
 
         super.init()
 
-        phoneNumberTextField.delegate = self
-        phoneNumberTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        phoneNumberTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidBegin)
-        phoneNumberTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidEnd)
+        nationalNumberTextField.delegate = self
+        nationalNumberTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        nationalNumberTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidBegin)
+        nationalNumberTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingDidEnd)
 
-        phoneNumberString = phoneNumber.nationalNumber
+        nationalNumber = phoneNumber?.nationalNumber ?? ""
     }
 
-    var countryState: RegistrationCountryState {
-        get {
-            return phoneNumber.countryState
-        }
-        set {
-            phoneNumber = RegistrationPhoneNumber(countryState: newValue, nationalNumber: phoneNumber.nationalNumber)
-        }
-    }
-
-    var countryName: String { countryState.countryName }
+    var countryState: RegistrationCountryState
     var plusPrefixedCallingCode: String { countryState.plusPrefixedCallingCode }
     var countryCode: String { countryState.countryCode }
 
@@ -358,21 +344,19 @@ private class ChangePhoneNumberValueViews: NSObject {
 
     private var phoneNumberError: InlineError?
 
-    var phoneNumberString: String? {
-        get { phoneNumberTextField.text }
+    var nationalNumber: String? {
+        get { nationalNumberTextField.text }
         set {
-            phoneNumberTextField.text = newValue
+            nationalNumberTextField.text = newValue
             applyPhoneNumberFormatting()
         }
     }
 
-    let phoneNumberTextField: UITextField = {
+    fileprivate let nationalNumberTextField: UITextField = {
         let field = UITextField()
         field.font = UIFont.dynamicTypeBodyClamped
         field.textColor = Theme.primaryTextColor
-        field.textAlignment = (CurrentAppContext().isRTL
-                               ? .left
-                               : .right)
+        field.textAlignment = (CurrentAppContext().isRTL ? .left : .right)
         field.textContentType = .telephoneNumber
 
         // There's a bug in iOS 13 where predictions aren't provided for .numberPad
@@ -391,7 +375,7 @@ private class ChangePhoneNumberValueViews: NSObject {
 
     private func applyPhoneNumberFormatting() {
         AssertIsOnMainThread()
-        TextFieldFormatting.reformatPhoneNumberTextField(phoneNumberTextField, plusPrefixedCallingCode: plusPrefixedCallingCode)
+        TextFieldFormatting.reformatPhoneNumberTextField(nationalNumberTextField, plusPrefixedCallingCode: plusPrefixedCallingCode)
     }
 
     var sectionHeaderTitle: String {
@@ -421,17 +405,15 @@ private class ChangePhoneNumberValueViews: NSObject {
     }
 
     func tryToParse() -> ParsedValue {
-        guard let phoneNumberWithoutCallingCode = phoneNumberString?.strippedOrNil else {
+        guard var nationalNumber = nationalNumber?.strippedOrNil else {
             return .noNumber
         }
 
+        nationalNumber = nationalNumber.asciiDigitsOnly
+
         guard
-            let phoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumber(
-                userSpecifiedText: phoneNumberWithoutCallingCode,
-                callingCode: String(plusPrefixedCallingCode.dropFirst())
-            ),
-            let e164String = phoneNumber.e164.strippedOrNil,
-            let e164 = E164(e164String),
+            let e164 = RegistrationPhoneNumber(countryState: countryState, nationalNumber: nationalNumber).e164,
+            let phoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(e164),
             PhoneNumberValidator().isValidForRegistration(phoneNumber: phoneNumber)
         else {
             return .invalidNumber

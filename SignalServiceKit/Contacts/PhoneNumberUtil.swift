@@ -300,9 +300,9 @@ extension PhoneNumberUtil {
         return Locale.current.localizedString(forRegionCode: countryCode)?.nilIfEmpty ?? unknownValue
     }
 
-    private func parsePhoneNumber(_ numberToParse: String, regionCode: String) -> PhoneNumber? {
+    private func _parsePhoneNumber(filteredValue: String) -> PhoneNumber? {
         do {
-            let phoneNumber = try parse(numberToParse, defaultRegion: regionCode)
+            let phoneNumber = try parse(filteredValue, defaultRegion: Self.defaultCountryCode())
             guard nbPhoneNumberUtil.isPossibleNumber(phoneNumber) else {
                 return nil
             }
@@ -314,27 +314,7 @@ extension PhoneNumberUtil {
     }
 
     public func parsePhoneNumber(userSpecifiedText: String) -> PhoneNumber? {
-        if userSpecifiedText.isEmpty {
-            return nil
-        }
-        let sanitizedText = userSpecifiedText.filteredAsE164
-        return parsePhoneNumber(sanitizedText, regionCode: Self.defaultCountryCode())
-    }
-
-    /// `text` may omit the calling code or duplicate the value in `callingCode`.
-    public func parsePhoneNumber(userSpecifiedText: String, callingCode: String) -> PhoneNumber? {
-        if userSpecifiedText.isEmpty {
-            return nil
-        }
-        let regionCode = getRegionCodeForCallingCode((callingCode as NSString).integerValue)
-        if regionCode == NB_UNKNOWN_REGION {
-            return parsePhoneNumber(userSpecifiedText: callingCode.appending(userSpecifiedText))
-        }
-        var sanitizedText = userSpecifiedText.filteredAsE164
-        if sanitizedText.hasPrefix("+") {
-            sanitizedText = String(sanitizedText.dropFirst())
-        }
-        return parsePhoneNumber(sanitizedText, regionCode: regionCode)
+        return _parsePhoneNumber(filteredValue: userSpecifiedText.filteredAsE164)
     }
 
     public func parseE164(_ phoneNumberString: String) -> PhoneNumber? {
@@ -345,7 +325,7 @@ extension PhoneNumberUtil {
     }
 
     public func parseE164(_ phoneNumber: E164) -> PhoneNumber? {
-        return parsePhoneNumber(phoneNumber.stringValue, regionCode: "ZZ")
+        return _parsePhoneNumber(filteredValue: phoneNumber.stringValue)
     }
 
     public func parsePhoneNumbers(userSpecifiedText: String, localPhoneNumber: String?) -> [PhoneNumber] {
@@ -401,7 +381,7 @@ extension PhoneNumberUtil {
         var phoneNumbers = Set<String>()
 
         func tryParsing(_ text: String) {
-            guard let phoneNumber = parsePhoneNumber(text, regionCode: Self.defaultCountryCode()) else {
+            guard let phoneNumber = _parsePhoneNumber(filteredValue: text) else {
                 return
             }
             guard phoneNumbers.insert(phoneNumber.e164).inserted else {

@@ -57,21 +57,6 @@ class PhoneNumberTest: XCTestCase {
         }
     }
 
-    func testTryParsePhoneNumberWithCallingCode() {
-        XCTAssertEqual(
-            phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: "18085550101", callingCode: "1")?.e164,
-            "+18085550101"
-        )
-        XCTAssertEqual(
-            phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: "61255504321", callingCode: "61")?.e164,
-            "+61255504321"
-        )
-        XCTAssertEqual(
-            phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: "493083050", callingCode: "49")?.e164,
-            "+493083050"
-        )
-    }
-
     func testNationalNumber() throws {
         let testCases: [(inputValue: String, expectedValue: String)] = [
             ("+19025550123", "9025550123"),
