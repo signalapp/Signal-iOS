@@ -17,14 +17,14 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
 
     var plusPrefixedCallingCode: String = "+1"
     let countryCodeLabel = UILabel()
-    private lazy var phoneNumberTextField = OWSTextField(
+    private lazy var nationalNumberTextField = OWSTextField(
         keyboardType: .numberPad,
         returnKeyType: .done,
         autocorrectionType: .no,
         delegate: self
     )
     let countryRowTitleLabel = UILabel()
-    let phoneNumberRowTitleLabel = UILabel()
+    let nationalNumberRowTitleLabel = UILabel()
 
     public init(delegate: FindByPhoneNumberDelegate, buttonText: String?, requiresRegisteredNumber: Bool) {
         self.findByPhoneNumberDelegate = delegate
@@ -50,7 +50,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
         )
     }
 
-    private var phoneNumberTitle: NSAttributedString {
+    private var nationalNumberTitle: NSAttributedString {
         NSAttributedString(
             string: OWSLocalizedString(
                 "REGISTRATION_PHONENUMBER_BUTTON",
@@ -90,7 +90,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
 
         let titleWidth: CGFloat = 138
         let useInlineTitles: Bool = {
-            [countryTitle, phoneNumberTitle].allSatisfy { string in
+            [countryTitle, nationalNumberTitle].allSatisfy { string in
                 string.size().width <= titleWidth
             }
         }()
@@ -136,19 +136,17 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
         phoneNumberStack.axis = useInlineTitles ? .horizontal : .vertical
         phoneNumberStack.spacing = useInlineTitles ? 10 : 0
 
-        phoneNumberRowTitleLabel.attributedText = phoneNumberTitle
-        phoneNumberRowTitleLabel.accessibilityIdentifier =
-            UIView.accessibilityIdentifier(in: self, name: "phoneNumberRowTitleLabel")
+        nationalNumberRowTitleLabel.attributedText = nationalNumberTitle
 
-        phoneNumberStack.addArrangedSubview(phoneNumberRowTitleLabel)
+        phoneNumberStack.addArrangedSubview(nationalNumberRowTitleLabel)
 
         if useInlineTitles {
-            phoneNumberRowTitleLabel.autoSetDimension(.width, toSize: titleWidth)
+            nationalNumberRowTitleLabel.autoSetDimension(.width, toSize: titleWidth)
         }
 
-        phoneNumberTextField.becomeFirstResponder()
+        nationalNumberTextField.becomeFirstResponder()
 
-        phoneNumberStack.addArrangedSubview(phoneNumberTextField)
+        phoneNumberStack.addArrangedSubview(nationalNumberTextField)
 
         section.add(.init(customCellBlock: { phoneNumberCell }))
 
@@ -187,9 +185,9 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
     private func applyTheme() {
         countryRowTitleLabel.attributedText = countryTitle
         countryCodeLabel.textColor = .placeholderText
-        phoneNumberRowTitleLabel.attributedText = phoneNumberTitle
-        phoneNumberTextField.attributedPlaceholder = phoneNumberPlaceholder
-        phoneNumberTextField.textColor = Theme.primaryTextColor
+        nationalNumberRowTitleLabel.attributedText = nationalNumberTitle
+        nationalNumberTextField.attributedPlaceholder = phoneNumberPlaceholder
+        nationalNumberTextField.textColor = Theme.primaryTextColor
     }
 
     func updateButtonState() {
@@ -201,11 +199,11 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
             owsFailDebug("local number unexpectedly nil")
             return nil
         }
-        guard let userSpecifiedText = phoneNumberTextField.text else {
+        guard let nationalNumber = nationalNumberTextField.text else {
             return nil
         }
         let possiblePhoneNumbers = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumbers(
-            userSpecifiedText: plusPrefixedCallingCode + userSpecifiedText,
+            userSpecifiedText: plusPrefixedCallingCode + nationalNumber,
             localPhoneNumber: localNumber
         )
         let possibleValidPhoneNumbers = possiblePhoneNumbers.map { $0.e164 }.filter { !$0.isEmpty }
@@ -233,7 +231,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
             return
         }
 
-        phoneNumberTextField.resignFirstResponder()
+        nationalNumberTextField.resignFirstResponder()
 
         if requiresRegisteredNumber {
             ModalActivityIndicatorViewController.present(
@@ -271,7 +269,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
 
 extension FindByPhoneNumberViewController: SheetDismissalDelegate {
     public func didDismissPresentedSheet() {
-        phoneNumberTextField.becomeFirstResponder()
+        nationalNumberTextField.becomeFirstResponder()
     }
 }
 

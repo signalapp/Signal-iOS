@@ -132,7 +132,6 @@ class RegistrationPhoneNumberInputView: UIStackView {
             "ONBOARDING_PHONE_NUMBER_PLACEHOLDER",
             comment: "Placeholder string for phone number field during registration"
         )
-        result.accessibilityIdentifier = "registration.phonenumber.phoneNumberTextField"
 
         result.delegate = self
 

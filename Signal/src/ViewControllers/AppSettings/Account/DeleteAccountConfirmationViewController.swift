@@ -9,7 +9,7 @@ import SignalUI
 class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     private var plusPrefixedCallingCode = "+1"
     private var countryCode = "US"
-    private let phoneNumberTextField = UITextField()
+    private let nationalNumberTextField = UITextField()
     private let nameLabel = UILabel()
 
     // Don't allow swipe to dismiss
@@ -28,12 +28,10 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     override func loadView() {
         view = UIView()
 
-        phoneNumberTextField.returnKeyType = .done
-        phoneNumberTextField.autocorrectionType = .no
-        phoneNumberTextField.spellCheckingType = .no
-
-        phoneNumberTextField.delegate = self
-        phoneNumberTextField.accessibilityIdentifier = "phone_number_textfield"
+        nationalNumberTextField.returnKeyType = .done
+        nationalNumberTextField.autocorrectionType = .no
+        nationalNumberTextField.spellCheckingType = .no
+        nationalNumberTextField.delegate = self
     }
 
     override func viewDidLoad() {
@@ -50,13 +48,13 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        phoneNumberTextField.becomeFirstResponder()
+        nationalNumberTextField.becomeFirstResponder()
     }
 
     override func themeDidChange() {
         super.themeDidChange()
         nameLabel.textColor = Theme.primaryTextColor
-        phoneNumberTextField.textColor = Theme.primaryTextColor
+        nationalNumberTextField.textColor = Theme.primaryTextColor
         updateTableContents()
     }
 
@@ -95,7 +93,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             return self.phoneNumberCell
         },
             actionBlock: { [weak self] in
-                self?.phoneNumberTextField.becomeFirstResponder()
+                self?.nationalNumberTextField.becomeFirstResponder()
             }
         ))
         contents.add(confirmSection)
@@ -161,19 +159,19 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.autoSetDimension(.height, toSize: 24, relation: .greaterThanOrEqual)
 
-        phoneNumberTextField.textColor = Theme.primaryTextColor
-        phoneNumberTextField.font = OWSTableItem.accessoryLabelFont
-        phoneNumberTextField.placeholder = TextFieldFormatting.examplePhoneNumber(
+        nationalNumberTextField.textColor = Theme.primaryTextColor
+        nationalNumberTextField.font = OWSTableItem.accessoryLabelFont
+        nationalNumberTextField.placeholder = TextFieldFormatting.examplePhoneNumber(
             forCountryCode: countryCode,
             plusPrefixedCallingCode: plusPrefixedCallingCode,
             includeExampleLabel: false
         )
 
         nameLabel.setCompressionResistanceHigh()
-        phoneNumberTextField.setContentHuggingHorizontalHigh()
+        nationalNumberTextField.setContentHuggingHorizontalHigh()
 
         let contentRow = UIStackView(arrangedSubviews: [
-            nameLabel, phoneNumberTextField
+            nameLabel, nationalNumberTextField
         ])
         contentRow.spacing = OWSTableItem.iconSpacing
         contentRow.alignment = .center
@@ -205,7 +203,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             return
         }
 
-        phoneNumberTextField.resignFirstResponder()
+        nationalNumberTextField.resignFirstResponder()
 
         showDeletionConfirmUI_checkPayments()
     }
@@ -358,9 +356,11 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             return false
         }
 
-        guard let phoneNumberText = phoneNumberTextField.text else { return false }
+        guard let nationalNumber = nationalNumberTextField.text else {
+            return false
+        }
 
-        let possiblePhoneNumber = plusPrefixedCallingCode + phoneNumberText
+        let possiblePhoneNumber = plusPrefixedCallingCode + nationalNumber
         let possibleNumbers = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumbers(
             userSpecifiedText: possiblePhoneNumber,
             localPhoneNumber: localNumber
