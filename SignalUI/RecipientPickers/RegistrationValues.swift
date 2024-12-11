@@ -27,8 +27,9 @@ public class RegistrationPhoneNumberParser {
 
     public func parseE164(_ phoneNumber: E164) -> RegistrationPhoneNumber? {
         guard
-            let country = PhoneNumberCountry.country(forE164: phoneNumber.stringValue),
-            let phoneNumber = phoneNumberUtil.parseE164(phoneNumber)
+            let phoneNumber = phoneNumberUtil.parseE164(phoneNumber),
+            let callingCode = phoneNumber.getCallingCode(),
+            let country = PhoneNumberCountry.buildCountry(forCallingCode: callingCode)
         else {
             return nil
         }

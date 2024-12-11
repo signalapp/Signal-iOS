@@ -33,19 +33,6 @@ public struct PhoneNumberCountry: Equatable {
 
     // MARK: -
 
-    public static func country(forE164 e164: String) -> PhoneNumberCountry? {
-        for country in allCountries {
-            if e164.hasPrefix(country.plusPrefixedCallingCode) {
-                return country
-            }
-        }
-        return nil
-    }
-
-    private static var allCountries: [PhoneNumberCountry] {
-        PhoneNumberCountry.buildCountries(searchText: nil)
-    }
-
     public static func buildCountries(searchText: String?) -> [PhoneNumberCountry] {
         let searchText = searchText?.strippedOrNil
         let countryCodes: [String] = SSKEnvironment.shared.phoneNumberUtilRef.countryCodes(forSearchTerm: searchText)
@@ -62,20 +49,34 @@ public struct PhoneNumberCountry: Equatable {
                 owsFailDebug("Invalid callingCode.")
                 return nil
             }
-            guard let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode).strippedOrNil else {
-                owsFailDebug("Invalid countryName.")
-                return nil
-            }
-            guard plusPrefixedCallingCode != "+0" else {
-                owsFailDebug("Invalid callingCode.")
-                return nil
-            }
-
-            return PhoneNumberCountry(
-                countryName: countryName,
-                plusPrefixedCallingCode: plusPrefixedCallingCode,
-                countryCode: countryCode
-            )
+            return buildCountry(countryCode: countryCode, plusPrefixedCallingCode: plusPrefixedCallingCode)
         }
+    }
+
+    public static func buildCountry(forCallingCode callingCode: Int) -> PhoneNumberCountry? {
+        let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
+
+        guard let countryCode = phoneNumberUtil.getFilteredRegionCodeForCallingCode(callingCode) else {
+            owsFailDebug("Invalid callingCode.")
+            return nil
+        }
+
+        return buildCountry(countryCode: countryCode, plusPrefixedCallingCode: "+\(callingCode)")
+    }
+
+    private static func buildCountry(countryCode: String, plusPrefixedCallingCode: String) -> PhoneNumberCountry? {
+        guard let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode).strippedOrNil else {
+            owsFailDebug("Invalid countryName.")
+            return nil
+        }
+        guard plusPrefixedCallingCode != "+0" else {
+            owsFailDebug("Invalid callingCode.")
+            return nil
+        }
+        return PhoneNumberCountry(
+            countryName: countryName,
+            plusPrefixedCallingCode: plusPrefixedCallingCode,
+            countryCode: countryCode
+        )
     }
 }

@@ -225,7 +225,7 @@ extension PhoneNumberUtil {
         return nbPhoneNumberUtil.getRegionCode(forCountryCode: NSNumber(value: callingCode))
     }
 
-    private func getFilteredRegionCodeForCallingCode(_ callingCode: Int) -> String? {
+    public func getFilteredRegionCodeForCallingCode(_ callingCode: Int) -> String? {
         let result = getRegionCodeForCallingCode(callingCode)
         if result == NB_UNKNOWN_REGION || result == NB_REGION_CODE_FOR_NON_GEO_ENTITY {
             return nil
