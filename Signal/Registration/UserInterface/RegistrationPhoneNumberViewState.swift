@@ -38,7 +38,7 @@ public enum RegistrationPhoneNumberViewState: Equatable {
         let oldE164: E164
         let newE164: E164?
         let hasConfirmed: Bool
-        let invalidNumberError: ValidationError.InvalidNumber?
+        let invalidE164Error: ValidationError.InvalidE164?
     }
 
     public struct ChangeNumberConfirmation: Equatable {
@@ -48,10 +48,19 @@ public enum RegistrationPhoneNumberViewState: Equatable {
     }
 
     public enum ValidationError: Equatable {
-        case invalidNumber(InvalidNumber)
+        case invalidInput(InvalidInput)
+        case invalidE164(InvalidE164)
         case rateLimited(RateLimited)
 
-        public struct InvalidNumber: Equatable {
+        /// The user typed something that couldn't be parsed.
+        public struct InvalidInput: Equatable {
+            let invalidCountryCode: String
+            let invalidNationalNumber: String
+        }
+
+        /// The user submitted something that could be parsed, but local or server
+        /// validation rejected it as not a valid number for registration.
+        public struct InvalidE164: Equatable {
             let invalidE164: E164
         }
 
@@ -64,35 +73,39 @@ public enum RegistrationPhoneNumberViewState: Equatable {
 
 extension RegistrationPhoneNumberViewState.ValidationError {
 
-    func canSubmit(e164: E164, dateProvider: DateProvider) -> Bool {
+    func warningLabelText(dateProvider: DateProvider) -> String? {
         switch self {
-        case let .invalidNumber(error):
-            return error.canSubmit(e164: e164)
+        case let .invalidInput(error):
+            return error.warningLabelText()
+        case let .invalidE164(error):
+            return error.warningLabelText()
         case let .rateLimited(error):
-            return error.canSubmit(e164: e164, dateProvider: dateProvider)
-        }
-    }
-
-    func warningLabelText(e164: E164, dateProvider: DateProvider) -> String? {
-        switch self {
-        case .invalidNumber(let error):
-            return error.warningLabelText(e164: e164)
-        case let .rateLimited(error):
-            return error.warningLabelText(e164: e164, dateProvider: dateProvider)
+            return error.warningLabelText(dateProvider: dateProvider)
         }
     }
 }
 
-extension RegistrationPhoneNumberViewState.ValidationError.InvalidNumber {
+extension RegistrationPhoneNumberViewState.ValidationError.InvalidInput {
 
-    func canSubmit(e164: E164) -> Bool {
+    func canSubmit(countryCode: String, nationalNumber: String) -> Bool {
+        return countryCode != invalidCountryCode || nationalNumber != invalidNationalNumber
+    }
+
+    func warningLabelText() -> String {
+        return OWSLocalizedString(
+            "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
+            comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view."
+        )
+    }
+}
+
+extension RegistrationPhoneNumberViewState.ValidationError.InvalidE164 {
+
+    func canSubmit(e164: E164?) -> Bool {
         return e164 != invalidE164
     }
 
-    func warningLabelText(e164: E164) -> String? {
-        guard self.invalidE164 == e164 else {
-            return nil
-        }
+    func warningLabelText() -> String {
         return OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
             comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view."
@@ -102,18 +115,12 @@ extension RegistrationPhoneNumberViewState.ValidationError.InvalidNumber {
 
 extension RegistrationPhoneNumberViewState.ValidationError.RateLimited {
 
-    func canSubmit(e164: E164, dateProvider: DateProvider) -> Bool {
+    func canSubmit(e164: E164?, dateProvider: DateProvider) -> Bool {
         return dateProvider() >= expiration || e164 != self.e164
     }
 
-    func warningLabelText(e164: E164, dateProvider: DateProvider) -> String? {
-        guard e164 == self.e164 else {
-            return nil
-        }
+    func warningLabelText(dateProvider: DateProvider) -> String {
         let now = dateProvider()
-        if now >= expiration {
-            return nil
-        }
         let rateLimitFormat = OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT",
             comment: "Label indicating that registration has been ratelimited. Embeds {{remaining time string}}."

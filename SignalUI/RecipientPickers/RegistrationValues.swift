@@ -9,12 +9,10 @@ public import SignalServiceKit
 public struct RegistrationPhoneNumber {
     public let country: PhoneNumberCountry
     public let nationalNumber: String
-    public let e164: E164?
 
     public init(country: PhoneNumberCountry, nationalNumber: String) {
         self.country = country
         self.nationalNumber = nationalNumber
-        self.e164 = E164("\(country.plusPrefixedCallingCode)\(nationalNumber)")
     }
 }
 

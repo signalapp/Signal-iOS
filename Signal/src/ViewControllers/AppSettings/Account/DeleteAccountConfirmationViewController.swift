@@ -7,8 +7,7 @@ import SignalServiceKit
 import SignalUI
 
 class DeleteAccountConfirmationViewController: OWSTableViewController2 {
-    private var plusPrefixedCallingCode = "+1"
-    private var countryCode = "US"
+    private var country: PhoneNumberCountry!
     private let nationalNumberTextField = UITextField()
     private let nameLabel = UILabel()
 
@@ -80,7 +79,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
                 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE",
                 comment: "Title for the 'country code' row of the 'delete account confirmation' view controller."
             ),
-            accessoryText: "\(plusPrefixedCallingCode) (\(countryCode))",
+            accessoryText: "\(country.plusPrefixedCallingCode) (\(country.countryCode))",
             actionBlock: { [weak self] in
                 guard let self = self else { return }
                 let countryCodeController = CountryCodeViewController()
@@ -162,8 +161,8 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         nationalNumberTextField.textColor = Theme.primaryTextColor
         nationalNumberTextField.font = OWSTableItem.accessoryLabelFont
         nationalNumberTextField.placeholder = TextFieldFormatting.examplePhoneNumber(
-            forCountryCode: countryCode,
-            plusPrefixedCallingCode: plusPrefixedCallingCode,
+            forCountryCode: country.countryCode,
+            plusPrefixedCallingCode: country.plusPrefixedCallingCode,
             includeExampleLabel: false
         )
 
@@ -351,7 +350,8 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     }
 
     var hasEnteredLocalNumber: Bool {
-        guard let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let localNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
             owsFailDebug("local number unexpectedly nil")
             return false
         }
@@ -360,40 +360,36 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             return false
         }
 
-        let possiblePhoneNumber = plusPrefixedCallingCode + nationalNumber
-        let possibleNumbers = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumbers(
-            userSpecifiedText: possiblePhoneNumber,
-            localPhoneNumber: localNumber
-        ).map(\.e164)
+        let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
+        let parsedNumber = phoneNumberUtil.parsePhoneNumber(countryCode: country.countryCode, nationalNumber: nationalNumber)
 
-        return possibleNumbers.contains(localNumber)
+        return localNumber == parsedNumber?.e164
     }
 }
 
 extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDelegate {
     public func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountry country: PhoneNumberCountry) {
-        updateCountry(plusPrefixedCallingCode: country.plusPrefixedCallingCode, countryCode: country.countryCode)
+        updateCountry(country)
     }
 
     private func populateDefaultCountryCode() {
-        guard let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
-            owsFailDebug("Local number unexpectedly nil")
-            return
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
+        let defaultCountry: PhoneNumberCountry
+        if
+            let localNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
+            let localCountry = PhoneNumberCountry.buildCountry(forCountryCode: phoneNumberUtil.preferredCountryCode(forLocalNumber: localNumber))
+        {
+            defaultCountry = localCountry
+        } else {
+            owsFailDebug("Couldn't determine local country.")
+            defaultCountry = .defaultValue
         }
-
-        let (countryCode, callingCode) = SSKEnvironment.shared.phoneNumberUtilRef.preferredCountryAndCallingCode(forLocalNumber: localNumber)
-
-        updateCountry(plusPrefixedCallingCode: "+\(callingCode)", countryCode: countryCode)
+        updateCountry(defaultCountry)
     }
 
-    private func updateCountry(plusPrefixedCallingCode: String, countryCode: String) {
-        guard let plusPrefixedCallingCode = plusPrefixedCallingCode.nilIfEmpty, let countryCode = countryCode.nilIfEmpty else {
-            owsFailDebug("missing calling code for selected country")
-            return
-        }
-
-        self.plusPrefixedCallingCode = plusPrefixedCallingCode
-        self.countryCode = countryCode
+    private func updateCountry(_ country: PhoneNumberCountry) {
+        self.country = country
         updateTableContents()
     }
 }
@@ -405,7 +401,7 @@ extension DeleteAccountConfirmationViewController: UITextFieldDelegate {
     }
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        TextFieldFormatting.phoneNumberTextField(textField, changeCharactersIn: range, replacementString: string, plusPrefixedCallingCode: plusPrefixedCallingCode)
+        TextFieldFormatting.phoneNumberTextField(textField, changeCharactersIn: range, replacementString: string, plusPrefixedCallingCode: country.plusPrefixedCallingCode)
         return false
     }
 }

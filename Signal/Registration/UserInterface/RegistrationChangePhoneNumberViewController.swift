@@ -49,15 +49,15 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
         self.state = newState
         updateTableContents()
 
-        if let invalidNumberError = state.invalidNumberError {
-            showInvalidPhoneNumberAlertIfNecessary(for: invalidNumberError.invalidE164.stringValue)
+        if let invalidNumberError = state.invalidE164Error {
+            showInvalidPhoneNumberAlertIfNecessary(for: invalidNumberError)
         }
     }
 
-    private var previousInvalidE164: String?
+    private var previousInvalidNumber: RegistrationPhoneNumberViewState.ValidationError.InvalidE164?
 
-    private func showInvalidPhoneNumberAlertIfNecessary(for e164: String) {
-        let shouldShowAlert = e164 != previousInvalidE164
+    private func showInvalidPhoneNumberAlertIfNecessary(for invalidNumber: RegistrationPhoneNumberViewState.ValidationError.InvalidE164) {
+        let shouldShowAlert = invalidNumber != previousInvalidNumber
         if shouldShowAlert {
             OWSActionSheets.showActionSheet(
                 title: OWSLocalizedString(
@@ -71,7 +71,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
             )
         }
 
-        previousInvalidE164 = e164
+        previousInvalidNumber = invalidNumber
     }
 
     override func viewDidLoad() {
@@ -144,11 +144,12 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
         case .newNumber:
             if
                 let e164 = self.state.newE164,
-                let warningLabelText = state.invalidNumberError?.warningLabelText(e164: e164)
+                let invalidE164Error = state.invalidE164Error,
+                !invalidE164Error.canSubmit(e164: e164)
             {
                 section.add(.init(customCellBlock: {
                     let cell = OWSTableItem.buildCell(
-                        itemName: warningLabelText,
+                        itemName: invalidE164Error.warningLabelText(),
                         textColor: .ows_accentRed
                     )
                     cell.isUserInteractionEnabled = false
@@ -211,7 +212,6 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
                 showInvalidPhoneNumberAlert(isOldValue: isOldValue)
                 return nil
             case .validNumber(let e164):
-
                 return e164
             }
         }
@@ -233,7 +233,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
             return nil
         }
 
-        guard state.invalidNumberError?.canSubmit(e164: newE164) != false else {
+        guard state.invalidE164Error?.canSubmit(e164: newE164) != false else {
             showInvalidPhoneNumberAlert(isOldValue: false)
             return nil
         }
@@ -411,15 +411,15 @@ private class ChangePhoneNumberValueViews: NSObject {
 
         nationalNumber = nationalNumber.asciiDigitsOnly
 
+        let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
         guard
-            let e164 = RegistrationPhoneNumber(country: country, nationalNumber: nationalNumber).e164,
-            let phoneNumber = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(e164),
+            let phoneNumber = E164(phoneNumberUtil.parsePhoneNumber(countryCode: country.countryCode, nationalNumber: nationalNumber)?.e164),
             PhoneNumberValidator().isValidForRegistration(phoneNumber: phoneNumber)
         else {
             return .invalidNumber
         }
 
-        return .validNumber(e164: e164)
+        return .validNumber(e164: phoneNumber)
     }
 }
 

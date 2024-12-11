@@ -57,11 +57,8 @@ class RegistrationPhoneNumberInputView: UIStackView {
 
     public var nationalNumber: String { nationalNumberView.text?.asciiDigitsOnly ?? "" }
 
-    public var e164: E164? {
-        return RegistrationPhoneNumber(
-            country: country,
-            nationalNumber: nationalNumber
-        ).e164
+    public var phoneNumber: RegistrationPhoneNumber {
+        return RegistrationPhoneNumber(country: country, nationalNumber: nationalNumber)
     }
 
     public var isEnabled: Bool = true {
@@ -191,8 +188,8 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
 
         if
             textField.text.isEmptyOrNil,
-            let fulle164 = E164(replacementString.removeCharacters(characterSet: CharacterSet(charactersIn: " -()"))),
-            let phoneNumber = RegistrationPhoneNumberParser(phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef).parseE164(fulle164)
+            let fullE164 = E164(replacementString.removeCharacters(characterSet: CharacterSet(charactersIn: " -()"))),
+            let phoneNumber = RegistrationPhoneNumberParser(phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef).parseE164(fullE164)
         {
             // If we got a full e164, it was probably from system autofill.
             // Split out the country code portion.

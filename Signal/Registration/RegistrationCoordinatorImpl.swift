@@ -2128,7 +2128,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         return strongSelf.nextStep()
                     case .invalidArgument:
                         return .value(.phoneNumberEntry(strongSelf.phoneNumberEntryState(
-                            validationError: .invalidNumber(.init(invalidE164: e164))
+                            validationError: .invalidE164(.init(invalidE164: e164))
                         )))
                     case .retryAfter(let timeInterval):
                         if timeInterval < Constants.autoRetryInterval {
@@ -3937,20 +3937,34 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     // MARK: - Step State Generation Helpers
 
+    private enum RemoteValidationError {
+        case invalidE164(RegistrationPhoneNumberViewState.ValidationError.InvalidE164)
+        case rateLimited(RegistrationPhoneNumberViewState.ValidationError.RateLimited)
+
+        func asViewStateError() -> RegistrationPhoneNumberViewState.ValidationError {
+            switch self {
+            case let .invalidE164(error):
+                return .invalidE164(error)
+            case let .rateLimited(error):
+                return .rateLimited(error)
+            }
+        }
+    }
+
     private func phoneNumberEntryState(
-        validationError: RegistrationPhoneNumberViewState.ValidationError? = nil
+        validationError: RemoteValidationError? = nil
     ) -> RegistrationPhoneNumberViewState {
         switch mode {
         case .registering:
             return .registration(.initialRegistration(.init(
                 previouslyEnteredE164: persistedState.e164,
-                validationError: validationError,
+                validationError: validationError?.asViewStateError(),
                 canExitRegistration: canExitRegistrationFlow().canExit
             )))
         case .reRegistering(let state):
             return .registration(.reregistration(.init(
                 e164: state.e164,
-                validationError: validationError,
+                validationError: validationError?.asViewStateError(),
                 canExitRegistration: canExitRegistrationFlow().canExit
             )))
         case .changingNumber(let state):
@@ -3960,12 +3974,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 break
             case .rateLimited(let error):
                 rateLimitedError = error
-            case .invalidNumber(let invalidNumberError):
+            case .invalidE164(let invalidE164Error):
                 return .changingNumber(.initialEntry(.init(
                     oldE164: state.oldE164,
                     newE164: inMemoryState.changeNumberProspectiveE164,
                     hasConfirmed: inMemoryState.changeNumberProspectiveE164 != nil,
-                    invalidNumberError: invalidNumberError
+                    invalidE164Error: invalidE164Error
                 )))
             }
             if let newE164 = inMemoryState.changeNumberProspectiveE164 {
@@ -3979,7 +3993,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     oldE164: state.oldE164,
                     newE164: nil,
                     hasConfirmed: false,
-                    invalidNumberError: nil
+                    invalidE164Error: nil
                 )))
             }
         }

@@ -45,12 +45,16 @@ public struct PhoneNumberCountry: Equatable {
                 owsFailDebug("Invalid countryCode.")
                 return nil
             }
-            guard let plusPrefixedCallingCode = SSKEnvironment.shared.phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: countryCode) else {
-                owsFailDebug("Invalid callingCode.")
-                return nil
-            }
-            return buildCountry(countryCode: countryCode, plusPrefixedCallingCode: plusPrefixedCallingCode)
+            return buildCountry(forCountryCode: countryCode)
         }
+    }
+
+    public static func buildCountry(forCountryCode countryCode: String) -> PhoneNumberCountry? {
+        guard let plusPrefixedCallingCode = SSKEnvironment.shared.phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: countryCode) else {
+            owsFailDebug("Invalid countryCode.")
+            return nil
+        }
+        return buildCountry(countryCode: countryCode, plusPrefixedCallingCode: plusPrefixedCallingCode)
     }
 
     public static func buildCountry(forCallingCode callingCode: Int) -> PhoneNumberCountry? {

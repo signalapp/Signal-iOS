@@ -161,7 +161,7 @@ extension PhoneNumberUtil {
         return Locale.current.regionCode ?? "US"
     }
 
-    /// Computes the country ("GB") and calling ("44") codes for localNumber.
+    /// Computes the country code ("GB") for localNumber.
     ///
     /// If multiple countries share a calling code (e.g., the US and Canada
     /// share "1"), then we don't know which country to return for "1". If
@@ -169,17 +169,17 @@ extension PhoneNumberUtil {
     /// return `defaultCountryCode`.
     ///
     /// If localNumber can't be parsed, `defaultCountryCode` is returned.
-    public func preferredCountryAndCallingCode(forLocalNumber localNumber: String) -> (countryCode: String, callingCode: Int) {
+    public func preferredCountryCode(forLocalNumber localNumber: String) -> String {
         // TODO: Determine countryCode precisely from the phone number.
         let defaultCountryCode = Self.defaultCountryCode()
         if let localCallingCode = parseE164(localNumber)?.getCallingCode() {
             if getCallingCode(forRegion: defaultCountryCode) == localCallingCode {
-                return (defaultCountryCode, localCallingCode)
+                return defaultCountryCode
             }
             let localCountryCode = getFilteredRegionCodeForCallingCode(localCallingCode)
-            return (localCountryCode ?? "", localCallingCode)
+            return localCountryCode ?? ""
         }
-        return (defaultCountryCode, getCallingCode(forRegion: defaultCountryCode))
+        return defaultCountryCode
     }
 
     private func format(_ phoneNumber: NBPhoneNumber, numberFormat: NBEPhoneNumberFormat) throws -> String {
@@ -302,9 +302,9 @@ extension PhoneNumberUtil {
         return Locale.current.localizedString(forRegionCode: countryCode)?.nilIfEmpty ?? unknownValue
     }
 
-    private func _parsePhoneNumber(filteredValue: String) -> PhoneNumber? {
+    private func _parsePhoneNumber(filteredValue: String, countryCode: String = defaultCountryCode()) -> PhoneNumber? {
         do {
-            let phoneNumber = try parse(filteredValue, defaultRegion: Self.defaultCountryCode())
+            let phoneNumber = try parse(filteredValue, defaultRegion: countryCode)
             guard nbPhoneNumberUtil.isPossibleNumber(phoneNumber) else {
                 return nil
             }
@@ -328,6 +328,10 @@ extension PhoneNumberUtil {
 
     public func parseE164(_ phoneNumber: E164) -> PhoneNumber? {
         return _parsePhoneNumber(filteredValue: phoneNumber.stringValue)
+    }
+
+    public func parsePhoneNumber(countryCode: String, nationalNumber: String) -> PhoneNumber? {
+        return _parsePhoneNumber(filteredValue: nationalNumber.filteredAsE164, countryCode: countryCode)
     }
 
     public func parsePhoneNumbers(userSpecifiedText: String, localPhoneNumber: String?) -> [PhoneNumber] {

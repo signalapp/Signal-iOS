@@ -15,7 +15,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
     let buttonText: String?
     let requiresRegisteredNumber: Bool
 
-    var plusPrefixedCallingCode: String = "+1"
+    private var country: PhoneNumberCountry!
     let countryCodeLabel = UILabel()
     private lazy var nationalNumberTextField = OWSTextField(
         keyboardType: .numberPad,
@@ -194,24 +194,14 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
     }
 
     func validPhoneNumber() -> String? {
-        guard let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
-            owsFailDebug("local number unexpectedly nil")
-            return nil
-        }
         guard let nationalNumber = nationalNumberTextField.text else {
             return nil
         }
-        let possiblePhoneNumbers = SSKEnvironment.shared.phoneNumberUtilRef.parsePhoneNumbers(
-            userSpecifiedText: plusPrefixedCallingCode + nationalNumber,
-            localPhoneNumber: localNumber
-        )
-        let possibleValidPhoneNumbers = possiblePhoneNumbers.map { $0.e164 }.filter { !$0.isEmpty }
-
-        // There should only be one phone number, since we're explicitly specifying
-        // a country code and therefore parsing a number in e164 format.
-        owsAssertDebug(possibleValidPhoneNumbers.count <= 1)
-
-        return possibleValidPhoneNumbers.first
+        let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
+        return phoneNumberUtil.parsePhoneNumber(
+            countryCode: country.countryCode,
+            nationalNumber: nationalNumber
+        )?.e164.nilIfEmpty
     }
 
     func hasValidPhoneNumber() -> Bool {
@@ -276,7 +266,7 @@ extension FindByPhoneNumberViewController: SheetDismissalDelegate {
 
 extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
     public func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountry country: PhoneNumberCountry) {
-        updateCountry(plusPrefixedCallingCode: country.plusPrefixedCallingCode, countryCode: country.countryCode)
+        updateCountry(country)
     }
 
     private func didTapCountryRow() {
@@ -286,31 +276,31 @@ extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
     }
 
     private func populateDefaultCountryCode() {
-        guard let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
-            owsFailDebug("Local number unexpectedly nil")
-            return
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
+        let defaultCountry: PhoneNumberCountry
+        if
+            let localNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
+            let localCountry = PhoneNumberCountry.buildCountry(forCountryCode: phoneNumberUtil.preferredCountryCode(forLocalNumber: localNumber))
+        {
+            defaultCountry = localCountry
+        } else {
+            owsFailDebug("Couldn't determine local country.")
+            defaultCountry = .defaultValue
         }
-
-        let (countryCode, callingCode) = SSKEnvironment.shared.phoneNumberUtilRef.preferredCountryAndCallingCode(forLocalNumber: localNumber)
-
-        updateCountry(plusPrefixedCallingCode: "+\(callingCode)", countryCode: countryCode)
+        updateCountry(defaultCountry)
     }
 
-    private func updateCountry(plusPrefixedCallingCode: String, countryCode: String) {
-        guard let plusPrefixedCallingCode = plusPrefixedCallingCode.nilIfEmpty, let countryCode = countryCode.nilIfEmpty else {
-            owsFailDebug("missing calling code for selected country")
-            return
-        }
-
-        self.plusPrefixedCallingCode = plusPrefixedCallingCode
+    private func updateCountry(_ country: PhoneNumberCountry) {
+        self.country = country
         let labelFormat = CurrentAppContext().isRTL ? "(%2$@) %1$@" : "%1$@ (%2$@)"
-        countryCodeLabel.text = String(format: labelFormat, plusPrefixedCallingCode, countryCode.localizedUppercase)
+        countryCodeLabel.text = String(format: labelFormat, country.plusPrefixedCallingCode, country.countryCode.localizedUppercase)
     }
 }
 
 extension FindByPhoneNumberViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        TextFieldFormatting.phoneNumberTextField(textField, changeCharactersIn: range, replacementString: string, plusPrefixedCallingCode: plusPrefixedCallingCode)
+        TextFieldFormatting.phoneNumberTextField(textField, changeCharactersIn: range, replacementString: string, plusPrefixedCallingCode: country.plusPrefixedCallingCode)
         updateButtonState()
         return false
     }

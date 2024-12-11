@@ -3968,7 +3968,7 @@ public class RegistrationCoordinatorTest {
             case .success:
                 validationError = nil
             case .invalidArgument:
-                validationError = .invalidNumber(.init(invalidE164: previouslyEnteredE164 ?? Stubs.e164))
+                validationError = .invalidE164(.init(invalidE164: previouslyEnteredE164 ?? Stubs.e164))
             case .retryAfter(let timeInterval):
                 validationError = .rateLimited(.init(
                     expiration: self.date.addingTimeInterval(timeInterval),
@@ -4006,7 +4006,7 @@ public class RegistrationCoordinatorTest {
                             oldE164: changeNumberParams.oldE164,
                             newE164: nil,
                             hasConfirmed: false,
-                            invalidNumberError: nil
+                            invalidE164Error: nil
                         )))
                     }
                 case .rateLimited(let error):
@@ -4015,12 +4015,14 @@ public class RegistrationCoordinatorTest {
                         newE164: previouslyEnteredE164!,
                         rateLimitedError: error
                     )))
-                case .invalidNumber(let error):
+                case .invalidInput:
+                    owsFail("Can't happen.")
+                case .invalidE164(let error):
                     return .changingNumber(.initialEntry(.init(
                         oldE164: changeNumberParams.oldE164,
                         newE164: previouslyEnteredE164,
                         hasConfirmed: previouslyEnteredE164 != nil,
-                        invalidNumberError: error
+                        invalidE164Error: error
                     )))
                 }
             }

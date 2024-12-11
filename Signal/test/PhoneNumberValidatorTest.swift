@@ -18,7 +18,7 @@ class PhoneNumberValidatorTest: XCTestCase {
 
     func assertValid(e164: String, file: StaticString = #filePath, line: UInt = #line) {
         let validator = PhoneNumberValidator()
-        guard let phoneNumber = phoneNumberUtilRef.parseE164(e164) else {
+        guard let phoneNumber = E164(phoneNumberUtilRef.parseE164(e164)?.e164) else {
             XCTFail("unparsable phone number", file: file, line: line)
             return
         }
@@ -28,7 +28,7 @@ class PhoneNumberValidatorTest: XCTestCase {
 
     func assertInvalid(e164: String, file: StaticString = #filePath, line: UInt = #line) {
         let validator = PhoneNumberValidator()
-        guard let phoneNumber = phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: e164) else {
+        guard let phoneNumber = E164(phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: e164)?.e164) else {
             // number wasn't even parsable
             return
         }
