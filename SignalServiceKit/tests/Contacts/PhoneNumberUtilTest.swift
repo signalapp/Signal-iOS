@@ -15,12 +15,6 @@ class PhoneNumberUtilTestSwift: XCTestCase {
         self.phoneNumberUtilRef = PhoneNumberUtil()
     }
 
-    func test_probableCountryCode() {
-        XCTAssertEqual(phoneNumberUtilRef.probableCountryCode(forPlusPrefixedCallingCode: "+1"), "US")
-        XCTAssertEqual(phoneNumberUtilRef.probableCountryCode(forPlusPrefixedCallingCode: "+44"), "GB")
-        XCTAssertEqual(phoneNumberUtilRef.probableCountryCode(forPlusPrefixedCallingCode: "+0"), "")
-    }
-
     func test_callingCodeFromCountryCode() {
         XCTAssertEqual("+1", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: "US"))
         XCTAssertEqual("+44", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: "GB"))
@@ -32,24 +26,6 @@ class PhoneNumberUtilTestSwift: XCTestCase {
         XCTAssertEqual("+0", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: "+"))
         XCTAssertEqual("+0", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: "9"))
         XCTAssertEqual("+1", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: "US "))
-    }
-
-    func test_countryCodesFromCallingCode() {
-        func countryCodes(fromCallingCode callingCode: String) -> [String] {
-            return phoneNumberUtilRef.countryCodes(fromPlusPrefixedCallingCode: callingCode)
-        }
-        // Order matters here.
-        XCTAssertEqual(["US", "CA", "DO", "PR", "JM", "TT", "BS", "BB", "LC", "GU", "VI", "GD", "VC", "AG", "DM", "BM", "AS", "MP", "KN", "KY", "SX", "VG", "TC", "AI", "MS", "UM"], countryCodes(fromCallingCode: "+1"))
-        XCTAssertEqual(["GB", "JE", "IM", "GG"], countryCodes(fromCallingCode: "+44"))
-        XCTAssertEqual(["UY"], countryCodes(fromCallingCode: "+598"))
-        XCTAssertEqual([], countryCodes(fromCallingCode: "+7945"))
-        XCTAssertEqual([], countryCodes(fromCallingCode: "+"))
-        XCTAssertEqual([], countryCodes(fromCallingCode: ""))
-        XCTAssertEqual([], countryCodes(fromCallingCode: " "))
-        XCTAssertEqual([], countryCodes(fromCallingCode: "a"))
-        XCTAssertEqual([], countryCodes(fromCallingCode: "++598"))
-        XCTAssertEqual([], countryCodes(fromCallingCode: "+1 "))
-        XCTAssertEqual([], countryCodes(fromCallingCode: " +1"))
     }
 
     func test_examplePhoneNumberForCountryCode() {

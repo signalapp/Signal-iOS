@@ -375,37 +375,21 @@ extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDele
         updateCountry(plusPrefixedCallingCode: countryState.plusPrefixedCallingCode, countryCode: countryState.countryCode)
     }
 
-    func populateDefaultCountryCode() {
+    private func populateDefaultCountryCode() {
         guard let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber else {
-            return owsFailDebug("Local number unexpectedly nil")
+            owsFailDebug("Local number unexpectedly nil")
+            return
         }
 
-        var callingCodeInt: Int?
-        var countryCode: String?
+        let (countryCode, callingCode) = SSKEnvironment.shared.phoneNumberUtilRef.preferredCountryAndCallingCode(forLocalNumber: localNumber)
 
-        if
-            let localE164 = SSKEnvironment.shared.phoneNumberUtilRef.parseE164(localNumber),
-            let localCallingCode = localE164.getCallingCode()
-        {
-            callingCodeInt = localCallingCode
-        } else {
-            callingCodeInt = SSKEnvironment.shared.phoneNumberUtilRef.getCallingCode(
-                forRegion: PhoneNumberUtil.defaultCountryCode()
-            )
-        }
-
-        var plusPrefixedCallingCode: String?
-        if let callingCodeInt = callingCodeInt {
-            plusPrefixedCallingCode = PhoneNumber.countryCodePrefix + "\(callingCodeInt)"
-            countryCode = SSKEnvironment.shared.phoneNumberUtilRef.probableCountryCode(forPlusPrefixedCallingCode: plusPrefixedCallingCode!)
-        }
-
-        updateCountry(plusPrefixedCallingCode: plusPrefixedCallingCode, countryCode: countryCode)
+        updateCountry(plusPrefixedCallingCode: "+\(callingCode)", countryCode: countryCode)
     }
 
-    private func updateCountry(plusPrefixedCallingCode: String?, countryCode: String?) {
-        guard let plusPrefixedCallingCode = plusPrefixedCallingCode?.nilIfEmpty, let countryCode = countryCode?.nilIfEmpty else {
-            return owsFailDebug("missing calling code for selected country")
+    private func updateCountry(plusPrefixedCallingCode: String, countryCode: String) {
+        guard let plusPrefixedCallingCode = plusPrefixedCallingCode.nilIfEmpty, let countryCode = countryCode.nilIfEmpty else {
+            owsFailDebug("missing calling code for selected country")
+            return
         }
 
         self.plusPrefixedCallingCode = plusPrefixedCallingCode
