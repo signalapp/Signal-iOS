@@ -16,7 +16,7 @@ public struct CanonicalPhoneNumber: Equatable, Hashable {
     public let rawValue: E164
 
     public init(nonCanonicalPhoneNumber phoneNumber: E164) {
-        if phoneNumber.stringValue.hasPrefix("+521") {
+        if phoneNumber.stringValue.hasPrefix("+521"), phoneNumber.stringValue.count == 14 {
             self.rawValue = E164("+52" + phoneNumber.stringValue.dropFirst(4))!
         } else if phoneNumber.stringValue.hasPrefix("+229"), phoneNumber.stringValue.count == 12 {
             self.rawValue = E164("+22901" + phoneNumber.stringValue.dropFirst(4))!
@@ -32,7 +32,11 @@ public struct CanonicalPhoneNumber: Equatable, Hashable {
     }
 
     public func alternatePhoneNumbers() -> [E164] {
-        if rawValue.stringValue.hasPrefix("+52") {
+        if
+            rawValue.stringValue.hasPrefix("+52"),
+            !rawValue.stringValue.hasPrefix("+521"),
+            rawValue.stringValue.count == 13
+        {
             return [E164("+521" + rawValue.stringValue.dropFirst(3))!]
         }
         if rawValue.stringValue.hasPrefix("+22901"), rawValue.stringValue.count == 14 {
