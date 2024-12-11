@@ -15,17 +15,30 @@ class PhoneNumberUtilTestSwift: XCTestCase {
         self.phoneNumberUtilRef = PhoneNumberUtil()
     }
 
+    func testCountryCodeForParsing() {
+        let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        for ch1 in alphabet {
+            for ch2 in alphabet {
+                _ = self.phoneNumberUtilRef.countryCodeForParsing(fromCountryCode: String(ch1) + String(ch2))
+            }
+        }
+    }
+
     func test_callingCodeFromCountryCode() {
-        XCTAssertEqual("+1", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: "US"))
-        XCTAssertEqual("+44", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: "GB"))
-        XCTAssertEqual("+598", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: "UY"))
-        XCTAssertEqual("+0", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: "QG"))
-        XCTAssertEqual("+0", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: "EK"))
-        XCTAssertEqual("+0", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: "ZZZ"))
-        XCTAssertEqual("+0", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: ""))
-        XCTAssertEqual("+0", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: "+"))
-        XCTAssertEqual("+0", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: "9"))
-        XCTAssertEqual("+1", phoneNumberUtilRef.plusPrefixedCallingCode(fromCountryCode: "US "))
+        func plusPrefixedCallingCode(fromCountryCode countryCode: String) -> String {
+            let callingCode = phoneNumberUtilRef.getCallingCode(forRegion: countryCode)
+            return "+\(callingCode)"
+        }
+        XCTAssertEqual("+1", plusPrefixedCallingCode(fromCountryCode: "US"))
+        XCTAssertEqual("+44", plusPrefixedCallingCode(fromCountryCode: "GB"))
+        XCTAssertEqual("+598", plusPrefixedCallingCode(fromCountryCode: "UY"))
+        XCTAssertEqual("+0", plusPrefixedCallingCode(fromCountryCode: "QG"))
+        XCTAssertEqual("+0", plusPrefixedCallingCode(fromCountryCode: "EK"))
+        XCTAssertEqual("+0", plusPrefixedCallingCode(fromCountryCode: "ZZZ"))
+        XCTAssertEqual("+0", plusPrefixedCallingCode(fromCountryCode: ""))
+        XCTAssertEqual("+0", plusPrefixedCallingCode(fromCountryCode: "+"))
+        XCTAssertEqual("+0", plusPrefixedCallingCode(fromCountryCode: "9"))
+        XCTAssertEqual("+1", plusPrefixedCallingCode(fromCountryCode: "US "))
     }
 
     func test_examplePhoneNumberForCountryCode() {
@@ -56,44 +69,6 @@ class PhoneNumberUtilTestSwift: XCTestCase {
         XCTAssertEqual(0, phoneNumberUtilRef.getCallingCode(forRegion: "ZZ"))
         XCTAssertEqual(0, phoneNumberUtilRef.getCallingCode(forRegion: "+"))
         XCTAssertEqual(0, phoneNumberUtilRef.getCallingCode(forRegion: "ZQ"))
-    }
-
-    func testCountryCodesForSearchTerm() {
-        // Empty search.
-        XCTAssertGreaterThan(phoneNumberUtilRef.countryCodes(forSearchTerm: nil).count, 30)
-        XCTAssertGreaterThan(phoneNumberUtilRef.countryCodes(forSearchTerm: "").count, 30)
-        XCTAssertGreaterThan(phoneNumberUtilRef.countryCodes(forSearchTerm: " ").count, 30)
-
-        // Searches with no results.
-        XCTAssertEqual(phoneNumberUtilRef.countryCodes(forSearchTerm: " . ").count, 0)
-        XCTAssertEqual(phoneNumberUtilRef.countryCodes(forSearchTerm: " XXXXX ").count, 0)
-        XCTAssertEqual(phoneNumberUtilRef.countryCodes(forSearchTerm: " ! ").count, 0)
-
-        // Search by country code.
-        XCTAssertEqual(phoneNumberUtilRef.countryCodes(forSearchTerm: "GB"), ["GB"])
-        XCTAssertEqual(phoneNumberUtilRef.countryCodes(forSearchTerm: "gb"), ["GB"])
-        XCTAssertEqual(phoneNumberUtilRef.countryCodes(forSearchTerm: "GB "), ["GB"])
-        XCTAssertEqual(phoneNumberUtilRef.countryCodes(forSearchTerm: " GB"), ["GB"])
-        XCTAssert(phoneNumberUtilRef.countryCodes(forSearchTerm: " G").contains("GB"))
-        XCTAssertFalse(phoneNumberUtilRef.countryCodes(forSearchTerm: " B").contains("GB"))
-
-        // Search by country name.
-        XCTAssertEqual(phoneNumberUtilRef.countryCodes(forSearchTerm: "united kingdom"), ["GB"])
-        XCTAssertEqual(phoneNumberUtilRef.countryCodes(forSearchTerm: " UNITED KINGDOM "), ["GB"])
-        XCTAssertEqual(phoneNumberUtilRef.countryCodes(forSearchTerm: " UNITED KING "), ["GB"])
-        XCTAssertEqual(phoneNumberUtilRef.countryCodes(forSearchTerm: " UNI KING "), ["GB"])
-        XCTAssertEqual(phoneNumberUtilRef.countryCodes(forSearchTerm: " u k "), ["GB"])
-        XCTAssert(phoneNumberUtilRef.countryCodes(forSearchTerm: " u").contains("GB"))
-        XCTAssert(phoneNumberUtilRef.countryCodes(forSearchTerm: " k").contains("GB"))
-        XCTAssertFalse(phoneNumberUtilRef.countryCodes(forSearchTerm: " m").contains("GB"))
-
-        // Search by calling code.
-        XCTAssert(phoneNumberUtilRef.countryCodes(forSearchTerm: " +44 ").contains("GB"))
-        XCTAssert(phoneNumberUtilRef.countryCodes(forSearchTerm: " 44 ").contains("GB"))
-        XCTAssert(phoneNumberUtilRef.countryCodes(forSearchTerm: " +4 ").contains("GB"))
-        XCTAssert(phoneNumberUtilRef.countryCodes(forSearchTerm: " 4 ").contains("GB"))
-        XCTAssertFalse(phoneNumberUtilRef.countryCodes(forSearchTerm: " +123 ").contains("GB"))
-        XCTAssertFalse(phoneNumberUtilRef.countryCodes(forSearchTerm: " +444 ").contains("GB"))
     }
 
     func testTranslateCursorPosition() {

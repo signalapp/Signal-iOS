@@ -107,54 +107,36 @@ public class PhoneNumberUtil: NSObject {
 }
 
 extension PhoneNumberUtil {
-    // country code -> calling code
-    public func plusPrefixedCallingCode(fromCountryCode countryCode: String) -> String? {
-        guard let countryCode = countryCode.nilIfEmpty else {
-            return "+0"
+    /// Returns calling codes for libPhoneNumber-unsupported country codes.
+    ///
+    /// These are country codes that NSLocale.isoCountryCodes contains but
+    /// libPhoneNumber doesn't support. In every case, these countries share a
+    /// calling code with a country that libPhoneNumber *does* support. We show
+    /// these unsupported countries in the UI and convert them to a supported
+    /// country when parsing the number.
+    public static func callingCodeForUnsupportedCountryCode(_ countryCode: String) -> Int? {
+        switch countryCode {
+        case "AQ": /* Antarctica */ return 672
+        case "BV": /* Bouvet Island */ return 55
+        case "IC": /* Canary Islands */ return 34
+        case "EA": /* Ceuta & Melilla */ return 34
+        case "DG": /* Diego Garcia */ return 246
+        case "TF": /* French Southern Territories */ return 262
+        case "HM": /* Heard & McDonald Islands */ return 672
+        case "PN": /* Pitcairn Islands */ return 64
+        case "CQ": /* Sark */ return 44
+        case "GS": /* So. Georgia & So. Sandwich Isl. */ return 500
+        case "UM": /* U.S. Outlying Islands */ return 1
+        default: return nil
         }
+    }
 
-        if countryCode == "AQ" {
-            // Antarctica
-            return "+672"
-        } else if countryCode == "BV" {
-            // Bouvet Island
-            return "+55"
-        } else if countryCode == "IC" {
-            // Canary Islands
-            return "+34"
-        } else if countryCode == "EA" {
-            // Ceuta & Melilla
-            return "+34"
-        } else if countryCode == "CP" {
-            // Clipperton Island
-            //
-            // This country code should be filtered - it does not appear to have a calling code.
-            return nil
-        } else if countryCode == "DG" {
-            // Diego Garcia
-            return "+246"
-        } else if countryCode == "TF" {
-            // French Southern Territories
-            return "+262"
-        } else if countryCode == "HM" {
-            // Heard & McDonald Islands
-            return "+672"
-        } else if countryCode == "XK" {
-            // Kosovo
-            return "+383"
-        } else if countryCode == "PN" {
-            // Pitcairn Islands
-            return "+64"
-        } else if countryCode == "GS" {
-            // So. Georgia & So. Sandwich Isl.
-            return "+500"
-        } else if countryCode == "UM" {
-            // U.S. Outlying Islands
-            return "+1"
+    public func countryCodeForParsing(fromCountryCode countryCode: String) -> String {
+        if let callingCode = Self.callingCodeForUnsupportedCountryCode(countryCode) {
+            // Force unwrap is covered by unit tests.
+            return getFilteredRegionCodeForCallingCode(callingCode)!
         }
-
-        let callingCode = getCallingCode(forRegion: countryCode)
-        return PhoneNumber.countryCodePrefix + "\(callingCode)"
+        return countryCode
     }
 
     public static func defaultCountryCode() -> String {
@@ -245,52 +227,9 @@ extension PhoneNumberUtil {
         return try? format(phoneNumber.nbPhoneNumber, numberFormat: .NATIONAL)
     }
 
-    private class func does(_ string: String, matchQuery query: String) -> Bool {
-        let searchOptions: String.CompareOptions = [.caseInsensitive, .anchored]
-
-        let stringTokens = string.components(separatedBy: .whitespaces)
-        let queryTokens = query.components(separatedBy: .whitespaces)
-
-        return queryTokens.allSatisfy { queryToken in
-            if queryToken.isEmpty {
-                return true
-            }
-            return stringTokens.contains { stringToken in
-                stringToken.range(of: queryToken, options: searchOptions) != nil
-            }
-        }
-    }
-
-    /// Get country codes from a search term.
-    public func countryCodes(forSearchTerm searchTerm: String?) -> [String] {
-        let cleanedSearch = (searchTerm ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-
-        let codes = NSLocale.isoCountryCodes.filter { countryCode in
-            guard
-                let callingCode = plusPrefixedCallingCode(fromCountryCode: countryCode),
-                callingCode != "+0"
-            else {
-                return false
-            }
-            let countryName = Self.countryName(fromCountryCode: countryCode)
-            return (
-                cleanedSearch.isEmpty ||
-                Self.does(countryName, matchQuery: cleanedSearch) ||
-                Self.does(countryCode, matchQuery: cleanedSearch) ||
-                callingCode.contains(cleanedSearch)
-            )
-        }
-
-        return codes.sorted { lhs, rhs in
-            let lhsCountry = Self.countryName(fromCountryCode: lhs)
-            let rhsCountry = Self.countryName(fromCountryCode: rhs)
-            return lhsCountry.localizedCaseInsensitiveCompare(rhsCountry) == .orderedAscending
-        }
-    }
-
     /// Convert country code to country name.
-    public class func countryName(fromCountryCode countryCode: String) -> String {
-        lazy var unknownValue =  OWSLocalizedString(
+    public static func countryName(fromCountryCode countryCode: String) -> String {
+        lazy var unknownValue = OWSLocalizedString(
             "UNKNOWN_VALUE",
             comment: "Indicates an unknown or unrecognizable value."
         )
@@ -331,7 +270,10 @@ extension PhoneNumberUtil {
     }
 
     public func parsePhoneNumber(countryCode: String, nationalNumber: String) -> PhoneNumber? {
-        return _parsePhoneNumber(filteredValue: nationalNumber.filteredAsE164, countryCode: countryCode)
+        return _parsePhoneNumber(
+            filteredValue: nationalNumber.filteredAsE164,
+            countryCode: countryCodeForParsing(fromCountryCode: countryCode)
+        )
     }
 
     public func parsePhoneNumbers(userSpecifiedText: String, localPhoneNumber: String?) -> [PhoneNumber] {
