@@ -74,6 +74,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+        populateDefaultCountryCode()
         loadTableContents()
     }
 
@@ -151,8 +152,6 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
         section.add(.init(customCellBlock: { phoneNumberCell }))
 
         self.contents = content
-
-        populateDefaultCountryCode()
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: CommonStrings.nextButton,
