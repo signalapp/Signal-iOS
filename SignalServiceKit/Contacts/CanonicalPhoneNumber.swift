@@ -20,6 +20,12 @@ public struct CanonicalPhoneNumber: Equatable, Hashable {
             self.rawValue = E164("+52" + phoneNumber.stringValue.dropFirst(4))!
         } else if phoneNumber.stringValue.hasPrefix("+229"), phoneNumber.stringValue.count == 12 {
             self.rawValue = E164("+22901" + phoneNumber.stringValue.dropFirst(4))!
+        } else if
+            phoneNumber.stringValue.hasPrefix("+54"),
+            !phoneNumber.stringValue.hasPrefix("+549"),
+            phoneNumber.stringValue.count == 13
+        {
+            self.rawValue = E164("+549" + phoneNumber.stringValue.dropFirst(3))!
         } else {
             self.rawValue = phoneNumber
         }
@@ -31,6 +37,9 @@ public struct CanonicalPhoneNumber: Equatable, Hashable {
         }
         if rawValue.stringValue.hasPrefix("+22901"), rawValue.stringValue.count == 14 {
             return [E164("+229" + rawValue.stringValue.dropFirst(6))!]
+        }
+        if rawValue.stringValue.hasPrefix("+549"), rawValue.stringValue.count == 14 {
+            return [E164("+54" + rawValue.stringValue.dropFirst(4))!]
         }
         return []
     }
