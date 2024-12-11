@@ -9,7 +9,8 @@ import libPhoneNumber_iOS
 // MARK: -
 
 public class PhoneNumberUtil: NSObject {
-    private let nbPhoneNumberUtil = NBPhoneNumberUtil()
+    let nbMetadataHelper: NBMetadataHelper
+    private let nbPhoneNumberUtil: NBPhoneNumberUtil
     private let parsedPhoneNumberCache = LRUCache<String, NBPhoneNumber>(
         maxSize: 256,
         nseMaxSize: 0,
@@ -18,6 +19,9 @@ public class PhoneNumberUtil: NSObject {
     private let nationalPrefixTransformRuleCache = AtomicDictionary<String, String?>([:], lock: .init())
 
     public override init() {
+        self.nbMetadataHelper = NBMetadataHelper()
+        self.nbPhoneNumberUtil = NBPhoneNumberUtil(metadataHelper: self.nbMetadataHelper)
+
         super.init()
 
         SwiftSingletons.register(self)
