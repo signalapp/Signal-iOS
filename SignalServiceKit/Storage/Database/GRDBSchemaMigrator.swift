@@ -3709,17 +3709,17 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.tsMessageAttachmentMigration1) { tx in
-            try TSAttachmentMigration.TSMessageMigration.prepareBlockingTSMessageMigration(tx: tx)
+            TSAttachmentMigration.TSMessageMigration.prepareBlockingTSMessageMigration(tx: tx)
             return .success(())
         }
 
         migrator.registerMigration(.tsMessageAttachmentMigration2) { tx in
-            try TSAttachmentMigration.TSMessageMigration.completeBlockingTSMessageMigration(tx: tx)
+            TSAttachmentMigration.TSMessageMigration.completeBlockingTSMessageMigration(tx: tx)
             return .success(())
         }
 
         migrator.registerMigration(.tsMessageAttachmentMigration3) { tx in
-            try TSAttachmentMigration.TSMessageMigration.cleanUpTSAttachmentFiles()
+            TSAttachmentMigration.TSMessageMigration.cleanUpTSAttachmentFiles()
             try tx.database.drop(table: "TSAttachmentMigration")
             return .success(())
         }

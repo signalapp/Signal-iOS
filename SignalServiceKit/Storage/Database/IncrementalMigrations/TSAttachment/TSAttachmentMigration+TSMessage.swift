@@ -48,27 +48,27 @@ extension TSAttachmentMigration {
         // MARK: - Phase 1/2
 
         /// Phases 1 and 2 when applying as a blocking-on-launch GRDB migration.
-        static func prepareBlockingTSMessageMigration(tx: GRDBWriteTransaction) throws {
+        static func prepareBlockingTSMessageMigration(tx: GRDBWriteTransaction) {
             // If we finished phase 2, we are done.
-            let finished: Bool? = try Self.read(key: finishedGoingForwardsKey, tx: tx)
+            let finished: Bool? = Self.read(key: finishedGoingForwardsKey, tx: tx)
             if finished == true {
                 return
             }
 
             guard
-                let maxMigratedRowId: Int64 = try Self.read(key: maxMigratedInteractionRowIdKey, tx: tx)
+                let maxMigratedRowId: Int64 = Self.read(key: maxMigratedInteractionRowIdKey, tx: tx)
             else {
                 // We've made zero progress. Migrate working backwards from the top (phase 1).
                 // No need for phase 2, as this will just run top to bottom.
-                _ = try prepareTSMessageMigrationBatch(batchSize: nil, maxRowId: nil, minRowId: nil, tx: tx)
+                _ = prepareTSMessageMigrationBatch(batchSize: nil, maxRowId: nil, minRowId: nil, tx: tx)
                 return
             }
 
-            let finishedGoingBackwards: Bool? = try Self.read(key: finishedGoingBackwardsKey, tx: tx)
+            let finishedGoingBackwards: Bool? = Self.read(key: finishedGoingBackwardsKey, tx: tx)
             if finishedGoingBackwards != true {
                 // We've made partial progress in phase 1, pick up where we left off working backwards.
-                let minMigratedRowId: Int64? = try Self.read(key: minMigratedInteractionRowIdKey, tx: tx)
-                _ = try prepareTSMessageMigrationBatch(
+                let minMigratedRowId: Int64? = Self.read(key: minMigratedInteractionRowIdKey, tx: tx)
+                _ = prepareTSMessageMigrationBatch(
                     batchSize: nil,
                     maxRowId: minMigratedRowId ?? maxMigratedRowId,
                     minRowId: nil,
@@ -77,7 +77,7 @@ extension TSAttachmentMigration {
             }
 
             // We finished phase 1. Finish phase 2, picking up wherever we left off.
-            _ = try prepareTSMessageMigrationBatch(
+            _ = prepareTSMessageMigrationBatch(
                 batchSize: nil,
                 maxRowId: nil,
                 minRowId: maxMigratedRowId,
@@ -88,9 +88,9 @@ extension TSAttachmentMigration {
         /// Phases 1 and 2 when running as an iterative migration.
         /// - Returns
         /// True if any rows were migrated; callers should keep calling until it returns false.
-        public static func prepareNextIterativeTSMessageMigrationBatch(tx: GRDBWriteTransaction) throws -> Bool {
+        public static func prepareNextIterativeTSMessageMigrationBatch(tx: GRDBWriteTransaction) -> Bool {
             // If we finished phase 2, we are done.
-            let finished: Bool? = try Self.read(key: finishedGoingForwardsKey, tx: tx)
+            let finished: Bool? = Self.read(key: finishedGoingForwardsKey, tx: tx)
             if finished == true {
                 return false
             }
@@ -98,15 +98,15 @@ extension TSAttachmentMigration {
             let batchSize = 5
 
             guard
-                let maxMigratedRowId: Int64 = try Self.read(key: maxMigratedInteractionRowIdKey, tx: tx)
+                let maxMigratedRowId: Int64 = Self.read(key: maxMigratedInteractionRowIdKey, tx: tx)
             else {
-                return try Self.prepareNextIterativeBatchPhase1ColdStart(batchSize: batchSize, tx: tx)
+                return Self.prepareNextIterativeBatchPhase1ColdStart(batchSize: batchSize, tx: tx)
             }
 
             // If phase 1 is done, proceed to phase 2.
-            let finishedGoingBackwards: Bool? = try Self.read(key: finishedGoingBackwardsKey, tx: tx)
+            let finishedGoingBackwards: Bool? = Self.read(key: finishedGoingBackwardsKey, tx: tx)
             if finishedGoingBackwards == true {
-                return try Self.prepareNextIteraveBatchPhase2(
+                return Self.prepareNextIteraveBatchPhase2(
                     batchSize: batchSize,
                     maxMigratedRowId: maxMigratedRowId,
                     tx: tx
@@ -114,7 +114,7 @@ extension TSAttachmentMigration {
             }
 
             // Otherwise continue our progress on phase 1.
-            return try Self.prepareNextIterativeBatchPhase1(
+            return Self.prepareNextIterativeBatchPhase1(
                 batchSize: batchSize,
                 maxMigratedRowId: maxMigratedRowId,
                 tx: tx
@@ -128,29 +128,33 @@ extension TSAttachmentMigration {
         private static func prepareNextIterativeBatchPhase1ColdStart(
             batchSize: Int,
             tx: GRDBWriteTransaction
-        ) throws -> Bool {
+        ) -> Bool {
             // We've made zero progress. Migrate working backwards from the top (phase 1).
-            guard
-                let maxInteractionRowId = try Int64.fetchOne(tx.database, sql: "SELECT max(id) from model_TSInteraction;")
-            else {
+            let maxInteractionRowId: Int64?
+            do {
+                maxInteractionRowId = try Int64.fetchOne(tx.database, sql: "SELECT max(id) from model_TSInteraction;")
+            } catch {
+                owsFail("Failed to read interaction row id")
+            }
+            guard let maxInteractionRowId else {
                 // No interactions. Must be a new install, which is fine, it means we are instantly done.
-                try Self.write(true, key: finishedGoingForwardsKey, tx: tx)
+                Self.write(true, key: finishedGoingForwardsKey, tx: tx)
                 return false
             }
             // Write the cutoff point to disk.
-            try Self.write(maxInteractionRowId, key: maxMigratedInteractionRowIdKey, tx: tx)
+            Self.write(maxInteractionRowId, key: maxMigratedInteractionRowIdKey, tx: tx)
 
             // Start going backwards from the top (phase 1).
-            let lastMigratedRowId = try prepareTSMessageMigrationBatch(batchSize: batchSize, maxRowId: nil, minRowId: nil, tx: tx)
+            let lastMigratedRowId = prepareTSMessageMigrationBatch(batchSize: batchSize, maxRowId: nil, minRowId: nil, tx: tx)
 
             if let lastMigratedRowId {
                 // Save our incremental progress.
-                try Self.write(lastMigratedRowId, key: minMigratedInteractionRowIdKey, tx: tx)
+                Self.write(lastMigratedRowId, key: minMigratedInteractionRowIdKey, tx: tx)
                 return true
             } else {
                 // If we got nothing back, there were no messages needing migrating. Finish phase 1;
                 // next batch we try and run will proceed to phase 2.
-                try Self.write(true, key: finishedGoingBackwardsKey, tx: tx)
+                Self.write(true, key: finishedGoingBackwardsKey, tx: tx)
                 return true
             }
         }
@@ -161,21 +165,21 @@ extension TSAttachmentMigration {
             batchSize: Int,
             maxMigratedRowId: Int64,
             tx: GRDBWriteTransaction
-        ) throws -> Bool {
+        ) -> Bool {
             // Proceed going backwards from the min id, continuing our progress on phase 1.
-            let minMigratedRowId: Int64? = try Self.read(key: minMigratedInteractionRowIdKey, tx: tx)
+            let minMigratedRowId: Int64? = Self.read(key: minMigratedInteractionRowIdKey, tx: tx)
             let lastMigratedId = minMigratedRowId ?? maxMigratedRowId
 
             let newMinMigratedId =
-                try prepareTSMessageMigrationBatch(batchSize: batchSize, maxRowId: lastMigratedId, minRowId: nil, tx: tx)
+                prepareTSMessageMigrationBatch(batchSize: batchSize, maxRowId: lastMigratedId, minRowId: nil, tx: tx)
             if let newMinMigratedId {
                 // Save our incremental progress.
-                try Self.write(newMinMigratedId, key: minMigratedInteractionRowIdKey, tx: tx)
+                Self.write(newMinMigratedId, key: minMigratedInteractionRowIdKey, tx: tx)
                 return true
             } else {
                 // If we got nothing back, there were no messages needing migrating. Finish phase 1;
                 // next batch we try and run will proceed to phase 2.
-                try Self.write(true, key: finishedGoingBackwardsKey, tx: tx)
+                Self.write(true, key: finishedGoingBackwardsKey, tx: tx)
                 return true
             }
         }
@@ -186,19 +190,19 @@ extension TSAttachmentMigration {
             batchSize: Int,
             maxMigratedRowId: Int64,
             tx: GRDBWriteTransaction
-        ) throws -> Bool {
+        ) -> Bool {
             let newMaxMigratedId =
-                try prepareTSMessageMigrationBatch(batchSize: batchSize, maxRowId: nil, minRowId: maxMigratedRowId, tx: tx)
+                prepareTSMessageMigrationBatch(batchSize: batchSize, maxRowId: nil, minRowId: maxMigratedRowId, tx: tx)
             if let newMaxMigratedId {
                 // Save our incremental progress.
-                try Self.write(newMaxMigratedId, key: maxMigratedInteractionRowIdKey, tx: tx)
+                Self.write(newMaxMigratedId, key: maxMigratedInteractionRowIdKey, tx: tx)
                 return true
             } else {
                 // If we got nothing back, we are finished with phase 2.
                 // The value of `maxMigratedInteractionRowIdKey` will stay stale,
                 // but once we write `finishedGoingForwardsKey` it doesn't matter;
                 // we are done and none of the others get read.
-                try Self.write(true, key: finishedGoingForwardsKey, tx: tx)
+                Self.write(true, key: finishedGoingForwardsKey, tx: tx)
                 return false
             }
         }
@@ -217,29 +221,37 @@ extension TSAttachmentMigration {
         // Once phase 2 is done (finishedGoingForwardsKey = true) the value is stale and should be ignored.
         private static let maxMigratedInteractionRowIdKey = "maxMigratedInteractionRowId"
 
-        private static func read<T: DatabaseValueConvertible>(key: String, tx: GRDBWriteTransaction) throws -> T? {
-            return try T.fetchOne(
-                tx.database,
-                sql: "SELECT value from keyvalue WHERE collection = ? AND key = ?",
-                arguments: [Self.collectionName, key]
-            )
+        private static func read<T: DatabaseValueConvertible>(key: String, tx: GRDBWriteTransaction) -> T? {
+            do {
+                return try T.fetchOne(
+                    tx.database,
+                    sql: "SELECT value from keyvalue WHERE collection = ? AND key = ?",
+                    arguments: [Self.collectionName, key]
+                )
+            } catch {
+                owsFail("Unable to read key \(key)")
+            }
         }
 
-        private static func write<T: DatabaseValueConvertible>(_ t: T, key: String, tx: GRDBWriteTransaction) throws {
-            try tx.database.execute(
-                sql: """
-                    INSERT INTO keyvalue (collection,key,value) VALUES (?,?,?)
-                    ON CONFLICT(key,collection) DO UPDATE SET value = ?;
-                    """,
-                arguments: [Self.collectionName, key, t, t]
-            )
+        private static func write<T: DatabaseValueConvertible>(_ t: T, key: String, tx: GRDBWriteTransaction) {
+            do {
+                try tx.database.execute(
+                    sql: """
+                        INSERT INTO keyvalue (collection,key,value) VALUES (?,?,?)
+                        ON CONFLICT(key,collection) DO UPDATE SET value = ?;
+                        """,
+                    arguments: [Self.collectionName, key, t, t]
+                )
+            } catch {
+                owsFail("Unable to write key \(key)")
+            }
         }
 
         // MARK: - Phase 3
 
         /// Phase 3 when applying as a blocking-on-launch GRDB migration.
-        static func completeBlockingTSMessageMigration(tx: GRDBWriteTransaction) throws {
-            _ = try Self.completeTSMessageMigrationBatch(batchSize: nil, tx: tx)
+        static func completeBlockingTSMessageMigration(tx: GRDBWriteTransaction) {
+            _ = Self.completeTSMessageMigrationBatch(batchSize: nil, tx: tx)
         }
 
         /// Phase 3 when running as an iterative migration.
@@ -248,8 +260,8 @@ extension TSAttachmentMigration {
         public static func completeNextIterativeTSMessageMigrationBatch(
             batchSize: Int = 5,
             tx: GRDBWriteTransaction
-        ) throws -> Bool {
-            let count = try Self.completeTSMessageMigrationBatch(batchSize: batchSize, tx: tx)
+        ) -> Bool {
+            let count = Self.completeTSMessageMigrationBatch(batchSize: batchSize, tx: tx)
             return count > 0
         }
 
@@ -257,7 +269,7 @@ extension TSAttachmentMigration {
 
         /// Phase 4.
         /// Works the same whether its run "iteratively" or as a blocking GRDB migration.
-        public static func cleanUpTSAttachmentFiles() throws {
+        public static func cleanUpTSAttachmentFiles() {
             // Just try and delete the folder, don't bother checking if we've tried before.
             // If the folder is already deleted, this is super cheap.
             let rootPath = FileManager.default.containerURL(
@@ -265,7 +277,7 @@ extension TSAttachmentMigration {
             )!.path
             let attachmentsFolder = rootPath.appendingPathComponent("Attachments")
             guard OWSFileSystem.deleteFileIfExists(attachmentsFolder) == true else {
-                throw OWSAssertionError("Unable to delete folder!")
+                owsFail("Unable to delete folder!")
             }
         }
 
@@ -283,7 +295,7 @@ extension TSAttachmentMigration {
             maxRowId: Int64?,
             minRowId: Int64?,
             tx: GRDBWriteTransaction
-        ) throws -> Int64? {
+        ) -> Int64? {
             var sql = "SELECT * FROM model_TSInteraction"
             var arguments = StatementArguments()
             if let maxRowId {
@@ -303,23 +315,23 @@ extension TSAttachmentMigration {
                     arguments: arguments
                 )
             } catch {
-                throw OWSAssertionError("Failed to create interaction cursor")
+                owsFail("Failed to create interaction cursor")
             }
-            func next() throws -> Row? {
+            func next() -> Row? {
                 do {
                     return try cursor.next()
                 } catch {
-                    throw OWSAssertionError("Failed to iterate interaction cursor")
+                    owsFail("Failed to iterate interaction cursor")
                 }
             }
             var batchCount = 0
             var lastMessageRowId: Int64?
-            while batchCount < batchSize ?? Int.max, let messageRow = try next() {
+            while batchCount < batchSize ?? Int.max, let messageRow = next() {
                 guard let messageRowId = messageRow["id"] as? Int64 else {
-                    throw OWSAssertionError("TSInteraction row without id")
+                    owsFail("TSInteraction row without id")
                 }
 
-                guard try prepareTSMessageForMigration(
+                guard prepareTSMessageForMigration(
                     messageRow: messageRow,
                     messageRowId: messageRowId,
                     tx: tx
@@ -337,7 +349,7 @@ extension TSAttachmentMigration {
             messageRow: Row,
             messageRowId: Int64,
             tx: GRDBWriteTransaction
-        ) throws -> Bool {
+        ) -> Bool {
             // Check if the message has any attachments.
             let attachmentIds: [String] = (
                 bodyAttachmentIds(messageRow: messageRow)
@@ -362,7 +374,11 @@ extension TSAttachmentMigration {
                     reservedV2AttachmentAudioWaveformFileId: UUID(),
                     reservedV2AttachmentVideoStillFrameFileId: UUID()
                 )
-                try reservedFileIds.insert(tx.database)
+                do {
+                    try reservedFileIds.insert(tx.database)
+                } catch {
+                    owsFail("Unable to insert reserved file ids")
+                }
             }
             return true
         }
@@ -373,19 +389,32 @@ extension TSAttachmentMigration {
         private static func completeTSMessageMigrationBatch(
             batchSize: Int?,
             tx: GRDBWriteTransaction
-        ) throws -> Int {
+        ) -> Int {
             let isRunningIteratively = batchSize != nil
 
-            let reservedFileIdsCursor = try TSAttachmentMigration.V1AttachmentReservedFileIds
-                .filter(Column("interactionRowId") != nil)
-                .order([Column("interactionRowId").desc])
-                .fetchCursor(tx.database)
+            let reservedFileIdsCursor: RecordCursor<TSAttachmentMigration.V1AttachmentReservedFileIds>
+            do {
+                reservedFileIdsCursor = try TSAttachmentMigration.V1AttachmentReservedFileIds
+                    .filter(Column("interactionRowId") != nil)
+                    .order([Column("interactionRowId").desc])
+                    .fetchCursor(tx.database)
+            } catch {
+                owsFail("Unable to read reserved file ids!")
+            }
+
+            func nextReservedFileIds() -> TSAttachmentMigration.V1AttachmentReservedFileIds? {
+                do {
+                    return try reservedFileIdsCursor.next()
+                } catch {
+                    owsFail("Unable to read next reserved file ids!")
+                }
+            }
 
             // row id to (true = migrated) (false = needs re-reservation for next batch)
             var migratedMessageRowIds = [Int64: Bool]()
             var deletedAttachments = [TSAttachmentMigration.V1Attachment]()
-            while migratedMessageRowIds.count < batchSize ?? Int.max, let reservedFileIds = try reservedFileIdsCursor.next() {
-                try autoreleasepool {
+            while migratedMessageRowIds.count < batchSize ?? Int.max, let reservedFileIds = nextReservedFileIds() {
+                autoreleasepool {
                     guard let messageRowId = reservedFileIds.interactionRowId else {
                         return
                     }
@@ -401,23 +430,28 @@ extension TSAttachmentMigration {
                             arguments: [messageRowId]
                         )
                     } catch {
-                        throw OWSAssertionError("Failed to fetch interaction row")
+                        owsFail("Failed to fetch interaction row")
                     }
                     guard let messageRow else {
                         // The message got deleted. Still, count this in the batch
                         // size so we don't iterate over deleted rows unbounded.
                         migratedMessageRowIds[messageRowId] = true
-                        try reservedFileIds.cleanUpFiles()
+                        reservedFileIds.cleanUpFiles()
                         return
                     }
 
                     // We _have_ to migrate everything on a given TSMessage at once.
                     // Fetch all the reserved ids for the message.
-                    let reservedFileIdsForMessage = try TSAttachmentMigration.V1AttachmentReservedFileIds
-                        .filter(Column("interactionRowId") == messageRowId)
-                        .fetchAll(tx.database)
+                    let reservedFileIdsForMessage: [TSAttachmentMigration.V1AttachmentReservedFileIds]
+                    do {
+                        reservedFileIdsForMessage = try TSAttachmentMigration.V1AttachmentReservedFileIds
+                            .filter(Column("interactionRowId") == messageRowId)
+                            .fetchAll(tx.database)
+                    } catch {
+                        owsFail("Unable to read reserved file ids for message")
+                    }
 
-                    let deletedAttachmentsForMessage = try Self.migrateMessageAttachments(
+                    let deletedAttachmentsForMessage = Self.migrateMessageAttachments(
                         reservedFileIds: reservedFileIdsForMessage,
                         messageRow: messageRow,
                         messageRowId: messageRowId,
@@ -444,13 +478,17 @@ extension TSAttachmentMigration {
                 for migratedMessageRowId in migratedMessageRowIds {
                     let didMigrate = migratedMessageRowId.value
                     let messageRowId = migratedMessageRowId.key
-                    try TSAttachmentMigration.V1AttachmentReservedFileIds
-                        .filter(Column("interactionRowId") == messageRowId)
-                        .deleteAll(tx.database)
+                    do {
+                        try TSAttachmentMigration.V1AttachmentReservedFileIds
+                            .filter(Column("interactionRowId") == messageRowId)
+                            .deleteAll(tx.database)
+                    } catch {
+                        owsFail("Unable to delete reserved file ids")
+                    }
 
                     if
                         !didMigrate,
-                        let messageRow: GRDB.Row = try {
+                        let messageRow: GRDB.Row = {
                             do {
                                 return try Row.fetchOne(
                                     tx.database,
@@ -458,12 +496,12 @@ extension TSAttachmentMigration {
                                     arguments: [messageRowId]
                                 )
                             } catch {
-                                throw OWSAssertionError("Failed to fetch interaction row")
+                                owsFail("Failed to fetch interaction row")
                             }
                         }()
                     {
                         // Re-reserve new rows; we will migrate in the next batch.
-                        _ = try Self.prepareTSMessageForMigration(
+                        _ = Self.prepareTSMessageForMigration(
                             messageRow: messageRow,
                             messageRowId: messageRowId,
                             tx: tx
@@ -490,7 +528,7 @@ extension TSAttachmentMigration {
             messageRowId: Int64,
             isRunningIteratively: Bool,
             tx: GRDBWriteTransaction
-        ) throws -> [TSAttachmentMigration.V1Attachment]? {
+        ) -> [TSAttachmentMigration.V1Attachment]? {
             // From attachment unique id to the reserved file ids.
             var reservedFileIdsDict = [String: TSAttachmentMigration.V1AttachmentReservedFileIds]()
             for reservedFileIds in reservedFileIdsArray {
@@ -582,7 +620,7 @@ extension TSAttachmentMigration {
 
             if allAttachmentIds.isEmpty {
                 // Nothing to migrate! This can happen if an edit removed attachments.
-                try reservedFileIdsArray.forEach { try $0.cleanUpFiles() }
+                reservedFileIdsArray.forEach { $0.cleanUpFiles() }
                 return []
             }
 
@@ -593,9 +631,9 @@ extension TSAttachmentMigration {
             if hasUnreservedAttachment {
                 guard isRunningIteratively else {
                     // If we are running as a blocking GRDB migration this should be impossible.
-                    throw OWSAssertionError("Message attachment changed between blocking migrations")
+                    owsFail("Message attachment changed between blocking migrations")
                 }
-                try reservedFileIdsArray.forEach { try $0.cleanUpFiles() }
+                reservedFileIdsArray.forEach { $0.cleanUpFiles() }
                 // Return nil to mark this message and needing another pass.
                 return nil
             }
@@ -607,11 +645,16 @@ extension TSAttachmentMigration {
                 return []
             }
 
-            let threadRowId = try Int64.fetchOne(
-                tx.database,
-                sql: "SELECT id FROM model_TSThread WHERE uniqueId = ?;",
-                arguments: [threadUniqueId]
-            )
+            let threadRowId: Int64?
+            do {
+                threadRowId = try Int64.fetchOne(
+                    tx.database,
+                    sql: "SELECT id FROM model_TSThread WHERE uniqueId = ?;",
+                    arguments: [threadUniqueId]
+                )
+            } catch {
+                owsFail("Unable to read thread row id")
+            }
             guard let threadRowId else {
                 Logger.error("Thread doesn't exist for message")
                 // Give up; the message will be marked as migrated and we'll leave
@@ -644,11 +687,11 @@ extension TSAttachmentMigration {
                 orderInMessage: Int? = nil,
                 stickerPackId: Data? = nil,
                 stickerId: UInt32? = nil
-            ) throws {
+            ) {
                 guard let reservedFileIds = reservedFileIdsDict.removeValue(forKey: tsAttachmentUniqueId) else {
-                    throw OWSAssertionError("Missing reservation for attachment")
+                    owsFail("Missing reservation for attachment")
                 }
-                let migratedAttachment = try Self.migrateSingleMessageAttachment(
+                let migratedAttachment = Self.migrateSingleMessageAttachment(
                     tsAttachmentUniqueId: tsAttachmentUniqueId,
                     reservedFileIds: reservedFileIds,
                     messageRowId: messageRowId,
@@ -668,7 +711,7 @@ extension TSAttachmentMigration {
             }
 
             for (index, bodyTSAttachmentId) in bodyTSAttachmentIds.enumerated() {
-                try migrateSingleMessageAttachment(
+                migrateSingleMessageAttachment(
                     tsAttachmentUniqueId: bodyTSAttachmentId,
                     messageOwnerType: .bodyAttachment,
                     orderInMessage: index
@@ -677,7 +720,7 @@ extension TSAttachmentMigration {
             }
 
             if let messageSticker, let stickerTSAttachmentId {
-                try migrateSingleMessageAttachment(
+                migrateSingleMessageAttachment(
                     tsAttachmentUniqueId: stickerTSAttachmentId,
                     messageOwnerType: .sticker,
                     stickerPackId: messageSticker.info.packId,
@@ -687,7 +730,7 @@ extension TSAttachmentMigration {
             }
 
             if let linkPreviewTSAttachmentId {
-                try migrateSingleMessageAttachment(
+                migrateSingleMessageAttachment(
                     tsAttachmentUniqueId: linkPreviewTSAttachmentId,
                     messageOwnerType: .linkPreview
                 )
@@ -695,7 +738,7 @@ extension TSAttachmentMigration {
             }
 
             if let contactTSAttachmentId {
-                try migrateSingleMessageAttachment(
+                migrateSingleMessageAttachment(
                     tsAttachmentUniqueId: contactTSAttachmentId,
                     messageOwnerType: .contactAvatar
                 )
@@ -711,18 +754,18 @@ extension TSAttachmentMigration {
                 case .thumbnail, .untrustedPointer:
                     // Standard case; attachment is wholly owned by this quoted reply
                     // and no thumbnail-ing is necessary.
-                    try migrateSingleMessageAttachment(
+                    migrateSingleMessageAttachment(
                         tsAttachmentUniqueId: quotedMessageTSAttachmentId,
                         messageOwnerType: .quotedReplyAttachment
                     )
                     newQuotedMessage = quotedMessage.removingLegacyAttachment()
                 case .originalForSend, .original:
                     guard let reservedFileIds = reservedFileIdsDict.removeValue(forKey: quotedMessageTSAttachmentId) else {
-                        throw OWSAssertionError("Missing reservation for attachment")
+                        owsFail("Missing reservation for attachment")
                     }
                     // These point at the attachment of the message being quoted.
                     // We need to thumbnail the message.
-                    newQuotedMessage = try Self.migrateQuotedMessageAttachment(
+                    newQuotedMessage = Self.migrateQuotedMessageAttachment(
                         quotedMessage: quotedMessage,
                         originalTSAttachmentUniqueId: quotedMessageTSAttachmentId,
                         reservedFileIds: reservedFileIds,
@@ -737,7 +780,7 @@ extension TSAttachmentMigration {
                 }
             }
 
-            try Self.updateMessageRow(
+            Self.updateMessageRow(
                 rowId: messageRowId,
                 bodyAttachmentIds: newBodyAttachmentIds,
                 contact: newContact,
@@ -784,7 +827,7 @@ extension TSAttachmentMigration {
             stickerId: UInt32?,
             isViewOnce: Bool,
             tx: GRDBWriteTransaction
-        ) throws -> TSAttachmentMigration.V1Attachment? {
+        ) -> TSAttachmentMigration.V1Attachment? {
             let oldAttachment: TSAttachmentMigration.V1Attachment?
             do {
                 oldAttachment = try TSAttachmentMigration.V1Attachment
@@ -792,11 +835,11 @@ extension TSAttachmentMigration {
                     .fetchOne(tx.database)
             } catch {
                 Logger.error("Failed to parse TSAttachment row")
-                try reservedFileIds.cleanUpFiles()
+                reservedFileIds.cleanUpFiles()
                 return nil
             }
             guard let oldAttachment else {
-                try reservedFileIds.cleanUpFiles()
+                reservedFileIds.cleanUpFiles()
                 return nil
             }
 
@@ -868,19 +911,19 @@ extension TSAttachmentMigration {
                 // A pointer; no validation needed.
                 pendingAttachment = nil
                 // Clean up files just in case.
-                try reservedFileIds.cleanUpFiles()
+                reservedFileIds.cleanUpFiles()
             }
 
             let v2AttachmentId: Int64
             if
                 let pendingAttachment,
-                let existingV2Attachment = try {
+                let existingV2Attachment = {
                     do {
                         return try TSAttachmentMigration.V2Attachment
                             .filter(Column("sha256ContentHash") == pendingAttachment.sha256ContentHash)
                             .fetchOne(tx.database)
                     } catch {
-                        throw OWSAssertionError("Failed to fetch v2 attachment")
+                        owsFail("Failed to fetch v2 attachment")
                     }
                 }()
             {
@@ -888,7 +931,7 @@ extension TSAttachmentMigration {
                 // create new references to it and drop the pending attachment.
                 v2AttachmentId = existingV2Attachment.id!
                 // Delete the reserved files being used by the pending attachment.
-                try reservedFileIds.cleanUpFiles()
+                reservedFileIds.cleanUpFiles()
             } else {
                 var v2Attachment: TSAttachmentMigration.V2Attachment
                 if let pendingAttachment {
@@ -946,7 +989,7 @@ extension TSAttachmentMigration {
                 do {
                     try v2Attachment.insert(tx.database)
                 } catch {
-                    throw OWSAssertionError("Failed to insert v2 attachment")
+                    owsFail("Failed to insert v2 attachment")
                 }
                 v2AttachmentId = v2Attachment.id!
             }
@@ -962,14 +1005,14 @@ extension TSAttachmentMigration {
                 } else {
                     // Uniquely, non-oversize-text body attachments are present in the
                     // media gallery table and need to be deleted from there.
-                    try oldAttachment.deleteMediaGalleryRecord(tx: tx)
+                    try? oldAttachment.deleteMediaGalleryRecord(tx: tx)
                     fallthrough
                 }
             default:
                 ownerTypeRaw = UInt32(messageOwnerType.rawValue)
             }
 
-            let (sourceMediaHeightPixels, sourceMediaWidthPixels) = try oldAttachment.sourceMediaSizePixels() ?? (nil, nil)
+            let (sourceMediaHeightPixels, sourceMediaWidthPixels) = (try? oldAttachment.sourceMediaSizePixels()) ?? (nil, nil)
 
             let reference = TSAttachmentMigration.MessageAttachmentReference(
                 ownerType: ownerTypeRaw,
@@ -993,7 +1036,7 @@ extension TSAttachmentMigration {
             do {
                 try reference.insert(tx.database)
             } catch {
-                throw OWSAssertionError("Failed to insert attachment reference")
+                owsFail("Failed to insert attachment reference")
             }
 
             // Edits might be reusing the original's TSAttachment.
@@ -1009,7 +1052,7 @@ extension TSAttachmentMigration {
             do {
                 try oldAttachment.delete(tx.database)
             } catch {
-                throw OWSAssertionError("Failed to insert v2 attachment")
+                owsFail("Failed to insert v2 attachment")
             }
 
             return oldAttachment
@@ -1028,7 +1071,7 @@ extension TSAttachmentMigration {
             threadRowId: Int64,
             messageReceivedAtTimestamp: UInt64,
             tx: GRDBWriteTransaction
-        ) throws -> TSAttachmentMigration.TSQuotedMessage {
+        ) -> TSAttachmentMigration.TSQuotedMessage {
             let oldAttachment: TSAttachmentMigration.V1Attachment?
             do {
                 oldAttachment = try TSAttachmentMigration.V1Attachment
@@ -1037,7 +1080,7 @@ extension TSAttachmentMigration {
             } catch {
                 Logger.error("Failed to parse quote TSAttachment")
                 // We can easily fall back to stub, just drop the attachment.
-                try reservedFileIds.cleanUpFiles()
+                reservedFileIds.cleanUpFiles()
                 return quotedMessage.fallbackToStub()
             }
 
@@ -1046,7 +1089,7 @@ extension TSAttachmentMigration {
                 // This can happen if the quote came in, then the original got deleted
                 // while the quote still pointed at the original's attachment.
                 // Just fall back to a stub.
-                try reservedFileIds.cleanUpFiles()
+                reservedFileIds.cleanUpFiles()
                 return quotedMessage.fallbackToStub()
             }
 
@@ -1061,23 +1104,29 @@ extension TSAttachmentMigration {
             else {
                 // We've got no original media stream, just a pointer or non-visual media.
                 // We can't easily handle this, so instead just fall back to a stub.
-                try reservedFileIds.cleanUpFiles()
+                reservedFileIds.cleanUpFiles()
                 return quotedMessage.fallbackToStub(oldAttachment)
             }
 
-            let pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.prepareQuotedReplyThumbnail(
-                fromOriginalAttachmentStream: oldAttachment,
-                reservedFileIds: .init(
-                    primaryFile: reservedFileIds.reservedV2AttachmentPrimaryFileId,
-                    audioWaveform: reservedFileIds.reservedV2AttachmentAudioWaveformFileId,
-                    videoStillFrame: reservedFileIds.reservedV2AttachmentVideoStillFrameFileId
-                ),
-                renderingFlag: oldAttachment.attachmentType.asRenderingFlag,
-                sourceFilename: oldAttachment.sourceFilename
-            )
+            let pendingAttachment: TSAttachmentMigration.PendingV2AttachmentFile?
+            do {
+                pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.prepareQuotedReplyThumbnail(
+                    fromOriginalAttachmentStream: oldAttachment,
+                    reservedFileIds: .init(
+                        primaryFile: reservedFileIds.reservedV2AttachmentPrimaryFileId,
+                        audioWaveform: reservedFileIds.reservedV2AttachmentAudioWaveformFileId,
+                        videoStillFrame: reservedFileIds.reservedV2AttachmentVideoStillFrameFileId
+                    ),
+                    renderingFlag: oldAttachment.attachmentType.asRenderingFlag,
+                    sourceFilename: oldAttachment.sourceFilename
+                )
+            } catch {
+                Logger.error("Error validating quote attachment")
+                pendingAttachment = nil
+            }
             guard let pendingAttachment else {
                 Logger.error("Failed to validate quote attachment")
-                try reservedFileIds.cleanUpFiles()
+                reservedFileIds.cleanUpFiles()
                 return quotedMessage.fallbackToStub(oldAttachment)
             }
 
@@ -1089,14 +1138,14 @@ extension TSAttachmentMigration {
                     .filter(Column("sha256ContentHash") == pendingAttachment.sha256ContentHash)
                     .fetchOne(tx.database)
             } catch {
-                throw OWSAssertionError("Failed to fetch v2 attachment")
+                owsFail("Failed to fetch v2 attachment")
             }
             if let existingV2Attachment {
                 // If we already have a v2 attachment with the same plaintext hash,
                 // create new references to it and drop the pending attachment.
                 v2AttachmentId = existingV2Attachment.id!
                 // Delete the reserved files being used by the pending attachment.
-                try reservedFileIds.cleanUpFiles()
+                reservedFileIds.cleanUpFiles()
             } else {
                 var v2Attachment = TSAttachmentMigration.V2Attachment(
                     blurHash: pendingAttachment.blurHash,
@@ -1126,7 +1175,7 @@ extension TSAttachmentMigration {
                 do {
                     try v2Attachment.insert(tx.database)
                 } catch {
-                    throw OWSAssertionError("Failed to insert v2 attachment")
+                    owsFail("Failed to insert v2 attachment")
                 }
                 v2AttachmentId = v2Attachment.id!
             }
@@ -1154,7 +1203,7 @@ extension TSAttachmentMigration {
             do {
                 try reference.insert(tx.database)
             } catch {
-                throw OWSAssertionError("Failed to insert attachment reference")
+                owsFail("Failed to insert attachment reference")
             }
 
             // NOTE: we DO NOT delete the old attachment. It belongs to the original message.
@@ -1282,7 +1331,7 @@ extension TSAttachmentMigration {
             linkPreview: TSAttachmentMigration.OWSLinkPreview?,
             quotedMessage: TSAttachmentMigration.TSQuotedMessage?,
             tx: GRDBWriteTransaction
-        ) throws {
+        ) {
             var sql = "UPDATE model_TSInteraction SET "
             var arguments = StatementArguments()
 
@@ -1314,7 +1363,7 @@ extension TSAttachmentMigration {
             do {
                 try tx.database.execute(sql: sql, arguments: arguments)
             } catch {
-                throw OWSAssertionError("Failed to update message columns: \(columns)")
+                owsFail("Failed to update message columns: \(columns)")
             }
         }
     }
