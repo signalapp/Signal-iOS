@@ -277,7 +277,8 @@ extension TSAttachmentMigration {
             )!.path
             let attachmentsFolder = rootPath.appendingPathComponent("Attachments")
             guard OWSFileSystem.deleteFileIfExists(attachmentsFolder) == true else {
-                owsFail("Unable to delete folder!")
+                owsFailDebug("Unable to delete folder!")
+                return
             }
         }
 
