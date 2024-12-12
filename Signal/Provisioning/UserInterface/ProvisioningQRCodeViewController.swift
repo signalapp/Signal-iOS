@@ -14,6 +14,8 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
         case loadingSpinner
     }
 
+    private var qrCodeWrapperView: UIView!
+    private var qrCodeWrapperViewSizeConstraints: [NSLayoutConstraint]!
     private var qrCodeImageBackgroundView: UIView!
     private var qrCodeImageView: UIImageView!
     private var qrCodeRefreshButton: OWSButton!
@@ -40,10 +42,13 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
         }
     }
 
-    override func loadView() {
-        // MARK: Views
+    override init(provisioningController: ProvisioningController) {
+        super.init(provisioningController: provisioningController)
+    }
 
-        view = UIView()
+    private func populateViewContents() {
+        view.removeAllSubviews()
+
         view.addSubview(primaryView)
         primaryView.autoPinEdgesToSuperviewEdges()
 
@@ -61,9 +66,8 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
         bodyLabel.font = UIFont.dynamicTypeBody
         bodyLabel.numberOfLines = 0
 
-        let qrCodeWrapperView = UIView()
+        qrCodeWrapperView = UIView()
         qrCodeWrapperView.backgroundColor = .ows_gray02
-        qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 48)
         qrCodeWrapperView.layer.cornerRadius = 24
 
         qrCodeImageBackgroundView = UIView()
@@ -149,42 +153,65 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
         qrCodeWrapperView.addSubview(qrCodeImageBackgroundView)
         qrCodeImageBackgroundView.autoPinEdgesToSuperviewMargins()
 
-        primaryView.addSubview(titleLabel)
-        primaryView.addSubview(bodyLabel)
-        primaryView.addSubview(qrCodeWrapperView)
-        primaryView.addSubview(getHelpLabel)
+        let qrCodeTopSpacer = UIView()
+        let qrCodeBottomSpacer = UIView()
 
-        titleLabel.setContentHuggingHigh()
-        titleLabel.autoPinTopToSuperviewMargin()
-        titleLabel.autoPinWidthToSuperviewMargins()
-        titleLabel.autoPinEdge(.bottom, to: .top, of: bodyLabel, withOffset: -12)
-
-        bodyLabel.setContentHuggingHigh()
-        bodyLabel.autoPinWidthToSuperviewMargins()
-        bodyLabel.autoPinEdge(.bottom, to: .top, of: qrCodeWrapperView, withOffset: -64)
-
-        qrCodeWrapperView.autoHCenterInSuperview()
-        qrCodeWrapperView.autoSetDimensions(to: .square(352))
-
+        let contentStack = UIStackView(arrangedSubviews: [
+            titleLabel,
+            bodyLabel,
+            qrCodeTopSpacer,
+            qrCodeWrapperView,
+            qrCodeBottomSpacer,
+            getHelpLabel,
+        ])
 #if TESTABLE_BUILD
         let shareURLButton = UIButton(type: .system)
         shareURLButton.setTitle(LocalizationNotNeeded("Debug only: Share URL"), for: .normal)
         shareURLButton.addTarget(self, action: #selector(didTapShareURL), for: .touchUpInside)
-        primaryView.addSubview(shareURLButton)
 
-        getHelpLabel.autoPinWidthToSuperviewMargins()
-        getHelpLabel.autoPinEdge(.bottom, to: .top, of: shareURLButton, withOffset: -12)
-
-        shareURLButton.autoPinWidthToSuperviewMargins()
-        shareURLButton.autoPinBottomToSuperviewMargin()
-#else
-        getHelpLabel.autoPinWidthToSuperviewMargins()
-        getHelpLabel.autoPinBottomToSuperviewMargin()
+        contentStack.addArrangedSubview(shareURLButton)
 #endif
+
+        contentStack.axis = .vertical
+        contentStack.alignment = .center
+        contentStack.spacing = 12
+
+        primaryView.addSubview(contentStack)
+        contentStack.autoPinEdgesToSuperviewMargins()
+
+        qrCodeTopSpacer.autoMatch(.height, to: .height, of: qrCodeBottomSpacer, withMultiplier: 0.33)
+
+        /// Constraint constants managed by `adjustLayoutForCurrentOrientation`.
+        qrCodeWrapperViewSizeConstraints = [
+            qrCodeWrapperView.autoSetDimension(.height, toSize: 0),
+            qrCodeWrapperView.autoSetDimension(.width, toSize: 0),
+        ]
+
+        adjustLayoutForCurrentOrientation()
+    }
+
+    @objc
+    private func adjustLayoutForCurrentOrientation() {
+        if UIDevice.current.orientation.isPortrait {
+            qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 48)
+            qrCodeWrapperViewSizeConstraints.forEach { $0.constant = 352 }
+        } else {
+            qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 24)
+            qrCodeWrapperViewSizeConstraints.forEach { $0.constant = 220 }
+        }
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        populateViewContents()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(adjustLayoutForCurrentOrientation),
+            name: UIDevice.orientationDidChangeNotification,
+            object: UIDevice.current
+        )
 
         setDisplayMode(.loadingSpinner)
 
