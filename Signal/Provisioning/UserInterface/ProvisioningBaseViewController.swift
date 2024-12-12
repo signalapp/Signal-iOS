@@ -13,7 +13,6 @@ class ProvisioningBaseViewController: OWSViewController, OWSNavigationChildContr
 
     init(provisioningController: ProvisioningController) {
         self.provisioningController = provisioningController
-
         super.init()
     }
 
