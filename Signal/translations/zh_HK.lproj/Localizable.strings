@@ -1984,6 +1984,9 @@
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "無法更新裝置列表。";
 
+/* Message appearing on a toast indicating a new device was successfully linked and synced. */
+"DEVICE_LIST_UPDATE_NEW_DEVICE_SYNCED_TOAST" = "Message sync complete";
+
 /* Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }} */
 "DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "已連結「%1$@」";
 
@@ -2695,9 +2698,6 @@
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "此聯絡人未在使用Signal。";
 
-/* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "無法下載附件。";
-
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "無法上載附件。";
 
@@ -3263,7 +3263,7 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "要求透過群組連結加入的新成員須經管理員核准。";
 
 /* Label for the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Require Admin Approval";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "需要管理員核准";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "啟用並分享連結";
@@ -3290,7 +3290,7 @@
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "二維碼";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Require Admin Approval";
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "需要管理員核准";
 
 /* Label for the 'copy link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_COPY_LINK" = "複製連結";
@@ -4007,7 +4007,7 @@
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "「新版群組」是甚麼？";
 
 /* subtitle for declining to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_SUBTITLE" = "No old messages or media will be transferred to your linked device";
+"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_SUBTITLE" = "任何舊訊息或媒體將不會轉移到你的已連結裝置";
 
 /* title for declining to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "不要轉移";
@@ -4016,7 +4016,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "完成連結";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and recent media to your linked device";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "將文字訊息和最近的媒體轉移到你的已連結裝置";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "轉移訊息紀錄";
@@ -4035,9 +4035,6 @@
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "重試";
-
-/* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "請掃描您想連結的裝置上所顯示的二維碼。";
 
 /* Title for QR Scanning screen instructions sheet */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "使用此裝置來掃描你想連結的裝置上所顯示的二維碼";
@@ -4060,8 +4057,17 @@
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "在另一部裝置上完成連結";
 
-/* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "掃描二維碼連結新裝置。";
+/* Message for a sheet indicating that a newly linked device failed to sync messages. */
+"LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Your device was successfully linked, but your messages could not be transferred.";
+
+/* Title for a sheet indicating that a newly linked device failed to sync messages. */
+"LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Message Sync Failed";
+
+/* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
+"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ complete";
+
+/* Title for a progress modal indicating the sync progress */
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "Syncing Messages…";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "連結新的裝置";
@@ -4079,16 +4085,16 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "了解更多";
 
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
-"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "On your other device, visit %1$@ to install the iPad app or %2$@ to install the desktop app.";
+"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "在你的其他裝置上，前往 %1$@ 以安裝 iPad 應用程式或 %2$@ 以安裝桌面版應用程式。";
 
 /* Bullet point about message sync on the linked devices education sheet */
-"LINKED_DEVICES_EDUCATION_POINT_MESSAGES" = "Signal messages are synchronized with Signal on your mobile phone after it is linked.";
+"LINKED_DEVICES_EDUCATION_POINT_MESSAGES" = "連結後，Signal 訊息會與手機上的 Signal 同步。";
 
 /* Bullet point about privacy on the linked devices education sheet */
-"LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "All messaging on linked devices is private";
+"LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "所有在已連結裝置上的訊息均為私密";
 
 /* Title for the linked device education sheet */
-"LINKED_DEVICES_EDUCATION_TITLE" = "Signal on Desktop or iPad";
+"LINKED_DEVICES_EDUCATION_TITLE" = "在桌面電腦或 iPad 上的 Signal";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
 "LINKED_DEVICES_EMPTY_STATE" = "沒有已連結裝置";
@@ -4097,7 +4103,7 @@
 "LINKED_DEVICES_HEADER_DESCRIPTION" = "在桌面電腦或 iPad 上使用 Signal。你的訊息將同步到已連結裝置。";
 
 /* Description for header of the linked devices list when Link and Sync is disabled */
-"LINKED_DEVICES_HEADER_DESCRIPTION_LINK_AND_SYNC_DISABLED" = "Use Signal on desktop or iPad.";
+"LINKED_DEVICES_HEADER_DESCRIPTION_LINK_AND_SYNC_DISABLED" = "在桌面電腦或 iPad 上使用 Signal。";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "所有裝置上的訊息和聊天資訊均受端對端加密的保護";
@@ -4105,14 +4111,38 @@
 /* Title above the list of currently-linked devices */
 "LINKED_DEVICES_LIST_TITLE" = "已連結裝置";
 
+/* Button title for renaming a linked device */
+"LINKED_DEVICES_RENAME_BUTTON" = "Rename";
+
+/* Message on a sheet indicating the device rename attempt received an error. */
+"LINKED_DEVICES_RENAME_FAILURE_MESSAGE" = "Unable to change device name. Try again later.";
+
+/* Message on a toast indicating the device was renamed. */
+"LINKED_DEVICES_RENAME_SUCCESS_MESSAGE" = "Device name updated";
+
+/* Title for the screen for renaming a linked device */
+"LINKED_DEVICES_RENAME_TITLE" = "Edit Device Name";
+
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "已連結裝置";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "裝置連結失敗";
 
+/* Progress label when the message loading has nearly completed during the device linking process */
+"LINKING_SYNCING_FINALIZING" = "Finalizing message transfer…";
+
+/* Footer text when loading messages during linking process. */
+"LINKING_SYNCING_FOOTER" = "Messages and chat info are protected by end-to-end encryption, including the sync process.";
+
 /* Title shown when loading messages during linking process */
 "LINKING_SYNCING_MESSAGES_TITLE" = "同步訊息";
+
+/* Progress label when the message loading has not yet started during the device linking process */
+"LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Preparing to download…";
+
+/* Label below the progress bar when loading messages during linking process */
+"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes depending on the size of your message history";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "為轉移您的 Signal 帳戶，您需要在兩部裝置上啟用區域網絡存取權限。";
@@ -4148,7 +4178,7 @@
 "LONG_TEXT_VIEW_TITLE" = "訊息";
 
 /* Title for error sheet shown when the max video length is recorded with the in-app camera */
-"MAX_VIDEO_RECORDING_LENGTH_ALERT" = "Max video length reached";
+"MAX_VIDEO_RECORDING_LENGTH_ALERT" = "已達到最大影片長度";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "所有媒體";
@@ -6077,7 +6107,7 @@
 "REGISTRATION_PHONE_NUMBER_TITLE" = "你的電話號碼";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "你將會收到一通來電，以驗證此電話號碼。上述電話號碼是否正確？";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "Is your phone number above correct?";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "電話號碼";
@@ -6122,13 +6152,25 @@
 "REGISTRATION_PROFILE_SETUP_TITLE" = "設定你的個人資料";
 
 /* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal can’t send an SMS code because of issues with the SMS provider.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "由於 SMS 供應商的問題，Signal 無法傳送 SMS 代碼。";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal couldn’t send an SMS code because of issues with the SMS provider. Try again in several hours.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "由於 SMS 供應商的問題，Signal 無法傳送 SMS 代碼。請於幾個小時後重試。";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "你需要先登記以傳送訊息。";
+
+/* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
+"REGISTRATION_SCAN_QR_CODE_TITLE" = "Scan this code with your old phone";
+
+/* Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal */
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "Open Signal on your old device";
+
+/* Tutorial text describing the third step to scanning the restore/transfer QR code with your old phone: scan the code */
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_SCAN" = "Scan this code with the camera";
+
+/* Tutorial text describing the second step to scanning the restore/transfer QR code with your old phone: tap the camera icon */
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA" = "Tap the camera icon";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "語音通話";
@@ -6340,9 +6382,6 @@
 /* section header for search results that match a message in a conversation */
 "SEARCH_SECTION_MESSAGES" = "訊息";
 
-/* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "無法獲得連結碼";
-
 /* Message for error alert indicating that re-linking failed because the account did not match. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "如要將此裝置連結至其他帳戶，您必須先重設裝置。您是否確定要刪除所有紀錄（訊息、附件、通話等）？此操作將無法還原。";
 
@@ -6366,6 +6405,15 @@
 
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "無法連結您的裝置";
+
+/* Title for action sheet when secondary device fails to sync messages. */
+"SECONDARY_LINKING_SYNCING_ERROR_TITLE" = "Error transferring your messages";
+
+/* Message for action sheet when secondary device fails to sync messages due to network error. */
+"SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE" = "Your messages could not be transferred. Check your internet connection and try again.";
+
+/* Message for action sheet when secondary device fails to sync messages due to an unspecified error. */
+"SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE" = "Your messages could not be transferred due to an error. Try again by re-linking this device.";
 
 /* header text when this device is being added as a secondary */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "請選擇此裝置的名稱";
@@ -6396,6 +6444,9 @@
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "在此處獲得有關連結 iPad 的協助";
+
+/* Text for a button offering to refresh the QR code to link an iPad. */
+"SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "Refresh code";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "用您的電話掃描二維碼";
@@ -6618,9 +6669,6 @@
 
 /* Format for the 'country code' in the 'change phone number' settings. Embeds: {{ %1$@ the numeric country code prefix, %2$@ the country code abbreviation }}. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT" = "%1$@ (%2$@)";
-
-/* Format for 'example phone numbers' in the 'change phone number' settings. Embeds: {{ the example phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "範例：%1$@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "您的新號碼";
@@ -8421,9 +8469,6 @@
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "按住以錄製。";
-
-/* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "完成 Signal 桌面版設定。";
 
 /* Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }} */
 "WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "具有 %1$@ 和 %2$@ 的漸層";

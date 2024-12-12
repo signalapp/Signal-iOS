@@ -1984,6 +1984,9 @@
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "No se ha podido actualizar la lista de dispositivos.";
 
+/* Message appearing on a toast indicating a new device was successfully linked and synced. */
+"DEVICE_LIST_UPDATE_NEW_DEVICE_SYNCED_TOAST" = "Message sync complete";
+
 /* Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }} */
 "DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "\"%1$@\" se ha vinculado";
 
@@ -2695,9 +2698,6 @@
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Esta persona no usa Signal.";
 
-/* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "No se ha podido descargar el archivo.";
-
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "No se ha podido subir el archivo.";
 
@@ -3263,7 +3263,7 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Alguien que sea admin del grupo debe aprobar a nuevos participantes que se unan mediante enlace.";
 
 /* Label for the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Require Admin Approval";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Solicitar aprobación de admin";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Activar y compartir enlace";
@@ -3290,7 +3290,7 @@
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "Código QR";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Require Admin Approval";
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Solicitar aprobación de admin";
 
 /* Label for the 'copy link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_COPY_LINK" = "Copiar enlace";
@@ -4007,7 +4007,7 @@
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "¿Qué son los nuevos grupos?";
 
 /* subtitle for declining to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_SUBTITLE" = "No old messages or media will be transferred to your linked device";
+"LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_SUBTITLE" = "No se transferirán mensajes ni archivos multimedia antiguos a tu dispositivo vinculado";
 
 /* title for declining to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE" = "No transferir";
@@ -4016,7 +4016,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Completar vinculación";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and recent media to your linked device";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfiere tus mensajes de texto y archivos multimedia recientes a tu dispositivo vinculado";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Transferir historial de mensajes";
@@ -4035,9 +4035,6 @@
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Reintentar";
-
-/* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Escanea el código QR que se muestra en el dispositivo que quieres vincular.";
 
 /* Title for QR Scanning screen instructions sheet */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Usa este dispositivo para escanear el código QR que se muestra en el dispositivo que quieres vincular";
@@ -4060,8 +4057,17 @@
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Completa la vinculación en tu otro dispositivo";
 
-/* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Escanea el código QR para vincular un dispositivo nuevo.";
+/* Message for a sheet indicating that a newly linked device failed to sync messages. */
+"LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Your device was successfully linked, but your messages could not be transferred.";
+
+/* Title for a sheet indicating that a newly linked device failed to sync messages. */
+"LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Message Sync Failed";
+
+/* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
+"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ complete";
+
+/* Title for a progress modal indicating the sync progress */
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "Syncing Messages…";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Vincular un nuevo dispositivo";
@@ -4079,16 +4085,16 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Más información";
 
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
-"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "On your other device, visit %1$@ to install the iPad app or %2$@ to install the desktop app.";
+"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "En tu otro dispositivo, ve a %1$@ para instalar la aplicación para iPad o a %2$@ para instalar la aplicación de escritorio.";
 
 /* Bullet point about message sync on the linked devices education sheet */
-"LINKED_DEVICES_EDUCATION_POINT_MESSAGES" = "Signal messages are synchronized with Signal on your mobile phone after it is linked.";
+"LINKED_DEVICES_EDUCATION_POINT_MESSAGES" = "Los mensajes de Signal se sincronizan con Signal en tu teléfono móvil después de vincularlo.";
 
 /* Bullet point about privacy on the linked devices education sheet */
-"LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "All messaging on linked devices is private";
+"LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "Todos los mensajes que se envían y reciben en los dispositivos vinculados son privados";
 
 /* Title for the linked device education sheet */
-"LINKED_DEVICES_EDUCATION_TITLE" = "Signal on Desktop or iPad";
+"LINKED_DEVICES_EDUCATION_TITLE" = "Signal para escritorio o iPad";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
 "LINKED_DEVICES_EMPTY_STATE" = "No hay dispositivos vinculados";
@@ -4097,7 +4103,7 @@
 "LINKED_DEVICES_HEADER_DESCRIPTION" = "Usa Signal para escritorio o iPad. Tus mensajes se sincronizarán en todos tus dispositivos vinculados.";
 
 /* Description for header of the linked devices list when Link and Sync is disabled */
-"LINKED_DEVICES_HEADER_DESCRIPTION_LINK_AND_SYNC_DISABLED" = "Use Signal on desktop or iPad.";
+"LINKED_DEVICES_HEADER_DESCRIPTION_LINK_AND_SYNC_DISABLED" = "Usa Signal para escritorio o iPad.";
 
 /* Footer text below the list of currently-linked devices */
 "LINKED_DEVICES_LIST_FOOTER" = "Los mensajes y los chats están protegidos con cifrado de extremo a extremo en todos los dispositivos";
@@ -4105,14 +4111,38 @@
 /* Title above the list of currently-linked devices */
 "LINKED_DEVICES_LIST_TITLE" = "Dispositivos vinculados";
 
+/* Button title for renaming a linked device */
+"LINKED_DEVICES_RENAME_BUTTON" = "Rename";
+
+/* Message on a sheet indicating the device rename attempt received an error. */
+"LINKED_DEVICES_RENAME_FAILURE_MESSAGE" = "Unable to change device name. Try again later.";
+
+/* Message on a toast indicating the device was renamed. */
+"LINKED_DEVICES_RENAME_SUCCESS_MESSAGE" = "Device name updated";
+
+/* Title for the screen for renaming a linked device */
+"LINKED_DEVICES_RENAME_TITLE" = "Edit Device Name";
+
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Dispositivos vinculados";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "No se ha podido vincular el dispositivo";
 
+/* Progress label when the message loading has nearly completed during the device linking process */
+"LINKING_SYNCING_FINALIZING" = "Finalizing message transfer…";
+
+/* Footer text when loading messages during linking process. */
+"LINKING_SYNCING_FOOTER" = "Messages and chat info are protected by end-to-end encryption, including the sync process.";
+
 /* Title shown when loading messages during linking process */
 "LINKING_SYNCING_MESSAGES_TITLE" = "Sincronizando mensajes";
+
+/* Progress label when the message loading has not yet started during the device linking process */
+"LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Preparing to download…";
+
+/* Label below the progress bar when loading messages during linking process */
+"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes depending on the size of your message history";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Para transferir tu cuenta de Signal, necesitas permitir el acceso a la red local en ambos dispositivos.";
@@ -4148,7 +4178,7 @@
 "LONG_TEXT_VIEW_TITLE" = "Mensaje";
 
 /* Title for error sheet shown when the max video length is recorded with the in-app camera */
-"MAX_VIDEO_RECORDING_LENGTH_ALERT" = "Max video length reached";
+"MAX_VIDEO_RECORDING_LENGTH_ALERT" = "Se ha alcanzado la duración máxima del vídeo";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Archivos multimedia";
@@ -5081,7 +5111,7 @@
 "PAYMENT_DETAILS_CARD_TITLE" = "Tarjeta de crédito o débito";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
-"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ a %2$@";
+"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ - %2$@";
 
 /* Indicator for unknown currency. */
 "PAYMENTS_CURRENCY_UNKNOWN" = "¿?";
@@ -5759,22 +5789,22 @@
 "PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Escribe algunas palabras sobre ti…";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Sé amable";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Namasté";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Amante del café";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Recargando energías";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Cifrado y seguro";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Privacidad ante todo";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Libre para chatear";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Todo bien por aquí";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Habla con libertad";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Tomándome un descanso";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Desconectando para conectar";
 
 /* The 'Working on something new' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Trabajando en algo nuevo";
@@ -5801,13 +5831,13 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Nombre";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Ha habido un problema con tu alias; ya no está asignado a tu cuenta. Puedes intentar crearlo de nuevo o elegir uno distinto.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Ha habido un problema con tu alias, por lo que ya no está asignado a tu cuenta. Puedes intentar crearlo de nuevo o elegir uno distinto.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Eliminar alias";
 
 /* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Corregirlo ahora";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Corregir ahora";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
 "PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Se eliminará tu alias y deshabilitarán tu código QR y tu enlace. \"%1$@\" estará disponible para que otras personas lo usen. ¿Seguro que quieres continuar?";
@@ -6077,7 +6107,7 @@
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Tu número de teléfono";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "Recibirás una llamada para verificar este número. ¿Es correcto el número que se muestra arriba?";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "Is your phone number above correct?";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Número de teléfono";
@@ -6122,28 +6152,40 @@
 "REGISTRATION_PROFILE_SETUP_TITLE" = "Completa tu perfil";
 
 /* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal can’t send an SMS code because of issues with the SMS provider.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal no puede enviar un código SMS debido a problemas con el proveedor de SMS.";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal couldn’t send an SMS code because of issues with the SMS provider. Try again in several hours.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal no ha podido enviar un código SMS debido a problemas con el proveedor de SMS. Vuelve a intentarlo dentro de unas horas.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Debes registrarte para poder enviar un mensaje.";
+
+/* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
+"REGISTRATION_SCAN_QR_CODE_TITLE" = "Scan this code with your old phone";
+
+/* Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal */
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "Open Signal on your old device";
+
+/* Tutorial text describing the third step to scanning the restore/transfer QR code with your old phone: scan the code */
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_SCAN" = "Scan this code with the camera";
+
+/* Tutorial text describing the second step to scanning the restore/transfer QR code with your old phone: tap the camera icon */
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA" = "Tap the camera icon";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Llamada";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "No hemos podido enviarte el código de verificación por SMS. Intenta recibir tu código a través de una llamada.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "No hemos podido enviarte el código de verificación por SMS. Intenta recibir tu código mediante llamada.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Has realizado demasiados intentos para introducir el código. Vuelve a enviar el código e inténtalo de nuevo.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Has realizado demasiados intentos para introducir el código. Vuelve a solicitar el código e inténtalo de nuevo.";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
 "REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Has realizado demasiados intentos para introducir el código. Vuelve a intentarlo en %1$@.";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "El código que has introducido no es válido. Vuelve a enviar el código e inténtalo de nuevo.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "El código que has introducido no es válido. Vuelve a solicitar el código e inténtalo de nuevo.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Introduce un número de teléfono válido para registrarte.";
@@ -6167,19 +6209,19 @@
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Enviar SMS";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "No hemos podido enviarte el código de verificación por llamada. Intenta recibir tu código por SMS.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "No hemos podido enviarte el código de verificación mediante llamada. Intenta recibir tu código por SMS.";
 
 /* Button below the warning to fix a corrupted username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Corregirlo ahora";
+"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Corregir ahora";
 
 /* Label warning the user that something is wrong with their username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Ha habido un problema con tu alias; ya no está asignado a tu cuenta. Puedes intentar crearlo de nuevo o elegir uno distinto.";
+"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Ha habido un problema con tu alias, por lo que ya no está asignado a tu cuenta. Puedes intentar crearlo de nuevo o elegir uno distinto.";
 
 /* Button below the warning to fix a username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Corregirlo ahora";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Corregir ahora";
 
 /* Label warning the user that something is wrong with their username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Ha habido un problema con el código QR y el enlace de tu alias. Ya no son válidos. Crea un nuevo enlace para compartir con otras personas.";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Ha habido un problema con el código QR y el enlace de tu alias, por lo que ya no son válidos. Crea un nuevo enlace para compartir con otras personas.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "Eliminar vista previa";
@@ -6191,10 +6233,10 @@
 "REREGISTER_FOR_PUSH" = "Reactivar las notificaciones push";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "Te queda %1$@. Cuando agotes tus intentos, podrás crear un nuevo PIN. Podrás volver a registrarte y usar tu cuenta, pero perderás algunos ajustes ya guardados, como tu información de perfil.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "Tienes %1$@ más. Cuando agotes tus intentos, podrás crear un nuevo PIN. Podrás volver a registrarte y usar tu cuenta, pero perderás algunos ajustes ya guardados, como tu información de perfil.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "Te quedan %1$@. Si agotas los intentos, tu cuenta se bloqueará durante 7 días. Después de 7 días de inactividad, podrás volver a registrarte sin tener que introducir tu PIN. Se eliminará todo tu contenido.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "Tienes %1$@ más. Si agotas los intentos, tu cuenta se bloqueará durante 7 días. Después de 7 días de inactividad, podrás volver a registrarte sin tener que introducir tu PIN. Se eliminará todo tu contenido.";
 
 /* Configure reactions reset button text */
 "RESET" = "Restablecer";
@@ -6340,9 +6382,6 @@
 /* section header for search results that match a message in a conversation */
 "SEARCH_SECTION_MESSAGES" = "Mensajes";
 
-/* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "No se ha podido recuperar el código de vinculación";
-
 /* Message for error alert indicating that re-linking failed because the account did not match. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Para vincular este dispositivo con otra cuenta, primero debes reiniciar Signal en este dispositivo. ¿Quieres eliminar todo tu historial (mensajes, archivos, llamadas, etc.)? Esta acción es irreversible.";
 
@@ -6366,6 +6405,15 @@
 
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "No se ha podido vincular el dispositivo";
+
+/* Title for action sheet when secondary device fails to sync messages. */
+"SECONDARY_LINKING_SYNCING_ERROR_TITLE" = "Error transferring your messages";
+
+/* Message for action sheet when secondary device fails to sync messages due to network error. */
+"SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE" = "Your messages could not be transferred. Check your internet connection and try again.";
+
+/* Message for action sheet when secondary device fails to sync messages due to an unspecified error. */
+"SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE" = "Your messages could not be transferred due to an error. Try again by re-linking this device.";
 
 /* header text when this device is being added as a secondary */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Elige un nombre para este dispositivo";
@@ -6396,6 +6444,9 @@
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Obtener ayuda para vincular iPad";
+
+/* Text for a button offering to refresh the QR code to link an iPad. */
+"SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "Refresh code";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Escanea el código QR con tu teléfono";
@@ -6611,16 +6662,13 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Cambiar número";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Vas a cambiar tu número de Signal de %1$@ a %2$@.\n\nAntes de continuar, comprueba que el número a continuación es correcto.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Vas a cambiar tu número de teléfono en Signal de %1$@ a %2$@.\n\nAntes de continuar, comprueba que el número a continuación es correcto.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Código de país";
 
 /* Format for the 'country code' in the 'change phone number' settings. Embeds: {{ %1$@ the numeric country code prefix, %2$@ the country code abbreviation }}. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT" = "%1$@ (%2$@)";
-
-/* Format for 'example phone numbers' in the 'change phone number' settings. Embeds: {{ the example phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "Ejemplo: %1$@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Tu nuevo número";
@@ -6644,7 +6692,7 @@
 "SETTINGS_CHATS" = "Chats";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Eliminar historial del chat";
+"SETTINGS_CLEAR_HISTORY" = "Eliminar historial de chat";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicencia AGPLv3";
@@ -6689,7 +6737,7 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "No transferir";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Tienes un saldo de %1$@. Ya no podrás recuperar tus fondos si no los transfieres a otra cartera antes de eliminar tu cuenta.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Tienes un saldo de %1$@. Si no transfieres tus fondos a otra cartera antes de eliminar tu cuenta, ya no podrás recuperarlos.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "¿Transferir saldo?";
@@ -6815,7 +6863,7 @@
 "SETTINGS_PAYMENTS_ALL_RECORDS" = "Todos los pagos";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
-"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ el %3$@";
+"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ - %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Los pagos en Signal ya no están disponibles. Podrás seguir transfiriendo tus fondos a una plataforma de intercambio de monedas, pero ya no podrás recibir ni enviar pagos, ni añadir fondos.";
@@ -8421,9 +8469,6 @@
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Mantén pulsado para grabar.";
-
-/* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completa la configuración en la aplicación de escritorio Signal Desktop.";
 
 /* Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }} */
 "WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "Degradado con %1$@ y %2$@";
