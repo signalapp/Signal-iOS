@@ -166,11 +166,15 @@ struct UploadEndpointCDN3: UploadEndpoint {
                 return .afterDelay(delay)
             }()
 
-#if DEBUG
-            let debugInfo = " [ERROR RESPONSE: \(error.httpResponseJson.debugDescription)]"
-#else
-            let debugInfo = ""
-#endif
+            let debugInfo: String
+            if
+                DebugFlags.internalLogging,
+                error.httpResponseJson.debugDescription.isEmpty.negated
+            {
+                debugInfo = " [ERROR RESPONSE: \(error.httpResponseJson.debugDescription)]"
+            } else {
+                debugInfo = ""
+            }
 
             switch error.httpStatusCode {
             case .some(415):
@@ -189,7 +193,11 @@ struct UploadEndpointCDN3: UploadEndpoint {
                 attempt.logger.warn("Unknown upload failure. (HTTP status code: \(httpStatusCode)) \(debugInfo)")
                 throw Upload.Error.unknown
             default:
-                attempt.logger.warn("Unknown network failure during upload.")
+                if DebugFlags.internalLogging {
+                    attempt.logger.warn("Unknown network failure during upload. \(debugInfo) Error: \(error)")
+                } else {
+                    attempt.logger.warn("Unknown network failure during upload. \(debugInfo)")
+                }
                 throw Upload.Error.unknown
             }
         } catch _ as CancellationError {
