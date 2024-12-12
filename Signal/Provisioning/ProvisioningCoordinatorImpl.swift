@@ -360,10 +360,10 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             // block on a contact sync after doing one. We still do the
             // contact sync in the background to get contact avatars.
             Task {
-                try await performInitialContactSync()
+                try await performInitialContactSync(didLinkNSync: didLinkNSync)
             }
         } else {
-            async let contactSync: Void = self.performInitialContactSync()
+            async let contactSync: Void = self.performInitialContactSync(didLinkNSync: didLinkNSync)
             do {
                 _ = try await (storageServiceRestore, contactSync)
             } catch {
@@ -382,7 +382,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             .awaitable()
     }
 
-    private func performInitialContactSync() async throws {
+    private func performInitialContactSync(didLinkNSync: Bool) async throws {
         // we wait a bit for the initial syncs to come in before proceeding to the inbox
         // because we want to present the inbox already populated with groups and contacts,
         // rather than have the trickle in moments later.
@@ -393,15 +393,17 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         let orderedThreadIds = try await syncManager
             .sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeout: 60)
 
-        // Maintain the remote sort ordering of threads by inserting `syncedThread` messages
-        // in that thread order.
-        await self.db.awaitableWrite { tx in
-            for threadId in orderedThreadIds.reversed() {
-                guard let thread = self.threadStore.fetchThread(uniqueId: threadId, tx: tx) else {
-                    owsFailDebug("thread was unexpectedly nil")
-                    continue
+        if !didLinkNSync {
+            // Maintain the remote sort ordering of threads by inserting `syncedThread` messages
+            // in that thread order. Don't do this if we link'n'synced.
+            await self.db.awaitableWrite { tx in
+                for threadId in orderedThreadIds.reversed() {
+                    guard let thread = self.threadStore.fetchThread(uniqueId: threadId, tx: tx) else {
+                        owsFailDebug("thread was unexpectedly nil")
+                        continue
+                    }
+                    self.messageFactory.insertInfoMessage(into: thread, messageType: .syncedThread, tx: tx)
                 }
-                self.messageFactory.insertInfoMessage(into: thread, messageType: .syncedThread, tx: tx)
             }
         }
     }
