@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 public class MessageBackupPostFrameRestoreActionManager {
     typealias SharedMap = MessageBackup.SharedMap
     typealias RecipientId = MessageBackup.RecipientId
@@ -10,6 +12,8 @@ public class MessageBackupPostFrameRestoreActionManager {
     typealias ChatId = MessageBackup.ChatId
     typealias ChatActions = MessageBackup.ChatRestoringContext.PostFrameRestoreActions
 
+    private let avatarFetcher: MessageBackupAvatarFetcher
+    private let dateProvider: DateProvider
     private let interactionStore: MessageBackupInteractionStore
     private let lastVisibleInteractionStore: LastVisibleInteractionStore
     private let recipientDatabaseTable: RecipientDatabaseTable
@@ -17,12 +21,16 @@ public class MessageBackupPostFrameRestoreActionManager {
     private let threadStore: MessageBackupThreadStore
 
     init(
+        avatarFetcher: MessageBackupAvatarFetcher,
+        dateProvider: @escaping DateProvider,
         interactionStore: MessageBackupInteractionStore,
         lastVisibleInteractionStore: LastVisibleInteractionStore,
         recipientDatabaseTable: RecipientDatabaseTable,
         sskPreferences: Shims.SSKPreferences,
         threadStore: MessageBackupThreadStore
     ) {
+        self.avatarFetcher = avatarFetcher
+        self.dateProvider = dateProvider
         self.interactionStore = interactionStore
         self.lastVisibleInteractionStore = lastVisibleInteractionStore
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -89,6 +97,55 @@ public class MessageBackupPostFrameRestoreActionManager {
         }
         if wasAnyThreadVisible {
             sskPreferences.setHasSavedThread(true, tx: chatItemContext.tx)
+        }
+
+        let avatarFetchTimestamp = dateProvider().ows_millisecondsSince1970
+        for recipientId in chatItemContext.recipientContext.allRecipientIds() {
+            guard let recipientAddress = chatItemContext.recipientContext[recipientId] else {
+                continue
+            }
+
+            func getLastVisibleInteractionRowId() -> Int64? {
+                guard
+                    let chatId = chatItemContext.chatContext[recipientId],
+                    let action = chatActions[chatId]
+                else {
+                    return nil
+                }
+                return action.lastVisibleInteractionRowId
+            }
+
+            switch recipientAddress {
+            case .releaseNotesChannel, .distributionList, .callLink:
+                continue
+            case .localAddress:
+                try avatarFetcher.enqueueFetchOfUserProfile(
+                    serviceId: chatItemContext.recipientContext.localIdentifiers.aci,
+                    currentTimestamp: avatarFetchTimestamp,
+                    lastVisibleInteractionRowIdInContactThread: getLastVisibleInteractionRowId(),
+                    tx: chatItemContext.tx
+                )
+            case .contact(let contactAddress):
+                guard let serviceId: ServiceId = contactAddress.aci ?? contactAddress.pni else {
+                    continue
+                }
+                try avatarFetcher.enqueueFetchOfUserProfile(
+                    serviceId: serviceId,
+                    currentTimestamp: avatarFetchTimestamp,
+                    lastVisibleInteractionRowIdInContactThread: getLastVisibleInteractionRowId(),
+                    tx: chatItemContext.tx
+                )
+            case .group(let groupId):
+                guard let groupThread = chatItemContext.recipientContext[groupId] else {
+                    continue
+                }
+                try avatarFetcher.enqueueFetchOfGroupAvatar(
+                    groupThread,
+                    currentTimestamp: avatarFetchTimestamp,
+                    lastVisibleInteractionRowIdInGroupThread: getLastVisibleInteractionRowId(),
+                    tx: chatItemContext.tx
+                )
+            }
         }
     }
 

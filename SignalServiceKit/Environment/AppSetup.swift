@@ -1123,6 +1123,8 @@ public class AppSetup {
             mrbkStore: mrbkStore,
             plaintextStreamProvider: MessageBackupPlaintextProtoStreamProviderImpl(),
             postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager(
+                avatarFetcher: messageBackupAvatarFetcher,
+                dateProvider: dateProvider,
                 interactionStore: backupInteractionStore,
                 lastVisibleInteractionStore: lastVisibleInteractionStore,
                 recipientDatabaseTable: recipientDatabaseTable,

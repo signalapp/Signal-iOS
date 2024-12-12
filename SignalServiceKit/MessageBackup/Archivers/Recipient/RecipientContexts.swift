@@ -252,6 +252,10 @@ extension MessageBackup {
             set(newValue) { callLinkRecordCache[id] = newValue }
         }
 
+        func allRecipientIds() -> Dictionary<RecipientId, Address>.Keys {
+            return map.keys
+        }
+
         // MARK: Post-Frame Restore
 
         public struct PostFrameRestoreActions {

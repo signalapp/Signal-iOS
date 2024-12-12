@@ -382,13 +382,6 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             }
         }
 
-        do {
-            try avatarFetcher.enqueueFetchOfGroupAvatar(groupThread, tx: context.tx)
-        } catch let error {
-            // Don't fail entirely, we just won't fetch the avatar.
-            partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId))
-        }
-
         // MARK: Return successfully!
 
         let groupId = GroupId(groupModel: groupModel)

@@ -56,16 +56,35 @@ public class MessageBackupAvatarFetcher {
         }
     }
 
-    internal func enqueueFetchOfGroupAvatar(_ thread: TSGroupThread, tx: DBWriteTransaction) throws {
+    internal func enqueueFetchOfGroupAvatar(
+        _ thread: TSGroupThread,
+        currentTimestamp: UInt64,
+        lastVisibleInteractionRowIdInGroupThread: Int64?,
+        tx: DBWriteTransaction
+    ) throws {
         guard let avatarUrl = (thread.groupModel as? TSGroupModelV2)?.avatarUrlPath else {
             return
         }
-        var record = Record.forGroupAvatar(groupThread: thread, avatarUrl: avatarUrl)
+        var record = Record.forGroupAvatar(
+            groupThread: thread,
+            avatarUrl: avatarUrl,
+            currentTimestamp: currentTimestamp,
+            lastVisibleInteractionRowIdInGroupThread: lastVisibleInteractionRowIdInGroupThread
+        )
         try record?.insert(tx.databaseConnection)
     }
 
-    internal func enqueueFetchOfUserProfile(serviceId: ServiceId, tx: DBWriteTransaction) throws {
-        var record = Record.forUserProfile(serviceId: serviceId)
+    internal func enqueueFetchOfUserProfile(
+        serviceId: ServiceId,
+        currentTimestamp: UInt64,
+        lastVisibleInteractionRowIdInContactThread: Int64?,
+        tx: DBWriteTransaction
+    ) throws {
+        var record = Record.forUserProfile(
+            serviceId: serviceId,
+            currentTimestamp: currentTimestamp,
+            lastVisibleInteractionRowIdInContactThread: lastVisibleInteractionRowIdInContactThread
+        )
         try record.insert(tx.databaseConnection)
     }
 
@@ -297,23 +316,67 @@ public class MessageBackupAvatarFetcher {
         var nextRetryTimestamp: UInt64
         var numRetries: Int
 
-        private init(groupThreadRowId: Int64?, groupAvatarUrl: String?, serviceId: ServiceId?) {
+        private init(
+            groupThreadRowId: Int64?,
+            groupAvatarUrl: String?,
+            serviceId: ServiceId?,
+            currentTimestamp: UInt64,
+            lastVisibleInteractionRowIdInThread: Int64?
+        ) {
             self._id = nil
             self.groupThreadRowId = groupThreadRowId
             self.groupAvatarUrl = groupAvatarUrl
             self.serviceId = serviceId
-            // Set this in the past so we "retry" immediately for the first try.
-            self.nextRetryTimestamp = 0
             self.numRetries = 0
+
+            // We initialize the next retry timestamp in the past (or present),
+            // but use a trick for ordering. Since we pop off the queue in
+            // nextRetryTimestamp ordering ascending, we initialize the timestamp
+            // to a _smaller_ value if the related thread has a more recent message.
+            if
+                let lastVisibleInteractionRowIdInThread = lastVisibleInteractionRowIdInThread
+                    .map({ UInt64(exactly: $0 ) }) ?? nil
+            {
+                if lastVisibleInteractionRowIdInThread < currentTimestamp {
+                    nextRetryTimestamp = currentTimestamp - lastVisibleInteractionRowIdInThread
+                } else {
+                    nextRetryTimestamp = 0
+                }
+            } else {
+                // If there are no messages, put the row last in the queue,
+                // at the current time so its still eligible for download.
+                nextRetryTimestamp = currentTimestamp
+            }
         }
 
-        static func forGroupAvatar(groupThread: TSGroupThread, avatarUrl: String) -> Self? {
+        static func forGroupAvatar(
+            groupThread: TSGroupThread,
+            avatarUrl: String,
+            currentTimestamp: UInt64,
+            lastVisibleInteractionRowIdInGroupThread: Int64?
+        ) -> Self? {
             guard let rowId = groupThread.sqliteRowId else { return nil }
-            return .init(groupThreadRowId: rowId, groupAvatarUrl: avatarUrl, serviceId: nil)
+            return .init(
+                groupThreadRowId: rowId,
+                groupAvatarUrl: avatarUrl,
+                serviceId: nil,
+                currentTimestamp: currentTimestamp,
+                lastVisibleInteractionRowIdInThread: lastVisibleInteractionRowIdInGroupThread
+            )
         }
 
-        static func forUserProfile(serviceId: ServiceId) -> Self {
-            return .init(groupThreadRowId: nil, groupAvatarUrl: nil, serviceId: serviceId)
+        static func forUserProfile(
+            serviceId: ServiceId,
+            currentTimestamp: UInt64,
+            lastVisibleInteractionRowIdInContactThread: Int64?
+        ) -> Self {
+            return .init(
+                groupThreadRowId: nil,
+                groupAvatarUrl: nil,
+                serviceId: serviceId,
+                currentTimestamp: currentTimestamp,
+                lastVisibleInteractionRowIdInThread: lastVisibleInteractionRowIdInContactThread
+            )
         }
 
         /// Returns nil if it should not retry.

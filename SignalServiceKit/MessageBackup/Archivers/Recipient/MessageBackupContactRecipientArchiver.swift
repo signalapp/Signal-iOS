@@ -697,14 +697,6 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             tx: context.tx
         )
 
-        if let serviceId = aci ?? pni {
-            do {
-                try avatarFetcher.enqueueFetchOfUserProfile(serviceId: serviceId, tx: context.tx)
-            } catch let error {
-                partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId))
-            }
-        }
-
         if partialErrors.isEmpty {
             return .success
         } else {
