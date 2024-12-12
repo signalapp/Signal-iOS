@@ -125,10 +125,18 @@ public struct AttachmentUpload {
             bytesAlreadyUploaded = 0
         }
 
+        let internalProgress: OWSProgressSource
+        if let progress {
+            internalProgress = progress
+        } else {
+            let internalProgressSink = OWSProgress.createSink { _ in }
+            internalProgress = await internalProgressSink.addSource(withLabel: "upload", unitCount: UInt64(totalDataLength))
+        }
+
         // Total progress is (progress from previous attempts/slices +
         // progress from this attempt/slice).
-        if let progress, progress.completedUnitCount < bytesAlreadyUploaded {
-            progress.incrementCompletedUnitCount(by: UInt64(bytesAlreadyUploaded) - progress.completedUnitCount)
+        if internalProgress.completedUnitCount < bytesAlreadyUploaded {
+            internalProgress.incrementCompletedUnitCount(by: UInt64(bytesAlreadyUploaded) - internalProgress.completedUnitCount)
         }
 
         do {
@@ -150,9 +158,14 @@ public struct AttachmentUpload {
                 // if a failure mode was passed back
                 failureMode = retryMode
             } else {
-                // if this isn't an understood error, map into a failure mode
-                let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count + 1)
-                failureMode = .resume(.afterDelay(backoff))
+                if internalProgress.completedUnitCount > bytesAlreadyUploaded {
+                    // progress was made, so don't backoff
+                    failureMode = .resume(.immediately)
+                } else {
+                    // if this isn't an understood error, map into a failure mode
+                    let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count + 1)
+                    failureMode = .resume(.afterDelay(backoff))
+                }
             }
 
             switch failureMode {

@@ -146,9 +146,18 @@ struct UploadEndpointCDN3: UploadEndpoint {
             case 200...204:
                 return
             default:
-                throw Upload.Error.unknown
+                throw Upload.Error.unexpectedResponseStatusCode(response.responseStatusCode)
             }
-        } catch {
+        } catch let error as Upload.Error {
+            switch error {
+            case .unexpectedResponseStatusCode(let statusCode):
+                attempt.logger.warn("Unexpected response status code: \(statusCode)")
+                throw Upload.Error.unknown
+            case .invalidUploadURL, .unknown, .unsupportedEndpoint, .uploadFailure:
+                attempt.logger.warn("Unexpected upload error")
+                throw error
+            }
+        } catch let error as OWSHTTPError {
             let retryMode: Upload.FailureMode.RetryMode = {
                 guard
                     let retryHeader = error.httpResponseHeaders?.value(forHeader: "retry-after"),
@@ -176,10 +185,19 @@ struct UploadEndpointCDN3: UploadEndpoint {
                 // On 5XX errors, clients should try to resume the upload
                 attempt.logger.warn("Temporary upload failure, retry.\(debugInfo)")
                 throw Upload.Error.uploadFailure(recovery: .resume(retryMode))
+            case .some(let httpStatusCode):
+                attempt.logger.warn("Unknown upload failure. (HTTP status code: \(httpStatusCode)) \(debugInfo)")
+                throw Upload.Error.unknown
             default:
-                attempt.logger.warn("Unknown upload failure.\(debugInfo)")
+                attempt.logger.warn("Unknown network failure during upload.")
                 throw Upload.Error.unknown
             }
+        } catch _ as CancellationError {
+            attempt.logger.warn("upload cancelled.")
+            throw Upload.Error.unknown
+        } catch {
+            attempt.logger.warn("Unknown upload failure.")
+            throw Upload.Error.unknown
         }
     }
 }
