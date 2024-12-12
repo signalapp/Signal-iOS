@@ -247,6 +247,8 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             return .genericError(error)
         }
 
+        var didLinkNSync = false
+        var postLinkNSyncProgress: OWSProgressSource?
         if
             FeatureFlags.linkAndSync,
             let ephemeralBackupKey = BackupKey(provisioningMessage: provisionMessage)
@@ -256,6 +258,14 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                     progressViewModel.progress = progress.percentComplete
                 }
             }
+            let linkNSyncProgress = await progress.addChild(
+                withLabel: LocalizationNotNeeded("Link'n'sync"),
+                unitCount: 95
+            )
+            postLinkNSyncProgress = await progress.addSource(
+                withLabel: LocalizationNotNeeded("Post-link'n'sync"),
+                unitCount: 5
+            )
 
             let localIdentifiers = LocalIdentifiers(
                 aci: aci,
@@ -268,8 +278,9 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                     localIdentifiers: localIdentifiers,
                     auth: authedDevice.authedAccount.chatServiceAuth,
                     ephemeralBackupKey: ephemeralBackupKey,
-                    progress: progress
+                    progress: linkNSyncProgress
                 )
+                didLinkNSync = true
             } catch let firstAttemptError {
                 Logger.error("Failed link'n'sync \(firstAttemptError)")
 
@@ -281,8 +292,9 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                             localIdentifiers: localIdentifiers,
                             auth: authedDevice.authedAccount.chatServiceAuth,
                             ephemeralBackupKey: ephemeralBackupKey,
-                            progress: progress
+                            progress: linkNSyncProgress
                         )
+                        didLinkNSync = true
                         break
                     } catch {
                         currentError = error
@@ -317,22 +329,46 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             )
         }
 
-        return await performNecessarySyncsAndRestores(
-            authedDevice: authedDevice
-        )
+        if let postLinkNSyncProgress {
+            return await postLinkNSyncProgress.updatePeriodically(
+                timeInterval: 0.1,
+                estimatedTimeToCompletion: 5,
+                work: {
+                    return await self.performNecessarySyncsAndRestores(
+                        authedDevice: authedDevice,
+                        didLinkNSync: didLinkNSync
+                    )
+                }
+            )
+        } else {
+            return await performNecessarySyncsAndRestores(
+                authedDevice: authedDevice,
+                didLinkNSync: didLinkNSync
+            )
+        }
     }
 
     private func performNecessarySyncsAndRestores(
-        authedDevice: AuthedDevice
+        authedDevice: AuthedDevice,
+        didLinkNSync: Bool
     ) async -> CompleteProvisioningResult {
         async let storageServiceRestore: Void = self.performInitialStorageServiceRestore(
             authedDevice: authedDevice
         )
-        async let contactSync: Void = self.performInitialContactSync()
-        do {
-            _ = try await (storageServiceRestore, contactSync)
-        } catch {
-            return .genericError(error)
+        if didLinkNSync {
+            // Because link'n'sync gives us basic contact info, we don't
+            // block on a contact sync after doing one. We still do the
+            // contact sync in the background to get contact avatars.
+            Task {
+                try await performInitialContactSync()
+            }
+        } else {
+            async let contactSync: Void = self.performInitialContactSync()
+            do {
+                _ = try await (storageServiceRestore, contactSync)
+            } catch {
+                return .genericError(error)
+            }
         }
         return .success
     }

@@ -86,7 +86,9 @@ public struct MessageBackupImportProgress {
             owsFailDebug("How did we get such a huge byte length?")
             return
         }
-        progressSource.incrementCompletedUnitCount(by: byteLength)
+        if byteLength > 0 {
+            progressSource.incrementCompletedUnitCount(by: byteLength)
+        }
     }
 
     public func didFinishImport() {

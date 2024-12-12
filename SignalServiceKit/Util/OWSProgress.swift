@@ -138,7 +138,7 @@ extension OWSProgressSource {
     /// on the current source periodically (every ``timeInterval`` seconds)
     /// until the work block completes.
     /// Returns with the result of the work block when it completes.
-    func updatePeriodically<T, E>(
+    public func updatePeriodically<T, E>(
         timeInterval: TimeInterval = 0.1,
         estimatedTimeToCompletion: TimeInterval,
         work: @escaping () async throws(E) -> T
