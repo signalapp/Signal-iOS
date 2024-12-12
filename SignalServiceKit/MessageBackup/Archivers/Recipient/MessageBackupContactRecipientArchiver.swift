@@ -599,7 +599,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 identityKey = try IdentityKey(publicKey: PublicKey(contactProto.identityKey))
                     // 'keyBytes', which drops the keyType prefix
                     .publicKey.keyBytes.asData
-            } catch let error {
+            } catch {
                 return .failure([.restoreFrameError(.invalidProtoData(.invalidContactIdentityKey), recipientProto.recipientId)])
             }
 

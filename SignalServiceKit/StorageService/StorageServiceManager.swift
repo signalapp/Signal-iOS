@@ -1263,13 +1263,13 @@ class StorageServiceOperation {
                 return builder.buildInfallibly()
             }()
 
-            if let stillConflictingManifestVersion = try await createNewManifestAndSaveState(
+            if try await createNewManifestAndSaveState(
                 manifest,
                 state: &state,
                 newItems: allItems,
                 deletedIdentifiers: [],
                 deleteAllExistingRecords: true
-            ) {
+            ) != nil {
                 owsFailDebug("Repeated conflicts trying to create a new manifest; giving up. What's going on?")
                 throw .assertion
             }
