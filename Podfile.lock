@@ -33,10 +33,10 @@ PODS:
   - SignalRingRTC (2.49.0):
     - SignalRingRTC/WebRTC (= 2.49.0)
   - SignalRingRTC/WebRTC (2.49.0)
-  - SQLCipher (4.6.0):
-    - SQLCipher/standard (= 4.6.0)
-  - SQLCipher/common (4.6.0)
-  - SQLCipher/standard (4.6.0):
+  - SQLCipher (4.6.1):
+    - SQLCipher/standard (= 4.6.1)
+  - SQLCipher/common (4.6.1)
+  - SQLCipher/standard (4.6.1):
     - SQLCipher/common
   - SwiftProtobuf (1.28.2)
   - YYImage (1.0.4):
@@ -62,7 +62,7 @@ DEPENDENCIES:
   - PureLayout
   - Reachability
   - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.49.0`)
-  - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.6.0-f_barrierfsync`)
+  - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.6.1-f_barrierfsync`)
   - SwiftProtobuf (= 1.28.2)
   - YYImage (from `https://github.com/signalapp/YYImage`)
   - YYImage/libwebp (from `https://github.com/signalapp/YYImage`)
@@ -104,7 +104,7 @@ EXTERNAL SOURCES:
     :tag: v2.49.0
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
-    :tag: v4.6.0-f_barrierfsync
+    :tag: v4.6.1-f_barrierfsync
   YYImage:
     :git: https://github.com/signalapp/YYImage
 
@@ -133,7 +133,7 @@ CHECKOUT OPTIONS:
     :tag: v2.49.0
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
-    :tag: v4.6.0-f_barrierfsync
+    :tag: v4.6.1-f_barrierfsync
   YYImage:
     :commit: 62a4cede20bcf31da73d18163408e46a92f171c6
     :git: https://github.com/signalapp/YYImage
@@ -154,10 +154,10 @@ SPEC CHECKSUMS:
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
   SignalRingRTC: a1c7cbc6506b81b871aa53da1782f49efea54d56
-  SQLCipher: 30a8e81afa6128e600b17ffa77d0f92fa05ed208
+  SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
   SwiftProtobuf: 4dbaffec76a39a8dc5da23b40af1a5dc01a4c02d
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: e13686905f939eb7888ad1d66d7575612492a646
+PODFILE CHECKSUM: 2a8adc732af95facf97ea0ca98c3b55de7a64d21
 
 COCOAPODS: 1.15.2
