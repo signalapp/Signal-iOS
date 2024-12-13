@@ -153,19 +153,15 @@ public struct AttachmentUpload {
                 attempt.logger.warn("Encountered error during upload. ")
             }
 
+            let didUploadMakeProgress = internalProgress.completedUnitCount > bytesAlreadyUploaded
             var failureMode: Upload.FailureMode = .noMoreRetries
             if case Upload.Error.uploadFailure(let retryMode) = error {
                 // if a failure mode was passed back
                 failureMode = retryMode
             } else {
-                if internalProgress.completedUnitCount > bytesAlreadyUploaded {
-                    // progress was made, so don't backoff
-                    failureMode = .resume(.immediately)
-                } else {
-                    // if this isn't an understood error, map into a failure mode
-                    let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count + 1)
-                    failureMode = .resume(.afterDelay(backoff))
-                }
+                // if this isn't an understood error, map into a failure mode
+                let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count)
+                failureMode = .resume(.afterDelay(backoff))
             }
 
             switch failureMode {
@@ -187,7 +183,9 @@ public struct AttachmentUpload {
             }
 
             attempt.logger.info("Resuming upload.")
-            try await performResumableUpload(attempt: attempt, count: count + 1, progress: progress)
+            // Reset the attempt count to 0 as long as progress was made.
+            let nextAttemptCount = didUploadMakeProgress ? 0 : count + 1
+            try await performResumableUpload(attempt: attempt, count: nextAttemptCount, progress: progress)
         }
     }
 
