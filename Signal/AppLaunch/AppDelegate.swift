@@ -298,8 +298,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // Show LoadingViewController until the database migrations are complete.
-        let window = initializeWindow(mainAppContext: mainAppContext, rootViewController: LoadingViewController())
-        self.launchApp(in: window, launchContext: launchContext)
+        let progress = Progress(totalUnitCount: 1)
+        let loadingViewController = LoadingViewController()
+        loadingViewController.progress = progress
+
+        let window = initializeWindow(mainAppContext: mainAppContext, rootViewController: loadingViewController)
+        self.launchApp(in: window, launchContext: launchContext, tsAttachmentMigrationProgress: progress)
         return true
     }
 
@@ -323,12 +327,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func launchApp(
         in window: UIWindow,
-        launchContext: LaunchContext
+        launchContext: LaunchContext,
+        tsAttachmentMigrationProgress: Progress?
     ) {
         assert(window.rootViewController is LoadingViewController)
         configureGlobalUI(in: window)
         setUpMainAppEnvironment(
-            launchContext: launchContext
+            launchContext: launchContext,
+            tsAttachmentMigrationProgress: tsAttachmentMigrationProgress
         ).done(on: DispatchQueue.main) { (finalContinuation, sleepBlockObject) in
             self.didLoadDatabase(
                 finalContinuation: finalContinuation,
@@ -349,7 +355,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         screenLockUI.startObserving()
     }
 
-    private func setUpMainAppEnvironment(launchContext: LaunchContext) -> Guarantee<(AppSetup.FinalContinuation, DeviceSleepManager.BlockObject)> {
+    private func setUpMainAppEnvironment(
+        launchContext: LaunchContext,
+        tsAttachmentMigrationProgress: Progress? = nil
+    ) -> Guarantee<(AppSetup.FinalContinuation, DeviceSleepManager.BlockObject)> {
         let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "app launch")
         DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
 
@@ -388,7 +397,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager
             )
         )
-        let result = databaseContinuation.prepareDatabase()
+        let result = databaseContinuation.prepareDatabase(
+            tsAttachmentMigrationProgress: tsAttachmentMigrationProgress
+        )
         return result.map(on: SyncScheduler()) { ($0, sleepBlockObject) }
     }
 
@@ -950,7 +961,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             setupSskEnvironment: { databaseStorage in
                 firstly(on: DispatchQueue.main) {
                     launchContext.databaseStorage = databaseStorage
-                    return self.setUpMainAppEnvironment(launchContext: launchContext)
+                    return self.setUpMainAppEnvironment(
+                        launchContext: launchContext
+                    )
                 }
             },
             launchApp: { (finalContinuation, sleepBlockObject) in
@@ -1037,8 +1050,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         func ignoreErrorAndLaunchApp(in window: UIWindow, launchContext: LaunchContext) {
             // Pretend we didn't fail!
             self.didAppLaunchFail = false
-            window.rootViewController = LoadingViewController()
-            self.launchApp(in: window, launchContext: launchContext)
+            let progress = Progress()
+            let loadingViewController = LoadingViewController()
+            loadingViewController.progress = progress
+            window.rootViewController = loadingViewController
+            self.launchApp(in: window, launchContext: launchContext, tsAttachmentMigrationProgress: progress)
         }
 
         for action in actions {
