@@ -73,7 +73,7 @@ public struct OWSCountryMetadata {
         OWSCountryMetadata(name: "Cook Islands", frontingDomain: nil, countryCode: "CK"),
         OWSCountryMetadata(name: "Chile", frontingDomain: nil, countryCode: "CL"),
         OWSCountryMetadata(name: "Cameroon", frontingDomain: nil, countryCode: "CM"),
-        OWSCountryMetadata(name: "China", frontingDomain: nil, countryCode: "CN"),
+        OWSCountryMetadata(name: "China", frontingDomain: .fastly, countryCode: "CN"),
         OWSCountryMetadata(name: "Colombia", frontingDomain: nil, countryCode: "CO"),
         OWSCountryMetadata(name: "Costa Rica", frontingDomain: nil, countryCode: "CR"),
         OWSCountryMetadata(name: "Cuba", frontingDomain: .fastly, countryCode: "CU"),
