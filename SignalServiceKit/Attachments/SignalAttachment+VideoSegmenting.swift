@@ -22,15 +22,12 @@ extension SignalAttachment {
     /// If the attachment is a video longer than `storyVideoSegmentMaxDuration`,
     /// segments into separate attachments under that duration.
     /// Otherwise returns a result with only the original and nil segmented attachments.
-    public func segmentedIfNecessary(
-        on queue: DispatchQueue,
-        segmentDuration: TimeInterval
-    ) -> Promise<SegmentAttachmentResult> {
-        owsAssertDebug(!Thread.isMainThread)
+    public func segmentedIfNecessary(segmentDuration: TimeInterval) async throws -> SegmentAttachmentResult {
+        guard isVideo else {
+            return .init(self, segmented: nil)
+        }
 
-        guard isVideo else { return .value(.init(self, segmented: nil)) }
-
-        // Write to disk  so we can edit with AVKit
+        // Write to disk so we can edit with AVKit
         guard
             let url = dataSource.dataUrl,
             url.isFileURL
@@ -38,7 +35,7 @@ extension SignalAttachment {
             // Nil URL means failure to write to disk.
             // This should almost never happens, but if it does we have to fail
             // because we don't know if the video is too long to send.
-            return .init(error: OWSAssertionError("Failed to write video to disk for segmentation"))
+            throw OWSAssertionError("Failed to write video to disk for segmentation")
         }
 
         let asset = AVURLAsset(url: url)
@@ -46,15 +43,15 @@ extension SignalAttachment {
         let duration = cmDuration.seconds
         guard duration > segmentDuration else {
             // No need to segment, we are done.
-            return .value(.init(self, segmented: nil))
+            return .init(self, segmented: nil)
         }
 
         let dataUTI = self.dataUTI
 
         var startTime: TimeInterval = 0
-        var segmentFilePromises = [Promise<URL>]()
+        var segmentFileUrls = [URL]()
         while startTime < duration {
-            segmentFilePromises.append(Self.trimAsset(
+            segmentFileUrls.append(try await Self.trimAsset(
                 asset,
                 from: startTime,
                 duration: segmentDuration,
@@ -62,19 +59,16 @@ extension SignalAttachment {
             ))
             startTime += segmentDuration
         }
-        return Promise.when(fulfilled: segmentFilePromises)
-            .map(on: queue) { (urls: [URL]) -> SegmentAttachmentResult in
-                let segments = try urls.map { url in
-                    return SignalAttachment.attachment(
-                        dataSource: try DataSourcePath(
-                            fileUrl: url,
-                            shouldDeleteOnDeallocation: true
-                        ),
-                        dataUTI: dataUTI
-                    )
-                }
-                return .init(self, segmented: segments)
-            }
+        let segments = try segmentFileUrls.map { url in
+            return SignalAttachment.attachment(
+                dataSource: try DataSourcePath(
+                    fileUrl: url,
+                    shouldDeleteOnDeallocation: true
+                ),
+                dataUTI: dataUTI
+            )
+        }
+        return .init(self, segmented: segments)
     }
 
     fileprivate static func trimAsset(
@@ -82,9 +76,9 @@ extension SignalAttachment {
         from startTime: TimeInterval,
         duration: TimeInterval,
         totalDuration: CMTime
-    ) -> Promise<URL> {
+    ) async throws -> URL {
         guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
-            return .init(error: OWSAssertionError("Failed to start export session for segmentation"))
+            throw OWSAssertionError("Failed to start export session for segmentation")
         }
 
         // tmp url is ok, it gets moved when converted to a Attachment later anyway.
@@ -103,17 +97,17 @@ extension SignalAttachment {
         let cmEnd = CMTime(seconds: endTime, preferredTimescale: totalDuration.timescale)
         exportSession.timeRange = CMTimeRange(start: cmStart, end: cmEnd)
 
-        return Promise { future in
-            exportSession.exportAsynchronously {
-                switch exportSession.status {
-                case .completed:
-                    future.resolve(outputUrl)
-                case .cancelled, .failed:
-                    future.reject(OWSAssertionError("Video segmentation export session failed"))
-                default:
-                    future.reject(OWSAssertionError("Video segmentation failed with unknown status: \(exportSession.status)"))
-                }
-            }
+        await exportSession.export()
+
+        switch exportSession.status {
+        case .completed:
+            return outputUrl
+        case .cancelled, .failed:
+            throw OWSAssertionError("Video segmentation export session failed")
+        case .unknown, .waiting, .exporting:
+            fallthrough
+        @unknown default:
+            throw OWSAssertionError("Video segmentation failed with unknown status: \(exportSession.status)")
         }
     }
 }

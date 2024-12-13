@@ -258,8 +258,7 @@ public class AttachmentMultisend {
             for (index, attachment) in approvedAttachments.enumerated() {
                 taskGroup.addTask(operation: {
                     let segmentingResult = try await attachment.preparedForOutput(qualityLevel: qualityLevel)
-                        .segmentedIfNecessary(on: ThreadUtil.enqueueSendQueue, segmentDuration: requiredSegmentDuration)
-                        .awaitable()
+                        .segmentedIfNecessary(segmentDuration: requiredSegmentDuration)
 
                     let originalDataSource: AttachmentDataSource?
                     if hasNonStoryDestination || segmentingResult.segmented == nil {
