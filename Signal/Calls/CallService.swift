@@ -1075,7 +1075,6 @@ private extension LocalDeviceState {
 extension CallService: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        AssertIsOnMainThread()
         owsAssertDebug(appReadiness.isAppReady)
 
         switch callServiceState.currentCall?.mode {
@@ -1089,14 +1088,12 @@ extension CallService: DatabaseChangeDelegate {
     }
 
     public func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
         owsAssertDebug(appReadiness.isAppReady)
 
         updateGroupMembersForCurrentCallIfNecessary()
     }
 
     public func databaseChangesDidReset() {
-        AssertIsOnMainThread()
         owsAssertDebug(appReadiness.isAppReady)
 
         updateGroupMembersForCurrentCallIfNecessary()

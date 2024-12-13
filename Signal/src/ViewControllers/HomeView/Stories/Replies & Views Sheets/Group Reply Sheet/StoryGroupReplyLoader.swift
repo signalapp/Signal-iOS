@@ -41,6 +41,7 @@ class StoryGroupReplyLoader {
         return container.contains(tableView.rectForRow(at: lastIndexPath))
     }
 
+    @MainActor
     init?(storyMessage: StoryMessage, threadUniqueId: String?, tableView: UITableView) {
         guard let threadUniqueId = threadUniqueId else {
             owsFailDebug("Unexpectedly missing threadUniqueId")

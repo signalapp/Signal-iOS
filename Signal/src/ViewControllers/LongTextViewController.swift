@@ -314,8 +314,6 @@ public class LongTextViewController: OWSViewController {
 extension LongTextViewController: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        AssertIsOnMainThread()
-
         guard databaseChanges.didUpdate(interaction: itemViewModel.interaction) else {
             return
         }
@@ -325,14 +323,10 @@ extension LongTextViewController: DatabaseChangeDelegate {
     }
 
     public func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
-
         refreshContent()
     }
 
     public func databaseChangesDidReset() {
-        AssertIsOnMainThread()
-
         refreshContent()
     }
 }

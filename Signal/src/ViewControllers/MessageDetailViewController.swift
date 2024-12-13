@@ -819,8 +819,6 @@ extension MediaPresentationContext {
 extension MessageDetailViewController: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        AssertIsOnMainThread()
-
         guard databaseChanges.didUpdate(interaction: self.message) else {
             return
         }
@@ -829,14 +827,10 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
     }
 
     public func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
-
         refreshContentForDatabaseUpdate()
     }
 
     public func databaseChangesDidReset() {
-        AssertIsOnMainThread()
-
         refreshContentForDatabaseUpdate()
     }
 

@@ -1126,8 +1126,6 @@ extension ConversationSettingsViewController: GroupPermissionsSettingsDelegate {
 extension ConversationSettingsViewController: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        AssertIsOnMainThread()
-
         if databaseChanges.didUpdate(tableName: TSGroupMember.databaseTableName) {
             updateMutualGroupThreads()
             updateTableContents()
@@ -1135,16 +1133,12 @@ extension ConversationSettingsViewController: DatabaseChangeDelegate {
     }
 
     public func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
-
         updateRecentAttachments()
         updateMutualGroupThreads()
         updateTableContents()
     }
 
     public func databaseChangesDidReset() {
-        AssertIsOnMainThread()
-
         updateRecentAttachments()
         updateMutualGroupThreads()
         updateTableContents()

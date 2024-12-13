@@ -701,8 +701,6 @@ class EmptySearchResultCell: UITableViewCell {
 extension ConversationSearchViewController: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        AssertIsOnMainThread()
-
         guard databaseChanges.didUpdateThreads || databaseChanges.didUpdateInteractions else {
             return
         }
@@ -711,14 +709,10 @@ extension ConversationSearchViewController: DatabaseChangeDelegate {
     }
 
     public func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
-
         refreshSearchResults()
     }
 
     public func databaseChangesDidReset() {
-        AssertIsOnMainThread()
-
         refreshSearchResults()
     }
 }

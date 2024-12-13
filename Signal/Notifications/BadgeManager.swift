@@ -101,6 +101,7 @@ public class BadgeManager {
         fetchBadgeValueIfNeeded()
     }
 
+    @MainActor
     public func startObservingChanges(in databaseChangeObserver: DatabaseChangeObserver) {
         databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }

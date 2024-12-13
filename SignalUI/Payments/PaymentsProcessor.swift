@@ -235,7 +235,6 @@ public class PaymentsProcessor: NSObject {
 extension PaymentsProcessor: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        AssertIsOnMainThread()
         owsAssertDebug(appReadiness.isAppReady)
 
         guard databaseChanges.didUpdate(tableName: TSPaymentModel.table.tableName) else {
@@ -246,14 +245,12 @@ extension PaymentsProcessor: DatabaseChangeDelegate {
     }
 
     public func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
         owsAssertDebug(appReadiness.isAppReady)
 
         process()
     }
 
     public func databaseChangesDidReset() {
-        AssertIsOnMainThread()
         owsAssertDebug(appReadiness.isAppReady)
 
         process()

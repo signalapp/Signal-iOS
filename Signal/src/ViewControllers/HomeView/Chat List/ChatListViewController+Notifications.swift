@@ -240,8 +240,6 @@ extension ChatListViewController {
 extension ChatListViewController: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        AssertIsOnMainThread()
-
         if databaseChanges.didUpdate(tableName: TSPaymentModel.table.tableName) {
             updateUnreadPaymentNotificationsCountWithSneakyTransaction()
         }
@@ -252,8 +250,6 @@ extension ChatListViewController: DatabaseChangeDelegate {
     }
 
     public func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
-
         // External database modifications can't be converted into incremental updates,
         // so rebuild everything.  This is expensive and usually isn't necessary, but
         // there's no alternative.
@@ -261,8 +257,6 @@ extension ChatListViewController: DatabaseChangeDelegate {
     }
 
     public func databaseChangesDidReset() {
-        AssertIsOnMainThread()
-
         // This should only happen if we need to recover from an error in the
         // database change observation pipeline.  This should never occur,
         // but when it does we need to rebuild everything.  This is expensive,

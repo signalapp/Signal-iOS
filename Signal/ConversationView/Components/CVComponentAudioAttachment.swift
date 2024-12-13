@@ -23,7 +23,12 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
         super.init(itemModel: itemModel)
 
-        DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            // TODO: This type isn't well-equipped to implement this logic.
+            DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
+            self.checkIfMessageStillExists()
+        }
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
@@ -140,14 +145,18 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
     /// Checks if the message still exists and stops playback if it does not.
     private func checkIfMessageStillExists() {
+        guard AppEnvironment.shared.cvAudioPlayerRef.audioPlaybackState(forAttachmentId: attachment.id) == .playing else {
+            return
+        }
+
         let messageWasDeleted = SSKEnvironment.shared.databaseStorageRef.read { tx in
             TSInteraction.anyFetch(uniqueId: interaction.uniqueId, transaction: tx) == nil
         }
-
-        if messageWasDeleted,
-           AppEnvironment.shared.cvAudioPlayerRef.audioPlaybackState(forAttachmentId: attachment.id) == .playing {
-            AppEnvironment.shared.cvAudioPlayerRef.stopAll()
+        guard messageWasDeleted else {
+            return
         }
+
+        AppEnvironment.shared.cvAudioPlayerRef.stopAll()
     }
 
     // MARK: - Events

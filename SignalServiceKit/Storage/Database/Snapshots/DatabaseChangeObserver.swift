@@ -7,8 +7,11 @@ import Foundation
 public import GRDB
 
 public protocol DatabaseChangeDelegate: AnyObject {
+    @MainActor
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges)
+    @MainActor
     func databaseChangesDidUpdateExternally()
+    @MainActor
     func databaseChangesDidReset()
 }
 
@@ -50,6 +53,7 @@ public protocol DatabaseChangeObserver {
     /// Disable generic change observer events during a block that occurs within a write transaction.
     func disable<T>(tx: DBWriteTransaction, during: (DBWriteTransaction) throws -> T) rethrows -> T
 
+    @MainActor
     func appendDatabaseChangeDelegate(_ databaseChangeDelegate: DatabaseChangeDelegate)
 
 #if TESTABLE_BUILD
@@ -104,17 +108,19 @@ public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
         }
     }
 
+    @MainActor
     private var _databaseChangeDelegates: [Weak<DatabaseChangeDelegate>] = []
-    private var databaseChangeDelegates: [DatabaseChangeDelegate] {
-        return _databaseChangeDelegates.compactMap { $0.value }
+
+    @MainActor
+    private func fetchAndPruneDatabaseChangeDelegates() -> [DatabaseChangeDelegate] {
+        _databaseChangeDelegates.removeAll(where: { $0.value == nil })
+        return _databaseChangeDelegates.compactMap(\.value)
     }
 
+    @MainActor
     public func appendDatabaseChangeDelegate(_ databaseChangeDelegate: DatabaseChangeDelegate) {
         let append = { [weak self] in
-            guard let self = self else {
-                return
-            }
-            self._databaseChangeDelegates = self._databaseChangeDelegates.filter { $0.value != nil} + [Weak(value: databaseChangeDelegate)]
+            _ = self?._databaseChangeDelegates.append(Weak(value: databaseChangeDelegate))
         }
         if CurrentAppContext().isRunningTests {
             append()
@@ -287,7 +293,8 @@ public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
     }
 
     @objc
-    func displayLinkDidFire() {
+    @MainActor
+    private func displayLinkDidFire() {
         AssertIsOnMainThread()
 
         recentDisplayLinkDates.append(Date())
@@ -302,28 +309,25 @@ public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
         ensureDisplayLink()
     }
 
+    @MainActor
     private lazy var didUpdateExternallyEvent: DebouncedEvent = {
-        AssertIsOnMainThread()
-
-        return DebouncedEvents.build(mode: .firstLast,
-                                     maxFrequencySeconds: 3.0,
-                                     onQueue: .asyncOnQueue(queue: .main)) { [weak self] in
-            guard let self = self else { return }
-            self.fireDidUpdateExternally()
-        }
+        return DebouncedEvents.build(
+            mode: .firstLast,
+            maxFrequencySeconds: 3.0,
+            onQueue: .asyncOnQueue(queue: .main),
+            notifyBlock: { [weak self] in self?.fireDidUpdateExternally() }
+        )
     }()
 
     @objc
-    func didReceiveCrossProcessNotification(_ notification: Notification) {
-        AssertIsOnMainThread()
-
+    @MainActor
+    private func didReceiveCrossProcessNotification(_ notification: Notification) {
         didUpdateExternallyEvent.requestNotify()
     }
 
+    @MainActor
     private func fireDidUpdateExternally() {
-        AssertIsOnMainThread()
-
-        for delegate in databaseChangeDelegates {
+        for delegate in fetchAndPruneDatabaseChangeDelegates() {
             delegate.databaseChangesDidUpdateExternally()
         }
     }
@@ -515,9 +519,8 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
     }
 
     // See comment on databaseDidChange.
+    @MainActor
     private func publishUpdatesIfNecessary() {
-        AssertIsOnMainThread()
-
         switch DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction {
         case .transferringIncoming, .transferringLinkedOutgoing, .transferringPrimaryOutgoing:
             Logger.info("Skipping publishing of updates; transfer in progress.")
@@ -603,9 +606,8 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
 
     // "Updating" entails publishing pending database changes to database change observers.
     // See comment on databaseDidChange.
+    @MainActor
     private func publishUpdates() {
-        AssertIsOnMainThread()
-
         let committedChanges = Self.committedChangesLock.withLock { () -> DatabaseChangesSnapshot in
             // Return the current committedChanges.
             let committedChanges = self.committedChanges
@@ -633,11 +635,11 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
             default:
                 owsFailDebug("unknown error: \(lastError)")
             }
-            for delegate in self.databaseChangeDelegates {
+            for delegate in fetchAndPruneDatabaseChangeDelegates() {
                 delegate.databaseChangesDidReset()
             }
         } else {
-            for delegate in databaseChangeDelegates {
+            for delegate in fetchAndPruneDatabaseChangeDelegates() {
                 delegate.databaseChangesDidUpdate(databaseChanges: committedChanges)
             }
         }

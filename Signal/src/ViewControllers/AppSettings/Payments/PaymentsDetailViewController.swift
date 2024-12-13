@@ -510,8 +510,6 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 extension PaymentsDetailViewController: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        AssertIsOnMainThread()
-
         guard databaseChanges.didUpdate(tableName: TSPaymentModel.table.tableName) else {
             return
         }
@@ -520,14 +518,10 @@ extension PaymentsDetailViewController: DatabaseChangeDelegate {
     }
 
     public func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
-
         updateItem()
     }
 
     public func databaseChangesDidReset() {
-        AssertIsOnMainThread()
-
         updateItem()
     }
 }

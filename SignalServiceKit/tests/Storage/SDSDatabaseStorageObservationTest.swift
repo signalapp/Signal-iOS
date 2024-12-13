@@ -22,21 +22,15 @@ class MockObserver: DatabaseChangeDelegate {
     }
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        AssertIsOnMainThread()
-
         updateCount += 1
         lastChange = databaseChanges
     }
 
     func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
-
         externalUpdateCount += 1
     }
 
     func databaseChangesDidReset() {
-        AssertIsOnMainThread()
-
         resetCount += 1
     }
 }
@@ -44,6 +38,7 @@ class MockObserver: DatabaseChangeDelegate {
 // MARK: -
 
 class SDSDatabaseStorageObservationTest: SSKBaseTest {
+    @MainActor
     func testGRDBSyncWrite() {
         // Make sure there's already at least one thread.
         let someThread = self.write { transaction in

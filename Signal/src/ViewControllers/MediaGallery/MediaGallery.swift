@@ -314,6 +314,7 @@ class MediaGallery {
         Logger.debug("")
     }
 
+    @MainActor
     init(thread: TSThread, mediaCategory: AllMediaCategory, spoilerState: SpoilerRenderState) {
         self.thread = thread
         mediaFilter = AllMediaFilter.defaultMediaType(for: mediaCategory)

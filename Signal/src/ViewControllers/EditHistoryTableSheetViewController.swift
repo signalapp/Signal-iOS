@@ -265,8 +265,6 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
 extension EditHistoryTableSheetViewController: DatabaseChangeDelegate {
     func databaseChangesDidUpdate(databaseChanges: SignalServiceKit.DatabaseChanges) {
-        AssertIsOnMainThread()
-
         guard databaseChanges.didUpdate(interaction: self.message) else {
             return
         }
@@ -275,14 +273,10 @@ extension EditHistoryTableSheetViewController: DatabaseChangeDelegate {
     }
 
     func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
-
         updateTableContents()
     }
 
     func databaseChangesDidReset() {
-        AssertIsOnMainThread()
-
         updateTableContents()
     }
 }

@@ -250,6 +250,7 @@ class StoryListDataSource: NSObject {
 
     // MARK: - Database Observation
 
+    @MainActor
     public func beginObservingDatabase() {
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
         SSKEnvironment.shared.systemStoryManagerRef.addStateChangedObserver(self)

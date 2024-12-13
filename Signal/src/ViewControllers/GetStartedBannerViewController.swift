@@ -351,19 +351,16 @@ extension GetStartedBannerViewController {
 extension GetStartedBannerViewController: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        AssertIsOnMainThread()
         if databaseChanges.didUpdateThreads {
             updateContent()
         }
     }
 
     public func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
         updateContent()
     }
 
     public func databaseChangesDidReset() {
-        AssertIsOnMainThread()
         updateContent()
     }
 

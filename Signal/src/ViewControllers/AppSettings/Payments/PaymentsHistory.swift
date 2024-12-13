@@ -18,6 +18,7 @@ protocol PaymentsHistoryDataSourceDelegate: AnyObject {
 
 // MARK: -
 
+@MainActor
 class PaymentsHistoryDataSource {
 
     public enum RecordType: Int, CustomStringConvertible {
@@ -137,8 +138,6 @@ class PaymentsHistoryDataSource {
 extension PaymentsHistoryDataSource: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        AssertIsOnMainThread()
-
         guard databaseChanges.didUpdate(tableName: TSPaymentModel.table.tableName) else {
             return
         }
@@ -147,14 +146,10 @@ extension PaymentsHistoryDataSource: DatabaseChangeDelegate {
     }
 
     public func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
-
         updateContent()
     }
 
     public func databaseChangesDidReset() {
-        AssertIsOnMainThread()
-
         updateContent()
     }
 }

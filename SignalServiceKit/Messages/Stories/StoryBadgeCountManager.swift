@@ -12,6 +12,7 @@ public protocol StoryBadgeCountObserver: AnyObject {
     func didUpdateStoryBadge(_ badge: String?)
 }
 
+@MainActor
 public class StoryBadgeCountManager: NSObject {
 
     private weak var observer: StoryBadgeCountObserver?

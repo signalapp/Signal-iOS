@@ -9,6 +9,7 @@ import SignalUI
 
 protocol LinkDeviceViewControllerDelegate: AnyObject {
     typealias LinkNSyncData = (ephemeralBackupKey: BackupKey, tokenId: DeviceProvisioningTokenId)
+    @MainActor
     func didFinishLinking(_ linkNSyncData: LinkNSyncData?, from linkDeviceViewController: LinkDeviceViewController)
 }
 

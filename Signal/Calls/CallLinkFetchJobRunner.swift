@@ -80,17 +80,21 @@ actor CallLinkFetchJobRunner: DatabaseChangeDelegate {
 
     // MARK: - DatabaseChangeDelegate
 
-    nonisolated func observeDatabase(_ databaseChangeObserver: DatabaseChangeObserver) {
+    @MainActor
+    func observeDatabase(_ databaseChangeObserver: DatabaseChangeObserver) {
         databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
-    nonisolated func databaseChangesDidReset() {}
+    @MainActor
+    func databaseChangesDidReset() {}
 
-    nonisolated func databaseChangesDidUpdateExternally() {
+    @MainActor
+    func databaseChangesDidUpdateExternally() {
         setMightHavePendingFetchAndFetch()
     }
 
-    nonisolated func databaseChangesDidUpdate(databaseChanges: any DatabaseChanges) {
+    @MainActor
+    func databaseChangesDidUpdate(databaseChanges: any DatabaseChanges) {
         guard databaseChanges.didUpdate(tableName: CallLinkRecord.databaseTableName) else {
             return
         }

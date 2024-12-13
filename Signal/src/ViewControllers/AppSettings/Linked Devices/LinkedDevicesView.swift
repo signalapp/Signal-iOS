@@ -15,6 +15,7 @@ private var shouldShowDeviceIdsBecauseUserIsInternal: Bool { DebugFlags.internal
 
 // MARK: - LinkedDevicesViewModel
 
+@MainActor
 class LinkedDevicesViewModel: ObservableObject {
 
     @Published fileprivate var editMode: EditMode = .inactive
@@ -75,7 +76,6 @@ class LinkedDevicesViewModel: ObservableObject {
         databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
-    @MainActor
     func refreshDevices() async {
         if displayableDevices.isEmpty {
             self.isLoading = true
@@ -252,8 +252,6 @@ class LinkedDevicesViewModel: ObservableObject {
 
 extension LinkedDevicesViewModel: DatabaseChangeDelegate {
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        AssertIsOnMainThread()
-
         guard databaseChanges.didUpdate(tableName: OWSDevice.databaseTableName) else {
             return
         }
@@ -262,14 +260,10 @@ extension LinkedDevicesViewModel: DatabaseChangeDelegate {
     }
 
     func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
-
         updateDeviceList()
     }
 
     func databaseChangesDidReset() {
-        AssertIsOnMainThread()
-
         updateDeviceList()
     }
 }
@@ -323,20 +317,20 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
     }
 
     private func expectMoreDevices() {
-        AssertIsOnMainThread()
-
         newDeviceExpectation = .link
         editMode = .inactive
 
         pollingRefreshTimer?.invalidate()
         pollingRefreshTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] timer in
-            guard let self, self.newDeviceExpectation != nil else {
-                timer.invalidate()
-                return
-            }
+            MainActor.assumeIsolated {
+                guard let self, self.newDeviceExpectation != nil else {
+                    timer.invalidate()
+                    return
+                }
 
-            Task {
-                await self.refreshDevices()
+                Task {
+                    await self.refreshDevices()
+                }
             }
         }
     }

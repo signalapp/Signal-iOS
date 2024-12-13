@@ -110,9 +110,8 @@ public class CVLoadCoordinator: NSObject {
         super.init()
     }
 
-    func configure(delegate: CVLoadCoordinatorDelegate,
-                   componentDelegate: CVComponentDelegate,
-                   focusMessageIdOnOpen: String?) {
+    @MainActor
+    func configure(delegate: CVLoadCoordinatorDelegate, componentDelegate: CVComponentDelegate, focusMessageIdOnOpen: String?) {
         self.delegate = delegate
         self.componentDelegate = componentDelegate
 
@@ -582,8 +581,6 @@ public class CVLoadCoordinator: NSObject {
 extension CVLoadCoordinator: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        AssertIsOnMainThread()
-
         guard databaseChanges.threadUniqueIds.contains(threadUniqueId) else {
             return
         }
@@ -592,14 +589,10 @@ extension CVLoadCoordinator: DatabaseChangeDelegate {
     }
 
     public func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
-
         enqueueReloadWithoutCaches()
     }
 
     public func databaseChangesDidReset() {
-        AssertIsOnMainThread()
-
         enqueueReloadWithoutCaches()
     }
 }

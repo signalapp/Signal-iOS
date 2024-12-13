@@ -282,20 +282,14 @@ class ViewOnceMessageViewController: OWSViewController {
 extension ViewOnceMessageViewController: DatabaseChangeDelegate {
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        AssertIsOnMainThread()
-
         dismissIfRemoved()
     }
 
     func databaseChangesDidUpdateExternally() {
-        AssertIsOnMainThread()
-
         dismissIfRemoved()
     }
 
     func databaseChangesDidReset() {
-        AssertIsOnMainThread()
-
         dismissIfRemoved()
     }
 }
