@@ -1506,7 +1506,8 @@ extension AppSetup {
 extension AppSetup.DatabaseContinuation {
     public func prepareDatabase(
         backgroundScheduler: Scheduler = DispatchQueue.global(),
-        mainScheduler: Scheduler = DispatchQueue.main
+        mainScheduler: Scheduler = DispatchQueue.main,
+        tsAttachmentMigrationProgress: Progress? = nil
     ) -> Guarantee<AppSetup.FinalContinuation> {
         let databaseStorage = sskEnvironment.databaseStorageRef
 
@@ -1522,7 +1523,10 @@ extension AppSetup.DatabaseContinuation {
                     owsFailDebug("Failed to truncate database: \(error)")
                 }
             }
-            databaseStorage.runGrdbSchemaMigrationsOnMainDatabase(completionScheduler: mainScheduler) {
+            databaseStorage.runGrdbSchemaMigrationsOnMainDatabase(
+                completionScheduler: mainScheduler,
+                tsAttachmentMigrationProgress: tsAttachmentMigrationProgress
+            ) {
                 do {
                     try databaseStorage.grdbStorage.setupDatabaseChangeObserver()
                 } catch {

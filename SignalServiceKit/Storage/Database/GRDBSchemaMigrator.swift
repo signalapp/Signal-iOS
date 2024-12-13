@@ -6,6 +6,10 @@
 import Foundation
 import GRDB
 
+public enum TSAttachmentMigrationValues {
+    public static var numAttachmentsToMigrate: Int?
+}
+
 @objc
 public class GRDBSchemaMigrator: NSObject {
 
@@ -25,6 +29,7 @@ public class GRDBSchemaMigrator: NSObject {
     static func migrateDatabase(
         databaseStorage: SDSDatabaseStorage,
         isMainDatabase: Bool,
+        tsAttachmentMigrationProgress: Progress? = nil,
         runDataMigrations: Bool = true
     ) throws -> Bool {
         let didPerformIncrementalMigrations: Bool
@@ -39,6 +44,7 @@ public class GRDBSchemaMigrator: NSObject {
             do {
                 didPerformIncrementalMigrations = try runIncrementalMigrations(
                     databaseStorage: databaseStorage,
+                    tsAttachmentMigrationProgress: tsAttachmentMigrationProgress,
                     runDataMigrations: runDataMigrations
                 )
             } catch {
@@ -65,6 +71,7 @@ public class GRDBSchemaMigrator: NSObject {
 
     private static func runIncrementalMigrations(
         databaseStorage: SDSDatabaseStorage,
+        tsAttachmentMigrationProgress: Progress?,
         runDataMigrations: Bool
     ) throws -> Bool {
         let grdbStorageAdapter = databaseStorage.grdbStorage
@@ -76,7 +83,10 @@ public class GRDBSchemaMigrator: NSObject {
         // First do the schema migrations. (See the comment within MigrationId for why schema and data
         // migrations are separate.)
         let incrementalMigrator = DatabaseMigratorWrapper()
-        registerSchemaMigrations(migrator: incrementalMigrator)
+        registerSchemaMigrations(
+            migrator: incrementalMigrator,
+            tsAttachmentMigrationProgress: tsAttachmentMigrationProgress
+        )
         try incrementalMigrator.migrate(grdbStorageAdapter.pool)
 
         if runDataMigrations {
@@ -491,7 +501,10 @@ public class GRDBSchemaMigrator: NSObject {
         }
     }
 
-    private static func registerSchemaMigrations(migrator: DatabaseMigratorWrapper) {
+    private static func registerSchemaMigrations(
+        migrator: DatabaseMigratorWrapper,
+        tsAttachmentMigrationProgress: Progress?
+    ) {
 
         migrator.registerMigration(.createInitialSchema) { _ in
             owsFail("This migration should have already been run by the last YapDB migration.")
@@ -3714,7 +3727,27 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.tsMessageAttachmentMigration2) { tx in
-            TSAttachmentMigration.TSMessageMigration.completeBlockingTSMessageMigration(tx: tx)
+            tsAttachmentMigrationProgress?.becomeCurrent(withPendingUnitCount: 1)
+            defer {
+                tsAttachmentMigrationProgress?.resignCurrent()
+            }
+
+            let progress: Progress?
+            if tsAttachmentMigrationProgress != nil {
+                let numberOfRows = try Int.fetchOne(
+                    tx.database,
+                    sql: "SELECT COUNT(1) FROM TSAttachmentMigration;"
+                ) ?? 0
+                progress = Progress(totalUnitCount: Int64(numberOfRows))
+                TSAttachmentMigrationValues.numAttachmentsToMigrate = numberOfRows
+            } else {
+                progress = nil
+            }
+
+            TSAttachmentMigration.TSMessageMigration.completeBlockingTSMessageMigration(
+                progress: progress,
+                tx: tx
+            )
             return .success(())
         }
 

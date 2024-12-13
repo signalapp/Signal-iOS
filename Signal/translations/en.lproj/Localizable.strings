@@ -4138,6 +4138,9 @@
 /* Label below the progress bar when loading messages during linking process */
 "LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes depending on the size of your message history";
 
+/* Shown to users while the app is loading, asking them not to close the app. */
+"LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Do not close the app.";
+
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "In order to transfer your Signal account, you need to enable local network access on both devices.";
 

@@ -250,8 +250,11 @@ extension TSAttachmentMigration {
         // MARK: - Phase 3
 
         /// Phase 3 when applying as a blocking-on-launch GRDB migration.
-        static func completeBlockingTSMessageMigration(tx: GRDBWriteTransaction) {
-            _ = Self.completeTSMessageMigrationBatch(batchSize: nil, tx: tx)
+        static func completeBlockingTSMessageMigration(
+            progress: Progress?,
+            tx: GRDBWriteTransaction
+        ) {
+            _ = Self.completeTSMessageMigrationBatch(batchSize: nil, progress: progress, tx: tx)
         }
 
         /// Phase 3 when running as an iterative migration.
@@ -261,7 +264,7 @@ extension TSAttachmentMigration {
             batchSize: Int = 5,
             tx: GRDBWriteTransaction
         ) -> Bool {
-            let count = Self.completeTSMessageMigrationBatch(batchSize: batchSize, tx: tx)
+            let count = Self.completeTSMessageMigrationBatch(batchSize: batchSize, progress: nil, tx: tx)
             return count > 0
         }
 
@@ -389,6 +392,7 @@ extension TSAttachmentMigration {
         /// If a batch size is provided, prepares only that many prepared messages. Otherwise migares all prepared messages.
         private static func completeTSMessageMigrationBatch(
             batchSize: Int?,
+            progress: Progress?,
             tx: GRDBWriteTransaction
         ) -> Int {
             let isRunningIteratively = batchSize != nil
@@ -437,6 +441,7 @@ extension TSAttachmentMigration {
                         // The message got deleted. Still, count this in the batch
                         // size so we don't iterate over deleted rows unbounded.
                         migratedMessageRowIds[messageRowId] = true
+                        progress?.completedUnitCount += 1
                         reservedFileIds.cleanUpFiles()
                         return
                     }
@@ -459,6 +464,7 @@ extension TSAttachmentMigration {
                         isRunningIteratively: isRunningIteratively,
                         tx: tx
                     )
+                    progress?.completedUnitCount += Int64(deletedAttachmentsForMessage?.count ?? 0)
                     // No need to delete one by one if running non-iteratively;
                     // we nuke the whole migration table and attachment folder at the end.
                     if isRunningIteratively {
