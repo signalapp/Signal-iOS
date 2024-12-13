@@ -90,7 +90,9 @@ struct LinkAndSyncProvisioningProgressView: View {
                     "LINKING_SYNCING_FOOTER",
                     comment: "Footer text when loading messages during linking process."
                 ))
-                .appendLink(CommonStrings.learnMore, urlString: "https://support.signal.org/hc/articles/360007320551")
+                .appendLink(CommonStrings.learnMore) {
+                    UIApplication.shared.open(URL(string: "https://support.signal.org/hc/articles/360007320551")!)
+                }
                 .frame(maxWidth: 412)
             }
             .foregroundStyle(Color.Signal.secondaryLabel)

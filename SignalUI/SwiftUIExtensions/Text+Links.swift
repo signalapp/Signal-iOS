@@ -18,11 +18,6 @@ extension Text {
                 return .handled
             })
     }
-
-    public func appendLink(_ title: String, urlString: String) -> some View {
-        (self + Text(" [\(title)](\(urlString))"))
-            .tint(.Signal.accent)
-    }
 }
 
 #Preview {
@@ -30,7 +25,4 @@ extension Text {
         .appendLink(CommonStrings.learnMore) {
             print("Learn more")
         }
-
-    Text(verbatim: "Description text.")
-        .appendLink(CommonStrings.learnMore, urlString: "https://support.signal.org/")
 }
