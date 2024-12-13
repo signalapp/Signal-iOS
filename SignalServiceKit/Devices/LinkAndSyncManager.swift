@@ -110,6 +110,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private let db: any DB
     private let kvStore: KeyValueStore
     private let messageBackupManager: MessageBackupManager
+    private let messagePipelineSupervisor: MessagePipelineSupervisor
     private let networkManager: NetworkManager
     private let tsAccountManager: TSAccountManager
 
@@ -119,6 +120,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         attachmentUploadManager: AttachmentUploadManager,
         db: any DB,
         messageBackupManager: MessageBackupManager,
+        messagePipelineSupervisor: MessagePipelineSupervisor,
         networkManager: NetworkManager,
         tsAccountManager: TSAccountManager
     ) {
@@ -128,6 +130,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         self.db = db
         self.kvStore = KeyValueStore(collection: "LinkAndSyncManagerImpl")
         self.messageBackupManager = messageBackupManager
+        self.messagePipelineSupervisor = messagePipelineSupervisor
         self.networkManager = networkManager
         self.tsAccountManager = tsAccountManager
     }
@@ -165,7 +168,9 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         await MainActor.run {
             appContext.ensureSleepBlocking(true, blockingObjectsDescription: Constants.sleepBlockingDescription)
         }
+        let suspendHandler = messagePipelineSupervisor.suspendMessageProcessing(for: .linkNsync)
         defer {
+            suspendHandler.invalidate()
             Task { @MainActor in
                 appContext.ensureSleepBlocking(false, blockingObjectsDescription: Constants.sleepBlockingDescription)
             }

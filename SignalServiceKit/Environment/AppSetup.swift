@@ -1190,6 +1190,7 @@ public class AppSetup {
             attachmentUploadManager: attachmentUploadManager,
             db: db,
             messageBackupManager: messageBackupManager,
+            messagePipelineSupervisor: messagePipelineSupervisor,
             networkManager: networkManager,
             tsAccountManager: tsAccountManager
         )

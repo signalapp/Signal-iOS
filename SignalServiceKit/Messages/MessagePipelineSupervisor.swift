@@ -41,6 +41,7 @@ public class MessagePipelineSupervisor: NSObject {
         case nseWakingUpApp(suspensionId: UUID, payloadString: String)
         case pendingChangeNumber
         case messageBackup
+        case linkNsync
 
         fileprivate var reasonString: String {
             switch self {
@@ -50,6 +51,8 @@ public class MessagePipelineSupervisor: NSObject {
                 return "Pending change number"
             case .messageBackup:
                 return "Message Backup"
+            case .linkNsync:
+                return "Link'N'Sync"
             }
         }
     }
