@@ -4064,7 +4064,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "संदेश सिंक अयशस्वी";
 
 /* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ complete";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ पूर्ण";
 
 /* Title for a progress modal indicating the sync progress */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "संदेश सिंक करत आहे...";
@@ -4145,7 +4145,7 @@
 "LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes depending on the size of your message history";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
-"LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Do not close the app.";
+"LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Signal बंद करू नका.";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "आपले Signal खाते स्थानांतरित करण्यासाठी, आपल्याला दोन्ही डिव्हाईसवर स्थानिक नेटवर्कचा अॅक्सेस सक्षम करणे गरजेचे आहे.";

@@ -4064,7 +4064,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Sincronizarea mesajelor a eșuat";
 
 /* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ complete";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ finalizat";
 
 /* Title for a progress modal indicating the sync progress */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "Se sincronizează mesajele…";
@@ -4145,7 +4145,7 @@
 "LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes depending on the size of your message history";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
-"LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Do not close the app.";
+"LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Nu închideți Signal.";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Pentru a putea transfera contul tău Signal, este nevoie să activezi accesul la rețeaua locală pe ambele dispozitive.";

@@ -4064,7 +4064,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "میسج سنک ناکام ہو گئی";
 
 /* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ complete";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ مکمل ہو گیا ہے";
 
 /* Title for a progress modal indicating the sync progress */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "میسجز سنک ہو رہے ہیں…";
@@ -4145,7 +4145,7 @@
 "LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes depending on the size of your message history";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
-"LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Do not close the app.";
+"LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Signal کو بند نہ کریں۔";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "اپنے Signal اکاؤنٹ کو منتقل کرنے کے لیئے ، آپ کو دونوں آلات پر مقامی نیٹ ورک تک رسائی کو چالو کرنے کی ضرورت ہے۔";

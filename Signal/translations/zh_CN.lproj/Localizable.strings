@@ -4064,7 +4064,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "消息同步失败";
 
 /* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ complete";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "完成 %1$@";
 
 /* Title for a progress modal indicating the sync progress */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "正在同步消息…";
@@ -4145,7 +4145,7 @@
 "LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes depending on the size of your message history";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
-"LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Do not close the app.";
+"LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "不要关闭 Signal。";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "为了转移您的 Signal 帐户，您需要在两个设备上启用本地网络访问权限。";
