@@ -1985,7 +1985,7 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Mislyktes med oppdatering av enhetsliste";
 
 /* Message appearing on a toast indicating a new device was successfully linked and synced. */
-"DEVICE_LIST_UPDATE_NEW_DEVICE_SYNCED_TOAST" = "Message sync complete";
+"DEVICE_LIST_UPDATE_NEW_DEVICE_SYNCED_TOAST" = "Meldingene ble synkronisert";
 
 /* Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }} */
 "DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "«%1$@» ble koblet til";
@@ -4058,16 +4058,16 @@
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Fullfør tilkoblingen på den andre enheten";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages. */
-"LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Your device was successfully linked, but your messages could not be transferred.";
+"LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Enheten ble koblet til, men meldingene dine kunne ikke overføres.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
-"LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Message Sync Failed";
+"LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Synkroniseringen mislyktes";
 
 /* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ complete";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ fullført";
 
 /* Title for a progress modal indicating the sync progress */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "Syncing Messages…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "Synkroniserer meldinger …";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Koble til ny enhet";
@@ -4112,16 +4112,16 @@
 "LINKED_DEVICES_LIST_TITLE" = "Tilkoblede enheter";
 
 /* Button title for renaming a linked device */
-"LINKED_DEVICES_RENAME_BUTTON" = "Rename";
+"LINKED_DEVICES_RENAME_BUTTON" = "Gi nytt navn";
 
 /* Message on a sheet indicating the device rename attempt received an error. */
-"LINKED_DEVICES_RENAME_FAILURE_MESSAGE" = "Unable to change device name. Try again later.";
+"LINKED_DEVICES_RENAME_FAILURE_MESSAGE" = "Kan ikke endre navnet på enheten. Prøv igjen senere.";
 
 /* Message on a toast indicating the device was renamed. */
-"LINKED_DEVICES_RENAME_SUCCESS_MESSAGE" = "Device name updated";
+"LINKED_DEVICES_RENAME_SUCCESS_MESSAGE" = "Navnet på enheten ble endret";
 
 /* Title for the screen for renaming a linked device */
-"LINKED_DEVICES_RENAME_TITLE" = "Edit Device Name";
+"LINKED_DEVICES_RENAME_TITLE" = "Rediger navnet på enheten";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Koblede enheter";
@@ -4130,19 +4130,22 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Kobling av enhet mislyktes";
 
 /* Progress label when the message loading has nearly completed during the device linking process */
-"LINKING_SYNCING_FINALIZING" = "Finalizing message transfer…";
+"LINKING_SYNCING_FINALIZING" = "Ferdigstiller meldingsoverføringen …";
 
 /* Footer text when loading messages during linking process. */
-"LINKING_SYNCING_FOOTER" = "Messages and chat info are protected by end-to-end encryption, including the sync process.";
+"LINKING_SYNCING_FOOTER" = "Meldinger og samtaleinnhold beskyttes av ende-til-ende-kryptering. Dette inkluderer også synkroniseringen.";
 
 /* Title shown when loading messages during linking process */
 "LINKING_SYNCING_MESSAGES_TITLE" = "Synkroniserer meldinger";
 
 /* Progress label when the message loading has not yet started during the device linking process */
-"LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Preparing to download…";
+"LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Gjør klart for nedlasting …";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes depending on the size of your message history";
+"LINKING_SYNCING_TIMING_INFO" = "Dette kan ta et par minutter avhengig av størrelsen på meldingsloggen";
+
+/* Shown to users while the app is loading, asking them not to close the app. */
+"LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Do not close the app.";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "For å overføre Signal-kontoen må du gi tilgang til lokalt nett på begge enheter.";
@@ -6107,7 +6110,7 @@
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Ditt telefonnummer";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "Is your phone number above correct?";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "Stemmer telefonnummeret ovenfor?";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefonnummer";
@@ -6161,16 +6164,16 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Du må registrere deg før du kan sende en melding.";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
-"REGISTRATION_SCAN_QR_CODE_TITLE" = "Scan this code with your old phone";
+"REGISTRATION_SCAN_QR_CODE_TITLE" = "Skann denne koden med den gamle enheten";
 
 /* Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal */
-"REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "Open Signal on your old device";
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "Åpne Signal på den gamle enheten.";
 
 /* Tutorial text describing the third step to scanning the restore/transfer QR code with your old phone: scan the code */
-"REGISTRATION_SCAN_QR_CODE_TUTORIAL_SCAN" = "Scan this code with the camera";
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_SCAN" = "Skann denne koden med kameraet.";
 
 /* Tutorial text describing the second step to scanning the restore/transfer QR code with your old phone: tap the camera icon */
-"REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA" = "Tap the camera icon";
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA" = "Trykk på kamera-ikonet.";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Taleanrop";
@@ -6407,13 +6410,13 @@
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Kunne ikke koble til enheten din";
 
 /* Title for action sheet when secondary device fails to sync messages. */
-"SECONDARY_LINKING_SYNCING_ERROR_TITLE" = "Error transferring your messages";
+"SECONDARY_LINKING_SYNCING_ERROR_TITLE" = "Feil ved overføring av meldingene dine";
 
 /* Message for action sheet when secondary device fails to sync messages due to network error. */
-"SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE" = "Your messages could not be transferred. Check your internet connection and try again.";
+"SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE" = "Meldingene dine kunne ikke overføres. Sjekk internettilkoblingen og prøv igjen.";
 
 /* Message for action sheet when secondary device fails to sync messages due to an unspecified error. */
-"SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE" = "Your messages could not be transferred due to an error. Try again by re-linking this device.";
+"SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE" = "Meldingene dine kunne ikke overføres på grunn av en feil. Prøv igjen ved å koble enheten til på nytt.";
 
 /* header text when this device is being added as a secondary */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Velg et navn for denne enheten";
@@ -6446,7 +6449,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Få hjelp til å koble iPaden din her";
 
 /* Text for a button offering to refresh the QR code to link an iPad. */
-"SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "Refresh code";
+"SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "Last inn koden igjen";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Skann QR-koden med telefonen din";

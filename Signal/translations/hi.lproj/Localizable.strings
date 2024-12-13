@@ -4061,13 +4061,13 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Your device was successfully linked, but your messages could not be transferred.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
-"LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Message Sync Failed";
+"LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "संदेश का सिंक नहीं हो पाया";
 
 /* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ complete";
 
 /* Title for a progress modal indicating the sync progress */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "Syncing Messages…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "संदेश सिंक किए जा रहे हैं…";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "नया डिवाइस लिंक करें";
@@ -4115,13 +4115,13 @@
 "LINKED_DEVICES_RENAME_BUTTON" = "Rename";
 
 /* Message on a sheet indicating the device rename attempt received an error. */
-"LINKED_DEVICES_RENAME_FAILURE_MESSAGE" = "Unable to change device name. Try again later.";
+"LINKED_DEVICES_RENAME_FAILURE_MESSAGE" = "डिवाइस का नाम बदला नहीं जा सका। बाद में कोशिश करें।";
 
 /* Message on a toast indicating the device was renamed. */
-"LINKED_DEVICES_RENAME_SUCCESS_MESSAGE" = "Device name updated";
+"LINKED_DEVICES_RENAME_SUCCESS_MESSAGE" = "डिवाइस का नाम अपडेट किया गया";
 
 /* Title for the screen for renaming a linked device */
-"LINKED_DEVICES_RENAME_TITLE" = "Edit Device Name";
+"LINKED_DEVICES_RENAME_TITLE" = "डिवाइस का नाम संपादित करें";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "लिंक की गईं डिवाइसें";
@@ -4133,7 +4133,7 @@
 "LINKING_SYNCING_FINALIZING" = "Finalizing message transfer…";
 
 /* Footer text when loading messages during linking process. */
-"LINKING_SYNCING_FOOTER" = "Messages and chat info are protected by end-to-end encryption, including the sync process.";
+"LINKING_SYNCING_FOOTER" = "संदेश और चैट जानकारी शुरू से अंत तक एनक्रिप्शन से सुरक्षित है, जिसमें सिंक करने की प्रोसेस शामिल है।";
 
 /* Title shown when loading messages during linking process */
 "LINKING_SYNCING_MESSAGES_TITLE" = "संदेश सिंक किए जा रहे हैं";
@@ -4143,6 +4143,9 @@
 
 /* Label below the progress bar when loading messages during linking process */
 "LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes depending on the size of your message history";
+
+/* Shown to users while the app is loading, asking them not to close the app. */
+"LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Do not close the app.";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "अपने Signal अकाउंट को ट्रांसफर करने के लिए, आपको दोनों डिवाइस पर लोकल नेटवर्क एक्सेस को चालू करना होगा।";
@@ -6107,7 +6110,7 @@
 "REGISTRATION_PHONE_NUMBER_TITLE" = "आपका फोन नंबर";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "Is your phone number above correct?";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "क्या ऊपर दिया आपका फोन नंबर सही है?";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "फोन नंबर";
@@ -6161,16 +6164,16 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "आपको कोई मेसेज भेजने से पहले पंजीकृत होना होगाा।";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
-"REGISTRATION_SCAN_QR_CODE_TITLE" = "Scan this code with your old phone";
+"REGISTRATION_SCAN_QR_CODE_TITLE" = "अपने पुराने फ़ोन से यह कोड स्कैन करें";
 
 /* Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal */
-"REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "Open Signal on your old device";
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "अपने पुराने डिवाइस पर Signal खोलें";
 
 /* Tutorial text describing the third step to scanning the restore/transfer QR code with your old phone: scan the code */
-"REGISTRATION_SCAN_QR_CODE_TUTORIAL_SCAN" = "Scan this code with the camera";
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_SCAN" = "कैमरे से यह कोड स्कैन करें";
 
 /* Tutorial text describing the second step to scanning the restore/transfer QR code with your old phone: tap the camera icon */
-"REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA" = "Tap the camera icon";
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA" = "कैमरा आइकन पर टैप करें";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "वीडियो कॉल";
@@ -6407,10 +6410,10 @@
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "डिवाइस लिंक करना असफल रहा";
 
 /* Title for action sheet when secondary device fails to sync messages. */
-"SECONDARY_LINKING_SYNCING_ERROR_TITLE" = "Error transferring your messages";
+"SECONDARY_LINKING_SYNCING_ERROR_TITLE" = "आपके संदेश ट्रांसफ़र करने में गड़बड़ी हुई";
 
 /* Message for action sheet when secondary device fails to sync messages due to network error. */
-"SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE" = "Your messages could not be transferred. Check your internet connection and try again.";
+"SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE" = "आपके संदेश ट्रांसफ़र नहीं किए जा सके। अपने इंटरनेट कनेक्शन की जाँच करके फिर से कोशिश करें।";
 
 /* Message for action sheet when secondary device fails to sync messages due to an unspecified error. */
 "SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE" = "Your messages could not be transferred due to an error. Try again by re-linking this device.";
