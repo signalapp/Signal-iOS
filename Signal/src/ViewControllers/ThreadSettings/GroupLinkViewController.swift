@@ -308,16 +308,18 @@ public class GroupLinkViewUtils {
             owsFailDebug("Missing navigationController.")
             return
         }
-
         do {
             let inviteLinkUrl = try groupModelV2.groupInviteLinkUrl()
             let messageBody = MessageBody(text: inviteLinkUrl.absoluteString, ranges: .empty)
-            let unapprovedContent = SendMessageUnapprovedContent.text(messageBody: messageBody)
-            let sendMessageFlow = SendMessageFlow(flowType: .`default`,
-                                                  unapprovedContent: unapprovedContent,
-                                                  useConversationComposeForSingleRecipient: true,
-                                                  presentationStyle: .pushOnto(navigationController),
-                                                  delegate: sendMessageController)
+            guard let unapprovedContent = SendMessageUnapprovedContent(messageBody: messageBody) else {
+                owsFailDebug("Missing messageBody.")
+                return
+            }
+            let sendMessageFlow = SendMessageFlow(
+                unapprovedContent: unapprovedContent,
+                presentationStyle: .pushOnto(navigationController),
+                delegate: sendMessageController
+            )
             // Retain the flow until it is complete.
             sendMessageController.sendMessageFlow.set(sendMessageFlow)
         } catch {

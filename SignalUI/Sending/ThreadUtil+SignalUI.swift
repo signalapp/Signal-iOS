@@ -17,8 +17,6 @@ extension ThreadUtil {
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
         persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil
     ) {
-        AssertIsOnMainThread()
-
         let messageTimestamp = MessageTimestampGenerator.sharedInstance.generateTimestamp()
 
         let benchEventId = sendMessageBenchEventStart(messageTimestamp: messageTimestamp)

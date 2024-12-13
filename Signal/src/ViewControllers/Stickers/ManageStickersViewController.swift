@@ -504,11 +504,12 @@ public class ManageStickersViewController: OWSTableViewController2 {
             return
         }
         let messageBody = MessageBody(text: packUrl, ranges: .empty)
-        let unapprovedContent = SendMessageUnapprovedContent.text(messageBody: messageBody)
+        guard let unapprovedContent = SendMessageUnapprovedContent(messageBody: messageBody) else {
+            owsFailDebug("Missing messageBody.")
+            return
+        }
         let sendMessageFlow = SendMessageFlow(
-            flowType: .`default`,
             unapprovedContent: unapprovedContent,
-            useConversationComposeForSingleRecipient: true,
             presentationStyle: .pushOnto(navigationController),
             delegate: self
         )

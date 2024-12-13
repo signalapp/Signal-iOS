@@ -319,11 +319,12 @@ final class CallLinkViewController: OWSTableViewController2 {
 
     func shareCallLinkViaSignal() {
         let messageBody = MessageBody(text: callLink.url().absoluteString, ranges: .empty)
-        let unapprovedContent = SendMessageUnapprovedContent.text(messageBody: messageBody)
+        guard let unapprovedContent = SendMessageUnapprovedContent(messageBody: messageBody) else {
+            owsFailDebug("Missing messageBody.")
+            return
+        }
         let sendMessageFlow = SendMessageFlow(
-            flowType: .`default`,
             unapprovedContent: unapprovedContent,
-            useConversationComposeForSingleRecipient: true,
             presentationStyle: .presentFrom(self),
             delegate: self
         )

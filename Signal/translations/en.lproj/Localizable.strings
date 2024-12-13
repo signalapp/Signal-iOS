@@ -2830,12 +2830,6 @@
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
 "FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Flip Camera has been moved here, tap your video to try it out";
 
-/* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Forward Contact";
-
-/* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Forward Message";
-
 /* Message for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Forwarded messages are now sent immediately.";
 
