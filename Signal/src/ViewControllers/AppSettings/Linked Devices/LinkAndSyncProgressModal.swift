@@ -39,18 +39,43 @@ class LinkAndSyncProgressModal: HostingController<LinkAndSyncProgressView> {
         super.viewDidLoad()
         self.view.backgroundColor = Theme.backdropColor
     }
+
+    @MainActor
+    func completeAndDismiss() async {
+        progress = 1
+        try? await Task.sleep(nanoseconds: NSEC_PER_SEC / 2)
+        await withCheckedContinuation { continuation in
+            dismiss(animated: true) {
+                continuation.resume()
+            }
+        }
+    }
 }
 
 // MARK: SwiftUI View
 
 struct LinkAndSyncProgressView: View {
+    @Environment(\.appearanceTransitionState) private var appearanceTransitionState
 
     @ObservedObject fileprivate var viewModel: LinkAndSyncProgressViewModel
 
+    // If the first portion fills very quickly before the view is visible,
+    // we still want to animate it from 0.
+    private var progressToShow: Float {
+        switch appearanceTransitionState {
+        case .appearing:
+            0
+        case .cancelled, .finished, .none:
+            viewModel.progress
+        }
+    }
+
     var body: some View {
         VStack(spacing: 8) {
-            CircleProgressView(progress: viewModel.progress)
+            CircleProgressView(progress: progressToShow)
                 .padding(.bottom, 12)
+                .animation(.linear, value: progressToShow)
+
             Text(OWSLocalizedString(
                 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE",
                 comment: "Title for a progress modal indicating the sync progress"
@@ -62,7 +87,7 @@ struct LinkAndSyncProgressView: View {
                     "LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT",
                     comment: "On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }}"
                 ),
-                viewModel.progress.formatted(.percent.precision(.fractionLength(0)))
+                progressToShow.formatted(.percent.precision(.fractionLength(0)))
             ))
             .font(.subheadline.monospacedDigit())
             .foregroundStyle(Color.Signal.secondaryLabel)
@@ -103,8 +128,9 @@ struct LinkAndSyncProgressView: View {
         let modal = LinkAndSyncProgressModal()
 
         Task { @MainActor in
+            modal.progress = 0.2
             let loadingPoints = (0..<20)
-                .map { _ in Float.random(in: 0...1) }
+                .map { _ in Float.random(in: (0.2)...1) }
                 .sorted()
 
             for point in loadingPoints {
@@ -115,7 +141,7 @@ struct LinkAndSyncProgressView: View {
             try? await Task.sleep(for: .milliseconds(100))
             modal.progress = 1
 
-            modal.dismiss(animated: true)
+            await modal.completeAndDismiss()
         }
 
         return modal

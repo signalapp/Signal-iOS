@@ -302,7 +302,7 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
                     progress: progress
                 )
                 Task { @MainActor in
-                    linkAndSyncProgressModal.dismiss(animated: true)
+                    await linkAndSyncProgressModal.completeAndDismiss()
                 }
             } catch {
                 linkAndSyncProgressModal.dismiss(animated: true) {
