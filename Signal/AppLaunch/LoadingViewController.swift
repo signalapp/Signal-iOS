@@ -10,6 +10,11 @@ public import SignalUI
 // After a delay we present some "loading" UI so the user doesn't think the app is frozen.
 public class LoadingViewController: UIViewController {
 
+    private let dontCloseAppString: String = OWSLocalizedString(
+        "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP",
+        comment: "Shown to users while the app is loading, asking them not to close the app."
+    )
+
     var logoView: UIImageView!
     var topLabel: UILabel!
     var bottomLabel: UILabel!
