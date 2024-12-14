@@ -1,1 +1,2 @@
-• Denne oppdateringen inkluderer støtte for nye telefonnumre i Benin.
+• Vi har gjort visningen av emojier litt bedre.
+• Vi har fikset opp i et par problemer knyttet til mediegalleriet og tekstfeltet i appen.

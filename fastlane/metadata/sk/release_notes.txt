@@ -1,1 +1,2 @@
-• This update includes support for the new telephone number format in Benin.
+• Vylepšený spôsob vykresľovania emodži.
+• Opravy chýb súvisiacich s galériou médií a zadávaním textu.

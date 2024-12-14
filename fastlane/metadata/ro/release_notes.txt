@@ -1,1 +1,2 @@
-• This update includes support for the new telephone number format in Benin.
+• Fanii emoțiilor mari (sau ai emoji-urilor) vor fi bucuroși să audă că un mic spațiu sau o întrerupere de linie între două caractere emoji nu va mai împiedica emoji-urile respective să apară în forma lor jumbo.
+• Am remediat, de asemenea, o eroare care făcea uneori ca bara de file să acopere câmpul de introducere a textului și o alta care făcea ca atașamentele editate să apară de mai multe ori în galeria fișierelor – așa că acum poți schimba trecutul fără să simți că îl repeți.

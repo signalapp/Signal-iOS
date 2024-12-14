@@ -1,1 +1,2 @@
-• This update includes support for the new telephone number format in Benin.
+• تحسينات تخُصّ عرض الرموز التعبيرية
+• إصلاحات لأخطاء تخُصُّ ألبوم الوسائط وإدخال النصوص.—

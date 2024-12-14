@@ -1,1 +1,2 @@
-• This update includes support for the new telephone number format in Benin.
+• Bonne nouvelle pour les fans d'émojis et toutes les personnes qui vivent des émotions intenses (hypersensibles, on pense à vous !) : une espace ou un saut de ligne entre deux émojis ne les empêcheront plus de s'afficher en format XXL.
+• La barre d'onglets recouvrait parfois le champ de saisie. Cette mise à jour vous rend votre liberté d'expression. Et lorsqu'on modifiait des pièces jointes, elles s'affichaient plusieurs fois dans la galerie. On peut vouloir changer le passé sans nécessairement vouloir qu'il se répète.

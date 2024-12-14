@@ -1,1 +1,2 @@
-• This update includes support for the new telephone number format in Benin.
+• 喜歡大表情符號 (emoji) 的粉絲一定會很高興聽到，兩個 emoji 字元之間的小空格或換行，將不再會阻止這些 emoji 以巨型的形式出現。
+• 我們也修正了一個有時會造成標籤列遮住文字輸入欄位的錯誤，以及另一個會造成已編輯附件多次出現在媒體圖片庫的錯誤。

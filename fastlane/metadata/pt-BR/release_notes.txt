@@ -1,1 +1,2 @@
-• This update includes support for the new telephone number format in Benin.
+• Os fãs de emojis grandes vão gostar de saber que um pequeno espaço ou quebra de linha entre dois emojis não impedirá mais que eles sejam exibidos no formato jumbo.
+• Também corrigimos um erro que, às vezes, fazia a barra de abas cobrir o campo de texto e outro que duplicava anexos editados na galeria de mídia.

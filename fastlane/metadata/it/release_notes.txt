@@ -1,1 +1,2 @@
-• This update includes support for the new telephone number format in Benin.
+• Novità per chi è fan delle emoji: da ora anche un piccolo spazio o l'andare a capo tra un carattere e l'altro di un emoji non impedirà alle emoji di apparire magicamente lo stesso nel loro formato più grande!
+• Abbiamo anche risolto un bug che a volte consentiva alla tab bar di coprire il campo dove inserire il testo e un altro bug che consentiva agli allegati modificati di apparire più volte nella galleria dei media. Troppo permissivi questi bug, vero?

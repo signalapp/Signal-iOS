@@ -1,1 +1,2 @@
-• This update includes support for the new telephone number format in Benin.
+• Hangulatjel-megjelenítéssekkel kapcsolatos fejlesztések.
+• Kijavítottunk egy olyan hibát is, amely miatt a tabulátor sáv eltakarta a szövegbeviteli mezőt, és egy másikat, amely miatt a szerkesztett mellékletek többször is megjelentek a médiagalériában – így most megváltoztathatod a múltat anélkül, hogy azt éreznéd, hogy megismételnéd.

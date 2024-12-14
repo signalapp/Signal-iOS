@@ -1,1 +1,2 @@
-• This update includes support for the new telephone number format in Benin.
+• Speciaal voor de fans van grote emoties (of emoji): bij een spatie of regeleinde tussen twee emoji worden emoji nu ook in jumboformaat weergegeven.
+• We hebben ook een bug opgelost die er soms voor zorgde dat de tabbalk over het tekstinvoerveld werd weergegeven, en een andere bug die ervoor zorgde dat bewerkte bijlagen meerdere keren in de mediagalerij verschenen. — Nu kun je het verleden aanpassen, zonder het te herleven.

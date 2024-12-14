@@ -1,1 +1,2 @@
-• This update includes support for the new telephone number format in Benin.
+• Gratka dla fanów dużych (i to dosłownie dużych) emocji: od teraz emoji wyświetlą się w większym formacie nawet wtedy, gdy wstawisz między nimi spację czy podział wiersza.
+• Naprawiliśmy błąd, w wyniku którego pasek kart zakrywał czasem pole do wprowadzania tekstu, oraz inny błąd, przez który edytowany załącznik wyświetlał się w galerii multimediów wiele razy. Teraz możesz śmiało tuszować przeszłość bez obaw o powtórkę z rozrywki.

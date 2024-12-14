@@ -1,1 +1,2 @@
-• This update includes support for the new telephone number format in Benin.
+• Großartige Nachrichten für Fans großer Emotionen (oder Emojis) – sollte sich ein kleines Leerzeichen oder ein Zeilenumbruch zwischen zwei Emojis schleichen, werden diese Emojis jetzt trotzdem in voller Größe angezeigt.
+• Wir haben auch einen Fehler behoben, der ab und zu dazu führte, dass die Tab-Leiste das Texteingabefeld verdeckte. Und noch einen weiteren Fehler bereinigt, der dazu führte, dass bearbeitete Anhänge in der Mediengalerie mehrmals angezeigt wurden. Jetzt kannst du die Vergangenheit ändern, ohne das Gefühl zu haben, sie zu wiederholen.
