@@ -11,7 +11,7 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
 
     private var qrCodeWrapperView: UIView!
     private var qrCodeWrapperViewSizeConstraints: [NSLayoutConstraint]!
-    private var qrCodeView: QRCodeView2!
+    private var qrCodeView: QRCodeView!
 
     // MARK: -
 
@@ -41,7 +41,7 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
         qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 48)
         qrCodeWrapperView.layer.cornerRadius = 24
 
-        qrCodeView = QRCodeView2()
+        qrCodeView = QRCodeView()
 
         let explanationLabel2 = self.createExplanationLabel(
             explanationText: OWSLocalizedString("DEVICE_TRANSFER_QRCODE_EXPLANATION2",

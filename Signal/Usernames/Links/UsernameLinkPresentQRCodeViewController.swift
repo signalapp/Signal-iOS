@@ -10,15 +10,15 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     private enum UsernameLinkState {
         case available(
             usernameLink: Usernames.UsernameLink,
-            qrCodeTemplateImage: UIImage
+            qrCode: UIImage
         )
         case resetting
         case corrupted
 
-        var linkParams: (Usernames.UsernameLink, templateImage: UIImage)? {
+        var linkParams: (Usernames.UsernameLink, qrCode: UIImage)? {
             switch self {
-            case let .available(usernameLink, qrCodeTemplateImage):
-                return (usernameLink, templateImage: qrCodeTemplateImage)
+            case let .available(usernameLink, qrCode):
+                return (usernameLink, qrCode: qrCode)
             case .resetting, .corrupted:
                 return nil
             }
@@ -28,17 +28,11 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             usernameLink: Usernames.UsernameLink
         ) -> UsernameLinkState {
             if
-                let qrCodeImage = SignalBrandedQRCodeGenerator(
-                    foregroundColor: .ows_black,
-                    backgroundColor: .clear
-                ).generateQRCode(url: usernameLink.url)
+                let qrCode = QRCodeGenerator().generateQRCode(url: usernameLink.url)
             {
-                // TODO: @sasha does this need to be a template image?
-                let templateImage = qrCodeImage.withRenderingMode(.alwaysTemplate)
-
                 return .available(
                     usernameLink: usernameLink,
-                    qrCodeTemplateImage: templateImage
+                    qrCode: qrCode
                 )
             }
 
@@ -56,7 +50,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
 
     private weak var usernameChangeDelegate: UsernameChangeDelegate?
 
-    private var qrCodeColor: SignalBrandedQRCodes.QRCodeColor!
+    private var qrCodeColor: QRCodeColor!
     private var _usernameLinkState: UsernameLinkState!
 
     /// A layer of indirection to avoid needing to handle `nil` in switches,
@@ -125,8 +119,8 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     /// Builds the QR code view, including the QR code, colored background, and
     /// display of the current username.
     private func buildQRCodeView() -> UIView {
-        let qrCodeView: QRCodeView2 = {
-            let qrCodeView = QRCodeView2(
+        let qrCodeView: QRCodeView = {
+            let qrCodeView = QRCodeView(
                 qrCodeTintColor: qrCodeColor,
                 contentInset: 16
             )
@@ -135,8 +129,8 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             case .resetting:
                 // The QR code view will be in a "loading" state already.
                 break
-            case let .available(_, qrCodeTemplateImage):
-                qrCodeView.setQRCode(image: qrCodeTemplateImage)
+            case let .available(_, qrCode):
+                qrCodeView.setQRCode(image: qrCode)
             case .corrupted:
                 qrCodeView.setError()
             }
@@ -280,7 +274,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
                 let colorPickerVC = UsernameLinkQRCodeColorPickerViewController(
                     currentColor: self.qrCodeColor,
                     username: self.username,
-                    qrCodeTemplateImage: qrCodeImage,
+                    qrCode: qrCodeImage,
                     delegate: self
                 )
 
@@ -305,14 +299,9 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
 
     /// Generate a color-over-white QR code and share.
     private func shareQRCode(sourceView: UIView) {
-        let qrCodeBackgroundColor = UIColor.ows_white
-
         guard
             let (usernameLink, _) = self.usernameLinkState.linkParams,
-            let qrCode = SignalBrandedQRCodeGenerator(
-                foregroundColor: self.qrCodeColor.foreground,
-                backgroundColor: qrCodeBackgroundColor
-            ).generateQRCode(url: usernameLink.url)
+            let qrCode = QRCodeGenerator().generateQRCode(url: usernameLink.url)
         else {
             return
         }
@@ -342,13 +331,13 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
 
         let qrCodeBackground = UIView()
         card.addArrangedSubview(qrCodeBackground)
-        qrCodeBackground.backgroundColor = qrCodeBackgroundColor
+        qrCodeBackground.backgroundColor = .white
         qrCodeBackground.layoutMargins = .init(margin: 16)
         qrCodeBackground.layer.cornerRadius = 12
         qrCodeBackground.layer.borderWidth = 2
         qrCodeBackground.layer.borderColor = self.qrCodeColor.paddingBorder.cgColor
 
-        let qrCodeView = UIImageView(image: qrCode)
+        let qrCodeView: UIImageView = .withTemplateImage(qrCode, tintColor: self.qrCodeColor.foreground)
         qrCodeBackground.addSubview(qrCodeView)
         qrCodeView.autoPinEdgesToSuperviewMargins()
         qrCodeView.autoPinToSquareAspectRatio()
@@ -695,7 +684,7 @@ extension UsernameLinkPresentQRCodeViewController: SheetDismissalDelegate {
 }
 
 extension UsernameLinkPresentQRCodeViewController: UsernameLinkQRCodeColorPickerDelegate {
-    func didFinalizeSelectedColor(color: SignalBrandedQRCodes.QRCodeColor) {
+    func didFinalizeSelectedColor(color: QRCodeColor) {
         db.write { tx in
             localUsernameManager.setUsernameLinkQRCodeColor(
                 color: color,

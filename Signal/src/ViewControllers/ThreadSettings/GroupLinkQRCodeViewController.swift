@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import BonMot
 import SignalServiceKit
 public import SignalUI
 
@@ -32,7 +33,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
 
     private func createContents() {
 
-        let qrCodeView = QRCodeView2()
+        let qrCodeView = QRCodeView()
         qrCodeView.autoPinToSquareAspectRatio()
 
         do {
@@ -83,19 +84,25 @@ public class GroupLinkQRCodeViewController: OWSViewController {
     @objc
     private func didTapShareCode(_ sender: UIButton) {
         do {
-            guard let qrCodeImage = ExportableQRCodeGenerator().generateQRCode(
+            guard let qrCodeImage = QRCodeGenerator().generateQRCode(
                 url: try groupModelV2.groupInviteLinkUrl()
             ) else {
                 owsFailDebug("Failed to generate QR code image!")
                 return
             }
 
-            guard let imageData = qrCodeImage.pngData() else {
+            let coloredQRCodeImage = qrCodeImage.tintedImage(
+                color: QRCodeColor.blue.foreground
+            )
+
+            guard let imageData = coloredQRCodeImage.pngData() else {
                 owsFailDebug("Could not encode QR code.")
                 return
             }
+
             let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: "png")
             try imageData.write(to: fileUrl)
+
             AttachmentSharing.showShareUI(for: fileUrl, sender: sender)
         } catch {
             owsFailDebug("error \(error)")

@@ -2408,7 +2408,7 @@
 		D93830742A703969006CDCDE /* LocalUsernameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830732A703968006CDCDE /* LocalUsernameManager.swift */; };
 		D938307A2A704123006CDCDE /* UsernameLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830792A704123006CDCDE /* UsernameLinkManager.swift */; };
 		D938307C2A704338006CDCDE /* LocalUsernameManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830752A70396E006CDCDE /* LocalUsernameManagerTests.swift */; };
-		D938307E2A70441D006CDCDE /* SignalBrandedQRCodes+QRCodeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938307D2A70441D006CDCDE /* SignalBrandedQRCodes+QRCodeColor.swift */; };
+		D938307E2A70441D006CDCDE /* QRCodeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938307D2A70441D006CDCDE /* QRCodeColor.swift */; };
 		D93830802A705D64006CDCDE /* UsernameLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938307F2A705D64006CDCDE /* UsernameLogger.swift */; };
 		D93830812A7065C7006CDCDE /* UsernameValidationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */; };
 		D93830832A708E95006CDCDE /* UsernameChangeDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830822A708E95006CDCDE /* UsernameChangeDelegate.swift */; };
@@ -2525,7 +2525,7 @@
 		D9B95A9829E8906200D7CB95 /* OWSDeviceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */; };
 		D9B95A9B29E8923B00D7CB95 /* InMemoryDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */; };
 		D9B95A9D29E894A600D7CB95 /* ValidatableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */; };
-		D9BF53362D0814A000EC3DF0 /* QRCodeView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BF53352D08149D00EC3DF0 /* QRCodeView2.swift */; };
+		D9BF53362D0814A000EC3DF0 /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BF53352D08149D00EC3DF0 /* QRCodeView.swift */; };
 		D9BFB8BF2C4EE33C00D67881 /* MessageBackupThreadMergeChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BFB8BE2C4EE33C00D67881 /* MessageBackupThreadMergeChatUpdateArchiver.swift */; };
 		D9BFB8C82C4F02C900D67881 /* MessageBackupSessionSwitchoverChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BFB8C72C4F02C900D67881 /* MessageBackupSessionSwitchoverChatUpdateArchiver.swift */; };
 		D9C0AE652BD7103100FCB05E /* OWSDeviceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE632BD7103100FCB05E /* OWSDeviceStore.swift */; };
@@ -2570,10 +2570,7 @@
 		D9DB37FB2B72A85C007B16C8 /* CallRecordDeleteAllJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DB37FA2B72A85C007B16C8 /* CallRecordDeleteAllJobRecord.swift */; };
 		D9DCFDA52A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */; };
 		D9DCFDAB2A39402F00C73C0B /* SettingsHeaderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */; };
-		D9DCFDAE2A3BB25200C73C0B /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAD2A3BB25200C73C0B /* QRCodeGenerator.swift */; };
-		D9DCFDB02A3BC4A400C73C0B /* SignalBrandedQRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAF2A3BC4A400C73C0B /* SignalBrandedQRCodeGenerator.swift */; };
-		D9DCFDB22A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDB12A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift */; };
-		D9DCFDB42A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDB32A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift */; };
+		D9DCFDB02A3BC4A400C73C0B /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAF2A3BC4A400C73C0B /* QRCodeGenerator.swift */; };
 		D9E335A929933B1A00825677 /* Usernames+HashedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */; };
 		D9E43AF62CC193D70001536E /* BackupSubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43AF32CC193D70001536E /* BackupSubscriptionManager.swift */; };
 		D9E43BE22CC194140001536E /* CallButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E43B932CC194140001536E /* CallButton.swift */; };
@@ -2819,7 +2816,6 @@
 		E19B35492CD2E8C40078A678 /* ad_hoc_call_02.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E19B35442CD2E8C40078A678 /* ad_hoc_call_02.binproto */; };
 		E19B354A2CD2E8C40078A678 /* ad_hoc_call_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E19B35402CD2E8C40078A678 /* ad_hoc_call_00.binproto */; };
 		E19B354B2CD2E8C40078A678 /* ad_hoc_call_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E19B35422CD2E8C40078A678 /* ad_hoc_call_01.binproto */; };
-		E19C3D942CF6B36500F2C496 /* SignalBrandedQRCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19C3D932CF6B35A00F2C496 /* SignalBrandedQRCodes.swift */; };
 		E1A090382A4B909B00F2BE8B /* RecipientHidingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */; };
 		E1B32F842CA6162A002141F4 /* LinkPreviewCallLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1CFAAA22C9DD2B1003145C3 /* LinkPreviewCallLink.swift */; };
 		E1B628DA2CCC59E600C4DC7F /* chat_item_view_once_11.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E1B628D22CCC59E600C4DC7F /* chat_item_view_once_11.binproto */; };
@@ -6166,7 +6162,7 @@
 		D93830752A70396E006CDCDE /* LocalUsernameManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUsernameManagerTests.swift; sourceTree = "<group>"; };
 		D93830772A70399C006CDCDE /* ConsumableMockPromise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsumableMockPromise.swift; sourceTree = "<group>"; };
 		D93830792A704123006CDCDE /* UsernameLinkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsernameLinkManager.swift; sourceTree = "<group>"; };
-		D938307D2A70441D006CDCDE /* SignalBrandedQRCodes+QRCodeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalBrandedQRCodes+QRCodeColor.swift"; sourceTree = "<group>"; };
+		D938307D2A70441D006CDCDE /* QRCodeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeColor.swift; sourceTree = "<group>"; };
 		D938307F2A705D64006CDCDE /* UsernameLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsernameLogger.swift; sourceTree = "<group>"; };
 		D93830822A708E95006CDCDE /* UsernameChangeDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameChangeDelegate.swift; sourceTree = "<group>"; };
 		D93830842A784210006CDCDE /* UsernameApiClientImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameApiClientImpl.swift; sourceTree = "<group>"; };
@@ -6290,7 +6286,7 @@
 		D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceTest.swift; sourceTree = "<group>"; };
 		D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryDB.swift; sourceTree = "<group>"; };
 		D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatableModel.swift; sourceTree = "<group>"; };
-		D9BF53352D08149D00EC3DF0 /* QRCodeView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView2.swift; sourceTree = "<group>"; };
+		D9BF53352D08149D00EC3DF0 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
 		D9BFB8BE2C4EE33C00D67881 /* MessageBackupThreadMergeChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupThreadMergeChatUpdateArchiver.swift; sourceTree = "<group>"; };
 		D9BFB8C72C4F02C900D67881 /* MessageBackupSessionSwitchoverChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupSessionSwitchoverChatUpdateArchiver.swift; sourceTree = "<group>"; };
 		D9C0AE612BD7102500FCB05E /* InactiveLinkedDeviceFinderTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InactiveLinkedDeviceFinderTest.swift; sourceTree = "<group>"; };
@@ -6347,10 +6343,7 @@
 		D9DB37FA2B72A85C007B16C8 /* CallRecordDeleteAllJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordDeleteAllJobRecord.swift; sourceTree = "<group>"; };
 		D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkPresentQRCodeViewController.swift; sourceTree = "<group>"; };
 		D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHeaderButton.swift; sourceTree = "<group>"; };
-		D9DCFDAD2A3BB25200C73C0B /* QRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeGenerator.swift; sourceTree = "<group>"; };
-		D9DCFDAF2A3BC4A400C73C0B /* SignalBrandedQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalBrandedQRCodeGenerator.swift; sourceTree = "<group>"; };
-		D9DCFDB12A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportableQRCodeGenerator.swift; sourceTree = "<group>"; };
-		D9DCFDB32A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicDisplayQRCodeGenerator.swift; sourceTree = "<group>"; };
+		D9DCFDAF2A3BC4A400C73C0B /* QRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeGenerator.swift; sourceTree = "<group>"; };
 		D9E335A829933B1A00825677 /* Usernames+HashedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+HashedUsername.swift"; sourceTree = "<group>"; };
 		D9E43AF32CC193D70001536E /* BackupSubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSubscriptionManager.swift; sourceTree = "<group>"; };
 		D9E43B932CC194140001536E /* CallButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallButton.swift; sourceTree = "<group>"; };
@@ -6595,7 +6588,6 @@
 		E19B35432CD2E8C40078A678 /* ad_hoc_call_01.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = ad_hoc_call_01.txtproto; sourceTree = "<group>"; };
 		E19B35442CD2E8C40078A678 /* ad_hoc_call_02.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = ad_hoc_call_02.binproto; sourceTree = "<group>"; };
 		E19B35452CD2E8C40078A678 /* ad_hoc_call_02.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = ad_hoc_call_02.txtproto; sourceTree = "<group>"; };
-		E19C3D932CF6B35A00F2C496 /* SignalBrandedQRCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalBrandedQRCodes.swift; sourceTree = "<group>"; };
 		E1A090372A4B909B00F2BE8B /* RecipientHidingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientHidingManager.swift; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E1B628BC2CCC59E600C4DC7F /* chat_item_view_once_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_view_once_00.binproto; sourceTree = "<group>"; };
@@ -12233,11 +12225,8 @@
 			isa = PBXGroup;
 			children = (
 				D96343082A4B62CC0086C052 /* Bitmaps */,
-				D9DCFDB32A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift */,
-				D9DCFDB12A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift */,
-				D9DCFDAD2A3BB25200C73C0B /* QRCodeGenerator.swift */,
-				D9BF53352D08149D00EC3DF0 /* QRCodeView2.swift */,
-				D9DCFDAF2A3BC4A400C73C0B /* SignalBrandedQRCodeGenerator.swift */,
+				D9DCFDAF2A3BC4A400C73C0B /* QRCodeGenerator.swift */,
+				D9BF53352D08149D00EC3DF0 /* QRCodeView.swift */,
 			);
 			path = QRCodes;
 			sourceTree = "<group>";
@@ -12395,8 +12384,7 @@
 		E19C3D922CF6B34200F2C496 /* QRCodes */ = {
 			isa = PBXGroup;
 			children = (
-				D938307D2A70441D006CDCDE /* SignalBrandedQRCodes+QRCodeColor.swift */,
-				E19C3D932CF6B35A00F2C496 /* SignalBrandedQRCodes.swift */,
+				D938307D2A70441D006CDCDE /* QRCodeColor.swift */,
 			);
 			path = QRCodes;
 			sourceTree = "<group>";
@@ -16020,7 +16008,6 @@
 				D99554752AF5AFE90001E15C /* BadgeThanksSheetPresenter.swift in Sources */,
 				B9DB91702AF46B9A0051A3FD /* BankTransferMandateViewController.swift in Sources */,
 				349439D824360D63001045F7 /* BaseGroupMemberViewController.swift in Sources */,
-				D9DCFDB42A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift in Sources */,
 				34F1072026D005340053EF4D /* BatchUpdate.swift in Sources */,
 				66DA8DF82C910D3B00799E70 /* BGProcessingTaskRunner.swift in Sources */,
 				D9EB22202A4B636C00C73E1D /* Bitmaps+Image.swift in Sources */,
@@ -16314,7 +16301,6 @@
 				3428577A26BD8777005A2A96 /* EmojiWithSkinTones.swift in Sources */,
 				88A505F423DA16E10005C012 /* ExperienceUpgradeManager.swift in Sources */,
 				88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */,
-				D9DCFDB22A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift in Sources */,
 				326DF2612739F4D90017B789 /* FeaturedBadgeViewController.swift in Sources */,
 				344A761124B366F4009D69A5 /* FlagsViewController.swift in Sources */,
 				D9E43BFC2CC194140001536E /* FlipCameraTooltip.swift in Sources */,
@@ -16511,9 +16497,9 @@
 				88DF81A128E1538000F8BA80 /* ProxyLinkSheetViewController.swift in Sources */,
 				88DF81A328E15D1600F8BA80 /* ProxySettingsViewController.swift in Sources */,
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
-				D9DCFDAE2A3BB25200C73C0B /* QRCodeGenerator.swift in Sources */,
+				D9DCFDB02A3BC4A400C73C0B /* QRCodeGenerator.swift in Sources */,
 				B9E322D52CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift in Sources */,
-				D9BF53362D0814A000EC3DF0 /* QRCodeView2.swift in Sources */,
+				D9BF53362D0814A000EC3DF0 /* QRCodeView.swift in Sources */,
 				3470C8742554926200F5847C /* QuotedMessageView.swift in Sources */,
 				D9E43C0A2CC194140001536E /* RaisedHandsToast.swift in Sources */,
 				88863A56280CD04B00977F69 /* ReactionFlybyAnimation.swift in Sources */,
@@ -16580,7 +16566,6 @@
 				886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */,
 				F915A77029CB6D4C00EB6F68 /* ShareActivityUtil.swift in Sources */,
 				880D90302481E617003D2B14 /* SignalApp.swift in Sources */,
-				D9DCFDB02A3BC4A400C73C0B /* SignalBrandedQRCodeGenerator.swift in Sources */,
 				D9E43C2D2CC194140001536E /* SignalCall.swift in Sources */,
 				8822558D26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift in Sources */,
 				D9E43C0F2CC194140001536E /* SimulatorCallUIAdaptee.swift in Sources */,
@@ -17536,6 +17521,7 @@
 				720547F72B9C98C600E2CF2F /* ProximityMonitoringManager.swift in Sources */,
 				503B47222AF0569B00978266 /* PublicKey.swift in Sources */,
 				F9C5CD91289453B300548EEE /* PushChallenge.swift in Sources */,
+				D938307E2A70441D006CDCDE /* QRCodeColor.swift in Sources */,
 				669573022C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift in Sources */,
 				667BB2062C58076400E79B57 /* QueuedBackupAttachmentDownload.swift in Sources */,
 				661681862C9A1ADF00A39C12 /* QueuedBackupAttachmentUpload.swift in Sources */,
@@ -17639,8 +17625,6 @@
 				7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */,
 				7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */,
 				664E8D882BD6D87700C4968A /* SignalAttachmentCloner.swift in Sources */,
-				D938307E2A70441D006CDCDE /* SignalBrandedQRCodes+QRCodeColor.swift in Sources */,
-				E19C3D942CF6B36500F2C496 /* SignalBrandedQRCodes.swift in Sources */,
 				F9C5CC8F289453B300548EEE /* SignalIOS.pb.swift in Sources */,
 				F9C5CC9E289453B300548EEE /* SignalIOSProto.swift in Sources */,
 				725465382BA01FAA00EABFD2 /* SignalMessagingJobQueues.swift in Sources */,

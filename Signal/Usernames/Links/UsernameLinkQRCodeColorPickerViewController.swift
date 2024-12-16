@@ -7,31 +7,29 @@ import SignalServiceKit
 import SignalUI
 
 protocol UsernameLinkQRCodeColorPickerDelegate: SheetDismissalDelegate {
-    func didFinalizeSelectedColor(color: SignalBrandedQRCodes.QRCodeColor)
+    func didFinalizeSelectedColor(color: QRCodeColor)
 }
 
 class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
-    private let startingColor: SignalBrandedQRCodes.QRCodeColor
-    private var currentColor: SignalBrandedQRCodes.QRCodeColor
+    private let startingColor: QRCodeColor
+    private var currentColor: QRCodeColor
 
     private let username: String
-    private let qrCodeTemplateImage: UIImage
+    private let qrCode: UIImage
 
     private weak var colorPickerDelegate: UsernameLinkQRCodeColorPickerDelegate?
 
     init(
-        currentColor: SignalBrandedQRCodes.QRCodeColor,
+        currentColor: QRCodeColor,
         username: String,
-        qrCodeTemplateImage: UIImage,
+        qrCode: UIImage,
         delegate: UsernameLinkQRCodeColorPickerDelegate
     ) {
-        owsPrecondition(qrCodeTemplateImage.renderingMode == .alwaysTemplate)
-
         self.startingColor = currentColor
         self.currentColor = currentColor
 
         self.username = username
-        self.qrCodeTemplateImage = qrCodeTemplateImage
+        self.qrCode = qrCode
 
         self.colorPickerDelegate = delegate
 
@@ -44,13 +42,13 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
     ///
     /// This view has a fixed width, built around the fixed-width QR code.
     private func buildQRCodeView() -> UIView {
-        let qrCodeView: QRCodeView2 = {
-            let view = QRCodeView2(
+        let qrCodeView: QRCodeView = {
+            let view = QRCodeView(
                 qrCodeTintColor: currentColor,
                 contentInset: 16
             )
             view.autoSetDimensions(to: .square(184))
-            view.setQRCode(image: qrCodeTemplateImage)
+            view.setQRCode(image: qrCode)
             return view
         }()
 
@@ -85,8 +83,8 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
     }
 
     private func buildColorOptionsView() -> UIView {
-        let colorOptionButtons: [SignalBrandedQRCodes.QRCodeColor: ColorOptionButton] = {
-            return SignalBrandedQRCodes.QRCodeColor.allCases.reduce(into: [:]) { partial, color in
+        let colorOptionButtons: [QRCodeColor: ColorOptionButton] = {
+            return QRCodeColor.allCases.reduce(into: [:]) { partial, color in
                 let button = ColorOptionButton(
                     size: 56,
                     color: color.background,
@@ -99,7 +97,7 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
             }
         }()
 
-        func stack(colors: [SignalBrandedQRCodes.QRCodeColor]) -> UIStackView {
+        func stack(colors: [QRCodeColor]) -> UIStackView {
             let stack = UIStackView(arrangedSubviews: colors.map { color in
                 return colorOptionButtons[color]!
             })
@@ -197,7 +195,7 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
         dismiss(animated: true)
     }
 
-    private func didSelectColor(color selectedColor: SignalBrandedQRCodes.QRCodeColor) {
+    private func didSelectColor(color selectedColor: QRCodeColor) {
         currentColor = selectedColor
         reloadTableContents()
     }

@@ -25,8 +25,8 @@ public class MockLocalUsernameManager: LocalUsernameManager {
 
     public func setLocalUsername(username: String, usernameLink: Usernames.UsernameLink, tx: DBWriteTransaction) { owsFail("Not implemented!") }
     public func clearLocalUsername(tx: DBWriteTransaction) { owsFail("Not implemented!") }
-    public func usernameLinkQRCodeColor(tx: DBReadTransaction) -> SignalBrandedQRCodes.QRCodeColor { owsFail("Not implemented!") }
-    public func setUsernameLinkQRCodeColor(color: SignalBrandedQRCodes.QRCodeColor, tx: DBWriteTransaction) { owsFail("Not implemented!") }
+    public func usernameLinkQRCodeColor(tx: DBReadTransaction) -> QRCodeColor { owsFail("Not implemented!") }
+    public func setUsernameLinkQRCodeColor(color: QRCodeColor, tx: DBWriteTransaction) { owsFail("Not implemented!") }
     public func reserveUsername(usernameCandidates: Usernames.HashedUsername.GeneratedCandidates) -> Guarantee<Usernames.RemoteMutationResult<Usernames.ReservationResult>> { owsFail("Not implemented!") }
     public func confirmUsername(reservedUsername: Usernames.HashedUsername, tx: DBWriteTransaction) -> Guarantee<Usernames.RemoteMutationResult<Usernames.ConfirmationResult>> { owsFail("Not implemented!") }
     public func deleteUsername(tx: DBWriteTransaction) -> Guarantee<Usernames.RemoteMutationResult<Void>> { owsFail("Not implemented!") }

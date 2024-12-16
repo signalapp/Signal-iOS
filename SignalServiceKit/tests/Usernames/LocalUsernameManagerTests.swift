@@ -92,7 +92,7 @@ class LocalUsernameManagerTests: XCTestCase {
     }
 
     func testUsernameQRCodeColorChanges() {
-        func color() -> SignalBrandedQRCodes.QRCodeColor {
+        func color() -> QRCodeColor {
             return mockDB.read { tx in
                 return localUsernameManager.usernameLinkQRCodeColor(tx: tx)
             }

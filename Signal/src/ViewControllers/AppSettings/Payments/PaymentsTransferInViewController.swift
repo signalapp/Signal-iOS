@@ -122,7 +122,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             return
         }
 
-        guard let qrImage = ExportableQRCodeGenerator().generateQRCode(
+        guard let qrImage = QRCodeGenerator().generateUnstyledQRCode(
             data: walletAddressBase58Data
         ) else {
             owsFailDebug("Failed to generate QR code image!")

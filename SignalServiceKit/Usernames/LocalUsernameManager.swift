@@ -45,11 +45,11 @@ public protocol LocalUsernameManager {
     func clearLocalUsername(tx: DBWriteTransaction)
 
     /// Returns the color to be used for the local user's username link QR code.
-    func usernameLinkQRCodeColor(tx: DBReadTransaction) -> SignalBrandedQRCodes.QRCodeColor
+    func usernameLinkQRCodeColor(tx: DBReadTransaction) -> QRCodeColor
 
     /// Sets the color to be used for the local user's username link QR code.
     func setUsernameLinkQRCodeColor(
-        color: SignalBrandedQRCodes.QRCodeColor,
+        color: QRCodeColor,
         tx: DBWriteTransaction
     )
 
@@ -236,7 +236,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             return nil
         }
 
-        func usernameLinkColor(tx: DBReadTransaction) -> SignalBrandedQRCodes.QRCodeColor {
+        func usernameLinkColor(tx: DBReadTransaction) -> QRCodeColor {
             return (try? kvStore.getCodableValue(
                 forKey: Constants.usernameLinkQRCodeColorKey,
                 transaction: tx
@@ -252,7 +252,7 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
             kvStore.setData(usernameLink?.entropy, key: Constants.usernameLinkEntropyKey, transaction: tx)
         }
 
-        func setUsernameLinkColor(color: SignalBrandedQRCodes.QRCodeColor, tx: DBWriteTransaction) {
+        func setUsernameLinkColor(color: QRCodeColor, tx: DBWriteTransaction) {
             try? kvStore.setCodable(color, key: Constants.usernameLinkQRCodeColorKey, transaction: tx)
         }
     }
@@ -366,12 +366,12 @@ class LocalUsernameManagerImpl: LocalUsernameManager {
 
     func usernameLinkQRCodeColor(
         tx: DBReadTransaction
-    ) -> SignalBrandedQRCodes.QRCodeColor {
+    ) -> QRCodeColor {
         return usernameStore.usernameLinkColor(tx: tx)
     }
 
     func setUsernameLinkQRCodeColor(
-        color: SignalBrandedQRCodes.QRCodeColor,
+        color: QRCodeColor,
         tx: DBWriteTransaction
     ) {
         usernameStore.setUsernameLinkColor(color: color, tx: tx)

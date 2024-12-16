@@ -6,15 +6,15 @@
 import SignalUI
 import SignalServiceKit
 
-class QRCodeView2: UIView {
-    private let qrCodeTintColor: SignalBrandedQRCodes.QRCodeColor
+class QRCodeView: UIView {
+    private let qrCodeTintColor: QRCodeColor
 
     private let loadingSpinner = UIActivityIndicatorView()
     private let qrCodeImageView = UIImageView()
     private let errorImageView: UIImageView = .withTemplateImageName("error-circle", tintColor: .ows_gray25)
 
     init(
-        qrCodeTintColor: SignalBrandedQRCodes.QRCodeColor = .blue,
+        qrCodeTintColor: QRCodeColor = .blue,
         contentInset: CGFloat = 20,
         cornerRadius: CGFloat = 12,
         borderWidth: CGFloat = 2
@@ -101,11 +101,7 @@ class QRCodeView2: UIView {
     }
 
     func setQRCode(url: URL) {
-        // TODO: @sasha investigate if we can strip the colors from the generator code
-        let qrCodeImage = SignalBrandedQRCodeGenerator(
-            foregroundColor: qrCodeTintColor.foreground,
-            backgroundColor: .clear
-        ).generateQRCode(url: url)
+        let qrCodeImage = QRCodeGenerator().generateQRCode(url: url)
 
         if let qrCodeImage {
             setMode(.qrCodeImage(qrCodeImage))

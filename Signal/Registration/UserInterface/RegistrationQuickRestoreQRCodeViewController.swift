@@ -131,14 +131,14 @@ private struct QRCode: View {
 private struct QRCodeViewRepresentable: UIViewRepresentable {
     var url: URL
 
-    func makeUIView(context: Context) -> QRCodeView2 {
-        let view = QRCodeView2(contentInset: 4)
+    func makeUIView(context: Context) -> QRCodeView {
+        let view = QRCodeView(contentInset: 4)
 
         view.setQRCode(url: url)
         return view
     }
 
-    func updateUIView(_ qrCodeView: QRCodeView2, context: Context) {
+    func updateUIView(_ qrCodeView: QRCodeView, context: Context) {
         // The url will never change, so there's no need to implement this.
     }
 }

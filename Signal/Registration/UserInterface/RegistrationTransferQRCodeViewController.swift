@@ -19,7 +19,7 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
         return isQRCodeExpanded ? .lightContent : super.preferredStatusBarStyle
     }
 
-    private lazy var qrCodeView = QRCodeView2(contentInset: 8)
+    private lazy var qrCodeView = QRCodeView(contentInset: 8)
 
     private lazy var expansionButton: ExpansionButton = {
         let button = ExpansionButton()

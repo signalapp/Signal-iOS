@@ -16,7 +16,7 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
 
     private var qrCodeWrapperView: UIView!
     private var qrCodeWrapperViewSizeConstraints: [NSLayoutConstraint]!
-    private var qrCodeView: QRCodeView2!
+    private var qrCodeView: QRCodeView!
     private var qrCodeRefreshButton: OWSButton!
 
     private var rotateQRCodeTask: Task<Void, Never>?
@@ -67,7 +67,7 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
         qrCodeWrapperView.backgroundColor = .ows_gray02
         qrCodeWrapperView.layer.cornerRadius = 24
 
-        qrCodeView = QRCodeView2()
+        qrCodeView = QRCodeView()
 
         qrCodeRefreshButton = OWSRoundedButton()
         qrCodeRefreshButton.setAttributedTitle(
