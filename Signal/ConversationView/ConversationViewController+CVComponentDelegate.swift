@@ -265,13 +265,15 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction {
         AssertIsOnMainThread()
 
-        if let previewController = attachment.createQLPreviewController() {
-            self.present(previewController, animated: true, completion: nil)
-            return .handledByDelegate
-        } else if PKAddPassesViewController.canAddPasses(),
-                  let pkPass = attachment.representedPKPass(),
-                  let addPassesVC = PKAddPassesViewController(pass: pkPass) {
+        if
+            PKAddPassesViewController.canAddPasses(),
+            let pkPass = attachment.representedPKPass(),
+            let addPassesVC = PKAddPassesViewController(pass: pkPass)
+        {
             self.present(addPassesVC, animated: true, completion: nil)
+            return .handledByDelegate
+        } else if let previewController = attachment.createQLPreviewController() {
+            self.present(previewController, animated: true, completion: nil)
             return .handledByDelegate
         } else {
             return .default
