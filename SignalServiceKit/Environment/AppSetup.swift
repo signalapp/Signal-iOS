@@ -1117,7 +1117,9 @@ public class AppSetup {
                 storyStore: backupStoryStore,
                 threadStore: backupThreadStore
             ),
-            localRecipientArchiver: MessageBackupLocalRecipientArchiver(),
+            localRecipientArchiver: MessageBackupLocalRecipientArchiver(
+                profileManager: MessageBackup.Wrappers.ProfileManager(profileManager)
+            ),
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             messagePipelineSupervisor: messagePipelineSupervisor,
             mrbkStore: mrbkStore,

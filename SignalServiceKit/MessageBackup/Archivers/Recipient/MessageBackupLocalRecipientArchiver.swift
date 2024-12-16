@@ -18,6 +18,11 @@ extension MessageBackup {
 public class MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver {
     private static let localRecipientId = MessageBackup.RecipientId(value: 1)
 
+    private let profileManager: MessageBackup.Shims.ProfileManager
+    public init(profileManager: MessageBackup.Shims.ProfileManager) {
+        self.profileManager = profileManager
+    }
+
     /// Archive the local recipient.
     public func archiveLocalRecipient(
         stream: MessageBackupProtoOutputStream
@@ -51,6 +56,7 @@ public class MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver {
         context: MessageBackup.RecipientRestoringContext
     ) -> MessageBackup.RestoreLocalRecipientResult {
         context[recipient.recipientId] = .localAddress
+        profileManager.addToWhitelist(context.localIdentifiers.aciAddress, tx: context.tx)
         return .success
     }
 }
