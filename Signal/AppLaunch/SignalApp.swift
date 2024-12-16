@@ -253,6 +253,25 @@ extension SignalApp {
     }
 
     @MainActor
+    static func resetLinkedAppDataWithUI(
+        currentDeviceId: Int,
+        keyFetcher: GRDBKeyFetcher = SSKEnvironment.shared.databaseStorageRef.keyFetcher
+    ) {
+        Logger.info("")
+
+        guard let fromVC = UIApplication.shared.frontmostViewController else { return }
+        ModalActivityIndicatorViewController.present(
+            fromViewController: fromVC,
+            canCancel: false,
+            asyncBlock: { _ in
+                // Best effort to unlink ourselves from the server.
+                try? await DependenciesBridge.shared.deviceService.unlinkDevice(deviceId: currentDeviceId)
+                SignalApp.resetAppDataAndExit(keyFetcher: keyFetcher)
+            }
+        )
+    }
+
+    @MainActor
     static func resetAppDataAndExit(keyFetcher: GRDBKeyFetcher) -> Never {
         resetAppData(keyFetcher: keyFetcher)
         exit(0)

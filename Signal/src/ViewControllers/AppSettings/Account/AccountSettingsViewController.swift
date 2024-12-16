@@ -215,7 +215,8 @@ class AccountSettingsViewController: OWSTableViewController2 {
             proceedTitle: OWSLocalizedString("PROCEED_BUTTON", comment: ""),
             proceedStyle: .destructive
         ) { _ in
-            SignalApp.resetAppDataWithUI()
+            let deviceId = Int(DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction)
+            SignalApp.resetLinkedAppDataWithUI(currentDeviceId: deviceId)
         }
     }
 

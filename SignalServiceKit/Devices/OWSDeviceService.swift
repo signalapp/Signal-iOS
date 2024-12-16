@@ -10,13 +10,20 @@ public protocol OWSDeviceService {
     func refreshDevices() async throws -> Bool
 
     /// Unlink the given device.
-    func unlinkDevice(_ device: OWSDevice) async throws
+    func unlinkDevice(deviceId: Int) async throws
 
     /// Renames a device with the given encrypted name.
     func renameDevice(
         device: OWSDevice,
         toEncryptedName encryptedName: String
     ) async throws
+}
+
+extension OWSDeviceService {
+
+    public func unlinkDevice(_ device: OWSDevice) async throws {
+        try await unlinkDevice(deviceId: device.deviceId)
+    }
 }
 
 public enum DeviceRenameError: Error {
@@ -117,9 +124,9 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
 
     // MARK: -
 
-    func unlinkDevice(_ device: OWSDevice) async throws {
+    func unlinkDevice(deviceId: Int) async throws {
         _ = try await networkManager.asyncRequest(
-            .deleteDevice(device)
+            .deleteDevice(deviceId: deviceId)
         )
     }
 
@@ -149,10 +156,10 @@ private extension TSRequest {
     }
 
     static func deleteDevice(
-        _ device: OWSDevice
+        deviceId: Int
     ) -> TSRequest {
         return TSRequest(
-            url: URL(string: "/v1/devices/\(device.deviceId)")!,
+            url: URL(string: "/v1/devices/\(deviceId)")!,
             method: "DELETE",
             parameters: nil
         )
