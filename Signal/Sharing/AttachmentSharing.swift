@@ -134,34 +134,93 @@ public class AttachmentSharing {
     }
 }
 
-extension ReferencedAttachmentStream {
+extension Array where Element == ReferencedAttachmentStream {
 
-    public func asShareableAttachment() throws -> ShareableAttachment? {
-        return try self.attachmentStream.asShareableAttachment(sourceFilename: reference.sourceFilename)
-    }
-}
+    public func asShareableAttachments() throws -> [ShareableAttachment] {
+        var hadUrlType = false
+        var types = [ShareableAttachment.ShareType]()
+        var dedupedSourceFilenames = [String?]()
+        var sourceFilenamesSet = Set<String>()
+        for attachment in self {
+            let shareType = ShareableAttachment.shareType(attachment.attachmentStream)
+            switch shareType {
+            case .decryptedFileURL:
+                hadUrlType = true
+                types.append(.decryptedFileURL)
+            case .image:
+                types.append(.image)
+            }
 
-extension AttachmentStream {
+            if
+                let sourceFilename = attachment.reference.sourceFilename,
+                sourceFilenamesSet.contains(sourceFilename)
+            {
+                // Avoid source filename collisions.
+                let pathExtension = (sourceFilename as NSString).pathExtension
+                let normalizedFilename = (sourceFilename as NSString)
+                    .deletingPathExtension
+                    .trimmingCharacters(in: .whitespaces)
 
-    public func asShareableAttachment(sourceFilename: String?) throws -> ShareableAttachment? {
-        return try ShareableAttachment(self, sourceFilename: sourceFilename)
+                var i = 0
+                sourceFilenameLoop: while true {
+                    i += 1
+                    var newSourceFilename = normalizedFilename + "_\(i)"
+                    newSourceFilename = (newSourceFilename as NSString).appendingPathExtension(pathExtension) ?? newSourceFilename
+                    if !sourceFilenamesSet.contains(newSourceFilename) {
+                        dedupedSourceFilenames.append(newSourceFilename)
+                        sourceFilenamesSet.insert(newSourceFilename)
+                        break sourceFilenameLoop
+                    }
+                }
+            } else {
+                dedupedSourceFilenames.append(attachment.reference.sourceFilename)
+                _ = attachment.reference.sourceFilename.map { sourceFilenamesSet.insert($0) }
+            }
+        }
+        if hadUrlType {
+            // Once one of them are all file, they all have to be files.
+            types = [ShareableAttachment.ShareType](repeating: .decryptedFileURL, count: self.count)
+        }
+
+        return try zip(zip(self, types), dedupedSourceFilenames).compactMap {
+            let ((attachment, shareType), sourceFilename) = $0
+            return try ShareableAttachment(
+                attachment.attachmentStream,
+                sourceFilename: sourceFilename,
+                shareType: shareType
+            )
+        }
     }
 }
 
 public class ShareableAttachment: NSObject, UIActivityItemSource {
 
-    /// Throws an error if decryption fails.
-    /// Returns nil if the attachment cannot be shared with the system sharesheet.
-    public init?(_ attachmentStream: AttachmentStream, sourceFilename: String?) throws {
-        self.attachmentStream = attachmentStream
+    fileprivate static func shareType(_ attachmentStream: AttachmentStream) -> ShareType {
         if attachmentStream.mimeType == MimeType.imageWebp.rawValue {
-            self.shareType = .image
-            return
+            return .image
         }
         if
             !MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(attachmentStream.mimeType),
             MimeTypeUtil.isSupportedImageMimeType(attachmentStream.mimeType)
         {
+            return .image
+        }
+
+        return .decryptedFileURL
+    }
+
+    /// Throws an error if decryption fails.
+    /// Returns nil if the attachment cannot be shared with the system sharesheet.
+    fileprivate init?(
+        _ attachmentStream: AttachmentStream,
+        sourceFilename: String?,
+        shareType: ShareType
+    ) throws {
+        self.attachmentStream = attachmentStream
+        switch shareType {
+        case .decryptedFileURL:
+            break
+        case .image:
             self.shareType = .image
             return
         }
@@ -171,7 +230,7 @@ public class ShareableAttachment: NSObject, UIActivityItemSource {
             self.shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy(filename: sourceFilename))
             return
         case .image, .animatedImage:
-            shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy(filename: sourceFilename))
+            self.shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy(filename: sourceFilename))
         case .video:
             let decryptedFileUrl = try attachmentStream.makeDecryptedCopy(filename: sourceFilename)
             // Some videos don't support sharing.
@@ -184,7 +243,7 @@ public class ShareableAttachment: NSObject, UIActivityItemSource {
             guard MimeTypeUtil.isSupportedVisualMediaMimeType(attachmentStream.mimeType) else {
                 return nil
             }
-            shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy(filename: sourceFilename))
+            self.shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy(filename: sourceFilename))
         }
     }
 
@@ -196,7 +255,12 @@ public class ShareableAttachment: NSObject, UIActivityItemSource {
     // (e.g. an album with photos and videos) the OS will still incorrectly
     // order the video items. I haven't found any way to work around this
     // since videos may only be shared as URLs.
-    private enum ShareType {
+    fileprivate enum ShareType {
+        case decryptedFileURL
+        case image
+    }
+
+    private enum PreparedShareType {
         case decryptedFileURL(URL)
         /// We load the image into memory when it is requested, so that we theoretically
         /// can load them one at a time and not all up front when sharing more than one.
@@ -204,7 +268,7 @@ public class ShareableAttachment: NSObject, UIActivityItemSource {
     }
 
     private let attachmentStream: AttachmentStream
-    private let shareType: ShareType
+    private let shareType: PreparedShareType
 
     deinit {
         switch shareType {

@@ -1711,9 +1711,10 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
             return
         }
 
-        let items: [ShareableAttachment] = indexPaths.compactMap {
-            return try? self.galleryItem(at: $0)?.attachmentStream.asShareableAttachment()
+        let attachments = indexPaths.compactMap {
+            self.galleryItem(at: $0)?.attachmentStream
         }
+        let items: [ShareableAttachment] = (try? attachments.asShareableAttachments()) ?? []
         guard items.count == indexPaths.count else {
             owsFailDebug("trying to delete an item that never loaded")
             return
