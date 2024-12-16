@@ -38,10 +38,10 @@ public enum PrimaryLinkNSyncProgressPhase: String {
 
     var percentOfTotalProgress: UInt64 {
         return switch self {
-        case .waitingForLinking: 20
-        case .exportingBackup: 35
-        case .uploadingBackup: 35
-        case .finishing: 10
+        case .waitingForLinking: 30
+        case .exportingBackup: 25
+        case .uploadingBackup: 40
+        case .finishing: 5
         }
     }
 }
@@ -64,9 +64,9 @@ public enum SecondaryLinkNSyncProgressPhase: String {
 
     var percentOfTotalProgress: UInt64 {
         return switch self {
-        case .waitingForBackup: 20
-        case .downloadingBackup: 40
-        case .importingBackup: 40
+        case .waitingForBackup: 50
+        case .downloadingBackup: 30
+        case .importingBackup: 20
         }
     }
 }
@@ -414,7 +414,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             unitCount: 100
         )
         return try await progressSource.updatePeriodically(
-            estimatedTimeToCompletion: 1,
+            estimatedTimeToCompletion: 3,
             work: { () async throws(PrimaryLinkNSyncError) -> Void in
                 try await self._markEphemeralBackupUploaded(
                     waitForDeviceToLinkResponse: waitForDeviceToLinkResponse,
@@ -460,7 +460,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             unitCount: 100
         )
         return try await progressSource.updatePeriodically(
-            estimatedTimeToCompletion: 20,
+            estimatedTimeToCompletion: 40,
             work: { () async throws(SecondaryLinkNSyncError) -> Requests.ExportAndUploadBackupResult in
                 try await self._waitForPrimaryToUploadBackup(auth: auth)
             }
