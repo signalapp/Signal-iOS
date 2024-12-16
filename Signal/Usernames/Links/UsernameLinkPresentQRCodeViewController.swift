@@ -33,6 +33,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
                     backgroundColor: .clear
                 ).generateQRCode(url: usernameLink.url)
             {
+                // TODO: @sasha does this need to be a template image?
                 let templateImage = qrCodeImage.withRenderingMode(.alwaysTemplate)
 
                 return .available(
@@ -124,24 +125,20 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
     /// Builds the QR code view, including the QR code, colored background, and
     /// display of the current username.
     private func buildQRCodeView() -> UIView {
-        let qrCodeView: QRCodeView = {
-            let qrCodeView = QRCodeView(useCircularWrapper: false)
-            qrCodeView.backgroundColor = .ows_white
-            qrCodeView.layoutMargins = UIEdgeInsets(margin: 16)
-            qrCodeView.layer.cornerRadius = 12
-            qrCodeView.layer.borderWidth = 2
-            qrCodeView.layer.borderColor = qrCodeColor.paddingBorder.cgColor
+        let qrCodeView: QRCodeView2 = {
+            let qrCodeView = QRCodeView2(
+                qrCodeTintColor: qrCodeColor,
+                contentInset: 16
+            )
 
             switch usernameLinkState {
             case .resetting:
+                // The QR code view will be in a "loading" state already.
                 break
             case let .available(_, qrCodeTemplateImage):
-                qrCodeView.setQR(
-                    templateImage: qrCodeTemplateImage,
-                    tintColor: qrCodeColor.foreground
-                )
+                qrCodeView.setQRCode(image: qrCodeTemplateImage)
             case .corrupted:
-                qrCodeView.setQRError()
+                qrCodeView.setError()
             }
 
             return qrCodeView
@@ -182,8 +179,8 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         wrapperView.addSubview(copyUsernameButton)
 
         qrCodeView.autoPinTopToSuperviewMargin()
-        qrCodeView.autoAlignAxis(toSuperviewAxis: .vertical)
-        qrCodeView.autoSetDimension(.width, toSize: 214)
+        qrCodeView.autoSetDimensions(to: .square(214))
+        qrCodeView.autoHCenterInSuperview()
 
         qrCodeView.autoPinEdge(.bottom, to: .top, of: copyUsernameButton, withOffset: -16)
 

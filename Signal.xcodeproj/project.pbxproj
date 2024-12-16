@@ -1513,7 +1513,6 @@
 		889DFA12264EE77C00D03921 /* GroupDescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889DFA11264EE77C00D03921 /* GroupDescriptionViewController.swift */; };
 		88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A357B823639384009D6B9A /* MemberActionSheet.swift */; };
 		88A4CC10246CE2760082211F /* TransferProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC0F246CE2760082211F /* TransferProgressView.swift */; };
-		88A4CC12246CE2F50082211F /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC11246CE2F50082211F /* QRCodeView.swift */; };
 		88A4CC17246CE6190082211F /* OutgoingDeviceTransferNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC16246CE6190082211F /* OutgoingDeviceTransferNavigationController.swift */; };
 		88A4CC19246CE6810082211F /* OutgoingDeviceTransferInitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC18246CE6810082211F /* OutgoingDeviceTransferInitialViewController.swift */; };
 		88A4CC1B246CEC8B0082211F /* OutgoingDeviceTransferQRScanningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC1A246CEC8B0082211F /* OutgoingDeviceTransferQRScanningViewController.swift */; };
@@ -2526,6 +2525,7 @@
 		D9B95A9829E8906200D7CB95 /* OWSDeviceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */; };
 		D9B95A9B29E8923B00D7CB95 /* InMemoryDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */; };
 		D9B95A9D29E894A600D7CB95 /* ValidatableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */; };
+		D9BF53362D0814A000EC3DF0 /* QRCodeView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BF53352D08149D00EC3DF0 /* QRCodeView2.swift */; };
 		D9BFB8BF2C4EE33C00D67881 /* MessageBackupThreadMergeChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BFB8BE2C4EE33C00D67881 /* MessageBackupThreadMergeChatUpdateArchiver.swift */; };
 		D9BFB8C82C4F02C900D67881 /* MessageBackupSessionSwitchoverChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BFB8C72C4F02C900D67881 /* MessageBackupSessionSwitchoverChatUpdateArchiver.swift */; };
 		D9C0AE652BD7103100FCB05E /* OWSDeviceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE632BD7103100FCB05E /* OWSDeviceStore.swift */; };
@@ -5237,7 +5237,6 @@
 		88A35828236402D3009D6B9A /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/bn.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88A4717228664DE3001A3065 /* BaseMemberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseMemberViewController.swift; sourceTree = "<group>"; };
 		88A4CC0F246CE2760082211F /* TransferProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferProgressView.swift; sourceTree = "<group>"; };
-		88A4CC11246CE2F50082211F /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
 		88A4CC16246CE6190082211F /* OutgoingDeviceTransferNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceTransferNavigationController.swift; sourceTree = "<group>"; };
 		88A4CC18246CE6810082211F /* OutgoingDeviceTransferInitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceTransferInitialViewController.swift; sourceTree = "<group>"; };
 		88A4CC1A246CEC8B0082211F /* OutgoingDeviceTransferQRScanningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceTransferQRScanningViewController.swift; sourceTree = "<group>"; };
@@ -6291,6 +6290,7 @@
 		D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceTest.swift; sourceTree = "<group>"; };
 		D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryDB.swift; sourceTree = "<group>"; };
 		D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatableModel.swift; sourceTree = "<group>"; };
+		D9BF53352D08149D00EC3DF0 /* QRCodeView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView2.swift; sourceTree = "<group>"; };
 		D9BFB8BE2C4EE33C00D67881 /* MessageBackupThreadMergeChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupThreadMergeChatUpdateArchiver.swift; sourceTree = "<group>"; };
 		D9BFB8C72C4F02C900D67881 /* MessageBackupSessionSwitchoverChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupSessionSwitchoverChatUpdateArchiver.swift; sourceTree = "<group>"; };
 		D9C0AE612BD7102500FCB05E /* InactiveLinkedDeviceFinderTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InactiveLinkedDeviceFinderTest.swift; sourceTree = "<group>"; };
@@ -12236,7 +12236,7 @@
 				D9DCFDB32A3BDC7400C73C0B /* BasicDisplayQRCodeGenerator.swift */,
 				D9DCFDB12A3BDAB000C73C0B /* ExportableQRCodeGenerator.swift */,
 				D9DCFDAD2A3BB25200C73C0B /* QRCodeGenerator.swift */,
-				88A4CC11246CE2F50082211F /* QRCodeView.swift */,
+				D9BF53352D08149D00EC3DF0 /* QRCodeView2.swift */,
 				D9DCFDAF2A3BC4A400C73C0B /* SignalBrandedQRCodeGenerator.swift */,
 			);
 			path = QRCodes;
@@ -16513,7 +16513,7 @@
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
 				D9DCFDAE2A3BB25200C73C0B /* QRCodeGenerator.swift in Sources */,
 				B9E322D52CD01956006DAF3B /* QRCodeScanOrPickDelegate.swift in Sources */,
-				88A4CC12246CE2F50082211F /* QRCodeView.swift in Sources */,
+				D9BF53362D0814A000EC3DF0 /* QRCodeView2.swift in Sources */,
 				3470C8742554926200F5847C /* QuotedMessageView.swift in Sources */,
 				D9E43C0A2CC194140001536E /* RaisedHandsToast.swift in Sources */,
 				88863A56280CD04B00977F69 /* ReactionFlybyAnimation.swift in Sources */,

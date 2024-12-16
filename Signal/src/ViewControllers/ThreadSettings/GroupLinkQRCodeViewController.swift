@@ -32,12 +32,13 @@ public class GroupLinkQRCodeViewController: OWSViewController {
 
     private func createContents() {
 
-        let qrCodeView = QRCodeView()
+        let qrCodeView = QRCodeView2()
+        qrCodeView.autoPinToSquareAspectRatio()
 
         do {
             let inviteLinkUrl = try groupModelV2.groupInviteLinkUrl()
 
-            qrCodeView.setQR(url: inviteLinkUrl)
+            qrCodeView.setQRCode(url: inviteLinkUrl)
         } catch {
             owsFailDebug("error \(error)")
         }

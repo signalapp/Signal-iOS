@@ -19,7 +19,7 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
         return isQRCodeExpanded ? .lightContent : super.preferredStatusBarStyle
     }
 
-    private lazy var qrCodeView = QRCodeView(useCircularWrapper: false)
+    private lazy var qrCodeView = QRCodeView2(contentInset: 8)
 
     private lazy var expansionButton: ExpansionButton = {
         let button = ExpansionButton()
@@ -179,14 +179,16 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
 
         AppEnvironment.shared.deviceTransferServiceRef.addObserver(self)
 
-        do {
-            let url = try AppEnvironment.shared.deviceTransferServiceRef.startAcceptingTransfersFromOldDevices(
-                mode: .primary
-            )
+        Task { @MainActor in
+            do {
+                let url = try AppEnvironment.shared.deviceTransferServiceRef.startAcceptingTransfersFromOldDevices(
+                    mode: .primary
+                )
 
-            qrCodeView.setQR(url: url)
-        } catch {
-            owsFailDebug("error \(error)")
+                qrCodeView.setQRCode(url: url)
+            } catch {
+                owsFailDebug("error \(error)")
+            }
         }
     }
 

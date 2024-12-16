@@ -44,27 +44,13 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
     ///
     /// This view has a fixed width, built around the fixed-width QR code.
     private func buildQRCodeView() -> UIView {
-        let qrCodeImageView: UIImageView = {
-            let imageView = UIImageView(image: qrCodeTemplateImage)
-
-            imageView.tintColor = currentColor.foreground
-            imageView.autoSetDimensions(to: .square(184))
-
-            return imageView
-        }()
-
-        let qrCodePaddingView: UIView = {
-            let view = UIView()
-
-            view.backgroundColor = .ows_white
-            view.layer.borderColor = currentColor.paddingBorder.cgColor
-            view.layer.borderWidth = 2
-            view.layer.cornerRadius = 12
-            view.layoutMargins = UIEdgeInsets(margin: 16)
-
-            view.addSubview(qrCodeImageView)
-            qrCodeImageView.autoPinEdgesToSuperviewMargins()
-
+        let qrCodeView: QRCodeView2 = {
+            let view = QRCodeView2(
+                qrCodeTintColor: currentColor,
+                contentInset: 16
+            )
+            view.autoSetDimensions(to: .square(184))
+            view.setQRCode(image: qrCodeTemplateImage)
             return view
         }()
 
@@ -86,12 +72,12 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
         backgroundView.layer.cornerRadius = 24
         backgroundView.layoutMargins = UIEdgeInsets(hMargin: 40, vMargin: 32)
 
-        backgroundView.addSubview(qrCodePaddingView)
+        backgroundView.addSubview(qrCodeView)
         backgroundView.addSubview(usernameLabel)
 
-        qrCodePaddingView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
+        qrCodeView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
 
-        qrCodePaddingView.autoPinEdge(.bottom, to: .top, of: usernameLabel, withOffset: -16)
+        qrCodeView.autoPinEdge(.bottom, to: .top, of: usernameLabel, withOffset: -16)
 
         usernameLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
 

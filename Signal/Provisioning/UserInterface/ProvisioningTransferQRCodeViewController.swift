@@ -9,37 +9,46 @@ import SignalUI
 
 class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
 
-    private let qrCodeView = QRCodeView()
+    private var qrCodeWrapperView: UIView!
+    private var qrCodeWrapperViewSizeConstraints: [NSLayoutConstraint]!
+    private var qrCodeView: QRCodeView2!
 
-    override func loadView() {
+    // MARK: -
+
+    private func populateViewContents() {
+        // MARK: Views
+
         view = UIView()
         view.addSubview(primaryView)
         primaryView.autoPinEdgesToSuperviewEdges()
 
         view.backgroundColor = Theme.backgroundColor
 
-        let titleLabel = self.createTitleLabel(
-            text: OWSLocalizedString("DEVICE_TRANSFER_QRCODE_TITLE",
-                                    comment: "The title for the device transfer qr code view")
-        )
-        primaryView.addSubview(titleLabel)
-        titleLabel.accessibilityIdentifier = "onboarding.transferQRCode.titleLabel"
-        titleLabel.setContentHuggingHigh()
+        let titleLabel = self.createTitleLabel(text: OWSLocalizedString(
+            "DEVICE_TRANSFER_QRCODE_TITLE",
+            comment: "The title for the device transfer qr code view"
+        ))
 
-        let explanationLabel = self.createExplanationLabel(
-            explanationText: OWSLocalizedString("DEVICE_TRANSFER_QRCODE_EXPLANATION",
-                                               comment: "The explanation for the device transfer qr code view")
-        )
-        explanationLabel.accessibilityIdentifier = "onboarding.transferQRCode.bodyLabel"
-        explanationLabel.setContentHuggingHigh()
+        let explanationLabel = self.createExplanationLabel(explanationText: OWSLocalizedString(
+            "DEVICE_TRANSFER_QRCODE_EXPLANATION",
+            comment: "The explanation for the device transfer qr code view"
+        ))
+        explanationLabel.font = .dynamicTypeBody
+        explanationLabel.numberOfLines = 0
 
-        qrCodeView.setContentHuggingVerticalLow()
+        qrCodeWrapperView = UIView()
+        qrCodeWrapperView.backgroundColor = .ows_gray02
+        qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 48)
+        qrCodeWrapperView.layer.cornerRadius = 24
+
+        qrCodeView = QRCodeView2()
 
         let explanationLabel2 = self.createExplanationLabel(
             explanationText: OWSLocalizedString("DEVICE_TRANSFER_QRCODE_EXPLANATION2",
             comment: "The second explanation for the device transfer qr code view")
         )
-        explanationLabel2.setContentHuggingHigh()
+        explanationLabel2.font = .dynamicTypeBody
+        explanationLabel2.numberOfLines = 0
 
         let helpButton = self.linkButton(
             title: OWSLocalizedString(
@@ -52,37 +61,88 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
         helpButton.button.titleLabel?.numberOfLines = 0
         helpButton.button.titleLabel?.lineBreakMode = .byWordWrapping
 
-        let cancelButton = self.linkButton(title: CommonStrings.cancelButton, selector: #selector(didTapCancel))
+        let cancelButton = self.linkButton(
+            title: CommonStrings.cancelButton,
+            selector: #selector(didTapCancel)
+        )
 
-        let stackView = UIStackView(arrangedSubviews: [
+        // MARK: Layout
+
+        qrCodeWrapperView.addSubview(qrCodeView)
+        qrCodeView.autoPinEdgesToSuperviewMargins()
+
+        let qrCodeTopSpacer = UIView()
+        let qrCodeBottomSpacer = UIView()
+
+        let contentStack = UIStackView(arrangedSubviews: [
             titleLabel,
             explanationLabel,
-            qrCodeView,
+            qrCodeTopSpacer,
+            qrCodeWrapperView,
+            UIView.spacer(withHeight: 18),
             explanationLabel2,
-            UIView.vStretchingSpacer(),
+            qrCodeBottomSpacer,
             helpButton,
             cancelButton
         ])
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.spacing = 12
-        primaryView.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
+
+        contentStack.axis = .vertical
+        contentStack.alignment = .center
+        contentStack.spacing = 12
+
+        primaryView.addSubview(contentStack)
+        contentStack.autoPinEdgesToSuperviewMargins()
+
+        qrCodeTopSpacer.autoMatch(.height, to: .height, of: qrCodeBottomSpacer, withMultiplier: 0.33)
+
+        /// Constraint constants managed by `adjustLayoutForCurrentOrientation`.
+        qrCodeWrapperViewSizeConstraints = [
+            qrCodeWrapperView.autoSetDimension(.height, toSize: 0),
+            qrCodeWrapperView.autoSetDimension(.width, toSize: 0),
+        ]
+
+        adjustLayoutForCurrentOrientation()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    @objc
+    private func adjustLayoutForCurrentOrientation() {
+        if UIDevice.current.orientation.isPortrait {
+            qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 48)
+            qrCodeWrapperViewSizeConstraints.forEach { $0.constant = 352 }
+        } else {
+            qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 24)
+            qrCodeWrapperViewSizeConstraints.forEach { $0.constant = 220 }
+        }
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        populateViewContents()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(adjustLayoutForCurrentOrientation),
+            name: UIDevice.orientationDidChangeNotification,
+            object: UIDevice.current
+        )
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
         AppEnvironment.shared.deviceTransferServiceRef.addObserver(self)
 
-        do {
-            let url = try AppEnvironment.shared.deviceTransferServiceRef.startAcceptingTransfersFromOldDevices(
-                mode: .linked // TODO: .primary
-            )
+        Task { @MainActor in
+            do {
+                let url = try AppEnvironment.shared.deviceTransferServiceRef.startAcceptingTransfersFromOldDevices(
+                    mode: .linked // TODO: .primary
+                )
 
-            qrCodeView.setQR(url: url)
-        } catch {
-            owsFailDebug("error \(error)")
+                qrCodeView.setQRCode(url: url)
+            } catch {
+                owsFailDebug("error \(error)")
+            }
         }
     }
 

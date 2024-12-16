@@ -8,37 +8,34 @@ import SignalServiceKit
 import SignalUI
 
 class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
-    private enum QRCodeDisplayMode {
-        case qrCodeImage(UIImage?)
+    private enum ProvisioningUrlDisplayMode {
+        case loading
+        case loaded(URL)
         case refreshButton
-        case loadingSpinner
     }
 
     private var qrCodeWrapperView: UIView!
     private var qrCodeWrapperViewSizeConstraints: [NSLayoutConstraint]!
-    private var qrCodeImageBackgroundView: UIView!
-    private var qrCodeImageView: UIImageView!
+    private var qrCodeView: QRCodeView2!
     private var qrCodeRefreshButton: OWSButton!
-    private var qrCodeLoadingSpinner: UIActivityIndicatorView!
 
     private var rotateQRCodeTask: Task<Void, Never>?
 
-    private func setDisplayMode(_ displayMode: QRCodeDisplayMode) {
+    private func setDisplayMode(_ displayMode: ProvisioningUrlDisplayMode) {
         switch displayMode {
-        case .qrCodeImage(let image):
-            qrCodeLoadingSpinner.isHidden = true
-            qrCodeImageBackgroundView.isHidden = false
+        case .loading:
+            qrCodeView.isHidden = false
             qrCodeRefreshButton.isHidden = true
 
-            qrCodeImageView.setTemplateImage(image, tintColor: .qrCodeBlue)
-        case .refreshButton:
-            qrCodeLoadingSpinner.isHidden = true
-            qrCodeImageBackgroundView.isHidden = true
-            qrCodeRefreshButton.isHidden = false
-        case .loadingSpinner:
-            qrCodeLoadingSpinner.isHidden = false
-            qrCodeImageBackgroundView.isHidden = true
+            qrCodeView.setLoading()
+        case .loaded(let url):
+            qrCodeView.isHidden = false
             qrCodeRefreshButton.isHidden = true
+
+            qrCodeView.setQRCode(url: url)
+        case .refreshButton:
+            qrCodeView.isHidden = true
+            qrCodeRefreshButton.isHidden = false
         }
     }
 
@@ -70,13 +67,7 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
         qrCodeWrapperView.backgroundColor = .ows_gray02
         qrCodeWrapperView.layer.cornerRadius = 24
 
-        qrCodeImageBackgroundView = UIView()
-        qrCodeImageBackgroundView.backgroundColor = .white
-        qrCodeImageBackgroundView.layoutMargins = UIEdgeInsets(margin: 20)
-        qrCodeImageBackgroundView.layer.cornerRadius = 12
-
-        qrCodeImageView = UIImageView()
-        qrCodeImageView.backgroundColor = .white
+        qrCodeView = QRCodeView2()
 
         qrCodeRefreshButton = OWSRoundedButton()
         qrCodeRefreshButton.setAttributedTitle(
@@ -109,21 +100,16 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
             Task { [weak self] in
                 guard let self else { return }
 
-                setDisplayMode(.loadingSpinner)
+                setDisplayMode(.loading)
 
                 do {
-                    let qrCodeImage = try await fetchNewProvisioningQRCode()
-                    setDisplayMode(.qrCodeImage(qrCodeImage))
+                    let provisioningUrl = try await fetchNewProvisioningQRCode()
+                    setDisplayMode(.loaded(provisioningUrl))
                 } catch {
                     setDisplayMode(.refreshButton)
                 }
             }
         }
-
-        qrCodeLoadingSpinner = UIActivityIndicatorView(style: .large)
-        qrCodeLoadingSpinner.color = Theme.lightThemePrimaryColor
-        qrCodeLoadingSpinner.autoSetDimensions(to: .init(width: 40, height: 40))
-        qrCodeLoadingSpinner.startAnimating()
 
         let getHelpLabel = UILabel()
         getHelpLabel.text = OWSLocalizedString(
@@ -141,17 +127,11 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
 
         // MARK: Layout
 
-        qrCodeImageBackgroundView.addSubview(qrCodeImageView)
-        qrCodeImageView.autoPinEdgesToSuperviewMargins()
-
-        qrCodeWrapperView.addSubview(qrCodeLoadingSpinner)
-        qrCodeLoadingSpinner.autoCenterInSuperviewMargins()
-
         qrCodeWrapperView.addSubview(qrCodeRefreshButton)
         qrCodeRefreshButton.autoCenterInSuperviewMargins()
 
-        qrCodeWrapperView.addSubview(qrCodeImageBackgroundView)
-        qrCodeImageBackgroundView.autoPinEdgesToSuperviewMargins()
+        qrCodeWrapperView.addSubview(qrCodeView)
+        qrCodeView.autoPinEdgesToSuperviewMargins()
 
         let qrCodeTopSpacer = UIView()
         let qrCodeBottomSpacer = UIView()
@@ -213,7 +193,7 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
             object: UIDevice.current
         )
 
-        setDisplayMode(.loadingSpinner)
+        setDisplayMode(.loading)
 
         rotateQRCodeTask = Task {
             /// Refresh the QR code every 45s, five times. If we fail, or once
@@ -221,11 +201,11 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
             /// error state with a manual retry.
             do {
                 for _ in 0..<5 {
-                    let qrCodeImage = try await fetchNewProvisioningQRCode()
+                    let provisioningUrl = try await fetchNewProvisioningQRCode()
 
                     try Task.checkCancellation()
 
-                    setDisplayMode(.qrCodeImage(qrCodeImage))
+                    setDisplayMode(.loaded(provisioningUrl))
 
                     try await Task.sleep(nanoseconds: 45 * NSEC_PER_SEC)
 
@@ -286,22 +266,13 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
 
     // MARK: -
 
-    private nonisolated func fetchNewProvisioningQRCode() async throws -> UIImage? {
+    private nonisolated func fetchNewProvisioningQRCode() async throws -> URL {
         let provisioningUrl = try await provisioningController.getProvisioningURL()
 
 #if TESTABLE_BUILD
         currentProvisioningUrl.set(provisioningUrl)
 #endif
 
-        return SignalBrandedQRCodeGenerator(
-            foregroundColor: .qrCodeBlue,
-            backgroundColor: .clear
-        ).generateQRCode(url: provisioningUrl)
-    }
-}
-
-private extension UIColor {
-    static var qrCodeBlue: UIColor {
-        return SignalBrandedQRCodes.QRCodeColor.blue.foreground
+        return provisioningUrl
     }
 }
