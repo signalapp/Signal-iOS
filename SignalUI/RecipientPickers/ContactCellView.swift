@@ -292,10 +292,24 @@ public class ContactCellView: ManualStackView {
 
             switch configuration.dataSource {
             case .address(let address):
-                return SSKEnvironment.shared.contactManagerRef.nameForAddress(address,
-                                                      localUserDisplayMode: configuration.localUserDisplayMode,
-                                                      short: false,
-                                                      transaction: transaction)
+                let name = SSKEnvironment.shared.contactManagerRef.nameForAddress(
+                    address,
+                    localUserDisplayMode: configuration.localUserDisplayMode,
+                    short: false,
+                    transaction: transaction
+                )
+
+                switch (address.isLocalAddress, configuration.localUserDisplayMode) {
+                case (false, _), (true, .asLocalUser), (true, .asUser):
+                    return name
+                case (true, .noteToSelf):
+                    let verifiedIcon = NSAttributedString.with(
+                        image: Theme.iconImage(.official),
+                        font: .dynamicTypeSubheadline,
+                        centerVerticallyRelativeTo: .dynamicTypeBody
+                    )
+                    return name.stringByAppendingString(" ").stringByAppendingString(verifiedIcon)
+                }
             case .groupThread(let thread):
                 let threadName = SSKEnvironment.shared.contactManagerRef.displayName(for: thread, transaction: transaction)
                 return threadName.asAttributedString(attributes: [
