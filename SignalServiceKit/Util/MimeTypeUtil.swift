@@ -457,6 +457,7 @@ public class MimeTypeUtil: NSObject {
         "application/vnd.antix.game-component": "atx",
         "application/vnd.apple.installer+xml": "mpkg",
         "application/vnd.apple.mpegurl": "m3u8",
+        "application/vnd.apple.pkpass": "pkpass",
         "application/vnd.aristanetworks.swi": "swi",
         "application/vnd.astraea-software.iota": "iota",
         "application/vnd.audiograph": "aep",
