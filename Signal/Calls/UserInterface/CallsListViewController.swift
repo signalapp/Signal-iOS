@@ -113,6 +113,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
         navigationItem.titleView = filterPicker
         updateBarButtonItems()
+        OWSTableViewController2.removeBackButtonText(viewController: self)
 
         view.addSubview(tableView)
         tableView.autoPinEdgesToSuperviewEdges()
