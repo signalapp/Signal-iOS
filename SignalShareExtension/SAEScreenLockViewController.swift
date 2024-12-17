@@ -56,7 +56,7 @@ final class SAEScreenLockViewController: ScreenLockViewController {
     private var isShowingAuthUI = false
 
     private func ensureUI() {
-        updateUIWithState(.screenLock, isLogoAtTop: false, animated: false)
+        updateUIWithState(.screenLock)
     }
 
     private func tryToPresentAuthUIToUnlockScreenLock() {

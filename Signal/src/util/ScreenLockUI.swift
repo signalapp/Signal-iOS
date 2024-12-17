@@ -129,7 +129,7 @@ class ScreenLockUI {
 
         // Hide the screen blocking window until "app is ready" to
         // avoid blocking the loading view.
-        updateScreenBlockingWindowWithUIState(.none, animated: false)
+        updateScreenBlockingWindowWithUIState(.none)
 
         // Initialize the screen lock state.
         //
@@ -143,25 +143,14 @@ class ScreenLockUI {
 
     // MARK: - UI
 
-    // The "screen blocking" window has three possible states:
-    //
-    // * "Just a logo".  Used when app is launching and in app switcher.  Must match the "Launch Screen"
-    //    storyboard pixel-for-pixel.
-    // * "Screen Lock, local auth UI presented". Move the Signal logo so that it is visible.
-    // * "Screen Lock, local auth UI not presented". Move the Signal logo so that it is visible,
-    //    show "unlock" button.
-    private func updateScreenBlockingWindowWithUIState(_ uiState: ScreenLockViewController.UIState, animated: Bool) {
+    private func updateScreenBlockingWindowWithUIState(_ uiState: ScreenLockViewController.UIState) {
         AssertIsOnMainThread()
 
         let shouldShowBlockWindow = uiState != .none
 
         AppEnvironment.shared.windowManagerRef.isScreenBlockActive = shouldShowBlockWindow
 
-        screenBlockingViewController.updateUIWithState(
-            uiState,
-            isLogoAtTop: isShowingScreenLockUI,
-            animated: animated
-        )
+        screenBlockingViewController.updateUIWithState(uiState)
     }
 
     // 'Screen Blocking' window obscures the app screen:
@@ -191,7 +180,7 @@ class ScreenLockUI {
 
         let desiredUIState = desiredUIState()
 
-        updateScreenBlockingWindowWithUIState(desiredUIState, animated: true)
+        updateScreenBlockingWindowWithUIState(desiredUIState)
 
         // Show the "iOS auth UI to unlock" if necessary.
         if desiredUIState == .screenLock && !didLastUnlockAttemptFail {
