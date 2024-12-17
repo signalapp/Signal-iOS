@@ -90,6 +90,7 @@ public class DependenciesBridge {
     let incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager
     let incomingCallLogEventSyncMessageManager: IncomingCallLogEventSyncMessageManager
     public let incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor
+    public let incrementalMessageTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator
     public let individualCallRecordManager: IndividualCallRecordManager
     public let interactionDeleteManager: InteractionDeleteManager
     public let interactionStore: InteractionStore
@@ -204,6 +205,7 @@ public class DependenciesBridge {
         incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager,
         incomingCallLogEventSyncMessageManager: IncomingCallLogEventSyncMessageManager,
         incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor,
+        incrementalMessageTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
         individualCallRecordManager: IndividualCallRecordManager,
         interactionDeleteManager: InteractionDeleteManager,
         interactionStore: InteractionStore,
@@ -317,6 +319,7 @@ public class DependenciesBridge {
         self.incomingCallEventSyncMessageManager = incomingCallEventSyncMessageManager
         self.incomingCallLogEventSyncMessageManager = incomingCallLogEventSyncMessageManager
         self.incomingPniChangeNumberProcessor = incomingPniChangeNumberProcessor
+        self.incrementalMessageTSAttachmentMigrator = incrementalMessageTSAttachmentMigrator
         self.individualCallRecordManager = individualCallRecordManager
         self.interactionDeleteManager = interactionDeleteManager
         self.interactionStore = interactionStore

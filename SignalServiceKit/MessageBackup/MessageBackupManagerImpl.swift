@@ -47,6 +47,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let errorPresenter: MessageBackupErrorPresenter
     private let fullTextSearchIndexer: MessageBackupFullTextSearchIndexer
     private let groupRecipientArchiver: MessageBackupGroupRecipientArchiver
+    private let incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator
     private let kvStore: KeyValueStore
     private let localRecipientArchiver: MessageBackupLocalRecipientArchiver
     private let messageBackupKeyMaterial: MessageBackupKeyMaterial
@@ -80,6 +81,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         errorPresenter: MessageBackupErrorPresenter,
         fullTextSearchIndexer: MessageBackupFullTextSearchIndexer,
         groupRecipientArchiver: MessageBackupGroupRecipientArchiver,
+        incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
         localRecipientArchiver: MessageBackupLocalRecipientArchiver,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         messagePipelineSupervisor: MessagePipelineSupervisor,
@@ -111,6 +113,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.errorPresenter = errorPresenter
         self.fullTextSearchIndexer = fullTextSearchIndexer
         self.groupRecipientArchiver = groupRecipientArchiver
+        self.incrementalTSAttachmentMigrator = incrementalTSAttachmentMigrator
         self.kvStore = KeyValueStore(collection: Constants.keyValueStoreCollectionName)
         self.localRecipientArchiver = localRecipientArchiver
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
@@ -200,6 +203,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
+        await migrateAttachmentsBeforeBackup()
+
         let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
         defer {
             handle.invalidate()
@@ -262,6 +267,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
+
+        await migrateAttachmentsBeforeBackup()
 
         let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
         defer {
@@ -579,6 +586,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
+        await migrateAttachmentsBeforeBackup()
+
         let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
         defer {
             handle.invalidate()
@@ -643,6 +652,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
+
+        await migrateAttachmentsBeforeBackup()
 
         let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
         defer {
@@ -1012,6 +1023,12 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         if maxLogLevel > MessageBackup.LogLevel.warning.rawValue {
             errorPresenter.persistErrors(collapsedErrors, tx: tx)
         }
+    }
+
+    /// TSAttachments must be migrated to v2 Attachments before we can create or restore backups.
+    /// Normally this migration happens in the background; force it to run and finish now.
+    private func migrateAttachmentsBeforeBackup() async {
+        await incrementalTSAttachmentMigrator.runUntilFinished()
     }
 
     public func validateEncryptedBackup(

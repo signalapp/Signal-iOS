@@ -15,7 +15,7 @@ class LoadingViewController: UIViewController {
     private var bottomLabel: UILabel!
     private var progressView = UIProgressView()
     private lazy var percentCompleteLabel = UILabel()
-    private lazy var attachmentCountLabel = UILabel()
+    private lazy var unitCountLabel = UILabel()
     private let labelStack = UIStackView()
     private var topLabelTimer: Timer?
     private var bottomLabelTimer: Timer?
@@ -25,9 +25,7 @@ class LoadingViewController: UIViewController {
         didSet {
             self.progressObserver = progress?
                 .observe(\.fractionCompleted) { [weak self] progress, _ in
-                    DispatchQueue.main.async {
-                        self?.updateProgress(progress)
-                    }
+                    self?.updateProgress(progress)
                 }
         }
     }
@@ -80,10 +78,10 @@ class LoadingViewController: UIViewController {
         labelStack.addArrangedSubview(percentCompleteLabel)
         labelStack.setCustomSpacing(6, after: percentCompleteLabel)
 
-        attachmentCountLabel.alpha = 0
-        attachmentCountLabel.font = .dynamicTypeBody.monospaced()
-        attachmentCountLabel.textColor = .Signal.secondaryLabel
-        labelStack.addArrangedSubview(attachmentCountLabel)
+        unitCountLabel.alpha = 0
+        unitCountLabel.font = .dynamicTypeBody.monospaced()
+        unitCountLabel.textColor = .Signal.secondaryLabel
+        labelStack.addArrangedSubview(unitCountLabel)
 
         labelStack.axis = .vertical
         labelStack.alignment = .center
@@ -202,8 +200,8 @@ class LoadingViewController: UIViewController {
 
     private func updateProgress(_ progress: Progress) {
         let percentComplete = Float(progress.fractionCompleted)
-        let numAttachmentsToMigrate = TSAttachmentMigrationValues.numAttachmentsToMigrate ?? 0
-        let numAttachmentsMigrated = Int(Double(numAttachmentsToMigrate) * progress.fractionCompleted)
+        let unitCountToComplete = 0
+        let unitCountCompleted = Int(Double(unitCountToComplete) * progress.fractionCompleted)
 
         progressView.setProgress(percentComplete, animated: true)
         percentCompleteLabel.text = String(
@@ -213,7 +211,7 @@ class LoadingViewController: UIViewController {
             ),
             percentComplete.formatted(.percent.precision(.fractionLength(0)))
         )
-        attachmentCountLabel.text = "\(numAttachmentsMigrated.formatted(.number)) / \(numAttachmentsToMigrate.formatted(.number))"
+        unitCountLabel.text = "\(unitCountCompleted.formatted(.number)) / \(unitCountToComplete.formatted(.number))"
 
         if percentComplete > 0 {
             percentCompleteLabel.alpha = bottomLabel.alpha
@@ -223,11 +221,11 @@ class LoadingViewController: UIViewController {
             progressView.alpha = 0
         }
 
-        if numAttachmentsToMigrate > 0 {
-            attachmentCountLabel.alpha = bottomLabel.alpha
-        } else {
-            attachmentCountLabel.alpha = 0
-        }
+//        if unitCountToComplete > 0 {
+//            unitCountLabel.alpha = bottomLabel.alpha
+//        } else {
+//            unitCountLabel.alpha = 0
+//        }
     }
 
     // MARK: Orientation
@@ -254,8 +252,6 @@ class LoadingViewController: UIViewController {
     progress.totalUnitCount = 100
     let viewController = LoadingViewController()
     viewController.progress = progress
-
-    TSAttachmentMigrationValues.numAttachmentsToMigrate = 186_739
 
     Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
         progress.completedUnitCount += Int64.random(in: 2...8)

@@ -237,11 +237,20 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // Do this even if `appVersion` isn't used -- there's side effects.
         let appVersion = AppVersionImpl.shared
 
+        // Set up and register incremental migration for TSAttachment -> v2 Attachment.
+        // TODO: remove this (and the incremental migrator itself) once we make this
+        // migration a launch-blocking GRDB migration.
+        let incrementalMessageTSAttachmentMigrationStore = IncrementalTSAttachmentMigrationStore()
+        let incrementalMessageTSAttachmentMigratorFactory = IncrementalMessageTSAttachmentMigratorFactoryImpl(
+            store: incrementalMessageTSAttachmentMigrationStore
+        )
+
         let launchContext = LaunchContext(
             appContext: mainAppContext,
             databaseStorage: databaseStorage,
             keychainStorage: keychainStorage,
-            launchStartedAt: launchStartedAt
+            launchStartedAt: launchStartedAt,
+            incrementalMessageTSAttachmentMigratorFactory: incrementalMessageTSAttachmentMigratorFactory
         )
 
         // We need to do this _after_ we set up logging, when the keychain is unlocked,
@@ -275,6 +284,19 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // We _must_ register BGProcessingTask handlers synchronously in didFinishLaunching.
         // https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler/register(fortaskwithidentifier:using:launchhandler:)
         // WARNING: Apple docs say we can only have 10 BGProcessingTasks registered.
+        IncrementalMessageTSAttachmentMigrationRunner.registerBGProcessingTask(
+            store: incrementalMessageTSAttachmentMigrationStore,
+            migrator: Task {
+                await withCheckedContinuation { continuation in
+                    appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+                        continuation.resume(with: .success(
+                            DependenciesBridge.shared.incrementalMessageTSAttachmentMigrator
+                        ))
+                    }
+                }
+            },
+            db: databaseStorage
+        )
         let attachmentBackfillStore = AttachmentValidationBackfillStore()
         AttachmentValidationBackfillRunner.registerBGProcessingTask(
             store: attachmentBackfillStore,
@@ -291,6 +313,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         )
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            if SSKEnvironment.shared.remoteConfigManagerRef.currentConfig().shouldRunTSAttachmentMigration {
+                IncrementalMessageTSAttachmentMigrationRunner.scheduleBGProcessingTaskIfNeeded(
+                    store: incrementalMessageTSAttachmentMigrationStore,
+                    db: databaseStorage
+                )
+            }
             AttachmentValidationBackfillRunner.scheduleBGProcessingTaskIfNeeded(
                 store: attachmentBackfillStore,
                 db: databaseStorage
@@ -298,12 +326,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // Show LoadingViewController until the database migrations are complete.
-        let progress = Progress(totalUnitCount: 1)
         let loadingViewController = LoadingViewController()
-        loadingViewController.progress = progress
 
         let window = initializeWindow(mainAppContext: mainAppContext, rootViewController: loadingViewController)
-        self.launchApp(in: window, launchContext: launchContext, tsAttachmentMigrationProgress: progress)
+        self.launchApp(in: window, launchContext: launchContext)
         return true
     }
 
@@ -323,18 +349,17 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         var databaseStorage: SDSDatabaseStorage
         var keychainStorage: any KeychainStorage
         var launchStartedAt: CFTimeInterval
+        var incrementalMessageTSAttachmentMigratorFactory: IncrementalMessageTSAttachmentMigratorFactory
     }
 
     private func launchApp(
         in window: UIWindow,
-        launchContext: LaunchContext,
-        tsAttachmentMigrationProgress: Progress?
+        launchContext: LaunchContext
     ) {
         assert(window.rootViewController is LoadingViewController)
         configureGlobalUI(in: window)
         setUpMainAppEnvironment(
-            launchContext: launchContext,
-            tsAttachmentMigrationProgress: tsAttachmentMigrationProgress
+            launchContext: launchContext
         ).done(on: DispatchQueue.main) { (finalContinuation, sleepBlockObject) in
             self.didLoadDatabase(
                 finalContinuation: finalContinuation,
@@ -356,8 +381,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func setUpMainAppEnvironment(
-        launchContext: LaunchContext,
-        tsAttachmentMigrationProgress: Progress? = nil
+        launchContext: LaunchContext
     ) -> Guarantee<(AppSetup.FinalContinuation, DeviceSleepManager.BlockObject)> {
         let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "app launch")
         DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
@@ -374,6 +398,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             callMessageHandler: WebRTCCallMessageHandler(),
             currentCallProvider: currentCall,
             notificationPresenter: NotificationPresenterImpl(),
+            incrementalMessageTSAttachmentMigratorFactory: launchContext.incrementalMessageTSAttachmentMigratorFactory,
             messageBackupErrorPresenterFactory: MessageBackupErrorPresenterFactoryInternal()
         )
         setupNSEInteroperation()
@@ -397,9 +422,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager
             )
         )
-        let result = databaseContinuation.prepareDatabase(
-            tsAttachmentMigrationProgress: tsAttachmentMigrationProgress
-        )
+        let result = databaseContinuation.prepareDatabase()
         return result.map(on: SyncScheduler()) { ($0, sleepBlockObject) }
     }
 
@@ -1050,11 +1073,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         func ignoreErrorAndLaunchApp(in window: UIWindow, launchContext: LaunchContext) {
             // Pretend we didn't fail!
             self.didAppLaunchFail = false
-            let progress = Progress()
             let loadingViewController = LoadingViewController()
-            loadingViewController.progress = progress
             window.rootViewController = loadingViewController
-            self.launchApp(in: window, launchContext: launchContext, tsAttachmentMigrationProgress: progress)
+            self.launchApp(in: window, launchContext: launchContext)
         }
 
         for action in actions {

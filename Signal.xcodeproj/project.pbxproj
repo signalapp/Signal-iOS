@@ -1053,6 +1053,7 @@
 		66AEFCA42A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */; };
 		66B1E26C2CB187B3005F43AC /* AttachmentUploadStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B1E26B2CB187A0005F43AC /* AttachmentUploadStoreImpl.swift */; };
 		66B1E2702CB48C53005F43AC /* Array+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B1E26F2CB48C48005F43AC /* Array+SSKTest.swift */; };
+		66B2FBFE2D10F5EB00189908 /* IncrementalMessageTSAttachmentMigratorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B2FBFD2D10F5DE00189908 /* IncrementalMessageTSAttachmentMigratorFactory.swift */; };
 		66B78E032BE59B860022580E /* StickerMetadata+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E022BE59B860022580E /* StickerMetadata+TSResource.swift */; };
 		66B78E062BE5AADF0022580E /* AttachmentViewOnceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E052BE5AADF0022580E /* AttachmentViewOnceManager.swift */; };
 		66B78E082BE5AAFC0022580E /* AttachmentViewOnceManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E072BE5AAFB0022580E /* AttachmentViewOnceManagerImpl.swift */; };
@@ -1071,6 +1072,9 @@
 		66C1A8802BB77EA50076C65A /* AttachmentUploadManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A87E2BB77E950076C65A /* AttachmentUploadManagerTests.swift */; };
 		66C1A8852BB77EE00076C65A /* AttachmentUploadManagerTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A8812BB77EBB0076C65A /* AttachmentUploadManagerTestHelper.swift */; };
 		66C1A8862BB77EE30076C65A /* AttachmentUploadManagerTestMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1A8832BB77EC60076C65A /* AttachmentUploadManagerTestMocks.swift */; };
+		66C1BF512D0CC7C9002296F7 /* IncrementalTSAttachmentMigrationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1BF502D0CC7C7002296F7 /* IncrementalTSAttachmentMigrationStore.swift */; };
+		66C1BF532D0CC7EB002296F7 /* IncrementalMessageTSAttachmentMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1BF522D0CC7DB002296F7 /* IncrementalMessageTSAttachmentMigrator.swift */; };
+		66C1BF552D0CC88A002296F7 /* IncrementalMessageTSAttachmentMigrationRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C1BF542D0CC881002296F7 /* IncrementalMessageTSAttachmentMigrationRunner.swift */; };
 		66C2B1312A05D28A008DDE72 /* TSRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1302A05D28A008DDE72 /* TSRequest.swift */; };
 		66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */; };
 		66C2B1382A0DB6A9008DDE72 /* SVRAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */; };
@@ -4804,6 +4808,7 @@
 		66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+VideoSegmenting.swift"; sourceTree = "<group>"; };
 		66B1E26B2CB187A0005F43AC /* AttachmentUploadStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadStoreImpl.swift; sourceTree = "<group>"; };
 		66B1E26F2CB48C48005F43AC /* Array+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+SSKTest.swift"; sourceTree = "<group>"; };
+		66B2FBFD2D10F5DE00189908 /* IncrementalMessageTSAttachmentMigratorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalMessageTSAttachmentMigratorFactory.swift; sourceTree = "<group>"; };
 		66B78E022BE59B860022580E /* StickerMetadata+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StickerMetadata+TSResource.swift"; sourceTree = "<group>"; };
 		66B78E052BE5AADF0022580E /* AttachmentViewOnceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentViewOnceManager.swift; sourceTree = "<group>"; };
 		66B78E072BE5AAFB0022580E /* AttachmentViewOnceManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentViewOnceManagerImpl.swift; sourceTree = "<group>"; };
@@ -4822,6 +4827,9 @@
 		66C1A87E2BB77E950076C65A /* AttachmentUploadManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadManagerTests.swift; sourceTree = "<group>"; };
 		66C1A8812BB77EBB0076C65A /* AttachmentUploadManagerTestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadManagerTestHelper.swift; sourceTree = "<group>"; };
 		66C1A8832BB77EC60076C65A /* AttachmentUploadManagerTestMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadManagerTestMocks.swift; sourceTree = "<group>"; };
+		66C1BF502D0CC7C7002296F7 /* IncrementalTSAttachmentMigrationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalTSAttachmentMigrationStore.swift; sourceTree = "<group>"; };
+		66C1BF522D0CC7DB002296F7 /* IncrementalMessageTSAttachmentMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalMessageTSAttachmentMigrator.swift; sourceTree = "<group>"; };
+		66C1BF542D0CC881002296F7 /* IncrementalMessageTSAttachmentMigrationRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalMessageTSAttachmentMigrationRunner.swift; sourceTree = "<group>"; };
 		66C2B1302A05D28A008DDE72 /* TSRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRequest.swift; sourceTree = "<group>"; };
 		66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRUtil.swift; sourceTree = "<group>"; };
 		66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredential.swift; sourceTree = "<group>"; };
@@ -9556,6 +9564,9 @@
 		66A1ABE02C33118A0033C5EB /* TSAttachment */ = {
 			isa = PBXGroup;
 			children = (
+				66C1BF522D0CC7DB002296F7 /* IncrementalMessageTSAttachmentMigrator.swift */,
+				66B2FBFD2D10F5DE00189908 /* IncrementalMessageTSAttachmentMigratorFactory.swift */,
+				66C1BF502D0CC7C7002296F7 /* IncrementalTSAttachmentMigrationStore.swift */,
 				669379F62C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift */,
 				669379EE2C3C5E5800EED7A0 /* TSAttachmentMigration+AudioWaveformManager.swift */,
 				669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */,
@@ -10076,6 +10087,7 @@
 				6698FC12297F38AC004EFC30 /* ViewControllerContext */,
 				66DA8DF92C91125200799E70 /* AttachmentValidationBackfillRunner.swift */,
 				66DA8DF72C910D3B00799E70 /* BGProcessingTaskRunner.swift */,
+				66C1BF542D0CC881002296F7 /* IncrementalMessageTSAttachmentMigrationRunner.swift */,
 				66CDB7512AF9D117009A36EC /* MessageFetchBGRefreshTask.swift */,
 			);
 			path = src;
@@ -16347,6 +16359,7 @@
 				D9C0AE692BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift in Sources */,
 				D9E43C052CC194140001536E /* IncomingCallControls.swift in Sources */,
 				D9E43C062CC194140001536E /* IncomingReactionsView.swift in Sources */,
+				66C1BF552D0CC88A002296F7 /* IncrementalMessageTSAttachmentMigrationRunner.swift in Sources */,
 				D9E43C2A2CC194140001536E /* IndividualCall.swift in Sources */,
 				D9E43C2B2CC194140001536E /* IndividualCallService.swift in Sources */,
 				D9E43C072CC194140001536E /* IndividualCallViewController.swift in Sources */,
@@ -17089,6 +17102,9 @@
 				F9C5CDA0289453B400548EEE /* IncomingGroupsV2MessageJob.m in Sources */,
 				6640DD602ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift in Sources */,
 				F9C5CC69289453B300548EEE /* IncompleteCallsJob.swift in Sources */,
+				66C1BF532D0CC7EB002296F7 /* IncrementalMessageTSAttachmentMigrator.swift in Sources */,
+				66B2FBFE2D10F5EB00189908 /* IncrementalMessageTSAttachmentMigratorFactory.swift in Sources */,
+				66C1BF512D0CC7C9002296F7 /* IncrementalTSAttachmentMigrationStore.swift in Sources */,
 				D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */,
 				D9B95A9B29E8923B00D7CB95 /* InMemoryDB.swift in Sources */,
 				C1DD78AB2BB1CEF80020F064 /* InputStreamable.swift in Sources */,

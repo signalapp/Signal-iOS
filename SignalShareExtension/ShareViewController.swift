@@ -92,6 +92,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             callMessageHandler: NoopCallMessageHandler(),
             currentCallProvider: CurrentCallNoOpProvider(),
             notificationPresenter: NoopNotificationPresenterImpl(),
+            incrementalMessageTSAttachmentMigratorFactory: NoOpIncrementalMessageTSAttachmentMigratorFactory(),
             messageBackupErrorPresenterFactory: NoOpMessageBackupErrorPresenterFactory()
         )
 
