@@ -54,7 +54,8 @@ extension ChatListViewController {
             thread,
             action: action,
             focusMessageId: focusMessageId,
-            animated: animated
+            animated: animated,
+            forceReload: false
         )
     }
 }
