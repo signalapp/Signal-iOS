@@ -92,6 +92,13 @@ public class PreparedOutgoingMessage {
             )))
         case .transient(let message):
             if let storyMessage = message as? OutgoingStoryMessage {
+                guard storyMessage.storyMessageRowId != nil else {
+                    /// This field was, in the past, inadvertently not exposed
+                    /// to ObjC. If we deserialize one of these as `nil`, drop
+                    /// it.
+                    return nil
+                }
+
                 return .init(messageType: .story(.init(message: storyMessage)))
             }
             return .init(messageType: .transient(message))
