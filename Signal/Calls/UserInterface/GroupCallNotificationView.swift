@@ -159,14 +159,10 @@ private class BannerView: UIView {
         layer.cornerRadius = 8
         clipsToBounds = true
 
-        if UIAccessibility.isReduceTransparencyEnabled {
-            backgroundColor = .ows_blackAlpha80
-        } else {
-            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-            addSubview(blurEffectView)
-            blurEffectView.autoPinEdgesToSuperviewEdges()
-            backgroundColor = .ows_blackAlpha40
-        }
+        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        addSubview(blurEffectView)
+        blurEffectView.autoPinEdgesToSuperviewEdges()
+        backgroundColor = .ows_blackAlpha40
 
         let displayNames = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return SSKEnvironment.shared.contactManagerImplRef.sortedComparableNames(for: addresses, tx: tx)

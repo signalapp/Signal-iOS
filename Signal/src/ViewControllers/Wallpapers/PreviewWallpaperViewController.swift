@@ -486,16 +486,7 @@ class BlurButton: UIButton {
     let checkImageView = UIImageView()
     let label = UILabel()
     let action: (Bool) -> Void
-    let backgroundView: UIView = {
-        if UIAccessibility.isReduceTransparencyEnabled {
-            let backgroundView = UIView()
-            backgroundView.backgroundColor = .ows_blackAlpha80
-            return backgroundView
-        } else {
-            let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-            return blurView
-        }
-    }()
+    let backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
 
     init(action: @escaping (Bool) -> Void) {
         self.action = action

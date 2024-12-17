@@ -205,13 +205,9 @@ class ToastView: UIView {
         self.clipsToBounds = true
         self.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
 
-        if UIAccessibility.isReduceTransparencyEnabled {
-            backgroundColor = .ows_blackAlpha80
-        } else {
-            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-            addSubview(blurEffectView)
-            blurEffectView.autoPinEdgesToSuperviewEdges()
-        }
+        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        addSubview(blurEffectView)
+        blurEffectView.autoPinEdgesToSuperviewEdges()
 
         addSubview(darkThemeBackgroundOverlay)
         darkThemeBackgroundOverlay.autoPinEdgesToSuperviewEdges()

@@ -222,7 +222,7 @@ class IncomingReactionsView: UIView, ReactionReceiver {
             view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
             if UIAccessibility.isReduceTransparencyEnabled {
-                view.backgroundColor = .ows_blackAlpha80
+                view.backgroundColor = .ows_gray75
             } else {
                 let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterialDark))
                 view.addSubview(blurView)

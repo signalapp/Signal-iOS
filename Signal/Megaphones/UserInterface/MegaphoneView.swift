@@ -93,13 +93,9 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         layer.cornerRadius = 12
         clipsToBounds = true
 
-        if UIAccessibility.isReduceTransparencyEnabled {
-            backgroundColor = .ows_blackAlpha80
-        } else {
-            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-            addSubview(blurEffectView)
-            blurEffectView.autoPinEdgesToSuperviewEdges()
-        }
+        let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        addSubview(blurEffectView)
+        blurEffectView.autoPinEdgesToSuperviewEdges()
 
         addSubview(darkThemeBackgroundOverlay)
         darkThemeBackgroundOverlay.autoPinEdgesToSuperviewEdges()
