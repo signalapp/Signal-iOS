@@ -161,6 +161,10 @@ class SendMediaNavigationController: OWSNavigationController {
         return viewController
     }()
 
+    var hasUnsavedChanges: Bool {
+        (topViewController as? AttachmentApprovalViewController)?.currentPageViewController?.canSaveMedia ?? false
+    }
+
     private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem],
                                             options: AttachmentApprovalViewControllerOptions = .canAddMore,
                                             animated: Bool) {
@@ -351,7 +355,11 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
         }
 
         // Image picker presented initially doesn't need confirmation when canceling.
-        sendMediaNavDelegate?.sendMediaNavDidCancel(self)
+        if let sendMediaNavDelegate {
+            sendMediaNavDelegate.sendMediaNavDidCancel(self)
+        } else {
+            dismiss(animated: true)
+        }
     }
 
     func showApprovalAfterProcessingAnyMediaLibrarySelections() {

@@ -211,6 +211,14 @@ extension SignalApp {
             if let visibleThread = conversationSplitViewController.visibleThread, visibleThread.uniqueId == thread.uniqueId {
                 conversationSplitViewController.selectedConversationViewController?.scrollToInitialPosition(animated: animated)
                 return
+            } else if let sendMediaNavigationController = conversationSplitViewController.selectedConversationViewController?.presentedViewController as? SendMediaNavigationController {
+                if sendMediaNavigationController.hasUnsavedChanges {
+                    return
+                }
+
+                conversationSplitViewController.presentThread(thread, action: .none, focusMessageId: nil, animated: false)
+                sendMediaNavigationController.dismiss(animated: animated)
+                return
             }
 
             conversationSplitViewController.presentThread(thread, action: .none, focusMessageId: nil, animated: animated)
