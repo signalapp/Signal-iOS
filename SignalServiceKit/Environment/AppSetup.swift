@@ -1183,7 +1183,9 @@ public class AppSetup {
             db: db,
             deviceManager: deviceManager,
             deviceStore: deviceStore,
-            networkManager: networkManager
+            messageSenderJobQueue: messageSenderJobQueue,
+            networkManager: networkManager,
+            threadStore: threadStore
         )
         let inactiveLinkedDeviceFinder = InactiveLinkedDeviceFinderImpl(
             dateProvider: dateProvider,

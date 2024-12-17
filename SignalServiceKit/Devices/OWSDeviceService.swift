@@ -35,6 +35,7 @@ public enum DeviceRenameError: Error {
 
 struct OWSDeviceServiceImpl: OWSDeviceService {
     private let db: any DB
+    private let deviceNameChangeSyncMessageSender: DeviceNameChangeSyncMessageSender
     private let deviceManager: OWSDeviceManager
     private let deviceStore: OWSDeviceStore
     private let networkManager: NetworkManager
@@ -43,9 +44,15 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
         db: any DB,
         deviceManager: OWSDeviceManager,
         deviceStore: OWSDeviceStore,
-        networkManager: NetworkManager
+        messageSenderJobQueue: MessageSenderJobQueue,
+        networkManager: NetworkManager,
+        threadStore: ThreadStore
     ) {
         self.db = db
+        self.deviceNameChangeSyncMessageSender = DeviceNameChangeSyncMessageSender(
+            messageSenderJobQueue: messageSenderJobQueue,
+            threadStore: threadStore
+        )
         self.deviceManager = deviceManager
         self.deviceStore = deviceStore
         self.networkManager = networkManager
@@ -141,6 +148,59 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
         guard response.responseStatusCode == 204 else {
             throw DeviceRenameError.unspecified
         }
+
+        await db.awaitableWrite { tx in
+            deviceStore.setEncryptedName(
+                encryptedName,
+                for: device,
+                tx: tx
+            )
+
+            guard let deviceId = UInt32(exactly: device.deviceId) else {
+                owsFailDebug("Failed to coerce device ID into UInt32!")
+                return
+            }
+
+            deviceNameChangeSyncMessageSender.enqueueDeviceNameChangeSyncMessage(
+                forDeviceId: deviceId,
+                tx: tx
+            )
+        }
+    }
+}
+
+// MARK: -
+
+private struct DeviceNameChangeSyncMessageSender {
+    private let messageSenderJobQueue: MessageSenderJobQueue
+    private let threadStore: ThreadStore
+
+    init(messageSenderJobQueue: MessageSenderJobQueue, threadStore: ThreadStore) {
+        self.messageSenderJobQueue = messageSenderJobQueue
+        self.threadStore = threadStore
+    }
+
+    func enqueueDeviceNameChangeSyncMessage(
+        forDeviceId deviceId: UInt32,
+        tx: DBWriteTransaction
+    ) {
+        let sdsTx = SDSDB.shimOnlyBridge(tx)
+
+        guard let localThread = threadStore.getOrCreateLocalThread(tx: tx) else {
+            owsFailDebug("Failed to create local thread!")
+            return
+        }
+
+        let outgoingSyncMessage = OutgoingDeviceNameChangeSyncMessage(
+            deviceId: deviceId,
+            thread: localThread,
+            tx: sdsTx
+        )
+
+        messageSenderJobQueue.add(
+            message: .preprepared(transientMessageWithoutAttachments: outgoingSyncMessage),
+            transaction: sdsTx
+        )
     }
 }
 

@@ -646,7 +646,7 @@ public final class MessageReceiver {
                 deleteForMeProto: deleteForMe,
                 tx: tx.asV2Write
             )
-        } else if let deviceNameChange = syncMessage.deviceNameChange {
+        } else if syncMessage.deviceNameChange != nil {
             Task {
                 let deviceService = DependenciesBridge.shared.deviceService
 

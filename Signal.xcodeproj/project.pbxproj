@@ -2515,6 +2515,7 @@
 		D9A85DC22BE1719C003F7045 /* MessageBackupGroupCallArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A85DC12BE1719C003F7045 /* MessageBackupGroupCallArchiver.swift */; };
 		D9AA37A02A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA379F2A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift */; };
 		D9AA37A42A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA37A32A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift */; };
+		D9AA7D6E2D11F08A0014137C /* OutgoingDeviceNameChangeSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA7D6D2D11F0750014137C /* OutgoingDeviceNameChangeSyncMessage.swift */; };
 		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift */; };
 		D9AE0ACF29186D7F0063488B /* IncomingContactSyncJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ACE29186D7F0063488B /* IncomingContactSyncJobRecord.swift */; };
 		D9AE0AD32918715E0063488B /* DonationReceiptCredentialRedemptionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0AD22918715E0063488B /* DonationReceiptCredentialRedemptionJobRecord.swift */; };
@@ -6280,6 +6281,7 @@
 		D9A85DC12BE1719C003F7045 /* MessageBackupGroupCallArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupCallArchiver.swift; sourceTree = "<group>"; };
 		D9AA379F2A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessageTest.swift; sourceTree = "<group>"; };
 		D9AA37A32A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingGroupCallUpdateMessage.swift; sourceTree = "<group>"; };
+		D9AA7D6D2D11F0750014137C /* OutgoingDeviceNameChangeSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingDeviceNameChangeSyncMessage.swift; sourceTree = "<group>"; };
 		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateType+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
 		D9AE0ACE29186D7F0063488B /* IncomingContactSyncJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingContactSyncJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0AD22918715E0063488B /* DonationReceiptCredentialRedemptionJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptCredentialRedemptionJobRecord.swift; sourceTree = "<group>"; };
@@ -13443,6 +13445,7 @@
 				6619A1BB2B2A8132004B38FE /* SentMessageTranscriptReceiver */,
 				D9C0AE642BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift */,
 				669941A02CC976B000DC99A1 /* LinkAndSyncManager.swift */,
+				D9AA7D6D2D11F0750014137C /* OutgoingDeviceNameChangeSyncMessage.swift */,
 				F9C5CA21289453B100548EEE /* OWSBlockedPhoneNumbersMessage.h */,
 				F9C5CA29289453B100548EEE /* OWSBlockedPhoneNumbersMessage.m */,
 				F9C5CA1A289453B100548EEE /* OWSDevice.swift */,
@@ -17323,6 +17326,7 @@
 				D979CC292AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift in Sources */,
 				5060EBBA2C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift in Sources */,
 				D9DB37F32B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift in Sources */,
+				D9AA7D6E2D11F08A0014137C /* OutgoingDeviceNameChangeSyncMessage.swift in Sources */,
 				C13B9BB62A1819C7007F74C4 /* OutgoingEditMessage.swift in Sources */,
 				C1EAECDF2A1EFC21008A3D58 /* OutgoingEditMessageSyncTranscript.swift in Sources */,
 				D9AA37A42A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift in Sources */,

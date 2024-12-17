@@ -55,8 +55,8 @@ class LinkedDevicesViewModel: ObservableObject {
     private let db: any DB
     private let deviceService: OWSDeviceService
     private let deviceStore: OWSDeviceStore
-    private let messageBackupErrorPresenter: MessageBackupErrorPresenter
     private let identityManager: OWSIdentityManager
+    private let messageBackupErrorPresenter: MessageBackupErrorPresenter
 
 #if DEBUG
     private let isPreview: Bool
@@ -70,8 +70,8 @@ class LinkedDevicesViewModel: ObservableObject {
         db = DependenciesBridge.shared.db
         deviceService = DependenciesBridge.shared.deviceService
         deviceStore = DependenciesBridge.shared.deviceStore
-        messageBackupErrorPresenter = DependenciesBridge.shared.messageBackupErrorPresenter
         identityManager = DependenciesBridge.shared.identityManager
+        messageBackupErrorPresenter = DependenciesBridge.shared.messageBackupErrorPresenter
 
         databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
@@ -214,14 +214,6 @@ class LinkedDevicesViewModel: ObservableObject {
             device: displayableDevice.device,
             toEncryptedName: encryptedName
         )
-
-        await db.awaitableWrite { tx in
-            deviceStore.setEncryptedName(
-                encryptedName,
-                for: displayableDevice.device,
-                tx: tx
-            )
-        }
     }
 
     // MARK: DisplayableDevice
