@@ -83,7 +83,11 @@ class ViewOnceMessageViewController: OWSViewController {
         let controlsHeight = controlSize + vMargin * 2
         mediaView.autoSetDimension(.width, toSize: controlsWidth, relation: .greaterThanOrEqual)
         mediaView.autoSetDimension(.height, toSize: controlsHeight, relation: .greaterThanOrEqual)
-
+        contentView.addSubview(restrictScreenCapturePlaceholderView)
+        restrictScreenCapturePlaceholderView.autoSetDimension(.width, toSize: controlsWidth, relation: .greaterThanOrEqual)
+        restrictScreenCapturePlaceholderView.autoSetDimension(.height, toSize: controlsHeight, relation: .greaterThanOrEqual)
+        restrictScreenCapturePlaceholderView.autoPinEdgesToSuperviewEdges()
+        
         let dismissButton = OWSButton(imageName: Theme.iconName(.buttonX), tintColor: Theme.darkThemePrimaryColor) { [weak self] in
             self?.dismissButtonPressed()
         }
@@ -100,6 +104,40 @@ class ViewOnceMessageViewController: OWSViewController {
 
         setupDatabaseObservation()
     }
+    
+    private var restrictScreenCapturePlaceholderView: UIView = {
+        let view = UIView()
+        view.backgroundColor = Theme.backgroundColor
+        let label = UILabel()
+        label.text = OWSLocalizedString("VIEW_ONCE_MEDIA_SCREEN_CAPTURE_RESTRICTION", comment: "Text to show when user tries to see a media file when device screen recording is still going on.")
+        label.numberOfLines = 0
+        label.font = .dynamicTypeCaption1
+        
+        let imageView = UIImageView(image: UIImage(named: "video-slash"))
+        imageView.autoSetDimension(.height, toSize: 48)
+        imageView.autoSetDimension(.width, toSize: 48)
+        imageView.contentMode = .scaleAspectFill
+        let stackView = UIStackView()
+        stackView.addArrangedSubview(imageView)
+        stackView.addArrangedSubview(label)
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.distribution = .equalCentering
+        stackView.spacing = 12
+        view.addSubview(stackView)
+        stackView.autoCenterInSuperview()
+        stackView.autoPinLeadingToSuperviewMargin(withInset: 24)
+        stackView.autoPinTrailingToSuperviewMargin(withInset: 24)
+        
+        let logoView = UIImageView(image: UIImage(named: "signal-full-logo"))
+        view.addSubview(logoView)
+        logoView.autoSetDimension(.height, toSize: 48)
+        logoView.autoSetDimension(.width, toSize: 48)
+        logoView.contentMode = .scaleAspectFill
+        logoView.autoPinBottomToSuperviewMargin(withInset: 24)
+        logoView.autoHCenterInSuperview()
+        return view
+    }()
 
     private func buildMediaView() -> UIView? {
         switch content.type {
@@ -227,11 +265,18 @@ class ViewOnceMessageViewController: OWSViewController {
                                                name: .OWSApplicationWillEnterForeground,
                                                object: nil)
     }
+    
+    func setupScreenCaptureDidChangeObservation() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(checkScreenCaptureStatusAndShowPlaceholderView),
+                                               name: UIScreen.capturedDidChangeNotification,
+                                               object: nil)
+        
+    }
 
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        self.videoPlayer?.play()
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        checkScreenCaptureStatusAndShowPlaceholderView()
     }
 
     public override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -274,6 +319,18 @@ class ViewOnceMessageViewController: OWSViewController {
         AssertIsOnMainThread()
 
         dismiss(animated: true)
+    }
+    
+    @objc private func checkScreenCaptureStatusAndShowPlaceholderView() {
+        let isCaptured = UIScreen.main.isCaptured
+        DispatchQueue.main.async { [weak self] in
+            self?.restrictScreenCapturePlaceholderView.isHidden = !isCaptured
+        }
+        isCaptured ? videoPlayer?.stop() : videoPlayer?.play()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        videoPlayer?.stop()
     }
 }
 
