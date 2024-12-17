@@ -9,7 +9,10 @@ import LibSignalClient
 public class OutgoingStoryMessage: TSOutgoingMessage {
     @objc
     public private(set) var storyMessageId: String!
-    public private(set) var storyMessageRowId: Int64!
+
+    @objc
+    public private(set) var _storyMessageRowId: NSNumber!
+    public var storyMessageRowId: Int64! { _storyMessageRowId?.int64Value }
 
     @objc
     public private(set) var storyAllowsReplies: NSNumber!
@@ -28,7 +31,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         transaction: SDSAnyReadTransaction
     ) {
         self.storyMessageId = storyMessage.uniqueId
-        self.storyMessageRowId = storyMessageRowId
+        self._storyMessageRowId = NSNumber(value: storyMessageRowId)
         self.storyAllowsReplies = NSNumber(value: storyAllowsReplies)
         self.isPrivateStorySend = NSNumber(value: isPrivateStorySend)
         self.skipSyncTranscript = NSNumber(value: skipSyncTranscript)
