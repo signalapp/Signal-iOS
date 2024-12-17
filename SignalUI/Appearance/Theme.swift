@@ -109,6 +109,15 @@ final public class Theme: NSObject {
     private var cachedIsDarkThemeEnabled: Bool?
     private var cachedCurrentMode: Mode?
 
+    public static var shareExtensionThemeOverride: UIUserInterfaceStyle = .unspecified {
+        didSet {
+            guard !CurrentAppContext().isMainApp else {
+                return owsFailDebug("Should only be set in share extension")
+            }
+            shared.themeDidChange()
+        }
+    }
+
     private var isDarkThemeEnabled: Bool {
 #if TESTABLE_BUILD
         if let isDarkThemeEnabledForTests {
@@ -123,7 +132,16 @@ final public class Theme: NSObject {
 
         // Always respect the system theme in extensions.
         guard CurrentAppContext().isMainApp else {
-            return isSystemDarkThemeEnabled()
+            return switch Self.shareExtensionThemeOverride {
+            case .dark:
+                true
+            case .light:
+                false
+            case .unspecified:
+                isSystemDarkThemeEnabled()
+            @unknown default:
+                isSystemDarkThemeEnabled()
+            }
         }
 
         if let cachedIsDarkThemeEnabled {

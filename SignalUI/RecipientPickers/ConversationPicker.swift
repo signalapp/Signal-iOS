@@ -225,10 +225,21 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         conversationCollection = buildConversationCollection(sectionOptions: sectionOptions)
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(blockListDidChange),
-                                               name: BlockingManager.blockListDidChange,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(blockListDidChange),
+            name: BlockingManager.blockListDidChange,
+            object: nil
+        )
+
+        DispatchQueue.main.async {
+            if
+                !CurrentAppContext().isMainApp,
+                self.traitCollection.userInterfaceStyle != UITraitCollection.current.userInterfaceStyle
+            {
+                Theme.shareExtensionThemeOverride = self.traitCollection.userInterfaceStyle
+            }
+        }
     }
 
     var presentationTime: Date?
