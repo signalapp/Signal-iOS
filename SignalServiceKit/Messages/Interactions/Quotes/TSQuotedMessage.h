@@ -131,14 +131,14 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
           isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce;
 
 // used when restoring quoted messages from backups
-+ (instancetype)quotedMessageWithTargetMessageTimestamp:(nullable NSNumber *)timestamp
-                                          authorAddress:(SignalServiceAddress *)authorAddress
-                                                   body:(nullable NSString *)body
-                                             bodyRanges:(nullable MessageBodyRanges *)bodyRanges
-                                             bodySource:(TSQuotedMessageContentSource)bodySource
-                                   quotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
-                                            isGiftBadge:(BOOL)isGiftBadge
-                                isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce;
++ (instancetype)quotedMessageFromBackupWithTargetMessageTimestamp:(nullable NSNumber *)timestamp
+                                                    authorAddress:(SignalServiceAddress *)authorAddress
+                                                             body:(nullable NSString *)body
+                                                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                                                       bodySource:(TSQuotedMessageContentSource)bodySource
+                                             quotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
+                                                      isGiftBadge:(BOOL)isGiftBadge
+                                          isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce;
 
 @end
 

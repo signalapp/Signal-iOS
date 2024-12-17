@@ -719,7 +719,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             )
         else {
             return .withoutFinalizer(TSQuotedMessage(
-                targetMessageTimestamp: draft.originalMessageTimestamp.map(NSNumber.init(value:)),
+                timestamp: draft.originalMessageTimestamp ?? 0,
                 authorAddress: draft.originalMessageAuthorAddress,
                 body: OWSLocalizedString(
                     "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
@@ -727,7 +727,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 ),
                 bodyRanges: nil,
                 bodySource: .remote,
-                quotedAttachmentInfo: nil,
+                receivedQuotedAttachmentInfo: nil,
                 isGiftBadge: false,
                 isTargetMessageViewOnce: false
             ))

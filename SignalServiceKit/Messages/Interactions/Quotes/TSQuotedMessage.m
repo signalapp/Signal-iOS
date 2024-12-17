@@ -186,16 +186,15 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (instancetype)quotedMessageWithTargetMessageTimestamp:(nullable NSNumber *)timestamp
-                                          authorAddress:(SignalServiceAddress *)authorAddress
-                                                   body:(nullable NSString *)body
-                                             bodyRanges:(nullable MessageBodyRanges *)bodyRanges
-                                             bodySource:(TSQuotedMessageContentSource)bodySource
-                                   quotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
-                                            isGiftBadge:(BOOL)isGiftBadge
-                                isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce
++ (instancetype)quotedMessageFromBackupWithTargetMessageTimestamp:(nullable NSNumber *)timestamp
+                                                    authorAddress:(SignalServiceAddress *)authorAddress
+                                                             body:(nullable NSString *)body
+                                                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                                                       bodySource:(TSQuotedMessageContentSource)bodySource
+                                             quotedAttachmentInfo:(nullable OWSAttachmentInfo *)attachmentInfo
+                                                      isGiftBadge:(BOOL)isGiftBadge
+                                          isTargetMessageViewOnce:(BOOL)isTargetMessageViewOnce
 {
-    OWSAssertDebug(body != nil || attachmentInfo != nil || isGiftBadge || isTargetMessageViewOnce);
     OWSAssertDebug(authorAddress.isValid);
 
     uint64_t rawTimestamp;

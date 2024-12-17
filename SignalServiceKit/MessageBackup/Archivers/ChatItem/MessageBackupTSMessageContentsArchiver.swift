@@ -1433,20 +1433,20 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             quotedAttachmentThumbnail = nil
         }
 
-        guard
-            quoteBody != nil
-            || quotedAttachmentInfo != nil
-            || isGiftBadge
-            || isTargetMessageViewOnce
-        else {
-            return .messageFailure([.restoreFrameError(
+        if
+            quoteBody == nil,
+            quotedAttachmentInfo == nil,
+            !isGiftBadge,
+            !isTargetMessageViewOnce
+        {
+            partialErrors.append(.restoreFrameError(
                 .invalidProtoData(.quotedMessageEmptyContent),
                 chatItemId
-            )])
+            ))
         }
 
         let quotedMessage = TSQuotedMessage(
-            targetMessageTimestamp: targetMessageTimestamp,
+            fromBackupWithTargetMessageTimestamp: targetMessageTimestamp,
             authorAddress: authorAddress,
             body: quoteBody?.text,
             bodyRanges: quoteBody?.ranges,

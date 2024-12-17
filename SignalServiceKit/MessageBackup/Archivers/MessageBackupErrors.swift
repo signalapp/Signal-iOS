@@ -998,7 +998,6 @@ extension MessageBackup {
                         .emptyStandardMessage,
                         .longTextStandardMessageMissingBody,
                         .unrecognizedBodyRangeStyle,
-                        .quotedMessageEmptyContent,
                         .linkPreviewEmptyUrl,
                         .linkPreviewUrlNotInBody,
                         .contactMessageNonSingularContactAttachmentCount,
@@ -1068,6 +1067,12 @@ extension MessageBackup {
                         .adHocCallUnrecognizedState,
                         .recipientOfAdHocCallWasNotCallLink:
                     return .error
+                case .quotedMessageEmptyContent:
+                    // It was historically possible to end up with a quote that
+                    // had no contents (no body, no OWSAttachmentInfo, not view-once
+                    // or a gift badge). The way this renders is as a quote of an
+                    // attachment with no preview, just the text "Attachment".
+                    return .warning
                 }
             case
                     .referencedChatThreadNotFound,
