@@ -778,6 +778,7 @@ extension BodyRangesTextView {
         editableBody.replaceCharacters(in: selectedRange, with: "", selectedRange: selectedRange)
         editableBody.endEditing()
         self.selectedRange = NSRange(location: selectedRange.location, length: 0)
+        textViewDidChange(self)
     }
 
     public class func copyToPasteboard(_ text: CVTextValue) {
