@@ -247,6 +247,10 @@ public class RemoteConfig {
         return UInt64(messageQueueTime * Double(MSEC_PER_SEC))
     }
 
+    public var shouldRunTSAttachmentMigration: Bool {
+        return !isEnabled(.tsAttachmentMigrationKillSwitch)
+    }
+
     // MARK: UInt values
 
     private func getUIntValue(
@@ -435,6 +439,7 @@ private enum IsEnabledFlag: String, FlagType {
     case paypalOneTimeDonationKillSwitch = "ios.paypalOneTimeDonationKillSwitch"
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
+    case tsAttachmentMigrationKillSwitch = "ios.tsAttachmentMigrationKillSwitch"
 
     var isSticky: Bool {
         switch self {
@@ -459,6 +464,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalOneTimeDonationKillSwitch: false
         case .ringrtcNwPathMonitorTrialKillSwitch: false
         case .serviceExtensionFailureKillSwitch: false
+        case .tsAttachmentMigrationKillSwitch: false
         }
     }
     var isHotSwappable: Bool {
@@ -484,6 +490,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalOneTimeDonationKillSwitch: false
         case .ringrtcNwPathMonitorTrialKillSwitch: false
         case .serviceExtensionFailureKillSwitch: true
+        case .tsAttachmentMigrationKillSwitch: false
         }
     }
 }

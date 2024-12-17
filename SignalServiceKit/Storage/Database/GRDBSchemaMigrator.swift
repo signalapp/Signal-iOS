@@ -6,10 +6,6 @@
 import Foundation
 import GRDB
 
-public enum TSAttachmentMigrationValues {
-    public static var numAttachmentsToMigrate: Int?
-}
-
 @objc
 public class GRDBSchemaMigrator: NSObject {
 
@@ -29,7 +25,6 @@ public class GRDBSchemaMigrator: NSObject {
     static func migrateDatabase(
         databaseStorage: SDSDatabaseStorage,
         isMainDatabase: Bool,
-        tsAttachmentMigrationProgress: Progress? = nil,
         runDataMigrations: Bool = true
     ) throws -> Bool {
         let didPerformIncrementalMigrations: Bool
@@ -44,7 +39,6 @@ public class GRDBSchemaMigrator: NSObject {
             do {
                 didPerformIncrementalMigrations = try runIncrementalMigrations(
                     databaseStorage: databaseStorage,
-                    tsAttachmentMigrationProgress: tsAttachmentMigrationProgress,
                     runDataMigrations: runDataMigrations
                 )
             } catch {
@@ -71,7 +65,6 @@ public class GRDBSchemaMigrator: NSObject {
 
     private static func runIncrementalMigrations(
         databaseStorage: SDSDatabaseStorage,
-        tsAttachmentMigrationProgress: Progress?,
         runDataMigrations: Bool
     ) throws -> Bool {
         let grdbStorageAdapter = databaseStorage.grdbStorage
@@ -83,10 +76,7 @@ public class GRDBSchemaMigrator: NSObject {
         // First do the schema migrations. (See the comment within MigrationId for why schema and data
         // migrations are separate.)
         let incrementalMigrator = DatabaseMigratorWrapper()
-        registerSchemaMigrations(
-            migrator: incrementalMigrator,
-            tsAttachmentMigrationProgress: tsAttachmentMigrationProgress
-        )
+        registerSchemaMigrations(migrator: incrementalMigrator)
         try incrementalMigrator.migrate(grdbStorageAdapter.pool)
 
         if runDataMigrations {
@@ -327,6 +317,8 @@ public class GRDBSchemaMigrator: NSObject {
         case dropTSAttachmentTable
         case dropMediaGalleryItemTable
         case addBackupsReceiptCredentialStateToJobRecord
+        case recreateTSAttachment
+        case recreateTSAttachmentMigration
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -388,7 +380,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 106
+    public static let grdbSchemaVersionLatest: UInt = 107
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -501,10 +493,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
     }
 
-    private static func registerSchemaMigrations(
-        migrator: DatabaseMigratorWrapper,
-        tsAttachmentMigrationProgress: Progress?
-    ) {
+    private static func registerSchemaMigrations(migrator: DatabaseMigratorWrapper) {
 
         migrator.registerMigration(.createInitialSchema) { _ in
             owsFail("This migration should have already been run by the last YapDB migration.")
@@ -3722,38 +3711,24 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.tsMessageAttachmentMigration1) { tx in
-            TSAttachmentMigration.TSMessageMigration.prepareBlockingTSMessageMigration(tx: tx)
+            // This was rolled back in a complex dance of rewriting migration
+            // history. See `recreateTSAttachment`.
+            // TSAttachmentMigration.TSMessageMigration.prepareBlockingTSMessageMigration(tx: tx)
             return .success(())
         }
 
         migrator.registerMigration(.tsMessageAttachmentMigration2) { tx in
-            tsAttachmentMigrationProgress?.becomeCurrent(withPendingUnitCount: 1)
-            defer {
-                tsAttachmentMigrationProgress?.resignCurrent()
-            }
-
-            let progress: Progress?
-            if tsAttachmentMigrationProgress != nil {
-                let numberOfRows = try Int.fetchOne(
-                    tx.database,
-                    sql: "SELECT COUNT(1) FROM TSAttachmentMigration;"
-                ) ?? 0
-                progress = Progress(totalUnitCount: Int64(numberOfRows))
-                TSAttachmentMigrationValues.numAttachmentsToMigrate = numberOfRows
-            } else {
-                progress = nil
-            }
-
-            TSAttachmentMigration.TSMessageMigration.completeBlockingTSMessageMigration(
-                progress: progress,
-                tx: tx
-            )
+            // This was rolled back in a complex dance of rewriting migration
+            // history. See `recreateTSAttachment`.
+            // TSAttachmentMigration.TSMessageMigration.completeBlockingTSMessageMigration(tx: tx)
             return .success(())
         }
 
         migrator.registerMigration(.tsMessageAttachmentMigration3) { tx in
-            TSAttachmentMigration.TSMessageMigration.cleanUpTSAttachmentFiles()
-            try tx.database.drop(table: "TSAttachmentMigration")
+            // This was rolled back in a complex dance of rewriting migration
+            // history. See `recreateTSAttachment`.
+            // TSAttachmentMigration.TSMessageMigration.cleanUpTSAttachmentFiles()
+            // try tx.database.drop(table: "TSAttachmentMigration")
             return .success(())
         }
 
@@ -3800,7 +3775,9 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dropTSAttachmentTable) { tx in
-            try tx.database.drop(table: "model_TSAttachment")
+            // This was rolled back in a complex dance of rewriting migration
+            // history. See `recreateTSAttachment`.
+            // try tx.database.drop(table: "model_TSAttachment")
             return .success(())
         }
 
@@ -3814,6 +3791,92 @@ public class GRDBSchemaMigrator: NSObject {
                 table.add(column: "BRCRJR_state", .blob)
             }
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.recreateTSAttachment) { tx in
+            try tx.database.execute(sql: """
+            CREATE
+                 TABLE
+                     IF NOT EXISTS "model_TSAttachment" (
+                         "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+                         ,"recordType" INTEGER NOT NULL
+                         ,"uniqueId" TEXT NOT NULL UNIQUE
+                             ON CONFLICT FAIL
+                         ,"albumMessageId" TEXT
+                         ,"attachmentType" INTEGER NOT NULL
+                         ,"blurHash" TEXT
+                         ,"byteCount" INTEGER NOT NULL
+                         ,"caption" TEXT
+                         ,"contentType" TEXT NOT NULL
+                         ,"encryptionKey" BLOB
+                         ,"serverId" INTEGER NOT NULL
+                         ,"sourceFilename" TEXT
+                         ,"cachedAudioDurationSeconds" DOUBLE
+                         ,"cachedImageHeight" DOUBLE
+                         ,"cachedImageWidth" DOUBLE
+                         ,"creationTimestamp" DOUBLE
+                         ,"digest" BLOB
+                         ,"isUploaded" INTEGER
+                         ,"isValidImageCached" INTEGER
+                         ,"isValidVideoCached" INTEGER
+                         ,"lazyRestoreFragmentId" TEXT
+                         ,"localRelativeFilePath" TEXT
+                         ,"mediaSize" BLOB
+                         ,"pointerType" INTEGER
+                         ,"state" INTEGER
+                         ,"uploadTimestamp" INTEGER NOT NULL DEFAULT 0
+                         ,"cdnKey" TEXT NOT NULL DEFAULT ''
+                         ,"cdnNumber" INTEGER NOT NULL DEFAULT 0
+                         ,"isAnimatedCached" INTEGER
+                         ,"attachmentSchemaVersion" INTEGER DEFAULT 0
+                         ,"videoDuration" DOUBLE
+                         ,"clientUuid" TEXT
+                     )
+            ;
+            """)
+
+            try tx.database.execute(sql: """
+            CREATE
+                 INDEX IF NOT EXISTS "index_model_TSAttachment_on_uniqueId_and_contentType"
+                     ON "model_TSAttachment"("uniqueId"
+                 ,"contentType"
+             )
+             ;
+            """)
+            return .success(())
+        }
+
+        migrator.registerMigration(.recreateTSAttachmentMigration) { tx in
+            try tx.database.execute(sql: """
+            CREATE
+                 TABLE
+                     IF NOT EXISTS "TSAttachmentMigration" (
+                         "tsAttachmentUniqueId" TEXT NOT NULL
+                         ,"interactionRowId" INTEGER
+                         ,"storyMessageRowId" INTEGER
+                         ,"reservedV2AttachmentPrimaryFileId" BLOB NOT NULL
+                         ,"reservedV2AttachmentAudioWaveformFileId" BLOB NOT NULL
+                         ,"reservedV2AttachmentVideoStillFrameFileId" BLOB NOT NULL
+                     )
+            ;
+            """)
+            try tx.database.execute(sql: """
+            CREATE
+                 INDEX IF NOT EXISTS "index_TSAttachmentMigration_on_interactionRowId"
+                     ON "TSAttachmentMigration" ("interactionRowId")
+             WHERE
+                 "interactionRowId" IS NOT NULL
+             ;
+            """)
+            try tx.database.execute(sql: """
+            CREATE
+                 INDEX IF NOT EXISTS "index_TSAttachmentMigration_on_storyMessageRowId"
+                     ON "TSAttachmentMigration" ("storyMessageRowId")
+             WHERE
+                 "storyMessageRowId" IS NOT NULL
+             ;
+            """)
             return .success(())
         }
 

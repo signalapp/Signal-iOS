@@ -68,17 +68,12 @@ public class SDSDatabaseStorage: NSObject {
         return GRDBDatabaseStorageAdapter.databaseFileUrl()
     }
 
-    func runGrdbSchemaMigrationsOnMainDatabase(
-        completionScheduler: Scheduler,
-        tsAttachmentMigrationProgress: Progress? = nil,
-        completion: @escaping () -> Void
-    ) {
+    func runGrdbSchemaMigrationsOnMainDatabase(completionScheduler: Scheduler, completion: @escaping () -> Void) {
         let didPerformIncrementalMigrations: Bool = {
             do {
                 return try GRDBSchemaMigrator.migrateDatabase(
                     databaseStorage: self,
-                    isMainDatabase: true,
-                    tsAttachmentMigrationProgress: tsAttachmentMigrationProgress
+                    isMainDatabase: true
                 )
             } catch {
                 DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(

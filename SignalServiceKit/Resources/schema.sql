@@ -2190,3 +2190,75 @@ CREATE
         ON "MessageBackupAvatarFetchQueue"("nextRetryTimestamp"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_TSAttachment" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"albumMessageId" TEXT
+            ,"attachmentType" INTEGER NOT NULL
+            ,"blurHash" TEXT
+            ,"byteCount" INTEGER NOT NULL
+            ,"caption" TEXT
+            ,"contentType" TEXT NOT NULL
+            ,"encryptionKey" BLOB
+            ,"serverId" INTEGER NOT NULL
+            ,"sourceFilename" TEXT
+            ,"cachedAudioDurationSeconds" DOUBLE
+            ,"cachedImageHeight" DOUBLE
+            ,"cachedImageWidth" DOUBLE
+            ,"creationTimestamp" DOUBLE
+            ,"digest" BLOB
+            ,"isUploaded" INTEGER
+            ,"isValidImageCached" INTEGER
+            ,"isValidVideoCached" INTEGER
+            ,"lazyRestoreFragmentId" TEXT
+            ,"localRelativeFilePath" TEXT
+            ,"mediaSize" BLOB
+            ,"pointerType" INTEGER
+            ,"state" INTEGER
+            ,"uploadTimestamp" INTEGER NOT NULL DEFAULT 0
+            ,"cdnKey" TEXT NOT NULL DEFAULT ''
+            ,"cdnNumber" INTEGER NOT NULL DEFAULT 0
+            ,"isAnimatedCached" INTEGER
+            ,"attachmentSchemaVersion" INTEGER DEFAULT 0
+            ,"videoDuration" DOUBLE
+            ,"clientUuid" TEXT
+        )
+;
+
+CREATE
+    INDEX "index_model_TSAttachment_on_uniqueId_and_contentType"
+        ON "model_TSAttachment"("uniqueId"
+    ,"contentType"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "TSAttachmentMigration" (
+            "tsAttachmentUniqueId" TEXT NOT NULL
+            ,"interactionRowId" INTEGER
+            ,"storyMessageRowId" INTEGER
+            ,"reservedV2AttachmentPrimaryFileId" BLOB NOT NULL
+            ,"reservedV2AttachmentAudioWaveformFileId" BLOB NOT NULL
+            ,"reservedV2AttachmentVideoStillFrameFileId" BLOB NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_TSAttachmentMigration_on_interactionRowId"
+        ON "TSAttachmentMigration" ("interactionRowId")
+WHERE
+    "interactionRowId" IS NOT NULL
+;
+
+CREATE
+    INDEX "index_TSAttachmentMigration_on_storyMessageRowId"
+        ON "TSAttachmentMigration" ("storyMessageRowId")
+WHERE
+    "storyMessageRowId" IS NOT NULL
+;

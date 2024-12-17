@@ -102,6 +102,7 @@ public class AppSetup {
         callMessageHandler: CallMessageHandler,
         currentCallProvider: any CurrentCallProvider,
         notificationPresenter: any NotificationPresenter,
+        incrementalMessageTSAttachmentMigratorFactory: IncrementalMessageTSAttachmentMigratorFactory,
         messageBackupErrorPresenterFactory: MessageBackupErrorPresenterFactory,
         testDependencies: TestDependencies = TestDependencies()
     ) -> AppSetup.DatabaseContinuation {
@@ -1034,6 +1035,13 @@ public class AppSetup {
             usernameLookupManager: usernameLookupManager
         )
 
+        let incrementalMessageTSAttachmentMigrator = incrementalMessageTSAttachmentMigratorFactory.migrator(
+            appContext: appContext,
+            appReadiness: appReadiness,
+            databaseStorage: databaseStorage,
+            remoteConfigManager: remoteConfigManager
+        )
+
         let messageBackupManager = MessageBackupManagerImpl(
             accountDataArchiver: MessageBackupAccountDataArchiverImpl(
                 chatStyleArchiver: messageBackupChatStyleArchiver,
@@ -1117,6 +1125,7 @@ public class AppSetup {
                 storyStore: backupStoryStore,
                 threadStore: backupThreadStore
             ),
+            incrementalTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator,
             localRecipientArchiver: MessageBackupLocalRecipientArchiver(),
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             messagePipelineSupervisor: messagePipelineSupervisor,
@@ -1245,6 +1254,7 @@ public class AppSetup {
             incomingCallEventSyncMessageManager: incomingCallEventSyncMessageManager,
             incomingCallLogEventSyncMessageManager: incomingCallLogEventSyncMessageManager,
             incomingPniChangeNumberProcessor: incomingPniChangeNumberProcessor,
+            incrementalMessageTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator,
             individualCallRecordManager: individualCallRecordManager,
             interactionDeleteManager: interactionDeleteManager,
             interactionStore: interactionStore,
@@ -1503,8 +1513,7 @@ extension AppSetup {
 extension AppSetup.DatabaseContinuation {
     public func prepareDatabase(
         backgroundScheduler: Scheduler = DispatchQueue.global(),
-        mainScheduler: Scheduler = DispatchQueue.main,
-        tsAttachmentMigrationProgress: Progress? = nil
+        mainScheduler: Scheduler = DispatchQueue.main
     ) -> Guarantee<AppSetup.FinalContinuation> {
         let databaseStorage = sskEnvironment.databaseStorageRef
 
@@ -1520,10 +1529,7 @@ extension AppSetup.DatabaseContinuation {
                     owsFailDebug("Failed to truncate database: \(error)")
                 }
             }
-            databaseStorage.runGrdbSchemaMigrationsOnMainDatabase(
-                completionScheduler: mainScheduler,
-                tsAttachmentMigrationProgress: tsAttachmentMigrationProgress
-            ) {
+            databaseStorage.runGrdbSchemaMigrationsOnMainDatabase(completionScheduler: mainScheduler) {
                 do {
                     try databaseStorage.grdbStorage.setupDatabaseChangeObserver()
                 } catch {
