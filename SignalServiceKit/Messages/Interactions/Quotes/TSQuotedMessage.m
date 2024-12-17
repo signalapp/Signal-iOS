@@ -217,6 +217,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSNumber *)getTimestampValue
 {
+    return [self timestampValue];
+}
+
+- (nullable NSNumber *)timestampValue
+{
     if (_timestamp == 0) {
         return nil;
     }
