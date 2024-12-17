@@ -319,6 +319,16 @@ public class RegistrationNavigationController: OWSNavigationController {
                 // No state to update.
                 update: nil
             )
+        case .enterBackupKey:
+            return Controller(
+                type: RegistrationEnterBackupKeyViewController.self,
+                make: { presenter in
+                    return RegistrationEnterBackupKeyViewController(presenter: presenter)
+                },
+                // No state to update.
+                update: nil
+            )
+
         case let .showErrorSheet(errorSheet):
             let title: String?
             let message: String
@@ -588,6 +598,12 @@ extension RegistrationNavigationController: RegistrationReglockTimeoutPresenter 
         case .restartRegistration(let nextStepGuarantee):
             pushNextController(nextStepGuarantee)
         }
+    }
+}
+
+extension RegistrationNavigationController: RegistrationEnterBackupKeyPresenter {
+    func next() {
+        // TODO [Reg UI]: IOS-5450.
     }
 }
 

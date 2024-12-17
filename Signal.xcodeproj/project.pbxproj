@@ -2795,6 +2795,7 @@
 		E1650BD82CD0508C00304C58 /* recipient_call_link_13.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E1650BBB2CD0508C00304C58 /* recipient_call_link_13.binproto */; };
 		E1650BD92CD0508C00304C58 /* recipient_call_link_07.binproto in Resources */ = {isa = PBXBuildFile; fileRef = E1650BAF2CD0508C00304C58 /* recipient_call_link_07.binproto */; };
 		E16B440E2BBF242C00D2583E /* ReactionsModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E16B440D2BBF242C00D2583E /* ReactionsModelTest.swift */; };
+		E183B2B32D025AC500B197C9 /* RegistrationEnterBackupKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E183B2B22D025AA700B197C9 /* RegistrationEnterBackupKeyViewController.swift */; };
 		E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */; };
 		E18EA8072CE7D8C1003F397B /* chat_item_group_change_chat_multiple_update_06.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = E18EA8022CE7D8C1003F397B /* chat_item_group_change_chat_multiple_update_06.txtproto */; };
 		E18EA8082CE7D8C1003F397B /* chat_item_group_change_chat_multiple_update_01.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = E18EA7F82CE7D8C1003F397B /* chat_item_group_change_chat_multiple_update_01.txtproto */; };
@@ -6571,6 +6572,7 @@
 		E1650BBF2CD0508C00304C58 /* recipient_call_link_15.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = recipient_call_link_15.binproto; sourceTree = "<group>"; };
 		E1650BC02CD0508C00304C58 /* recipient_call_link_15.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = recipient_call_link_15.txtproto; sourceTree = "<group>"; };
 		E16B440D2BBF242C00D2583E /* ReactionsModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionsModelTest.swift; sourceTree = "<group>"; };
+		E183B2B22D025AA700B197C9 /* RegistrationEnterBackupKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationEnterBackupKeyViewController.swift; sourceTree = "<group>"; };
 		E18C4A7629EF2ECC007534D4 /* SignalAccountTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAccountTest.swift; sourceTree = "<group>"; };
 		E18EA7F52CE7D8C1003F397B /* chat_item_group_change_chat_multiple_update_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_group_change_chat_multiple_update_00.binproto; sourceTree = "<group>"; };
 		E18EA7F62CE7D8C1003F397B /* chat_item_group_change_chat_multiple_update_00.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_group_change_chat_multiple_update_00.txtproto; sourceTree = "<group>"; };
@@ -9599,6 +9601,7 @@
 				66AAC2C729CB9ED900566AD6 /* RegistrationChangePhoneNumberConfirmationViewController.swift */,
 				66AAC2C529CB942F00566AD6 /* RegistrationChangePhoneNumberViewController.swift */,
 				6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */,
+				E183B2B22D025AA700B197C9 /* RegistrationEnterBackupKeyViewController.swift */,
 				F92E4C73299E9A0100C6E6C7 /* RegistrationLoadingViewController.swift */,
 				F95A64F2299589CA007FDBDF /* RegistrationNavigationController.swift */,
 				F9D5C39E2993F9FF004891FC /* RegistrationPermissionsView.swift */,
@@ -16531,6 +16534,7 @@
 				66A93A8029940A8200FA0291 /* RegistrationCoordinatorImpl+Service.swift in Sources */,
 				6600F38E29918A6100B1EDB7 /* RegistrationCoordinatorImpl.swift in Sources */,
 				66F0F1DD29C1230C008C0ECE /* RegistrationCoordinatorLoader.swift in Sources */,
+				E183B2B32D025AC500B197C9 /* RegistrationEnterBackupKeyViewController.swift in Sources */,
 				F92E4C74299E9A0100C6E6C7 /* RegistrationLoadingViewController.swift in Sources */,
 				66533E3A29B9502100E8D928 /* RegistrationMode.swift in Sources */,
 				F95A64F3299589CA007FDBDF /* RegistrationNavigationController.swift in Sources */,

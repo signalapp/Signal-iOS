@@ -50,6 +50,12 @@ public enum RegistrationStep: Equatable {
     /// PIN guesses got used up), we have no choice but to wait out the reglock.
     case reglockTimeout(RegistrationReglockTimeoutState)
 
+    // MARK: From Backup
+
+    /// If the user elects to restore from backup and doesn't have their old phone,
+    /// they are prompted to manually enter their backup key.
+    case enterBackupKey
+
     // MARK: - Post-Registration
 
     /// If the user has successfully recovered their master key and can attempt to
@@ -126,6 +132,7 @@ public enum RegistrationStep: Equatable {
         case .pinAttemptsExhaustedWithoutReglock: return "pinAttemptsExhaustedWithoutReglock"
         case .captchaChallenge: return "captchaChallenge"
         case .reglockTimeout: return "reglockTimeout"
+        case .enterBackupKey: return "enterBackupKey"
         case .restoreFromLocalMessageBackup: return "restoreFromLocalMessageBackup"
         case .phoneNumberDiscoverability: return "phoneNumberDiscoverability"
         case .setupProfile: return "setupProfile"
