@@ -83,6 +83,10 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
+    public func scheduleNotifyForNewLinkedDevice() {
+        Logger.warn("")
+    }
+
     public func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void) {
         Logger.warn("")
     }
@@ -92,6 +96,14 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
     }
 
     public func clearAllNotifications() {
+        Logger.warn("")
+    }
+
+    public func clearAllNotificationsExceptNewLinkedDevices() {
+        Logger.warn("")
+    }
+
+    public static func clearAllNotificationsExceptNewLinkedDevices() {
         Logger.warn("")
     }
 

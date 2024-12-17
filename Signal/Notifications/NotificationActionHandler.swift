@@ -86,6 +86,9 @@ public class NotificationActionHandler {
         case .showChatList:
             // No need to do anything.
             return .value(())
+        case .showLinkedDevices:
+            showLinkedDevices()
+            return .value(())
         }
     }
 
@@ -349,6 +352,10 @@ public class NotificationActionHandler {
                 future.resolve()
             }
         }
+    }
+
+    private class func showLinkedDevices() {
+        SignalApp.shared.showAppSettings(mode: .linkedDevices)
     }
 
     private struct NotificationMessage {

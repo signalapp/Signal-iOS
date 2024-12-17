@@ -243,6 +243,9 @@ class LinkDeviceViewController: OWSViewController {
 
         deviceProvisioner.provision().map(on: DispatchQueue.main) { tokenId in
             Logger.info("Successfully provisioned device.")
+
+            SSKEnvironment.shared.notificationPresenterRef.scheduleNotifyForNewLinkedDevice()
+
             self.delegate?.didFinishLinking(
                 ephemeralBackupKey.map { ($0, tokenId) },
                 from: self

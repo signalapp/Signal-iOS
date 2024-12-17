@@ -82,6 +82,10 @@ public class UserNotificationConfig {
             // Currently, .showChatList is only used as a default action.
             owsFailDebug("ShowChatList is not supported as a UNNotificationAction")
             return nil
+        case .showLinkedDevices:
+            // Currently, .showLinkedDevices is only used as a default action.
+            owsFailDebug("showLinkedDevices is not supported as a UNNotificationAction")
+            return nil
         }
     }
 
@@ -173,6 +177,9 @@ class UserNotificationPresenter {
         if checkForCancel, !isMainAppAndActive, hasReceivedSyncMessageRecentlyWithSneakyTransaction {
             assert(userInfo[AppNotificationUserInfoKey.threadId] != nil)
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForRemoteRead, repeats: false)
+        } else if category == .newDeviceLinked {
+            let delay = TimeInterval.random(in: kHourInterval...(kHourInterval * 3))
+            trigger = UNTimeIntervalNotificationTrigger(timeInterval: delay, repeats: false)
         } else {
             trigger = nil
         }
@@ -227,7 +234,8 @@ class UserNotificationPresenter {
              .missedCallWithoutActions,
              .missedCallFromNoLongerVerifiedIdentity,
              .transferRelaunch,
-             .deregistration:
+             .deregistration,
+             .newDeviceLinked:
             // Always show these notifications
             return true
 
@@ -308,6 +316,26 @@ class UserNotificationPresenter {
 
         Self.notificationCenter.removeAllPendingNotificationRequests()
         Self.notificationCenter.removeAllDeliveredNotifications()
+    }
+
+    static func clearAllNotificationsExceptNewLinkedDevices() {
+        Logger.info("Clearing all notifications except new linked device notifications")
+
+        Task {
+            let pendingNotificationIDs = await Self.notificationCenter.pendingNotificationRequests()
+                .filter { notificationRequest in
+                    notificationRequest.content.categoryIdentifier != AppNotificationCategory.newDeviceLinked.identifier
+                }
+                .map(\.identifier)
+            let deliveredNotificationIDs = await Self.notificationCenter.deliveredNotifications()
+                .filter { notification in
+                    notification.request.content.categoryIdentifier != AppNotificationCategory.newDeviceLinked.identifier
+                }
+                .map(\.request.identifier)
+
+            Self.notificationCenter.removePendingNotificationRequests(withIdentifiers: pendingNotificationIDs)
+            Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: deliveredNotificationIDs)
+        }
     }
 
     private enum CancellationType: Equatable, Hashable {

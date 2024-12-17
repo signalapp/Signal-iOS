@@ -34,6 +34,7 @@ public enum AppNotificationCategory: CaseIterable {
     case failedStorySend
     case transferRelaunch
     case deregistration
+    case newDeviceLinked
 }
 
 public enum AppNotificationAction: String, CaseIterable {
@@ -47,6 +48,7 @@ public enum AppNotificationAction: String, CaseIterable {
     case submitDebugLogs
     case reregister
     case showChatList
+    case showLinkedDevices
 }
 
 public struct AppNotificationUserInfoKey {
@@ -95,6 +97,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.transferRelaunch"
         case .deregistration:
             return "Signal.AppNotificationCategory.authErrorLogout"
+        case .newDeviceLinked:
+            return "Signal.AppNotificationCategory.newDeviceLinked"
         }
     }
 
@@ -129,6 +133,8 @@ extension AppNotificationCategory {
             return []
         case .deregistration:
             return []
+        case .newDeviceLinked:
+            return []
         }
     }
 }
@@ -156,6 +162,8 @@ extension AppNotificationAction {
             return "Signal.AppNotifications.Action.reregister"
         case .showChatList:
             return "Signal.AppNotifications.Action.showChatList"
+        case .showLinkedDevices:
+            return "Signal.AppNotifications.Action.showLinkedDevices"
         }
     }
 }
@@ -880,6 +888,29 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
     }
 
+    public func scheduleNotifyForNewLinkedDevice() {
+        enqueueNotificationAction {
+            await self.notifyViaPresenter(
+                category: .newDeviceLinked,
+                title: OWSLocalizedString(
+                    "LINKED_DEVICE_NOTIFICATION_TITLE",
+                    comment: "Title for system notification when a new device is linked."
+                ),
+                body: String(
+                    format: OWSLocalizedString(
+                        "LINKED_DEVICE_NOTIFICATION_BODY",
+                        comment: "Body for system notification when a new device is linked. Embeds {{ time the device was linked }}"
+                    ),
+                    Date().formatted(date: .omitted, time: .shortened)
+                ),
+                threadIdentifier: nil,
+                userInfo: [AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showLinkedDevices.rawValue],
+                interaction: nil,
+                soundQuery: .global
+            )
+        }
+    }
+
     public func notifyUser(
         forErrorMessage errorMessage: TSErrorMessage,
         thread: TSThread,
@@ -1248,6 +1279,14 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     public func clearAllNotifications() {
         presenter.clearAllNotifications()
+    }
+
+    public func clearAllNotificationsExceptNewLinkedDevices() {
+        Self.clearAllNotificationsExceptNewLinkedDevices()
+    }
+
+    public static func clearAllNotificationsExceptNewLinkedDevices() {
+        UserNotificationPresenter.clearAllNotificationsExceptNewLinkedDevices()
     }
 
     // MARK: - Serialization

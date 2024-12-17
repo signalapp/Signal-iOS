@@ -50,6 +50,8 @@ public protocol NotificationPresenter {
         presentAtJoin: Bool
     )
 
+    func scheduleNotifyForNewLinkedDevice()
+
     /// Notify user to relaunch the app after we deliberately terminate when an incoming device transfer completes.
     func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void)
 
@@ -57,6 +59,8 @@ public protocol NotificationPresenter {
     func notifyUserOfDeregistration(tx: DBWriteTransaction)
 
     func clearAllNotifications()
+    func clearAllNotificationsExceptNewLinkedDevices()
+    static func clearAllNotificationsExceptNewLinkedDevices()
 
     func cancelNotifications(threadId: String)
 

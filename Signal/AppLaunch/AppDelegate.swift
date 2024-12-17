@@ -93,7 +93,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // When opening the app from a notification,
         // AppDelegate.didReceiveLocalNotification will always
         // be called _before_ we become active.
-        clearAllNotificationsAndRestoreBadgeCount()
+        clearAppropriateNotificationsAndRestoreBadgeCount()
 
         // On every activation, clear old temp directories.
         ClearOldTemporaryDirectories()
@@ -113,7 +113,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         Logger.warn("")
 
-        clearAllNotificationsAndRestoreBadgeCount()
+        clearAppropriateNotificationsAndRestoreBadgeCount()
 
         let backgroundTask = OWSBackgroundTask(label: #function)
         flushQueue.async {
@@ -746,7 +746,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let application: UIApplication = .shared
         let userNotificationCenter: UNUserNotificationCenter = .current()
 
-        userNotificationCenter.removeAllPendingNotificationRequests()
+        NotificationPresenterImpl.clearAllNotificationsExceptNewLinkedDevices()
         application.applicationIconBadgeNumber = 0
 
         userNotificationCenter.add(notificationRequest)
@@ -1320,12 +1320,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         return .notHandled
     }
 
-    private func clearAllNotificationsAndRestoreBadgeCount() {
+    private func clearAppropriateNotificationsAndRestoreBadgeCount() {
         AssertIsOnMainThread()
 
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
             let oldBadgeValue = UIApplication.shared.applicationIconBadgeNumber
-            SSKEnvironment.shared.notificationPresenterRef.clearAllNotifications()
+            SSKEnvironment.shared.notificationPresenterRef.clearAllNotificationsExceptNewLinkedDevices()
             UIApplication.shared.applicationIconBadgeNumber = oldBadgeValue
         }
     }
