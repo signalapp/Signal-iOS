@@ -38,7 +38,6 @@ public struct OwnedAttachmentBackupPointerProto {
         case missingMediaName
         case missingEncryptionKey
         case missingDigest
-        case missingSize
         case dbInsertionError(Error)
     }
 }

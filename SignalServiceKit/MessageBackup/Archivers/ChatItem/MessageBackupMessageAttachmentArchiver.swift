@@ -593,8 +593,6 @@ extension MessageBackup.RestoreFrameError.ErrorType {
             return .invalidProtoData(.filePointerMissingEncryptionKey)
         case .missingDigest:
             return .invalidProtoData(.filePointerMissingDigest)
-        case .missingSize:
-            return .invalidProtoData(.filePointerMissingSize)
         case .dbInsertionError(let error):
             return .databaseInsertionFailed(error)
         }

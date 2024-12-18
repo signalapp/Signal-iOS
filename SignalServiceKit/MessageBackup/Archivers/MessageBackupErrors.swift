@@ -734,9 +734,6 @@ extension MessageBackup {
                 /// A ``BackupProto_FilePointer/AttachmentLocator`` or a
                 /// ``BackupProto_FilePointer/BackupLocator`` was missing the digest.
                 case filePointerMissingDigest
-                /// A ``BackupProto_FilePointer/AttachmentLocator`` or a
-                /// ``BackupProto_FilePointer/BackupLocator`` was missing the file size.
-                case filePointerMissingSize
                 /// A ``BackupProto_MessageAttachment/clientUuid`` contained an invalid UUID.
                 case invalidAttachmentClientUUID
 
@@ -925,7 +922,6 @@ extension MessageBackup {
                         .filePointerMissingMediaName,
                         .filePointerMissingEncryptionKey,
                         .filePointerMissingDigest,
-                        .filePointerMissingSize,
                         .invalidAttachmentClientUUID,
                         .unrecognizedGiftBadgeState,
                         .callLinkInvalidRootKey,
@@ -1057,7 +1053,6 @@ extension MessageBackup {
                         .filePointerMissingMediaName,
                         .filePointerMissingEncryptionKey,
                         .filePointerMissingDigest,
-                        .filePointerMissingSize,
                         .invalidAttachmentClientUUID,
                         .unrecognizedGiftBadgeState,
                         .callLinkInvalidRootKey,

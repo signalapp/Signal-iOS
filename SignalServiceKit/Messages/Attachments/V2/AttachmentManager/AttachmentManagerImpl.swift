@@ -156,7 +156,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             if let originalMessageRowId = dataSource.source.originalMessageRowId {
                 let (info, isStub) = _quotedReplyAttachmentInfo(originalMessageRowId: originalMessageRowId, tx: tx)
                 guard
-                    let info,
+                    info != nil,
                     !isStub
                 else {
                     return
@@ -438,9 +438,6 @@ public class AttachmentManagerImpl: AttachmentManager {
             guard let digestSHA256Ciphertext = backupLocator.digest.nilIfEmpty else {
                 return .failure(.missingDigest)
             }
-            guard backupLocator.size != 0 else {
-                return .failure(.missingSize)
-            }
 
             let transitTierInfo: Attachment.TransitTierInfo?
             switch self.transitTierInfo(from: backupLocator, incrementalMacInfo: incrementalMacInfo) {
@@ -473,7 +470,11 @@ public class AttachmentManagerImpl: AttachmentManager {
                     lastDownloadAttemptTimestamp: nil
                 )
             )
-            sourceUnencryptedByteCount = backupLocator.size
+            if backupLocator.size > 0 {
+                sourceUnencryptedByteCount = backupLocator.size
+            } else {
+                sourceUnencryptedByteCount = nil
+            }
         case .attachmentLocator(let attachmentLocator):
             let transitTierInfo: Attachment.TransitTierInfo
             switch self.transitTierInfo(from: attachmentLocator, incrementalMacInfo: incrementalMacInfo) {
@@ -482,16 +483,18 @@ public class AttachmentManagerImpl: AttachmentManager {
             case .failure(let error):
                 return .failure(error)
             }
-            guard attachmentLocator.size != 0 else {
-                return .failure(.missingSize)
-            }
             attachmentParams = .fromPointer(
                 blurHash: proto.blurHash.nilIfEmpty,
                 mimeType: mimeType,
                 encryptionKey: transitTierInfo.encryptionKey,
                 transitTierInfo: transitTierInfo
             )
-            sourceUnencryptedByteCount = attachmentLocator.size
+
+            if attachmentLocator.size > 0 {
+                sourceUnencryptedByteCount = attachmentLocator.size
+            } else {
+                sourceUnencryptedByteCount = nil
+            }
         case .invalidAttachmentLocator, .none:
             attachmentParams = .forInvalidBackupAttachment(
                 blurHash: proto.blurHash.nilIfEmpty,
@@ -557,7 +560,6 @@ public class AttachmentManagerImpl: AttachmentManager {
         from backupLocator: BackupProto_FilePointer.BackupLocator,
         incrementalMacInfo: Attachment.IncrementalMacInfo?
     ) -> Result<Attachment.TransitTierInfo?, OwnedAttachmentBackupPointerProto.CreationError> {
-        guard backupLocator.size > 0 else { return .failure(.missingSize) }
         guard backupLocator.key.count > 0 else { return .failure(.missingEncryptionKey) }
         guard backupLocator.digest.count > 0 else { return .failure(.missingDigest) }
 
@@ -567,13 +569,20 @@ public class AttachmentManagerImpl: AttachmentManager {
             return .success(nil)
         }
 
+        let unencryptedByteCount: UInt32?
+        if backupLocator.size > 0 {
+            unencryptedByteCount = backupLocator.size
+        } else {
+            unencryptedByteCount = nil
+        }
+
         return .success(Attachment.TransitTierInfo(
             cdnNumber: backupLocator.transitCdnNumber,
             cdnKey: backupLocator.transitCdnKey,
             // Treat it as uploaded now.
             uploadTimestamp: Date().ows_millisecondsSince1970,
             encryptionKey: backupLocator.key,
-            unencryptedByteCount: backupLocator.size,
+            unencryptedByteCount: unencryptedByteCount,
             digestSHA256Ciphertext: backupLocator.digest,
             incrementalMacInfo: incrementalMacInfo,
             lastDownloadAttemptTimestamp: nil
@@ -584,10 +593,15 @@ public class AttachmentManagerImpl: AttachmentManager {
         from attachmentLocator: BackupProto_FilePointer.AttachmentLocator,
         incrementalMacInfo: Attachment.IncrementalMacInfo?
     ) -> Result<Attachment.TransitTierInfo, OwnedAttachmentBackupPointerProto.CreationError> {
-        guard attachmentLocator.size > 0 else { return .failure(.missingSize) }
-        guard attachmentLocator.key.count > 0 else { return .failure(.missingEncryptionKey) }
         guard attachmentLocator.digest.count > 0 else { return .failure(.missingDigest) }
         guard attachmentLocator.cdnKey.count > 0 else { return .failure(.missingTransitCdnKey) }
+
+        let unencryptedByteCount: UInt32?
+        if attachmentLocator.size > 0 {
+            unencryptedByteCount = attachmentLocator.size
+        } else {
+            unencryptedByteCount = nil
+        }
 
         return .success(Attachment.TransitTierInfo(
             cdnNumber: attachmentLocator.cdnNumber,
@@ -597,7 +611,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             // past, which is fine and matches desired behavior.
             uploadTimestamp: attachmentLocator.uploadTimestamp,
             encryptionKey: attachmentLocator.key,
-            unencryptedByteCount: attachmentLocator.size,
+            unencryptedByteCount: unencryptedByteCount,
             digestSHA256Ciphertext: attachmentLocator.digest,
             incrementalMacInfo: incrementalMacInfo,
             lastDownloadAttemptTimestamp: nil
