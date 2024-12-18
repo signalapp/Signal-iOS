@@ -166,11 +166,6 @@ public class JobRecord: SDSCodableModel {
 // MARK: - Failures
 
 extension JobRecord {
-    public func addInMemoryFailure() {
-        owsAssertDebug(self.id == nil)
-        self.failureCount += 1
-    }
-
     public func addFailure(tx: SDSAnyWriteTransaction) {
         anyUpdate(transaction: tx) { record in record.failureCount += 1 }
     }

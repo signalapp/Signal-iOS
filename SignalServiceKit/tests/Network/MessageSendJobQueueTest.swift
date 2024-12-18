@@ -121,7 +121,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
 
         // simulate permanent failure (via `maxRetries` retryable failures)
         let retryCount: Int = 110 // Matches MessageSenderOperation
-        fakeMessageSender.stubbedFailingErrors = Array(repeating: OWSRetryableError(), count: retryCount + 1)
+        fakeMessageSender.stubbedFailingErrors = Array(repeating: URLError(.notConnectedToInternet), count: retryCount + 1)
         jobQueue.setUp()
 
         do {
@@ -129,7 +129,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
                 while true {
                     try Task.checkCancellation()
                     try await Task.sleep(nanoseconds: 500*NSEC_PER_USEC)
-                    _ = jobQueue.runAnyQueuedRetry()
+                    jobQueue.becameReachable()
                 }
             }
             defer {
@@ -148,9 +148,6 @@ class MessageSenderJobQueueTest: SSKBaseTest {
             fakeMessageSender.sentMessages.map { $0.uniqueId },
             Array(repeating: message.uniqueId, count: retryCount + 1)
         )
-
-        // No remaining retries
-        XCTAssertNil(jobQueue.runAnyQueuedRetry())
     }
 
     func test_permanentFailure() async throws {

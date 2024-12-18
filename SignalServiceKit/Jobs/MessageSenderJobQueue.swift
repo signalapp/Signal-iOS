@@ -5,38 +5,33 @@
 
 import Foundation
 
-private enum JobError: Error {
-    case permanentFailure(description: String)
-    case obsolete(description: String)
-}
-
-private struct MessageSenderJob {
-    let record: MessageSenderJobRecord
-    let isInMemoryOnly: Bool
-}
-
-/// Durably enqueues a message for sending.
+/// Durably enqueues outgoing messages.
 ///
-/// The queue's operations (`MessageSenderOperation`) uses `MessageSender` to send a message.
+/// Calls `MessageSender` to send messages.
 ///
-/// ## Retry behavior
+/// # Retries
 ///
-/// Like all JobQueue's, MessageSenderJobQueue implements retry handling for operation errors.
+/// Both `MessageSenderJobQueue` and `MessageSender` implement retry
+/// handling.
 ///
-/// `MessageSender` also includes it's own retry logic necessary to encapsulate business logic around
-/// a user changing their Registration ID, or adding/removing devices. That is, it is sometimes *normal*
-/// for MessageSender to have to resend to a recipient multiple times before it is accepted, and doesn't
-/// represent a "failure" from the application standpoint.
+/// The latter (`MessageSender`) retries only specific errors that the
+/// server indicates are immediately retryable (e.g., "you are missing a
+/// device for the destination; add it and try again"). These retries aren't
+/// "configurable", nor do they have any backoff. They are expected when the
+/// system is operating normally, and they are part of the expected flow for
+/// sending a message.
 ///
-/// So we have an inner non-durable retry (MessageSender) and an outer durable retry (MessageSenderJobQueue).
+/// The former (`MessageSenderJobQueue`) retries generic/unknown failures
+/// (e.g., "the server gave us a 5xx error; try after a few seconds", "there
+/// isn't any Internet; try when we reconnect"). These retries are
+/// "configurable", meaning we can decide how many occur and how often they
+/// occur. These only happen when something is operating abnormally (e.g.,
+/// "the server is down", "the user isn't connected to the network").
 ///
-/// Both respect the `error.isRetryable` convention to be sure we don't keep retrying in some situations
-/// (e.g. rate limiting)
-public class MessageSenderJobQueue: NSObject {
+/// Both respect `IsRetryableProvider` and only retry retryable errors.
+public class MessageSenderJobQueue {
 
     public init(appReadiness: AppReadiness) {
-        super.init()
-
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.setUp()
         }
@@ -100,7 +95,7 @@ public class MessageSenderJobQueue: NSObject {
         }
 
         self.state.update {
-            $0.pendingJobs.append(MessageSenderJob(record: jobRecord, isInMemoryOnly: exclusiveToCurrentProcessIdentifier))
+            $0.pendingJobs.append(Job(record: jobRecord, isInMemoryOnly: exclusiveToCurrentProcessIdentifier))
             if let future {
                 $0.jobFutures[jobRecord.uniqueId] = future
             }
@@ -113,12 +108,132 @@ public class MessageSenderJobQueue: NSObject {
 
     // MARK: JobQueue
 
+    /// A job that needs to be executed.
+    private struct Job {
+        let record: MessageSenderJobRecord
+        let isInMemoryOnly: Bool
+    }
+
+    /// A job that's been queued but hasn't started yet.
+    private struct QueuedOperationState {
+        let job: Job
+        let message: PreparedOutgoingMessage
+        let future: Future<Void>?
+    }
+
+    /// A job that's actively executing; it may be suspended due to errors.
+    private struct ActiveOperationState {
+        let job: Job
+        let message: PreparedOutgoingMessage
+        let future: Future<Void>?
+        let externalRetryTriggerState = AtomicValue(ExternalRetryTriggerState(), lock: .init())
+
+        init(queuedOperation: QueuedOperationState) {
+            self.job = queuedOperation.job
+            self.message = queuedOperation.message
+            self.future = queuedOperation.future
+        }
+
+        /// "Consume" any triggers that have already fired.
+        ///
+        /// Callers should do this before performing any retryable action that might
+        /// fail due to one of the triggers. For example, if a message might fail to
+        /// send because there's no Internet, this should be called before
+        /// attempting to send the message.
+        ///
+        /// This pattern ensures no triggers are missed due to concurrently
+        /// executing operations & triggers. For example, if Internet isn't
+        /// available, you start sending a message, Internet becomes available, and
+        /// then the message fails to send with a "network failure" error, we want
+        /// to immediately retry. If we don't retry, we'd be stuck until something
+        /// *else* triggers a retry (e.g., losing & gaining Internet again).
+        func clearExternalRetryTriggers() {
+            self.externalRetryTriggerState.update {
+                $0.reportedExternalRetryTriggers = []
+            }
+        }
+
+        /// Trigger any jobs that failed because of `failureReason`.
+        ///
+        /// This also triggers any in-progress jobs (after they fail) that fail
+        /// because of `failureReason`. This avoids race conditions (see above).
+        func reportExternalRetryTrigger(_ externalRetryTrigger: ExternalRetryTriggers) {
+            self.externalRetryTriggerState.update {
+                $0.reportedExternalRetryTriggers.formUnion(externalRetryTrigger)
+                notifyIfPossible(mutableState: &$0)
+            }
+        }
+
+        /// Waits until any of `failureReasons` has been triggered.
+        func waitForAnyExternalRetryTrigger(fromExternalRetryTriggers externalRetryTriggers: ExternalRetryTriggers) async throws {
+            let waitingContinuation = CancellableContinuation<Void>()
+            self.externalRetryTriggerState.update {
+                $0.waitingState = (waitingContinuation, externalRetryTriggers)
+                notifyIfPossible(mutableState: &$0)
+            }
+            return try await waitingContinuation.wait()
+        }
+
+        private func notifyIfPossible(mutableState: inout ExternalRetryTriggerState) {
+            guard let waitingState = mutableState.waitingState else {
+                return
+            }
+            if mutableState.reportedExternalRetryTriggers.isDisjoint(with: waitingState.externalRetryTriggers) {
+                return
+            }
+            waitingState.continuation.resume(with: .success(()))
+        }
+    }
+
+    /// Tracks information about failures with external retry triggers.
+    private struct ExternalRetryTriggerState {
+        var reportedExternalRetryTriggers: ExternalRetryTriggers = []
+        var waitingState: (continuation: CancellableContinuation<Void>, externalRetryTriggers: ExternalRetryTriggers)?
+    }
+
+    /// Tracks failure types with external retry triggers.
+    ///
+    /// For example, a "network failure" error can be triggered before its
+    /// timer-based retry interval if Internet suddenly becomes available.
+    /// Conversely, 5xx errors are transient but can only be retried when their
+    /// timer-based retry fires, so they're not included here.
+    private struct ExternalRetryTriggers: OptionSet {
+        let rawValue: Int
+
+        static let networkBecameReachable = ExternalRetryTriggers(rawValue: 1 << 0)
+    }
+
+    private enum JobPriority: Hashable {
+        case high
+        case renderableContent
+        case low
+    }
+
     private struct State {
         var isLoaded = false
-        var runningOperations = [MessageSenderOperation]()
-        var pendingJobs = [MessageSenderJob]()
+        var pendingJobs = [Job]()
+        var queueStates = [QueueKey: QueueState]()
         var jobFutures = [String: Future<Void>]()
     }
+
+    private struct QueueKey: Hashable {
+        let threadId: String?
+        let priority: JobPriority
+    }
+
+    private struct QueueState {
+        var activeOperations = [ActiveOperationState]()
+        var queuedOperations = [QueuedOperationState]()
+
+        var isEmpty: Bool {
+            return activeOperations.isEmpty && queuedOperations.isEmpty
+        }
+
+        var hasExactlyOneActiveOperationThatUsesTheMediaQueue: Bool {
+            return activeOperations.count == 1 && activeOperations[0].job.record.useMediaQueue
+        }
+    }
+
     private let state = AtomicValue<State>(State(), lock: .init())
 
     private func didMarkAsReady(oldJobRecord: MessageSenderJobRecord, transaction: SDSAnyWriteTransaction) {
@@ -142,97 +257,10 @@ public class MessageSenderJobQueue: NSObject {
             .updateAllUnsentRecipientsAsSending(transaction: transaction)
     }
 
-    private func buildOperation(
-        job: MessageSenderJob,
-        transaction: SDSAnyReadTransaction
-    ) -> MessageSenderOperation? {
-        guard let message = PreparedOutgoingMessage.restore(from: job.record, tx: transaction) else {
-            return nil
-        }
-
-        let operation = MessageSenderOperation(
-            message: message,
-            job: job,
-            future: self.state.update { $0.jobFutures.removeValue(forKey: job.record.uniqueId) }
-        )
-        operation.queuePriority = job.record.isHighPriority ? .high : message.sendingQueuePriority(tx: transaction)
-
-        // Media messages run on their own queue to not block future non-media sends,
-        // but should not start sending until all previous operations have executed.
-        // We can guarantee this by adding another operation to the send queue that
-        // we depend upon.
-        //
-        // For example, if you send text messages A, B and then media message C
-        // message C should never send before A and B. However, if you send text
-        // messages A, B, then media message C, followed by text message D, D cannot
-        // send before A and B, but CAN send before C.
-        switch job.record.messageType {
-        case .persisted(_, let useMediaQueue), .editMessage(_, _, let useMediaQueue):
-            if useMediaQueue, let sendQueue = senderQueues[message.uniqueThreadId] {
-                let orderMaintainingOperation = Operation()
-                orderMaintainingOperation.queuePriority = operation.queuePriority
-                sendQueue.addOperation(orderMaintainingOperation)
-                operation.addDependency(orderMaintainingOperation)
-            }
-        case .transient, .none:
-            break
-        }
-
-        return operation
-    }
-
-    private var senderQueues: [String: OperationQueue] = [:]
-    private var mediaSenderQueues: [String: OperationQueue] = [:]
-    private let defaultQueue: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "MessageSenderJobQueue-Default"
-        operationQueue.maxConcurrentOperationCount = 1
-
-        return operationQueue
-    }()
-
-    // We use a per-thread serial OperationQueue to ensure messages are delivered to the
-    // service in the order the user sent them.
-    private func operationQueue(jobRecord: MessageSenderJobRecord) -> OperationQueue {
-        guard let threadId = jobRecord.threadId else {
-            return defaultQueue
-        }
-
-        switch jobRecord.messageType {
-        case
-                .persisted(_, let useMediaQueue) where useMediaQueue,
-                .editMessage(_, _, let useMediaQueue) where useMediaQueue:
-            guard let existingQueue = mediaSenderQueues[threadId] else {
-                let operationQueue = OperationQueue()
-                operationQueue.name = "MessageSenderJobQueue-Media"
-                operationQueue.maxConcurrentOperationCount = 1
-
-                mediaSenderQueues[threadId] = operationQueue
-
-                return operationQueue
-            }
-
-            return existingQueue
-        case .persisted, .editMessage, .transient, .none:
-            guard let existingQueue = senderQueues[threadId] else {
-                let operationQueue = OperationQueue()
-                operationQueue.name = "MessageSenderJobQueue-Text"
-                operationQueue.maxConcurrentOperationCount = 1
-
-                senderQueues[threadId] = operationQueue
-
-                return operationQueue
-            }
-
-            return existingQueue
-        }
-    }
-
-    // MARK: - Job Queue
-
     private let pendingJobQueue = DispatchQueue(label: "MessageSenderJobQueue.pendingJobRecords")
 
     private func startPendingJobRecordsIfPossible() {
+        // Use a queue to ensure "pendingJobs" get passed to queueJob in the correct order.
         pendingJobQueue.async {
             let pendingJobs = self.state.update {
                 if $0.isLoaded {
@@ -245,28 +273,44 @@ public class MessageSenderJobQueue: NSObject {
             if !pendingJobs.isEmpty {
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
                     for pendingJob in pendingJobs {
-                        self.startJob(pendingJob, tx: tx)
+                        self.queueJob(pendingJob, tx: tx)
                     }
                 }
             }
         }
     }
 
-    private func startJob(_ job: MessageSenderJob, tx transaction: SDSAnyWriteTransaction) {
-        let operationQueue = operationQueue(jobRecord: job.record)
-        guard let durableOperation = buildOperation(job: job, transaction: transaction) else {
-            Logger.warn("Dropping obsolete job record.")
-            job.record.anyRemove(transaction: transaction)
+    private func queueJob(_ job: Job, tx transaction: SDSAnyWriteTransaction) {
+        let future = self.state.update { $0.jobFutures.removeValue(forKey: job.record.uniqueId) }
+
+        guard let message = PreparedOutgoingMessage.restore(from: job.record, tx: transaction) else {
+            if !job.isInMemoryOnly {
+                job.record.anyRemove(transaction: transaction)
+            }
+            future?.reject(OWSAssertionError("Can't start job that can't be prepared."))
             return
         }
 
-        durableOperation.durableOperationDelegate = self
-        owsAssertDebug(durableOperation.durableOperationDelegate != nil)
-
-        transaction.addSyncCompletion {
-            self.state.update { $0.runningOperations.append(durableOperation) }
-            operationQueue.addOperation(durableOperation)
+        let sendPriority: JobPriority
+        if job.record.isHighPriority {
+            sendPriority = .high
+        } else if message.hasRenderableContent(tx: transaction) {
+            sendPriority = .renderableContent
+        } else {
+            sendPriority = .low
         }
+
+        let operation = QueuedOperationState(
+            job: job,
+            message: message,
+            future: future
+        )
+
+        let queueKey = QueueKey(threadId: job.record.threadId, priority: sendPriority)
+        self.state.update {
+            $0.queueStates[queueKey, default: QueueState()].queuedOperations.append(operation)
+        }
+        startNextJobIfNeeded(queueKey: queueKey)
     }
 
     public func setUp() {
@@ -281,7 +325,7 @@ public class MessageSenderJobQueue: NSObject {
                     self.state.update {
                         var newlyPendingJobs = $0.pendingJobs
                         newlyPendingJobs.removeAll(where: { jobRecordUniqueIds.contains($0.record.uniqueId) })
-                        $0.pendingJobs = jobRecords.map { MessageSenderJob(record: $0, isInMemoryOnly: false) }
+                        $0.pendingJobs = jobRecords.map { Job(record: $0, isInMemoryOnly: false) }
                         $0.pendingJobs.append(contentsOf: newlyPendingJobs)
                     }
                 } catch {
@@ -308,103 +352,119 @@ public class MessageSenderJobQueue: NSObject {
         }
     }
 
-    private func becameReachable() {
-        _ = self.runAnyQueuedRetry()
-    }
-
-    func runAnyQueuedRetry() -> OWSOperation? {
-        guard let runningDurableOperation = self.state.update(block: { $0.runningOperations.first }) else {
-            return nil
+    func becameReachable() {
+        self.state.update {
+            for (_, queueState) in $0.queueStates {
+                for activeOperation in queueState.activeOperations {
+                    activeOperation.reportExternalRetryTrigger(.networkBecameReachable)
+                }
+            }
         }
+    }
 
-        DispatchQueue.main.async {
-            runningDurableOperation.runAnyQueuedRetry()
+    private func startNextJobIfNeeded(queueKey: QueueKey) {
+        self.state.update {
+            var queueState = $0.queueStates[queueKey, default: QueueState()]
+
+            // If nothing is running, start *any* operation that needs to be started.
+            if queueState.activeOperations.isEmpty {
+                if let nextIndex = queueState.queuedOperations.indices.first {
+                    startNextJob(atQueuedIndex: nextIndex, forQueueKey: queueKey, in: &queueState)
+                }
+            }
+
+            // Non-media messages get an extra slot to run so that they don't get stuck
+            // behind media messages. If the first slot got filled by a media message,
+            // this one can be filled by a non-media message. If the first slot is
+            // filled by a non-media message, we can't schedule anything else.
+
+            // For example, if you send A, B, C, and D, where C is media and everything
+            // else is a text message, then only orderings ABCD and ABDC are allowed.
+            // This block exists to start sending "D" concurrently with "C".
+            if queueState.hasExactlyOneActiveOperationThatUsesTheMediaQueue {
+                if let nextIndex = queueState.queuedOperations.firstIndex(where: { !$0.job.record.useMediaQueue }) {
+                    startNextJob(atQueuedIndex: nextIndex, forQueueKey: queueKey, in: &queueState)
+                }
+            }
+
+            $0.queueStates[queueKey] = queueState.isEmpty ? nil : queueState
         }
-
-        return runningDurableOperation
     }
 
-    // MARK: DurableOperationDelegate
-
-    fileprivate func durableOperationDidComplete(_ operation: MessageSenderOperation) {
-        self.state.update { $0.runningOperations.removeAll(where: { $0 == operation }) }
-    }
-}
-
-private class MessageSenderOperation: OWSOperation, @unchecked Sendable {
-
-    // MARK: DurableOperation
-
-    private let job: MessageSenderJob
-    weak public var durableOperationDelegate: MessageSenderJobQueue?
-
-    /// 110 retries corresponds to approximately ~24hr of retry when using
-    /// ``OWSOperation/retryIntervalForExponentialBackoff(failureCount:maxBackoff:)``.
-    let maxRetries: Int = 110
-
-    // MARK: Init
-
-    let message: PreparedOutgoingMessage
-    private var future: Future<Void>?
-
-    init(message: PreparedOutgoingMessage, job: MessageSenderJob, future: Future<Void>?) {
-        self.message = message
-        self.job = job
-        self.future = future
-
-        let retryCount = UInt(max(0, self.maxRetries - Int(job.record.failureCount)))
-        super.init(retryCount: retryCount)
+    private func startNextJob(atQueuedIndex index: Int, forQueueKey queueKey: QueueKey, in queueState: inout QueueState) {
+        let queuedOperation = queueState.queuedOperations.remove(at: index)
+        let activeOperation = ActiveOperationState(queuedOperation: queuedOperation)
+        queueState.activeOperations.append(activeOperation)
+        Task(priority: Self.taskPriority(forJobPriority: queueKey.priority)) {
+            await self.runOperation(activeOperation)
+            self.state.update {
+                $0.queueStates[queueKey]!.activeOperations.removeAll(where: { $0.job.record.uniqueId == activeOperation.job.record.uniqueId })
+            }
+            startNextJobIfNeeded(queueKey: queueKey)
+        }
     }
 
-    // MARK: OWSOperation
+    private static func taskPriority(forJobPriority jobPriority: JobPriority) -> TaskPriority {
+        switch jobPriority {
+        case .high, .renderableContent:
+            return .userInitiated
+        case .low:
+            return .medium
+        }
+    }
 
-    override func run() {
-        Task {
+    /// Runs a job to send a particular message.
+    ///
+    /// This method returns after the operation reaches a terminal result and
+    /// the job record has been deleted.
+    private func runOperation(_ operation: ActiveOperationState) async {
+        let result = await Result { try await self._runOperation(operation) }
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            if !operation.job.isInMemoryOnly {
+                operation.job.record.anyRemove(transaction: tx)
+            }
+            if case .failure(let error) = result {
+                operation.message.updateWithAllSendingRecipientsMarkedAsFailed(error: error, tx: tx)
+            }
+        }
+        switch result {
+        case .success(()):
+            operation.future?.resolve()
+        case .failure(let error):
+            operation.future?.reject(error)
+        }
+    }
+
+    /// Runs a job to send a particular message.
+    ///
+    /// This methods returns after the operation has reached a terminal result
+    /// but before that result has been processed.
+    private func _runOperation(_ operation: ActiveOperationState) async throws {
+        var attemptCount = Int(operation.job.record.failureCount)
+        let maxRetries = 110
+        while true {
+            assert(!Task.isCancelled, "Cancellation isn't supported.")
             do {
-                try await SSKEnvironment.shared.messageSenderRef.sendMessage(message)
-                DispatchQueue.global().async { self.reportSuccess() }
-            } catch {
-                DispatchQueue.global().async { self.reportError(withUndefinedRetry: error) }
+                operation.clearExternalRetryTriggers()
+                try await SSKEnvironment.shared.messageSenderRef.sendMessage(operation.message)
+                return
+            } catch where error.isRetryable && !error.isFatalError && attemptCount < maxRetries {
+                attemptCount += 1
+                if !operation.job.isInMemoryOnly {
+                    await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                        operation.job.record.addFailure(tx: tx)
+                    }
+                }
+                var externalRetryTriggers: ExternalRetryTriggers = []
+                // If there's a network failure, we can retry when we reconnect.
+                if error.isNetworkFailureOrTimeout {
+                    externalRetryTriggers.insert(.networkBecameReachable)
+                }
+                try? await withCooperativeTimeout(
+                    seconds: OWSOperation.retryIntervalForExponentialBackoff(failureCount: UInt(attemptCount)),
+                    operation: { try await operation.waitForAnyExternalRetryTrigger(fromExternalRetryTriggers: externalRetryTriggers) }
+                )
             }
         }
-    }
-
-    override func didSucceed() {
-        self.durableOperationDelegate?.durableOperationDidComplete(self)
-        if self.job.isInMemoryOnly {
-            // Nothing to clean up
-        } else {
-            SSKEnvironment.shared.databaseStorageRef.write { tx in
-                self.job.record.anyRemove(transaction: tx)
-            }
-        }
-        future?.resolve()
-    }
-
-    override func didReportError(_ error: Error) {
-        if self.job.isInMemoryOnly {
-            self.job.record.addInMemoryFailure()
-        } else {
-            SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                self.job.record.addFailure(tx: transaction)
-            }
-        }
-    }
-
-    override var retryInterval: TimeInterval {
-        OWSOperation.retryIntervalForExponentialBackoff(failureCount: self.job.record.failureCount)
-    }
-
-    override func didFail(error: Error) {
-        self.durableOperationDelegate?.durableOperationDidComplete(self)
-        if self.job.isInMemoryOnly {
-            // Nothing to clean up
-        } else {
-            SSKEnvironment.shared.databaseStorageRef.write { tx in
-                self.job.record.anyRemove(transaction: tx)
-                self.message.updateWithAllSendingRecipientsMarkedAsFailed(error: error, tx: tx)
-            }
-        }
-        future?.reject(error)
     }
 }

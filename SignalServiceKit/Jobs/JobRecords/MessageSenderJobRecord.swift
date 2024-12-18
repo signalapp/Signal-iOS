@@ -17,7 +17,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
     private let persistedMessageId: String?
     /// Ignored for in memory messages. Determined if the media queue should
     /// be used for sending.
-    private let useMediaQueue: Bool
+    let useMediaQueue: Bool
 
     /// A message we send but which is never inserted into the Interactions table;
     /// its only used for sending.

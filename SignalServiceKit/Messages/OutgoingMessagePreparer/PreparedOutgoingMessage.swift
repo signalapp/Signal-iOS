@@ -199,15 +199,15 @@ public class PreparedOutgoingMessage {
         }
     }
 
-    public func sendingQueuePriority(tx: SDSAnyReadTransaction) -> Operation.QueuePriority {
+    public func hasRenderableContent(tx: SDSAnyReadTransaction) -> Bool {
         switch messageType {
         case .persisted(let message):
-            return message.message.insertedMessageHasRenderableContent(rowId: message.rowId, tx: tx) ? .normal : .low
+            return message.message.insertedMessageHasRenderableContent(rowId: message.rowId, tx: tx)
         case .editMessage, .story:
             // Always have renderable content; send at normal priority.
-            return .normal
+            return true
         case .transient, .contactSync:
-            return .low
+            return false
         }
     }
 
