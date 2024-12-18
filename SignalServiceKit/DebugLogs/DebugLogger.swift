@@ -190,7 +190,22 @@ public final class DebugLogger {
     }
 
     public static func registerRingRTC() {
-        RingRTCLoggerImpl().setUpRingRTCLogging(maxLogLevel: { () -> RingRTCLogLevel in
+        let maxLogLevel: RingRTCLogLevel
+        #if DEBUG
+        if
+            let overrideLogLevelString = ProcessInfo().environment["RINGRTC_MAX_LOG_LEVEL"],
+            let overrideLogLevelRaw = UInt8(overrideLogLevelString),
+            let overrideLogLevel = RingRTCLogLevel(rawValue: overrideLogLevelRaw)
+        {
+            maxLogLevel = overrideLogLevel
+        } else {
+            maxLogLevel = .trace
+        }
+        #else
+        maxLogLevel = .trace
+        #endif
+
+        RingRTCLoggerImpl(maxLogLevel: maxLogLevel).setUpRingRTCLogging(maxLogLevel: min(maxLogLevel, { () -> RingRTCLogLevel in
             if ShouldLogVerbose() {
                 return .trace
             }
@@ -204,7 +219,7 @@ public final class DebugLogger {
                 return .warn
             }
             return .error
-        }())
+        }()))
     }
 }
 
@@ -249,7 +264,16 @@ private extension RingRTCLogLevel {
 }
 
 final class RingRTCLoggerImpl: RingRTCLogger {
+    private nonisolated let maxLogLevel: RingRTCLogLevel
+
+    init(maxLogLevel: RingRTCLogLevel) {
+        self.maxLogLevel = maxLogLevel
+    }
+
     func log(level: RingRTCLogLevel, file: String, function: String, line: UInt32, message: String) {
+        guard level <= maxLogLevel else {
+            return
+        }
         Logger.log(
             message,
             flag: level.logFlag,

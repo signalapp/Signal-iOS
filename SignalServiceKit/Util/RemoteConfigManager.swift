@@ -758,10 +758,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         }
         updateCachedConfig { _ in remoteConfig }
         warmSecondaryCaches(valueFlags: valueFlags ?? [:])
-
-        appReadiness.runNowOrWhenAppWillBecomeReady {
-            RemoteConfig.current.logFlags()
-        }
     }
 
     fileprivate func warmSecondaryCaches(valueFlags: [String: String]) {
@@ -928,6 +924,8 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
                 return (oldConfig ?? .emptyConfig).mergingHotSwappableFlags(from: newConfig)
             }
             self.warmSecondaryCaches(valueFlags: mergedConfig.valueFlags)
+
+            newConfig.logFlags()
 
             // We always return `newConfig` because callers may want to see the
             // newly-fetched, non-hot-swappable values for themselves.

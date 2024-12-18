@@ -214,6 +214,9 @@ class DebugLogs: NSObject {
         }
 
         // Phase 0. Flush any pending logs to disk.
+        if DebugFlags.internalLogging {
+            KeyValueStore.logCollectionStatistics()
+        }
         Logger.info("About to zip debug logs")
         Logger.flush()
 

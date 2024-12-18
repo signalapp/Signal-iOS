@@ -184,8 +184,6 @@ public struct StorageService {
         greaterThanVersion: UInt64? = nil,
         chatServiceAuth: ChatServiceAuth
     ) async -> FetchLatestManifestResponse {
-        Logger.info("")
-
         var endpoint = "v1/storage/manifest"
         if let greaterThanVersion = greaterThanVersion {
             endpoint += "/version/\(greaterThanVersion)"

@@ -172,8 +172,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             debugLogger.enableErrorReporting()
         }
 
-        Logger.warn("Synchronous launch started")
-        defer { Logger.info("Synchronous launch finished") }
+        Logger.warn("Launching…")
+        defer { Logger.info("Launched.") }
 
         BenchEventStart(title: "Presenting HomeView", eventId: "AppStart", logInProduction: true)
         appReadiness.runNowOrWhenUIDidBecomeReadySync { BenchEventComplete(eventId: "AppStart") }
@@ -537,15 +537,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         launchInterface: LaunchInterface,
         launchContext: LaunchContext
     ) {
-        Logger.info("")
         owsPrecondition(!appReadiness.isAppReady)
         owsPrecondition(!CurrentAppContext().isRunningTests)
 
         let appContext = launchContext.appContext
-
-        if DebugFlags.internalLogging {
-            DispatchQueue.global().async { KeyValueStore.logCollectionStatistics() }
-        }
 
         SignalApp.shared.performInitialSetup(appReadiness: appReadiness)
 
@@ -1149,7 +1144,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         AssertIsOnMainThread()
 
         defer {
-            Logger.info("Synchronous handleActivation finished")
+            Logger.info("Activated.")
         }
 
         let tsRegistrationState: TSRegistrationState = DependenciesBridge.shared.db.read { tx in

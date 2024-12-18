@@ -251,7 +251,7 @@ public class MessageSender {
                 context: transaction
             )
         } catch SignalError.untrustedIdentity(_), IdentityManagerError.identityKeyMismatchForOutgoingMessage {
-            Logger.error("Found untrusted identity for \(serviceId)")
+            Logger.warn("Found untrusted identity for \(serviceId)")
             handleUntrustedIdentityKeyError(
                 serviceId: serviceId,
                 recipientUniqueId: recipientUniqueId,
@@ -968,7 +968,6 @@ public class MessageSender {
 
         // Otherwise, if we have any error at all, propagate it.
         throw anyError
-
     }
 
     private func normalizeRecipientStatesIfNeeded(

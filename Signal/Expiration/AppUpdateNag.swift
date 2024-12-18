@@ -49,8 +49,6 @@ class AppUpdateNag {
     }
 
     private static func fetchLatestVersion(lookupURL: URL) async throws -> AppStoreRecord {
-        Logger.debug("lookupURL:\(lookupURL)")
-
         let (data, _) = try await URLSession(configuration: .ephemeral).data(from: lookupURL)
         let decoder = JSONDecoder()
         let resultSet = try decoder.decode(AppStoreLookupResultSet.self, from: data)
