@@ -966,7 +966,8 @@ public final class MessageReceiver {
             return nil
         }
 
-        guard dataMessage.body?.utf8.count ?? 0 <= kOversizeTextMessageSizeThreshold else {
+        // TODO: change this back to kOversizeTextMessageSizeThreshold
+        guard dataMessage.body?.utf8.count ?? 0 <= 6000 else {
             Logger.error("Dropping message with too large body: \(dataMessage.body?.utf8.count ?? 0)")
             return nil
         }
