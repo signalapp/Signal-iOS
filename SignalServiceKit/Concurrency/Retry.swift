@@ -33,8 +33,8 @@ enum Retry {
                 if error.isFatalError || !error.isRetryable || attemptCount >= maxAttempts {
                     throw error
                 }
-                let retryDelay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: UInt(attemptCount))
-                try await Task.sleep(nanoseconds: UInt64(retryDelay * TimeInterval(NSEC_PER_SEC)))
+                let retryDelayNs = OWSOperation.retryIntervalForExponentialBackoffNs(failureCount: attemptCount)
+                try await Task.sleep(nanoseconds: retryDelayNs)
             }
         )
     }
