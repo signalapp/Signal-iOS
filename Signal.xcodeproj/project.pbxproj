@@ -2932,7 +2932,6 @@
 		F9426263289B1B5500460798 /* DeviceNamesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F6289B1B5400460798 /* DeviceNamesTest.swift */; };
 		F9426265289B1B5500460798 /* Date+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F8289B1B5400460798 /* Date+SSKTest.swift */; };
 		F9426267289B1B5500460798 /* DispatchQueue+OWSTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */; };
-		F9426268289B1B5500460798 /* OWSOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FB289B1B5400460798 /* OWSOperationTest.swift */; };
 		F9426269289B1B5500460798 /* MathOWSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FC289B1B5400460798 /* MathOWSTests.swift */; };
 		F942626A289B1B5500460798 /* ViewOnceMessagesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FD289B1B5400460798 /* ViewOnceMessagesTest.swift */; };
 		F942626C289B1B5500460798 /* SignalAccountFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426200289B1B5400460798 /* SignalAccountFinderTest.swift */; };
@@ -6718,7 +6717,6 @@
 		F94261F6289B1B5400460798 /* DeviceNamesTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceNamesTest.swift; sourceTree = "<group>"; };
 		F94261F8289B1B5400460798 /* Date+SSKTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+SSKTest.swift"; sourceTree = "<group>"; };
 		F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+OWSTest.swift"; sourceTree = "<group>"; };
-		F94261FB289B1B5400460798 /* OWSOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSOperationTest.swift; sourceTree = "<group>"; };
 		F94261FC289B1B5400460798 /* MathOWSTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MathOWSTests.swift; sourceTree = "<group>"; };
 		F94261FD289B1B5400460798 /* ViewOnceMessagesTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnceMessagesTest.swift; sourceTree = "<group>"; };
 		F9426200289B1B5400460798 /* SignalAccountFinderTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAccountFinderTest.swift; sourceTree = "<group>"; };
@@ -12575,7 +12573,6 @@
 				F94261E6289B1B5400460798 /* OWSErrorTest.swift */,
 				F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */,
 				F94261EE289B1B5400460798 /* OWSFormatTest.swift */,
-				F94261FB289B1B5400460798 /* OWSOperationTest.swift */,
 				663F94072CED62E5002C9063 /* OWSProgressTest.swift */,
 				4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */,
 				F9CAC7842919B5A400EEC1DE /* PhoneNumberRegionsTest.swift */,
@@ -18051,7 +18048,6 @@
 				F9426248289B1B5500460798 /* OWSIdentityManagerTests.swift in Sources */,
 				669FAE1B2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift in Sources */,
 				F9426290289B1B5600460798 /* OWSLinkPreviewTest.swift in Sources */,
-				F9426268289B1B5500460798 /* OWSOperationTest.swift in Sources */,
 				F988DC13289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift in Sources */,
 				508C72242C2DFCB2000811F3 /* OWSOutgoingResendResponseTest.swift in Sources */,
 				663F94082CED62EC002C9063 /* OWSProgressTest.swift in Sources */,
