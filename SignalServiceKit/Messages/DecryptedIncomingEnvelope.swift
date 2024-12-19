@@ -22,29 +22,16 @@ import LibSignalClient
 /// For unidentified envelopes, we first decrypt the envelope payload which
 /// gives us the `sourceAci` and a nested payload. We then decrypt that
 /// nested payload to populate `plaintextData`.
-@objc
-class DecryptedIncomingEnvelope: NSObject {
-    @objc
+class DecryptedIncomingEnvelope {
     let envelope: SSKProtoEnvelope
-
-    @objc
     let timestamp: UInt64
-
-    @objc
     let serverTimestamp: UInt64
-
     let sourceAci: Aci
-
-    @objc
     let sourceDeviceId: UInt32
-
     let localIdentity: OWSIdentity
     let wasReceivedByUD: Bool
     let plaintextData: Data
     let content: SSKProtoContent?
-
-    @objc
-    var sourceAciObjC: AciObjC { AciObjC(sourceAci) }
 
     init(
         validatedEnvelope: ValidatedIncomingEnvelope,

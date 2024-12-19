@@ -353,7 +353,7 @@ public class ProfileFetcherJob {
 
             let paymentAddress = fetchedProfile.decryptedProfile?.paymentAddress(identityKey: fetchedProfile.identityKey)
             self.paymentsHelper.setArePaymentsEnabled(
-                for: ServiceIdObjC.wrapValue(serviceId),
+                for: serviceId,
                 hasPaymentsEnabled: paymentAddress != nil,
                 transaction: SDSDB.shimOnlyBridge(transaction)
             )

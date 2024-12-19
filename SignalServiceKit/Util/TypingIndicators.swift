@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import LibSignalClient
+public import LibSignalClient
 
 public protocol TypingIndicators: AnyObject {
     var keyValueStore: KeyValueStore { get }
@@ -15,11 +15,11 @@ public protocol TypingIndicators: AnyObject {
 
     func didSendOutgoingMessage(inThread thread: TSThread)
 
-    func didReceiveTypingStartedMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32)
+    func didReceiveTypingStartedMessage(inThread thread: TSThread, senderAci: Aci, deviceId: UInt32)
 
-    func didReceiveTypingStoppedMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32)
+    func didReceiveTypingStoppedMessage(inThread thread: TSThread, senderAci: Aci, deviceId: UInt32)
 
-    func didReceiveIncomingMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32)
+    func didReceiveIncomingMessage(inThread thread: TSThread, senderAci: Aci, deviceId: UInt32)
 
     // Returns the address of the user who should currently be shown typing for a given thread.
     //
@@ -114,21 +114,21 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         outgoingIndicators.didSendOutgoingMessage()
     }
 
-    public func didReceiveTypingStartedMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32) {
+    public func didReceiveTypingStartedMessage(inThread thread: TSThread, senderAci: Aci, deviceId: UInt32) {
         AssertIsOnMainThread()
-        ensureIncomingIndicators(forThread: thread, senderAci: senderAci.wrappedAciValue, deviceId: deviceId)
+        ensureIncomingIndicators(forThread: thread, senderAci: senderAci, deviceId: deviceId)
             .didReceiveTypingStartedMessage()
     }
 
-    public func didReceiveTypingStoppedMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32) {
+    public func didReceiveTypingStoppedMessage(inThread thread: TSThread, senderAci: Aci, deviceId: UInt32) {
         AssertIsOnMainThread()
-        ensureIncomingIndicators(forThread: thread, senderAci: senderAci.wrappedAciValue, deviceId: deviceId)
+        ensureIncomingIndicators(forThread: thread, senderAci: senderAci, deviceId: deviceId)
             .didReceiveTypingStoppedMessage()
     }
 
-    public func didReceiveIncomingMessage(inThread thread: TSThread, senderAci: AciObjC, deviceId: UInt32) {
+    public func didReceiveIncomingMessage(inThread thread: TSThread, senderAci: Aci, deviceId: UInt32) {
         AssertIsOnMainThread()
-        ensureIncomingIndicators(forThread: thread, senderAci: senderAci.wrappedAciValue, deviceId: deviceId)
+        ensureIncomingIndicators(forThread: thread, senderAci: senderAci, deviceId: deviceId)
             .didReceiveIncomingMessage()
     }
 

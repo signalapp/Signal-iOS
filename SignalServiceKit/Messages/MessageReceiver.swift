@@ -224,7 +224,7 @@ public final class MessageReceiver {
                     wasReceivedByUD: request.wasReceivedByUD,
                     serverDeliveryTimestamp: request.serverDeliveryTimestamp,
                     associatedMessageTimestamp: editMessage.targetSentTimestamp,
-                    associatedMessageAuthor: request.decryptedEnvelope.sourceAciObjC,
+                    associatedMessageAuthor: request.decryptedEnvelope.sourceAci,
                     transaction: tx
                 )
             }
@@ -255,7 +255,7 @@ public final class MessageReceiver {
         let earlyReceiptTimestamps = SSKEnvironment.shared.receiptManagerRef.processDeliveryReceipts(
             from: envelope.sourceServiceId,
             recipientDeviceId: envelope.sourceDeviceId,
-            sentTimestamps: [ envelope.timestamp ],
+            sentTimestamps: [envelope.validatedEnvelope.timestamp],
             deliveryTimestamp: deliveryTimestamp,
             context: context,
             tx: tx
@@ -440,7 +440,7 @@ public final class MessageReceiver {
                             wasReceivedByUD: request.wasReceivedByUD,
                             serverDeliveryTimestamp: request.serverDeliveryTimestamp,
                             associatedMessageTimestamp: reaction.timestamp,
-                            associatedMessageAuthor: messageAuthor.map { AciObjC($0) },
+                            associatedMessageAuthor: messageAuthor,
                             transaction: tx
                         )
                     }
@@ -464,7 +464,7 @@ public final class MessageReceiver {
                             wasReceivedByUD: request.wasReceivedByUD,
                             serverDeliveryTimestamp: request.serverDeliveryTimestamp,
                             associatedMessageTimestamp: delete.targetSentTimestamp,
-                            associatedMessageAuthor: decryptedEnvelope.sourceAciObjC,
+                            associatedMessageAuthor: decryptedEnvelope.sourceAci,
                             transaction: tx
                         )
                     }
@@ -517,7 +517,7 @@ public final class MessageReceiver {
                         wasReceivedByUD: request.wasReceivedByUD,
                         serverDeliveryTimestamp: request.serverDeliveryTimestamp,
                         associatedMessageTimestamp: editMessage.targetSentTimestamp,
-                        associatedMessageAuthor: decryptedEnvelope.sourceAciObjC,
+                        associatedMessageAuthor: decryptedEnvelope.sourceAci,
                         transaction: tx
                     )
                 }
@@ -579,7 +579,7 @@ public final class MessageReceiver {
                     wasReceivedByUD: request.wasReceivedByUD,
                     serverDeliveryTimestamp: request.serverDeliveryTimestamp,
                     associatedMessageTimestamp: associatedMessageTimestamp,
-                    associatedMessageAuthor: AciObjC(senderAci),
+                    associatedMessageAuthor: senderAci,
                     transaction: tx
                 )
             }
@@ -907,7 +907,7 @@ public final class MessageReceiver {
                     wasReceivedByUD: request.wasReceivedByUD,
                     serverDeliveryTimestamp: request.serverDeliveryTimestamp,
                     associatedMessageTimestamp: reaction.timestamp,
-                    associatedMessageAuthor: AciObjC(aciString: reaction.targetAuthorAci),
+                    associatedMessageAuthor: Aci.parseFrom(aciString: reaction.targetAuthorAci),
                     transaction: tx
                 )
             }
@@ -934,7 +934,7 @@ public final class MessageReceiver {
                     wasReceivedByUD: request.wasReceivedByUD,
                     serverDeliveryTimestamp: request.serverDeliveryTimestamp,
                     associatedMessageTimestamp: delete.targetSentTimestamp,
-                    associatedMessageAuthor: envelope.sourceAciObjC,
+                    associatedMessageAuthor: envelope.sourceAci,
                     transaction: tx
                 )
             }
@@ -1044,15 +1044,15 @@ public final class MessageReceiver {
             SSKEnvironment.shared.paymentsHelperRef.processIncomingPaymentNotification(
                 thread: thread,
                 paymentNotification: paymentModels.notification,
-                senderAci: envelope.sourceAciObjC,
+                senderAci: envelope.sourceAci,
                 transaction: tx
             )
         } else if let payment = dataMessage.payment, let activation = payment.activation {
             switch activation.type {
             case .none, .request:
-                SSKEnvironment.shared.paymentsHelperRef.processIncomingPaymentsActivationRequest(thread: thread, senderAci: envelope.sourceAciObjC, transaction: tx)
+                SSKEnvironment.shared.paymentsHelperRef.processIncomingPaymentsActivationRequest(thread: thread, senderAci: envelope.sourceAci, transaction: tx)
             case .activated:
-                SSKEnvironment.shared.paymentsHelperRef.processIncomingPaymentsActivatedMessage(thread: thread, senderAci: envelope.sourceAciObjC, transaction: tx)
+                SSKEnvironment.shared.paymentsHelperRef.processIncomingPaymentsActivatedMessage(thread: thread, senderAci: envelope.sourceAci, transaction: tx)
             }
             return nil
         }
@@ -1246,7 +1246,7 @@ public final class MessageReceiver {
             DispatchQueue.main.async {
                 SSKEnvironment.shared.typingIndicatorsRef.didReceiveIncomingMessage(
                     inThread: thread,
-                    senderAci: envelope.sourceAciObjC,
+                    senderAci: envelope.sourceAci,
                     deviceId: envelope.sourceDeviceId
                 )
             }
@@ -1404,13 +1404,13 @@ public final class MessageReceiver {
             case .started:
                 SSKEnvironment.shared.typingIndicatorsRef.didReceiveTypingStartedMessage(
                     inThread: thread,
-                    senderAci: envelope.sourceAciObjC,
+                    senderAci: envelope.sourceAci,
                     deviceId: envelope.sourceDeviceId
                 )
             case .stopped:
                 SSKEnvironment.shared.typingIndicatorsRef.didReceiveTypingStoppedMessage(
                     inThread: thread,
-                    senderAci: envelope.sourceAciObjC,
+                    senderAci: envelope.sourceAci,
                     deviceId: envelope.sourceDeviceId
                 )
             case .none:
@@ -1772,7 +1772,7 @@ public final class MessageReceiver {
         DispatchQueue.main.async {
             SSKEnvironment.shared.typingIndicatorsRef.didReceiveIncomingMessage(
                 inThread: thread,
-                senderAci: AciObjC(envelope.sourceAci),
+                senderAci: envelope.sourceAci,
                 deviceId: envelope.sourceDeviceId
             )
         }

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
+public import LibSignalClient
 
 public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
 
@@ -280,7 +280,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
 
     private static let arePaymentsEnabledForUserStore = KeyValueStore(collection: "arePaymentsEnabledForUserStore")
 
-    public func setArePaymentsEnabled(for serviceId: ServiceIdObjC, hasPaymentsEnabled: Bool, transaction tx: SDSAnyWriteTransaction) {
+    public func setArePaymentsEnabled(for serviceId: ServiceId, hasPaymentsEnabled: Bool, transaction tx: SDSAnyWriteTransaction) {
         Self.arePaymentsEnabledForUserStore.setBool(hasPaymentsEnabled, key: serviceId.serviceIdUppercaseString, transaction: tx.asV2Write)
     }
 
@@ -315,7 +315,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
     public func processIncomingPaymentNotification(
         thread: TSThread,
         paymentNotification: TSPaymentNotification,
-        senderAci: AciObjC,
+        senderAci: Aci,
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("")
@@ -325,13 +325,13 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         }
         upsertPaymentModelForIncomingPaymentNotification(paymentNotification,
                                                          thread: thread,
-                                                         senderAci: senderAci.wrappedAciValue,
+                                                         senderAci: senderAci,
                                                          transaction: transaction)
     }
 
     public func processIncomingPaymentsActivationRequest(
         thread: TSThread,
-        senderAci: AciObjC,
+        senderAci: Aci,
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("")
@@ -357,26 +357,26 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         // a message telling them we activated.
         TSPaymentsActivationRequestModel.createIfNotExists(
             threadUniqueId: thread.uniqueId,
-            senderAci: senderAci.wrappedAciValue,
+            senderAci: senderAci,
             transaction: transaction
         )
         // Insert the info message to display in chat.
         let infoMessage: TSInfoMessage = .paymentsActivationRequestMessage(
             thread: thread,
-            senderAci: senderAci.wrappedAciValue
+            senderAci: senderAci
         )
         infoMessage.anyInsert(transaction: transaction)
     }
 
     public func processIncomingPaymentsActivatedMessage(
         thread: TSThread,
-        senderAci: AciObjC,
+        senderAci: Aci,
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("")
         let infoMessage: TSInfoMessage = .paymentsActivatedMessage(
             thread: thread,
-            senderAci: senderAci.wrappedAciValue
+            senderAci: senderAci
         )
         infoMessage.anyInsert(transaction: transaction)
 

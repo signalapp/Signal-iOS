@@ -178,14 +178,13 @@ public class EarlyMessageManager: NSObject {
         }
     }
 
-    @objc
     public func recordEarlyEnvelope(
         _ envelope: SSKProtoEnvelope,
         plainTextData: Data,
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
         associatedMessageTimestamp: UInt64,
-        associatedMessageAuthor: AciObjC?,
+        associatedMessageAuthor: Aci?,
         transaction: SDSAnyWriteTransaction
     ) {
         guard plainTextData.count <= Self.maxEarlyEnvelopeSize else {
@@ -198,7 +197,7 @@ public class EarlyMessageManager: NSObject {
 
         let identifier = MessageIdentifier(
             timestamp: associatedMessageTimestamp,
-            author: associatedMessageAuthor.wrappedAciValue
+            author: associatedMessageAuthor
         )
 
         Logger.info("Recording early envelope \(OWSMessageDecrypter.description(for: envelope)) for message \(identifier)")
