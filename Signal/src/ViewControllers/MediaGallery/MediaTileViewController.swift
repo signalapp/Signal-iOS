@@ -1520,6 +1520,20 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
         return (items.count, totalSize)
     }
 
+    func selectAll() {
+        let scrollPosition = collectionView.contentOffset
+        for section in 0..<collectionView.numberOfSections {
+            for index in 0..<collectionView.numberOfItems(inSection: section) {
+                collectionView.selectItem(
+                    at: IndexPath(item: index, section: section),
+                    animated: false,
+                    scrollPosition: []
+                )
+            }
+        }
+        collectionView.setContentOffset(scrollPosition, animated: false)
+    }
+
     var mediaGalleryFilterMenuItems: [MediaGalleryAccessoriesHelper.MenuItem] {
         let menuItems: [MenuItem]
         switch mediaCategory {

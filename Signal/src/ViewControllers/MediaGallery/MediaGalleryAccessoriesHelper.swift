@@ -14,6 +14,7 @@ protocol MediaGalleryPrimaryViewController: UIViewController {
     func selectionInfo() -> (count: Int, totalSize: Int64)?
     func disableFiltering()
     func batchSelectionModeDidChange(isInBatchSelectMode: Bool)
+    func selectAll()
     func didEndSelectMode()
     func deleteSelectedItems()
     func shareSelectedItems(_ sender: Any)
@@ -167,6 +168,8 @@ public class MediaGalleryAccessoriesHelper {
         updateShareButton()
     }
 
+    private var previousLeftBarButtonItem: UIBarButtonItem?
+
     private func updateSelectionModeControls() {
         guard let viewController else {
             return
@@ -175,8 +178,20 @@ public class MediaGalleryAccessoriesHelper {
             viewController.navigationItem.rightBarButtonItem = .cancelButton { [weak self] in
                 self?.didCancelSelect()
             }
+            previousLeftBarButtonItem = viewController.navigationItem.leftBarButtonItem
+            viewController.navigationItem.leftBarButtonItem = .button(
+                title: OWSLocalizedString(
+                    "SELECT_ALL",
+                    comment: "Button text to select all in any list selection mode"
+                ),
+                style: .plain,
+                action: { [weak self] in
+                    self?.didSelectAll()
+                })
         } else {
             viewController.navigationItem.rightBarButtonItem = nil // TODO: Search
+            viewController.navigationItem.leftBarButtonItem = previousLeftBarButtonItem
+            previousLeftBarButtonItem = nil
         }
 
         headerView.isHidden = isInBatchSelectMode
@@ -193,6 +208,11 @@ public class MediaGalleryAccessoriesHelper {
 
     private func didCancelSelect() {
         endSelectMode()
+    }
+
+    private func didSelectAll() {
+        self.viewController?.selectAll()
+        self.didModifySelection()
     }
 
     // Call this to exit select mode, for example after completing a deletion.

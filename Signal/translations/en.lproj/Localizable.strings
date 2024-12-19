@@ -6472,6 +6472,9 @@
 /* Label for the 'see all' button. */
 "SEE_ALL_BUTTON" = "See All";
 
+/* Button text to select all in any list selection mode */
+"SELECT_ALL" = "Select All";
+
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Send Again";
 
