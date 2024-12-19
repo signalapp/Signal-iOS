@@ -475,7 +475,14 @@ class ProvisioningController: NSObject {
         SignalApp.resetAppDataWithUI()
     }
 
-    func getProvisioningURL() async throws -> URL {
+    /// Opens a new provisioning socket. Note that the server closes
+    /// provisioning sockets after 90s, so callers must ensure that they do not
+    /// need the socket longer than that.
+    ///
+    /// - Returns
+    /// A provisioning URL containing information about the now-opened
+    /// provisioning socket.
+    func openNewProvisioningSocket() async throws -> URL {
         let provisioningUrlParams: ProvisioningUrlParams = try await withCheckedThrowingContinuation { paramsContinuation in
             let newAttempt = ProvisioningUrlCommunicationAttempt(
                 socket: ProvisioningSocket(),

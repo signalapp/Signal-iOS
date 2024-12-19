@@ -97,18 +97,10 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
         qrCodeRefreshButton.ows_contentEdgeInsets = UIEdgeInsets(hMargin: 24, vMargin: 0)
         qrCodeRefreshButton.autoSetDimension(.height, toSize: 40)
         qrCodeRefreshButton.block = { [weak self] in
-            Task { [weak self] in
-                guard let self else { return }
+            guard let self else { return }
 
-                setDisplayMode(.loading)
-
-                do {
-                    let provisioningUrl = try await fetchNewProvisioningQRCode()
-                    setDisplayMode(.loaded(provisioningUrl))
-                } catch {
-                    setDisplayMode(.refreshButton)
-                }
-            }
+            setDisplayMode(.loading)
+            startQRCodeRotationTask()
         }
 
         let getHelpLabel = UILabel()
@@ -194,14 +186,36 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
         )
 
         setDisplayMode(.loading)
+        startQRCodeRotationTask()
+    }
+
+    override public func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        rotateQRCodeTask?.cancel()
+    }
+
+    // MARK: -
+
+    private func startQRCodeRotationTask() {
+        AssertIsOnMainThread()
+
+        guard rotateQRCodeTask == nil else {
+            return
+        }
 
         rotateQRCodeTask = Task {
-            /// Refresh the QR code every 45s, five times. If we fail, or once
-            /// we've exhausted the five refreshes, fall back to showing an
-            /// error state with a manual retry.
+            /// Every 45s, five times, rotate the provisioning socket for which
+            /// we're displaying a QR code. If we fail, or once we've exhausted
+            /// the five rotations, fall back to showing a manual "refresh"
+            /// button.
+            ///
+            /// Note that the server will close provisioning sockets after 90s,
+            /// so hopefully rotating every 45s means no primary will ever end
+            /// up trying to send into a closed socket.
             do {
                 for _ in 0..<5 {
-                    let provisioningUrl = try await fetchNewProvisioningQRCode()
+                    let provisioningUrl = try await openNewProvisioningSocket()
 
                     try Task.checkCancellation()
 
@@ -219,15 +233,8 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
             }
 
             setDisplayMode(.refreshButton)
+            rotateQRCodeTask = nil
         }
-    }
-
-    override public func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        rotateQRCodeTask?.cancel()
-        rotateQRCodeTask = nil
-        setDisplayMode(.refreshButton)
     }
 
     // MARK: - Events
@@ -266,8 +273,8 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
 
     // MARK: -
 
-    private nonisolated func fetchNewProvisioningQRCode() async throws -> URL {
-        let provisioningUrl = try await provisioningController.getProvisioningURL()
+    private nonisolated func openNewProvisioningSocket() async throws -> URL {
+        let provisioningUrl = try await provisioningController.openNewProvisioningSocket()
 
 #if TESTABLE_BUILD
         currentProvisioningUrl.set(provisioningUrl)
