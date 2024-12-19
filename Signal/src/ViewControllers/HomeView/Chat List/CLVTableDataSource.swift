@@ -862,7 +862,7 @@ public class CLVTableView: UITableView {
     //
     // It also allows the user to swipe up to dismiss the search bar (if the
     // content height is too small, the search bar otherwise becomes un-hideable).
-    let footerView = UIView()
+    private let footerView = UIView()
 
     public init() {
         super.init(frame: .zero, style: .grouped)
@@ -917,7 +917,6 @@ public class CLVTableView: UITableView {
 
         if footerView.frame.height != finalHeight {
             footerView.frame.height = finalHeight
-            performBatchUpdates(nil)
         }
     }
 }
