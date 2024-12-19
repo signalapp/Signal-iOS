@@ -882,8 +882,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         )
         guard shouldUpdateAvatar else { return }
 
-        heroView.rerender()
-
         SSKEnvironment.shared.databaseStorageRef.read { [weak self] transaction in
             self?.avatarView.update(transaction) { config in
                 guard let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {

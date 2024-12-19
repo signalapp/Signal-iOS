@@ -8,6 +8,25 @@ import SignalServiceKit
 
 public class LinkingTextView: UITextView {
 
+    public var shouldInteractWithURLOverride: ((URL) -> Bool)?
+
+    /// Creates a text view with the provided action in place of opening
+    /// tapped links. If there are multiple links and you want to perform
+    /// a different action depending on which was tapped, use
+    /// ``LinkingTextView/init(shouldInteractWithURL:)``.
+    public convenience init(overrideLinkAction: @escaping () -> Void) {
+        self.init { url in
+            overrideLinkAction()
+            return false
+        }
+    }
+
+    /// Creates a text view with a closure for determining what to do with tapped links.
+    public convenience init(shouldInteractWithURL: @escaping (URL) -> Bool) {
+        self.init()
+        self.shouldInteractWithURLOverride = shouldInteractWithURL
+    }
+
     public override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
 
@@ -63,8 +82,12 @@ public class LinkingTextView: UITextView {
 
 extension LinkingTextView: UITextViewDelegate {
 
-    public func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        let vc = SFSafariViewController(url: URL)
+    public func textView(_ textView: UITextView, shouldInteractWith url: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        if let shouldInteractWithURLOverride {
+            return shouldInteractWithURLOverride(url)
+        }
+
+        let vc = SFSafariViewController(url: url)
         CurrentAppContext().frontmostViewController()?.present(vc, animated: true, completion: nil)
         return false
     }

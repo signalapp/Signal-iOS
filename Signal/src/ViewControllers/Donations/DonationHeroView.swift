@@ -12,9 +12,7 @@ protocol DonationHeroViewDelegate: AnyObject {
 }
 
 class DonationHeroView: UIStackView {
-    private let descriptionTextView = LinkingTextView()
-
-    public weak var delegate: DonationHeroViewDelegate?
+    weak var delegate: DonationHeroViewDelegate?
 
     init(avatarView: UIView) {
         super.init(frame: .zero)
@@ -38,28 +36,22 @@ class DonationHeroView: UIStackView {
         self.addArrangedSubview(titleLabel)
         self.setCustomSpacing(6, after: titleLabel)
 
-        descriptionTextView.delegate = self
+        let descriptionTextView = LinkingTextView { [weak self] in
+            self?.delegate?.present(readMoreSheet: DonationReadMoreSheetViewController())
+        }
         self.addArrangedSubview(descriptionTextView)
 
         // Others may add additional views after the description view, which is
         // why we set this spacing.
         self.setCustomSpacing(24, after: descriptionTextView)
 
-        rerender()
-    }
-
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    public func rerender() {
         let descriptionBodyText = OWSLocalizedString(
             "DONATION_SCREENS_HEADER_DESCRIPTION",
             comment: "On donation screens, a small amount of information text is shown. This is the subtitle for that text."
         )
         // We'd like a link that doesn't go anywhere, because we'd like to
-        // handle the tapping ourselves. We use a "fake" URL because BonMot
-        // needs one.
+        // handle the tapping ourselves. We use a "fake" URL because
+        // NSAttributedString needs one.
         let linkPart = StringStyle.Part.link(SupportConstants.subscriptionFAQURL)
         let readMoreText = OWSLocalizedString(
             "DONATION_SCREENS_HEADER_READ_MORE",
@@ -69,28 +61,16 @@ class DonationHeroView: UIStackView {
             descriptionBodyText,
             " ",
             readMoreText
-        ]).styled(with: .color(Theme.primaryTextColor), .font(.dynamicTypeBody))
+        ]).styled(with: .color(UIColor.Signal.label), .font(.dynamicTypeBody))
         descriptionTextView.linkTextAttributes = [
-            .foregroundColor: Theme.accentBlueColor,
+            .foregroundColor: UIColor.Signal.accent,
             .underlineColor: UIColor.clear,
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
         descriptionTextView.textAlignment = .center
     }
-}
 
-// MARK: - Read more
-
-extension DonationHeroView: UITextViewDelegate {
-    func textView(
-        _ textView: UITextView,
-        shouldInteractWith URL: URL,
-        in characterRange: NSRange,
-        interaction: UITextItemInteraction
-    ) -> Bool {
-        if textView == descriptionTextView {
-            delegate?.present(readMoreSheet: DonationReadMoreSheetViewController())
-        }
-        return false
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
