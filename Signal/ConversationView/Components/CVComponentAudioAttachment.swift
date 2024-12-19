@@ -354,10 +354,22 @@ extension CVComponentAudioAttachment: DatabaseChangeDelegate {
 extension CVComponentAudioAttachment: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         if audioAttachment.isVoiceMessage {
-            if audioAttachment.durationSeconds > 0 {
-                let format = OWSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO_%d", tableName: "PluralAware",
-                                               comment: "Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}.")
+            if audioAttachment.durationSeconds > 0 && audioAttachment.durationSeconds < 60 {
+                let format = OWSLocalizedString(
+                    "ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d",
+                    tableName: "PluralAware",
+                    comment: "Accessibility label for a short (under 60 seconds) voice memo. Embeds: {{ the duration of the voice message in seconds }}."
+                )
                 return String.localizedStringWithFormat(format, Int(audioAttachment.durationSeconds))
+            } else if audioAttachment.durationSeconds >= 60 {
+                let minutes = (audioAttachment.durationSeconds / 60).rounded(.down)
+                let seconds = audioAttachment.durationSeconds.truncatingRemainder(dividingBy: 60)
+                let format = OWSLocalizedString(
+                    "ACCESSIBILITY_LABEL_LONG_VOICE_MEMO_%d_%d",
+                    tableName: "PluralAware",
+                    comment: "Accessibility label for a long (60+ seconds) voice memo. Embeds: {{ %1$@ the minutes component of the duration, %2$@ the seconds component of the duration }}."
+                )
+                return String.localizedStringWithFormat(format, Int(minutes), Int(seconds))
             } else {
                 return OWSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO",
                                          comment: "Accessibility label for a voice memo.")
