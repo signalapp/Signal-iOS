@@ -10,15 +10,14 @@ import SignalUI
 class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
 
     private var qrCodeWrapperView: UIView!
-    private var qrCodeWrapperViewSizeConstraints: [NSLayoutConstraint]!
+    private var qrCodeWrapperViewSizeConstraint: NSLayoutConstraint!
     private var qrCodeView: QRCodeView!
 
     // MARK: -
 
-    private func populateViewContents() {
-        // MARK: Views
-
+    override func loadView() {
         view = UIView()
+
         view.addSubview(primaryView)
         primaryView.autoPinEdgesToSuperviewEdges()
 
@@ -95,38 +94,21 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
 
         qrCodeTopSpacer.autoMatch(.height, to: .height, of: qrCodeBottomSpacer, withMultiplier: 0.33)
 
-        /// Constraint constants managed by `adjustLayoutForCurrentOrientation`.
-        qrCodeWrapperViewSizeConstraints = [
-            qrCodeWrapperView.autoSetDimension(.height, toSize: 0),
-            qrCodeWrapperView.autoSetDimension(.width, toSize: 0),
-        ]
-
-        adjustLayoutForCurrentOrientation()
+        qrCodeWrapperView.autoPinToSquareAspectRatio()
+        qrCodeWrapperViewSizeConstraint = qrCodeWrapperView.autoSetDimension(.height, toSize: 0)
     }
 
-    @objc
-    private func adjustLayoutForCurrentOrientation() {
-        if UIDevice.current.orientation.isPortrait {
+    private func updateLayoutForViewSize(_ size: CGSize) {
+        if size.height > size.width {
             qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 48)
-            qrCodeWrapperViewSizeConstraints.forEach { $0.constant = 352 }
+            qrCodeWrapperViewSizeConstraint.constant = 352
         } else {
             qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 24)
-            qrCodeWrapperViewSizeConstraints.forEach { $0.constant = 220 }
+            qrCodeWrapperViewSizeConstraint.constant = 220
         }
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        populateViewContents()
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(adjustLayoutForCurrentOrientation),
-            name: UIDevice.orientationDidChangeNotification,
-            object: UIDevice.current
-        )
-    }
+    // MARK: -
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -146,11 +128,25 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
         }
     }
 
+    override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+
+        /// Wait until this method to update the layout, because this is the
+        /// first point at which we will be laid out and know our size.
+        updateLayoutForViewSize(view.bounds.size)
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         AppEnvironment.shared.deviceTransferServiceRef.removeObserver(self)
         AppEnvironment.shared.deviceTransferServiceRef.stopAcceptingTransfersFromOldDevices()
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        updateLayoutForViewSize(size)
     }
 
     // MARK: - Events
