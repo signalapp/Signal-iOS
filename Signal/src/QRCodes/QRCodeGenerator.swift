@@ -9,13 +9,17 @@ import SignalServiceKit
 /// Signal logo and rounded "pixels". They are scaled up so as to appropriately
 /// render the rounded shapes.
 struct QRCodeGenerator {
+    enum StylingMode {
+        case brandedWithLogo
+        case brandedWithoutLogo
+    }
 
     init() {}
 
     // MARK: -
 
     /// Generates a styled, Signal-branded QR code image encoding the given URL.
-    func generateQRCode(url: URL) -> UIImage? {
+    func generateQRCode(url: URL, stylingMode: StylingMode = .brandedWithLogo) -> UIImage? {
         guard let urlData: Data = url.absoluteString.data(using: .utf8) else {
             owsFailDebug("Failed to convert URL to data!")
             return nil
@@ -25,7 +29,10 @@ struct QRCodeGenerator {
             return nil
         }
 
-        return QRCodeStyler().styleQRCode(unstyledQRCode: unstyledQRCode)
+        return QRCodeStyler().styleQRCode(
+            unstyledQRCode: unstyledQRCode,
+            stylingMode: stylingMode
+        )
     }
 
     /// Generate an un-styled QR code image encoding the given data.
@@ -93,9 +100,14 @@ private struct QRCodeStyler {
         static let deadzoneLogoSizePercentage: CGFloat = 38 / 64
     }
 
+    typealias StylingMode = QRCodeGenerator.StylingMode
+
     init() {}
 
-    func styleQRCode(unstyledQRCode: UIImage) -> UIImage {
+    func styleQRCode(
+        unstyledQRCode: UIImage,
+        stylingMode: StylingMode
+    ) -> UIImage {
         guard
             let cgQRCode = unstyledQRCode.cgImage,
             let qrCodeBitmap = Bitmaps.Image(cgImage: cgQRCode)
@@ -104,11 +116,16 @@ private struct QRCodeStyler {
             return unstyledQRCode
         }
 
-        // Specify a centered deadzone in the QR code.
-        let deadzone: Bitmaps.Rect = qrCodeBitmap.centeredDeadzone(
-            dimensionPercentage: Constants.deadzoneSizePointsPercentage,
-            paddingPoints: Constants.deadzonePaddingPoints
-        )
+        let deadzone: Bitmaps.Rect? = switch stylingMode {
+        case .brandedWithLogo:
+            // Specify a centered deadzone in the QR code.
+            qrCodeBitmap.centeredDeadzone(
+                dimensionPercentage: Constants.deadzoneSizePointsPercentage,
+                paddingPoints: Constants.deadzonePaddingPoints
+            )
+        case .brandedWithoutLogo:
+            nil
+        }
 
         // Make a grid drawing of the QR code.
         let qrCodeGridDrawing = qrCodeBitmap.gridDrawingByMergingAdjacentPixels(
@@ -123,24 +140,26 @@ private struct QRCodeStyler {
             backgroundColor: UIColor.clear.cgColor
         )
 
-        // Draw a circle into the deadzone, inside the padding. When drawing,
-        // inset by half the stroke so the circle draws entirely inside the rect
-        // instead of straddling the edges (the CoreGraphics behavior).
-        let circleRect = deadzone.cgRect(
-            scaledBy: CGFloat(Constants.imagePixelsPerQRCodePoint),
-            insetBy: CGFloat(Constants.deadzonePaddingPoints)
-        )
-        let circleStroke = circleRect.width * Constants.deadzoneCircleStrokePercentage
-        styledQRCodeContext.setLineWidth(circleStroke)
-        styledQRCodeContext.strokeEllipse(in: circleRect.insetBy(
-            dx: circleStroke / 2,
-            dy: circleStroke / 2
-        ))
+        if let deadzone {
+            // Draw a circle into the deadzone, inside the padding. When drawing,
+            // inset by half the stroke so the circle draws entirely inside the rect
+            // instead of straddling the edges (the CoreGraphics behavior).
+            let circleRect = deadzone.cgRect(
+                scaledBy: CGFloat(Constants.imagePixelsPerQRCodePoint),
+                insetBy: CGFloat(Constants.deadzonePaddingPoints)
+            )
+            let circleStroke = circleRect.width * Constants.deadzoneCircleStrokePercentage
+            styledQRCodeContext.setLineWidth(circleStroke)
+            styledQRCodeContext.strokeEllipse(in: circleRect.insetBy(
+                dx: circleStroke / 2,
+                dy: circleStroke / 2
+            ))
 
-        // Draw the logo inside the circle in the deadzone.
-        let logo = UIImage(named: "signal-logo-40")!
-        let logoRect = circleRect.scaled(toPercentage: Constants.deadzoneLogoSizePercentage)
-        styledQRCodeContext.draw(logo.cgImage!, in: logoRect)
+            // Draw the logo inside the circle in the deadzone.
+            let logo = UIImage(named: "signal-logo-40")!
+            let logoRect = circleRect.scaled(toPercentage: Constants.deadzoneLogoSizePercentage)
+            styledQRCodeContext.draw(logo.cgImage!, in: logoRect)
+        }
 
         guard let styledQRCodeImage = styledQRCodeContext.makeImage() else {
             owsFailDebug("Failed to make styled image!")

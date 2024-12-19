@@ -100,10 +100,10 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
 
     private func updateLayoutForViewSize(_ size: CGSize) {
         if size.height > size.width {
-            qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 48)
+            qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 24)
             qrCodeWrapperViewSizeConstraint.constant = 352
         } else {
-            qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 24)
+            qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 12)
             qrCodeWrapperViewSizeConstraint.constant = 220
         }
     }
@@ -121,7 +121,10 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
                     mode: .linked // TODO: .primary
                 )
 
-                qrCodeView.setQRCode(url: url)
+                qrCodeView.setQRCode(
+                    url: url,
+                    stylingMode: .brandedWithoutLogo
+                )
             } catch {
                 owsFailDebug("error \(error)")
             }

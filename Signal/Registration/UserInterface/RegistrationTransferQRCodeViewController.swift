@@ -185,7 +185,10 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
                     mode: .primary
                 )
 
-                qrCodeView.setQRCode(url: url)
+                qrCodeView.setQRCode(
+                    url: url,
+                    stylingMode: .brandedWithoutLogo
+                )
             } catch {
                 owsFailDebug("error \(error)")
             }
