@@ -163,9 +163,10 @@ class CallControls: UIView {
 
     private var heightAfterLastUpdate: CGFloat = 0
 
+    private var animator: UIViewPropertyAnimator?
+
     private func updateControls() {
         // Top row
-        audioSourceButton.isHidden = viewModel.audioSourceButtonIsHidden
         hangUpButton.isHidden = viewModel.hangUpButtonIsHidden
         muteButton.isHidden = viewModel.muteButtonIsHidden
         moreButton.isHidden = viewModel.moreButtonIsHidden
@@ -229,9 +230,26 @@ class CallControls: UIView {
         moreButton.accessibilityLabel = viewModel.moreButtonAccessibilityLabel
 
         if self.heightAfterLastUpdate != self.currentHeight {
+            // callControlsHeightDidChange will animate changes
+            self.animator?.stopAnimation(true)
+            audioSourceButton.isHiddenInStackView = viewModel.audioSourceButtonIsHidden
+
             callControlsHeightObservers.elements.forEach {
                 $0.callControlsHeightDidChange(newHeight: currentHeight)
             }
+        } else if audioSourceButton.isHiddenInStackView != viewModel.audioSourceButtonIsHidden {
+            // Animate audioSourceButton ourselves
+            self.animator?.stopAnimation(true)
+            let animator = UIViewPropertyAnimator(
+                duration: 0.5,
+                controlPoint1: .init(x: 0.25, y: 1),
+                controlPoint2: .init(x: 0.25, y: 1)
+            )
+            animator.addAnimations { [unowned self] in
+                self.audioSourceButton.isHiddenInStackView = self.viewModel.audioSourceButtonIsHidden
+            }
+            animator.startAnimation()
+            self.animator = animator
         }
 
         self.heightAfterLastUpdate = self.currentHeight

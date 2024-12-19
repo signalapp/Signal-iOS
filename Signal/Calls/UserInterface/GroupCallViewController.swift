@@ -1246,6 +1246,7 @@ class GroupCallViewController: UIViewController {
 
         splitViewSnapshot.autoPinEdgesToSuperviewEdges()
 
+        bottomSheet.cancelAnimationAndUpdateConstraints()
         bottomSheet.dismiss(animated: true) { [self] in
             dismissSelf(splitViewSnapshot: splitViewSnapshot)
         }
