@@ -9,6 +9,7 @@ public final class BulkDeleteInteractionJobQueue {
         JobRecordFinderImpl<BulkDeleteInteractionJobRecord>,
         BulkDeleteInteractionJobRunnerFactory
     >
+    private var jobSerializer = CompletionSerializer()
 
     init(
         addressableMessageFinder: DeleteForMeAddressableMessageFinder,
@@ -57,7 +58,7 @@ public final class BulkDeleteInteractionJobQueue {
 
         jobRecord.anyInsert(transaction: tx)
 
-        tx.addSyncCompletion {
+        jobSerializer.addOrderedSyncCompletion(tx: tx.asV2Write) {
             self.jobQueueRunner.addPersistedJob(jobRecord)
         }
     }

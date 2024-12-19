@@ -566,6 +566,8 @@
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */; };
 		501AD1C42AF17A16001B796A /* ECKeyPairTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */; };
+		501E4DAB2D133F4400D883C7 /* CompletionSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501E4DAA2D133F4400D883C7 /* CompletionSerializer.swift */; };
+		501E4DAE2D13439E00D883C7 /* CompletionSerializerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501E4DAC2D13439E00D883C7 /* CompletionSerializerTest.swift */; };
 		501E78622CFE3E2700FD56C4 /* PhoneNumberCountry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501E78612CFE3E2700FD56C4 /* PhoneNumberCountry.swift */; };
 		501F11002C7FD688008FC0DD /* CallLinkRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501F10FF2C7FD688008FC0DD /* CallLinkRecord.swift */; };
 		501F11022C7FD999008FC0DD /* CallLinkRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501F11012C7FD999008FC0DD /* CallLinkRecordStore.swift */; };
@@ -4308,6 +4310,8 @@
 		5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthedDevice.swift; sourceTree = "<group>"; };
 		501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPairTest.swift; sourceTree = "<group>"; };
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
+		501E4DAA2D133F4400D883C7 /* CompletionSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionSerializer.swift; sourceTree = "<group>"; };
+		501E4DAC2D13439E00D883C7 /* CompletionSerializerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CompletionSerializerTest.swift; path = SignalServiceKit/tests/Storage/Database/CompletionSerializerTest.swift; sourceTree = SOURCE_ROOT; };
 		501E78612CFE3E2700FD56C4 /* PhoneNumberCountry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberCountry.swift; sourceTree = "<group>"; };
 		501F10FF2C7FD688008FC0DD /* CallLinkRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkRecord.swift; sourceTree = "<group>"; };
 		501F11012C7FD999008FC0DD /* CallLinkRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkRecordStore.swift; sourceTree = "<group>"; };
@@ -12768,6 +12772,7 @@
 			children = (
 				D9F6554529DA4216002A330A /* SDSCodableModel */,
 				66138FAC2982F4A7002E0CFE /* SDSDatabaseStorage */,
+				501E4DAC2D13439E00D883C7 /* CompletionSerializerTest.swift */,
 				668A28AE2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift */,
 				F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */,
 				F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */,
@@ -13511,6 +13516,7 @@
 				D9F6553029D6530B002A330A /* SDSCodableModel */,
 				6673FF83297B666500F96CFD /* SDSDatabaseStorage */,
 				F9C5CA3C289453B100548EEE /* Snapshots */,
+				501E4DAA2D133F4400D883C7 /* CompletionSerializer.swift */,
 				F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */,
 				F9B652C228D8E3DF006914CA /* DatabaseRecovery.swift */,
 				F9C5CA48289453B100548EEE /* DeepCopy.swift */,
@@ -16913,6 +16919,7 @@
 				0512145B2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift in Sources */,
 				66F6D6A52C7D0E0000EFAF75 /* ColorOrGradient.swift in Sources */,
 				72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */,
+				501E4DAB2D133F4400D883C7 /* CompletionSerializer.swift in Sources */,
 				50C0203C2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift in Sources */,
 				D958E2AF2B58696700EE9831 /* ConsumableMockGuarantee.swift in Sources */,
 				D990CACD2B4DCD83000A99A2 /* ConsumableMockPromise.swift in Sources */,
@@ -17964,6 +17971,7 @@
 				661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */,
 				D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */,
 				F9C9610B29A91026001E4A09 /* ChatServiceAuthTest.swift in Sources */,
+				501E4DAE2D13439E00D883C7 /* CompletionSerializerTest.swift in Sources */,
 				50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */,
 				500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */,
 				5077B5B82BBC7FE600EF399E /* ContactTest.swift in Sources */,

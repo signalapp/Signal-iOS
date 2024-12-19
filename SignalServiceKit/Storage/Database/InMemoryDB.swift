@@ -190,20 +190,26 @@ public final class InMemoryDB: DB {
         rescue: (Error) throws -> Never
     ) rethrows -> T {
         var thrownError: Error?
+        var syncCompletions: [() -> Void]!
+        var asyncCompletions: [(Scheduler, () -> Void)]!
         let result: T? = try! databaseQueue.write { db in
             do {
                 let tx = WriteTransaction(db: db)
                 defer {
-                    tx.syncCompletions.forEach { $0() }
-                    tx.asyncCompletions.forEach {
-                        $0.0.async($0.1)
-                    }
+                    syncCompletions = tx.syncCompletions
+                    asyncCompletions = tx.asyncCompletions
                 }
                 return try block(tx)
             } catch {
                 thrownError = error
                 return nil
             }
+        }
+        syncCompletions.forEach {
+            $0()
+        }
+        asyncCompletions.forEach {
+            $0.0.async($0.1)
         }
         if let thrownError {
             try rescue(thrownError)
@@ -214,15 +220,15 @@ public final class InMemoryDB: DB {
     private func _writeWithTxCompletion<T>(
         block: (WriteTransaction) -> TransactionCompletion<T>
     ) -> T {
-        return try! databaseQueue.writeWithoutTransaction { db in
+        var syncCompletions: [() -> Void]!
+        var asyncCompletions: [(Scheduler, () -> Void)]!
+        let result: T = try! databaseQueue.writeWithoutTransaction { db in
             var result: T!
             try db.inTransaction {
                 let tx = WriteTransaction(db: db)
                 defer {
-                    tx.syncCompletions.forEach { $0() }
-                    tx.asyncCompletions.forEach {
-                        $0.0.async($0.1)
-                    }
+                    syncCompletions = tx.syncCompletions
+                    asyncCompletions = tx.asyncCompletions
                 }
                 switch block(tx) {
                 case .commit(let t):
@@ -235,6 +241,13 @@ public final class InMemoryDB: DB {
             }
             return result
         }
+        syncCompletions.forEach {
+            $0()
+        }
+        asyncCompletions.forEach {
+            $0.0.async($0.1)
+        }
+        return result
     }
 
     // MARK: - Helpers

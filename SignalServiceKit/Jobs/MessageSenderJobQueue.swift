@@ -30,6 +30,7 @@ import Foundation
 ///
 /// Both respect `IsRetryableProvider` and only retry retryable errors.
 public class MessageSenderJobQueue {
+    private var jobSerializer = CompletionSerializer()
 
     public init(appReadiness: AppReadiness) {
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
@@ -307,10 +308,12 @@ public class MessageSenderJobQueue {
         )
 
         let queueKey = QueueKey(threadId: job.record.threadId, priority: sendPriority)
-        self.state.update {
-            $0.queueStates[queueKey, default: QueueState()].queuedOperations.append(operation)
+        self.jobSerializer.addOrderedSyncCompletion(tx: transaction.asV2Write) {
+            self.state.update {
+                $0.queueStates[queueKey, default: QueueState()].queuedOperations.append(operation)
+            }
+            self.startNextJobIfNeeded(queueKey: queueKey)
         }
-        startNextJobIfNeeded(queueKey: queueKey)
     }
 
     public func setUp() {

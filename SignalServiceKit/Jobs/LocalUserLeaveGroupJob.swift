@@ -97,6 +97,7 @@ public class LocalUserLeaveGroupJobQueue {
         JobRecordFinderImpl<LocalUserLeaveGroupJobRecord>,
         LocalUserLeaveGroupJobRunnerFactory
     >
+    private var jobSerializer = CompletionSerializer()
     private let jobRunnerFactory: LocalUserLeaveGroupJobRunnerFactory
 
     public init(db: any DB, reachabilityManager: SSKReachabilityManager) {
@@ -149,7 +150,7 @@ public class LocalUserLeaveGroupJobQueue {
             waitForMessageProcessing: waitForMessageProcessing
         )
         jobRecord.anyInsert(transaction: tx)
-        tx.addSyncCompletion {
+        jobSerializer.addOrderedSyncCompletion(tx: tx.asV2Write) {
             self.jobQueueRunner.addPersistedJob(jobRecord, runner: self.jobRunnerFactory.buildRunner(future: future))
         }
     }

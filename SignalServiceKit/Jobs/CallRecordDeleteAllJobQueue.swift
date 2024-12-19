@@ -24,6 +24,7 @@ public class CallRecordDeleteAllJobQueue {
         JobRecordFinderImpl<CallRecordDeleteAllJobRecord>,
         CallRecordDeleteAllJobRunnerFactory
     >
+    private var jobSerializer = CompletionSerializer()
 
     private let callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter
 
@@ -100,7 +101,7 @@ public class CallRecordDeleteAllJobQueue {
 
         jobRecord.anyInsert(transaction: tx)
 
-        tx.addSyncCompletion {
+        jobSerializer.addOrderedSyncCompletion(tx: tx.asV2Write) {
             self.jobQueueRunner.addPersistedJob(jobRecord)
         }
     }

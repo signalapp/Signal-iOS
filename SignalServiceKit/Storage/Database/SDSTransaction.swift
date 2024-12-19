@@ -73,12 +73,10 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
     }
     internal var asyncCompletions: [AsyncCompletion] = []
 
-    @objc
     public func addSyncCompletion(block: @escaping CompletionBlock) {
         syncCompletions.append(block)
     }
 
-    @objc
     public func addAsyncCompletion(queue: DispatchQueue, block: @escaping CompletionBlock) {
         addAsyncCompletion(on: queue, block: block)
     }
@@ -178,7 +176,6 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
 
     // NOTE: These completions are performed _after_ the write
     //       transaction has completed.
-    @objc
     public func addSyncCompletion(_ block: @escaping () -> Void) {
         switch writeTransaction {
         case .grdbWrite(let grdbWrite):

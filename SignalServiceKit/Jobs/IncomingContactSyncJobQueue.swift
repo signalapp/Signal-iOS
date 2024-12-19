@@ -16,6 +16,7 @@ public class IncomingContactSyncJobQueue: NSObject {
         JobRecordFinderImpl<IncomingContactSyncJobRecord>,
         IncomingContactSyncJobRunnerFactory
     >
+    private var jobSerializer = CompletionSerializer()
 
     public init(appReadiness: AppReadiness, db: any DB, reachabilityManager: SSKReachabilityManager) {
         self.jobQueueRunner = JobQueueRunner(
@@ -50,7 +51,9 @@ public class IncomingContactSyncJobQueue: NSObject {
             isCompleteContactSync: isComplete
         )
         jobRecord.anyInsert(transaction: tx)
-        tx.addSyncCompletion { self.jobQueueRunner.addPersistedJob(jobRecord) }
+        jobSerializer.addOrderedSyncCompletion(tx: tx.asV2Write) {
+            self.jobQueueRunner.addPersistedJob(jobRecord)
+        }
     }
 }
 
