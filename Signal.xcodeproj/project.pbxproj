@@ -758,6 +758,7 @@
 		66076B5D2BC06CA70043D547 /* MockEditManagerAttachments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B592BC06CA70043D547 /* MockEditManagerAttachments.swift */; };
 		66076B5E2BC06CA70043D547 /* EditManagerAttachmentsImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B5A2BC06CA70043D547 /* EditManagerAttachmentsImpl.swift */; };
 		66076B5F2BC06CA70043D547 /* EditManagerAttachments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B5B2BC06CA70043D547 /* EditManagerAttachments.swift */; };
+		6609A3BA2D137908007D04A2 /* MediaGalleryFileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6609A3B92D137900007D04A2 /* MediaGalleryFileCell.swift */; };
 		660FA9112CE58CD7006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660FA9102CE58CD0006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift */; };
 		661170C12ABA459D00A1B16D /* RegistrationIdGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */; };
 		661170C42ABA4D9900A1B16D /* TSAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C32ABA4D9900A1B16D /* TSAccountManager.swift */; };
@@ -4511,6 +4512,7 @@
 		66076B592BC06CA70043D547 /* MockEditManagerAttachments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockEditManagerAttachments.swift; sourceTree = "<group>"; };
 		66076B5A2BC06CA70043D547 /* EditManagerAttachmentsImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditManagerAttachmentsImpl.swift; sourceTree = "<group>"; };
 		66076B5B2BC06CA70043D547 /* EditManagerAttachments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditManagerAttachments.swift; sourceTree = "<group>"; };
+		6609A3B92D137900007D04A2 /* MediaGalleryFileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryFileCell.swift; sourceTree = "<group>"; };
 		660FA9102CE58CD0006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkAndSyncProvisioningProgressViewController.swift; sourceTree = "<group>"; };
 		661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationIdGenerator.swift; sourceTree = "<group>"; };
 		661170C32ABA4D9900A1B16D /* TSAccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManager.swift; sourceTree = "<group>"; };
@@ -10066,6 +10068,7 @@
 			children = (
 				45B3680A2A1D75DF0067D05A /* AudioAllMediaPresenter.swift */,
 				45D9784329F0B51F00BBB3C0 /* AudioCell.swift */,
+				6609A3B92D137900007D04A2 /* MediaGalleryFileCell.swift */,
 				45D9784129F0B50000BBB3C0 /* MediaTileListModeCell.swift */,
 				45906C6A29D238560025906D /* WidePhotoCell.swift */,
 			);
@@ -16406,6 +16409,7 @@
 				45DDD06729C1365100FD9670 /* MediaGalleryAccessoriesHelper.swift in Sources */,
 				7622B3B22A4510D7000E31DA /* MediaGalleryCellItem.swift in Sources */,
 				4585B4A3291B2BFB003A8F8E /* MediaGalleryCollectionViewUpdater.swift in Sources */,
+				6609A3BA2D137908007D04A2 /* MediaGalleryFileCell.swift in Sources */,
 				1700E33928B568200073D949 /* MediaGallerySections.swift in Sources */,
 				4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */,
 				76BB06FA29AD84DB00978856 /* MediaItemViewController.swift in Sources */,

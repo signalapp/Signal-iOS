@@ -70,7 +70,8 @@ public class MediaGalleryAccessoriesHelper {
     private lazy var headerView: UISegmentedControl = {
         let items = [
             AllMediaCategory.photoVideo,
-            AllMediaCategory.audio
+            AllMediaCategory.audio,
+            AllMediaCategory.otherFiles,
         ].map { $0.titleString }
         let segmentedControl = UISegmentedControl(items: items)
         segmentedControl.selectedSegmentTintColor = .init(dynamicProvider: { _ in
@@ -548,6 +549,8 @@ extension AllMediaCategory {
             return true
         case .audio:
             return false
+        case .otherFiles:
+            return false
         }
     }
 
@@ -559,6 +562,11 @@ extension AllMediaCategory {
         case .audio:
             return OWSLocalizedString("ALL_MEDIA_FILE_TYPE_AUDIO",
                                       comment: "Audio file type in All Meda file type picker.")
+        case .otherFiles:
+            return OWSLocalizedString(
+                "ALL_MEDIA_FILE_TYPE_FILES",
+                comment: "Generic All Media file type for non-audiovisual files used in file type picker"
+            )
         }
     }
 }

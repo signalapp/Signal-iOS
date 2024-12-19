@@ -307,6 +307,8 @@ public struct MediaGalleryAttachmentFinder {
         case .allAudioCategory:
             query = query
                 .filter(contentTypeColumn == AttachmentReference.ContentType.audio.rawValue)
+        case .otherFiles:
+            query = query.filter(literal: "isInvalidOrFileContentType = \(true)")
         case .gifs:
             // NOTE: this query will not make complete use of an index; it has to combine the results
             // of two indexes and use a temp b-tree for sorting. This is suboptimal but fine in practice

@@ -20,6 +20,7 @@ protocol MediaGalleryCollectionViewCell: UICollectionViewCell {
 enum MediaGalleryCellItem {
     case photoVideo(MediaGalleryCellItemPhotoVideo)
     case audio(MediaGalleryCellItemAudio)
+    case otherFile(MediaGalleryCellItemOtherFile)
 
     var attachmentStream: ReferencedAttachmentStream? {
         switch self {
@@ -27,6 +28,8 @@ enum MediaGalleryCellItem {
             return item.galleryItem.attachmentStream
         case .audio(let audioItem):
             return audioItem.attachmentStream
+        case .otherFile(let fileItem):
+            return fileItem.attachmentStream
         }
     }
 }
@@ -38,7 +41,9 @@ extension MediaGalleryCellItem: Equatable {
             return lvalue === rvalue
         case let (.audio(lvalue), .audio(rvalue)):
             return lvalue.attachmentStream.reference.attachmentRowId == rvalue.attachmentStream.reference.attachmentRowId
-        case (.photoVideo, _), (.audio, _):
+        case let (.otherFile(lvalue), .otherFile(rvalue)):
+            return lvalue.attachmentStream.reference.attachmentRowId == rvalue.attachmentStream.reference.attachmentRowId
+        case (.photoVideo, _), (.audio, _), (.otherFile, _):
             return false
         }
     }
@@ -75,6 +80,27 @@ struct MediaGalleryCellItemAudio {
                                       comment: "VoiceOver description for a generic audio file in All Media")
 
         }
+    }
+}
+
+struct MediaGalleryCellItemOtherFile {
+    var message: TSMessage
+    var interaction: TSInteraction
+    var thread: TSThread
+    var attachmentStream: ReferencedAttachmentStream
+    var receivedAtDate: Date
+    var mediaCache: CVMediaCache
+    var metadata: MediaMetadata
+
+    var size: UInt {
+        UInt(attachmentStream.attachmentStream.unencryptedByteCount)
+    }
+
+    var localizedString: String {
+        return OWSLocalizedString(
+            "MEDIA_GALLERY_A11Y_OTHER_FILE",
+            comment: "VoiceOver description for a generic non-audiovisual file in All Media"
+        )
     }
 }
 

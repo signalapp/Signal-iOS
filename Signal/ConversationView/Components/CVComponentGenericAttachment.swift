@@ -32,6 +32,12 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         CVComponentViewGenericAttachment()
     }
 
+    var isIncomingOverride: Bool?
+
+    var isIncoming: Bool {
+        return isIncomingOverride ?? (interaction is TSIncomingMessage)
+    }
+
     public func configureForRendering(componentView componentViewParam: CVComponentView,
                                       cellMeasurement: CVCellMeasurement,
                                       componentDelegate: CVComponentDelegate) {
@@ -51,7 +57,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         } else {
             let iconImageView = componentView.iconImageView
             if let icon = UIImage(named: "generic-attachment") {
-                owsAssertDebug(icon.size == iconSize)
+                owsAssertDebug(icon.size == Self.iconSize)
                 iconImageView.image = icon
             } else {
                 owsFailDebug("Missing icon.")
@@ -83,42 +89,51 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         let topLabel = componentView.topLabel
         let bottomLabel = componentView.bottomLabel
 
-        topLabelConfig.applyForRendering(label: topLabel)
-        bottomLabelConfig.applyForRendering(label: bottomLabel)
+        Self.topLabelConfig(
+            genericAttachment: genericAttachment,
+            textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming)
+        ).applyForRendering(label: topLabel)
+        Self.bottomLabelConfig(
+            genericAttachment: genericAttachment,
+            textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
+        ).applyForRendering(label: bottomLabel)
 
         let vSubviews = [
             componentView.topLabel,
             componentView.bottomLabel
         ]
-        vStackView.configure(config: vStackConfig,
+        vStackView.configure(config: Self.vStackConfig,
                              cellMeasurement: cellMeasurement,
                              measurementKey: Self.measurementKey_vStack,
                              subviews: vSubviews)
         hSubviews.append(vStackView)
-        hStackView.configure(config: hStackConfig,
+        hStackView.configure(config: Self.hStackConfig,
                                  cellMeasurement: cellMeasurement,
                                  measurementKey: Self.measurementKey_hStack,
                                  subviews: hSubviews)
     }
 
-    private var hStackConfig: CVStackViewConfig {
+    private static var hStackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .horizontal,
                           alignment: .center,
                           spacing: hSpacing,
                           layoutMargins: UIEdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
     }
 
-    private var vStackConfig: CVStackViewConfig {
+    private static var vStackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .vertical,
                           alignment: .leading,
                           spacing: labelVSpacing,
                           layoutMargins: .zero)
     }
 
-    private var topLabelConfig: CVLabelConfig {
-        var text: String = attachment.reference.sourceFilename?.ows_stripped() ?? ""
+    private static func topLabelConfig(
+        genericAttachment: CVComponentState.GenericAttachment,
+        textColor: UIColor
+    ) -> CVLabelConfig {
+        var text: String = genericAttachment.attachment.attachment.reference.sourceFilename?.ows_stripped() ?? ""
         if text.isEmpty,
-           let fileExtension = MimeTypeUtil.fileExtensionForMimeType(attachment.attachment.mimeType) {
+           let fileExtension = MimeTypeUtil.fileExtensionForMimeType(genericAttachment.attachment.attachment.attachment.mimeType) {
             text = (fileExtension as NSString).localizedUppercase
         }
         if text.isEmpty {
@@ -127,19 +142,22 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         return CVLabelConfig.unstyledText(
             text,
             font: UIFont.dynamicTypeBody2.semibold(),
-            textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming),
+            textColor: textColor,
             lineBreakMode: .byTruncatingMiddle
         )
     }
 
-    private var bottomLabelConfig: CVLabelConfig {
+    private static func bottomLabelConfig(
+        genericAttachment: CVComponentState.GenericAttachment,
+        textColor: UIColor
+    ) -> CVLabelConfig {
 
         // We don't want to show the file size while the attachment is downloading.
         // To avoid layout jitter when the download completes, we reserve space in
         // the layout using a whitespace string.
         var text = " "
 
-        if let attachmentPointer = self.genericAttachment.attachmentPointer {
+        if let attachmentPointer = genericAttachment.attachmentPointer {
             var textComponents = [String]()
 
             if let byteCount = attachmentPointer.info.unencryptedByteCount, byteCount > 0 {
@@ -156,10 +174,10 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             if !textComponents.isEmpty {
                 text = textComponents.joined(separator: " • ")
             }
-        } else if let attachmentStream = attachmentStream {
+        } else if let attachmentStream = genericAttachment.attachmentStream {
             let fileSize = attachmentStream.unencryptedByteCount
             text = OWSFormat.localizedFileSizeString(from: Int64(fileSize))
-        } else if let _ = self.genericAttachment.attachmentBackupThumbnail {
+        } else if let _ = genericAttachment.attachmentBackupThumbnail {
             // TODO[Backups]: Handle similar to attachment pointers above
             owsFailDebug("Not implemented yet")
         } else {
@@ -169,7 +187,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         return CVLabelConfig.unstyledText(
             text,
             font: UIFont.dynamicTypeCaption1,
-            textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming),
+            textColor: textColor,
             lineBreakMode: .byTruncatingMiddle
         )
     }
@@ -218,12 +236,15 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         }
 
         return CVAttachmentProgressView(direction: direction,
-                                        diameter: progressSize,
+                                        diameter: Self.progressSize,
                                         isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
                                         mediaCache: mediaCache)
     }
 
-    private var hasProgressView: Bool {
+    private static func hasProgressView(
+        genericAttachment: CVComponentState.GenericAttachment,
+        interaction: TSInteraction
+    ) -> Bool {
         switch CVAttachmentProgressView.progressType(
             forAttachment: genericAttachment.attachment,
             interaction: interaction
@@ -241,17 +262,35 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         }
     }
 
-    private let hSpacing: CGFloat = 8
-    private let labelVSpacing: CGFloat = 1
-    private let iconSize = CGSize(width: 36, height: CGFloat(AvatarBuilder.standardAvatarSizePoints))
-    private let progressSize: CGFloat = 36
+    private static let hSpacing: CGFloat = 8
+    private static let labelVSpacing: CGFloat = 1
+    private static let iconSize = CGSize(width: 36, height: CGFloat(AvatarBuilder.standardAvatarSizePoints))
+    private static let progressSize: CGFloat = 36
 
     private static let measurementKey_hStack = "CVComponentGenericAttachment.measurementKey_hStack"
     private static let measurementKey_vStack = "CVComponentGenericAttachment.measurementKey_vStack"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
+        return Self.measure(
+            maxWidth: maxWidth,
+            measurementBuilder: measurementBuilder,
+            genericAttachment: genericAttachment,
+            interaction: interaction
+        )
+    }
+
+    static func measure(
+        maxWidth: CGFloat,
+        measurementBuilder: CVCellMeasurement.Builder,
+        genericAttachment: CVComponentState.GenericAttachment,
+        interaction: TSInteraction
+    ) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
+        let hasProgressView = Self.hasProgressView(
+            genericAttachment: genericAttachment,
+            interaction: interaction
+        )
         let leftViewSize: CGSize = (hasProgressView
                                         ? .square(progressSize)
                                         : iconSize)
@@ -260,7 +299,15 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                                                 hSpacing +
                                                 hStackConfig.layoutMargins.totalWidth +
                                                 vStackConfig.layoutMargins.totalWidth))
+        let topLabelConfig = Self.topLabelConfig(
+            genericAttachment: genericAttachment,
+            textColor: .black // Irrelevant for sizing
+        )
         let topLabelSize = CVText.measureLabel(config: topLabelConfig, maxWidth: maxLabelWidth)
+        let bottomLabelConfig = Self.bottomLabelConfig(
+            genericAttachment: genericAttachment,
+            textColor: .black // Irrelevant for sizing
+        )
         let bottomLabelSize = CVText.measureLabel(config: bottomLabelConfig, maxWidth: maxLabelWidth)
 
         var vSubviewInfos = [ManualStackSubviewInfo]()

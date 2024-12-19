@@ -10,6 +10,7 @@ import Foundation
 public enum AllMediaCategory: Int, CaseIterable {
     case photoVideo = 0
     case audio = 1
+    case otherFiles = 2
 }
 
 /// The filter we apply to the actual attachment files.
@@ -22,6 +23,8 @@ public enum AllMediaFilter: CaseIterable {
     // They are a superset of all the subfilters below.
     case allPhotoVideoCategory
     case allAudioCategory
+    // Files that don't fall into photo/video/audio category.
+    case otherFiles
 
     // These cases are sub-filters for the photoVideo category.
     case gifs
@@ -38,6 +41,8 @@ public enum AllMediaFilter: CaseIterable {
             return .allPhotoVideoCategory
         case .audio:
             return .allAudioCategory
+        case .otherFiles:
+            return .otherFiles
         }
     }
 }

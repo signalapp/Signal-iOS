@@ -228,7 +228,8 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
                     // * we DONT use expensive B trees for ordering
                     let allowedQueryPlans: [String] = [
                         "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_single_content_type_index (threadRowId=? AND ownerType=? AND contentType=?",
-                        "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_visualMedia_content_type_index (threadRowId=? AND ownerType=? AND isVisualMediaContentType=?"
+                        "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_visualMedia_content_type_index (threadRowId=? AND ownerType=? AND isVisualMediaContentType=?",
+                        "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_fileOrInvalid_content_type_index (threadRowId=? AND ownerType=? AND isInvalidOrFileContentType=?"
                     ]
                     XCTAssert(queryPlan.allSatisfy { queryPlan in
                         for allowedQueryPlan in allowedQueryPlans {

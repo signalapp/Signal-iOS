@@ -71,6 +71,8 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
                 }
             case .audio:
                 return AudioCell.reuseIdentifier
+            case .otherFiles:
+                return MediaGalleryFileCell.reuseIdentifier
             }
         }
     }
@@ -229,6 +231,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
         collectionView.register(MediaTileCollectionViewCell.self, forCellWithReuseIdentifier: MediaTileCollectionViewCell.reuseIdentifier)
         collectionView.register(WidePhotoCell.self, forCellWithReuseIdentifier: WidePhotoCell.reuseIdentifier)
         collectionView.register(AudioCell.self, forCellWithReuseIdentifier: AudioCell.reuseIdentifier)
+        collectionView.register(MediaGalleryFileCell.self, forCellWithReuseIdentifier: MediaGalleryFileCell.reuseIdentifier)
         collectionView.register(
             MediaGalleryDateHeader.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
@@ -800,6 +803,16 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
                 mediaCache: mediaCache,
                 metadata: galleryItem.mediaMetadata!
             ))
+        case .otherFiles:
+            return .otherFile(MediaGalleryCellItemOtherFile(
+                message: galleryItem.message,
+                interaction: galleryItem.message,
+                thread: thread,
+                attachmentStream: galleryItem.attachmentStream,
+                receivedAtDate: galleryItem.receivedAtDate,
+                mediaCache: mediaCache,
+                metadata: galleryItem.mediaMetadata!
+            ))
         }
     }
 
@@ -853,6 +866,10 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
                     return WideMediaTileViewLayout(contentCardVerticalInset: WidePhotoCell.contentCardVerticalInset)
                 case .audio:
                     return WideMediaTileViewLayout(contentCardVerticalInset: AudioCell.contentCardVerticalInset)
+                case .otherFiles:
+                    return WideMediaTileViewLayout(
+                        contentCardVerticalInset: MediaGalleryFileCell.contentCardVerticalInset
+                    )
                 }
             case .grid:
                 return SquareMediaTileViewLayout()
@@ -905,6 +922,9 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
         case .audio:
             horizontalSectionInset = 0
             cellHeight = AudioCell.defaultCellHeight
+        case .otherFiles:
+            horizontalSectionInset = 0
+            cellHeight = MediaGalleryFileCell.defaultCellHeight
         }
 
         let newItemSize = CGSize(
@@ -991,6 +1011,14 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
                 if let galleryItem = galleryItem(at: indexPath, loadAsync: true) {
                     let cellItem = cellItem(for: galleryItem)
                     let cellHeight = AudioCell.cellHeight(for: cellItem, maxWidth: defaultCellSize.width)
+                    return CGSize(width: defaultCellSize.width, height: cellHeight)
+                }
+                return defaultCellSize
+            case .otherFiles:
+                let defaultCellSize = currentCollectionViewLayout.itemSize
+                if let galleryItem = galleryItem(at: indexPath, loadAsync: true) {
+                    let cellItem = cellItem(for: galleryItem)
+                    let cellHeight = MediaGalleryFileCell.cellHeight(for: cellItem, maxWidth: defaultCellSize.width)
                     return CGSize(width: defaultCellSize.width, height: cellHeight)
                 }
                 return defaultCellSize
@@ -1428,6 +1456,15 @@ private class MediaGalleryEmptyContentView: UICollectionReusableView {
                     "MEDIA_GALLERY_NO_AUDIO_SUBTITLE",
                     comment: "Displayed in All Media (Audio) screen when there's no audio files - second line."
                 )
+            case .otherFiles:
+                title = NSLocalizedString(
+                    "MEDIA_GALLERY_NO_FILES_TITLE",
+                    comment: "Displayed in All Media (Audio) screen when there's no non-audiovisual files - first line."
+                )
+                subtitle = NSLocalizedString(
+                    "MEDIA_GALLERY_NO_FILES_SUBTITLE",
+                    comment: "Displayed in All Media (Audio) screen when there's no non-audiovisual files - second line."
+                )
             }
         }
 
@@ -1621,6 +1658,9 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
                     }
                 )
             ]
+
+        case .otherFiles:
+            return []
         }
 
         return menuItems
