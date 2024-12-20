@@ -43,10 +43,10 @@ class CallControls: UIView {
         accessibilityLabel: viewModel.videoButtonAccessibilityLabel) { [viewModel] _ in
             viewModel.didPressVideo()
         }
-    // TODO: Accessibility label
     private lazy var ringButton = createButton(
         iconName: "bell-ring-fill-28",
-        selectedIconName: "bell-slash-fill") { [viewModel] _ in
+        selectedIconName: "bell-slash-fill",
+        accessibilityLabel: viewModel.ringButtonAccessibilityLabel) { [viewModel] _ in
             viewModel.didPressRing()
         }
     private lazy var flipCameraButton: CallButton = {
@@ -226,6 +226,7 @@ class CallControls: UIView {
         audioSourceButton.accessibilityLabel = viewModel.audioSourceAccessibilityLabel
         muteButton.accessibilityLabel = viewModel.muteButtonAccessibilityLabel
         videoButton.accessibilityLabel = viewModel.videoButtonAccessibilityLabel
+        ringButton.accessibilityLabel = viewModel.ringButtonAccessibilityLabel
         flipCameraButton.accessibilityLabel = viewModel.flipCameraButtonAccessibilityLabel
         moreButton.accessibilityLabel = viewModel.moreButtonAccessibilityLabel
 
@@ -790,6 +791,31 @@ extension CallControlsViewModel {
                 comment: "Accessibility label for turning off the camera"
             )
         }
+    }
+
+    public var ringButtonAccessibilityLabel: String? {
+        switch call.mode {
+        case .individual:
+            owsFailDebug("Can't control ringing for an individual call.")
+        case .groupThread(let call):
+            switch call.groupCallRingState {
+            case .shouldRing:
+                return OWSLocalizedString(
+                    "CALL_VIEW_TURN_OFF_RINGING",
+                    comment: "Accessibility label for turning off call ringing"
+                )
+            case .doNotRing:
+                return OWSLocalizedString(
+                    "CALL_VIEW_TURN_ON_RINGING",
+                    comment: "Accessibility label for turning on call ringing"
+                )
+            default:
+                owsFailBeta("Ring button should not have been available to press!")
+            }
+        case .callLink:
+            owsFailDebug("Can't ring Call Link call.")
+        }
+        return nil
     }
 
     public var flipCameraButtonAccessibilityLabel: String {
