@@ -411,8 +411,10 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             !DateUtil.dateIsOlderThanToday(date)
         {
             let (formattedDate, nextRefreshTime) = DateUtil.formatDynamicDateShort(date)
+            let accessibilityLabel = DateUtil.formatMessageTimestampForCVC(date.ows_millisecondsSince1970, shouldUseLongFormat: true)
 
             self.dateTimeLabel.text = formattedDate
+            self.dateTimeLabel.accessibilityLabel = accessibilityLabel
             self.nextUpdateTimestamp = nextRefreshTime
         }
 
