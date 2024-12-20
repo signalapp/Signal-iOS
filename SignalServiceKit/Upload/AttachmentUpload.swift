@@ -51,7 +51,7 @@ public struct AttachmentUpload {
         dateProvider: @escaping DateProvider,
         progress: OWSProgressSource?
     ) async throws -> Upload.Result<Metadata> {
-        attempt.logger.info("Begin upload.")
+        attempt.logger.info("Begin upload. (CDN\(attempt.cdnNumber))")
         try await performResumableUpload(
             attempt: attempt,
             progress: progress
@@ -145,7 +145,7 @@ public struct AttachmentUpload {
                 attempt: attempt,
                 progress: progress
             )
-            attempt.logger.info("Attachment uploaded successfully.")
+            attempt.logger.info("Attachment uploaded successfully. (\(internalProgress.completedUnitCount) bytes)")
         } catch {
             if let statusCode = error.httpStatusCode {
                 attempt.logger.warn("Encountered error during upload. (code=\(statusCode)")
@@ -154,6 +154,9 @@ public struct AttachmentUpload {
             }
 
             let didUploadMakeProgress = internalProgress.completedUnitCount > bytesAlreadyUploaded
+            if didUploadMakeProgress {
+                attempt.logger.warn("Upload made progress: \(bytesAlreadyUploaded) -> \(internalProgress.completedUnitCount)")
+            }
             var failureMode: Upload.FailureMode = .noMoreRetries
             if case Upload.Error.uploadFailure(let retryMode) = error {
                 // if a failure mode was passed back
@@ -183,8 +186,9 @@ public struct AttachmentUpload {
             }
 
             attempt.logger.info("Resuming upload.")
-            // Reset the attempt count to 0 as long as progress was made.
-            let nextAttemptCount = didUploadMakeProgress ? 0 : count + 1
+            // Reset the attempt count to 1 as long as progress was made. Make it 1, since 0
+            // will behave like a fresh upload and skip fetching the remote upload progress.
+            let nextAttemptCount = didUploadMakeProgress ? 1 : count + 1
             try await performResumableUpload(attempt: attempt, count: nextAttemptCount, progress: progress)
         }
     }

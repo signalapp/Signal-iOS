@@ -57,12 +57,16 @@ public enum SignalServiceType {
 
 public extension OWSSignalServiceProtocol {
 
-    private func buildUrlSession(for signalServiceType: SignalServiceType, maxResponseSize: Int? = nil) -> OWSURLSessionProtocol {
+    private func buildUrlSession(
+        for signalServiceType: SignalServiceType,
+        configuration: URLSessionConfiguration? = nil,
+        maxResponseSize: Int? = nil
+    ) -> OWSURLSessionProtocol {
         let signalServiceInfo = signalServiceType.signalServiceInfo()
         return buildUrlSession(
             for: signalServiceInfo,
             endpoint: buildUrlEndpoint(for: signalServiceInfo),
-            configuration: nil,
+            configuration: configuration,
             maxResponseSize: maxResponseSize
         )
     }
@@ -75,9 +79,17 @@ public extension OWSSignalServiceProtocol {
         buildUrlSession(for: .storageService)
     }
 
-    func urlSessionForCdn(cdnNumber: UInt32, maxResponseSize: UInt?) -> OWSURLSessionProtocol {
-        buildUrlSession(
+    func urlSessionForCdn(
+        cdnNumber: UInt32,
+        maxResponseSize: UInt?
+    ) -> OWSURLSessionProtocol {
+
+        let urlSessionConfiguration = OWSURLSession.defaultConfigurationWithoutCaching
+        urlSessionConfiguration.timeoutIntervalForRequest = 600
+
+        return buildUrlSession(
             for: SignalServiceType.type(forCdnNumber: cdnNumber),
+            configuration: urlSessionConfiguration,
             maxResponseSize: maxResponseSize.map(Int.init(clamping:))
         )
     }
