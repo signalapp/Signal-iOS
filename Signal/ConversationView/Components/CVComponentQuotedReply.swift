@@ -115,19 +115,14 @@ extension CVComponentQuotedReply: CVAccessibilityComponent {
             comment: "Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}."
         )
 
-        let quotedReplyModel = quotedReply.quotedReplyModel
-        let originalAuthor: String
-        if quotedReplyModel.isOriginalMessageAuthorLocalUser {
-            originalAuthor = CommonStrings.you
+        if quotedReply.quotedReplyModel.isOriginalMessageAuthorLocalUser {
+            return String(format: format, CommonStrings.you)
         } else {
-            originalAuthor = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                return SSKEnvironment.shared.contactManagerRef.displayName(
-                    for: quotedReplyModel.originalMessageAuthorAddress,
-                    tx: tx
-                ).resolvedValue()
-            }
+            return String(
+                format: format,
+                self.quotedReply.viewState.quotedAuthorName
+            )
         }
-        return String(format: format, originalAuthor)
     }
 }
 

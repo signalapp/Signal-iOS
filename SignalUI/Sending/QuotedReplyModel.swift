@@ -317,10 +317,16 @@ public class QuotedReplyModel {
         func buildQuotedReplyModel(
             originalContent: OriginalContent
         ) -> QuotedReplyModel {
+            let isOriginalAuthorLocalUser = DependenciesBridge.shared.tsAccountManager
+                .localIdentifiers(tx: transaction.asV2Read)?
+                .aciAddress
+                .isEqualToAddress(quotedMessage.authorAddress)
+                ?? false
+
             return QuotedReplyModel(
                 originalMessageTimestamp: quotedMessage.timestampValue?.uint64Value,
                 originalMessageAuthorAddress: quotedMessage.authorAddress,
-                isOriginalMessageAuthorLocalUser: message.isOutgoing,
+                isOriginalMessageAuthorLocalUser: isOriginalAuthorLocalUser,
                 storyReactionEmoji: nil,
                 originalContent: originalContent,
                 sourceOfOriginal: quotedMessage.bodySource
