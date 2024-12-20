@@ -332,8 +332,6 @@ final public class Theme: NSObject {
         UIColor.Signal.tertiaryLabel.resolvedColor(with: currentThemeTraitCollection)
     }
 
-    public class var placeholderColor: UIColor { ternaryTextColor }
-
     public class var snippetColor: UIColor {
         isDarkThemeEnabled ? darkThemeSnippetColor : lightThemeSnippetColor
     }

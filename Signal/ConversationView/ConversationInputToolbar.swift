@@ -384,7 +384,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         // Wrap vertical stack into a view with rounded corners.
         let vStackRoundingView = UIView.container()
-        vStackRoundingView.backgroundColor = Theme.isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.16) : UIColor(white: 0, alpha: 0.1)
+        vStackRoundingView.backgroundColor = UIColor.Signal.tertiaryFill
         vStackRoundingView.layer.cornerRadius = 18
         vStackRoundingView.clipsToBounds = true
         vStackRoundingView.addSubview(messageContentVStack)

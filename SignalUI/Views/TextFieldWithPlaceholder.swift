@@ -116,8 +116,8 @@ public class TextFieldWithPlaceholder: UIView {
 
     @objc
     private func applyTheme() {
-        placeholderLabel.textColor = Theme.placeholderColor
-        textfield.textColor = Theme.primaryTextColor
+        placeholderLabel.textColor = UIColor.Signal.secondaryLabel
+        textfield.textColor = UIColor.Signal.label
     }
 }
 

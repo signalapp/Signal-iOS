@@ -51,13 +51,13 @@ class ConversationInputTextView: BodyRangesTextView {
             "INPUT_TOOLBAR_MESSAGE_PLACEHOLDER",
             comment: "Placeholder text displayed in empty input box in chat screen."
         )
-        placeholderView.textColor = Theme.placeholderColor
+        placeholderView.textColor = UIColor.Signal.secondaryLabel
         placeholderView.isUserInteractionEnabled = false
         addSubview(placeholderView)
 
         // We need to do these steps _after_ placeholderView is configured.
         font = .dynamicTypeBody
-        textColor = Theme.primaryTextColor
+        textColor = UIColor.Signal.label
         textAlignment = .natural
         textContainer.lineFragmentPadding = 0
         contentInset = .zero
