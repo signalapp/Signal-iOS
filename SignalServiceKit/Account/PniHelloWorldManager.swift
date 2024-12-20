@@ -6,6 +6,11 @@
 import LibSignalClient
 
 public protocol PniHelloWorldManager {
+    /// Records that performing a "PNI Hello World" operation is unnecessary,
+    /// for example because we know none of our devices could possibly have
+    /// incorrect PNI identity key material.
+    func markHelloWorldAsUnnecessary(tx: DBWriteTransaction)
+
     /// Perform a "PNI Hello World" operation, if necessary. PNI Hello World
     /// refers to the distribution of PNI identity key material from a primary
     /// device that generated it to linked devices.
@@ -60,6 +65,10 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         self.recipientDatabaseTable = recipientDatabaseTable
         self.schedulers = schedulers
         self.tsAccountManager = tsAccountManager
+    }
+
+    func markHelloWorldAsUnnecessary(tx: any DBWriteTransaction) {
+        keyValueStore.setBool(true, key: StoreConstants.hasSaidHelloWorldKey, transaction: tx)
     }
 
     func sayHelloWorldIfNecessary(tx syncTx: DBWriteTransaction) {
@@ -200,3 +209,15 @@ class _PniHelloWorldManagerImpl_NetworkManager_Wrapper: _PniHelloWorldManagerImp
         return networkManager.makePromise(request: helloWorldRequest).asVoid()
     }
 }
+
+// MARK: -
+
+#if TESTABLE_BUILD
+
+struct PniHelloWorldManagerMock: PniHelloWorldManager {
+    func markHelloWorldAsUnnecessary(tx: any DBWriteTransaction) {}
+
+    func sayHelloWorldIfNecessary(tx: any DBWriteTransaction) {}
+}
+
+#endif

@@ -1030,11 +1030,20 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         switch mode {
         case .registering:
             db.write { tx in
-                // For new users, read receipts are on by default.
+                /// For new registrations, we want to force-set some state.
+
+                /// Read receipts should be on by default.
                 deps.receiptManager.setAreReadReceiptsEnabled(true, tx)
                 deps.receiptManager.setAreStoryViewedReceiptsEnabled(true, tx)
-                // New users also have the onboarding banner cards enabled
+
+                /// Enable the onboarding banner cards.
                 deps.experienceManager.enableAllGetStartedCards(tx)
+
+                /// Disable PNI Hello World operations – these aren't necessary
+                /// since we are the only device and know that our
+                /// just-generated our PNI identity key is correct.
+                deps.pniHelloWorldManager.markHelloWorldAsUnnecessary(tx: tx)
+
                 finalizeRegistration(tx)
             }
             return setupContactsAndFinish()
