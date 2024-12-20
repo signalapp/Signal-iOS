@@ -163,6 +163,8 @@ extension BlockingManager {
                 return
             }
 
+            Logger.info("Added blocked address: \(address)")
+
             if blockMode.locallyInitiated {
                 SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [address])
             }
@@ -209,6 +211,8 @@ extension BlockingManager {
             guard state.removeBlockedRecipientId(recipient.id!) else {
                 return
             }
+
+            Logger.info("Removed blocked address: \(address)")
 
             if wasLocallyInitiated {
                 SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: [address])
