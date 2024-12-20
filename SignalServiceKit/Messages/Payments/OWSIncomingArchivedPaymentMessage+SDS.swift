@@ -106,7 +106,7 @@ class OWSIncomingArchivedPaymentMessageSerializer: SDSSerializer {
         let recipientAddressStates: Data? = nil
         let sender: Data? = nil
         let serverTimestamp: UInt64? = archiveOptionalNSNumber(model.serverTimestamp, conversion: { $0.uint64Value })
-        let deprecated_sourceDeviceId: UInt32? = model.deprecated_sourceDeviceId
+        let deprecated_sourceDeviceId: UInt32? = archiveOptionalNSNumber(model.deprecated_sourceDeviceId, conversion: { $0.uint32Value })
         let storedMessageState: TSOutgoingMessageState? = nil
         let storedShouldStartExpireTimer: Bool? = model.storedShouldStartExpireTimer
         let unregisteredAddress: Data? = nil

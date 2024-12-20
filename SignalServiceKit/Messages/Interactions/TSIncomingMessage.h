@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                authorPhoneNumber:(nullable NSString *)authorPhoneNumber
                       authorUUID:(nullable NSString *)authorUUID
-       deprecated_sourceDeviceId:(unsigned int)deprecated_sourceDeviceId
+       deprecated_sourceDeviceId:(nullable NSNumber *)deprecated_sourceDeviceId
                             read:(BOOL)read
          serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                       serverGuid:(nullable NSString *)serverGuid
@@ -124,7 +124,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 /// In other words, DONT USE IT.
 /// Kept only so sds codegen outputs code with backwards compatibility with our sql
 /// table without needing to migrate or reindex TSInteraction.
-@property (nonatomic, readonly) UInt32 deprecated_sourceDeviceId;
+@property (nonatomic, readonly, nullable) NSNumber *deprecated_sourceDeviceId;
 
 @property (nonatomic, readonly) SignalServiceAddress *authorAddress;
 @property (nonatomic, readonly, nullable) NSString *authorPhoneNumber;

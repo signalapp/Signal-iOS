@@ -2,6 +2,7 @@
 	"nsnumber_types": {
 		"TSThread.archivedAsOfMessageSortId": "UInt64",
 		"TSIncomingMessage.serverTimestamp": "UInt64",
+		"TSIncomingMessage.deprecated_sourceDeviceId": "UInt32",
 		"TSOutgoingMessageRecipientState.deliveryTimestamp": "UInt64",
 		"TSOutgoingMessageRecipientState.readTimestamp": "UInt64",
 		"OWSBackupFragment.uncompressedDataLength": "UInt64",

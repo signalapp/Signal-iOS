@@ -1181,8 +1181,8 @@ public struct %s: SDSRecord {
         %sSerializer.table
     }
 
-    public static var databaseTableName: String { 
-        %sSerializer.table.tableName 
+    public static var databaseTableName: String {
+        %sSerializer.table.tableName
     }
 
     public var id: Int64?
@@ -2090,7 +2090,7 @@ public extension %(class_name)s {
             swift_body += """
         return anyFetch(uniqueId: uniqueId, transaction: transaction, ignoreCache: false)
     }
-    
+
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction,
@@ -2545,7 +2545,7 @@ class %sSerializer: SDSSerializer {
 @objc
 public extension %(model_name)s {
     // We're not using this method at the moment,
-    // but we might use it for validation of 
+    // but we might use it for validation of
     // other deep copy methods.
     func deepCopyUsingRecord() throws -> %(model_name)s {
         guard let record = try asRecord() as? %(record_name)s else {

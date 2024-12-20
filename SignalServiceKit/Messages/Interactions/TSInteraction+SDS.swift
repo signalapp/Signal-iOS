@@ -633,7 +633,7 @@ extension TSInteraction {
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let authorPhoneNumber: String? = record.authorPhoneNumber
             let authorUUID: String? = record.authorUUID
-            let deprecated_sourceDeviceId: UInt32 = try SDSDeserialization.required(record.deprecated_sourceDeviceId, name: "deprecated_sourceDeviceId")
+            let deprecated_sourceDeviceId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.deprecated_sourceDeviceId, name: "deprecated_sourceDeviceId", conversion: { NSNumber(value: $0) })
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let serverDeliveryTimestamp: UInt64 = try SDSDeserialization.required(record.serverDeliveryTimestamp, name: "serverDeliveryTimestamp")
             let serverGuid: String? = record.serverGuid
@@ -722,7 +722,7 @@ extension TSInteraction {
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let authorPhoneNumber: String? = record.authorPhoneNumber
             let authorUUID: String? = record.authorUUID
-            let deprecated_sourceDeviceId: UInt32 = try SDSDeserialization.required(record.deprecated_sourceDeviceId, name: "deprecated_sourceDeviceId")
+            let deprecated_sourceDeviceId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.deprecated_sourceDeviceId, name: "deprecated_sourceDeviceId", conversion: { NSNumber(value: $0) })
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let serverDeliveryTimestamp: UInt64 = try SDSDeserialization.required(record.serverDeliveryTimestamp, name: "serverDeliveryTimestamp")
             let serverGuid: String? = record.serverGuid
@@ -1666,7 +1666,7 @@ extension TSInteraction {
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let authorPhoneNumber: String? = record.authorPhoneNumber
             let authorUUID: String? = record.authorUUID
-            let deprecated_sourceDeviceId: UInt32 = try SDSDeserialization.required(record.deprecated_sourceDeviceId, name: "deprecated_sourceDeviceId")
+            let deprecated_sourceDeviceId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.deprecated_sourceDeviceId, name: "deprecated_sourceDeviceId", conversion: { NSNumber(value: $0) })
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let serverDeliveryTimestamp: UInt64 = try SDSDeserialization.required(record.serverDeliveryTimestamp, name: "serverDeliveryTimestamp")
             let serverGuid: String? = record.serverGuid
@@ -4517,7 +4517,7 @@ extension TSInteraction: DeepCopyable {
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let authorPhoneNumber: String? = modelToCopy.authorPhoneNumber
             let authorUUID: String? = modelToCopy.authorUUID
-            let deprecated_sourceDeviceId: UInt32 = modelToCopy.deprecated_sourceDeviceId
+            let deprecated_sourceDeviceId: NSNumber? = modelToCopy.deprecated_sourceDeviceId
             let read: Bool = modelToCopy.wasRead
             let serverDeliveryTimestamp: UInt64 = modelToCopy.serverDeliveryTimestamp
             let serverGuid: String? = modelToCopy.serverGuid
@@ -4697,7 +4697,7 @@ extension TSInteraction: DeepCopyable {
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let authorPhoneNumber: String? = modelToCopy.authorPhoneNumber
             let authorUUID: String? = modelToCopy.authorUUID
-            let deprecated_sourceDeviceId: UInt32 = modelToCopy.deprecated_sourceDeviceId
+            let deprecated_sourceDeviceId: NSNumber? = modelToCopy.deprecated_sourceDeviceId
             let read: Bool = modelToCopy.wasRead
             let serverDeliveryTimestamp: UInt64 = modelToCopy.serverDeliveryTimestamp
             let serverGuid: String? = modelToCopy.serverGuid
@@ -4863,7 +4863,7 @@ extension TSInteraction: DeepCopyable {
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let authorPhoneNumber: String? = modelToCopy.authorPhoneNumber
             let authorUUID: String? = modelToCopy.authorUUID
-            let deprecated_sourceDeviceId: UInt32 = modelToCopy.deprecated_sourceDeviceId
+            let deprecated_sourceDeviceId: NSNumber? = modelToCopy.deprecated_sourceDeviceId
             let read: Bool = modelToCopy.wasRead
             let serverDeliveryTimestamp: UInt64 = modelToCopy.serverDeliveryTimestamp
             let serverGuid: String? = modelToCopy.serverGuid
