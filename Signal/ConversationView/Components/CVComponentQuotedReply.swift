@@ -108,6 +108,29 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
     }
 }
 
+extension CVComponentQuotedReply: CVAccessibilityComponent {
+    public var accessibilityDescription: String {
+        let format = OWSLocalizedString(
+            "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT",
+            comment: "Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}."
+        )
+
+        let quotedReplyModel = quotedReply.quotedReplyModel
+        let originalAuthor: String
+        if quotedReplyModel.isOriginalMessageAuthorLocalUser {
+            originalAuthor = CommonStrings.you
+        } else {
+            originalAuthor = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                return SSKEnvironment.shared.contactManagerRef.displayName(
+                    for: quotedReplyModel.originalMessageAuthorAddress,
+                    tx: tx
+                ).resolvedValue()
+            }
+        }
+        return String(format: format, originalAuthor)
+    }
+}
+
 // MARK: -
 
 private class QuotedMessageViewAdapter: QuotedMessageViewDelegate {

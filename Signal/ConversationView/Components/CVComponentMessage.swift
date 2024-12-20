@@ -1240,6 +1240,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         // Order matters. For example, body media should be before body text.
         let accessibilityComponentKeys: [CVComponentKey] = [
+            .quotedReply,
             .bodyMedia,
             .bodyText,
             .sticker,
