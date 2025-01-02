@@ -33,11 +33,9 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
         SSKEnvironment.shared.setContactManagerForUnitTests(OWSContactsManager(
             appReadiness: AppReadinessMock(),
-            swiftValues: OWSContactsManagerSwiftValues(
-                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
-                recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
-                nicknameManager: DependenciesBridge.shared.nicknameManager
-            )
+            nicknameManager: DependenciesBridge.shared.nicknameManager,
+            recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
+            usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
         ))
 
         // ensure local client has necessary "registered" state

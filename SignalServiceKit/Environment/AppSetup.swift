@@ -194,8 +194,7 @@ public class AppSetup {
         )
         let profileManager = testDependencies.profileManager ?? OWSProfileManager(
             appReadiness: appReadiness,
-            databaseStorage: databaseStorage,
-            swiftValues: OWSProfileManagerSwiftValues()
+            databaseStorage: databaseStorage
         )
         let reachabilityManager = testDependencies.reachabilityManager ?? SSKReachabilityManagerImpl(
             appReadiness: appReadiness
@@ -245,11 +244,9 @@ public class AppSetup {
         )
         let contactManager = testDependencies.contactManager ?? OWSContactsManager(
             appReadiness: appReadiness,
-            swiftValues: OWSContactsManagerSwiftValues(
-                usernameLookupManager: usernameLookupManager,
-                recipientDatabaseTable: recipientDatabaseTable,
-                nicknameManager: nicknameManager
-            )
+            nicknameManager: nicknameManager,
+            recipientDatabaseTable: recipientDatabaseTable,
+            usernameLookupManager: usernameLookupManager
         )
 
         let authCredentialStore = AuthCredentialStore()

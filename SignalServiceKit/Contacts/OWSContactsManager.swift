@@ -50,11 +50,24 @@ public enum ContactAuthorizationForSharing {
     case authorized
 }
 
-@objc
 public class OWSContactsManager: NSObject, ContactsManagerProtocol {
-    let swiftValues: OWSContactsManagerSwiftValues
-    let systemContactsFetcher: SystemContactsFetcher
-    let keyValueStore: KeyValueStore
+    private let avatarBlurringCache = LowTrustCache()
+    private let cnContactCache = LRUCache<String, CNContact>(maxSize: 50, shouldEvacuateInBackground: true)
+    private let isInWhitelistedGroupWithLocalUserCache = AtomicDictionary<ServiceId, Bool>([:], lock: .init())
+    private let hasWhitelistedGroupMemberCache = AtomicDictionary<Data, Bool>([:], lock: .init())
+    private let systemContactsCache = SystemContactsCache()
+    private let unknownThreadWarningCache = LowTrustCache()
+
+    private let intersectionQueue = DispatchQueue(label: "org.signal.contacts.intersection")
+
+    private let keyValueStore = KeyValueStore(collection: "OWSContactsManagerCollection")
+    private let skipContactAvatarBlurByServiceIdStore = KeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
+    private let skipGroupAvatarBlurByGroupIdStore = KeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
+
+    private let nicknameManager: any NicknameManager
+    private let recipientDatabaseTable: any RecipientDatabaseTable
+    private let systemContactsFetcher: SystemContactsFetcher
+    private let usernameLookupManager: UsernameLookupManager
 
     public var isEditingAllowed: Bool {
         // We're only allowed to edit contacts on devices that can sync them. Otherwise the UX doesn't make sense.
@@ -121,13 +134,18 @@ public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     /// Otherwise, it's value is undefined.
     public private(set) var hasLoadedSystemContacts: Bool = false
 
-    public init(appReadiness: AppReadiness, swiftValues: OWSContactsManagerSwiftValues) {
-        keyValueStore = KeyValueStore(collection: "OWSContactsManagerCollection")
-        systemContactsFetcher = SystemContactsFetcher(appReadiness: appReadiness)
-        self.swiftValues = swiftValues
+    public init(
+        appReadiness: AppReadiness,
+        nicknameManager: any NicknameManager,
+        recipientDatabaseTable: any RecipientDatabaseTable,
+        usernameLookupManager: any UsernameLookupManager
+    ) {
+        self.nicknameManager = nicknameManager
+        self.recipientDatabaseTable = recipientDatabaseTable
+        self.systemContactsFetcher = SystemContactsFetcher(appReadiness: appReadiness)
+        self.usernameLookupManager = usernameLookupManager
         super.init()
-        systemContactsFetcher.delegate = self
-
+        self.systemContactsFetcher.delegate = self
         SwiftSingletons.register(self)
     }
 
@@ -208,35 +226,6 @@ extension OWSContactsManager: SystemContactsFetcherDelegate {
 
     public func shortDisplayNameString(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
         displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
-    }
-}
-
-// MARK: - OWSContactsMangerSwiftValues
-
-public class OWSContactsManagerSwiftValues {
-    fileprivate let avatarBlurringCache = LowTrustCache()
-    fileprivate let cnContactCache = LRUCache<String, CNContact>(maxSize: 50, shouldEvacuateInBackground: true)
-    fileprivate let isInWhitelistedGroupWithLocalUserCache = AtomicDictionary<ServiceId, Bool>([:], lock: .init())
-    fileprivate let hasWhitelistedGroupMemberCache = AtomicDictionary<Data, Bool>([:], lock: .init())
-    fileprivate let systemContactsCache = SystemContactsCache()
-    fileprivate let unknownThreadWarningCache = LowTrustCache()
-
-    fileprivate let intersectionQueue = DispatchQueue(label: "org.signal.contacts.intersection")
-    fileprivate let skipContactAvatarBlurByServiceIdStore = KeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
-    fileprivate let skipGroupAvatarBlurByGroupIdStore = KeyValueStore(collection: "OWSContactsManager.skipGroupAvatarBlurByGroupIdStore")
-
-    fileprivate let usernameLookupManager: UsernameLookupManager
-    fileprivate let recipientDatabaseTable: any RecipientDatabaseTable
-    fileprivate let nicknameManager: any NicknameManager
-
-    public init(
-        usernameLookupManager: UsernameLookupManager,
-        recipientDatabaseTable: any RecipientDatabaseTable,
-        nicknameManager: any NicknameManager
-    ) {
-        self.usernameLookupManager = usernameLookupManager
-        self.recipientDatabaseTable = recipientDatabaseTable
-        self.nicknameManager = nicknameManager
     }
 }
 
@@ -326,9 +315,9 @@ extension OWSContactsManager: ContactManager {
         }
         // We can skip avatar blurring if the user has explicitly waived the blurring.
         if
-            lowTrustCache === swiftValues.avatarBlurringCache,
+            lowTrustCache === avatarBlurringCache,
             let storeKey = address.serviceId?.serviceIdUppercaseString,
-            swiftValues.skipContactAvatarBlurByServiceIdStore.getBool(storeKey, defaultValue: false, transaction: tx.asV2Read)
+            skipContactAvatarBlurByServiceIdStore.getBool(storeKey, defaultValue: false, transaction: tx.asV2Read)
         {
             lowTrustCache.add(address: address)
             return false
@@ -345,7 +334,7 @@ extension OWSContactsManager: ContactManager {
             return false
         }
         // We can skip "unknown thread warnings" if a group has members which are trusted.
-        if lowTrustCache === swiftValues.unknownThreadWarningCache, hasWhitelistedGroupMember(groupThread: groupThread, tx: tx) {
+        if lowTrustCache === unknownThreadWarningCache, hasWhitelistedGroupMember(groupThread: groupThread, tx: tx) {
             lowTrustCache.add(groupThread: groupThread)
             return false
         }
@@ -353,7 +342,7 @@ extension OWSContactsManager: ContactManager {
     }
 
     private func isInWhitelistedGroupWithLocalUser(otherAddress: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Bool {
-        let cache = swiftValues.isInWhitelistedGroupWithLocalUserCache
+        let cache = isInWhitelistedGroupWithLocalUserCache
         if let cacheKey = otherAddress.serviceId, let cachedValue = cache[cacheKey] {
             return cachedValue
         }
@@ -386,7 +375,7 @@ extension OWSContactsManager: ContactManager {
     }
 
     private func hasWhitelistedGroupMember(groupThread: TSGroupThread, tx: SDSAnyReadTransaction) -> Bool {
-        let cache = swiftValues.hasWhitelistedGroupMemberCache
+        let cache = hasWhitelistedGroupMemberCache
         let cacheKey = groupThread.groupId
         if let cachedValue = cache[cacheKey] {
             return cachedValue
@@ -404,17 +393,17 @@ extension OWSContactsManager: ContactManager {
     }
 
     public func shouldShowUnknownThreadWarning(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
-        isLowTrustThread(thread, lowTrustCache: swiftValues.unknownThreadWarningCache, tx: transaction)
+        isLowTrustThread(thread, lowTrustCache: unknownThreadWarningCache, tx: transaction)
     }
 
     // MARK: - Avatar Blurring
 
     public func shouldBlurContactAvatar(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        isLowTrustContact(address: address, lowTrustCache: swiftValues.avatarBlurringCache, tx: transaction)
+        isLowTrustContact(address: address, lowTrustCache: avatarBlurringCache, tx: transaction)
     }
 
     public func shouldBlurContactAvatar(contactThread: TSContactThread, transaction: SDSAnyReadTransaction) -> Bool {
-        isLowTrustContact(contactThread: contactThread, lowTrustCache: swiftValues.avatarBlurringCache, tx: transaction)
+        isLowTrustContact(contactThread: contactThread, lowTrustCache: avatarBlurringCache, tx: transaction)
     }
 
     public func shouldBlurGroupAvatar(groupThread: TSGroupThread, transaction: SDSAnyReadTransaction) -> Bool {
@@ -425,19 +414,19 @@ extension OWSContactsManager: ContactManager {
 
         if !isLowTrustGroup(
             groupThread: groupThread,
-            lowTrustCache: swiftValues.avatarBlurringCache,
+            lowTrustCache: avatarBlurringCache,
             tx: transaction
         ) {
             return false
         }
 
         // We can skip avatar blurring if the user has explicitly waived the blurring.
-        if swiftValues.skipGroupAvatarBlurByGroupIdStore.getBool(
+        if skipGroupAvatarBlurByGroupIdStore.getBool(
             groupThread.groupId.hexadecimalString,
             defaultValue: false,
-            transaction: transaction.asV2Read)
-        {
-            swiftValues.avatarBlurringCache.add(groupThread: groupThread)
+            transaction: transaction.asV2Read
+        ) {
+            avatarBlurringCache.add(groupThread: groupThread)
             return false
         }
 
@@ -455,12 +444,12 @@ extension OWSContactsManager: ContactManager {
             return
         }
         let storeKey = serviceId.serviceIdUppercaseString
-        let shouldSkipBlur = swiftValues.skipContactAvatarBlurByServiceIdStore.getBool(storeKey, defaultValue: false, transaction: tx.asV2Read)
+        let shouldSkipBlur = skipContactAvatarBlurByServiceIdStore.getBool(storeKey, defaultValue: false, transaction: tx.asV2Read)
         guard !shouldSkipBlur else {
             owsFailDebug("Value did not change.")
             return
         }
-        swiftValues.skipContactAvatarBlurByServiceIdStore.setBool(true, key: storeKey, transaction: tx.asV2Write)
+        skipContactAvatarBlurByServiceIdStore.setBool(true, key: storeKey, transaction: tx.asV2Write)
         if let contactThread = TSContactThread.getWithContactAddress(address, transaction: tx) {
             SSKEnvironment.shared.databaseStorageRef.touch(thread: contactThread, shouldReindex: false, transaction: tx)
         }
@@ -478,7 +467,7 @@ extension OWSContactsManager: ContactManager {
     public func doNotBlurGroupAvatar(groupThread: TSGroupThread, transaction: SDSAnyWriteTransaction) {
         let groupId = groupThread.groupId
         let groupUniqueId = groupThread.uniqueId
-        guard !swiftValues.skipGroupAvatarBlurByGroupIdStore.getBool(
+        guard !skipGroupAvatarBlurByGroupIdStore.getBool(
             groupId.hexadecimalString,
             defaultValue: false,
             transaction: transaction.asV2Read
@@ -486,7 +475,7 @@ extension OWSContactsManager: ContactManager {
             owsFailDebug("Value did not change.")
             return
         }
-        swiftValues.skipGroupAvatarBlurByGroupIdStore.setBool(
+        skipGroupAvatarBlurByGroupIdStore.setBool(
             true,
             key: groupId.hexadecimalString,
             transaction: transaction.asV2Write
@@ -494,11 +483,13 @@ extension OWSContactsManager: ContactManager {
         SSKEnvironment.shared.databaseStorageRef.touch(thread: groupThread, shouldReindex: false, transaction: transaction)
 
         transaction.addAsyncCompletionOffMain {
-            NotificationCenter.default.postNotificationNameAsync(Self.skipGroupAvatarBlurDidChange,
-                                                                 object: nil,
-                                                                 userInfo: [
-                                                                    Self.skipGroupAvatarBlurGroupUniqueIdKey: groupUniqueId
-                                                                 ])
+            NotificationCenter.default.postNotificationNameAsync(
+                Self.skipGroupAvatarBlurDidChange,
+                object: nil,
+                userInfo: [
+                    Self.skipGroupAvatarBlurGroupUniqueIdKey: groupUniqueId
+                ]
+            )
         }
     }
 
@@ -699,7 +690,7 @@ extension OWSContactsManager: ContactManager {
     }
 
     private func buildSignalAccountsAndUpdatePersistedState(for fetchedSystemContacts: FetchedSystemContacts) {
-        assertOnQueue(swiftValues.intersectionQueue)
+        assertOnQueue(intersectionQueue)
 
         let (oldSignalAccounts, newSignalAccounts) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let oldSignalAccounts = SignalAccount.anyFetchAll(transaction: transaction)
@@ -855,7 +846,7 @@ extension OWSContactsManager: ContactManager {
         guard let aciToUpdate else {
             return
         }
-        let recipient = swiftValues.recipientDatabaseTable.fetchRecipient(serviceId: aciToUpdate, transaction: tx)
+        let recipient = recipientDatabaseTable.fetchRecipient(serviceId: aciToUpdate, transaction: tx)
         guard let recipient else {
             return
         }
@@ -884,7 +875,7 @@ extension OWSContactsManager: ContactManager {
     }
 
     func updateContacts(_ addressBookContacts: [SystemContact]?, isUserRequested: Bool) {
-        swiftValues.intersectionQueue.async { self._updateContacts(addressBookContacts, isUserRequested: isUserRequested) }
+        intersectionQueue.async { self._updateContacts(addressBookContacts, isUserRequested: isUserRequested) }
     }
 
     private func fetchPriorIntersectionPhoneNumbers(tx: SDSAnyReadTransaction) -> Set<String>? {
@@ -969,7 +960,7 @@ extension OWSContactsManager: ContactManager {
         let intersectionPromise = Promise.wrapAsync {
             return try await self.intersectContacts(phoneNumbersToIntersect)
         }
-        intersectionPromise.done(on: swiftValues.intersectionQueue) { intersectedRecipients in
+        intersectionPromise.done(on: intersectionQueue) { intersectedRecipients in
             // Mark it as complete. If the app crashes after this transaction, we'll
             // avoid a redundant (expensive) intersection when we retry.
             SSKEnvironment.shared.databaseStorageRef.write { tx in
@@ -995,7 +986,7 @@ extension OWSContactsManager: ContactManager {
                     tx: tx.asV2Write
                 )
             }
-        }.catch(on: swiftValues.intersectionQueue) { error in
+        }.catch(on: intersectionQueue) { error in
             owsFailDebug("Couldn't intersect contacts: \(error)")
         }
     }
@@ -1135,8 +1126,8 @@ extension OWSContactsManager: ContactManager {
     // MARK: - System Contacts
 
     private func setFetchedSystemContacts(_ fetchedSystemContacts: FetchedSystemContacts) {
-        swiftValues.systemContactsCache.fetchedSystemContacts.set(fetchedSystemContacts)
-        swiftValues.cnContactCache.removeAllObjects()
+        systemContactsCache.fetchedSystemContacts.set(fetchedSystemContacts)
+        cnContactCache.removeAllObjects()
         NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerContactsDidChange, object: nil)
     }
 
@@ -1144,12 +1135,12 @@ extension OWSContactsManager: ContactManager {
         guard let cnContactId else {
             return nil
         }
-        if let cnContact = swiftValues.cnContactCache[cnContactId] {
+        if let cnContact = cnContactCache[cnContactId] {
             return cnContact
         }
         let cnContact = systemContactsFetcher.fetchCNContact(contactId: cnContactId)
         if let cnContact {
-            swiftValues.cnContactCache[cnContactId] = cnContact
+            cnContactCache[cnContactId] = cnContact
         }
         return cnContact
     }
@@ -1158,7 +1149,7 @@ extension OWSContactsManager: ContactManager {
         guard let phoneNumber = E164(phoneNumber) else {
             return nil
         }
-        let fetchedSystemContacts = swiftValues.systemContactsCache.fetchedSystemContacts.get()
+        let fetchedSystemContacts = systemContactsCache.fetchedSystemContacts.get()
         let canonicalPhoneNumber = CanonicalPhoneNumber(nonCanonicalPhoneNumber: phoneNumber)
         return fetchedSystemContacts?.phoneNumberToContactRef[canonicalPhoneNumber]?.cnContactId
     }
@@ -1172,8 +1163,8 @@ extension OWSContactsManager: ContactManager {
         let tx = transaction.asV2Read
         return .init(addresses).refine { addresses -> [DisplayName?] in
             return addresses.map { address -> DisplayName? in
-                swiftValues.recipientDatabaseTable.fetchRecipient(address: address, tx: tx)
-                    .flatMap { swiftValues.nicknameManager.fetchNickname(for: $0, tx: tx) }
+                recipientDatabaseTable.fetchRecipient(address: address, tx: tx)
+                    .flatMap { nicknameManager.fetchNickname(for: $0, tx: tx) }
                     .flatMap(ProfileName.init(nicknameRecord:))
                     .map(DisplayName.nickname(_:))
             }
@@ -1187,7 +1178,7 @@ extension OWSContactsManager: ContactManager {
         }.refine { addresses -> [DisplayName?] in
             return addresses.map { $0.e164.map { .phoneNumber($0) } }
         }.refine { addresses -> [DisplayName?] in
-            return swiftValues.usernameLookupManager.fetchUsernames(
+            return usernameLookupManager.fetchUsernames(
                 forAddresses: addresses,
                 transaction: transaction.asV2Read
             ).map { $0.map { .username($0) } }

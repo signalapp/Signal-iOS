@@ -38,11 +38,9 @@ class OWSContactsManagerTest: SignalBaseTest {
     private func makeContactsManager() -> OWSContactsManager {
         return OWSContactsManager(
             appReadiness: AppReadinessMock(),
-            swiftValues: OWSContactsManagerSwiftValues(
-                usernameLookupManager: mockUsernameLookupMananger,
-                recipientDatabaseTable: mockRecipientDatabaseTable,
-                nicknameManager: mockNicknameManager
-            )
+            nicknameManager: mockNicknameManager,
+            recipientDatabaseTable: mockRecipientDatabaseTable,
+            usernameLookupManager: mockUsernameLookupMananger
         )
     }
 

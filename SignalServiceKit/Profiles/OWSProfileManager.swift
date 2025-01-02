@@ -16,19 +16,17 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     public static let maxAvatarDiameterPixels: UInt = 1024
     public static let notificationKeyUserProfileWriter = "kNSNotificationKey_UserProfileWriter"
 
-    public let whitelistedPhoneNumbersStore = KeyValueStore(collection: "kOWSProfileManager_UserWhitelistCollection")
-    public let whitelistedServiceIdsStore = KeyValueStore(collection: "kOWSProfileManager_UserUUIDWhitelistCollection")
-    public let whitelistedGroupsStore = KeyValueStore(collection: "kOWSProfileManager_GroupWhitelistCollection")
-    public let settingsStore = KeyValueStore(collection: "kOWSProfileManager_SettingsStore")
-    public let badgeStore = BadgeStore()
+    private let whitelistedPhoneNumbersStore = KeyValueStore(collection: "kOWSProfileManager_UserWhitelistCollection")
+    private let whitelistedServiceIdsStore = KeyValueStore(collection: "kOWSProfileManager_UserUUIDWhitelistCollection")
+    private let whitelistedGroupsStore = KeyValueStore(collection: "kOWSProfileManager_GroupWhitelistCollection")
+    private let settingsStore = KeyValueStore(collection: "kOWSProfileManager_SettingsStore")
 
-    // This can be inlined soon, but first a direct port from objc to swift
-    public let swiftValues: OWSProfileManagerSwiftValues
+    private let pendingUpdateRequests = AtomicValue<[OWSProfileManager.ProfileUpdateRequest]>([], lock: .init())
 
     /// This property is used by the Swift extension to ensure that only one
     /// profile update is in flight at a time. It should only be accessed on the
     /// main thread.
-    fileprivate var isUpdatingProfileOnService: Bool = false
+    private var isUpdatingProfileOnService: Bool = false
 
     // The old objc code used synchronized a lock which is a recursive lock so using NSRecursiveLock here to recreate that behavior.
     private let lock = NSRecursiveLock()
@@ -37,15 +35,15 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     // it is not. The pattern of use in the objc code has been replicated here for the time being.
     @Atomic private var _localUserProfile: OWSUserProfile?
 
-    fileprivate let metadataStore = KeyValueStore(collection: "kOWSProfileManager_Metadata")
-    @Atomic fileprivate var isRotatingProfileKey: Bool = false
+    private let metadataStore = KeyValueStore(collection: "kOWSProfileManager_Metadata")
+    @Atomic private var isRotatingProfileKey: Bool = false
 
     private let appReadiness: AppReadiness
+    public let badgeStore = BadgeStore()
 
-    init(appReadiness: AppReadiness, databaseStorage: SDSDatabaseStorage, swiftValues: OWSProfileManagerSwiftValues) {
+    init(appReadiness: AppReadiness, databaseStorage: SDSDatabaseStorage) {
         AssertIsOnMainThread()
 
-        self.swiftValues = swiftValues
         self.appReadiness = appReadiness
 
         super.init()
@@ -706,12 +704,6 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     }
 }
 
-public class OWSProfileManagerSwiftValues {
-    fileprivate let pendingUpdateRequests = AtomicValue<[OWSProfileManager.ProfileUpdateRequest]>([], lock: .init())
-
-    public init() {}
-}
-
 extension OWSProfileManager: ProfileManager {
     public func fetchLocalUsersProfile(authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
         return Promise.wrapAsync {
@@ -829,7 +821,7 @@ extension OWSProfileManager: ProfileManager {
         )
 
         let (promise, future) = Promise<Void>.pending()
-        swiftValues.pendingUpdateRequests.update {
+        pendingUpdateRequests.update {
             $0.append(ProfileUpdateRequest(
                 requestId: update.id,
                 requestParameters: .init(profileKey: unsavedRotatedProfileKey, future: future),
@@ -1561,7 +1553,7 @@ extension OWSProfileManager: ProfileManager {
         // Find the AuthedAccount & Future for the request. This will generally
         // exist for the initial request but will be nil for any retries.
         let pendingRequests: (canceledRequests: [ProfileUpdateRequest], result: (ProfileUpdateRequest.Parameters?, AuthedAccount)?)
-        pendingRequests = swiftValues.pendingUpdateRequests.update { mutableRequests in
+        pendingRequests = pendingUpdateRequests.update { mutableRequests in
             let canceledRequests: [ProfileUpdateRequest]
             let currentRequest: ProfileUpdateRequest?
             if let requestIndex = mutableRequests.firstIndex(where: { $0.requestId == requestId }) {
