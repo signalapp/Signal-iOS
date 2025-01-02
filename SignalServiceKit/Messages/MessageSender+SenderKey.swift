@@ -29,7 +29,6 @@ extension MessageSender {
         case invalidRecipient
         case deviceUpdate
         case staleDevices
-        case oversizeMessage
 
         var isRetryableProvider: Bool { true }
 
@@ -583,10 +582,6 @@ extension MessageSender {
             contentHint: message.contentHint.signalClientHint,
             protocolContext: writeTx)
 
-        guard ciphertext.count <= Self.maxSenderKeyEnvelopeSize else {
-            Logger.error("serializedMessage: \(ciphertext.count) > \(Self.maxSenderKeyEnvelopeSize)")
-            throw SenderKeyError.oversizeMessage
-        }
         return ciphertext
     }
 
