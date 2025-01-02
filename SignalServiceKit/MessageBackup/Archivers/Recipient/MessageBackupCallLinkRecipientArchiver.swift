@@ -49,10 +49,11 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
     func archiveAllCallLinkRecipients(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext
-    ) -> ArchiveMultiFrameResult {
+    ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
         do {
             try self.callLinkStore.enumerateAll(tx: context.tx) { record in
+                try Task.checkCancellation()
                 autoreleasepool {
                     var callLink = BackupProto_CallLink()
                     callLink.rootKey = record.rootKey.bytes
@@ -102,6 +103,8 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
                     }.map { errors.append($0) }
                 }
             }
+        } catch let error as CancellationError {
+            throw error
         } catch {
             return .completeFailure(.fatalArchiveError(.callLinkRecordIteratorError(error)))
         }

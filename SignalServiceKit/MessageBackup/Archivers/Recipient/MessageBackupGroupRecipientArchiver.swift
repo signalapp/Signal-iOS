@@ -51,11 +51,12 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
     func archiveAllGroupRecipients(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext
-    ) -> ArchiveMultiFrameResult {
+    ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
 
         do {
             try threadStore.enumerateGroupThreads(context: context) { groupThread in
+                try Task.checkCancellation()
                 autoreleasepool {
                     self.archiveGroupThread(
                         groupThread,
@@ -67,6 +68,8 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
                 return true
             }
+        } catch let error as CancellationError {
+            throw error
         } catch {
             // The enumeration of threads failed, not the processing of one single thread.
             return .completeFailure(.fatalArchiveError(.threadIteratorError(error)))

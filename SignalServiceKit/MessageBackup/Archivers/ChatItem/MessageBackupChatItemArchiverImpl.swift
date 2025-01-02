@@ -103,7 +103,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     public func archiveInteractions(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
-    ) -> ArchiveMultiFrameResult {
+    ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var completeFailureError: MessageBackup.FatalArchivingError?
         var partialFailures = [ArchiveFrameError]()
 
@@ -135,8 +135,13 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         do {
             try interactionStore.enumerateAllInteractions(
                 tx: context.tx,
-                block: archiveInteraction(_:)
+                block: { interaction in
+                    try Task.checkCancellation()
+                    return archiveInteraction(interaction)
+                }
             )
+        } catch let error as CancellationError {
+            throw error
         } catch let error {
             // Errors thrown here are from the iterator's SQL query,
             // not the individual interaction handler.

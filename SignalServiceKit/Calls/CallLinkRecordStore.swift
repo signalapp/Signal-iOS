@@ -25,7 +25,7 @@ public protocol CallLinkRecordStore {
     func delete(_ callLinkRecord: CallLinkRecord, tx: any DBWriteTransaction) throws
 
     func fetchAll(tx: any DBReadTransaction) throws -> [CallLinkRecord]
-    func enumerateAll(tx: any DBReadTransaction, block: (CallLinkRecord) -> Void) throws
+    func enumerateAll(tx: any DBReadTransaction, block: (CallLinkRecord) throws -> Void) throws
     func fetchUpcoming(earlierThan expirationTimestamp: Date?, limit: Int, tx: any DBReadTransaction) throws -> [CallLinkRecord]
     func fetchWhere(adminDeletedAtTimestampMsIsLessThan thresholdMs: UInt64, tx: any DBReadTransaction) throws -> [CallLinkRecord]
     func fetchAnyPendingRecord(tx: any DBReadTransaction) throws -> CallLinkRecord?
@@ -106,11 +106,11 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
         }
     }
 
-    public func enumerateAll(tx: any DBReadTransaction, block: (CallLinkRecord) -> Void) throws {
+    public func enumerateAll(tx: any DBReadTransaction, block: (CallLinkRecord) throws -> Void) throws {
         do {
             let cursor = try CallLinkRecord.fetchCursor(tx.databaseConnection)
             while let next = try cursor.next() {
-                block(next)
+                try block(next)
             }
         } catch {
             throw error.grdbErrorForLogging
@@ -162,7 +162,7 @@ final class MockCallLinkRecordStore: CallLinkRecordStore {
     func update(_ callLinkRecord: CallLinkRecord, tx: any DBWriteTransaction) throws { fatalError() }
     func delete(_ callLinkRecord: CallLinkRecord, tx: any DBWriteTransaction) throws { fatalError() }
     func fetchAll(tx: any DBReadTransaction) throws -> [CallLinkRecord] { fatalError() }
-    func enumerateAll(tx: any DBReadTransaction, block: (CallLinkRecord) -> Void) throws { fatalError() }
+    func enumerateAll(tx: any DBReadTransaction, block: (CallLinkRecord) throws -> Void) throws { fatalError() }
     func fetchUpcoming(earlierThan expirationTimestamp: Date?, limit: Int, tx: any DBReadTransaction) throws -> [CallLinkRecord] { fatalError() }
     func fetchWhere(adminDeletedAtTimestampMsIsLessThan thresholdMs: UInt64, tx: any DBReadTransaction) throws -> [CallLinkRecord] { fatalError() }
     func fetchAnyPendingRecord(tx: any DBReadTransaction) throws -> CallLinkRecord? { fatalError() }

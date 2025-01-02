@@ -25,7 +25,7 @@ public protocol MessageBackupChatArchiver: MessageBackupProtoArchiver {
     func archiveChats(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
-    ) -> ArchiveMultiFrameResult
+    ) throws(CancellationError) -> ArchiveMultiFrameResult
 
     /// Restore a single ``BackupProto_Chat`` frame.
     ///
@@ -66,7 +66,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     public func archiveChats(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
-    ) -> ArchiveMultiFrameResult {
+    ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var completeFailureError: MessageBackup.FatalArchivingError?
         var partialErrors = [ArchiveFrameError]()
 
@@ -120,7 +120,12 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         }
 
         do {
-            try threadStore.enumerateNonStoryThreads(context: context, block: archiveThread(_:))
+            try threadStore.enumerateNonStoryThreads(context: context, block: { thread in
+                try Task.checkCancellation()
+                return archiveThread(thread)
+            })
+        } catch let error as CancellationError {
+            throw error
         } catch let error {
             return .completeFailure(.fatalArchiveError(.threadIteratorError(error)))
         }

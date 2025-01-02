@@ -344,6 +344,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 tx: tx
             )
         }
+        try Task.checkCancellation()
 
         let currentBackupAttachmentUploadEra: String?
         if MessageBackupMessageAttachmentArchiver.isFreeTierBackup() {
@@ -371,10 +372,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 throw OWSAssertionError("Failed to archive account data")
             }
         }
+        try Task.checkCancellation()
 
         let localRecipientResult = localRecipientArchiver.archiveLocalRecipient(
             stream: stream
         )
+
+        try Task.checkCancellation()
+
         let localRecipientId: MessageBackup.RecipientId
         switch localRecipientResult {
         case .success(let success):
@@ -405,8 +410,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 throw OWSAssertionError("Failed to archive release notes channel!")
             }
         }
+        try Task.checkCancellation()
 
-        switch contactRecipientArchiver.archiveAllContactRecipients(
+        switch try contactRecipientArchiver.archiveAllContactRecipients(
             stream: stream,
             context: recipientArchivingContext
         ) {
@@ -419,7 +425,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw BackupError()
         }
 
-        switch groupRecipientArchiver.archiveAllGroupRecipients(
+        switch try groupRecipientArchiver.archiveAllGroupRecipients(
             stream: stream,
             context: recipientArchivingContext
         ) {
@@ -432,7 +438,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw BackupError()
         }
 
-        switch distributionListRecipientArchiver.archiveAllDistributionListRecipients(
+        switch try distributionListRecipientArchiver.archiveAllDistributionListRecipients(
             stream: stream,
             context: recipientArchivingContext
         ) {
@@ -445,7 +451,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw BackupError()
         }
 
-        switch callLinkRecipientArchiver.archiveAllCallLinkRecipients(
+        switch try callLinkRecipientArchiver.archiveAllCallLinkRecipients(
             stream: stream,
             context: recipientArchivingContext
         ) {
@@ -466,7 +472,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             recipientContext: recipientArchivingContext,
             tx: tx
         )
-        let chatArchiveResult = chatArchiver.archiveChats(
+        let chatArchiveResult = try chatArchiver.archiveChats(
             stream: stream,
             context: chatArchivingContext
         )
@@ -480,7 +486,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw BackupError()
         }
 
-        let chatItemArchiveResult = chatItemArchiver.archiveInteractions(
+        let chatItemArchiveResult = try chatItemArchiver.archiveInteractions(
             stream: stream,
             context: chatArchivingContext
         )
@@ -500,7 +506,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             tx: tx
         )
-        let stickerPackArchiveResult = stickerPackArchiver.archiveStickerPacks(
+        let stickerPackArchiveResult = try stickerPackArchiver.archiveStickerPacks(
             stream: stream,
             context: archivingContext
         )
@@ -514,7 +520,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw BackupError()
         }
 
-        let adHocCallArchiveResult = adHocCallArchiver.archiveAdHocCalls(
+        let adHocCallArchiveResult = try adHocCallArchiver.archiveAdHocCalls(
             stream: stream,
             context: chatArchivingContext
         )
@@ -804,6 +810,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         let contexts = Contexts(localIdentifiers: localIdentifiers, tx: tx)
 
         while hasMoreFrames {
+            try Task.checkCancellation()
             try autoreleasepool {
                 let frame: BackupProto_Frame?
                 switch stream.readFrame() {

@@ -44,7 +44,7 @@ public protocol MessageBackupChatItemArchiver: MessageBackupProtoArchiver {
     func archiveInteractions(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
-    ) -> ArchiveMultiFrameResult
+    ) throws(CancellationError) -> ArchiveMultiFrameResult
 
     /// Restore a single ``BackupProto_ChatItem`` frame.
     ///

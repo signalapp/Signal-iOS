@@ -20,10 +20,11 @@ public class MessageBackupRecipientStore {
 
     func enumerateAllSignalRecipients(
         _ context: MessageBackup.RecipientArchivingContext,
-        block: (SignalRecipient
-        ) -> Void) throws {
+        block: (SignalRecipient) -> Void
+    ) throws {
         let cursor = try SignalRecipient.fetchCursor(context.tx.databaseConnection)
         while let next = try cursor.next() {
+            try Task.checkCancellation()
             block(next)
         }
     }

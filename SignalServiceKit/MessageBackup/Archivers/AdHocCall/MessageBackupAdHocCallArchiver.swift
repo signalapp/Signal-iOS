@@ -50,7 +50,7 @@ public protocol MessageBackupAdHocCallArchiver: MessageBackupProtoArchiver {
     func archiveAdHocCalls(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
-    ) -> ArchiveMultiFrameResult
+    ) throws(CancellationError) -> ArchiveMultiFrameResult
 
     /// Restore a single ``BackupProto_AdHocCall`` frame.
     ///
@@ -83,10 +83,11 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
     public func archiveAdHocCalls(
         stream: any MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext
-    ) -> ArchiveMultiFrameResult {
+    ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()
         do {
             try callRecordStore.enumerateAdHocCallRecords(tx: context.tx) { record in
+                try Task.checkCancellation()
                 autoreleasepool {
                     var adHocCallProto = BackupProto_AdHocCall()
                     adHocCallProto.callID = record.callId
@@ -131,6 +132,8 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
                     }
                 }
             }
+        } catch let error as CancellationError {
+            throw error
         } catch {
             return .completeFailure(.fatalArchiveError(.adHocCallIteratorError(error)))
         }

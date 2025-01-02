@@ -30,12 +30,13 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
     func archiveAllDistributionListRecipients(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext
-    ) -> ArchiveMultiFrameResult {
+    ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
 
         do {
             // enumerate deleted threads
             for item in privateStoryThreadDeletionManager.allDeletedIdentifiers(tx: context.tx) {
+                try Task.checkCancellation()
                 autoreleasepool {
                     self.archiveDeletedStoryList(
                         rawDistributionId: item,
@@ -46,6 +47,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
                 }
             }
             try threadStore.enumerateStoryThreads(context: context) { storyThread in
+                try Task.checkCancellation()
                 autoreleasepool {
                     self.archiveStoryThread(
                         storyThread,
@@ -57,6 +59,8 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
 
                 return true
             }
+        } catch let error as CancellationError {
+            throw error
         } catch {
             // The enumeration of threads failed, not the processing of one single thread.
             return .completeFailure(.fatalArchiveError(.threadIteratorError(error)))

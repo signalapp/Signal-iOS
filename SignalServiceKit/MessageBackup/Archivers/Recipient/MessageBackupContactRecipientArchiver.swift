@@ -64,7 +64,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     func archiveAllContactRecipients(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext
-    ) -> ArchiveMultiFrameResult {
+    ) throws(CancellationError) -> ArchiveMultiFrameResult {
         let whitelistedAddresses = Set(profileManager.allWhitelistedAddresses(tx: context.tx))
         let blockedAddresses = blockingManager.blockedAddresses(tx: context.tx)
 
@@ -234,6 +234,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             try recipientStore.enumerateAllSignalRecipients(context, block: { recipient in
                 autoreleasepool { recipientBlock(recipient) }
             })
+        } catch let error as CancellationError {
+            throw error
         } catch {
             return .completeFailure(.fatalArchiveError(.recipientIteratorError(error)))
         }

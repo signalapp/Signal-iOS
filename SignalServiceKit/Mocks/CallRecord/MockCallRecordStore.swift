@@ -48,10 +48,10 @@ class MockCallRecordStore: CallRecordStore {
         })
     }
 
-    func enumerateAdHocCallRecords(tx: any DBReadTransaction, block: (CallRecord) -> Void) throws {
-        callRecords.forEach { record in
+    func enumerateAdHocCallRecords(tx: any DBReadTransaction, block: (CallRecord) throws -> Void) throws {
+        try callRecords.forEach { record in
             guard record.callType == .adHocCall else { return }
-            block(record)
+            try block(record)
         }
     }
 

@@ -128,7 +128,7 @@ public protocol CallRecordStore {
     /// Enumerate all ad hoc call records.
     func enumerateAdHocCallRecords(
         tx: DBReadTransaction,
-        block: (CallRecord) -> Void
+        block: (CallRecord) throws -> Void
     ) throws
 
     /// Fetch the record for the given call ID in the given thread, if one
@@ -423,14 +423,14 @@ class CallRecordStoreImpl: CallRecordStore {
 
     func enumerateAdHocCallRecords(
         tx: DBReadTransaction,
-        block: (CallRecord) -> Void
+        block: (CallRecord) throws -> Void
     ) throws {
         do {
             let cursor = try CallRecord
                 .filter(Column(CallRecord.CodingKeys.callType) == CallRecord.CallType.adHocCall.rawValue)
                 .fetchCursor(tx.databaseConnection)
             while let value = try cursor.next() {
-                block(value)
+                try block(value)
             }
         } catch {
             throw error.grdbErrorForLogging

@@ -46,7 +46,7 @@ public protocol MessageBackupStickerPackArchiver: MessageBackupProtoArchiver {
     func archiveStickerPacks(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ArchivingContext
-    ) -> ArchiveMultiFrameResult
+    ) throws(CancellationError) -> ArchiveMultiFrameResult
 
     /// Restore a single ``BackupProto_StickerPack`` frame.
     ///
@@ -73,7 +73,7 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
     public func archiveStickerPacks(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ArchivingContext
-    ) -> ArchiveMultiFrameResult {
+    ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
 
         var handledPacks = Set<Data>()
@@ -108,9 +108,12 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
                 .filter(Column(StickerPackRecord.CodingKeys.isInstalled) == true)
                 .fetchCursor(context.tx.databaseConnection)
             while let next = try cursor.next() {
+                try Task.checkCancellation()
                 let stickerPack = try StickerPack.fromRecord(next)
                 archiveInstalledStickerPack(stickerPack)
             }
+        } catch let error as CancellationError {
+            throw error
         } catch {
             return .completeFailure(.fatalArchiveError(.stickerPackIteratorError(error)))
         }
@@ -118,6 +121,7 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
         // Iterate over any restored sticker packs that have yet to be downloaded via StickerManager.
         do {
             try backupStickerPackDownloadStore.iterateAllEnqueued(tx: context.tx) { record in
+                try Task.checkCancellation()
                 autoreleasepool {
                     guard !handledPacks.contains(record.packId) else { return }
                     let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
@@ -139,6 +143,8 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
                     }
                 }
             }
+        } catch let error as CancellationError {
+            throw error
         } catch {
             return .completeFailure(.fatalArchiveError(.stickerPackIteratorError(error)))
         }
