@@ -190,7 +190,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 button.titleLabel?.textAlignment = .center
                 button.titleLabel?.font = buttonLabelConfig.font
                 button.setTitleColor(buttonLabelConfig.textColor, for: .normal)
-                if nil != interaction as? OWSGroupCallMessage {
+                if interaction is OWSGroupCallMessage {
                     button.backgroundColor = UIColor.ows_accentGreen
                 } else {
                     if isDarkThemeEnabled && hasWallpaper {
@@ -349,7 +349,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
     private func buttonLabelConfig(action: Action) -> CVLabelConfig {
         let textColor: UIColor
-        if nil != interaction as? OWSGroupCallMessage {
+        if interaction is OWSGroupCallMessage {
             textColor = Theme.isDarkThemeEnabled ? .ows_whiteAlpha90 : .white
         } else {
             textColor = Theme.conversationButtonTextColor
@@ -841,7 +841,7 @@ extension CVComponentSystemMessage {
             case .video:
                 return Theme.iconImage(.video16)
             }
-        } else if nil != interaction as? OWSGroupCallMessage {
+        } else if interaction is OWSGroupCallMessage {
             return Theme.iconImage(.video16)
         } else {
             owsFailDebug("Unknown interaction type: \(type(of: interaction))")

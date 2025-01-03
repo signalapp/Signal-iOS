@@ -525,7 +525,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         innerSubviewInfos.append(timestampLabelSize.asManualSubviewInfo(hasFixedWidth: true))
 
         if hasPerConversationExpiration,
-           nil != interaction as? TSMessage {
+           interaction is TSMessage {
             let timerSize = MessageTimerView.measureSize
             innerSubviewInfos.append(timerSize.asManualSubviewInfo(hasFixedWidth: true))
         }

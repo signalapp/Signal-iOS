@@ -222,7 +222,7 @@ public class TSPaymentModels: NSObject {
         guard let paymentProto = dataMessage.payment else {
             return nil
         }
-        guard nil != thread as? TSContactThread else {
+        guard thread is TSContactThread else {
             owsFailDebug("Invalid thread.")
             return nil
         }

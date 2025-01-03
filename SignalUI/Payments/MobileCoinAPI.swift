@@ -834,7 +834,7 @@ public func owsFailDebugUnlessMCNetworkFailure(_ error: Error,
         } else {
             owsFailDebug("Error: \(error)", file: file, function: function, line: line)
         }
-    } else if nil != error as? OWSAssertionError {
+    } else if error is OWSAssertionError {
         owsFailDebug("Unexpected error: \(error)")
     } else {
         owsFailDebugUnlessNetworkFailure(error)
