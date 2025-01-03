@@ -1078,8 +1078,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let authedAccount: AuthedAccount
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
-    private let groupsV2: GroupsV2
-    private let legacyChangePhoneNumber: LegacyChangePhoneNumber
     private let linkPreviewSettingStore: LinkPreviewSettingStore
     private let localUsernameManager: LocalUsernameManager
     private let paymentsHelper: PaymentsHelperSwift
@@ -1102,8 +1100,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         authedAccount: AuthedAccount,
         backupSubscriptionManager: BackupSubscriptionManager,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
-        groupsV2: GroupsV2,
-        legacyChangePhoneNumber: LegacyChangePhoneNumber,
         linkPreviewSettingStore: LinkPreviewSettingStore,
         localUsernameManager: LocalUsernameManager,
         paymentsHelper: PaymentsHelperSwift,
@@ -1126,8 +1122,6 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.authedAccount = authedAccount
         self.backupSubscriptionManager = backupSubscriptionManager
         self.dmConfigurationStore = dmConfigurationStore
-        self.groupsV2 = groupsV2
-        self.legacyChangePhoneNumber = legacyChangePhoneNumber
         self.linkPreviewSettingStore = linkPreviewSettingStore
         self.localUsernameManager = localUsernameManager
         self.paymentsHelper = paymentsHelper

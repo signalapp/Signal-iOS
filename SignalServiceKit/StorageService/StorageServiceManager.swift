@@ -1997,8 +1997,6 @@ class StorageServiceOperation {
                 authedAccount: authedAccount,
                 backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
                 dmConfigurationStore: DependenciesBridge.shared.disappearingMessagesConfigurationStore,
-                groupsV2: SSKEnvironment.shared.groupsV2Ref,
-                legacyChangePhoneNumber: SSKEnvironment.shared.legacyChangePhoneNumberRef,
                 linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
                 localUsernameManager: DependenciesBridge.shared.localUsernameManager,
                 paymentsHelper: SSKEnvironment.shared.paymentsHelperRef,
