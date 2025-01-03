@@ -1,9 +1,0 @@
-{
-  "info" : {
-    "author" : "xcode",
-    "version" : 1
-  },
-  "properties" : {
-    "generate-swift-asset-symbol-extensions" : "disabled"
-  }
-}
