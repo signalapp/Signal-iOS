@@ -13,7 +13,7 @@ final class PreKeyTaskTests: XCTestCase {
     private var mockTSAccountManager: MockTSAccountManager!
     private var mockIdentityManager: PreKey.Mocks.IdentityManager!
     private var mockLinkedDevicePniKeyManager: PreKey.Mocks.LinkedDevicePniKeyManager!
-    private var mockServiceClient: PreKey.Mocks.AccountServiceClient!
+    private var mockServiceClient: PreKey.Mocks.SignalServiceClient!
     private var mockDateProvider: PreKey.Mocks.DateProvider!
     private var mockDb: InMemoryDB!
     private var scheduler: TestScheduler!

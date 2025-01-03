@@ -21,7 +21,7 @@ internal struct PreKeyTaskManager {
     private let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
     private let messageProcessor: PreKey.Shims.MessageProcessor
     private let protocolStoreManager: SignalProtocolStoreManager
-    private let serviceClient: AccountServiceClient
+    private let serviceClient: SignalServiceClient
     private let tsAccountManager: TSAccountManager
 
     init(
@@ -31,7 +31,7 @@ internal struct PreKeyTaskManager {
         linkedDevicePniKeyManager: LinkedDevicePniKeyManager,
         messageProcessor: PreKey.Shims.MessageProcessor,
         protocolStoreManager: SignalProtocolStoreManager,
-        serviceClient: AccountServiceClient,
+        serviceClient: SignalServiceClient,
         tsAccountManager: TSAccountManager
     ) {
         self.dateProvider = dateProvider
@@ -153,7 +153,7 @@ internal struct PreKeyTaskManager {
         } else {
             let (ecCount, pqCount): (Int?, Int?)
             if targets.contains(target: .oneTimePreKey) || targets.contains(target: .oneTimePqPreKey) {
-                (ecCount, pqCount) = try await self.serviceClient.getPreKeysCount(for: identity).awaitable()
+                (ecCount, pqCount) = try await self.serviceClient.getAvailablePreKeys(for: identity).awaitable()
             } else {
                 // No need to fetch prekey counts.
                 (ecCount, pqCount) = (nil, nil)
@@ -570,7 +570,7 @@ internal struct PreKeyTaskManager {
         PreKey.logger.info("[\(bundle.identity)] uploading prekeys")
 
         do {
-            try await self.serviceClient.setPreKeys(
+            try await self.serviceClient.registerPreKeys(
                 for: bundle.identity,
                 signedPreKeyRecord: bundle.getSignedPreKey(),
                 preKeyRecords: bundle.getPreKeyRecords(),

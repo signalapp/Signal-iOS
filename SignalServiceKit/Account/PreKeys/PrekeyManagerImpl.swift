@@ -46,7 +46,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         linkedDevicePniKeyManager: LinkedDevicePniKeyManager,
         messageProcessor: PreKey.Shims.MessageProcessor,
         protocolStoreManager: SignalProtocolStoreManager,
-        serviceClient: AccountServiceClient,
+        serviceClient: SignalServiceClient,
         chatConnectionManager: any ChatConnectionManager,
         tsAccountManager: TSAccountManager
     ) {

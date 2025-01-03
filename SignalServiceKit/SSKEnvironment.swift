@@ -62,7 +62,6 @@ public class SSKEnvironment: NSObject {
     public let databaseStorageRef: SDSDatabaseStorage
     public let signalServiceAddressCacheRef: SignalServiceAddressCache
     public let signalServiceRef: OWSSignalServiceProtocol
-    public let accountServiceClientRef: AccountServiceClient
     public let storageServiceManagerRef: StorageServiceManager
     public let sskPreferencesRef: SSKPreferences
     public let groupV2UpdatesRef: GroupV2Updates
@@ -129,7 +128,6 @@ public class SSKEnvironment: NSObject {
         databaseStorage: SDSDatabaseStorage,
         signalServiceAddressCache: SignalServiceAddressCache,
         signalService: OWSSignalServiceProtocol,
-        accountServiceClient: AccountServiceClient,
         storageServiceManager: StorageServiceManager,
         sskPreferences: SSKPreferences,
         groupsV2: GroupsV2,
@@ -191,7 +189,6 @@ public class SSKEnvironment: NSObject {
         self.databaseStorageRef = databaseStorage
         self.signalServiceAddressCacheRef = signalServiceAddressCache
         self.signalServiceRef = signalService
-        self.accountServiceClientRef = accountServiceClient
         self.storageServiceManagerRef = storageServiceManager
         self.sskPreferencesRef = sskPreferences
         self.groupsV2Ref = groupsV2

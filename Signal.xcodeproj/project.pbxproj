@@ -3246,7 +3246,6 @@
 		F9C5CCA2289453B300548EEE /* WebSocketResources.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B7289453B100548EEE /* WebSocketResources.pb.swift */; };
 		F9C5CCA3289453B300548EEE /* StorageService.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B8289453B100548EEE /* StorageService.pb.swift */; };
 		F9C5CCA4289453B300548EEE /* SSKProto+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B9289453B100548EEE /* SSKProto+OWS.swift */; };
-		F9C5CCA9289453B300548EEE /* AccountServiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9BF289453B100548EEE /* AccountServiceClient.swift */; };
 		F9C5CCAC289453B300548EEE /* PreKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C2289453B100548EEE /* PreKeyManager.swift */; };
 		F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */; };
 		F9C5CCB9289453B300548EEE /* OWSDisappearingMessagesConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -3463,7 +3462,6 @@
 		F9C5CE5C289453B400548EEE /* TestProtocolRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB8C289453B200548EEE /* TestProtocolRunner.swift */; };
 		F9C5CE5E289453B400548EEE /* OWSMockSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB8E289453B200548EEE /* OWSMockSyncManager.swift */; };
 		F9C5CE60289453B400548EEE /* FakeContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB90289453B200548EEE /* FakeContactsManager.swift */; };
-		F9C5CE61289453B400548EEE /* FakeAccountServiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB91289453B200548EEE /* FakeAccountServiceClient.swift */; };
 		F9C5CE62289453B400548EEE /* NoopNotificationPresenterImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB92289453B200548EEE /* NoopNotificationPresenterImpl.swift */; };
 		F9C5CE66289453B400548EEE /* MockKeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB96289453B200548EEE /* MockKeychainStorage.swift */; };
 		F9C5CE67289453B400548EEE /* TSConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB97289453B200548EEE /* TSConstants.swift */; };
@@ -7040,7 +7038,6 @@
 		F9C5C9B7289453B100548EEE /* WebSocketResources.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketResources.pb.swift; sourceTree = "<group>"; };
 		F9C5C9B8289453B100548EEE /* StorageService.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageService.pb.swift; sourceTree = "<group>"; };
 		F9C5C9B9289453B100548EEE /* SSKProto+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SSKProto+OWS.swift"; sourceTree = "<group>"; };
-		F9C5C9BF289453B100548EEE /* AccountServiceClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountServiceClient.swift; sourceTree = "<group>"; };
 		F9C5C9C2289453B100548EEE /* PreKeyManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreKeyManager.swift; sourceTree = "<group>"; };
 		F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteAttestation.swift; sourceTree = "<group>"; };
 		F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisappearingMessagesConfiguration.h; sourceTree = "<group>"; };
@@ -7258,7 +7255,6 @@
 		F9C5CB8C289453B200548EEE /* TestProtocolRunner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestProtocolRunner.swift; sourceTree = "<group>"; };
 		F9C5CB8E289453B200548EEE /* OWSMockSyncManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSMockSyncManager.swift; sourceTree = "<group>"; };
 		F9C5CB90289453B200548EEE /* FakeContactsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeContactsManager.swift; sourceTree = "<group>"; };
-		F9C5CB91289453B200548EEE /* FakeAccountServiceClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeAccountServiceClient.swift; sourceTree = "<group>"; };
 		F9C5CB92289453B200548EEE /* NoopNotificationPresenterImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopNotificationPresenterImpl.swift; sourceTree = "<group>"; };
 		F9C5CB96289453B200548EEE /* MockKeychainStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockKeychainStorage.swift; sourceTree = "<group>"; };
 		F9C5CB97289453B200548EEE /* TSConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSConstants.swift; sourceTree = "<group>"; };
@@ -13309,7 +13305,6 @@
 				6646572F2AC369EB0099DE1C /* PhoneNumberDiscoverabilityManager */,
 				6659A0242A7C112700066AB7 /* PreKeys */,
 				661170BF2ABA458800A1B16D /* TSAccountManager */,
-				F9C5C9BF289453B100548EEE /* AccountServiceClient.swift */,
 				D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */,
 				D9F399B12A96D65D001599EC /* LinkedDevicePniKeyManager.swift */,
 				5033D46629D76BD0007FEADA /* LocalIdentifiers.swift */,
@@ -13876,7 +13871,6 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CB87289453B200548EEE /* Factories.swift */,
-				F9C5CB91289453B200548EEE /* FakeAccountServiceClient.swift */,
 				F9C5CB90289453B200548EEE /* FakeContactsManager.swift */,
 				F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */,
 				F9C5CB84289453B200548EEE /* FakeStorageServiceManager.swift */,
@@ -16767,7 +16761,6 @@
 				6646572E2AC349C80099DE1C /* AccountAttributesUpdaterImpl.swift in Sources */,
 				F915A76C29CB669800EB6F68 /* AccountDataReport.swift in Sources */,
 				F915A76E29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift in Sources */,
-				F9C5CCA9289453B300548EEE /* AccountServiceClient.swift in Sources */,
 				50BE67532CAAF7DF006D7BC7 /* AdHocCallRecordManager.swift in Sources */,
 				728BFE4C2C5C3427008F20F1 /* Aes256Key.swift in Sources */,
 				667DEE5F2BC7175300EFF32D /* AllMediaCategory.swift in Sources */,
@@ -17035,7 +17028,6 @@
 				D9F6554429D798CC002A330A /* FactoryInitialization.swift in Sources */,
 				F9C5CC1D289453B300548EEE /* FailedMessagesJob.swift in Sources */,
 				7255A4C82B98DF3E00E95368 /* FailedStorySendDisplayController.swift in Sources */,
-				F9C5CE61289453B400548EEE /* FakeAccountServiceClient.swift in Sources */,
 				F9C5CE60289453B400548EEE /* FakeContactsManager.swift in Sources */,
 				F94BFA9528EBB0D800A5F34E /* FakeMessageSender.swift in Sources */,
 				F9C5CE54289453B400548EEE /* FakeStorageServiceManager.swift in Sources */,

@@ -21,7 +21,6 @@ public class AppSetup {
     /// that use the global state, and similarly use this type to inject a
     /// limited set of mock singletons.
     public struct TestDependencies {
-        let accountServiceClient: AccountServiceClient?
         let backupAttachmentDownloadManager: BackupAttachmentDownloadManager?
         let contactManager: (any ContactManager)?
         let dateProvider: DateProvider?
@@ -45,7 +44,6 @@ public class AppSetup {
         let webSocketFactory: (any WebSocketFactory)?
 
         public init(
-            accountServiceClient: AccountServiceClient? = nil,
             backupAttachmentDownloadManager: BackupAttachmentDownloadManager? = nil,
             contactManager: (any ContactManager)? = nil,
             dateProvider: DateProvider? = nil,
@@ -68,7 +66,6 @@ public class AppSetup {
             versionedProfiles: (any VersionedProfilesSwift)? = nil,
             webSocketFactory: (any WebSocketFactory)? = nil
         ) {
-            self.accountServiceClient = accountServiceClient
             self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
             self.contactManager = contactManager
             self.dateProvider = dateProvider
@@ -165,7 +162,6 @@ public class AppSetup {
             serviceClient: SignalServiceRestClient.shared
         )
 
-        let accountServiceClient = testDependencies.accountServiceClient ?? AccountServiceClient()
         let aciSignalProtocolStore = SignalProtocolStoreImpl(
             for: .aci,
             recipientIdFinder: recipientIdFinder,
@@ -773,7 +769,7 @@ public class AppSetup {
             linkedDevicePniKeyManager: linkedDevicePniKeyManager,
             messageProcessor: PreKey.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
             protocolStoreManager: signalProtocolStoreManager,
-            serviceClient: accountServiceClient,
+            serviceClient: SignalServiceRestClient.shared,
             chatConnectionManager: chatConnectionManager,
             tsAccountManager: tsAccountManager
         )
@@ -1408,7 +1404,6 @@ public class AppSetup {
             databaseStorage: databaseStorage,
             signalServiceAddressCache: signalServiceAddressCache,
             signalService: signalService,
-            accountServiceClient: accountServiceClient,
             storageServiceManager: storageServiceManager,
             sskPreferences: sskPreferences,
             groupsV2: groupsV2,

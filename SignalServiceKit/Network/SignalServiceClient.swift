@@ -6,11 +6,6 @@
 import Foundation
 import LibSignalClient
 
-@objc
-public enum SignalServiceError: Int, Error {
-    case obsoleteLinkedDevice
-}
-
 // MARK: -
 
 public protocol SignalServiceClient {

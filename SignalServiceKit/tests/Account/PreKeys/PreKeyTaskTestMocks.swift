@@ -15,11 +15,11 @@ import LibSignalClient
 //
 extension PreKey {
     enum Mocks {
-        typealias AccountServiceClient = _PreKey_AccountServiceClientMock
         typealias DateProvider = _PreKey_DateProviderMock
         typealias IdentityManager = _PreKey_IdentityManagerMock
         typealias LinkedDevicePniKeyManager = _PreKey_LinkedDevicePniKeyManagerMock
         typealias MessageProcessor = _PreKey_MessageProcessorMock
+        typealias SignalServiceClient = _PreKey_SignalServiceClientMock
     }
 }
 
@@ -76,7 +76,7 @@ class _PreKey_DateProviderMock {
     func targetDate() -> Date { return currentDate }
 }
 
-class _PreKey_AccountServiceClientMock: FakeAccountServiceClient {
+class _PreKey_SignalServiceClientMock: SignalServiceClient {
     var currentPreKeyCount: Int?
     var currentPqPreKeyCount: Int?
 
@@ -88,11 +88,11 @@ class _PreKey_AccountServiceClientMock: FakeAccountServiceClient {
     var pqPreKeyRecords: [SignalServiceKit.KyberPreKeyRecord]?
     var auth: ChatServiceAuth?
 
-    override func getPreKeysCount(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)> {
+    func getAvailablePreKeys(for identity: OWSIdentity) -> Promise<(ecCount: Int, pqCount: Int)> {
         return Promise.value((currentPreKeyCount!, currentPqPreKeyCount!))
     }
 
-    override func setPreKeys(
+    func registerPreKeys(
         for identity: OWSIdentity,
         signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord?,
         preKeyRecords: [SignalServiceKit.PreKeyRecord]?,
@@ -108,5 +108,24 @@ class _PreKey_AccountServiceClientMock: FakeAccountServiceClient {
             self.pqPreKeyRecords = pqPreKeyRecords
             self.auth = auth
         }
+    }
+
+    func setCurrentSignedPreKey(_ signedPreKey: SignalServiceKit.SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void> {
+        owsFail("Not implemented!")
+    }
+    func requestUDSenderCertificate(uuidOnly: Bool) -> Promise<Data> {
+        owsFail("Not implemented!")
+    }
+    func requestStorageAuth(chatServiceAuth: ChatServiceAuth) -> Promise<(username: String, password: String)> {
+        owsFail("Not implemented!")
+    }
+    func getRemoteConfig(auth: ChatServiceAuth) -> Promise<RemoteConfigResponse> {
+        owsFail("Not implemented!")
+    }
+    func updatePrimaryDeviceAccountAttributes(authedAccount: SignalServiceKit.AuthedAccount) async throws -> SignalServiceKit.AccountAttributes {
+        owsFail("Not implemented!")
+    }
+    func updateSecondaryDeviceCapabilities(_ capabilities: SignalServiceKit.AccountAttributes.Capabilities, authedAccount: SignalServiceKit.AuthedAccount) async throws {
+        owsFail("Not implemented!")
     }
 }

@@ -33,7 +33,6 @@ public class MockSSKEnvironment: NSObject {
             incrementalMessageTSAttachmentMigratorFactory: IncrementalMessageTSAttachmentMigratorFactoryMock(),
             messageBackupErrorPresenterFactory: NoOpMessageBackupErrorPresenterFactory(),
             testDependencies: AppSetup.TestDependencies(
-                accountServiceClient: FakeAccountServiceClient(),
                 contactManager: FakeContactsManager(),
                 groupV2Updates: MockGroupV2Updates(),
                 groupsV2: MockGroupsV2(),
