@@ -664,9 +664,6 @@ extension MessageBackup {
                 /// A "phone number chnaged" simple chat update was associated
                 /// with a non-contact recipient.
                 case phoneNumberChangeNotFromContact
-                /// An "identity key changed" simple chat update was associated
-                /// with a non-contact recipient.
-                case identityKeyChangeNotFromContact
                 /// An "end session" simple chat update was associated with a
                 /// non-contact recipient.
                 case endSessionNotFromContact
@@ -680,8 +677,8 @@ extension MessageBackup {
                 /// with a recipient with no ACI.
                 case paymentsActivatedNotFromAci
                 /// An "unsupported protocol version" simple chat update was
-                /// associated with a recipient with no ACI.
-                case unsupportedProtocolVersionNotFromAci
+                /// associated with a non-contact recipient.
+                case unsupportedProtocolVersionNotFromContact
 
                 /// An ArchivedPayment was unable to be crated from the
                 /// restored payment information.
@@ -901,13 +898,12 @@ extension MessageBackup {
                         .unrecognizedSimpleChatUpdate,
                         .verificationStateChangeNotFromContact,
                         .phoneNumberChangeNotFromContact,
-                        .identityKeyChangeNotFromContact,
                         .endSessionNotFromContact,
                         .decryptionErrorNotFromContact,
                         .paymentsActivationRequestNotFromAci,
                         .paymentsActivatedNotFromAci,
                         .unrecognizedPaymentTransaction,
-                        .unsupportedProtocolVersionNotFromAci,
+                        .unsupportedProtocolVersionNotFromContact,
                         .expirationTimerUpdateNotInContactThread,
                         .expirationTimerOverflowedLocalType,
                         .profileChangeUpdateInvalidNames,
@@ -1032,13 +1028,12 @@ extension MessageBackup {
                         .unrecognizedSimpleChatUpdate,
                         .verificationStateChangeNotFromContact,
                         .phoneNumberChangeNotFromContact,
-                        .identityKeyChangeNotFromContact,
                         .endSessionNotFromContact,
                         .decryptionErrorNotFromContact,
                         .paymentsActivationRequestNotFromAci,
                         .paymentsActivatedNotFromAci,
                         .unrecognizedPaymentTransaction,
-                        .unsupportedProtocolVersionNotFromAci,
+                        .unsupportedProtocolVersionNotFromContact,
                         .expirationTimerUpdateNotInContactThread,
                         .expirationTimerOverflowedLocalType,
                         .profileChangeUpdateInvalidNames,

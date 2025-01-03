@@ -531,7 +531,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
             case .contact(let contactAddress):
                 senderAddress = contactAddress.asInteropAddress()
             case .releaseNotesChannel, .group, .distributionList, .callLink:
-                return invalidProtoData(.unsupportedProtocolVersionNotFromAci)
+                return invalidProtoData(.unsupportedProtocolVersionNotFromContact)
             }
 
             simpleChatUpdateInteraction = .prebuiltInfoMessage(OWSUnknownProtocolVersionMessage(
