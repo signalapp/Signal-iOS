@@ -119,15 +119,11 @@ public extension TSInteraction {
             outgoingMessage.canBeRemotelyDeleted
         {
             let deleteForEveryoneAction = ActionSheetAction(
-                title: OWSLocalizedString(
-                    "MESSAGE_ACTION_DELETE_FOR_EVERYONE",
-                    comment: "The title for the action that deletes a message for all users in the conversation."
-                ),
+                title: CommonStrings.deleteForEveryoneButton,
                 style: .destructive
             ) { [weak self] _ in
-                self?.showDeleteForEveryoneConfirmationIfNecessary {
-                    guard self != nil else { return }
-
+                guard self != nil else { return }
+                Self.showDeleteForEveryoneConfirmationIfNecessary {
                     SSKEnvironment.shared.databaseStorageRef.write { tx in
                         let latestMessage = TSOutgoingMessage.anyFetchOutgoingMessage(
                             uniqueId: outgoingMessage.uniqueId,
@@ -174,7 +170,7 @@ public extension TSInteraction {
         fromViewController.presentActionSheet(actionSheetController)
     }
 
-    private func showDeleteForEveryoneConfirmationIfNecessary(completion: @escaping () -> Void) {
+    static func showDeleteForEveryoneConfirmationIfNecessary(completion: @escaping () -> Void) {
         guard !SSKEnvironment.shared.preferencesRef.wasDeleteForEveryoneConfirmationShown else { return completion() }
 
         OWSActionSheets.showConfirmationAlert(
@@ -182,10 +178,7 @@ public extension TSInteraction {
                 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION",
                 comment: "A one-time confirmation that you want to delete for everyone"
             ),
-            proceedTitle: OWSLocalizedString(
-                "MESSAGE_ACTION_DELETE_FOR_EVERYONE",
-                comment: "The title for the action that deletes a message for all users in the conversation."
-            ),
+            proceedTitle: CommonStrings.deleteForEveryoneButton,
             proceedStyle: .destructive) { _ in
             SSKEnvironment.shared.preferencesRef.setWasDeleteForEveryoneConfirmationShown()
             completion()
@@ -218,5 +211,14 @@ public extension TSInteraction {
                 )
             }
         }
+    }
+}
+
+extension CommonStrings {
+    static public var deleteForEveryoneButton: String {
+        OWSLocalizedString(
+            "MESSAGE_ACTION_DELETE_FOR_EVERYONE",
+            comment: "The title for the action that deletes a message for all users in the conversation."
+        )
     }
 }

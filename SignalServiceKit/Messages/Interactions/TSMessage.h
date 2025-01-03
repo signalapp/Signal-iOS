@@ -226,13 +226,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (void)updateWithRemotelyDeletedAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
-#pragma mark - Partial Delete
-
-- (void)removeBodyTextWithTransaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(removeBodyText(transaction:));
-
-- (void)removeMediaAndShareAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(removeMediaAndShareAttachments(transaction:));
-
 @end
 
 NS_ASSUME_NONNULL_END

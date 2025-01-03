@@ -511,35 +511,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                     }];
 }
 
-#pragma mark - Partial Delete
-
-- (void)removeBodyTextWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self removeOversizeTextAttachmentWithTx:transaction];
-    [self removeLinkPreviewAttachmentWithTx:transaction];
-    [self removeAllMentionsWithTransaction:transaction];
-    // That removed the attachments; now we remove the fields.
-    [self anyUpdateMessageWithTransaction:transaction
-                                    block:^(TSMessage *message) {
-                                        message.body = nil;
-                                        message.bodyRanges = nil;
-                                        message.linkPreview = nil;
-                                    }];
-}
-
-- (void)removeMediaAndShareAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self removeBodyMediaAttachmentsWithTx:transaction];
-    [self removeContactShareAvatarAttachmentWithTx:transaction];
-    [self removeStickerAttachmentWithTx:transaction];
-    // That removed the attachments; now we remove the whole contact share/sticker objects.
-    [self anyUpdateMessageWithTransaction:transaction
-                                    block:^(TSMessage *message) {
-                                        message.contactShare = nil;
-                                        message.messageSticker = nil;
-                                    }];
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

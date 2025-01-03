@@ -219,6 +219,8 @@ extension CVSelectionState {
             switch item.interactionType {
             case .threadDetails, .unknownThreadWarning, .defaultDisappearingMessageTimer, .typingIndicator, .unreadIndicator, .dateHeader:
                 return false
+            case .outgoingMessage where item.selectionType != .allContent:
+                return false
             case .info, .error, .call:
                 break
             case .incomingMessage, .outgoingMessage:
@@ -314,7 +316,20 @@ extension ConversationViewController {
         selectionItems: [CVSelectionItem],
         interactionDeleteManager: InteractionDeleteManager
     ) {
-        let deleteAction = ActionSheetAction(
+        let alert = ActionSheetController(
+            title: nil,
+            message: String.localizedStringWithFormat(
+                OWSLocalizedString(
+                    "DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d",
+                    tableName: "PluralAware",
+                    comment: "action sheet body. Embeds {{number of selected messages}} which will be deleted."
+                ),
+                selectionItems.count
+            )
+        )
+        alert.addAction(OWSActionSheets.cancelAction)
+
+        let deleteForMeAction = ActionSheetAction(
             title: CommonStrings.deleteForMeButton,
             style: .destructive
         ) { [weak self] _ in
@@ -339,20 +354,46 @@ extension ConversationViewController {
                 }
             }
         }
+        alert.addAction(deleteForMeAction)
 
-        let alert = ActionSheetController(
-            title: nil,
-            message: String.localizedStringWithFormat(
-                OWSLocalizedString(
-                    "DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d",
-                    tableName: "PluralAware",
-                    comment: "action sheet body. Embeds {{number of selected messages}} which will be deleted."
-                ),
-                selectionItems.count
-            )
-        )
-        alert.addAction(OWSActionSheets.cancelAction)
-        alert.addAction(deleteAction)
+        let canDeleteForEveryone: Bool = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            selectionItems.allSatisfy { selectionItem in
+                TSOutgoingMessage.anyFetchOutgoingMessage(
+                    uniqueId: selectionItem.interactionId,
+                    transaction: tx
+                )?.canBeRemotelyDeleted ?? false
+            }
+        }
+
+        if canDeleteForEveryone {
+            let deleteForEveryoneAction = ActionSheetAction(
+                title: CommonStrings.deleteForEveryoneButton,
+                style: .destructive
+            ) { [weak self] _ in
+                guard let self else { return }
+                TSInteraction.showDeleteForEveryoneConfirmationIfNecessary {
+                    ModalActivityIndicatorViewController.present(
+                        fromViewController: self,
+                        canCancel: false
+                    ) { @MainActor [weak self] modalActivityIndicator in
+                        guard let self else { return }
+                        let thread = self.thread
+                        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                            Self.deleteSelectedItemsForEveryone(
+                                selectionItems: selectionItems,
+                                thread: thread,
+                                tx: tx
+                            )
+                        }
+
+                        modalActivityIndicator.dismiss {
+                            self.uiMode = .normal
+                        }
+                    }
+                }
+            }
+            alert.addAction(deleteForEveryoneAction)
+        }
 
         present(alert, animated: true)
     }
@@ -363,24 +404,11 @@ extension ConversationViewController {
         interactionDeleteManager: InteractionDeleteManager
     ) {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
-            var interactionsToDelete = [TSInteraction]()
-
-            for selectionItem in selectionItems {
-                guard let interaction = TSInteraction.anyFetch(
-                    uniqueId: selectionItem.interactionId,
+            let interactionsToDelete = selectionItems.compactMap { item in
+                TSInteraction.anyFetch(
+                    uniqueId: item.interactionId,
                     transaction: tx
-                ) else { continue }
-
-                let wasPartiallyDeleted = attemptPartialDelete(
-                    interaction,
-                    selectionType: selectionItem.selectionType,
-                    tx: tx
                 )
-
-                if !wasPartiallyDeleted {
-                    // If we didn't partial-delete, we should full-delete.
-                    interactionsToDelete.append(interaction)
-                }
             }
 
             interactionDeleteManager.delete(
@@ -393,44 +421,53 @@ extension ConversationViewController {
         }
     }
 
-    /// Attempt to partially-delete the message contents without actually
-    /// deleting the interaction.
-    /// - Returns
-    /// Whether the interaction was partially-deleted.
-    private static func attemptPartialDelete(
-        _ interaction: TSInteraction,
-        selectionType: CVSelectionType,
+    private static func deleteSelectedItemsForEveryone(
+        selectionItems: [CVSelectionItem],
+        thread: TSThread,
         tx: SDSAnyWriteTransaction
-    ) -> Bool {
-        if selectionType == .allContent { return false }
-        owsAssertDebug(
-            selectionType == .primaryContent || selectionType == .secondaryContent,
-            "Unexpected selection type: \(selectionType.rawValue)!"
-        )
-
-        guard let message = interaction as? TSMessage else {
-            return false
+    ) {
+        guard !selectionItems.isEmpty else { return }
+        guard let latestThread = TSThread.anyFetch(uniqueId: thread.uniqueId, transaction: tx) else {
+            return owsFailDebug("Trying to delete messages without a thread.")
         }
 
-        guard
-            let componentState = CVLoader.buildStandaloneComponentState(
-                interaction: interaction,
-                spoilerState: SpoilerRenderState(),
+        guard let aci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
+            return owsFailDebug("Local ACI missing during message deletion.")
+        }
+
+        selectionItems.forEach {
+            guard let message = TSOutgoingMessage.anyFetchOutgoingMessage(
+                uniqueId: $0.interactionId,
                 transaction: tx
-            ),
-            componentState.hasPrimaryAndSecondaryContentForSelection
-        else {
-            owsFailDebug("Failed to load or invalid component state!")
-            return false
-        }
+            ) else {
+                return
+            }
 
-        if selectionType == .primaryContent {
-            message.removeMediaAndShareAttachments(transaction: tx)
-        } else {
-            message.removeBodyText(transaction: tx)
-        }
+            let deleteMessage = TSOutgoingDeleteMessage(
+                thread: latestThread,
+                message: message,
+                transaction: tx
+            )
 
-        return true
+            message.updateWithRecipientAddressStates(
+                deleteMessage.recipientAddressStates,
+                tx: tx
+            )
+
+            _ = TSMessage.tryToRemotelyDeleteMessage(
+                fromAuthor: aci,
+                sentAtTimestamp: message.timestamp,
+                threadUniqueId: latestThread.uniqueId,
+                serverTimestamp: 0, // TSOutgoingMessage won't have server timestamp.
+                transaction: tx
+            )
+
+            let preparedMessage = PreparedOutgoingMessage.preprepared(
+                transientMessageWithoutAttachments: deleteMessage
+            )
+
+            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
+        }
     }
 
     func didTapForwardSelectedItems() {
