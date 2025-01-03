@@ -157,6 +157,7 @@ public class AppSetup {
         let remoteConfigManager = testDependencies.remoteConfigManager ?? RemoteConfigManagerImpl(
             appExpiry: appExpiry,
             appReadiness: appReadiness,
+            dateProvider: dateProvider,
             db: db,
             tsAccountManager: tsAccountManager,
             serviceClient: SignalServiceRestClient.shared

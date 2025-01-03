@@ -627,7 +627,12 @@ public class MockRemoteConfigProvider: RemoteConfigProvider {
 public protocol RemoteConfigManager: RemoteConfigProvider {
     func warmCaches()
     var cachedConfig: RemoteConfig? { get }
-    func refresh(account: AuthedAccount) -> Promise<RemoteConfig>
+    /// Refresh the remote config from the server if either:
+    /// * has not been fetched this app launch
+    /// * its been too long since we last fetched it
+    /// and returns the latest fetched remote config value, whether just fetched
+    /// or an eligible cached value.
+    func refreshIfNeeded(account: AuthedAccount) async throws -> RemoteConfig
 }
 
 // MARK: -
@@ -639,8 +644,8 @@ public class StubbableRemoteConfigManager: RemoteConfigManager {
 
     public func warmCaches() {}
 
-    public func refresh(account: AuthedAccount) -> Promise<RemoteConfig> {
-        return .value(cachedConfig!)
+    public func refreshIfNeeded(account: AuthedAccount) async throws -> RemoteConfig {
+        return cachedConfig!
     }
 
     public func currentConfig() -> RemoteConfig {
@@ -655,6 +660,7 @@ public class StubbableRemoteConfigManager: RemoteConfigManager {
 public class RemoteConfigManagerImpl: RemoteConfigManager {
     private let appExpiry: AppExpiry
     private let appReadiness: AppReadiness
+    private let dateProvider: DateProvider
     private let db: any DB
     private let keyValueStore: KeyValueStore
     private let tsAccountManager: TSAccountManager
@@ -685,12 +691,14 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     public init(
         appExpiry: AppExpiry,
         appReadiness: AppReadiness,
+        dateProvider: @escaping DateProvider,
         db: any DB,
         tsAccountManager: TSAccountManager,
         serviceClient: SignalServiceClient
     ) {
         self.appExpiry = appExpiry
         self.appReadiness = appReadiness
+        self.dateProvider = dateProvider
         self.db = db
         self.keyValueStore = KeyValueStore(collection: "RemoteConfigManager")
         self.tsAccountManager = tsAccountManager
@@ -700,7 +708,9 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
             guard self.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 return
             }
-            self.scheduleNextRefresh()
+            Task {
+                try await self.refreshIfNeeded()
+            }
         }
 
         NotificationCenter.default.addObserver(
@@ -719,8 +729,12 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
         guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
         Logger.info("Refreshing and immediately applying new flags due to new registration.")
-        refresh().catch { error in
-            Logger.error("Failed to update remote config after registration change \(error)")
+        Task {
+            do {
+                try await refreshIfNeeded(force: true)
+            } catch let error {
+                Logger.error("Failed to update remote config after registration change \(error)")
+            }
         }
     }
 
@@ -765,181 +779,191 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     }
 
     private static let refreshInterval = 2 * kHourInterval
-    private var refreshTimer: Timer?
+    private let refreshTaskQueue = SerialTaskQueue()
 
-    private var lastAttempt: Date = .distantPast
+    /// Nil if no attempt made this app session (not persisted across launches)
+    /// Should only be accessed within `refreshTaskQueue`
+    private var lastAttempt: Date?
     private var consecutiveFailures: UInt = 0
-    private var nextPermittedAttempt: Date {
-        AssertIsOnMainThread()
-        let backoffDelay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: consecutiveFailures)
-        let earliestPermittedAttempt = lastAttempt.addingTimeInterval(backoffDelay)
 
-        let lastSuccess = db.read { keyValueStore.getLastFetched(transaction: $0) }
-        let nextScheduledRefresh = (lastSuccess ?? .distantPast).addingTimeInterval(Self.refreshInterval)
-
-        return max(earliestPermittedAttempt, nextScheduledRefresh)
-    }
-
-    private func scheduleNextRefresh() {
-        AssertIsOnMainThread()
-        refreshTimer?.invalidate()
-        refreshTimer = nil
-        let nextAttempt = nextPermittedAttempt
-
-        if nextAttempt.isBeforeNow {
-            refresh()
-        } else {
-            refreshTimer = Timer.scheduledTimer(
-                withTimeInterval: nextAttempt.timeIntervalSinceNow,
-                repeats: false
-            ) { [weak self] timer in
-                timer.invalidate()
-                self?.refresh()
-            }
-        }
+    @discardableResult
+    public func refreshIfNeeded(account: AuthedAccount = .implicit()) async throws -> RemoteConfig {
+        return try await self.refreshIfNeeded(account: account, force: false)
     }
 
     @discardableResult
-    public func refresh(account: AuthedAccount = .implicit()) -> Promise<RemoteConfig> {
-        AssertIsOnMainThread()
-        lastAttempt = Date()
+    private func refreshIfNeeded(account: AuthedAccount = .implicit(), force: Bool) async throws -> RemoteConfig {
+        return try await refreshTaskQueue.enqueue(operation: {
+            func msToNextRefresh() -> UInt64 {
+                let now = self.dateProvider()
+                let nowMs = now.ows_millisecondsSince1970
 
-        let promise = firstly(on: DispatchQueue.global()) {
-            self.serviceClient.getRemoteConfig(auth: account.chatServiceAuth)
-        }.map(on: DispatchQueue.global()) { (fetchedConfig: RemoteConfigResponse) in
+                let backoffDelay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: self.consecutiveFailures)
+                let earliestPermittedAttempt = (self.lastAttempt ?? .distantPast).addingTimeInterval(backoffDelay)
 
-            let clockSkew: TimeInterval
-            if let serverEpochTimeSeconds = fetchedConfig.serverEpochTimeSeconds {
-                let dateAccordingToServer = Date(timeIntervalSince1970: TimeInterval(serverEpochTimeSeconds))
-                clockSkew = dateAccordingToServer.timeIntervalSince(Date())
+                let lastSuccess = self.db.read { self.keyValueStore.getLastFetched(transaction: $0) }
+                let nextScheduledRefresh = (lastSuccess ?? .distantPast).addingTimeInterval(Self.refreshInterval)
+
+                let nextAttemptDate = max(earliestPermittedAttempt, nextScheduledRefresh)
+
+                if now >= nextAttemptDate {
+                    return 0
+                } else {
+                    return nextAttemptDate.ows_millisecondsSince1970 - nowMs
+                }
+            }
+
+            if !force, msToNextRefresh() > 0, let cached = self._cachedConfig.get() {
+                return cached
             } else {
-                clockSkew = 0
-            }
+                let result = await Result(catching: { try await self._refresh(account: account) })
 
-            // We filter the received config down to just the supported flags. This
-            // ensures if we have a sticky flag, it doesn't get inadvertently set
-            // because we cached a value before it went public. e.g. if we set a sticky
-            // flag to 100% in beta then turn it back to 0% before going to production.
-            var isEnabledFlags = [String: Bool]()
-            var valueFlags = [String: String]()
-            var timeGatedFlags = [String: Date]()
-            fetchedConfig.items.forEach { (key: String, item: RemoteConfigItem) in
-                switch item {
-                case .isEnabled(let isEnabled):
-                    if IsEnabledFlag(rawValue: key) != nil {
-                        isEnabledFlags[key] = isEnabled
-                    }
-                case .value(let value):
-                    if ValueFlag(rawValue: key) != nil {
-                        valueFlags[key] = value
-                    } else if TimeGatedFlag(rawValue: key) != nil {
-                        if let secondsSinceEpoch = TimeInterval(value) {
-                            timeGatedFlags[key] = Date(timeIntervalSince1970: secondsSinceEpoch)
-                        } else {
-                            owsFailDebug("Invalid value: \(value) \(type(of: value))")
-                        }
-                    }
-                }
-            }
-
-            // Persist all flags in the database to be applied on next launch.
-
-            self.db.write { transaction in
-                // Preserve any sticky flags.
-                if let existingConfig = self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: transaction) {
-                    existingConfig.forEach { (key: String, value: Bool) in
-                        // Preserve "is enabled" flags if they are sticky and already set.
-                        if let flag = IsEnabledFlag(rawValue: key), flag.isSticky, value == true {
-                            isEnabledFlags[key] = value
-                        }
-                    }
-                }
-                if let existingConfig = self.keyValueStore.getRemoteConfigValueFlags(transaction: transaction) {
-                    existingConfig.forEach { (key: String, value: String) in
-                        // Preserve "value" flags if they are sticky and already set and missing
-                        // from the fetched config.
-                        if let flag = ValueFlag(rawValue: key), flag.isSticky, valueFlags[key] == nil {
-                            valueFlags[key] = value
-                        }
-                    }
-                }
-                if let existingConfig = self.keyValueStore.getRemoteConfigTimeGatedFlags(transaction: transaction) {
-                    existingConfig.forEach { (key: String, value: Date) in
-                        // Preserve "time gated" flags if they are sticky and already set and
-                        // missing from the fetched config.
-                        if let flag = TimeGatedFlag(rawValue: key), flag.isSticky, timeGatedFlags[key] == nil {
-                            timeGatedFlags[key] = value
-                        }
-                    }
+                // Note: have to make sure we update `lastAttempt` and
+                // `consecutiveFailures` before calling msToNextRefresh
+                // again below. `_refresh` updates `keyValueStore.lastFetched`.
+                self.lastAttempt = self.dateProvider()
+                switch result {
+                case .success:
+                    self.consecutiveFailures = 0
+                case .failure(let error):
+                    Logger.error("error: \(error)")
+                    self.consecutiveFailures += 1
                 }
 
-                self.keyValueStore.setClockSkew(clockSkew, transaction: transaction)
-                self.keyValueStore.setRemoteConfigIsEnabledFlags(isEnabledFlags, transaction: transaction)
-                self.keyValueStore.setRemoteConfigValueFlags(valueFlags, transaction: transaction)
-                self.keyValueStore.setRemoteConfigTimeGatedFlags(timeGatedFlags, transaction: transaction)
-                self.keyValueStore.setLastFetched(Date(), transaction: transaction)
+                // Kick off a task for the next refresh
+                let msToNextRefresh = msToNextRefresh()
+                Task {
+                    try await Task.sleep(nanoseconds: msToNextRefresh * NSEC_PER_MSEC)
+                    try await self.refreshIfNeeded()
+                }
 
-                self.checkClientExpiration(valueFlags: valueFlags)
+                return try result.get()
             }
+        }).value
+    }
 
-            // As a special case, persist RingRTC field trials. See comments in
-            // ``RingrtcFieldTrials`` for details.
-            RingrtcFieldTrials.saveNwPathMonitorTrialState(
-                isEnabled: {
-                    let flag = IsEnabledFlag.ringrtcNwPathMonitorTrialKillSwitch
-                    let isKilled = isEnabledFlags[flag.rawValue] ?? false
-                    return !isKilled
-                }(),
-                in: CurrentAppContext().appUserDefaults()
-            )
-            // Similarly, persist the choice of libsignal for the chat websockets.
-            let shouldUseLibsignalForIdentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportUseLibsignalAuth.rawValue] ?? false
-            ChatConnectionManagerImpl.saveShouldUseLibsignalForIdentifiedWebsocket(
-                shouldUseLibsignalForIdentifiedWebsocket,
-                in: CurrentAppContext().appUserDefaults()
-            )
-            let shouldUseLibsignalForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportUseLibsignal.rawValue] ?? false
-            ChatConnectionManagerImpl.saveShouldUseLibsignalForUnidentifiedWebsocket(
-                shouldUseLibsignalForUnidentifiedWebsocket,
-                in: CurrentAppContext().appUserDefaults()
-            )
-            let enableShadowingForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportShadowingEnabled.rawValue] ?? false
-            ChatConnectionManagerImpl.saveEnableShadowingForUnidentifiedWebsocket(
-                enableShadowingForUnidentifiedWebsocket,
-                in: CurrentAppContext().appUserDefaults()
-            )
+    /// should only be called within `refreshTaskQueue`
+    private func _refresh(account: AuthedAccount) async throws -> RemoteConfig {
+        let fetchedConfig = try await self.serviceClient.getRemoteConfig(auth: account.chatServiceAuth).awaitable()
 
-            self.consecutiveFailures = 0
-
-            // This has *all* the new values, even those that can't be hot-swapped.
-            let newConfig = RemoteConfig(
-                clockSkew: clockSkew,
-                isEnabledFlags: isEnabledFlags,
-                valueFlags: valueFlags,
-                timeGatedFlags: timeGatedFlags
-            )
-
-            // This has hot-swappable new values and non-hot-swappable old values.
-            let mergedConfig = self.updateCachedConfig { oldConfig in
-                return (oldConfig ?? .emptyConfig).mergingHotSwappableFlags(from: newConfig)
-            }
-            self.warmSecondaryCaches(valueFlags: mergedConfig.valueFlags)
-
-            newConfig.logFlags()
-
-            // We always return `newConfig` because callers may want to see the
-            // newly-fetched, non-hot-swappable values for themselves.
-            return newConfig
+        let clockSkew: TimeInterval
+        if let serverEpochTimeSeconds = fetchedConfig.serverEpochTimeSeconds {
+            let dateAccordingToServer = Date(timeIntervalSince1970: TimeInterval(serverEpochTimeSeconds))
+            clockSkew = dateAccordingToServer.timeIntervalSince(Date())
+        } else {
+            clockSkew = 0
         }
 
-        promise.catch(on: DispatchQueue.main) { error in
-            Logger.error("error: \(error)")
-            self.consecutiveFailures += 1
-        }.ensure(on: DispatchQueue.main) {
-            self.scheduleNextRefresh()
-        }.cauterize()
+        // We filter the received config down to just the supported flags. This
+        // ensures if we have a sticky flag, it doesn't get inadvertently set
+        // because we cached a value before it went public. e.g. if we set a sticky
+        // flag to 100% in beta then turn it back to 0% before going to production.
+        var isEnabledFlags = [String: Bool]()
+        var valueFlags = [String: String]()
+        var timeGatedFlags = [String: Date]()
+        fetchedConfig.items.forEach { (key: String, item: RemoteConfigItem) in
+            switch item {
+            case .isEnabled(let isEnabled):
+                if IsEnabledFlag(rawValue: key) != nil {
+                    isEnabledFlags[key] = isEnabled
+                }
+            case .value(let value):
+                if ValueFlag(rawValue: key) != nil {
+                    valueFlags[key] = value
+                } else if TimeGatedFlag(rawValue: key) != nil {
+                    if let secondsSinceEpoch = TimeInterval(value) {
+                        timeGatedFlags[key] = Date(timeIntervalSince1970: secondsSinceEpoch)
+                    } else {
+                        owsFailDebug("Invalid value: \(value) \(type(of: value))")
+                    }
+                }
+            }
+        }
 
-        return promise
+        // Persist all flags in the database to be applied on next launch.
+
+        await self.db.awaitableWrite { transaction in
+            // Preserve any sticky flags.
+            if let existingConfig = self.keyValueStore.getRemoteConfigIsEnabledFlags(transaction: transaction) {
+                existingConfig.forEach { (key: String, value: Bool) in
+                    // Preserve "is enabled" flags if they are sticky and already set.
+                    if let flag = IsEnabledFlag(rawValue: key), flag.isSticky, value == true {
+                        isEnabledFlags[key] = value
+                    }
+                }
+            }
+            if let existingConfig = self.keyValueStore.getRemoteConfigValueFlags(transaction: transaction) {
+                existingConfig.forEach { (key: String, value: String) in
+                    // Preserve "value" flags if they are sticky and already set and missing
+                    // from the fetched config.
+                    if let flag = ValueFlag(rawValue: key), flag.isSticky, valueFlags[key] == nil {
+                        valueFlags[key] = value
+                    }
+                }
+            }
+            if let existingConfig = self.keyValueStore.getRemoteConfigTimeGatedFlags(transaction: transaction) {
+                existingConfig.forEach { (key: String, value: Date) in
+                    // Preserve "time gated" flags if they are sticky and already set and
+                    // missing from the fetched config.
+                    if let flag = TimeGatedFlag(rawValue: key), flag.isSticky, timeGatedFlags[key] == nil {
+                        timeGatedFlags[key] = value
+                    }
+                }
+            }
+
+            self.keyValueStore.setClockSkew(clockSkew, transaction: transaction)
+            self.keyValueStore.setRemoteConfigIsEnabledFlags(isEnabledFlags, transaction: transaction)
+            self.keyValueStore.setRemoteConfigValueFlags(valueFlags, transaction: transaction)
+            self.keyValueStore.setRemoteConfigTimeGatedFlags(timeGatedFlags, transaction: transaction)
+            self.keyValueStore.setLastFetched(Date(), transaction: transaction)
+
+            self.checkClientExpiration(valueFlags: valueFlags)
+        }
+
+        // As a special case, persist RingRTC field trials. See comments in
+        // ``RingrtcFieldTrials`` for details.
+        RingrtcFieldTrials.saveNwPathMonitorTrialState(
+            isEnabled: {
+                let flag = IsEnabledFlag.ringrtcNwPathMonitorTrialKillSwitch
+                let isKilled = isEnabledFlags[flag.rawValue] ?? false
+                return !isKilled
+            }(),
+            in: CurrentAppContext().appUserDefaults()
+        )
+        // Similarly, persist the choice of libsignal for the chat websockets.
+        let shouldUseLibsignalForIdentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportUseLibsignalAuth.rawValue] ?? false
+        ChatConnectionManagerImpl.saveShouldUseLibsignalForIdentifiedWebsocket(
+            shouldUseLibsignalForIdentifiedWebsocket,
+            in: CurrentAppContext().appUserDefaults()
+        )
+        let shouldUseLibsignalForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportUseLibsignal.rawValue] ?? false
+        ChatConnectionManagerImpl.saveShouldUseLibsignalForUnidentifiedWebsocket(
+            shouldUseLibsignalForUnidentifiedWebsocket,
+            in: CurrentAppContext().appUserDefaults()
+        )
+        let enableShadowingForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportShadowingEnabled.rawValue] ?? false
+        ChatConnectionManagerImpl.saveEnableShadowingForUnidentifiedWebsocket(
+            enableShadowingForUnidentifiedWebsocket,
+            in: CurrentAppContext().appUserDefaults()
+        )
+
+        // This has *all* the new values, even those that can't be hot-swapped.
+        let newConfig = RemoteConfig(
+            clockSkew: clockSkew,
+            isEnabledFlags: isEnabledFlags,
+            valueFlags: valueFlags,
+            timeGatedFlags: timeGatedFlags
+        )
+
+        // This has hot-swappable new values and non-hot-swappable old values.
+        let mergedConfig = self.updateCachedConfig { oldConfig in
+            return (oldConfig ?? .emptyConfig).mergingHotSwappableFlags(from: newConfig)
+        }
+        self.warmSecondaryCaches(valueFlags: mergedConfig.valueFlags)
+
+        newConfig.logFlags()
+
+        return mergedConfig
     }
 
     // MARK: - Client Expiration
