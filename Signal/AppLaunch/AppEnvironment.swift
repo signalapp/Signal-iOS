@@ -91,18 +91,15 @@ public class AppEnvironment: NSObject {
             let linkedDevicePniKeyManager = DependenciesBridge.shared.linkedDevicePniKeyManager
             let masterKeySyncManager = DependenciesBridge.shared.masterKeySyncManager
             let pniHelloWorldManager = DependenciesBridge.shared.pniHelloWorldManager
-            let schedulers = DependenciesBridge.shared.schedulers
 
             if isPrimaryDevice {
-                firstly(on: schedulers.sync) { () -> Promise<Void> in
-                    learnMyOwnPniManager.learnMyOwnPniIfNecessary()
-                }
-                .done(on: schedulers.global()) {
-                    db.write { tx in
+                Task {
+                    try await learnMyOwnPniManager.learnMyOwnPniIfNecessary()
+
+                    await db.awaitableWrite { tx in
                         pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
                     }
                 }
-                .cauterize()
             } else {
                 db.read { tx in
                     linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary(tx: tx)

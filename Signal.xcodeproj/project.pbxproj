@@ -883,7 +883,7 @@
 		6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */; };
 		6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */; };
 		6652DF6C2A04828800EF90E7 /* StoryMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */; };
-		66533E3729B7B56000E8D928 /* WhoAmIRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66533E3629B7B56000E8D928 /* WhoAmIRequestFactory.swift */; };
+		66533E3729B7B56000E8D928 /* WhoAmIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66533E3629B7B56000E8D928 /* WhoAmIManager.swift */; };
 		66533E3A29B9502100E8D928 /* RegistrationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66533E3929B9502100E8D928 /* RegistrationMode.swift */; };
 		66533E3C29BA8BB200E8D928 /* AuthedAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66533E3B29BA8BB200E8D928 /* AuthedAccount.swift */; };
 		66583EFF2B9246C400821D05 /* AttachmentStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66583EFE2B9246C400821D05 /* AttachmentStoreImpl.swift */; };
@@ -4636,7 +4636,7 @@
 		6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBody.swift; sourceTree = "<group>"; };
 		6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBodyTests.swift; sourceTree = "<group>"; };
 		6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryMessageAttachment.swift; sourceTree = "<group>"; };
-		66533E3629B7B56000E8D928 /* WhoAmIRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoAmIRequestFactory.swift; sourceTree = "<group>"; };
+		66533E3629B7B56000E8D928 /* WhoAmIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhoAmIManager.swift; sourceTree = "<group>"; };
 		66533E3929B9502100E8D928 /* RegistrationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationMode.swift; sourceTree = "<group>"; };
 		66533E3B29BA8BB200E8D928 /* AuthedAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthedAccount.swift; sourceTree = "<group>"; };
 		66583EFE2B9246C400821D05 /* AttachmentStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStoreImpl.swift; sourceTree = "<group>"; };
@@ -9186,7 +9186,7 @@
 		66533E3529B7B53500E8D928 /* WhoAmI */ = {
 			isa = PBXGroup;
 			children = (
-				66533E3629B7B56000E8D928 /* WhoAmIRequestFactory.swift */,
+				66533E3629B7B56000E8D928 /* WhoAmIManager.swift */,
 			);
 			path = WhoAmI;
 			sourceTree = "<group>";
@@ -17928,7 +17928,7 @@
 				500824CE292737FC005A5DC0 /* WebSocketPromise.swift in Sources */,
 				F9C5CC97289453B300548EEE /* WebSocketProto.swift in Sources */,
 				F9C5CCA2289453B300548EEE /* WebSocketResources.pb.swift in Sources */,
-				66533E3729B7B56000E8D928 /* WhoAmIRequestFactory.swift in Sources */,
+				66533E3729B7B56000E8D928 /* WhoAmIManager.swift in Sources */,
 				72454E802C9BCEA80084B483 /* YDBStorage.swift in Sources */,
 				668E403C2BE43752004B6730 /* YYImage+Attachment.swift in Sources */,
 				724D47B02B97BE13001BE973 /* ZkParamsMigrator.swift in Sources */,

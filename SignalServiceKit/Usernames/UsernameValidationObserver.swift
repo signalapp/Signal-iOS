@@ -18,8 +18,8 @@ public class UsernameValidationObserver {
         observeNotifications()
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.database.read { transaction in
-                self.manager.validateUsernameIfNecessary(transaction)
+            Task {
+                await self.manager.validateUsernameIfNecessary()
             }
         }
     }
@@ -38,8 +38,8 @@ public class UsernameValidationObserver {
     func didBecomeActive() {
         AssertIsOnMainThread()
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.database.read { transaction in
-                self.manager.validateUsernameIfNecessary(transaction)
+            Task {
+                await self.manager.validateUsernameIfNecessary()
             }
         }
     }

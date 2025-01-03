@@ -29,7 +29,6 @@ public protocol SignalServiceClient {
     func setCurrentSignedPreKey(_ signedPreKey: SignalServiceKit.SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void>
     func requestUDSenderCertificate(uuidOnly: Bool) -> Promise<Data>
     func updatePrimaryDeviceAccountAttributes(authedAccount: AuthedAccount) async throws -> AccountAttributes
-    func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI>
     func requestStorageAuth(chatServiceAuth: ChatServiceAuth) -> Promise<(username: String, password: String)>
     func getRemoteConfig(auth: ChatServiceAuth) -> Promise<RemoteConfigResponse>
 
@@ -147,19 +146,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 
         return attributes
-    }
-
-    public func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {
-        let request = WhoAmIRequestFactory.whoAmIRequest(auth: .implicit())
-
-        return firstly {
-            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
-            guard let json = response.responseBodyData else {
-                throw OWSAssertionError("Missing or invalid JSON.")
-            }
-            return try JSONDecoder().decode(WhoAmIRequestFactory.Responses.WhoAmI.self, from: json)
-        }
     }
 
     public func requestStorageAuth(chatServiceAuth: ChatServiceAuth) -> Promise<(username: String, password: String)> {

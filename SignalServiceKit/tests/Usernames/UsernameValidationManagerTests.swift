@@ -12,59 +12,48 @@ import XCTest
 final class UsernameValidationManagerTest: XCTestCase {
     typealias Username = String
 
-    private var mockAccountServiceClient: MockAccountServiceClient!
     private var mockContext: UsernameValidationManagerImpl.Context!
     private var mockDB: (any DB)!
     private var mockLocalUsernameManager: MockLocalUsernameManager!
     private var mockMessageProcessor: MockMessageProcessor!
-    private var mockScheduler: TestScheduler!
     private var mockStorageServiceManager: MockStorageServiceManager!
     private var mockUsernameLinkManager: MockUsernameLinkManager!
+    private var mockWhoAmIManager: MockWhoAmIManager!
 
     private var validationManager: UsernameValidationManagerImpl!
 
     override func setUp() {
-        mockAccountServiceClient = MockAccountServiceClient()
         mockDB = InMemoryDB()
         mockLocalUsernameManager = MockLocalUsernameManager()
         mockMessageProcessor = MockMessageProcessor()
-        mockScheduler = TestScheduler()
         mockStorageServiceManager = MockStorageServiceManager()
         mockUsernameLinkManager = MockUsernameLinkManager()
+        mockWhoAmIManager = MockWhoAmIManager()
 
         validationManager = UsernameValidationManagerImpl(context: .init(
-            accountServiceClient: mockAccountServiceClient,
             database: mockDB,
             localUsernameManager: mockLocalUsernameManager,
             messageProcessor: mockMessageProcessor,
-            schedulers: TestSchedulers(scheduler: mockScheduler),
             storageServiceManager: mockStorageServiceManager,
-            usernameLinkManager: mockUsernameLinkManager
+            usernameLinkManager: mockUsernameLinkManager,
+            whoAmIManager: mockWhoAmIManager
         ))
     }
 
     override func tearDown() {
-        mockAccountServiceClient.whoamiResponse.ensureUnset()
+        mockWhoAmIManager.whoamiResponse.ensureUnset()
         mockMessageProcessor.processingResult.ensureUnset()
         mockStorageServiceManager.pendingRestoreResult.ensureUnset()
         mockUsernameLinkManager.decryptLinkResult.ensureUnset()
     }
 
-    private func runRunRun() {
-        mockDB.read { tx in
-            validationManager.validateUsernameIfNecessary(tx)
-        }
-
-        mockScheduler.runUntilIdle()
-    }
-
-    func testUnsetValidationSuccessful() {
+    func testUnsetValidationSuccessful() async {
         mockLocalUsernameManager.startingUsernameState = .unset
         mockMessageProcessor.processingResult = .value(())
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockAccountServiceClient.whoamiResponse = .value(.noRemoteUsername)
+        mockWhoAmIManager.whoamiResponse = .value(.noRemoteUsername)
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNotNil(validationManager.lastValidationDate(tx))
@@ -73,13 +62,13 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testUnsetValidationFailsIfWhoamiFails() {
+    func testUnsetValidationFailsIfWhoamiFails() async {
         mockLocalUsernameManager.startingUsernameState = .unset
         mockMessageProcessor.processingResult = .value(())
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockAccountServiceClient.whoamiResponse = .error()
+        mockWhoAmIManager.whoamiResponse = .error()
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNil(validationManager.lastValidationDate(tx))
@@ -88,13 +77,13 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testUnsetValidationFailsIfRemoteUsernamePresent() {
+    func testUnsetValidationFailsIfRemoteUsernamePresent() async {
         mockLocalUsernameManager.startingUsernameState = .unset
         mockMessageProcessor.processingResult = .value(())
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockAccountServiceClient.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
+        mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNil(validationManager.lastValidationDate(tx))
@@ -103,17 +92,17 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testAvailableValidationSuccessful() {
+    func testAvailableValidationSuccessful() async {
         mockLocalUsernameManager.startingUsernameState = .available(
             username: "boba_fett.42",
             usernameLink: .mocked
         )
         mockMessageProcessor.processingResult = .value(())
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockAccountServiceClient.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
+        mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
         mockUsernameLinkManager.decryptLinkResult = .value("boba_fett.42")
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNotNil(validationManager.lastValidationDate(tx))
@@ -122,16 +111,16 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testAvailableValidationFailsIfWhoamiFails() {
+    func testAvailableValidationFailsIfWhoamiFails() async {
         mockLocalUsernameManager.startingUsernameState = .available(
             username: "boba_fett.42",
             usernameLink: .mocked
         )
         mockMessageProcessor.processingResult = .value(())
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockAccountServiceClient.whoamiResponse = .error()
+        mockWhoAmIManager.whoamiResponse = .error()
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNil(validationManager.lastValidationDate(tx))
@@ -140,16 +129,16 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testAvailableValidationFailsIfRemoteUsernameMismatch() {
+    func testAvailableValidationFailsIfRemoteUsernameMismatch() async {
         mockLocalUsernameManager.startingUsernameState = .available(
             username: "boba_fett.42",
             usernameLink: .mocked
         )
         mockMessageProcessor.processingResult = .value(())
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockAccountServiceClient.whoamiResponse = .value(.withRemoteUsername("boba_fett.43"))
+        mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.43"))
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNil(validationManager.lastValidationDate(tx))
@@ -158,17 +147,17 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testAvailableValidationFailsIfLinkDecryptFails() {
+    func testAvailableValidationFailsIfLinkDecryptFails() async {
         mockLocalUsernameManager.startingUsernameState = .available(
             username: "boba_fett.42",
             usernameLink: .mocked
         )
         mockMessageProcessor.processingResult = .value(())
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockAccountServiceClient.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
+        mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
         mockUsernameLinkManager.decryptLinkResult = .error()
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNil(validationManager.lastValidationDate(tx))
@@ -177,17 +166,17 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testAvailableValidationFailsIfUsernameLinkMismatch() {
+    func testAvailableValidationFailsIfUsernameLinkMismatch() async {
         mockLocalUsernameManager.startingUsernameState = .available(
             username: "boba_fett.42",
             usernameLink: .mocked
         )
         mockMessageProcessor.processingResult = .value(())
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockAccountServiceClient.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
+        mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
         mockUsernameLinkManager.decryptLinkResult = .value("boba_fett.43")
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNil(validationManager.lastValidationDate(tx))
@@ -196,13 +185,13 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testLinkCorruptedValidationSuccessful() {
+    func testLinkCorruptedValidationSuccessful() async {
         mockLocalUsernameManager.startingUsernameState = .linkCorrupted(username: "boba_fett.42")
         mockMessageProcessor.processingResult = .value(())
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockAccountServiceClient.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
+        mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.42"))
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNotNil(validationManager.lastValidationDate(tx))
@@ -211,13 +200,13 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testLinkCorruptedValidationFailsIfWhoamiFails() {
+    func testLinkCorruptedValidationFailsIfWhoamiFails() async {
         mockLocalUsernameManager.startingUsernameState = .linkCorrupted(username: "boba_fett.42")
         mockMessageProcessor.processingResult = .value(())
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockAccountServiceClient.whoamiResponse = .error()
+        mockWhoAmIManager.whoamiResponse = .error()
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNil(validationManager.lastValidationDate(tx))
@@ -226,13 +215,13 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testLinkCorruptedValidationFailsIfRemoteUsernameMismatch() {
+    func testLinkCorruptedValidationFailsIfRemoteUsernameMismatch() async {
         mockLocalUsernameManager.startingUsernameState = .linkCorrupted(username: "boba_fett.42")
         mockMessageProcessor.processingResult = .value(())
         mockStorageServiceManager.pendingRestoreResult = .value(())
-        mockAccountServiceClient.whoamiResponse = .value(.withRemoteUsername("boba_fett.43"))
+        mockWhoAmIManager.whoamiResponse = .value(.withRemoteUsername("boba_fett.43"))
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNil(validationManager.lastValidationDate(tx))
@@ -241,12 +230,12 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testUsernameCorruptedValidationSuccessful() {
+    func testUsernameCorruptedValidationSuccessful() async {
         mockLocalUsernameManager.startingUsernameState = .usernameAndLinkCorrupted
         mockMessageProcessor.processingResult = .value(())
         mockStorageServiceManager.pendingRestoreResult = .value(())
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNotNil(validationManager.lastValidationDate(tx))
@@ -255,12 +244,12 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testValidationFailsIfStorageServiceRestoreFails() {
+    func testValidationFailsIfStorageServiceRestoreFails() async {
         mockLocalUsernameManager.startingUsernameState = .usernameAndLinkCorrupted
         mockMessageProcessor.processingResult = .value(())
         mockStorageServiceManager.pendingRestoreResult = .error()
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNil(validationManager.lastValidationDate(tx))
@@ -269,7 +258,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testValidationSkippedIfValidatedRecently() {
+    func testValidationSkippedIfValidatedRecently() async {
         mockDB.write { tx in
             validationManager.setLastValidation(
                 date: Date().addingTimeInterval(-100),
@@ -277,7 +266,7 @@ final class UsernameValidationManagerTest: XCTestCase {
             )
         }
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNotNil(validationManager.lastValidationDate(tx))
@@ -286,7 +275,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         }
     }
 
-    func testValidationFiresIfValidatedAWhileAgo() {
+    func testValidationFiresIfValidatedAWhileAgo() async {
         mockDB.write { tx in
             validationManager.setLastValidation(
                 date: Date().addingTimeInterval(-kDayInterval).addingTimeInterval(-1),
@@ -298,7 +287,7 @@ final class UsernameValidationManagerTest: XCTestCase {
         mockMessageProcessor.processingResult = .value(())
         mockStorageServiceManager.pendingRestoreResult = .value(())
 
-        runRunRun()
+        await validationManager.validateUsernameIfNecessary()
 
         mockDB.read { tx in
             XCTAssertNotNil(validationManager.lastValidationDate(tx))
@@ -308,7 +297,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     }
 }
 
-private extension WhoAmIRequestFactory.Responses.WhoAmI {
+private extension WhoAmIManager.WhoAmIResponse {
     static let noRemoteUsername: Self = .init(
         aci: Aci.randomForTesting(),
         pni: Pni.randomForTesting(),
@@ -354,11 +343,11 @@ extension UsernameValidationManagerTest {
         }
     }
 
-    private class MockAccountServiceClient: Usernames.Validation.Shims.AccountServiceClient {
-        var whoamiResponse: ConsumableMockPromise<WhoAmIRequestFactory.Responses.WhoAmI> = .unset
+    private class MockWhoAmIManager: WhoAmIManager {
+        var whoamiResponse: ConsumableMockPromise<WhoAmIResponse> = .unset
 
-        func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {
-            return whoamiResponse.consumeIntoPromise()
+        func makeWhoAmIRequest() async throws -> WhoAmIResponse {
+            return try await whoamiResponse.consumeIntoPromise().awaitable()
         }
     }
 }

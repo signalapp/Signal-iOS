@@ -45,8 +45,4 @@ public class AccountServiceClient: NSObject {
     public func updatePrimaryDeviceAccountAttributes() async throws -> AccountAttributes {
         return try await SignalServiceRestClient.shared.updatePrimaryDeviceAccountAttributes()
     }
-
-    public func getAccountWhoAmI() -> Promise<WhoAmIRequestFactory.Responses.WhoAmI> {
-        return SignalServiceRestClient.shared.getAccountWhoAmI()
-    }
 }

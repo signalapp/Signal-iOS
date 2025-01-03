@@ -184,6 +184,7 @@ public class AppSetup {
             factory: ModelReadCacheFactory(appReadiness: appReadiness)
         )
         let networkManager = testDependencies.networkManager ?? NetworkManager(libsignalNet: libsignalNet)
+        let whoAmIManager = WhoAmIManagerImpl(networkManager: networkManager)
         let ows2FAManager = OWS2FAManager(appReadiness: appReadiness)
         let paymentsHelper = testDependencies.paymentsHelper ?? PaymentsHelperImpl()
         let archivedPaymentStore = ArchivedPaymentStoreImpl()
@@ -778,11 +779,10 @@ public class AppSetup {
         )
 
         let learnMyOwnPniManager = LearnMyOwnPniManagerImpl(
-            accountServiceClient: LearnMyOwnPniManagerImpl.Wrappers.AccountServiceClient(accountServiceClient),
             db: db,
             registrationStateChangeManager: registrationStateChangeManager,
-            schedulers: schedulers,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: tsAccountManager,
+            whoAmIManager: whoAmIManager
         )
 
         let registrationSessionManager = RegistrationSessionManagerImpl(
@@ -820,13 +820,12 @@ public class AppSetup {
             usernameLinkManager: usernameLinkManager
         )
         let usernameValidationManager = UsernameValidationManagerImpl(context: .init(
-            accountServiceClient: Usernames.Validation.Wrappers.AccountServiceClient(accountServiceClient),
             database: db,
             localUsernameManager: localUsernameManager,
             messageProcessor: Usernames.Validation.Wrappers.MessageProcessor(messageProcessor),
-            schedulers: schedulers,
             storageServiceManager: Usernames.Validation.Wrappers.StorageServiceManager(storageServiceManager),
-            usernameLinkManager: usernameLinkManager
+            usernameLinkManager: usernameLinkManager,
+            whoAmIManager: whoAmIManager
         ))
 
         let phoneNumberDiscoverabilityManager = PhoneNumberDiscoverabilityManagerImpl(
