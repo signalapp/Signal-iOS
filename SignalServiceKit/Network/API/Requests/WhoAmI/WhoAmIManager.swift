@@ -45,19 +45,52 @@ struct WhoAmIManagerImpl: WhoAmIManager {
 public enum WhoAmIRequestFactory {
 
     public enum Responses {
-
         public struct WhoAmI: Decodable {
+            public struct Entitlements: Decodable {
+                private enum CodingKeys: String, CodingKey {
+                    case backup
+                    case badges
+                }
+
+                public struct BackupEntitlement: Decodable {
+                    private enum CodingKeys: String, CodingKey {
+                        case backupLevel
+                        case expirationSeconds
+                    }
+
+                    public let backupLevel: Int
+                    public let expirationSeconds: TimeInterval
+                }
+
+                public struct BadgeEntitlement: Decodable {
+                    private enum CodingKeys: String, CodingKey {
+                        case badgeId = "id"
+                        case isVisible = "visible"
+                        case expirationSeconds
+                    }
+
+                    public let badgeId: String
+                    public let isVisible: Bool
+                    public let expirationSeconds: TimeInterval
+                }
+
+                public let backup: BackupEntitlement?
+                public let badges: [BadgeEntitlement]
+            }
+
             private enum CodingKeys: String, CodingKey {
                 case aci = "uuid"
                 case pni
                 case e164 = "number"
                 case usernameHash
+                case entitlements
             }
 
             @AciUuid public var aci: Aci
             @PniUuid public var pni: Pni
             public let e164: E164
             public let usernameHash: String?
+            public let entitlements: Entitlements
         }
 
         public enum AmIDeregistered: Int, UnknownEnumCodable {

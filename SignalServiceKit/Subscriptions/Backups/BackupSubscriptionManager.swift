@@ -352,6 +352,9 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         )
 
         try await subscriptionRedemptionNecessaryChecker.redeemSubscriptionIfNecessary(
+            parseEntitlementExpirationBlock: { accountEntitlements, _ in
+                return accountEntitlements.backup?.expirationSeconds
+            },
             enqueueRedemptionJobBlock: { subscriberId, _, tx -> BackupReceiptCredentialRedemptionJobRecord in
                 return receiptCredentialRedemptionJobQueue.saveBackupRedemptionJob(
                     subscriberId: subscriberId,
@@ -435,12 +438,6 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             /// - SeeAlso ``BackupSubscription/IAPSubscriberData/subscriptionId``
             static let purchaseToken = "purchaseToken"
 
-            /// The renewal date of the last subscription period for which we
-            /// affirmatively redeemed the subscription.
-            ///
-            /// Used by `SubscriptionRedemptionNecessityCheckerStore`.
-            static let lastSubscriptionRenewalDate = "lastSubscriptionRenewalDate"
-
             /// The last time we checked if redemption is necessary.
             ///
             /// Used by `SubscriptionRedemptionNecessityCheckerStore`.
@@ -501,14 +498,6 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
         func setLastRedemptionNecessaryCheck(_ now: Date, tx: any DBWriteTransaction) {
             kvStore.setDate(now, key: Keys.lastRedemptionNecessaryCheck, transaction: tx)
-        }
-
-        func getLastSubscriptionRenewalDate(tx: DBReadTransaction) -> Date? {
-            return kvStore.getDate(Keys.lastSubscriptionRenewalDate, transaction: tx)
-        }
-
-        func setLastSubscriptionRenewalDate(_ renewalDate: Date, tx: DBWriteTransaction) {
-            kvStore.setDate(renewalDate, key: Keys.lastSubscriptionRenewalDate, transaction: tx)
         }
     }
 }

@@ -134,6 +134,13 @@ public class DonationSubscriptionManager: NSObject {
         }
     }
 
+    /// A low-overhead, synchronous check for whether we *probably* have a
+    /// current donation subscription. Callers who need to know precise details
+    /// about our subscription should use `getCurrentSubscriptionStatus`.
+    public class func probablyHasCurrentSubscription() -> Bool {
+        return !currentProfileSubscriptionBadges().isEmpty
+    }
+
     public class func getCurrentSubscriptionStatus(
         for subscriberID: Data,
         networkManager: NetworkManager = SSKEnvironment.shared.networkManagerRef
@@ -295,7 +302,6 @@ public class DonationSubscriptionManager: NSObject {
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 self.setSubscriberID(nil, transaction: transaction)
                 self.setSubscriberCurrencyCode(nil, transaction: transaction)
-                self.setLastSubscriptionExpirationDate(nil, transaction: transaction)
                 self.setMostRecentSubscriptionPaymentMethod(paymentMethod: nil, transaction: transaction)
                 self.setUserManuallyCancelledSubscription(true, transaction: transaction)
 
@@ -409,7 +415,6 @@ public class DonationSubscriptionManager: NSObject {
 
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
-                self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
             }
 
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
@@ -737,14 +742,6 @@ public class DonationSubscriptionManager: NSObject {
             func setLastRedemptionNecessaryCheck(_ now: Date, tx: any DBWriteTransaction) {
                 donationSubscriptionManager.subscriptionKVS.setDate(now, key: donationSubscriptionManager.lastSubscriptionHeartbeatKey, transaction: tx)
             }
-
-            func getLastSubscriptionRenewalDate(tx: any DBReadTransaction) -> Date? {
-                return donationSubscriptionManager.lastSubscriptionExpirationDate(transaction: SDSDB.shimOnlyBridge(tx))
-            }
-
-            func setLastSubscriptionRenewalDate(_ renewalDate: Date, tx: any DBWriteTransaction) {
-                donationSubscriptionManager.setLastSubscriptionExpirationDate(renewalDate, transaction: SDSDB.shimOnlyBridge(tx))
-            }
         }
 
         let subscriptionRedemptionNecessaryChecker = SubscriptionRedemptionNecessityChecker<
@@ -759,6 +756,21 @@ public class DonationSubscriptionManager: NSObject {
         )
 
         try await subscriptionRedemptionNecessaryChecker.redeemSubscriptionIfNecessary(
+            parseEntitlementExpirationBlock: { accountEntitlements, subscription -> TimeInterval? in
+                // TODO: If the entitlement contains something we can correlate
+                // with the subscription, like the "subscription level" int
+                // value, then we can more simply extract the entitlement that
+                // matches the given subscription.
+
+                // Grab only the subscription badge entitlements...
+                let subscriptionBadgeEntitlements = accountEntitlements.badges.filter { entitlement in
+                    return SubscriptionBadgeIds.contains(entitlement.badgeId)
+                }
+
+                // ...and return the last-expiring one. We can infer that's the
+                // "current" one.
+                return subscriptionBadgeEntitlements.map(\.expirationSeconds).max()
+            },
             enqueueRedemptionJobBlock: { subscriberId, subscription, tx -> DonationReceiptCredentialRedemptionJobRecord in
                 guard let donationPaymentProcessor = subscription.donationPaymentProcessor else {
                     throw OWSAssertionError("Unexpectedly missing donation payment processor while redeeming donation subscription!")
@@ -798,46 +810,6 @@ public class DonationSubscriptionManager: NSObject {
                 try await receiptCredentialRedemptionJobQueue.runRedemptionJob(jobRecord: jobRecord)
             }
         )
-    }
-
-    @objc
-    public class func performDeviceSubscriptionExpiryUpdate() {
-        Logger.info("[Donations] doing subscription expiry update")
-
-        var lastSubscriptionExpiration: Date?
-        var subscriberID: Data?
-        SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            lastSubscriptionExpiration = self.subscriptionKVS.getDate(self.lastSubscriptionExpirationKey, transaction: transaction.asV2Read)
-            subscriberID = self.getSubscriberID(transaction: transaction)
-        }
-
-        guard let subscriberID = subscriberID else {
-            owsFailDebug("Device missing subscriberID")
-            return
-        }
-
-        firstly(on: DispatchQueue.global()) {
-            // Fetch current subscription
-            self.getCurrentSubscriptionStatus(for: subscriberID)
-        }.done(on: DispatchQueue.global()) { subscription in
-            guard let subscription = subscription else {
-                Logger.info("[Donations] No current subscription for this subscriberID")
-                return
-            }
-
-            if let lastSubscriptionExpiration = lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 == subscription.endOfCurrentPeriod {
-                Logger.info("[Donations] Not updating last subscription expiration, expirations are the same")
-            } else {
-                Logger.info("[Donations] Updating last subscription expiration")
-                // Save last expiration
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
-                }
-            }
-
-        }.catch(on: DispatchQueue.global()) { error in
-            owsFailDebug("Failed last subscription expiration update with error \(error)")
-        }
     }
 }
 
@@ -915,19 +887,6 @@ extension DonationSubscriptionManager {
     }
 
     // MARK: -
-
-    fileprivate static func lastSubscriptionExpirationDate(transaction: SDSAnyReadTransaction) -> Date? {
-        return subscriptionKVS.getDate(lastSubscriptionExpirationKey, transaction: transaction.asV2Read)
-    }
-
-    fileprivate static func setLastSubscriptionExpirationDate(_ expirationDate: Date?, transaction: SDSAnyWriteTransaction) {
-        guard let expirationDate = expirationDate else {
-            subscriptionKVS.removeValue(forKey: lastSubscriptionExpirationKey, transaction: transaction.asV2Write)
-            return
-        }
-
-        subscriptionKVS.setDate(expirationDate, key: lastSubscriptionExpirationKey, transaction: transaction.asV2Write)
-    }
 
     fileprivate static func setKnownUserSubscriptionBadgeIDs(badgeIDs: [String], transaction: SDSAnyWriteTransaction) {
         subscriptionKVS.setObject(badgeIDs, key: knownUserSubscriptionBadgeIDsKey, transaction: transaction.asV2Write)
@@ -1239,18 +1198,6 @@ extension DonationSubscriptionManager {
         Self.setShowExpirySheetOnHomeScreenKey(show: showExpiryOnHomeScreen, transaction: transaction)
         Self.setUserManuallyCancelledSubscription(userManuallyCancelled, transaction: transaction)
         Self.setDisplayBadgesOnProfile(displayBadgesOnProfile, transaction: transaction)
-    }
-
-    public static func hasCurrentSubscription(transaction: SDSAnyReadTransaction) -> Bool {
-        guard !Self.currentProfileSubscriptionBadges().isEmpty else { return false }
-
-        guard Self.getSubscriberID(transaction: transaction) != nil else { return false }
-
-        guard let lastSubscriptionExpiryDate = Self.lastSubscriptionExpirationDate(transaction: transaction) else {
-            return false
-        }
-
-        return lastSubscriptionExpiryDate.isAfterNow
     }
 }
 

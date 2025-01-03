@@ -758,7 +758,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             expiredBadgeID,
             shouldShowExpirySheet,
             mostRecentSubscriptionPaymentMethod,
-            hasCurrentSubscription
+            probablyHasCurrentSubscription
         ) = SSKEnvironment.shared.databaseStorageRef.read { transaction in (
             donationReceiptCredentialResultStore.getRedemptionSuccess(successMode: .oneTimeBoost, tx: transaction.asV2Read),
             donationReceiptCredentialResultStore.getRedemptionSuccess(successMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
@@ -778,7 +778,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             DonationSubscriptionManager.mostRecentlyExpiredBadgeID(transaction: transaction),
             DonationSubscriptionManager.showExpirySheetOnHomeScreenKey(transaction: transaction),
             DonationSubscriptionManager.getMostRecentSubscriptionPaymentMethod(transaction: transaction),
-            DonationSubscriptionManager.hasCurrentSubscription(transaction: transaction)
+            DonationSubscriptionManager.probablyHasCurrentSubscription()
         )}
 
         if
@@ -827,7 +827,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 expiredBadgeID: expiredBadgeID,
                 shouldShowExpirySheet: shouldShowExpirySheet,
                 mostRecentSubscriptionPaymentMethod: mostRecentSubscriptionPaymentMethod,
-                hasCurrentSubscription: hasCurrentSubscription
+                probablyHasCurrentSubscription: probablyHasCurrentSubscription
             )
         }
     }
@@ -943,7 +943,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         expiredBadgeID: String?,
         shouldShowExpirySheet: Bool,
         mostRecentSubscriptionPaymentMethod: DonationPaymentMethod?,
-        hasCurrentSubscription: Bool
+        probablyHasCurrentSubscription: Bool
     ) {
         guard let expiredBadgeID else {
             return
@@ -968,7 +968,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
                     let badgeSheet = BadgeIssueSheet(
                         badge: boostBadge,
-                        mode: .boostExpired(hasCurrentSubscription: hasCurrentSubscription)
+                        mode: .boostExpired(hasCurrentSubscription: probablyHasCurrentSubscription)
                     )
                     badgeSheet.delegate = self
                     self.present(badgeSheet, animated: true)

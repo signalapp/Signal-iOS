@@ -8,12 +8,14 @@ protocol SubscriptionRedemptionNecessityCheckerStore {
 
     func getLastRedemptionNecessaryCheck(tx: DBReadTransaction) -> Date?
     func setLastRedemptionNecessaryCheck(_ now: Date, tx: DBWriteTransaction)
-
-    func getLastSubscriptionRenewalDate(tx: DBReadTransaction) -> Date?
-    func setLastSubscriptionRenewalDate(_ renewalDate: Date, tx: DBWriteTransaction)
 }
 
 struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
+    typealias ParseEntitlementExpirationBlock = (
+        _ entitlements: WhoAmIRequestFactory.Responses.WhoAmI.Entitlements,
+        _ subscription: Subscription
+    ) -> TimeInterval?
+
     typealias EnqueueRedemptionJobBlock = (
         _ subscriberId: Data,
         _ subscription: Subscription,
@@ -34,6 +36,7 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
     private let logger: PrefixedLogger
     private let networkManager: NetworkManager
     private let tsAccountManager: TSAccountManager
+    private let whoAmIManager: WhoAmIManager
 
     init(
         checkerStore: SubscriptionRedemptionNecessityCheckerStore,
@@ -49,28 +52,39 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
         self.logger = logger
         self.networkManager = networkManager
         self.tsAccountManager = tsAccountManager
+        self.whoAmIManager = WhoAmIManagerImpl(networkManager: networkManager)
     }
 
+    /// Redeems the current subscription period, if necessary.
+    ///
+    /// - Parameter parseEntitlementExpirationBlock
+    /// Returns the expiration time of the current account entitlement
+    /// associated with the given subscription. For example, if the given
+    /// subscription is for a donation, returns the expiration time of the
+    /// associated badge entitlement.
+    /// - Parameter enqueueRedemptionJobBlock
+    /// Enqueues a durable redemption job. Invoked if redemption is necessary.
+    /// - Parameter startRedemptionJobBlock
+    /// Starts a durable redemption job previously enqueued by
+    /// `enqueueRedemptionJobBlock`.
     func redeemSubscriptionIfNecessary(
+        parseEntitlementExpirationBlock: ParseEntitlementExpirationBlock,
         enqueueRedemptionJobBlock: EnqueueRedemptionJobBlock,
         startRedemptionJobBlock: StartRedemptionJobBlock
     ) async throws {
         let (
             registrationState,
             subscriberId,
-            lastRedemptionNecessaryCheck,
-            lastSubscriptionRenewalDate
+            lastRedemptionNecessaryCheck
         ): (
             TSRegistrationState,
             Data?,
-            Date?,
             Date?
         ) = db.read { tx in
             return (
                 tsAccountManager.registrationState(tx: tx),
                 checkerStore.subscriberId(tx: tx),
-                checkerStore.getLastRedemptionNecessaryCheck(tx: tx),
-                checkerStore.getLastSubscriptionRenewalDate(tx: tx)
+                checkerStore.getLastRedemptionNecessaryCheck(tx: tx)
             )
         }
 
@@ -121,18 +135,30 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
             return
         }
 
-        let currentSubscriptionRenewalDate = Date(timeIntervalSince1970: subscription.endOfCurrentPeriod)
+        let hasSubscriptionRenewedSinceLastRedemption: Bool = try await {
+            let currentEntitlements = try await whoAmIManager.makeWhoAmIRequest().entitlements
+
+            let currentEntitlementExpiration: TimeInterval? = parseEntitlementExpirationBlock(
+                currentEntitlements,
+                subscription
+            )
+
+            guard let currentEntitlementExpiration else {
+                /// Since we have a subscription but no current entitlement at
+                /// all, we know we have not redeemed yet for this subscription
+                /// period.
+                return true
+            }
+
+            /// If the subscription expiration is after the entitlement
+            /// expiration, we know it's renewed since we last redeemed. (The
+            /// entitlement will last till the subscription expiration + a grace
+            /// period, so if the subscription expiration is larger, it must
+            /// have renewed since the entitlement was last set.)
+            return currentEntitlementExpiration < subscription.endOfCurrentPeriod
+        }()
 
         if
-            let lastSubscriptionRenewalDate,
-            lastSubscriptionRenewalDate == currentSubscriptionRenewalDate
-        {
-            logger.info("Renewal date has not changed since last redemption; bailing out.")
-
-            await db.awaitableWrite { tx in
-                checkerStore.setLastRedemptionNecessaryCheck(dateProvider(), tx: tx)
-            }
-        } else if
             case .pastDue = subscription.status
         {
             /// For some payment methods (e.g., cards), the payment processors
@@ -148,16 +174,8 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
             await db.awaitableWrite { tx in
                 checkerStore.setLastRedemptionNecessaryCheck(dateProvider(), tx: tx)
             }
-        } else {
-            /// When a subscription renews (i.e., there's a new payment to be
-            /// redeemed) the "end of period" changes to reflect a later date.
-            /// We can use that as signal to know we should go try and redeem
-            /// that new payment.
-            if let lastSubscriptionRenewalDate {
-                logger.info("Attempting to redeem subscription renewal. Last renewal \(lastSubscriptionRenewalDate), current renewal \(currentSubscriptionRenewalDate)")
-            } else {
-                logger.info("Attempting to redeem subscription renewal. No last renewal, current renewal \(currentSubscriptionRenewalDate)")
-            }
+        } else if hasSubscriptionRenewedSinceLastRedemption {
+            logger.info("Attempting to redeem subscription renewal!")
 
             let jobRecord: RedemptionJobRecord = try await db.awaitableWrite { tx in
                 /// Enqueue a redemption job, importantly in the same transaction
@@ -166,14 +184,17 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
 
                 checkerStore.setLastRedemptionNecessaryCheck(dateProvider(), tx: tx)
 
-                /// Save the new renewal date so we can tell when it *next* renews.
-                checkerStore.setLastSubscriptionRenewalDate(currentSubscriptionRenewalDate, tx: tx)
-
                 return jobRecord
             }
 
             /// Now that we've enqueued the durable job, kick-start it.
             try await startRedemptionJobBlock(jobRecord)
+        } else {
+            logger.info("Subscription has not renewed since last redemption; bailing out!")
+
+            await db.awaitableWrite { tx in
+                checkerStore.setLastRedemptionNecessaryCheck(dateProvider(), tx: tx)
+            }
         }
     }
 

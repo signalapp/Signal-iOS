@@ -302,7 +302,8 @@ private extension WhoAmIManager.WhoAmIResponse {
         aci: Aci.randomForTesting(),
         pni: Pni.randomForTesting(),
         e164: E164("+16125550101")!,
-        usernameHash: nil
+        usernameHash: nil,
+        entitlements: Entitlements(backup: nil, badges: [])
     )
 
     static func withRemoteUsername(_ remoteUsername: String) -> Self {
@@ -310,7 +311,8 @@ private extension WhoAmIManager.WhoAmIResponse {
             aci: Aci.randomForTesting(),
             pni: Pni.randomForTesting(),
             e164: E164("+16125550101")!,
-            usernameHash: try! Usernames.HashedUsername(forUsername: remoteUsername).hashString
+            usernameHash: try! Usernames.HashedUsername(forUsername: remoteUsername).hashString,
+            entitlements: Entitlements(backup: nil, badges: [])
         )
     }
 }
