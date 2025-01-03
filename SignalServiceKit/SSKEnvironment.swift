@@ -82,7 +82,6 @@ public class SSKEnvironment: NSObject {
     public let senderKeyStoreRef: SenderKeyStore
     public let phoneNumberUtilRef: PhoneNumberUtil
     public let webSocketFactoryRef: WebSocketFactory
-    public let legacyChangePhoneNumberRef: LegacyChangePhoneNumber
     public let systemStoryManagerRef: SystemStoryManagerProtocol
     public let contactDiscoveryManagerRef: ContactDiscoveryManager
     public let notificationPresenterRef: any NotificationPresenter
@@ -151,7 +150,6 @@ public class SSKEnvironment: NSObject {
         senderKeyStore: SenderKeyStore,
         phoneNumberUtil: PhoneNumberUtil,
         webSocketFactory: WebSocketFactory,
-        legacyChangePhoneNumber: LegacyChangePhoneNumber,
         systemStoryManager: SystemStoryManagerProtocol,
         contactDiscoveryManager: ContactDiscoveryManager,
         notificationPresenter: any NotificationPresenter,
@@ -214,7 +212,6 @@ public class SSKEnvironment: NSObject {
         self.senderKeyStoreRef = senderKeyStore
         self.phoneNumberUtilRef = phoneNumberUtil
         self.webSocketFactoryRef = webSocketFactory
-        self.legacyChangePhoneNumberRef = legacyChangePhoneNumber
         self.systemStoryManagerRef = systemStoryManager
         self.contactDiscoveryManagerRef = contactDiscoveryManager
         self.notificationPresenterRef = notificationPresenter

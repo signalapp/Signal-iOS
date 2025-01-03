@@ -1357,7 +1357,6 @@ public class AppSetup {
         let paymentsCurrencies = testDependencies.paymentsCurrencies ?? PaymentsCurrenciesImpl(appReadiness: appReadiness)
         let spamChallengeResolver = SpamChallengeResolver(appReadiness: appReadiness)
         let phoneNumberUtil = PhoneNumberUtil()
-        let legacyChangePhoneNumber = LegacyChangePhoneNumber(appReadiness: appReadiness)
         let contactDiscoveryManager = ContactDiscoveryManagerImpl(
             db: db,
             recipientDatabaseTable: recipientDatabaseTable,
@@ -1431,7 +1430,6 @@ public class AppSetup {
             senderKeyStore: senderKeyStore,
             phoneNumberUtil: phoneNumberUtil,
             webSocketFactory: webSocketFactory,
-            legacyChangePhoneNumber: legacyChangePhoneNumber,
             systemStoryManager: systemStoryManager,
             contactDiscoveryManager: contactDiscoveryManager,
             notificationPresenter: notificationPresenter,
