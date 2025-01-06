@@ -5,14 +5,7 @@
 
 import Foundation
 
-private let networkManagerQueue = DispatchQueue(
-    label: "org.signal.network-manager",
-    autoreleaseFrequency: .workItem)
-
 class RESTNetworkManager {
-    fileprivate typealias Success = (HTTPResponse) -> Void
-    fileprivate typealias Failure = (OWSHTTPError) -> Void
-
     private let udSessionManagerPool = OWSSessionManagerPool()
     private let nonUdSessionManagerPool = OWSSessionManagerPool()
 
@@ -20,23 +13,7 @@ class RESTNetworkManager {
         SwiftSingletons.register(self)
     }
 
-    private func makeRequest(
-        _ request: TSRequest,
-        completionQueue: DispatchQueue,
-        success: @escaping Success,
-        failure: @escaping Failure
-    ) {
-        networkManagerQueue.async {
-            self.makeRequestSync(request, completionQueue: completionQueue, success: success, failure: failure)
-        }
-    }
-
-    private func makeRequestSync(
-        _ request: TSRequest,
-        completionQueue: DispatchQueue,
-        success successParam: @escaping Success,
-        failure failureParam: @escaping Failure
-    ) {
+    private func makeRequest(_ request: TSRequest) async throws -> any HTTPResponse {
         let isUdRequest = request.isUDRequest
         if (isUdRequest) {
             owsPrecondition(!request.shouldHaveAuthorizationHeaders)
@@ -44,50 +21,29 @@ class RESTNetworkManager {
 
         let sessionManagerPool = isUdRequest ? self.udSessionManagerPool : self.nonUdSessionManagerPool
         let sessionManager = sessionManagerPool.get()
-
-        let success = { (response: HTTPResponse) in
-            #if TESTABLE_BUILD
-            if DebugFlags.logCurlOnSuccess {
-                HTTPUtils.logCurl(for: request as URLRequest)
-            }
-            #endif
-
-            networkManagerQueue.async {
-                sessionManagerPool.returnToPool(sessionManager)
-            }
-            completionQueue.async {
-                successParam(response)
-                OutageDetection.shared.reportConnectionSuccess()
-            }
+        defer {
+            sessionManagerPool.returnToPool(sessionManager)
         }
-        let failure = { (error: OWSHTTPError) in
-            networkManagerQueue.async {
-                sessionManagerPool.returnToPool(sessionManager)
-            }
-            completionQueue.async {
-                failureParam(error)
-            }
+
+        let result = try await sessionManager.performRequest(request)
+
+#if TESTABLE_BUILD
+        if DebugFlags.logCurlOnSuccess {
+            HTTPUtils.logCurl(for: request as URLRequest)
         }
-        sessionManager.performRequest(request, success: success, failure: failure)
+#endif
+
+        OutageDetection.shared.reportConnectionSuccess()
+
+        return result
     }
 
     func makePromise(request: TSRequest) -> Promise<HTTPResponse> {
-        let (promise, future) = Promise<HTTPResponse>.pending()
-        makeRequest(request,
-                    completionQueue: .global(),
-                    success: { (response: HTTPResponse) in
-                        future.resolve(response)
-                    },
-                    failure: { (error: OWSHTTPError) in
-                        future.reject(error)
-                    })
-        return promise
+        return Promise.wrapAsync { return try await self.asyncRequest(request) }
     }
 
     func asyncRequest(_ request: TSRequest) async throws -> HTTPResponse {
-        try await withCheckedThrowingContinuation { continuation in
-            makeRequest(request, completionQueue: .global(), success: { continuation.resume(returning: $0) }, failure: { continuation.resume(throwing: $0) })
-        }
+        return try await makeRequest(request)
     }
 }
 
@@ -99,78 +55,58 @@ private class RESTSessionManager {
     let createdDate = MonotonicDate()
 
     init() {
-        assertOnQueue(networkManagerQueue)
         urlSession = SSKEnvironment.shared.signalServiceRef.urlSessionForMainSignalService()
     }
 
-    public func performRequest(_ request: TSRequest,
-                               success: @escaping RESTNetworkManager.Success,
-                               failure: @escaping RESTNetworkManager.Failure) {
-        assertOnQueue(networkManagerQueue)
-
+    public func performRequest(_ request: TSRequest) async throws -> any HTTPResponse {
         // We should only use the RESTSessionManager for requests to the Signal main service.
         let urlSession = self.urlSession
         owsAssertDebug(urlSession.unfrontedBaseUrl == URL(string: TSConstants.mainServiceIdentifiedURL))
 
-        firstly {
-            urlSession.promiseForTSRequest(request)
-        }.done(on: DispatchQueue.global()) { (response: HTTPResponse) in
-            success(response)
-        }.catch(on: DispatchQueue.global()) { error in
+        do {
+            return try await urlSession.performRequest(request)
+        } catch let httpError as OWSHTTPError {
             // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
-            if let httpError = error as? OWSHTTPError {
-                HTTPUtils.applyHTTPError(httpError)
+            HTTPUtils.applyHTTPError(httpError)
 
-                if httpError.httpStatusCode == 401, request.shouldCheckDeregisteredOn401 {
-                    networkManagerQueue.async {
-                        self.makeIsDeregisteredRequest(
-                            originalRequestFailureHandler: failure,
-                            originalRequestFailure: httpError
-                        )
-                    }
-                } else {
-                    failure(httpError)
-                }
-            } else {
-                owsFailDebug("Unexpected error: \(error)")
-
-                failure(.invalidRequest)
+            if httpError.httpStatusCode == 401, request.shouldCheckDeregisteredOn401 {
+                try await makeIsDeregisteredRequest()
             }
+            throw httpError
+        } catch let error as CancellationError {
+            throw error
+        } catch {
+            owsFailDebug("Unexpected error: \(error)")
+            throw OWSHTTPError.invalidRequest
         }
     }
 
-    private func makeIsDeregisteredRequest(
-        originalRequestFailureHandler: @escaping RESTNetworkManager.Failure,
-        originalRequestFailure: OWSHTTPError
-    ) {
+    private func makeIsDeregisteredRequest() async throws(CancellationError) {
         let isDeregisteredRequest = WhoAmIRequestFactory.amIDeregisteredRequest()
 
-        let handleDeregisteredResponse: (WhoAmIRequestFactory.Responses.AmIDeregistered?) -> Void = { response in
-            switch response {
-            case .deregistered:
-                Logger.warn("AmIDeregistered response says we are deregistered, marking as such.")
-                DependenciesBridge.shared.db.write { tx in
-                    DependenciesBridge.shared.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
-                }
-            case .notDeregistered:
-                Logger.info("AmIDeregistered response says not deregistered; account probably disabled. Doing nothing.")
-            case .none, .unexpectedError:
-                Logger.error("Got unexpected AmIDeregistered response. Doing nothing.")
-            }
+        let result: WhoAmIRequestFactory.Responses.AmIDeregistered?
+        do {
+            let response = try await self.performRequest(isDeregisteredRequest)
+            result = WhoAmIRequestFactory.Responses.AmIDeregistered(rawValue: response.responseStatusCode)
+        } catch let error as OWSHTTPError {
+            result = WhoAmIRequestFactory.Responses.AmIDeregistered(rawValue: error.responseStatusCode)
+        } catch let error as CancellationError {
+            throw error
+        } catch {
+            result = nil
         }
 
-        self.performRequest(
-            isDeregisteredRequest,
-            success: { rawResponse in
-                let response = WhoAmIRequestFactory.Responses.AmIDeregistered(rawValue: rawResponse.responseStatusCode)
-                handleDeregisteredResponse(response)
-                originalRequestFailureHandler(originalRequestFailure)
-            }, failure: { rawFailure in
-                let response = WhoAmIRequestFactory.Responses.AmIDeregistered(rawValue: rawFailure.responseStatusCode)
-                handleDeregisteredResponse(response)
-                originalRequestFailureHandler(originalRequestFailure)
+        switch result {
+        case .deregistered:
+            Logger.warn("AmIDeregistered response says we are deregistered, marking as such.")
+            await DependenciesBridge.shared.db.awaitableWrite { tx in
+                DependenciesBridge.shared.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
             }
-        )
+        case .notDeregistered:
+            Logger.info("AmIDeregistered response says not deregistered; account probably disabled. Doing nothing.")
+        case .none, .unexpectedError:
+            Logger.error("Got unexpected AmIDeregistered response. Doing nothing.")
+        }
     }
 }
 
@@ -182,8 +118,7 @@ private class RESTSessionManager {
 private class OWSSessionManagerPool {
     private let maxSessionManagerAge = 5 * 60 * NSEC_PER_SEC
 
-    // must only be accessed from the networkManagerQueue for thread-safety
-    private var pool: [RESTSessionManager] = []
+    private let pool = AtomicValue<[RESTSessionManager]>([], lock: .init())
 
     // accessed from both networkManagerQueue and the main thread so needs a lock
     @Atomic private var lastDiscardDate: MonotonicDate?
@@ -214,13 +149,11 @@ private class OWSSessionManagerPool {
     }
 
     func get() -> RESTSessionManager {
-        assertOnQueue(networkManagerQueue)
-
         // Iterate over the pool, discarding expired session managers
         // until we find an unexpired session manager in the pool or
         // drain the pool and create a new session manager.
         while true {
-            guard let sessionManager = pool.popLast() else {
+            guard let sessionManager = pool.update(block: { $0.popLast() }) else {
                 return RESTSessionManager()
             }
             if shouldDiscardSessionManager(sessionManager) {
@@ -231,13 +164,15 @@ private class OWSSessionManagerPool {
     }
 
     func returnToPool(_ sessionManager: RESTSessionManager) {
-        assertOnQueue(networkManagerQueue)
-
-        let maxPoolSize = CurrentAppContext().isNSE ? 5 : 32
-        guard pool.count < maxPoolSize && !shouldDiscardSessionManager(sessionManager) else {
+        if shouldDiscardSessionManager(sessionManager) {
             return
         }
-        pool.append(sessionManager)
+        let maxPoolSize = CurrentAppContext().isNSE ? 5 : 32
+        pool.update {
+            if $0.count < maxPoolSize {
+                $0.append(sessionManager)
+            }
+        }
     }
 
     private func shouldDiscardSessionManager(_ sessionManager: RESTSessionManager) -> Bool {
