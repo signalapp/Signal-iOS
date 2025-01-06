@@ -630,7 +630,7 @@ public struct StorageService {
 
         let httpResponse: HTTPResponse
         do {
-            let (username, password) = try await SignalServiceRestClient.shared.requestStorageAuth(chatServiceAuth: chatServiceAuth).awaitable()
+            let (username, password) = try await requestStorageAuth(chatServiceAuth: chatServiceAuth)
 
             let httpHeaders = OWSHttpHeaders()
             httpHeaders.addHeader("Content-Type", value: MimeType.applicationXProtobuf.rawValue, overwriteOnConflict: true)
@@ -674,6 +674,27 @@ public struct StorageService {
 
         Logger.info("HTTP \(httpResponse.responseStatusCode) <- \(requestDescription)")
         return StorageResponse(status: status, data: httpResponseData)
+    }
+
+    private static func requestStorageAuth(
+        chatServiceAuth: ChatServiceAuth
+    ) async throws -> (username: String, password: String) {
+        let request = OWSRequestFactory.storageAuthRequest(auth: chatServiceAuth)
+
+        let response = try await SSKEnvironment.shared.networkManagerRef
+            .asyncRequest(request)
+
+        guard let json = response.responseBodyJson else {
+            throw OWSAssertionError("Missing or invalid JSON.")
+        }
+        guard let parser = ParamParser(responseObject: json) else {
+            throw OWSAssertionError("Missing or invalid response.")
+        }
+
+        let username: String = try parser.required(key: "username")
+        let password: String = try parser.required(key: "password")
+
+        return (username: username, password: password)
     }
 }
 

@@ -30,6 +30,7 @@ class SVR2ConcurrencyTests: XCTestCase {
         let mockClientWrapper = MockSVR2ClientWrapper()
 
         let localStorage = SVRLocalStorageImpl()
+        let keyDeriver = SVRKeyDeriverImpl(localStorage: localStorage)
 
         self.svr = SecureValueRecovery2Impl(
             accountAttributesUpdater: MockAccountAttributesUpdater(),
@@ -42,6 +43,7 @@ class SVR2ConcurrencyTests: XCTestCase {
             db: db,
             schedulers: Schedulers(queue),
             storageServiceManager: FakeStorageServiceManager(),
+            svrKeyDeriver: keyDeriver,
             svrLocalStorage: localStorage,
             syncManager: OWSMockSyncManager(),
             tsAccountManager: MockTSAccountManager(),
@@ -327,6 +329,7 @@ class SVR2ConcurrencyTests: XCTestCase {
             }
 
             let localStorage = SVRLocalStorageImpl()
+            let keyDeriver = SVRKeyDeriverImpl(localStorage: localStorage)
 
             let svr = SecureValueRecovery2Impl(
                 accountAttributesUpdater: MockAccountAttributesUpdater(),
@@ -339,6 +342,7 @@ class SVR2ConcurrencyTests: XCTestCase {
                 db: db,
                 schedulers: Schedulers(queue),
                 storageServiceManager: FakeStorageServiceManager(),
+                svrKeyDeriver: keyDeriver,
                 svrLocalStorage: localStorage,
                 syncManager: OWSMockSyncManager(),
                 tsAccountManager: MockTSAccountManager(),

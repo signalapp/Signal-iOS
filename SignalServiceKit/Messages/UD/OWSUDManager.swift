@@ -367,7 +367,21 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     private func requestSenderCertificate(aciOnly: Bool) async throws -> SenderCertificate {
-        let certificateData = try await SignalServiceRestClient().requestUDSenderCertificate(uuidOnly: aciOnly).awaitable()
+        let certificateRequest = OWSRequestFactory.udSenderCertificateRequest(uuidOnly: aciOnly)
+        let certificateResponse = try await SSKEnvironment.shared.networkManagerRef
+            .asyncRequest(certificateRequest)
+
+        let certificateData: Data = try {
+            guard let json = certificateResponse.responseBodyJson else {
+                throw OWSUDError.invalidData(description: "Missing or invalid JSON")
+            }
+            guard let parser = ParamParser(responseObject: json) else {
+                throw OWSUDError.invalidData(description: "Invalid sender certificate response")
+            }
+
+            return try parser.requiredBase64EncodedData(key: "certificate")
+        }()
+
         let senderCertificate = try SenderCertificate(certificateData)
         guard self.isValidCertificate(senderCertificate) else {
             throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")

@@ -66,51 +66,6 @@ public enum SVR {
         /// Referred to often as Kb (subscript b).
         case backupKey
 
-        private var infoString: String {
-            switch self {
-            case .registrationLock:
-                return "Registration Lock"
-            case .registrationRecoveryPassword:
-                return "Registration Recovery"
-            case .storageService:
-                return "Storage Service Encryption"
-            case .storageServiceManifest(let version):
-                return "Manifest_\(version)"
-            case .legacy_storageServiceRecord(let identifier):
-                return "Item_\(identifier.data.base64EncodedString())"
-            case .backupKey:
-                return "20231003_Signal_Backups_GenerateBackupKey"
-            }
-        }
-
-        public func derivedData(from dataToDeriveFrom: Data) -> Data? {
-            guard let infoData = infoString.data(using: .utf8) else {
-                owsFailDebug("Failed to encode data")
-                return nil
-            }
-            switch self {
-            case
-                    .registrationLock,
-                    .registrationRecoveryPassword,
-                    .storageService,
-                    .storageServiceManifest,
-                    .legacy_storageServiceRecord:
-                return Data(HMAC<SHA256>.authenticationCode(for: infoData, using: .init(data: dataToDeriveFrom)))
-            case .backupKey:
-                guard
-                    let bytes = try? hkdf(
-                        outputLength: Self.backupKeyLength,
-                        inputKeyMaterial: dataToDeriveFrom,
-                        salt: Data(),
-                        info: infoData
-                    )
-                else {
-                    return nil
-                }
-                return Data(bytes)
-            }
-        }
-
         public static let backupKeyLength = 32
     }
 

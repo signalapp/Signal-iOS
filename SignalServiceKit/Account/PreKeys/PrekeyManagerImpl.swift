@@ -45,8 +45,8 @@ public class PreKeyManagerImpl: PreKeyManager {
         identityManager: PreKey.Shims.IdentityManager,
         linkedDevicePniKeyManager: LinkedDevicePniKeyManager,
         messageProcessor: PreKey.Shims.MessageProcessor,
+        preKeyTaskAPIClient: PreKeyTaskAPIClient,
         protocolStoreManager: SignalProtocolStoreManager,
-        serviceClient: SignalServiceClient,
         chatConnectionManager: any ChatConnectionManager,
         tsAccountManager: TSAccountManager
     ) {
@@ -58,13 +58,13 @@ public class PreKeyManagerImpl: PreKeyManager {
         self.tsAccountManager = tsAccountManager
 
         self.taskManager = PreKeyTaskManager(
+            apiClient: preKeyTaskAPIClient,
             dateProvider: dateProvider,
             db: db,
             identityManager: identityManager,
             linkedDevicePniKeyManager: linkedDevicePniKeyManager,
             messageProcessor: messageProcessor,
             protocolStoreManager: protocolStoreManager,
-            serviceClient: serviceClient,
             tsAccountManager: tsAccountManager
         )
     }

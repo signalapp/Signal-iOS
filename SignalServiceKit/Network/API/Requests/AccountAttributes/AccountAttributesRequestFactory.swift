@@ -5,13 +5,20 @@
 
 import Foundation
 
-public enum AccountAttributesRequestFactory {
+public struct AccountAttributesRequestFactory {
+    private let tsAccountManager: TSAccountManager
+
+    public init(tsAccountManager: TSAccountManager) {
+        self.tsAccountManager = tsAccountManager
+    }
 
     /// If you are updating capabilities for a secondary device, use `updateLinkedDeviceCapabilitiesRequest` instead
-    public static func updatePrimaryDeviceAttributesRequest(_ attributes: AccountAttributes) -> TSRequest {
-
+    public func updatePrimaryDeviceAttributesRequest(
+        _ attributes: AccountAttributes,
+        auth: ChatServiceAuth
+    ) -> TSRequest {
         owsPrecondition(
-            DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? true,
+            tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? true,
             "Trying to set primary device attributes from secondary/linked device"
         )
 
@@ -27,20 +34,30 @@ public enum AccountAttributesRequestFactory {
         let data = try! JSONEncoder().encode(attributes)
         let parameters = try! JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) as! [String: Any]
 
-        let result = TSRequest(url: url, method: "PUT", parameters: parameters)
-        result.shouldHaveAuthorizationHeaders = true
+        let result = TSRequest(
+            url: url,
+            method: "PUT",
+            parameters: parameters
+        )
+        result.setAuth(auth)
         return result
     }
 
-    public static func updateLinkedDeviceCapabilitiesRequest(
+    public func updateLinkedDeviceCapabilitiesRequest(
         _ capabilities: AccountAttributes.Capabilities,
-        tsAccountManager: TSAccountManager
+        auth: ChatServiceAuth
     ) -> TSRequest {
         owsPrecondition(
             (tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false).negated,
             "Trying to set seconday device attributes from primary device"
         )
 
-        return TSRequest(url: URL(string: "v1/devices/capabilities")!, method: "PUT", parameters: capabilities.requestParameters)
+        let result = TSRequest(
+            url: URL(string: "v1/devices/capabilities")!,
+            method: "PUT",
+            parameters: capabilities.requestParameters
+        )
+        result.setAuth(auth)
+        return result
     }
 }

@@ -19,6 +19,7 @@ class SecureValueRecovery2Tests: XCTestCase {
     private var mockAccountAttributesUpdater: MockAccountAttributesUpdater!
     private var mock2FAManager: SVR2.TestMocks.OWS2FAManager!
     private var localStorage: SVRLocalStorageImpl!
+    private var keyDeriver: SVRKeyDeriverImpl!
     private var mockConnectionFactory: MockSgxWebsocketConnectionFactory!
     private var mockConnection: MockSgxWebsocketConnection<SVR2WebsocketConfigurator>!
     private var mockTSAccountManager: MockTSAccountManager!
@@ -32,7 +33,8 @@ class SecureValueRecovery2Tests: XCTestCase {
         self.scheduler.start()
 
         mock2FAManager = SVR2.TestMocks.OWS2FAManager()
-        localStorage = .init()
+        localStorage = SVRLocalStorageImpl()
+        keyDeriver = SVRKeyDeriverImpl(localStorage: localStorage)
 
         let mockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
         mockConnection.mockAuth = RemoteAttestation.Auth(username: "username", password: "password")
@@ -54,6 +56,7 @@ class SecureValueRecovery2Tests: XCTestCase {
             db: db,
             schedulers: TestSchedulers(scheduler: scheduler),
             storageServiceManager: FakeStorageServiceManager(),
+            svrKeyDeriver: keyDeriver,
             svrLocalStorage: localStorage,
             syncManager: OWSMockSyncManager(),
             tsAccountManager: mockTSAccountManager,

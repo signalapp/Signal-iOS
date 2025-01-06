@@ -31,8 +31,12 @@ public enum OWSRequestFactory {
         return TSRequest(url: URL(string: "v1/payments/conversions")!, method: "GET", parameters: [:])
     }
 
-    static func getRemoteConfigRequest() -> TSRequest {
-        return TSRequest(url: URL(string: "/v1/config/")!, method: "GET", parameters: [:])
+    static func getRemoteConfigRequest(
+        auth: ChatServiceAuth
+    ) -> TSRequest {
+        let result = TSRequest(url: URL(string: "/v1/config/")!, method: "GET", parameters: [:])
+        result.setAuth(auth)
+        return result
     }
 
     public static func callingRelaysRequest() -> TSRequest {
@@ -61,8 +65,10 @@ public enum OWSRequestFactory {
         return TSRequest(url: URL(string: "v2/backup/auth")!, method: "GET", parameters: [:])
     }
 
-    static func storageAuthRequest() -> TSRequest {
-        return TSRequest(url: URL(string: "v1/storage/auth")!, method: "GET", parameters: [:])
+    static func storageAuthRequest(auth: ChatServiceAuth) -> TSRequest {
+        let result = TSRequest(url: URL(string: "v1/storage/auth")!, method: "GET", parameters: [:])
+        result.setAuth(auth)
+        return result
     }
 
     // MARK: - Challenges
@@ -494,14 +500,6 @@ public enum OWSRequestFactory {
             request.setAuth(sealedSender: auth)
         }
         return request
-    }
-
-    static func registerSignedPrekeyRequest(for identity: OWSIdentity, signedPreKey: SignalServiceKit.SignedPreKeyRecord) -> TSRequest {
-        var path = self.textSecureSignedKeysAPI
-        if let queryParam = queryParam(for: identity) {
-            path += "?" + queryParam
-        }
-        return TSRequest(url: URL(string: path)!, method: "PUT", parameters: signedPreKeyRequestParameters(signedPreKey))
     }
 
     /// If a username and password are both provided, those are used for the request's

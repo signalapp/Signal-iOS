@@ -17,6 +17,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let connectionFactory: SgxWebsocketConnectionFactory
     private let credentialStorage: SVRAuthCredentialStorage
     private let db: any DB
+    private let keyDeriver: SVRKeyDeriver
     private let localStorage: SVRLocalStorageInternal
     private let schedulers: Schedulers
     private let storageServiceManager: StorageServiceManager
@@ -35,6 +36,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         db: any DB,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
+        svrKeyDeriver: SVRKeyDeriver,
         svrLocalStorage: SVRLocalStorageInternal,
         syncManager: SyncManagerProtocolSwift,
         tsAccountManager: TSAccountManager,
@@ -52,6 +54,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             db: db,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
+            svrKeyDeriver: svrKeyDeriver,
             svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
@@ -73,6 +76,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         db: any DB,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
+        svrKeyDeriver: SVRKeyDeriver,
         svrLocalStorage: SVRLocalStorageInternal,
         syncManager: SyncManagerProtocolSwift,
         tsAccountManager: TSAccountManager,
@@ -87,10 +91,11 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         self.connectionFactory = connectionFactory
         self.credentialStorage = credentialStorage
         self.db = db
+        self.localStorage = svrLocalStorage
+        self.keyDeriver = svrKeyDeriver
         self.schedulers = schedulers
         self.storageServiceManager = storageServiceManager
         self.syncManager = syncManager
-        self.localStorage = svrLocalStorage
         self.tsAccountManager = tsAccountManager
         self.tsConstants = tsConstants
         self.twoFAManager = twoFAManager
@@ -249,7 +254,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             case .success(let masterKey, _):
                 // Ignore whether we restored from an old enclave; we aren't backing up to the new enclave
                 // on this code path so its not safe to wipe the old one anyway.
-                guard let reglockToken = Self.deriveReglockKey(masterKey: masterKey)?.canonicalStringRepresentation else {
+                guard let reglockToken = self.keyDeriver.deriveReglockKey(masterKey: masterKey)?.canonicalStringRepresentation else {
                     return .init(error: SVR.SVRError.assertion)
                 }
                 return .value(reglockToken)
@@ -429,7 +434,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         if
             let masterKey = localStorage.getMasterKey(transaction),
-            Self.deriveStorageServiceKey(masterKey: masterKey)?.rawData == storageServiceKey
+            keyDeriver.deriveStorageServiceKey(masterKey: masterKey)?.rawData == storageServiceKey
         {
             // We already have a master key, it already produces this storage service key.
             // Nothing needs to change.
@@ -477,93 +482,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: - Value Derivation
 
-    public func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> SVR.DerivedKeyData? {
-        func withMasterKey(_ handler: (Data) -> SVR.DerivedKeyData?) -> SVR.DerivedKeyData? {
-            guard let masterKey = self.localStorage.getMasterKey(transaction) else {
-                return nil
-            }
-            return handler(masterKey)
-        }
-
-        func withStorageServiceKey(_ handler: (SVR.DerivedKeyData) -> SVR.DerivedKeyData?) -> SVR.DerivedKeyData? {
-            // NEW: linked devices might have the master key now, synced from the primary.
-            // This was not the case before, and in fact we may still not have the master
-            // key if it hasn't been synced yet.
-            // So we should _first_ check if we have the master key, and if we don't
-            // fall back to the storage service key which has historically been synced.
-            if let masterKey = self.localStorage.getMasterKey(transaction) {
-                guard let storageServiceKey = Self.deriveStorageServiceKey(masterKey: masterKey) else {
-                    return nil
-                }
-                return handler(storageServiceKey)
-            } else if
-                // TODO: By 10/2024, we can remove this check. Starting in 10/2023, we started sending
-                // master keys in syncs. A year later, any primary that has not yet delivered a master
-                // key must not have launched and is therefore deregistered; we are ok to ignore the
-                // storage service key and take the master key or bust.
-                let storageServiceKeyData = self.localStorage.getSyncedStorageServiceKey(transaction),
-                let storageServiceKey = SVR.DerivedKeyData(storageServiceKeyData, .storageService)
-            {
-                return handler(storageServiceKey)
-            } else {
-                // We have no keys at all.
-                return nil
-            }
-        }
-
-        switch key {
-        case .registrationLock:
-            return withMasterKey(Self.deriveReglockKey(masterKey:))
-        case .registrationRecoveryPassword:
-            return withMasterKey(Self.deriveRegRecoveryPwKey(masterKey:))
-        case .storageService:
-            return withStorageServiceKey { $0 }
-        case .storageServiceManifest(let version):
-            return withStorageServiceKey { Self.deriveStorageServiceManifestKey(version: version, storageServiceKey: $0) }
-        case .legacy_storageServiceRecord(let identifier):
-            return withStorageServiceKey { Self.deriveStorageServiceRecordKey(identifier: identifier, storageServiceKey: $0) }
-        case .backupKey:
-            return withMasterKey(Self.deriveBackupKey(masterKey:))
-        }
-    }
-
     public func isKeyAvailable(_ key: SVR.DerivedKey, transaction: DBReadTransaction) -> Bool {
         return data(for: key, transaction: transaction) != nil
     }
 
-    private static func deriveReglockKey(masterKey: Data) -> SVR.DerivedKeyData? {
-        return SVR.DerivedKeyData(SVR.DerivedKey.registrationLock.derivedData(from: masterKey), .registrationLock)
-    }
-
-    private static func deriveRegRecoveryPwKey(masterKey: Data) -> SVR.DerivedKeyData? {
-        return SVR.DerivedKeyData(SVR.DerivedKey.registrationRecoveryPassword.derivedData(from: masterKey), .registrationRecoveryPassword)
-    }
-
-    private static func deriveBackupKey(masterKey: Data) -> SVR.DerivedKeyData? {
-        guard FeatureFlags.messageBackupFileAlpha else {
-            owsFail("Internal only")
-        }
-        return SVR.DerivedKeyData(SVR.DerivedKey.backupKey.derivedData(from: masterKey), .backupKey)
-    }
-
-    private static func deriveStorageServiceKey(masterKey: Data) -> SVR.DerivedKeyData? {
-        return SVR.DerivedKeyData(SVR.DerivedKey.storageService.derivedData(from: masterKey), .storageService)
-    }
-
-    // StorageService manifest and record keys are derived from
-    // the root storageService key, which itself is derived from
-    // the svr master key.
-    // Linked devices have the storage service key but not the master key,
-    // so try that first before doing the double derivation from the master key.
-
-    private static func deriveStorageServiceManifestKey(version: UInt64, storageServiceKey: SVR.DerivedKeyData) -> SVR.DerivedKeyData? {
-        let keyType = SVR.DerivedKey.storageServiceManifest(version: version)
-        return SVR.DerivedKeyData(keyType.derivedData(from: storageServiceKey.rawData), keyType)
-    }
-
-    private static func deriveStorageServiceRecordKey(identifier: StorageService.StorageIdentifier, storageServiceKey: SVR.DerivedKeyData) -> SVR.DerivedKeyData? {
-        let keyType = SVR.DerivedKey.legacy_storageServiceRecord(identifier: identifier)
-        return SVR.DerivedKeyData(keyType.derivedData(from: storageServiceKey.rawData), keyType)
+    public func data(for key: SVR.DerivedKey, transaction: any DBReadTransaction) -> SVR.DerivedKeyData? {
+        return keyDeriver.data(for: key, tx: transaction)
     }
 
     // MARK: - Backup/Expose Request

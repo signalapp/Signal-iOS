@@ -95,11 +95,12 @@ extension ProvisioningCoordinatorImpl {
             signalService: OWSSignalServiceProtocol,
             tsAccountManager: TSAccountManager
         ) async throws {
-            let request = AccountAttributesRequestFactory.updateLinkedDeviceCapabilitiesRequest(
-                capabilities,
+            let request = AccountAttributesRequestFactory(
                 tsAccountManager: tsAccountManager
+            ).updateLinkedDeviceCapabilitiesRequest(
+                capabilities,
+                auth: auth
             )
-            request.setAuth(auth)
 
             // Don't care what the response is.
             _ = try await signalService.urlSessionForMainSignalService()

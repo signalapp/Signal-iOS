@@ -6,44 +6,44 @@
 import Foundation
 
 public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
-
+    private let accountAttributesGenerator: AccountAttributesGenerator
     private let appReadiness: AppReadiness
     private let appVersion: AppVersion
     private let dateProvider: DateProvider
     private let db: any DB
+    private let kvStore: KeyValueStore
+    private let networkManager: NetworkManager
     private let profileManager: ProfileManager
-    private let serviceClient: SignalServiceClient
     private let schedulers: Schedulers
     private let svrLocalStorage: SVRLocalStorage
     private let syncManager: SyncManagerProtocol
     private let tsAccountManager: TSAccountManager
 
-    private let kvStore: KeyValueStore
-
     public init(
+        accountAttributesGenerator: AccountAttributesGenerator,
         appReadiness: AppReadiness,
         appVersion: AppVersion,
         dateProvider: @escaping DateProvider,
         db: any DB,
+        networkManager: NetworkManager,
         profileManager: ProfileManager,
-        serviceClient: SignalServiceClient,
         schedulers: Schedulers,
         svrLocalStorage: SVRLocalStorage,
         syncManager: SyncManagerProtocol,
         tsAccountManager: TSAccountManager
     ) {
+        self.accountAttributesGenerator = accountAttributesGenerator
         self.appReadiness = appReadiness
         self.appVersion = appVersion
         self.dateProvider = dateProvider
         self.db = db
+        self.kvStore = KeyValueStore(collection: "AccountAttributesUpdater")
+        self.networkManager = networkManager
         self.profileManager = profileManager
-        self.serviceClient = serviceClient
         self.schedulers = schedulers
         self.svrLocalStorage = svrLocalStorage
         self.syncManager = syncManager
         self.tsAccountManager = tsAccountManager
-
-        self.kvStore = KeyValueStore(collection: "AccountAttributesUpdater")
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             Task {
@@ -174,10 +174,28 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             Logger.info("Updating account attributes.")
             let reportedDeviceCapabilities: AccountAttributes.Capabilities
             if registrationState.isPrimaryDevice == true {
-                let attributes = try await serviceClient.updatePrimaryDeviceAccountAttributes(authedAccount: authedAccount)
+                let attributes = await db.awaitableWrite { tx in
+                    accountAttributesGenerator.generateForPrimary(tx: tx)
+                }
+
+                let request = AccountAttributesRequestFactory(
+                    tsAccountManager: tsAccountManager
+                ).updatePrimaryDeviceAttributesRequest(
+                    attributes,
+                    auth: authedAccount.chatServiceAuth
+                )
+                _ = try await networkManager.asyncRequest(request)
+
                 reportedDeviceCapabilities = attributes.capabilities
             } else {
-                try await serviceClient.updateSecondaryDeviceCapabilities(currentDeviceCapabilities, authedAccount: authedAccount)
+                let request = AccountAttributesRequestFactory(
+                    tsAccountManager: tsAccountManager
+                ).updateLinkedDeviceCapabilitiesRequest(
+                    currentDeviceCapabilities,
+                    auth: authedAccount.chatServiceAuth
+                )
+                _ = try await networkManager.asyncRequest(request)
+
                 reportedDeviceCapabilities = currentDeviceCapabilities
             }
 
@@ -209,6 +227,5 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         static let latestUpdateRequestDate = "latestUpdateRequestDate"
         static let lastUpdateDeviceCapabilities = "lastUpdateDeviceCapabilities"
         static let lastUpdateAppVersion = "lastUpdateAppVersion"
-
     }
 }

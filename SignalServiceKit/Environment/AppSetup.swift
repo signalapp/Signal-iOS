@@ -154,13 +154,16 @@ public class AppSetup {
             schedulers: schedulers
         )
 
+        let networkManager = testDependencies.networkManager ?? NetworkManager(libsignalNet: libsignalNet)
+        let whoAmIManager = WhoAmIManagerImpl(networkManager: networkManager)
+
         let remoteConfigManager = testDependencies.remoteConfigManager ?? RemoteConfigManagerImpl(
             appExpiry: appExpiry,
             appReadiness: appReadiness,
             dateProvider: dateProvider,
             db: db,
-            tsAccountManager: tsAccountManager,
-            serviceClient: SignalServiceRestClient.shared
+            networkManager: networkManager,
+            tsAccountManager: tsAccountManager
         )
 
         let aciSignalProtocolStore = SignalProtocolStoreImpl(
@@ -180,8 +183,6 @@ public class AppSetup {
         let modelReadCaches = testDependencies.modelReadCaches ?? ModelReadCaches(
             factory: ModelReadCacheFactory(appReadiness: appReadiness)
         )
-        let networkManager = testDependencies.networkManager ?? NetworkManager(libsignalNet: libsignalNet)
-        let whoAmIManager = WhoAmIManagerImpl(networkManager: networkManager)
         let ows2FAManager = OWS2FAManager(appReadiness: appReadiness)
         let paymentsHelper = testDependencies.paymentsHelper ?? PaymentsHelperImpl()
         let archivedPaymentStore = ArchivedPaymentStoreImpl()
@@ -283,17 +284,33 @@ public class AppSetup {
 
         let svrCredentialStorage = SVRAuthCredentialStorageImpl()
         let svrLocalStorage = SVRLocalStorageImpl()
+        let svrKeyDeriver = SVRKeyDeriverImpl(localStorage: svrLocalStorage)
 
         let accountAttributesUpdater = AccountAttributesUpdaterImpl(
+            accountAttributesGenerator: AccountAttributesGenerator(
+                ows2FAManager: ows2FAManager,
+                profileManager: profileManager,
+                svrKeyDeriver: svrKeyDeriver,
+                svrLocalStorage: svrLocalStorage,
+                tsAccountManager: tsAccountManager,
+                udManager: udManager
+            ),
             appReadiness: appReadiness,
             appVersion: appVersion,
             dateProvider: dateProvider,
             db: db,
+            networkManager: networkManager,
             profileManager: profileManager,
-            serviceClient: SignalServiceRestClient(),
             schedulers: schedulers,
             svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
+            tsAccountManager: tsAccountManager
+        )
+
+        let phoneNumberDiscoverabilityManager = PhoneNumberDiscoverabilityManagerImpl(
+            accountAttributesUpdater: accountAttributesUpdater,
+            schedulers: schedulers,
+            storageServiceManager: storageServiceManager,
             tsAccountManager: tsAccountManager
         )
 
@@ -307,6 +324,7 @@ public class AppSetup {
             db: db,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
+            svrKeyDeriver: svrKeyDeriver,
             svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
@@ -763,14 +781,15 @@ public class AppSetup {
             userDefaults: appContext.appUserDefaults()
         )
 
+        let preKeyTaskAPIClient = PreKeyTaskAPIClientImpl(networkManager: networkManager)
         let preKeyManager = PreKeyManagerImpl(
             dateProvider: dateProvider,
             db: db,
             identityManager: PreKey.Wrappers.IdentityManager(identityManager),
             linkedDevicePniKeyManager: linkedDevicePniKeyManager,
             messageProcessor: PreKey.Wrappers.MessageProcessor(messageProcessor: messageProcessor),
+            preKeyTaskAPIClient: preKeyTaskAPIClient,
             protocolStoreManager: signalProtocolStoreManager,
-            serviceClient: SignalServiceRestClient.shared,
             chatConnectionManager: chatConnectionManager,
             tsAccountManager: tsAccountManager
         )
@@ -824,13 +843,6 @@ public class AppSetup {
             usernameLinkManager: usernameLinkManager,
             whoAmIManager: whoAmIManager
         ))
-
-        let phoneNumberDiscoverabilityManager = PhoneNumberDiscoverabilityManagerImpl(
-            accountAttributesUpdater: accountAttributesUpdater,
-            schedulers: schedulers,
-            storageServiceManager: storageServiceManager,
-            tsAccountManager: tsAccountManager
-        )
 
         let incomingPniChangeNumberProcessor = IncomingPniChangeNumberProcessorImpl(
             identityManager: identityManager,

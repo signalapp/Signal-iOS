@@ -853,7 +853,7 @@
 		664428962C12305D0092D0E2 /* SignalAttachment+Sending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664428952C12305D0092D0E2 /* SignalAttachment+Sending.swift */; };
 		6645F30829BF8D2000B58EBD /* AccountAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6645F30729BF8D2000B58EBD /* AccountAttributes.swift */; };
 		6645F30A29BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6645F30929BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift */; };
-		6645F30C29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6645F30B29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift */; };
+		6645F30C29BFA28A00B58EBD /* AccountAttributesGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6645F30B29BFA28A00B58EBD /* AccountAttributesGenerator.swift */; };
 		6646572C2AC347B70099DE1C /* AccountAttributesUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646572B2AC347B70099DE1C /* AccountAttributesUpdater.swift */; };
 		6646572E2AC349C80099DE1C /* AccountAttributesUpdaterImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646572D2AC349C80099DE1C /* AccountAttributesUpdaterImpl.swift */; };
 		664657312AC36A130099DE1C /* PhoneNumberDiscoverabilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664657302AC36A130099DE1C /* PhoneNumberDiscoverabilityManager.swift */; };
@@ -2427,6 +2427,8 @@
 		D945319E2CE53CEB004DAB30 /* SubscriptionRedemptionNecessityChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D945319D2CE53CC8004DAB30 /* SubscriptionRedemptionNecessityChecker.swift */; };
 		D9495A6D2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */; };
 		D9495A702C76965600843BC1 /* TSOutgoingMessageRecipientStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9495A6E2C76963F00843BC1 /* TSOutgoingMessageRecipientStateTest.swift */; };
+		D94AEB3A2D28837F00B03D7A /* SVRKeyDeriver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94AEB392D28837A00B03D7A /* SVRKeyDeriver.swift */; };
+		D94AEB3C2D28940A00B03D7A /* PreKeyTaskAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94AEB3B2D28940500B03D7A /* PreKeyTaskAPIClient.swift */; };
 		D94D67CD2C9DEF870091B485 /* MessageBackupPostFrameRestoreActionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94D67CC2C9DEF6E0091B485 /* MessageBackupPostFrameRestoreActionManager.swift */; };
 		D94D67CF2C9DF4720091B485 /* TSInfoMessage+ContactHidden.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94D67CE2C9DF46E0091B485 /* TSInfoMessage+ContactHidden.swift */; };
 		D95787772C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95787762C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift */; };
@@ -3355,7 +3357,6 @@
 		F9C5CD90289453B300548EEE /* TimeElapsedChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAB8289453B200548EEE /* TimeElapsedChallenge.swift */; };
 		F9C5CD91289453B300548EEE /* PushChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAB9289453B200548EEE /* PushChallenge.swift */; };
 		F9C5CD95289453B300548EEE /* ReachabilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CABD289453B200548EEE /* ReachabilityManager.swift */; };
-		F9C5CD96289453B300548EEE /* SignalServiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CABE289453B200548EEE /* SignalServiceClient.swift */; };
 		F9C5CD97289453B300548EEE /* ProxiedContentDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CABF289453B200548EEE /* ProxiedContentDownloader.swift */; };
 		F9C5CD9A289453B400548EEE /* OWSChatConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC3289453B200548EEE /* OWSChatConnection.swift */; };
 		F9C5CD9B289453B400548EEE /* ChatConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC4289453B200548EEE /* ChatConnectionManager.swift */; };
@@ -4602,7 +4603,7 @@
 		664428952C12305D0092D0E2 /* SignalAttachment+Sending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+Sending.swift"; sourceTree = "<group>"; };
 		6645F30729BF8D2000B58EBD /* AccountAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributes.swift; sourceTree = "<group>"; };
 		6645F30929BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributesRequestFactory.swift; sourceTree = "<group>"; };
-		6645F30B29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountAttributes+Dependencies.swift"; sourceTree = "<group>"; };
+		6645F30B29BFA28A00B58EBD /* AccountAttributesGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributesGenerator.swift; sourceTree = "<group>"; };
 		6646572B2AC347B70099DE1C /* AccountAttributesUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributesUpdater.swift; sourceTree = "<group>"; };
 		6646572D2AC349C80099DE1C /* AccountAttributesUpdaterImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributesUpdaterImpl.swift; sourceTree = "<group>"; };
 		664657302AC36A130099DE1C /* PhoneNumberDiscoverabilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberDiscoverabilityManager.swift; sourceTree = "<group>"; };
@@ -6184,6 +6185,8 @@
 		D945319D2CE53CC8004DAB30 /* SubscriptionRedemptionNecessityChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionRedemptionNecessityChecker.swift; sourceTree = "<group>"; };
 		D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageRecipientState.swift; sourceTree = "<group>"; };
 		D9495A6E2C76963F00843BC1 /* TSOutgoingMessageRecipientStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageRecipientStateTest.swift; sourceTree = "<group>"; };
+		D94AEB392D28837A00B03D7A /* SVRKeyDeriver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRKeyDeriver.swift; sourceTree = "<group>"; };
+		D94AEB3B2D28940500B03D7A /* PreKeyTaskAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskAPIClient.swift; sourceTree = "<group>"; };
 		D94D67CC2C9DEF6E0091B485 /* MessageBackupPostFrameRestoreActionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupPostFrameRestoreActionManager.swift; sourceTree = "<group>"; };
 		D94D67CE2C9DF46E0091B485 /* TSInfoMessage+ContactHidden.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+ContactHidden.swift"; sourceTree = "<group>"; };
 		D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+WebAuthentication.swift"; sourceTree = "<group>"; };
@@ -7147,7 +7150,6 @@
 		F9C5CAB9289453B200548EEE /* PushChallenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushChallenge.swift; sourceTree = "<group>"; };
 		F9C5CABC289453B200548EEE /* HTMLMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLMetadata.swift; sourceTree = "<group>"; };
 		F9C5CABD289453B200548EEE /* ReachabilityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReachabilityManager.swift; sourceTree = "<group>"; };
-		F9C5CABE289453B200548EEE /* SignalServiceClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceClient.swift; sourceTree = "<group>"; };
 		F9C5CABF289453B200548EEE /* ProxiedContentDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxiedContentDownloader.swift; sourceTree = "<group>"; };
 		F9C5CAC3289453B200548EEE /* OWSChatConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSChatConnection.swift; sourceTree = "<group>"; };
 		F9C5CAC4289453B200548EEE /* ChatConnectionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatConnectionManager.swift; sourceTree = "<group>"; };
@@ -9105,8 +9107,8 @@
 		6645F30629BF8D1000B58EBD /* AccountAttributes */ = {
 			isa = PBXGroup;
 			children = (
-				6645F30B29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift */,
 				6645F30729BF8D2000B58EBD /* AccountAttributes.swift */,
+				6645F30B29BFA28A00B58EBD /* AccountAttributesGenerator.swift */,
 				6645F30929BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift */,
 				6646572B2AC347B70099DE1C /* AccountAttributesUpdater.swift */,
 				6646572D2AC349C80099DE1C /* AccountAttributesUpdaterImpl.swift */,
@@ -9192,6 +9194,7 @@
 				F9C5C9C2289453B100548EEE /* PreKeyManager.swift */,
 				6659A0252A7C11A800066AB7 /* PrekeyManagerImpl.swift */,
 				C17345BA2A5E000300C6426D /* PreKeyTarget.swift */,
+				D94AEB3B2D28940500B03D7A /* PreKeyTaskAPIClient.swift */,
 				C1ED5CA02A72E3D5009AD3FC /* PreKeyTaskManager.swift */,
 				6659A0302A7C5B9700066AB7 /* PreKeyUploadBundle.swift */,
 			);
@@ -9271,6 +9274,7 @@
 				66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */,
 				6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */,
 				6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */,
+				D94AEB392D28837A00B03D7A /* SVRKeyDeriver.swift */,
 				66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */,
 			);
 			path = SecureValueRecovery;
@@ -13646,7 +13650,6 @@
 				F9C5CAF3289453B200548EEE /* OWSURLSessionProtocol.swift */,
 				F9C5CABF289453B200548EEE /* ProxiedContentDownloader.swift */,
 				F9C5CABD289453B200548EEE /* ReachabilityManager.swift */,
-				F9C5CABE289453B200548EEE /* SignalServiceClient.swift */,
 				F9C5CAC7289453B200548EEE /* SSKWebSocket.swift */,
 				500824CD292737FC005A5DC0 /* WebSocketPromise.swift */,
 			);
@@ -16748,8 +16751,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6645F30C29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift in Sources */,
 				6645F30829BF8D2000B58EBD /* AccountAttributes.swift in Sources */,
+				6645F30C29BFA28A00B58EBD /* AccountAttributesGenerator.swift in Sources */,
 				6645F30A29BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift in Sources */,
 				6646572C2AC347B70099DE1C /* AccountAttributesUpdater.swift in Sources */,
 				6646572E2AC349C80099DE1C /* AccountAttributesUpdaterImpl.swift in Sources */,
@@ -17505,6 +17508,7 @@
 				6659A0262A7C11A800066AB7 /* PrekeyManagerImpl.swift in Sources */,
 				72B0C2402C9EEA8200B57DAD /* PreKeyRecord.swift in Sources */,
 				C17345BB2A5E000300C6426D /* PreKeyTarget.swift in Sources */,
+				D94AEB3C2D28940A00B03D7A /* PreKeyTaskAPIClient.swift in Sources */,
 				C1ED5CA12A72E3D5009AD3FC /* PreKeyTaskManager.swift in Sources */,
 				6659A0312A7C5B9700066AB7 /* PreKeyUploadBundle.swift in Sources */,
 				6681AB652B7AE53B0099D187 /* PreloadedTextAttachment.swift in Sources */,
@@ -17649,7 +17653,6 @@
 				6619A1952B27C7F3004B38FE /* SignalRecipientManager.swift in Sources */,
 				F9C5CC9A289453B300548EEE /* SignalService.pb.swift in Sources */,
 				F9C5CCE2289453B300548EEE /* SignalServiceAddress.swift in Sources */,
-				F9C5CD96289453B300548EEE /* SignalServiceClient.swift in Sources */,
 				F9C5CDBB289453B400548EEE /* SignalServiceProfile.swift in Sources */,
 				C1CD0E3A2A6B0D2700307F1A /* SignalSessionStore.swift in Sources */,
 				C1CD0E382A6B0BFB00307F1A /* SignalSignedPreKeyStore.swift in Sources */,
@@ -17722,6 +17725,7 @@
 				6673FF702978C40300F96CFD /* SVRAuthCredentialStorage.swift in Sources */,
 				6673FF722979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift in Sources */,
 				C18E3C742AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift in Sources */,
+				D94AEB3A2D28837F00B03D7A /* SVRKeyDeriver.swift in Sources */,
 				6640DD632ACDD5DE00CE9A8C /* SVRLocalStorage.swift in Sources */,
 				66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */,
 				F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */,

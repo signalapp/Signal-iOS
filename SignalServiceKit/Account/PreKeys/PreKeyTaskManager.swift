@@ -15,32 +15,32 @@
 /// 6. Upload these new keys to the server (except for registration/provisioning)
 /// 7. Store the new keys and run any cleanup logic
 internal struct PreKeyTaskManager {
+    private let apiClient: PreKeyTaskAPIClient
     private let dateProvider: DateProvider
     private let db: any DB
     private let identityManager: PreKey.Shims.IdentityManager
     private let linkedDevicePniKeyManager: LinkedDevicePniKeyManager
     private let messageProcessor: PreKey.Shims.MessageProcessor
     private let protocolStoreManager: SignalProtocolStoreManager
-    private let serviceClient: SignalServiceClient
     private let tsAccountManager: TSAccountManager
 
     init(
+        apiClient: PreKeyTaskAPIClient,
         dateProvider: @escaping DateProvider,
         db: any DB,
         identityManager: PreKey.Shims.IdentityManager,
         linkedDevicePniKeyManager: LinkedDevicePniKeyManager,
         messageProcessor: PreKey.Shims.MessageProcessor,
         protocolStoreManager: SignalProtocolStoreManager,
-        serviceClient: SignalServiceClient,
         tsAccountManager: TSAccountManager
     ) {
+        self.apiClient = apiClient
         self.dateProvider = dateProvider
         self.db = db
         self.identityManager = identityManager
         self.linkedDevicePniKeyManager = linkedDevicePniKeyManager
         self.messageProcessor = messageProcessor
         self.protocolStoreManager = protocolStoreManager
-        self.serviceClient = serviceClient
         self.tsAccountManager = tsAccountManager
     }
 
@@ -153,7 +153,7 @@ internal struct PreKeyTaskManager {
         } else {
             let (ecCount, pqCount): (Int?, Int?)
             if targets.contains(target: .oneTimePreKey) || targets.contains(target: .oneTimePqPreKey) {
-                (ecCount, pqCount) = try await self.serviceClient.getAvailablePreKeys(for: identity).awaitable()
+                (ecCount, pqCount) = try await self.apiClient.getAvailablePreKeys(for: identity)
             } else {
                 // No need to fetch prekey counts.
                 (ecCount, pqCount) = (nil, nil)
@@ -570,14 +570,14 @@ internal struct PreKeyTaskManager {
         PreKey.logger.info("[\(bundle.identity)] uploading prekeys")
 
         do {
-            try await self.serviceClient.registerPreKeys(
+            try await self.apiClient.registerPreKeys(
                 for: bundle.identity,
                 signedPreKeyRecord: bundle.getSignedPreKey(),
                 preKeyRecords: bundle.getPreKeyRecords(),
                 pqLastResortPreKeyRecord: bundle.getLastResortPreKey(),
                 pqPreKeyRecords: bundle.getPqPreKeyRecords(),
                 auth: auth
-            ).awaitable()
+            )
             return .success
         } catch let error {
             switch error.httpStatusCode {

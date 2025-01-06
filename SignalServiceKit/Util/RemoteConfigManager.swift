@@ -663,8 +663,8 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     private let dateProvider: DateProvider
     private let db: any DB
     private let keyValueStore: KeyValueStore
+    private let networkManager: NetworkManager
     private let tsAccountManager: TSAccountManager
-    private let serviceClient: SignalServiceClient
 
     // MARK: -
 
@@ -693,16 +693,16 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         appReadiness: AppReadiness,
         dateProvider: @escaping DateProvider,
         db: any DB,
-        tsAccountManager: TSAccountManager,
-        serviceClient: SignalServiceClient
+        networkManager: NetworkManager,
+        tsAccountManager: TSAccountManager
     ) {
         self.appExpiry = appExpiry
         self.appReadiness = appReadiness
         self.dateProvider = dateProvider
         self.db = db
         self.keyValueStore = KeyValueStore(collection: "RemoteConfigManager")
+        self.networkManager = networkManager
         self.tsAccountManager = tsAccountManager
-        self.serviceClient = serviceClient
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             guard self.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
@@ -844,7 +844,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
     /// should only be called within `refreshTaskQueue`
     private func _refresh(account: AuthedAccount) async throws -> RemoteConfig {
-        let fetchedConfig = try await self.serviceClient.getRemoteConfig(auth: account.chatServiceAuth).awaitable()
+        let fetchedConfig = try await fetchRemoteConfig(auth: account.chatServiceAuth)
 
         let clockSkew: TimeInterval
         if let serverEpochTimeSeconds = fetchedConfig.serverEpochTimeSeconds {
@@ -861,7 +861,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         var isEnabledFlags = [String: Bool]()
         var valueFlags = [String: String]()
         var timeGatedFlags = [String: Date]()
-        fetchedConfig.items.forEach { (key: String, item: RemoteConfigItem) in
+        fetchedConfig.items.forEach { (key: String, item: FetchedRemoteConfigItem) in
             switch item {
             case .isEnabled(let isEnabled):
                 if IsEnabledFlag(rawValue: key) != nil {
@@ -964,6 +964,57 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         newConfig.logFlags()
 
         return mergedConfig
+    }
+
+    // MARK: -
+
+    private enum FetchedRemoteConfigItem {
+        case isEnabled(Bool)
+        case value(String)
+    }
+
+    private struct FetchedRemoteConfigResponse {
+        public let items: [String: FetchedRemoteConfigItem]
+        public let serverEpochTimeSeconds: UInt64?
+    }
+
+    private func fetchRemoteConfig(auth: ChatServiceAuth) async throws -> FetchedRemoteConfigResponse {
+        let request = OWSRequestFactory.getRemoteConfigRequest(auth: auth)
+
+        let response = try await networkManager.asyncRequest(request)
+
+        guard let json = response.responseBodyJson else {
+            throw OWSAssertionError("Missing or invalid JSON.")
+        }
+        guard let parser = ParamParser(responseObject: json) else {
+            throw OWSAssertionError("Missing or invalid response.")
+        }
+
+        let config: [[String: Any]] = try parser.required(key: "config")
+        let serverEpochTimeSeconds: UInt64? = try parser.optional(key: "serverEpochTime")
+
+        let items: [String: FetchedRemoteConfigItem] = try config.reduce([:]) { accum, item in
+            var accum = accum
+            guard let itemParser = ParamParser(responseObject: item) else {
+                throw OWSAssertionError("Missing or invalid remote config item.")
+            }
+
+            let name: String = try itemParser.required(key: "name")
+            let isEnabled: Bool = try itemParser.required(key: "enabled")
+
+            if let value: String = try itemParser.optional(key: "value") {
+                accum[name] = .value(value)
+            } else {
+                accum[name] = .isEnabled(isEnabled)
+            }
+
+            return accum
+        }
+
+        return FetchedRemoteConfigResponse(
+            items: items,
+            serverEpochTimeSeconds: serverEpochTimeSeconds
+        )
     }
 
     // MARK: - Client Expiration
