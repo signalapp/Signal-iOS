@@ -1396,7 +1396,11 @@ private class WebSocketConnection {
 
 internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSSKWebSocket, ConnectionEventsListener {
     private var libsignalNet: Net
-    @Atomic private var chatService: UnauthenticatedChatService
+
+    // We don't use the `.open` state here, only `.closed` and `.connecting`.
+    // This is a bit less efficient (because we keep the whole connection Task around),
+    // but also easier for state management.
+    @Atomic private var chatService: OWSChatConnectionUsingLibSignal<UnauthenticatedChatService>.ConnectionState = .closed
 
     private var _shadowingFrequency: Double
     private var shadowingFrequency: Double {
@@ -1445,13 +1449,12 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
     internal init(libsignalNet: Net, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, appReadiness: AppReadiness, currentCallProvider: any CurrentCallProvider, db: any DB, registrationStateChangeManager: RegistrationStateChangeManager, shadowingFrequency: Double) {
         owsPrecondition((0.0...1.0).contains(shadowingFrequency))
         self.libsignalNet = libsignalNet
-        self.chatService = Self.makeChatService(libsignalNet: libsignalNet)
         self._shadowingFrequency = shadowingFrequency
         super.init(type: type, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
     }
 
     fileprivate override func isSignalProxyReadyDidChange(_ notification: NSNotification) {
-        self.chatService = Self.makeChatService(libsignalNet: libsignalNet)
+        self.chatService = .closed
         super.isSignalProxyReadyDidChange(notification)
         // Sometimes the super implementation cycles the main socket,
         // but sometimes it waits for the proxy to close the socket.
@@ -1459,19 +1462,9 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         applyDesiredSocketState()
     }
 
-    fileprivate override func isCensorshipCircumventionActiveDidChange(_ notification: NSNotification) {
-        self.chatService = Self.makeChatService(libsignalNet: libsignalNet)
-        super.isCensorshipCircumventionActiveDidChange(notification)
-    }
-
     private func shouldSendShadowRequest() -> Bool {
         assertOnQueue(serialQueue)
         if CurrentAppContext().isRunningTests {
-            return false
-        }
-        if SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionManuallyDisabled {
-            // libsignal-net currently always tries censorship circumvention mode as a fallback,
-            // so it should work in scenarios where CC is *on*.
             return false
         }
         return shadowingFrequency == 1.0 || Double.random(in: 0.0..<1.0) < shadowingFrequency
@@ -1495,32 +1488,42 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         // 4. A shadowing request Task is kicked off.
         // 5. The shadowing request fails because (2) never got through to the underlying socket.
         // This is *extremely* unlikely, though. These get tracked like premature disconnects (discussed below).
-        Task {
-            do {
-                owsAssertDebug(type == .unidentified)
-                let debugInfo = try await chatService.connect()
-                Logger.verbose("\(logPrefix): libsignal shadowing socket connected: \(debugInfo.connectionInfo)")
-            } catch {
-                Logger.error("\(logPrefix): failed to connect libsignal: \(error)")
-            }
+
+        if case .closed = chatService {
+            chatService = .connecting(token: NSObject(), task: Task { [self] in
+                do {
+                    owsAssertDebug(type == .unidentified)
+                    let service = libsignalNet.createUnauthenticatedChatService()
+                    let debugInfo = try await service.connect()
+                    Logger.verbose("\(logPrefix): libsignal shadowing socket connected: \(debugInfo.connectionInfo)")
+                    return service
+
+                } catch {
+                    Logger.error("\(logPrefix): failed to connect libsignal: \(error)")
+                    return nil
+                }
+            })
         }
     }
 
     fileprivate override func disconnectIfNeeded() {
         super.disconnectIfNeeded()
-
+        if case .closed = chatService {
+            return
+        }
         // Doing this asynchronously means there is a chance of spuriously failing a future shadow request:
         // 1. An entire request succeeds on the SSKWebSocket-based socket.
         // 2. The libsignal web socket is disconnected.
         // 3. The shadow request on the libsignal is thus cancelled.
         // We track these errors separately just in case.
-        Task {
+        _ = Task { [chatService] in
             do {
-                try await chatService.disconnect()
+                try await chatService.waitToFinishConnecting()?.disconnect()
             } catch {
                 Logger.error("\(logPrefix): failed to disconnect libsignal: \(error)")
             }
         }
+        chatService = .closed
     }
 
     fileprivate override func makeRequestInternal(
@@ -1572,7 +1575,11 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         }
 
         do {
-            let (healthCheckResult, debugInfo) = try await chatService.sendAndDebug(.init(method: "GET", pathAndQuery: "/v1/keepalive", timeout: 3))
+            guard let service = await chatService.waitToFinishConnecting() else {
+                throw SignalError.chatServiceInactive("not connected")
+            }
+
+            let (healthCheckResult, debugInfo) = try await service.sendAndDebug(.init(method: "GET", pathAndQuery: "/v1/keepalive", timeout: 3))
             let succeeded = (200...299).contains(healthCheckResult.status)
             if !succeeded {
                 Logger.warn("\(logPrefix): [\(originalRequestId)] keepalive via libsignal responded with status [\(healthCheckResult.status)] (\(debugInfo.connectionInfo))")
@@ -1605,6 +1612,9 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         // Either the main connection will also be interrupted, and they'll reconnect together,
         // or requests to the shadowing connection will come back as "chatServiceInactive".
         // If we tried to eagerly reconnect here but libsignal had a bug, we could end up in a reconnect loop.
+        if let error {
+            Logger.warn("\(logPrefix): libsignal connection unexpectedly interrupted: \(error)")
+        }
     }
 }
 
