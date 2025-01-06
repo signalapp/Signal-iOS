@@ -154,6 +154,8 @@ final class ChatListFilterControl: UIView {
         }
     }
 
+    private var isDragging = false
+
     private var state = ControlState.off {
         didSet {
             if state != oldValue {
@@ -363,7 +365,7 @@ final class ChatListFilterControl: UIView {
         updateContentOrigin()
 
         switch state {
-        case .tracking(state: .off) where fractionComplete == 1:
+        case .tracking(state: .off) where fractionComplete == 1 && isDragging:
             feedback?.impactOccurred()
             feedback = nil
             state = .pending(newState: .on)
@@ -377,7 +379,7 @@ final class ChatListFilterControl: UIView {
         case .tracking(state: .off):
             filterIconAnimator?.fractionComplete = min(fractionComplete, 0.95)
 
-        case .tracking(state: .on) where fractionComplete == 2:
+        case .tracking(state: .on) where fractionComplete == 2 && isDragging:
             feedback?.impactOccurred()
             feedback = nil
             state = .pending(newState: .off)
@@ -498,6 +500,7 @@ final class ChatListFilterControl: UIView {
         default:
             break
         }
+        isDragging = true
     }
 
     func draggingWillEnd(in scrollView: UIScrollView) {
@@ -532,6 +535,7 @@ final class ChatListFilterControl: UIView {
         default:
             break
         }
+        isDragging = false
     }
 
     func scrollingDidStop(in scrollView: UIScrollView) {
