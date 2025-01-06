@@ -47,7 +47,7 @@ public enum FeatureFlags {
     public static let backupsMemorySamplerRatio: Float = build.includes(.internal) ? 0.1 : 0
     public static let messageBackupQuickRestoreFlow = false
 
-    public static let storageServiceRecordIkmMigration = false
+    public static let storageServiceRecordIkmMigration = build.includes(.beta)
 }
 
 // MARK: -
