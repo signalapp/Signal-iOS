@@ -205,20 +205,12 @@ class CallHeader: UIView {
         let groupThread = groupThreadCall.groupThread
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             // FIXME: Register for notifications so we can update if someone leaves the group while the screen is up?
-            let firstTwoNames = groupThread.sortedMemberNames(
+            let memberNames = groupThread.sortedMemberNames(
                 includingBlocked: false,
-                limit: 2,
                 useShortNameIfAvailable: true,
                 transaction: transaction
             )
-            if firstTwoNames.count < 2 {
-                return (firstTwoNames.count, firstTwoNames)
-            }
-
-            let count = groupThread.groupMembership.fullMembers.lazy.filter {
-                !$0.isLocalAddress && !SSKEnvironment.shared.blockingManagerRef.isAddressBlocked($0, transaction: transaction)
-            }.count
-            return (count, firstTwoNames)
+            return (memberNames.count, Array(memberNames.prefix(2)))
         }
     }
 
