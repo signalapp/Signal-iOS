@@ -491,7 +491,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     // block can be called twice, once on this instance and once
     // on the copy from the database.  We only want to remove
     // attachments once.
-    [self anyReloadWithTransaction:transaction ignoreMissing:YES];
     [self removeAllAttachmentsWithTx:transaction];
     [self removeAllMentionsWithTransaction:transaction];
     [MessageSendLogObjC deleteAllPayloadsForInteraction:self tx:transaction];

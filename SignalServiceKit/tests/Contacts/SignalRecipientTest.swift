@@ -230,7 +230,7 @@ class SignalRecipientTest: SSKBaseTest {
         let oldAddress = SignalServiceAddress(serviceId: oldAci, phoneNumber: phoneNumber.stringValue)
 
         try write { transaction in
-            let oldThread = TSContactThread.getOrCreateThread(
+            var oldThread = TSContactThread.getOrCreateThread(
                 withContactAddress: oldAddress,
                 transaction: transaction
             )
@@ -285,7 +285,7 @@ class SignalRecipientTest: SSKBaseTest {
             XCTAssertNotEqual(oldAddress.phoneNumber, newAddress.phoneNumber)
             XCTAssertNotEqual(oldAddress.serviceId, newAddress.serviceId)
 
-            oldThread.anyReload(transaction: transaction)
+            oldThread = TSContactThread.anyFetchContactThread(uniqueId: oldThread.uniqueId, transaction: transaction)!
             XCTAssertNotEqual(oldThread.uniqueId, newThread.uniqueId)
             XCTAssertNil(oldThread.contactPhoneNumber)
             XCTAssertEqual(newAddress, newThread.contactAddress)

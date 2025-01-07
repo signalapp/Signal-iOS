@@ -21,25 +21,14 @@ import GRDB
 /// That is left as an exercise for some future developer.
 public struct MediaGalleryAttachmentFinder {
 
-    public let thread: TSThread
+    public let threadId: Int64
 
     /// Media will be restricted to this type. Otherwise there is no filtering.
     public var filter: AllMediaFilter
 
-    public init(thread: TSThread, filter: AllMediaFilter) {
-        owsAssertDebug(thread.grdbId != 0, "only supports GRDB")
-        self.thread = thread
+    public init(threadId: Int64, filter: AllMediaFilter) {
+        self.threadId = threadId
         self.filter = filter
-    }
-
-    // MARK: -
-
-    public var threadId: Int64 {
-        guard let rowId = thread.grdbId else {
-            owsFailDebug("thread.grdbId was unexpectedly nil")
-            return 0
-        }
-        return rowId.int64Value
     }
 
     // MARK: - Public Methods

@@ -315,21 +315,6 @@ public extension IncomingGroupsV2MessageJob {
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
     }
-
-    func anyReload(transaction: SDSAnyReadTransaction) {
-        anyReload(transaction: transaction, ignoreMissing: false)
-    }
-
-    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
-        guard let latestVersion = type(of: self).anyFetch(uniqueId: uniqueId, transaction: transaction) else {
-            if !ignoreMissing {
-                owsFailDebug("`latest` was unexpectedly nil")
-            }
-            return
-        }
-
-        setValuesForKeys(latestVersion.dictionaryValue)
-    }
 }
 
 // MARK: - IncomingGroupsV2MessageJobCursor

@@ -886,7 +886,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     private lazy var mediaGalleryFinder = MediaGalleryAttachmentFinder(
-        thread: thread,
+        threadId: thread.grdbId!.int64Value,
         filter: .defaultMediaType(for: AllMediaCategory.defaultValue)
     )
 

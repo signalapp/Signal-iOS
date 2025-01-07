@@ -1148,7 +1148,7 @@ public final class MessageReceiver {
 
         // Inserting the message may have modified the thread on disk, so reload
         // it. For example, we may have marked the thread as visible.
-        thread.anyReload(transaction: tx)
+        let updatedThread = TSThread.anyFetch(uniqueId: thread.uniqueId, transaction: tx) ?? thread
 
         do {
             try DependenciesBridge.shared.attachmentManager.createAttachmentPointers(
@@ -1227,12 +1227,12 @@ public final class MessageReceiver {
         // should be automatically marked as read.
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         if envelope.sourceAci == tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci {
-            let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: tx)
+            let hasPendingMessageRequest = updatedThread.hasPendingMessageRequest(transaction: tx)
             owsFailDebug("Incoming messages from yourself aren't supported.")
             // Don't send a read receipt for messages sent by ourselves.
             message.markAsRead(
                 atTimestamp: envelope.timestamp,
-                thread: thread,
+                thread: updatedThread,
                 circumstance: hasPendingMessageRequest ? .onLinkedDeviceWhilePendingMessageRequest : .onLinkedDevice,
                 shouldClearNotifications: false, // not required, since no notifications if sent by local
                 transaction: tx
@@ -1245,7 +1245,7 @@ public final class MessageReceiver {
         if CurrentAppContext().isMainApp {
             DispatchQueue.main.async {
                 SSKEnvironment.shared.typingIndicatorsRef.didReceiveIncomingMessage(
-                    inThread: thread,
+                    inThread: updatedThread,
                     senderAci: envelope.sourceAci,
                     deviceId: envelope.sourceDeviceId
                 )

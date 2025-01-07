@@ -754,7 +754,6 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
         if contentThreadId == changedThreadId {
             SSKEnvironment.shared.databaseStorageRef.read {
-                dataSource.reload(transaction: $0)
                 updateModel(transaction: $0)
             }
         }
@@ -933,15 +932,6 @@ public enum ConversationAvatarDataSource: Equatable, CustomStringConvertible {
         case .thread:
             owsFailDebug("Unrecognized thread subclass: \(self)")
             return nil
-        }
-    }
-
-    fileprivate func reload(transaction: SDSAnyReadTransaction) {
-        switch self {
-        case .thread(let thread):
-            thread.anyReload(transaction: transaction)
-        case .asset, .address:
-            break
         }
     }
 

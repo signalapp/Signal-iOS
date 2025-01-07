@@ -94,9 +94,9 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
         let (lastMessage, unsavedMessage) = self.write { transaction in
             let recipient = SignalServiceAddress(phoneNumber: "+12345678900")
             let thread = TSContactThread.getOrCreateThread(withContactAddress: recipient, transaction: transaction)
-            let message = TSOutgoingMessage(in: thread, messageBody: "Hello Alice")
+            var message = TSOutgoingMessage(in: thread, messageBody: "Hello Alice")
             message.anyInsert(transaction: transaction)
-            message.anyReload(transaction: transaction)
+            message = TSOutgoingMessage.anyFetchOutgoingMessage(uniqueId: message.uniqueId, transaction: transaction)!
 
             let unsavedMessage = TSOutgoingMessage(in: thread, messageBody: "Goodbyte Alice")
 

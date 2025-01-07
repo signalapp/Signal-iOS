@@ -82,7 +82,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             .init(ownerId: .messageBodyAttachment(messageRowId: messageRowId), orderInOwner: 5)
         ])
 
-        let finder = MediaGalleryAttachmentFinder(thread: thread, filter: .allPhotoVideoCategory)
+        let finder = MediaGalleryAttachmentFinder(threadId: thread.grdbId!.int64Value, filter: .allPhotoVideoCategory)
 
         // Should get two results with offset 0
         var query = finder.galleryItemQuery(
@@ -160,7 +160,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
                 // use a simple index.
                 continue
             }
-            let finder = MediaGalleryAttachmentFinder(thread: thread, filter: filter)
+            let finder = MediaGalleryAttachmentFinder(threadId: thread.grdbId!.int64Value, filter: filter)
             var queries = [QueryInterfaceRequest<RecordType>]()
 
             for dateInterval in dateIntervals {

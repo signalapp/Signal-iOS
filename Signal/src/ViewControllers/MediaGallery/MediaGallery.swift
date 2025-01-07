@@ -289,7 +289,7 @@ class MediaGallery {
     typealias Update = Sections.Update
     typealias Journal = [JournalingOrderedDictionaryChange<Sections.ItemChange>]
 
-    private let thread: TSThread
+    private let threadUniqueId: String
 
     // Used for filtering.
     private(set) var mediaFilter: AllMediaFilter
@@ -316,9 +316,9 @@ class MediaGallery {
 
     @MainActor
     init(thread: TSThread, mediaCategory: AllMediaCategory, spoilerState: SpoilerRenderState) {
-        self.thread = thread
+        self.threadUniqueId = thread.uniqueId
         mediaFilter = AllMediaFilter.defaultMediaType(for: mediaCategory)
-        let finder = MediaGalleryAttachmentFinder(thread: thread, filter: mediaFilter)
+        let finder = MediaGalleryAttachmentFinder(threadId: thread.grdbId!.int64Value, filter: mediaFilter)
         self.mediaGalleryFinder = finder
         self.spoilerState = spoilerState
         self.mediaCategory = mediaCategory
@@ -846,8 +846,9 @@ class MediaGallery {
 
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { tx in
             do {
-                // Ensure we have the latest in-memory state for our thread.
-                self.thread.anyReload(transaction: tx)
+                guard let thread = TSThread.anyFetch(uniqueId: self.threadUniqueId, transaction: tx) else {
+                    throw OWSGenericError("Couldn't load thread that should exist.")
+                }
 
                 var attachmentsRemoved = [TSMessage: [ReferencedAttachment]]()
 
@@ -881,10 +882,6 @@ class MediaGallery {
                 /// instead we'll send a `DeleteForMe` sync about the removed
                 /// attachments.
                 for (message, removedAttachments) in attachmentsRemoved {
-                    // Refresh our in-memory model of the message so it has an
-                    // up-to-date attachment list.
-                    message.anyReload(transaction: tx)
-
                     let noBodyAttachments = message.hasBodyAttachments(transaction: tx).negated
                     let finderIsEmptyOfAttachments = try self.mediaGalleryFinder
                         .countAllAttachments(of: message, tx: tx.asV2Read) == 0
@@ -899,7 +896,7 @@ class MediaGallery {
                 if let localIdentifiers = deps.tsAccountManager.localIdentifiers(tx: tx.asV2Read) {
                     deps.deleteForMeOutgoingSyncMessageManager.send(
                         deletedAttachments: messagesWithAttachmentsRemaining,
-                        thread: self.thread,
+                        thread: thread,
                         localIdentifiers: localIdentifiers,
                         tx: tx.asV2Write
                     )
@@ -908,7 +905,7 @@ class MediaGallery {
                 deps.interactionDeleteManager.delete(
                     interactions: messagesWithAllAttachmentsRemoved,
                     sideEffects: .custom(
-                        deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: self.thread)
+                        deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: thread)
                     ),
                     tx: tx.asV2Write
                 )
@@ -971,7 +968,7 @@ class MediaGallery {
         self.mediaFilter = mediaFilter
         return mutate { sections in
             mediaGalleryFinder = MediaGalleryAttachmentFinder(
-                thread: mediaGalleryFinder.thread,
+                threadId: mediaGalleryFinder.threadId,
                 filter: mediaFilter
             )
             let newLoader = Loader(mediaGallery: self, finder: mediaGalleryFinder)
