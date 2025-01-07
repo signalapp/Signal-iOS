@@ -104,7 +104,7 @@ public class HeroSheetViewController: StackSheetViewController {
         self.stackView.setCustomSpacing(32, after: bodyLabel)
         bodyLabel.text = self.bodyText
         bodyLabel.font = .dynamicTypeSubheadline
-        bodyLabel.textColor = UIColor(named: "Signal/secondaryLabel")!
+        bodyLabel.textColor = UIColor.Signal.secondaryLabel
         bodyLabel.numberOfLines = 0
         bodyLabel.textAlignment = .center
 
@@ -126,7 +126,7 @@ public class HeroSheetViewController: StackSheetViewController {
         )
         buttonConfiguration.contentInsets = .init(hMargin: 16, vMargin: 14)
         buttonConfiguration.background.cornerRadius = 10
-        buttonConfiguration.background.backgroundColor = UIColor(named: "Signal/ultramarine")!
+        buttonConfiguration.background.backgroundColor = UIColor.Signal.ultramarine
         button.configuration = buttonConfiguration
     }
 }
