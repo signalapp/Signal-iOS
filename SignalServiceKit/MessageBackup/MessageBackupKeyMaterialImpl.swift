@@ -7,15 +7,16 @@ import Foundation
 public import LibSignalClient
 
 public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
-    private let svr: SecureValueRecovery
+
     private let mrbkStore: MediaRootBackupKeyStore
+    private let svrKeyDeriver: SVRKeyDeriver
 
     public init(
         mrbkStore: MediaRootBackupKeyStore,
-        svr: SecureValueRecovery
+        svrKeyDeriver: SVRKeyDeriver
     ) {
         self.mrbkStore = mrbkStore
-        self.svr = svr
+        self.svrKeyDeriver = svrKeyDeriver
     }
 
     /// Get the root backup key used by the encryption mode. The key may be derived
@@ -32,7 +33,7 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
             }
             resultData = backupKey
         case .messages:
-            guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
+            guard let backupKey = svrKeyDeriver.data(for: .backupKey, tx: tx) else {
                 throw MessageBackupKeyMaterialError.missingMasterKey
             }
             guard backupKey.type == .backupKey else {

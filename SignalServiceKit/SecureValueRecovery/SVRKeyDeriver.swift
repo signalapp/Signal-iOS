@@ -9,13 +9,22 @@ import LibSignalClient
 /// Responsible for deriving key data for keys downstream of the SVR master key.
 public protocol SVRKeyDeriver {
 
+    func isKeyAvailable(_ key: SVR.DerivedKey, tx: DBReadTransaction) -> Bool
+
     /// Reads and derives key data for the given key type.
     func data(for key: SVR.DerivedKey, tx: DBReadTransaction) -> SVR.DerivedKeyData?
 
-    /// Derive a Storage Service key from pre-known master key data.
-    func deriveStorageServiceKey(masterKey: Data) -> SVR.DerivedKeyData?
-    /// Derive a reglock key/token from pre-known master key data.
-    func deriveReglockKey(masterKey: Data) -> SVR.DerivedKeyData?
+    func encrypt(
+        keyType: SVR.DerivedKey,
+        data: Data,
+        tx: DBReadTransaction
+    ) -> SVR.ApplyDerivedKeyResult
+
+    func decrypt(
+        keyType: SVR.DerivedKey,
+        encryptedData: Data,
+        tx: DBReadTransaction
+    ) -> SVR.ApplyDerivedKeyResult
 }
 
 struct SVRKeyDeriverImpl: SVRKeyDeriver {
@@ -27,6 +36,10 @@ struct SVRKeyDeriverImpl: SVRKeyDeriver {
 
     // MARK: -
 
+    public func isKeyAvailable(_ key: SVR.DerivedKey, tx: DBReadTransaction) -> Bool {
+        return data(for: key, tx: tx) != nil
+    }
+
     func data(for key: SVR.DerivedKey, tx: DBReadTransaction) -> SVR.DerivedKeyData? {
         func withMasterKey(_ handler: (Data) -> SVR.DerivedKeyData?) -> SVR.DerivedKeyData? {
             guard let masterKey = self.localStorage.getMasterKey(tx) else {
@@ -36,29 +49,16 @@ struct SVRKeyDeriverImpl: SVRKeyDeriver {
         }
 
         func withStorageServiceKey(_ handler: (SVR.DerivedKeyData) -> SVR.DerivedKeyData?) -> SVR.DerivedKeyData? {
-            // NEW: linked devices might have the master key now, synced from the primary.
-            // This was not the case before, and in fact we may still not have the master
-            // key if it hasn't been synced yet.
-            // So we should _first_ check if we have the master key, and if we don't
-            // fall back to the storage service key which has historically been synced.
-            if let masterKey = self.localStorage.getMasterKey(tx) {
-                guard let storageServiceKey = deriveStorageServiceKey(masterKey: masterKey) else {
-                    return nil
-                }
-                return handler(storageServiceKey)
-            } else if
-                // TODO: By 10/2024, we can remove this check. Starting in 10/2023, we started sending
-                // master keys in syncs. A year later, any primary that has not yet delivered a master
-                // key must not have launched and is therefore deregistered; we are ok to ignore the
-                // storage service key and take the master key or bust.
-                let storageServiceKeyData = self.localStorage.getSyncedStorageServiceKey(tx),
-                let storageServiceKey = SVR.DerivedKeyData(storageServiceKeyData, .storageService)
-            {
-                return handler(storageServiceKey)
-            } else {
-                // We have no keys at all.
+            // Linked devices have the master key, synced from the primary.
+            // This was not the case historically (2023 and earlier), but since then
+            // we sync keys in provisioning and via sync message on app launch.
+            guard
+                let masterKey = self.localStorage.getMasterKey(tx),
+                let storageServiceKey = deriveStorageServiceKey(masterKey: masterKey)
+            else {
                 return nil
             }
+            return handler(storageServiceKey)
         }
 
         switch key {
@@ -107,6 +107,38 @@ struct SVRKeyDeriverImpl: SVRKeyDeriver {
     private func deriveStorageServiceRecordKey(identifier: StorageService.StorageIdentifier, storageServiceKey: SVR.DerivedKeyData) -> SVR.DerivedKeyData? {
         let keyType: SVR.DerivedKey = .legacy_storageServiceRecord(identifier: identifier)
         return SVR.DerivedKeyData(keyType: keyType, dataToDeriveFrom: storageServiceKey.rawData)
+    }
+
+    // MARK: -
+
+    public func encrypt(
+        keyType: SVR.DerivedKey,
+        data: Data,
+        tx: DBReadTransaction
+    ) -> SVR.ApplyDerivedKeyResult {
+        guard let keyData = self.data(for: keyType, tx: tx) else {
+            return .masterKeyMissing
+        }
+        do {
+            return .success(try Aes256GcmEncryptedData.encrypt(data, key: keyData.rawData).concatenate())
+        } catch let error {
+            return .cryptographyError(error)
+        }
+    }
+
+    public func decrypt(
+        keyType: SVR.DerivedKey,
+        encryptedData: Data,
+        tx: DBReadTransaction
+    ) -> SVR.ApplyDerivedKeyResult {
+        guard let keyData = self.data(for: keyType, tx: tx) else {
+            return .masterKeyMissing
+        }
+        do {
+            return .success(try Aes256GcmEncryptedData(concatenated: encryptedData).decrypt(key: keyData.rawData))
+        } catch let error {
+            return .cryptographyError(error)
+        }
     }
 }
 

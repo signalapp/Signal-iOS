@@ -247,31 +247,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: - Key Management
 
-    public func acquireRegistrationLockForNewNumber(with pin: String, and auth: SVRAuthCredential) -> Promise<String> {
-        Logger.info("")
-        return doRestore(pin: pin, authMethod: .svrAuth(auth, backup: nil)).then(on: scheduler) { restoreResult -> Promise<String> in
-            switch restoreResult {
-            case .success(let masterKey, _):
-                // Ignore whether we restored from an old enclave; we aren't backing up to the new enclave
-                // on this code path so its not safe to wipe the old one anyway.
-                guard let reglockToken = self.keyDeriver.deriveReglockKey(masterKey: masterKey)?.canonicalStringRepresentation else {
-                    return .init(error: SVR.SVRError.assertion)
-                }
-                return .value(reglockToken)
-            case .backupMissing:
-                return .init(error: SVR.SVRError.backupMissing)
-            case .invalidPin(let remainingAttempts):
-                return .init(error: SVR.SVRError.invalidPin(remainingAttempts: remainingAttempts))
-            case .decryptionError, .serverError, .unretainedError:
-                return .init(error: SVR.SVRError.assertion)
-            case .networkError(let error):
-                return .init(error: error)
-            case .genericError(let error):
-                return .init(error: error)
-            }
-        }
-    }
-
     public func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod) -> Promise<Void> {
         let promise: Promise<Data> = self.generateAndBackupKeys(pin: pin, authMethod: authMethod)
         return promise.asVoid(on: schedulers.sync)
@@ -383,74 +358,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         localStorage.clearKeys(transaction)
     }
 
-    // MARK: - Master Key Encryption
-
-    public func encrypt(
-        keyType: SVR.DerivedKey,
-        data: Data,
-        transaction: DBReadTransaction
-    ) -> SVR.ApplyDerivedKeyResult {
-        guard let keyData = self.data(for: keyType, transaction: transaction) else {
-            return .masterKeyMissing
-        }
-        do {
-            return .success(try Aes256GcmEncryptedData.encrypt(data, key: keyData.rawData).concatenate())
-        } catch let error {
-            return .cryptographyError(error)
-        }
-    }
-
-    public func decrypt(
-        keyType: SVR.DerivedKey,
-        encryptedData: Data,
-        transaction: DBReadTransaction
-    ) -> SVR.ApplyDerivedKeyResult {
-        guard let keyData = self.data(for: keyType, transaction: transaction) else {
-            return .masterKeyMissing
-        }
-        do {
-            return .success(try Aes256GcmEncryptedData(concatenated: encryptedData).decrypt(key: keyData.rawData))
-        } catch let error {
-            return .cryptographyError(error)
-        }
-    }
-
-    // TODO: By 03/2024, we can remove this method. Starting in 10/2023, we started sending
-    // master keys in syncs. 90 days later, all active primaries will be sending the master key.
-    // 30 days after that all message queues will have been flushed, at which point sync messages
-    // without a master key will be impossible.
-    public func storeSyncedStorageServiceKey(data: Data?, authedAccount: AuthedAccount, transaction: DBWriteTransaction) {
-        Logger.info("")
-
-        guard tsAccountManager.registrationState(tx: transaction).isPrimaryDevice == false else {
-            owsFailDebug("Should not be storing synced keys on primary!")
-            return
-        }
-
-        guard let storageServiceKey = data else {
-            localStorage.setSyncedStorageServiceKey(nil, transaction)
-            return
-        }
-
-        if
-            let masterKey = localStorage.getMasterKey(transaction),
-            keyDeriver.deriveStorageServiceKey(masterKey: masterKey)?.rawData == storageServiceKey
-        {
-            // We already have a master key, it already produces this storage service key.
-            // Nothing needs to change.
-            return
-        }
-
-        // Otherwise we are either missing a master key or it doesn't match;
-        // in either case we want to nil out our master key and store the storage
-        // service key.
-        localStorage.setSyncedStorageServiceKey(data, transaction)
-        localStorage.setMasterKey(nil, transaction)
-
-        // Trigger a re-fetch of the storage manifest, our keys have changed
-        storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedAccount.authedDevice(isPrimaryDevice: false))
-    }
-
     public func storeSyncedMasterKey(
         data: Data,
         authedDevice: AuthedDevice,
@@ -478,16 +385,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         Logger.info("")
         localStorage.setSyncedStorageServiceKey(nil, transaction)
         localStorage.setMasterKey(nil, transaction)
-    }
-
-    // MARK: - Value Derivation
-
-    public func isKeyAvailable(_ key: SVR.DerivedKey, transaction: DBReadTransaction) -> Bool {
-        return data(for: key, transaction: transaction) != nil
-    }
-
-    public func data(for key: SVR.DerivedKey, transaction: any DBReadTransaction) -> SVR.DerivedKeyData? {
-        return keyDeriver.data(for: key, tx: transaction)
     }
 
     // MARK: - Backup/Expose Request

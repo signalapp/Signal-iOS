@@ -1088,6 +1088,7 @@
 		66C2B1562A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */; };
 		66C343D62C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C343D52C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift */; };
 		66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */; };
+		66C59CED2D28AB060007B874 /* SVRKeyDeriverMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C59CEC2D28AB010007B874 /* SVRKeyDeriverMock.swift */; };
 		66C7952D2C9B78E900C13937 /* BackupAttachmentUploadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */; };
 		66C795302C9B83A200C13937 /* BackupAttachmentUploadStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C7952E2C9B837500C13937 /* BackupAttachmentUploadStoreTests.swift */; };
 		66CA4CE62B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */; };
@@ -4843,6 +4844,7 @@
 		66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailedStorySendDisplayController.swift; sourceTree = "<group>"; };
 		66C343D52C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DraftQuotedReplyModel+ForSending.swift"; sourceTree = "<group>"; };
 		66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferProgressViewController.swift; sourceTree = "<group>"; };
+		66C59CEC2D28AB010007B874 /* SVRKeyDeriverMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRKeyDeriverMock.swift; sourceTree = "<group>"; };
 		66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadStore.swift; sourceTree = "<group>"; };
 		66C7952E2C9B837500C13937 /* BackupAttachmentUploadStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadStoreTests.swift; sourceTree = "<group>"; };
 		66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+RenderingFlag.swift"; sourceTree = "<group>"; };
@@ -9275,6 +9277,7 @@
 				6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */,
 				6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */,
 				D94AEB392D28837A00B03D7A /* SVRKeyDeriver.swift */,
+				66C59CEC2D28AB010007B874 /* SVRKeyDeriverMock.swift */,
 				66C2B1352A0DB02E008DDE72 /* SVRUtil.swift */,
 			);
 			path = SecureValueRecovery;
@@ -17726,6 +17729,7 @@
 				6673FF722979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift in Sources */,
 				C18E3C742AA0F8CE003D1CF1 /* SVRAuthCredentialStorageMock.swift in Sources */,
 				D94AEB3A2D28837F00B03D7A /* SVRKeyDeriver.swift in Sources */,
+				66C59CED2D28AB060007B874 /* SVRKeyDeriverMock.swift in Sources */,
 				6640DD632ACDD5DE00CE9A8C /* SVRLocalStorage.swift in Sources */,
 				66C2B1362A0DB02E008DDE72 /* SVRUtil.swift in Sources */,
 				F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */,

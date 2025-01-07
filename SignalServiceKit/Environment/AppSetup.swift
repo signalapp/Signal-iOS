@@ -37,7 +37,7 @@ public class AppSetup {
         let remoteConfigManager: (any RemoteConfigManager)?
         let signalService: (any OWSSignalServiceProtocol)?
         let storageServiceManager: (any StorageServiceManager)?
-        let svr: SecureValueRecovery?
+        let svrKeyDeriver: SVRKeyDeriver?
         let syncManager: (any SyncManagerProtocol)?
         let systemStoryManager: (any SystemStoryManagerProtocol)?
         let versionedProfiles: (any VersionedProfilesSwift)?
@@ -60,7 +60,7 @@ public class AppSetup {
             remoteConfigManager: (any RemoteConfigManager)? = nil,
             signalService: (any OWSSignalServiceProtocol)? = nil,
             storageServiceManager: (any StorageServiceManager)? = nil,
-            svr: SecureValueRecovery? = nil,
+            svrKeyDeriver: SVRKeyDeriver? = nil,
             syncManager: (any SyncManagerProtocol)? = nil,
             systemStoryManager: (any SystemStoryManagerProtocol)? = nil,
             versionedProfiles: (any VersionedProfilesSwift)? = nil,
@@ -82,7 +82,7 @@ public class AppSetup {
             self.remoteConfigManager = remoteConfigManager
             self.signalService = signalService
             self.storageServiceManager = storageServiceManager
-            self.svr = svr
+            self.svrKeyDeriver = svrKeyDeriver
             self.syncManager = syncManager
             self.systemStoryManager = systemStoryManager
             self.versionedProfiles = versionedProfiles
@@ -284,7 +284,9 @@ public class AppSetup {
 
         let svrCredentialStorage = SVRAuthCredentialStorageImpl()
         let svrLocalStorage = SVRLocalStorageImpl()
-        let svrKeyDeriver = SVRKeyDeriverImpl(localStorage: svrLocalStorage)
+        let svrKeyDeriver = testDependencies.svrKeyDeriver ?? SVRKeyDeriverImpl(
+            localStorage: svrLocalStorage
+        )
 
         let accountAttributesUpdater = AccountAttributesUpdaterImpl(
             accountAttributesGenerator: AccountAttributesGenerator(
@@ -314,7 +316,7 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
-        let svr = testDependencies.svr ?? SecureValueRecovery2Impl(
+        let svr = SecureValueRecovery2Impl(
             accountAttributesUpdater: accountAttributesUpdater,
             appContext: SVR2.Wrappers.AppContext(),
             appReadiness: appReadiness,
@@ -335,7 +337,7 @@ public class AppSetup {
         let mrbkStore = MediaRootBackupKeyStore()
         let messageBackupKeyMaterial = MessageBackupKeyMaterialImpl(
             mrbkStore: mrbkStore,
-            svr: svr
+            svrKeyDeriver: svrKeyDeriver
         )
         let messageBackupRequestManager = MessageBackupRequestManagerImpl(
             dateProvider: dateProvider,
@@ -1314,6 +1316,7 @@ public class AppSetup {
             storageServiceRecordIkmCapabilityStore: storageServiceRecordIkmCapabilityStore,
             svr: svr,
             svrCredentialStorage: svrCredentialStorage,
+            svrKeyDeriver: svrKeyDeriver,
             threadAssociatedDataStore: threadAssociatedDataStore,
             threadRemover: threadRemover,
             threadReplyInfoStore: threadReplyInfoStore,

@@ -318,9 +318,9 @@ extension OWS2FAManager {
 
     public func enableRegistrationLockV2() async throws {
         let token = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return DependenciesBridge.shared.svr.data(
+            return DependenciesBridge.shared.svrKeyDeriver.data(
                 for: .registrationLock,
-                transaction: tx.asV2Read
+                tx: tx.asV2Read
             )?.canonicalStringRepresentation
         }
         guard let token else {

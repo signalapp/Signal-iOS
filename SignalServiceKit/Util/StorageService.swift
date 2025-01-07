@@ -211,10 +211,10 @@ public struct StorageService {
             }
 
             let decryptResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                return DependenciesBridge.shared.svr.decrypt(
+                return DependenciesBridge.shared.svrKeyDeriver.decrypt(
                     keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
                     encryptedData: encryptedManifestContainer.value,
-                    transaction: tx.asV2Read
+                    tx: tx.asV2Read
                 )
             })
             switch decryptResult {
@@ -280,10 +280,10 @@ public struct StorageService {
 
         let encryptedManifestData: Data
         let encryptResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-            return DependenciesBridge.shared.svr.encrypt(
+            return DependenciesBridge.shared.svrKeyDeriver.encrypt(
                 keyType: .storageServiceManifest(version: manifest.version),
                 data: manifestData,
-                transaction: tx.asV2Read
+                tx: tx.asV2Read
             )
         })
         switch encryptResult {
@@ -322,10 +322,10 @@ public struct StorageService {
                     /// If we don't have a `recordIkm` yet, fall back to the
                     /// SVR-derived key.
                     let itemEncryptionResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                        return DependenciesBridge.shared.svr.encrypt(
+                        return DependenciesBridge.shared.svrKeyDeriver.encrypt(
                             keyType: .legacy_storageServiceRecord(identifier: item.identifier),
                             data: plaintextRecordData,
-                            transaction: tx.asV2Read
+                            tx: tx.asV2Read
                         )
                     })
                     switch itemEncryptionResult {
@@ -388,10 +388,10 @@ public struct StorageService {
             }
 
             let decryptionResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                return DependenciesBridge.shared.svr.decrypt(
+                return DependenciesBridge.shared.svrKeyDeriver.decrypt(
                     keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
                     encryptedData: encryptedManifestContainer.value,
-                    transaction: tx.asV2Read
+                    tx: tx.asV2Read
                 )
             })
             switch decryptionResult {
@@ -501,10 +501,10 @@ public struct StorageService {
                 /// If we don't yet have a `recordIkm` set we should
                 /// continue using the SVR-derived record key.
                 let itemDecryptionResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                    return DependenciesBridge.shared.svr.decrypt(
+                    return DependenciesBridge.shared.svrKeyDeriver.decrypt(
                         keyType: .legacy_storageServiceRecord(identifier: itemIdentifier),
                         encryptedData: item.value,
-                        transaction: tx.asV2Read
+                        tx: tx.asV2Read
                     )
                 })
                 switch itemDecryptionResult {

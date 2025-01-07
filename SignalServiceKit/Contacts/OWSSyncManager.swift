@@ -199,7 +199,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return owsFailDebug("Missing thread")
         }
 
-        let storageServiceKey = DependenciesBridge.shared.svr.data(for: .storageService, transaction: tx.asV2Read)
+        let storageServiceKey = DependenciesBridge.shared.svrKeyDeriver.data(for: .storageService, tx: tx.asV2Read)
         let masterKey = DependenciesBridge.shared.svr.masterKeyDataForKeysSyncMessage(tx: tx.asV2Read)
         let mrbk = DependenciesBridge.shared.mrbkStore.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
         let syncKeysMessage = OWSSyncKeysMessage(
@@ -225,12 +225,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                 data: masterKey,
                 authedDevice: .implicit,
                 updateStorageService: true,
-                transaction: transaction.asV2Write
-            )
-        } else {
-            DependenciesBridge.shared.svr.storeSyncedStorageServiceKey(
-                data: syncMessage.storageService,
-                authedAccount: .implicit(),
                 transaction: transaction.asV2Write
             )
         }

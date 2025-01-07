@@ -678,7 +678,7 @@ class StorageServiceOperation {
             Bool,
             State?
         ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            let isKeyAvailable = DependenciesBridge.shared.svr.isKeyAvailable(.storageService, transaction: tx.asV2Read)
+            let isKeyAvailable = DependenciesBridge.shared.svrKeyDeriver.isKeyAvailable(.storageService, tx: tx.asV2Read)
 
             switch mode {
             case .rotateManifest:

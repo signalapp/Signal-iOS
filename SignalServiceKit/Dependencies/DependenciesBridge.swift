@@ -138,6 +138,7 @@ public class DependenciesBridge {
     public let storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStore
     public let svr: SecureValueRecovery
     public let svrCredentialStorage: SVRAuthCredentialStorage
+    public let svrKeyDeriver: SVRKeyDeriver
     public let threadAssociatedDataStore: ThreadAssociatedDataStore
     public let threadRemover: ThreadRemover
     public let threadReplyInfoStore: ThreadReplyInfoStore
@@ -253,6 +254,7 @@ public class DependenciesBridge {
         storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStore,
         svr: SecureValueRecovery,
         svrCredentialStorage: SVRAuthCredentialStorage,
+        svrKeyDeriver: SVRKeyDeriver,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
         threadRemover: ThreadRemover,
         threadReplyInfoStore: ThreadReplyInfoStore,
@@ -367,6 +369,7 @@ public class DependenciesBridge {
         self.storageServiceRecordIkmCapabilityStore = storageServiceRecordIkmCapabilityStore
         self.svr = svr
         self.svrCredentialStorage = svrCredentialStorage
+        self.svrKeyDeriver = svrKeyDeriver
         self.threadAssociatedDataStore = threadAssociatedDataStore
         self.threadRemover = threadRemover
         self.threadReplyInfoStore = threadReplyInfoStore

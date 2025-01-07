@@ -23,6 +23,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let signalService: OWSSignalServiceProtocol
     private let storageServiceManager: StorageServiceManager
     private let svr: SecureValueRecovery
+    private let svrKeyDeriver: SVRKeyDeriver
     private let syncManager: Shims.SyncManager
     private let threadStore: ThreadStore
     private let tsAccountManager: TSAccountManager
@@ -43,6 +44,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         signalService: OWSSignalServiceProtocol,
         storageServiceManager: StorageServiceManager,
         svr: SecureValueRecovery,
+        svrKeyDeriver: SVRKeyDeriver,
         syncManager: Shims.SyncManager,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
@@ -62,6 +64,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         self.signalService = signalService
         self.storageServiceManager = storageServiceManager
         self.svr = svr
+        self.svrKeyDeriver = svrKeyDeriver
         self.syncManager = syncManager
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
@@ -467,9 +470,9 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         // Don't bother with this field at all; just put explicit none.
         let twoFaMode: AccountAttributes.TwoFactorAuthMode = .none
 
-        let registrationRecoveryPassword = svr.data(
+        let registrationRecoveryPassword = svrKeyDeriver.data(
             for: .registrationRecoveryPassword,
-            transaction: tx
+            tx: tx
         )?.canonicalStringRepresentation
 
         let encryptedDeviceName = encryptedDeviceNameRaw.base64EncodedString()

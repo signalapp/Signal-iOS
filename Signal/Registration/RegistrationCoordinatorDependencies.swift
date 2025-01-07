@@ -35,6 +35,7 @@ public struct RegistrationCoordinatorDependencies {
     public let storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStore
     public let storageServiceManager: StorageServiceManager
     public let svr: SecureValueRecovery
+    public let svrKeyDeriver: SVRKeyDeriver
     public let svrAuthCredentialStore: SVRAuthCredentialStorage
     public let tsAccountManager: TSAccountManager
     public let udManager: RegistrationCoordinatorImpl.Shims.UDManager
@@ -73,6 +74,7 @@ public struct RegistrationCoordinatorDependencies {
             storageServiceRecordIkmCapabilityStore: DependenciesBridge.shared.storageServiceRecordIkmCapabilityStore,
             storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
             svr: DependenciesBridge.shared.svr,
+            svrKeyDeriver: DependenciesBridge.shared.svrKeyDeriver,
             svrAuthCredentialStore: DependenciesBridge.shared.svrCredentialStorage,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(SSKEnvironment.shared.udManagerRef),

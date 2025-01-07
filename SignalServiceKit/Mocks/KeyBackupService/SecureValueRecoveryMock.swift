@@ -37,10 +37,6 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public var reglockToken: String?
 
-    public func acquireRegistrationLockForNewNumber(with pin: String, and auth: SVRAuthCredential) -> Promise<String> {
-        return .value(reglockToken!)
-    }
-
     public var generateAndBackupKeysMock: ((_ pin: String, _ authMethod: SVR.AuthMethod) -> Promise<Void>)?
 
     public func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod) -> Promise<Void> {
@@ -63,36 +59,12 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         return .value(())
     }
 
-    public func encrypt(
-        keyType: SVR.DerivedKey,
-        data: Data,
-        transaction: DBReadTransaction
-    ) -> SVR.ApplyDerivedKeyResult {
-        return .success(data)
-    }
-
-    public func decrypt(
-        keyType: SVR.DerivedKey,
-        encryptedData: Data,
-        transaction: DBReadTransaction
-    ) -> SVR.ApplyDerivedKeyResult {
-        return .success(encryptedData)
-    }
-
     public func warmCaches() {
         // Do nothing
     }
 
     public func clearKeys(transaction: DBWriteTransaction) {
         hasMasterKey = false
-    }
-
-    public func storeSyncedStorageServiceKey(
-        data: Data?,
-        authedAccount: AuthedAccount,
-        transaction: DBWriteTransaction
-    ) {
-        // Do nothing
     }
 
     public var syncedMasterKey: Data?
@@ -141,20 +113,6 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
         transaction: DBWriteTransaction
     ) {
         useDeviceLocalMasterKeyMock?(authedAccount)
-    }
-
-    public var dataGenerator: (SVR.DerivedKey) -> Data? = { _ in return nil }
-
-    public func data(for key: SVR.DerivedKey) -> Data? {
-        return dataGenerator(key)
-    }
-
-    public func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> SVR.DerivedKeyData? {
-        return SVR.DerivedKeyData(dataGenerator(key), key)
-    }
-
-    public func isKeyAvailable(_ key: SVR.DerivedKey, transaction: DBReadTransaction) -> Bool {
-        return true
     }
 }
 

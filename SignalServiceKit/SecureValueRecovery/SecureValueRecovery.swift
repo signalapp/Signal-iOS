@@ -145,11 +145,6 @@ public protocol SecureValueRecovery {
     /// Callback will happen on the main thread.
     func verifyPin(_ pin: String, resultHandler: @escaping (Bool) -> Void)
 
-    // When changing number, we need to verify the PIN against the new number's SVR
-    // record in order to generate a registration lock token. It's important that this
-    // happens without touching any of the state we maintain around our account.
-    func acquireRegistrationLockForNewNumber(with pin: String, and auth: SVRAuthCredential) -> Promise<String>
-
     /// Loads the users key, if any, from the SVR into the database.
     func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>
 
@@ -164,35 +159,11 @@ public protocol SecureValueRecovery {
     /// they will not be able to be restored.
     func deleteKeys() -> Promise<Void>
 
-    // MARK: - Master Key Encryption
-
-    func encrypt(
-        keyType: SVR.DerivedKey,
-        data: Data,
-        transaction: DBReadTransaction
-    ) -> SVR.ApplyDerivedKeyResult
-
-    func decrypt(
-        keyType: SVR.DerivedKey,
-        encryptedData: Data,
-        transaction: DBReadTransaction
-    ) -> SVR.ApplyDerivedKeyResult
-
     func warmCaches()
 
     /// Removes the SVR keys locally from the device, they can still be
     /// restored from the server if you know the pin.
     func clearKeys(transaction: DBWriteTransaction)
-
-    // TODO: By 03/2024, we can remove this method. Starting in 10/2023, we started sending
-    // master keys in syncs. 90 days later, all active primaries will be sending the master key.
-    // 30 days after that all message queues will have been flushed, at which point sync messages
-    // without a master key will be impossible.
-    func storeSyncedStorageServiceKey(
-        data: Data?,
-        authedAccount: AuthedAccount,
-        transaction: DBWriteTransaction
-    )
 
     func storeSyncedMasterKey(
         data: Data,
@@ -210,8 +181,4 @@ public protocol SecureValueRecovery {
     /// Rotate the master key and _don't_ back it up to the SVR server, in effect switching to a
     /// local-only master key and disabling PIN usage for backup restoration.
     func useDeviceLocalMasterKey(authedAccount: AuthedAccount, transaction: DBWriteTransaction)
-
-    func data(for key: SVR.DerivedKey, transaction: DBReadTransaction) -> SVR.DerivedKeyData?
-
-    func isKeyAvailable(_ key: SVR.DerivedKey, transaction: DBReadTransaction) -> Bool
 }

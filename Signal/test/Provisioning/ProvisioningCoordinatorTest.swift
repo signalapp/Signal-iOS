@@ -27,6 +27,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
     private var signalServiceMock: OWSSignalServiceMock!
     private var storageServiceManagerMock: FakeStorageServiceManager!
     private var svrMock: SecureValueRecoveryMock!
+    private var svrKeyDeriverMock: SVRKeyDeriverMock!
     private var syncManagerMock: Mocks.SyncManager!
     private var threadStoreMock: MockThreadStore!
     private var tsAccountManagerMock: MockTSAccountManager!
@@ -54,6 +55,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         self.signalServiceMock = .init()
         self.storageServiceManagerMock = .init()
         self.svrMock = .init()
+        self.svrKeyDeriverMock = .init()
         self.syncManagerMock = .init()
         self.threadStoreMock = .init()
         self.tsAccountManagerMock = .init()
@@ -74,6 +76,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             signalService: signalServiceMock,
             storageServiceManager: storageServiceManagerMock,
             svr: svrMock,
+            svrKeyDeriver: svrKeyDeriverMock,
             syncManager: syncManagerMock,
             threadStore: threadStoreMock,
             tsAccountManager: tsAccountManagerMock,

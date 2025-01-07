@@ -36,6 +36,7 @@ public class RegistrationCoordinatorTest {
     private var sessionManager: RegistrationSessionManagerMock!
     private var storageServiceManagerMock: FakeStorageServiceManager!
     private var svr: SecureValueRecoveryMock!
+    private var svrKeyDeriver: SVRKeyDeriverMock!
     private var svrAuthCredentialStore: SVRAuthCredentialStorageMock!
     private var tsAccountManagerMock: MockTSAccountManager!
     private var usernameApiClientMock: MockUsernameApiClient!
@@ -61,6 +62,7 @@ public class RegistrationCoordinatorTest {
             return mock
         }()
         svr = SecureValueRecoveryMock()
+        svrKeyDeriver = SVRKeyDeriverMock()
         svrAuthCredentialStore = SVRAuthCredentialStorageMock()
         mockMessagePipelineSupervisor = RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor()
         mockMessageProcessor = RegistrationCoordinatorImpl.TestMocks.MessageProcessor()
@@ -115,6 +117,7 @@ public class RegistrationCoordinatorTest {
             storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStoreImpl(),
             storageServiceManager: storageServiceManagerMock,
             svr: svr,
+            svrKeyDeriver: svrKeyDeriver,
             svrAuthCredentialStore: svrAuthCredentialStore,
             tsAccountManager: tsAccountManagerMock,
             udManager: RegistrationCoordinatorImpl.TestMocks.UDManager(),
@@ -231,7 +234,7 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make SVR give us back a reg recovery password.
-        svr.dataGenerator = {
+        svrKeyDeriver.dataGenerator = {
             switch $0 {
             case .registrationRecoveryPassword:
                 return Stubs.regRecoveryPwData
@@ -391,7 +394,7 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make SVR give us back a reg recovery password.
-        svr.dataGenerator = {
+        svrKeyDeriver.dataGenerator = {
             switch $0 {
             case .registrationRecoveryPassword:
                 return Stubs.regRecoveryPwData
@@ -530,7 +533,7 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make SVR give us back a reg recovery password.
-        svr.dataGenerator = {
+        svrKeyDeriver.dataGenerator = {
             switch $0 {
             case .registrationRecoveryPassword:
 
@@ -676,7 +679,7 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make SVR give us back a reg recovery password.
-        svr.dataGenerator = {
+        svrKeyDeriver.dataGenerator = {
             switch $0 {
             case .registrationRecoveryPassword:
                 return Stubs.regRecoveryPwData
@@ -836,7 +839,7 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make SVR give us back a reg recovery password.
-        svr.dataGenerator = {
+        svrKeyDeriver.dataGenerator = {
             switch $0 {
             case .registrationRecoveryPassword:
                 return Stubs.regRecoveryPwData
@@ -1114,7 +1117,7 @@ public class RegistrationCoordinatorTest {
         }
 
         // At t=1 it should get the latest credentials from SVR.
-        self.svr.dataGenerator = {
+        self.svrKeyDeriver.dataGenerator = {
             #expect(self.scheduler.currentTime == 1)
             switch $0 {
             case .registrationRecoveryPassword:
