@@ -14,7 +14,7 @@ import SignalUI
 
 // TODO: Eventually add 1:1 call support to this view
 // and replace CallViewController
-class GroupCallViewController: UIViewController {
+final class GroupCallViewController: UIViewController {
 
     // MARK: Properties
 
@@ -185,8 +185,8 @@ class GroupCallViewController: UIViewController {
         return result
     }()
 
-    private var didUserEverSwipeToSpeakerView = true
-    private var didUserEverSwipeToScreenShare = true
+    private var didUserEverSwipeToSpeakerView: Bool
+    private var didUserEverSwipeToScreenShare: Bool
     private let swipeToastView = GroupCallSwipeToastView()
 
     private let speakerPage = UIView()
@@ -283,12 +283,43 @@ class GroupCallViewController: UIViewController {
     private var callControlsOverflowBottomConstraint: NSLayoutConstraint?
     private var callControlsConfirmationToastContainerViewBottomConstraint: NSLayoutConstraint?
 
-    init(call: SignalCall, groupCall: GroupCall) {
+    static func load(call: SignalCall, groupCall: GroupCall, tx: SDSAnyReadTransaction) -> GroupCallViewController {
+        let didUserEverSwipeToSpeakerView = keyValueStore.getBool(
+            didUserSwipeToSpeakerViewKey,
+            defaultValue: false,
+            transaction: tx.asV2Read
+        )
+        let didUserEverSwipeToScreenShare = keyValueStore.getBool(
+            didUserSwipeToScreenShareKey,
+            defaultValue: false,
+            transaction: tx.asV2Read
+        )
+
+        let phoneNumberSharingMode = SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx.asV2Read).orDefault
+
+        return GroupCallViewController(
+            call: call,
+            groupCall: groupCall,
+            didUserEverSwipeToSpeakerView: didUserEverSwipeToSpeakerView,
+            didUserEverSwipeToScreenShare: didUserEverSwipeToScreenShare,
+            phoneNumberSharingMode: phoneNumberSharingMode
+        )
+    }
+
+    init(
+        call: SignalCall,
+        groupCall: GroupCall,
+        didUserEverSwipeToSpeakerView: Bool,
+        didUserEverSwipeToScreenShare: Bool,
+        phoneNumberSharingMode: PhoneNumberSharingMode
+    ) {
         // TODO: Eventually unify UI for group and individual calls
 
         self.call = call
         self.groupCall = groupCall
         self.ringRtcCall = groupCall.ringRtcCall
+        self.didUserEverSwipeToSpeakerView = didUserEverSwipeToSpeakerView
+        self.didUserEverSwipeToScreenShare = didUserEverSwipeToScreenShare
 
         super.init(nibName: nil, bundle: nil)
 
@@ -308,6 +339,19 @@ class GroupCallViewController: UIViewController {
             name: SpamChallengeResolver.didCompleteAnyChallenge,
             object: nil
         )
+
+        self.callLinkLobbyToastLabel.text = switch phoneNumberSharingMode {
+        case .everybody:
+            OWSLocalizedString(
+                "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON",
+                comment: "Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned on."
+            )
+        case .nobody:
+            OWSLocalizedString(
+                "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_OFF",
+                comment: "Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned off."
+            )
+        }
     }
 
     static func presentLobby(thread: TSGroupThread, videoMuted: Bool = false) {
@@ -384,7 +428,10 @@ class GroupCallViewController: UIViewController {
             return nil
         }
 
-        let vc = GroupCallViewController(call: call, groupCall: groupCall)
+        let vc = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return GroupCallViewController.load(call: call, groupCall: groupCall, tx: tx)
+        }
+
         return {
             vc.modalTransitionStyle = .crossDissolve
             AppEnvironment.shared.windowManagerRef.startCall(viewController: vc)
@@ -529,38 +576,6 @@ class GroupCallViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        var phoneNumberSharingMode: PhoneNumberSharingMode = .defaultValue
-        SSKEnvironment.shared.databaseStorageRef.asyncRead { readTx in
-            self.didUserEverSwipeToSpeakerView = Self.keyValueStore.getBool(
-                Self.didUserSwipeToSpeakerViewKey,
-                defaultValue: false,
-                transaction: readTx.asV2Read
-            )
-            self.didUserEverSwipeToScreenShare = Self.keyValueStore.getBool(
-                Self.didUserSwipeToScreenShareKey,
-                defaultValue: false,
-                transaction: readTx.asV2Read
-            )
-
-            phoneNumberSharingMode = SSKEnvironment.shared.udManagerRef
-                .phoneNumberSharingMode(tx: readTx.asV2Read).orDefault
-        } completion: {
-            self.updateSwipeToastView()
-
-            self.callLinkLobbyToastLabel.text = switch phoneNumberSharingMode {
-            case .everybody:
-                OWSLocalizedString(
-                    "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON",
-                    comment: "Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned on."
-                )
-            case .nobody:
-                OWSLocalizedString(
-                    "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_OFF",
-                    comment: "Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned off."
-                )
-            }
-        }
 
         NotificationCenter.default.addObserver(
             self,
@@ -940,7 +955,7 @@ class GroupCallViewController: UIViewController {
 
     // MARK: Other UI
 
-    func updateSwipeToastView() {
+    private func updateSwipeToastView() {
         let isSpeakerViewAvailable = self.hasAtLeastTwoOthers
         guard isSpeakerViewAvailable else {
             swipeToastView.isHidden = true
