@@ -32,7 +32,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
                     contactPhoneNumber: nil
                 ))
             case .group:
-                return .group(groupThread: TSGroupThread.forUnitTest())
+                return .groupThread(groupId: Data(count: 32))
             case .callLink:
                 fatalError()
             }

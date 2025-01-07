@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalUI
 import SignalServiceKit
 import SignalRingRTC
@@ -12,7 +13,7 @@ import SignalRingRTC
 struct CallStarter {
     private enum Recipient {
         case contactThread(TSContactThread, withVideo: Bool)
-        case groupThread(TSGroupThread)
+        case groupThread(GroupIdentifier)
         case callLink(CallLinkRootKey)
     }
 
@@ -48,8 +49,8 @@ struct CallStarter {
         self.context = context
     }
 
-    init(groupThread: TSGroupThread, context: Context) {
-        self.recipient = .groupThread(groupThread)
+    init(groupId: GroupIdentifier, context: Context) {
+        self.recipient = .groupThread(groupId)
         self.context = context
     }
 
@@ -83,9 +84,9 @@ struct CallStarter {
             callTarget = .individual(thread)
             callThread = thread
             isVideoCall = withVideo
-        case .groupThread(let thread):
-            callTarget = .groupThread(thread)
-            callThread = thread
+        case .groupThread(let groupId):
+            callTarget = .groupThread(groupId)
+            callThread = context.databaseStorage.read { tx in TSGroupThread.fetch(forGroupId: groupId, tx: tx)! }
             isVideoCall = true
         case .callLink(let rootKey):
             callTarget = .callLink(CallLink(rootKey: rootKey))
@@ -108,25 +109,26 @@ struct CallStarter {
             return .callStarted
         }
 
-        switch callTarget {
-        case .individual(let thread):
-            guard thread.canCall else {
+        if let thread = callThread as? TSGroupThread, thread.isBlockedByAnnouncementOnly {
+            Self.showBlockedByAnnouncementOnlySheet(from: viewController)
+            return .callNotStarted
+        }
+
+        if let thread = callThread {
+            let canCall = {
+                switch thread {
+                case let thread as TSContactThread: return thread.canCall
+                case let thread as TSGroupThread: return thread.canCall
+                default: return false
+                }
+            }()
+            guard canCall else {
                 owsFailDebug("Shouldn't be able to startCall if canCall is false")
                 return .callNotStarted
             }
             self.whitelistThread(thread)
-        case .groupThread(let thread):
-            guard !thread.isBlockedByAnnouncementOnly else {
-                Self.showBlockedByAnnouncementOnlySheet(from: viewController)
-                return .callNotStarted
-            }
-            guard thread.canCall else {
-                return .callNotStarted
-            }
-            self.whitelistThread(thread)
-        case .callLink:
-            break
         }
+
         context.callService.initiateCall(to: callTarget, isVideo: isVideoCall)
         return .callStarted
     }

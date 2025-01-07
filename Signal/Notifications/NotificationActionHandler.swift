@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
@@ -280,11 +281,25 @@ public class NotificationActionHandler {
         let threadUniqueId = userInfo[AppNotificationUserInfoKey.threadId] as? String
         let callLinkRoomId = userInfo[AppNotificationUserInfoKey.roomId] as? String
 
-        let callTarget = { () -> CallTarget? in
+        enum LobbyTarget {
+            case groupThread(groupId: GroupIdentifier, uniqueId: String)
+            case callLink(CallLink)
+
+            var callTarget: CallTarget {
+                switch self {
+                case .groupThread(let groupId, uniqueId: _):
+                    return .groupThread(groupId)
+                case .callLink(let callLink):
+                    return .callLink(callLink)
+                }
+            }
+        }
+
+        let lobbyTarget = { () -> LobbyTarget? in
             if let threadUniqueId {
                 return SSKEnvironment.shared.databaseStorageRef.read { tx in
-                    if let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: tx) as? TSGroupThread {
-                        return .groupThread(thread)
+                    if let groupId = try? (TSThread.anyFetch(uniqueId: threadUniqueId, transaction: tx) as? TSGroupThread)?.groupIdentifier {
+                        return .groupThread(groupId: groupId, uniqueId: threadUniqueId)
                     }
                     return nil
                 }
@@ -303,28 +318,26 @@ public class NotificationActionHandler {
             }
             return nil
         }()
-        guard let callTarget else {
+        guard let lobbyTarget else {
             owsFailDebug("Couldn't resolve destination for call lobby.")
             return
         }
 
         let currentCall = Self.callService.callServiceState.currentCall
-        if currentCall?.mode.matches(callTarget) == true {
+        if currentCall?.mode.matches(lobbyTarget.callTarget) == true {
             AppEnvironment.shared.windowManagerRef.returnToCallView()
             return
         }
 
         if currentCall == nil {
-            callService.initiateCall(to: callTarget, isVideo: true)
+            callService.initiateCall(to: lobbyTarget.callTarget, isVideo: true)
             return
         }
 
-        switch callTarget {
-        case .individual:
-            owsFail("Not supported.")
-        case .groupThread(let thread as TSThread):
+        switch lobbyTarget {
+        case .groupThread(groupId: _, let uniqueId):
             // If currentCall is non-nil, we can't join a call anyway, so fall back to showing the thread.
-            self.showThread(uniqueId: thread.uniqueId)
+            self.showThread(uniqueId: uniqueId)
         case .callLink:
             // Nothing to show for a call link.
             break

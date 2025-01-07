@@ -810,19 +810,13 @@ extension CVLoadCoordinator: UIScrollViewDelegate {
 // MARK: -
 
 extension CVLoadCoordinator: CallServiceStateObserver {
-    private func doesGroupThreadCall(_ signalCall: SignalCall?, matchThread thread: TSThread) -> Bool {
-        switch signalCall?.mode {
-        case .groupThread(let call):
-            return call.groupThread.uniqueId == thread.uniqueId
-        case nil, .individual, .callLink:
-            return false
-        }
-    }
-
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
+        guard let groupId = try? (thread as? TSGroupThread)?.groupIdentifier else {
+            return
+        }
         let matchesThread: Bool = (
-            doesGroupThreadCall(oldValue, matchThread: thread)
-            || doesGroupThreadCall(newValue, matchThread: thread)
+            oldValue?.mode.matches(.groupThread(groupId)) == true
+            || newValue?.mode.matches(.groupThread(groupId)) == true
         )
         guard matchesThread else {
             return

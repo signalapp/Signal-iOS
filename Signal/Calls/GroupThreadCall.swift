@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
 import SignalUI
@@ -16,20 +17,32 @@ protocol GroupThreadCallDelegate: AnyObject {
 final class GroupThreadCall: Signal.GroupCall {
     private weak var delegate: (any GroupThreadCallDelegate)?
 
-    let groupThread: TSGroupThread
+    let groupId: GroupIdentifier
+    let threadUniqueId: String
     var membershipDidChangeObserver: (any NSObjectProtocol)!
 
-    init(
+    init?(
         delegate: any GroupThreadCallDelegate,
         ringRtcCall: SignalRingRTC.GroupCall,
-        groupThread: TSGroupThread,
+        groupId: GroupIdentifier,
         videoCaptureController: VideoCaptureController
     ) {
         self.delegate = delegate
-        self.groupThread = groupThread
+        self.groupId = groupId
+
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let groupThread = databaseStorage.read { tx in
+            return TSGroupThread.fetch(forGroupId: groupId, tx: tx)
+        }
+        guard let groupThread else {
+            owsFailDebug("Missing thread for active call.")
+            return nil
+        }
+
+        self.threadUniqueId = groupThread.uniqueId
 
         super.init(
-            audioDescription: "[SignalCall] with group \(groupThread.groupModel.groupId)",
+            audioDescription: "[SignalCall] with group \(groupId.serialize().asData)",
             ringRtcCall: ringRtcCall,
             videoCaptureController: videoCaptureController
         )
@@ -100,10 +113,17 @@ final class GroupThreadCall: Signal.GroupCall {
     private func groupMembershipDidChange(_ notification: Notification) {
         // NotificationCenter dispatches by object identity rather than equality,
         // so we filter based on the thread ID here.
-        guard groupThread.uniqueId == notification.object as? String else {
+        guard threadUniqueId == notification.object as? String else {
             return
         }
-        SSKEnvironment.shared.databaseStorageRef.read(block: groupThread.anyReload(transaction:))
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let groupThread = databaseStorage.read { tx in
+            return TSGroupThread.fetch(forGroupId: groupId, tx: tx)
+        }
+        guard let groupThread else {
+            owsFailDebug("Missing group thread for active call.")
+            return
+        }
         let groupModel = groupThread.groupModel
         let isGroupTooLarge = groupModel.groupMembers.count > RemoteConfig.current.maxGroupCallRingSize
         ringRestrictions.update(.groupTooLarge, present: isGroupTooLarge)

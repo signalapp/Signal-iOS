@@ -140,6 +140,19 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
         /// The data provider used to fetch an avatar and badge
         public var dataSource: ConversationAvatarDataSource?
+
+        public mutating func setGroupIdWithSneakyTransaction(groupId: Data) {
+            if dataSource?.groupId == groupId {
+                return
+            }
+            let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+            self.dataSource = databaseStorage.read { tx in
+                return TSGroupThread.fetch(groupId: groupId, transaction: tx)
+            }.map {
+                return .thread($0)
+            }
+        }
+
         /// Adjusts how the local user profile avatar is generated (Note to Self or Avatar?)
         public var localUserDisplayMode: LocalUserDisplayMode
         /// Places the user's badge (if they have one) over the avatar. Only supported for predefined size classes

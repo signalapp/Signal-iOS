@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalUI
 import SignalRingRTC
 import SignalServiceKit
@@ -652,7 +653,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         case .individual(let call):
             conversationId = .thread(threadRowId: call.thread.sqliteRowId!)
         case .groupThread(let call):
-            conversationId = .thread(threadRowId: call.groupThread.sqliteRowId!)
+            let rowId = deps.db.read { tx in deps.threadStore.fetchGroupThread(groupId: call.groupId, tx: tx)?.sqliteRowId }
+            guard let rowId else {
+                owsFailDebug("Can't reload call with non-existent group thread.")
+                return
+            }
+            conversationId = .thread(threadRowId: rowId)
         case .callLink(let call):
             // Query the database separately when starting & ending calls because the
             // row will usually be inserted during the call (ie `rowId` may be nil when
@@ -1069,7 +1075,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             case let groupThread as TSGroupThread:
                 title = groupThread.groupModel.groupNameOrDefault
                 medium = .video
-                recipientType = .group(groupThread: groupThread)
+                recipientType = .groupThread(groupId: groupThread.groupId)
             default:
                 owsFail("Call thread was neither contact nor group! This should be impossible.")
             }
@@ -1113,12 +1119,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private var callLinkPeekDates = [Data: MonotonicDate]()
 
     private enum Peekable {
-        case groupThread(groupThread: TSGroupThread)
+        case groupThread(groupId: GroupIdentifier)
         case callLink(rootKey: CallLinkRootKey)
 
         var identifier: Data {
             switch self {
-            case .groupThread(let thread): thread.groupId
+            case .groupThread(let groupId): groupId.serialize().asData
             case .callLink(let rootKey): rootKey.deriveRoomId()
             }
         }
@@ -1146,9 +1152,9 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         self.peekQueue.removeFirst(peekBatch.count)
         for peekable in peekBatch {
             switch peekable {
-            case .groupThread(let thread):
+            case .groupThread(let groupId):
                 Task { [deps] in
-                    await deps.groupCallManager.peekGroupCallAndUpdateThread(thread, peekTrigger: .localEvent())
+                    await deps.groupCallManager.peekGroupCallAndUpdateThread(forGroupId: groupId, peekTrigger: .localEvent())
                 }
             case .callLink(let rootKey):
                 self.callLinkPeekDates[rootKey.deriveRoomId()] = MonotonicDate()
@@ -1234,8 +1240,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         switch viewModel.recipientType {
         case .individual:
             break
-        case .group(groupThread: let groupThread):
-            addToPeekQueue(.groupThread(groupThread: groupThread))
+        case .groupThread(groupId: let groupId):
+            guard let groupId = try? GroupIdentifier(contents: [UInt8](groupId)) else {
+                owsFailDebug("Can't peek group call with invalid group id.")
+                break
+            }
+            addToPeekQueue(.groupThread(groupId: groupId))
         case .callLink(let rootKey):
             addToPeekQueue(.callLink(rootKey: rootKey))
         }
@@ -1247,7 +1257,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 continue
             }
             switch viewModel.recipientType {
-            case .individual, .group:
+            case .individual, .groupThread:
                 break
             case .callLink(let rootKey):
                 // Skip any where the link is more than 10 days old.
@@ -1365,7 +1375,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
         enum RecipientType {
             case individual(type: IndividualCallType, contactThread: TSContactThread)
-            case group(groupThread: TSGroupThread)
+            case groupThread(groupId: Data)
             case callLink(CallLinkRootKey)
 
             enum IndividualCallType {
@@ -1718,7 +1728,7 @@ extension CallsListViewController: UITableViewDelegate {
             image: "arrow-square-upright-fill",
             title: Strings.goToChatActionTitle
         ) { [weak self] in
-            self?.goToChat(for: chatThread)
+            self?.goToChat(for: chatThread()!)
         }
 
         return .init(actions: [goToChatAction])
@@ -1829,7 +1839,7 @@ extension CallsListViewController: UITableViewDelegate {
                     self?.startCall(from: viewModel, withVideo: false)
                 }
                 actions.append(audioCallAction)
-            case .group, .callLink:
+            case .groupThread, .callLink:
                 break
             }
 
@@ -1849,7 +1859,7 @@ extension CallsListViewController: UITableViewDelegate {
                 image: Theme.iconImage(.contextMenuOpenInChat),
                 attributes: []
             ) { [weak self] _ in
-                self?.goToChat(for: chatThread)
+                self?.goToChat(for: chatThread()!)
             }
             actions.append(goToChatAction)
         }
@@ -1910,10 +1920,11 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
                 withVideo: withVideo ?? (type == .video),
                 context: self.callStarterContext
             ).startCall(from: self)
-        case let .group(groupThread):
+        case let .groupThread(groupId):
             owsPrecondition(withVideo != false, "Can't start voice call.")
+            let groupId = try! GroupIdentifier(contents: [UInt8](groupId))
             CallStarter(
-                groupThread: groupThread,
+                groupId: groupId,
                 context: self.callStarterContext
             ).startCall(from: self)
         case .callLink(let rootKey):
@@ -2082,7 +2093,10 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         AssertIsOnMainThread()
 
         switch viewModel.recipientType {
-        case .individual(type: _, let thread as TSThread), .group(let thread as TSThread):
+        case .individual(type: _, let thread):
+            showCallInfo(forThread: thread, callRecords: viewModel.callRecords)
+        case .groupThread(let groupId):
+            let thread = deps.db.read { tx in deps.threadStore.fetchGroupThread(groupId: groupId, tx: tx)! }
             showCallInfo(forThread: thread, callRecords: viewModel.callRecords)
         case .callLink(let rootKey):
             showCallInfo(forRootKey: rootKey, callRecords: viewModel.callRecords)
@@ -2134,10 +2148,14 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
 
     // MARK: NewCallViewControllerDelegate
 
-    private func goToChatThread(from viewModel: CallViewModel) -> TSThread? {
+    private func goToChatThread(from viewModel: CallViewModel) -> (() -> TSThread?)? {
         switch viewModel.recipientType {
-        case .individual(type: _, let thread as TSThread), .group(let thread as TSThread):
-            return thread
+        case .individual(type: _, let thread):
+            return { thread }
+        case .groupThread(let groupId):
+            return { [deps] in
+                return deps.db.read { tx in deps.threadStore.fetchGroupThread(groupId: groupId, tx: tx) }
+            }
         case .callLink(_):
             return nil
         }
@@ -2396,8 +2414,10 @@ private extension CallsListViewController {
 
             avatarView.updateWithSneakyTransactionIfNecessary { configuration in
                 switch viewModel.recipientType {
-                case .individual(type: _, let thread as TSThread), .group(let thread as TSThread):
+                case .individual(type: _, let thread):
                     configuration.dataSource = .thread(thread)
+                case .groupThread(let groupId):
+                    configuration.setGroupIdWithSneakyTransaction(groupId: groupId)
                 case .callLink(let rootKey):
                     configuration.dataSource = .asset(avatar: CommonCallLinksUI.callLinkIcon(rootKey: rootKey), badge: nil)
                 }

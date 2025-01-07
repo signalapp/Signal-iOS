@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalUI
 import SignalServiceKit
 
@@ -52,9 +53,9 @@ class NewCallViewController: RecipientPickerContainerViewController {
 
     }
 
-    private func startGroupCall(thread: TSGroupThread) {
+    private func startGroupCall(groupId: GroupIdentifier) {
         self.startCall(callStarter: CallStarter(
-            groupThread: thread,
+            groupId: groupId,
             context: self.callStarterContext
         ))
     }
@@ -120,7 +121,7 @@ extension NewCallViewController: RecipientContextMenuHelperDelegate {
         [
             goToChatAction(thread: groupThread),
             startVideoCallAction { [weak self] _ in
-                self?.startGroupCall(thread: groupThread)
+                self?.startGroupCall(groupId: try! groupThread.groupIdentifier)
             }
         ]
     }
@@ -139,7 +140,7 @@ extension NewCallViewController: RecipientPickerDelegate, UsernameLinkScanDelega
             let thread = TSContactThread.getOrCreateThread(contactAddress: address)
             startIndividualCall(thread: thread, withVideo: false)
         case let .group(groupThread):
-            startGroupCall(thread: groupThread)
+            startGroupCall(groupId: try! groupThread.groupIdentifier)
         }
     }
 

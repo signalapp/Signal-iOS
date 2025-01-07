@@ -25,7 +25,7 @@ public class NoopCallMessageHandler: CallMessageHandler {
 
     public func receivedGroupCallUpdateMessage(
         _ updateMessage: SSKProtoDataMessageGroupCallUpdate,
-        for groupThread: TSGroupThread,
+        forGroupId groupId: GroupIdentifier,
         serverReceivedTimestamp: UInt64
     ) async {
         owsFailDebug("")

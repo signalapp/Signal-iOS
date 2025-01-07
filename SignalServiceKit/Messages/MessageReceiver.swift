@@ -469,18 +469,18 @@ public final class MessageReceiver {
                         )
                     }
                 } else if let groupCallUpdate = dataMessage.groupCallUpdate {
-                    if let groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx) {
+                    if let groupId = try? GroupIdentifier(contents: [UInt8](groupId ?? Data())) {
                         let pendingTask = MessageReceiver.buildPendingTask(label: "GroupCallUpdate")
                         Task { [callMessageHandler] in
                             defer { pendingTask.complete() }
                             await callMessageHandler.receivedGroupCallUpdateMessage(
                                 groupCallUpdate,
-                                for: groupThread,
+                                forGroupId: groupId,
                                 serverReceivedTimestamp: decryptedEnvelope.timestamp
                             )
                         }
                     } else {
-                        Logger.warn("Received GroupCallUpdate for unknown groupId")
+                        Logger.warn("Received GroupCallUpdate for invalid groupId")
                     }
                 } else {
                     guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
@@ -950,8 +950,8 @@ public final class MessageReceiver {
         }
 
         if let groupCallUpdate = dataMessage.groupCallUpdate {
-            guard let groupThread = thread as? TSGroupThread else {
-                Logger.warn("Ignoring group call update for non-group thread")
+            guard let groupId = try? (thread as? TSGroupThread)?.groupIdentifier else {
+                Logger.warn("Ignoring group call update invalid group thread.")
                 return nil
             }
             let pendingTask = Self.buildPendingTask(label: "GroupCallUpdate")
@@ -959,7 +959,7 @@ public final class MessageReceiver {
                 defer { pendingTask.complete() }
                 await callMessageHandler.receivedGroupCallUpdateMessage(
                     groupCallUpdate,
-                    for: groupThread,
+                    forGroupId: groupId,
                     serverReceivedTimestamp: envelope.timestamp
                 )
             }

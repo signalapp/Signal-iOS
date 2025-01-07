@@ -113,7 +113,18 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
             )
         case .groupThread(let call):
             if showNamesOnCallScreen {
-                return SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: call.groupThread, transaction: tx) }
+                let groupName = SSKEnvironment.shared.databaseStorageRef.read { tx -> String? in
+                    let groupThread = TSGroupThread.fetch(forGroupId: call.groupId, tx: tx)
+                    guard let groupThread else {
+                        owsFailDebug("Missing group thread for active call.")
+                        return nil
+                    }
+                    let contactManager = SSKEnvironment.shared.contactManagerRef
+                    return contactManager.displayName(for: groupThread, transaction: tx)
+                }
+                if let groupName {
+                    return groupName
+                }
             }
             return OWSLocalizedString(
                 "CALLKIT_ANONYMOUS_GROUP_NAME",

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalServiceKit
 
 struct CurrentCall {
@@ -18,12 +19,12 @@ struct CurrentCall {
 
 extension CurrentCall: CurrentCallProvider {
     var hasCurrentCall: Bool { self.get() != nil }
-    var currentGroupCallThread: TSGroupThread? {
+    var currentGroupThreadCallGroupId: GroupIdentifier? {
         switch self.get()?.mode {
         case nil, .individual, .callLink:
             return nil
         case .groupThread(let call):
-            return call.groupThread
+            return call.groupId
         }
     }
 }

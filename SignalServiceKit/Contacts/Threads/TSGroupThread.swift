@@ -3,6 +3,22 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+public import LibSignalClient
+
+// MARK: -
+
+extension TSGroupThread {
+    public var groupIdentifier: GroupIdentifier {
+        get throws {
+            return try GroupIdentifier(contents: [UInt8](self.groupId))
+        }
+    }
+
+    public static func fetch(forGroupId groupId: GroupIdentifier, tx: SDSAnyReadTransaction) -> TSGroupThread? {
+        return fetch(groupId: groupId.serialize().asData, transaction: tx)
+    }
+}
+
 // MARK: -
 
 public extension TSGroupThread {

@@ -354,11 +354,11 @@ final class GroupCallViewController: UIViewController {
         }
     }
 
-    static func presentLobby(thread: TSGroupThread, videoMuted: Bool = false) {
+    static func presentLobby(forGroupId groupId: GroupIdentifier, videoMuted: Bool = false) {
         self._presentLobby { viewController in
             let result = await self._prepareLobby(from: viewController, shouldAskForCameraPermission: !videoMuted) {
                 let callService = AppEnvironment.shared.callService!
-                return callService.buildAndConnectGroupCall(for: thread, isVideoMuted: videoMuted)
+                return callService.buildAndConnectGroupCall(for: groupId, isVideoMuted: videoMuted)
             }
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 // Dismiss the group call tooltip
@@ -1558,7 +1558,8 @@ extension GroupCallViewController: CallViewControllerWindowReference {
                 ringRtcCall.localDeviceState.joinState == .notJoined
             {
                 // If we haven't joined the call yet, we want to alert for all members of the group
-                addressesToCheck = groupThreadCall.groupThread.recipientAddresses(with: transaction)
+                let groupThread = TSGroupThread.fetch(forGroupId: groupThreadCall.groupId, tx: transaction)
+                addressesToCheck = groupThread!.recipientAddresses(with: transaction)
             } else {
                 // If we are in the call, we only care about safety numbers for the active call participants
                 addressesToCheck = ringRtcCall.remoteDeviceStates.map { $0.value.address }
@@ -1604,9 +1605,16 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             let atLeastOneUnresolvedPresentAtJoin = unresolvedAddresses.contains { membersAtJoin?.contains($0) ?? false }
             switch groupCall.concreteType {
             case .groupThread(let call):
+                let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+                let groupThread = databaseStorage.read { tx in
+                    return TSGroupThread.fetch(forGroupId: call.groupId, tx: tx)
+                }
+                guard let groupThread else {
+                    owsFail("Missing thread for active call.")
+                }
                 SSKEnvironment.shared.notificationPresenterRef.notifyForGroupCallSafetyNumberChange(
-                    callTitle: call.groupThread.groupNameOrDefault,
-                    threadUniqueId: call.groupThread.uniqueId,
+                    callTitle: groupThread.groupNameOrDefault,
+                    threadUniqueId: groupThread.uniqueId,
                     roomId: nil,
                     presentAtJoin: atLeastOneUnresolvedPresentAtJoin
                 )

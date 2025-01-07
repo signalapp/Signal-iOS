@@ -93,14 +93,14 @@ class CallHeader: UIView {
 
         // Avatar
         switch groupCall.concreteType {
-        case .groupThread(let groupThreadCall):
+        case .groupThread(let call):
             let avatarView = ConversationAvatarView(
                 sizeClass: .customDiameter(96),
                 localUserDisplayMode: .asLocalUser,
                 badged: false
             )
             avatarView.updateWithSneakyTransactionIfNecessary {
-                $0.dataSource = .thread(groupThreadCall.groupThread)
+                $0.setGroupIdWithSneakyTransaction(groupId: call.groupId.serialize().asData)
             }
             let avatarPaddingView = UIView()
             avatarPaddingView.addSubview(avatarView)
@@ -202,9 +202,12 @@ class CallHeader: UIView {
     }
 
     private func fetchGroupSizeAndMemberNamesWithSneakyTransaction(groupThreadCall: GroupThreadCall) -> (Int, [String]) {
-        let groupThread = groupThreadCall.groupThread
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             // FIXME: Register for notifications so we can update if someone leaves the group while the screen is up?
+            guard let groupThread = TSGroupThread.fetch(forGroupId: groupThreadCall.groupId, tx: transaction) else {
+                owsFailDebug("Couldn't fetch thread for active call.")
+                return (0, [] as [String])
+            }
             let memberNames = groupThread.sortedMemberNames(
                 includingBlocked: false,
                 useShortNameIfAvailable: true,
@@ -460,8 +463,13 @@ class CallHeader: UIView {
         switch groupCall.concreteType {
         case .groupThread(let groupThreadCall):
             // FIXME: This should auto-update if the group name changes.
-            return SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                SSKEnvironment.shared.contactManagerRef.displayName(for: groupThreadCall.groupThread, transaction: transaction)
+            let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+            return databaseStorage.read { tx in
+                let contactManager = SSKEnvironment.shared.contactManagerRef
+                guard let groupThread = TSGroupThread.fetch(forGroupId: groupThreadCall.groupId, tx: tx) else {
+                    return TSGroupThread.defaultGroupName
+                }
+                return contactManager.displayName(for: groupThread, transaction: tx)
             }
         case .callLink(let call):
             return call.callLinkState.localizedName

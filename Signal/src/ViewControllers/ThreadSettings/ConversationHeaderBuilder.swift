@@ -233,7 +233,7 @@ struct ConversationHeaderBuilder {
                 switch currentCall?.mode {
                 case nil: return false
                 case .individual(let call): return call.thread.uniqueId == delegate.thread.uniqueId
-                case .groupThread(let call): return call.groupThread.uniqueId == delegate.thread.uniqueId
+                case .groupThread(let call): return call.groupId.serialize().asData == (delegate.thread as? TSGroupThread)?.groupId
                 case .callLink: return false
                 }
             }()
@@ -602,13 +602,22 @@ extension ConversationHeaderDelegate {
             return
         }
         let callTarget: CallTarget
-        switch thread {
-        case let contactThread as TSContactThread:
+        if let contactThread = thread as? TSContactThread {
             callTarget = .individual(contactThread)
-        case let groupThread as TSGroupThread where withVideo:
-            callTarget = .groupThread(groupThread)
-        default:
-            owsFailDebug("Tried to start an audio only group call")
+        } else if let groupThread = thread as? TSGroupThread {
+            if withVideo {
+                if let groupId = try? groupThread.groupIdentifier {
+                    callTarget = .groupThread(groupId)
+                } else {
+                    owsFailDebug("Tried to start a group call with an invalid groupId")
+                    return
+                }
+            } else {
+                owsFailDebug("Tried to start an audio only group call")
+                return
+            }
+        } else {
+            owsFailDebug("Tried to start an invalid call")
             return
         }
 

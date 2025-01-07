@@ -2037,17 +2037,19 @@ public class GroupsV2Impl: GroupsV2 {
         }
     }
 
-    public func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) async throws -> GroupsProtoGroupExternalCredential {
+    public func fetchGroupExternalCredentials(secretParams: GroupSecretParams) async throws -> GroupsProtoGroupExternalCredential {
+        let groupParams = try GroupV2Params(groupSecretParams: secretParams)
+
         let requestBuilder: RequestBuilder = { authCredential in
             try StorageService.buildFetchGroupExternalCredentials(
-                groupV2Params: try groupModel.groupV2Params(),
+                groupV2Params: groupParams,
                 authCredential: authCredential
             )
         }
 
         let response = try await performServiceRequest(
             requestBuilder: requestBuilder,
-            groupId: groupModel.groupId,
+            groupId: try secretParams.getPublicParams().getGroupIdentifier().serialize().asData,
             behavior400: .fail,
             behavior403: .fetchGroupUpdates,
             behavior404: .fail

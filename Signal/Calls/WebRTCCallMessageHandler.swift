@@ -120,11 +120,11 @@ class WebRTCCallMessageHandler: CallMessageHandler {
 
     func receivedGroupCallUpdateMessage(
         _ updateMessage: SSKProtoDataMessageGroupCallUpdate,
-        for groupThread: TSGroupThread,
+        forGroupId groupId: GroupIdentifier,
         serverReceivedTimestamp: UInt64
     ) async {
         await groupCallManager.peekGroupCallAndUpdateThread(
-            groupThread,
+            forGroupId: groupId,
             peekTrigger: .receivedGroupUpdateMessage(
                 eraId: updateMessage.eraID,
                 messageTimestamp: serverReceivedTimestamp

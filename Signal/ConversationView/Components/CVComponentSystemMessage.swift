@@ -594,14 +594,14 @@ extension CVComponentSystemMessage {
 
     static func buildComponentState(interaction: TSInteraction,
                                     threadViewModel: ThreadViewModel,
-                                    currentGroupCallThreadUniqueId: String?,
+                                    currentGroupThreadCallGroupId: GroupIdentifier?,
                                     transaction: SDSAnyReadTransaction) -> CVComponentState.SystemMessage {
 
         let title = Self.title(forInteraction: interaction, transaction: transaction)
         let maybeOverrideTitleColor = Self.overrideTextColor(forInteraction: interaction)
         let action = Self.action(forInteraction: interaction,
                                  threadViewModel: threadViewModel,
-                                 currentGroupCallThreadUniqueId: currentGroupCallThreadUniqueId,
+                                 currentGroupThreadCallGroupId: currentGroupThreadCallGroupId,
                                  transaction: transaction)
 
         return buildComponentState(title: title, action: action, titleColor: maybeOverrideTitleColor)
@@ -1037,7 +1037,7 @@ extension CVComponentSystemMessage {
     static func action(
         forInteraction interaction: TSInteraction,
         threadViewModel: ThreadViewModel,
-        currentGroupCallThreadUniqueId: String?,
+        currentGroupThreadCallGroupId: GroupIdentifier?,
         transaction: SDSAnyReadTransaction
     ) -> Action? {
         if let errorMessage = interaction as? TSErrorMessage {
@@ -1050,7 +1050,7 @@ extension CVComponentSystemMessage {
             return action(
                 forGroupCall: groupCall,
                 threadViewModel: threadViewModel,
-                currentGroupCallThreadUniqueId: currentGroupCallThreadUniqueId
+                currentGroupThreadCallGroupId: currentGroupThreadCallGroupId
             )
         } else {
             owsFailDebug("Invalid interaction.")
@@ -1371,9 +1371,12 @@ extension CVComponentSystemMessage {
     private static func action(
         forGroupCall groupCallMessage: OWSGroupCallMessage,
         threadViewModel: ThreadViewModel,
-        currentGroupCallThreadUniqueId: String?
+        currentGroupThreadCallGroupId: GroupIdentifier?
     ) -> Action? {
-        let thread = threadViewModel.threadRecord
+        guard let groupThread = threadViewModel.threadRecord as? TSGroupThread else {
+            return nil
+        }
+
         // Assume the current thread supports calling if we have no delegate. This ensures we always
         // overestimate cell measurement in cases where the current thread doesn't support calling.
         let isCallingSupported = ConversationViewController.canCall(threadViewModel: threadViewModel)
@@ -1384,7 +1387,7 @@ extension CVComponentSystemMessage {
         }
 
         // TODO: We need to touch thread whenever current call changes.
-        let isCurrentCallForThread = currentGroupCallThreadUniqueId == thread.uniqueId
+        let isCurrentCallForThread = currentGroupThreadCallGroupId?.serialize().asData == groupThread.groupId
 
         let returnTitle = OWSLocalizedString("CALL_RETURN_BUTTON", comment: "Button to return to the current call")
         let title = isCurrentCallForThread ? returnTitle : CallStrings.joinGroupCall

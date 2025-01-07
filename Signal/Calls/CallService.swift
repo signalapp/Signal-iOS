@@ -267,7 +267,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             // Kick off a peek now that we've disconnected to get an updated participant state.
             Task {
                 await self.groupCallManager.peekGroupCallAndUpdateThread(
-                    call.groupThread,
+                    forGroupId: call.groupId,
                     peekTrigger: .localEvent()
                 )
             }
@@ -451,16 +451,14 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             individualCallService.handleLocalHangupCall(call)
         case .groupThread(let groupThreadCall):
             if case .incomingRing(_, let ringId) = groupThreadCall.groupCallRingState {
-                let groupThread = groupThreadCall.groupThread
-
                 groupCallAccessoryMessageDelegate.localDeviceDeclinedGroupRing(
                     ringId: ringId,
-                    groupThread: groupThread
+                    groupId: groupThreadCall.groupId
                 )
 
                 do {
                     try callManager.cancelGroupRing(
-                        groupId: groupThread.groupId,
+                        groupId: groupThreadCall.groupId.serialize().asData,
                         ringId: ringId,
                         reason: .declinedByUser
                     )
@@ -523,14 +521,12 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     // MARK: -
 
     @MainActor
-    func buildAndConnectGroupCall(for thread: TSGroupThread, isVideoMuted: Bool) -> (SignalCall, GroupThreadCall)? {
-        owsAssertDebug(thread.groupModel.groupsVersion == .V2)
-
+    func buildAndConnectGroupCall(for groupId: GroupIdentifier, isVideoMuted: Bool) -> (SignalCall, GroupThreadCall)? {
         return _buildAndConnectGroupCall(isOutgoingVideoMuted: isVideoMuted) { () -> (SignalCall, GroupThreadCall)? in
             let videoCaptureController = VideoCaptureController()
             let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
             let ringRtcCall = callManager.createGroupCall(
-                groupId: thread.groupModel.groupId,
+                groupId: groupId.serialize().asData,
                 sfuUrl: sfuUrl,
                 hkdfExtraInfo: Data(),
                 audioLevelsIntervalMillis: nil,
@@ -542,9 +538,12 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             let groupThreadCall = GroupThreadCall(
                 delegate: self,
                 ringRtcCall: ringRtcCall,
-                groupThread: thread,
+                groupId: groupId,
                 videoCaptureController: videoCaptureController
             )
+            guard let groupThreadCall else {
+                return nil
+            }
             return (SignalCall(groupThreadCall: groupThreadCall), groupThreadCall)
         }
     }
@@ -706,8 +705,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         switch callTarget {
         case .individual(let contactThread):
             Task { await self.initiateIndividualCall(thread: contactThread, isVideo: isVideo) }
-        case .groupThread(let groupThread):
-            GroupCallViewController.presentLobby(thread: groupThread, videoMuted: !isVideo)
+        case .groupThread(let groupId):
+            GroupCallViewController.presentLobby(forGroupId: groupId, videoMuted: !isVideo)
         case .callLink(let callLink):
             GroupCallViewController.presentLobby(for: callLink)
         }
@@ -849,7 +848,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             do {
                 membershipInfo = try self.databaseStorage.read { tx in
                     try self.groupCallManager.groupCallPeekClient.groupMemberInfo(
-                        groupThread: groupThreadCall.groupThread, tx: tx.asV2Read
+                        forGroupId: groupThreadCall.groupId,
+                        tx: tx.asV2Read
                     )
                 }
             } catch {
@@ -924,18 +924,17 @@ extension CallService: GroupCallObserver {
                 audioService.playOutboundRing()
             }
 
-            let groupThread = call.groupThread
             if ringRtcCall.localDeviceState.isJoined {
                 if let eraId = ringRtcCall.peekInfo?.eraId {
                     groupCallAccessoryMessageDelegate.localDeviceMaybeJoinedGroupCall(
                         eraId: eraId,
-                        groupThread: groupThread,
+                        groupId: call.groupId,
                         groupCallRingState: call.groupCallRingState
                     )
                 }
             } else {
                 groupCallAccessoryMessageDelegate.localDeviceMaybeLeftGroupCall(
-                    groupThread: groupThread,
+                    groupId: call.groupId,
                     groupCall: ringRtcCall
                 )
             }
@@ -956,7 +955,7 @@ extension CallService: GroupCallObserver {
 
         switch call.concreteType {
         case .groupThread(let call):
-            let groupThread = call.groupThread
+            let groupId = call.groupId
 
             if
                 ringRtcCall.localDeviceState.isJoined,
@@ -964,7 +963,7 @@ extension CallService: GroupCallObserver {
             {
                 groupCallAccessoryMessageDelegate.localDeviceMaybeJoinedGroupCall(
                     eraId: eraId,
-                    groupThread: groupThread,
+                    groupId: call.groupId,
                     groupCallRingState: call.groupCallRingState
                 )
             }
@@ -972,7 +971,7 @@ extension CallService: GroupCallObserver {
             databaseStorage.asyncWrite { tx in
                 self.groupCallManager.updateGroupCallModelsForPeek(
                     peekInfo: peekInfo,
-                    groupThread: groupThread,
+                    groupId: groupId,
                     triggerEventTimestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
                     tx: tx
                 )
@@ -1023,11 +1022,18 @@ extension CallService: GroupThreadCallDelegate {
         Logger.info("")
 
         let groupCall = call.ringRtcCall
-        let groupThread = call.groupThread
 
         Task { [groupCallManager] in
+            let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+            let groupThread = databaseStorage.read { tx in
+                return TSGroupThread.fetch(forGroupId: call.groupId, tx: tx)
+            }
+            guard let groupModel = groupThread?.groupModel as? TSGroupModelV2 else {
+                owsFailDebug("Missing v2 model for group call.")
+                return
+            }
             do {
-                let proof = try await groupCallManager.groupCallPeekClient.fetchGroupMembershipProof(groupThread: groupThread)
+                let proof = try await groupCallManager.groupCallPeekClient.fetchGroupMembershipProof(secretParams: try groupModel.secretParams())
                 await MainActor.run {
                     groupCall.updateMembershipProof(proof: proof)
                 }
@@ -1080,8 +1086,8 @@ extension CallService: DatabaseChangeDelegate {
         switch callServiceState.currentCall?.mode {
         case nil, .individual, .callLink:
             break
-        case .groupThread(let groupThreadCall):
-            if databaseChanges.didUpdate(thread: groupThreadCall.groupThread) {
+        case .groupThread(let call):
+            if databaseChanges.threadUniqueIds.contains(call.threadUniqueId) {
                 updateGroupMembersForCurrentCallIfNecessary()
             }
         }
@@ -1544,18 +1550,23 @@ extension CallService: CallManagerDelegate {
 
         enum RingAction {
             case cancel
-            case ring(TSGroupThread)
+            case ring(GroupIdentifier)
         }
 
         let action: RingAction = databaseStorage.read { transaction in
-            guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+            guard let groupId = try? GroupIdentifier(contents: [UInt8](groupId)) else {
+                owsFailDebug("discarding group ring \(ringId) from \(senderAci) for invalid group")
+                return .cancel
+            }
+
+            guard let thread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) else {
                 owsFailDebug("discarding group ring \(ringId) from \(senderAci) for unknown group")
                 return .cancel
             }
 
             guard GroupsV2MessageProcessor.discardMode(
                 forMessageFrom: senderAci,
-                groupId: groupId,
+                groupId: groupId.serialize().asData,
                 tx: transaction
             ) == .doNotDiscard else {
                 Logger.warn("discarding group ring \(ringId) from \(senderAci)")
@@ -1575,7 +1586,7 @@ extension CallService: CallManagerDelegate {
                 owsFailDebug("unable to check cancellation table: \(error)")
             }
 
-            return .ring(thread)
+            return .ring(groupId)
         }
 
         switch action {
@@ -1585,15 +1596,15 @@ extension CallService: CallManagerDelegate {
             } catch {
                 owsFailDebug("RingRTC failed to cancel group ring \(ringId): \(error)")
             }
-        case .ring(let thread):
+        case .ring(let groupId):
             let currentCall = self.callServiceState.currentCall
-            if case .groupThread(let call) = currentCall?.mode, call.groupThread.uniqueId == thread.uniqueId {
+            if case .groupThread(let call) = currentCall?.mode, call.groupId.serialize() == groupId.serialize() {
                 // We're already ringing or connected, or at the very least already in the lobby.
                 return
             }
             guard currentCall == nil else {
                 do {
-                    try callManager.cancelGroupRing(groupId: groupId, ringId: ringId, reason: .busy)
+                    try callManager.cancelGroupRing(groupId: groupId.serialize().asData, ringId: ringId, reason: .busy)
                 } catch {
                     owsFailDebug("RingRTC failed to cancel group ring \(ringId): \(error)")
                 }
@@ -1604,7 +1615,7 @@ extension CallService: CallManagerDelegate {
             // This keeps us from popping the "give permission to use your camera" alert before the user answers.
             let videoMuted = AVCaptureDevice.authorizationStatus(for: .video) != .authorized
             guard let (call, groupThreadCall) = buildAndConnectGroupCall(
-                for: thread,
+                for: groupId,
                 isVideoMuted: videoMuted
             ) else {
                 return owsFailDebug("Failed to build group call")

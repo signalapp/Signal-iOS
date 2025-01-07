@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
 import SignalUI
@@ -14,7 +15,7 @@ class CallKitIdStore {
     private static let groupIdStore = KeyValueStore(collection: "TSStorageManagerCallKitIdToGroupId")
     private static let callLinkStore = KeyValueStore(collection: "CallKitIdToCallLink")
 
-    static func setGroupThread(_ thread: TSGroupThread, forCallKitId callKitId: String) {
+    static func setGroupId(_ groupId: GroupIdentifier, forCallKitId callKitId: String) {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             // Make sure it doesn't exist, but only in DEBUG builds.
             assert(!phoneNumberStore.hasValue(callKitId, transaction: tx.asV2Read))
@@ -22,7 +23,7 @@ class CallKitIdStore {
             assert(!groupIdStore.hasValue(callKitId, transaction: tx.asV2Read))
             assert(!callLinkStore.hasValue(callKitId, transaction: tx.asV2Read))
 
-            groupIdStore.setData(thread.groupModel.groupId, key: callKitId, transaction: tx.asV2Write)
+            groupIdStore.setData(groupId.serialize().asData, key: callKitId, transaction: tx.asV2Write)
         }
     }
 
@@ -67,8 +68,11 @@ class CallKitIdStore {
             }
 
             // Next try group calls
-            if let groupId = groupIdStore.getData(callKitId, transaction: tx.asV2Read) {
-                return TSGroupThread.fetch(groupId: groupId, transaction: tx).map { .groupThread($0) }
+            if
+                let groupIdData = groupIdStore.getData(callKitId, transaction: tx.asV2Read),
+                let groupId = try? GroupIdentifier(contents: [UInt8](groupIdData))
+            {
+                return .groupThread(groupId)
             }
 
             // Check the phone number store, for very old 1:1 calls.

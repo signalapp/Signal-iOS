@@ -535,12 +535,12 @@ private enum CrashyMocks {
 
     final class MockCallMessageHandler: CallMessageHandler {
         func receivedEnvelope(_ envelope: SSKProtoEnvelope, callEnvelope: CallEnvelopeType, from caller: (aci: Aci, deviceId: UInt32), toLocalIdentity localIdentity: OWSIdentity, plaintextData: Data, wasReceivedByUD: Bool, sentAtTimestamp: UInt64, serverReceivedTimestamp: UInt64, serverDeliveryTimestamp: UInt64, tx: SDSAnyWriteTransaction) { failTest(Self.self) }
-        func receivedGroupCallUpdateMessage(_ updateMessage: SSKProtoDataMessageGroupCallUpdate, for thread: TSGroupThread, serverReceivedTimestamp: UInt64) async { failTest(Self.self) }
+        func receivedGroupCallUpdateMessage(_ updateMessage: SSKProtoDataMessageGroupCallUpdate, forGroupId groupId: GroupIdentifier, serverReceivedTimestamp: UInt64) async { failTest(Self.self) }
     }
 
     final class MockCurrentCallThreadProvider: CurrentCallProvider {
         var hasCurrentCall: Bool { failTest(Self.self) }
-        var currentGroupCallThread: TSGroupThread? { failTest(Self.self) }
+        var currentGroupThreadCallGroupId: GroupIdentifier? { failTest(Self.self) }
     }
 
     final class MockNotificationPresenter: NotificationPresenter {

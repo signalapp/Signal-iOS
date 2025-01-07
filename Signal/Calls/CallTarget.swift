@@ -4,12 +4,13 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
 enum CallTarget {
     case individual(TSContactThread)
-    case groupThread(TSGroupThread)
+    case groupThread(GroupIdentifier)
     case callLink(CallLink)
 }
 

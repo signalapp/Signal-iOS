@@ -622,10 +622,20 @@ struct CVItemModelBuilder: CVItemBuilding {
         }
 
         // Hide "call" buttons if there is an active call in another thread.
+        func isCurrentGroupCallForCurrentThread() -> Bool {
+            guard
+                let currentGroupThreadCallGroupId = viewStateSnapshot.currentGroupThreadCallGroupId,
+                let groupThread = thread as? TSGroupThread
+            else {
+                return false
+            }
+            return currentGroupThreadCallGroupId.serialize().asData == groupThread.groupId
+        }
+
         if
             item.interactionType == .call,
             viewStateSnapshot.hasActiveCall,
-            viewStateSnapshot.currentGroupCallThreadUniqueId != thread.uniqueId
+            !isCurrentGroupCallForCurrentThread()
         {
             item.itemViewState.shouldCollapseSystemMessageAction = true
         }

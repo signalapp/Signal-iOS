@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
@@ -39,7 +40,7 @@ struct CVViewStateSnapshot {
     let oldestUnreadMessageSortId: UInt64?
 
     let hasActiveCall: Bool
-    let currentGroupCallThreadUniqueId: String?
+    let currentGroupThreadCallGroupId: GroupIdentifier?
 
     private static var currentCallProvider: any CurrentCallProvider { DependenciesBridge.shared.currentCallProvider }
 
@@ -60,7 +61,7 @@ struct CVViewStateSnapshot {
             searchText: viewState.lastSearchedText,
             oldestUnreadMessageSortId: oldestUnreadMessageSortId,
             hasActiveCall: currentCallProvider.hasCurrentCall,
-            currentGroupCallThreadUniqueId: currentCallProvider.currentGroupCallThread?.uniqueId
+            currentGroupThreadCallGroupId: currentCallProvider.currentGroupThreadCallGroupId
         )
     }
 
@@ -79,7 +80,7 @@ struct CVViewStateSnapshot {
             searchText: nil,
             oldestUnreadMessageSortId: nil,
             hasActiveCall: false,
-            currentGroupCallThreadUniqueId: nil
+            currentGroupThreadCallGroupId: nil
         )
     }
 }

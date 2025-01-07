@@ -26,13 +26,13 @@ final class CallKitCallManager {
     static let kGroupThreadCallHandlePrefix = "SignalGroup:"
     static let kCallLinkCallHandlePrefix = "SignalCall:"
 
-    private static func decodeGroupId(fromIntentHandle handle: String) -> Data? {
+    private static func decodeGroupId(fromIntentHandle handle: String) -> GroupIdentifier? {
         let prefix = handle.prefix(kGroupThreadCallHandlePrefix.count)
         guard prefix == kGroupThreadCallHandlePrefix else {
             return nil
         }
         do {
-            return try Data.data(fromBase64Url: String(handle[prefix.endIndex...]))
+            return try GroupIdentifier(contents: [UInt8](Data.data(fromBase64Url: String(handle[prefix.endIndex...]))))
         } catch {
             // ignore the error
             return nil
@@ -67,12 +67,12 @@ final class CallKitCallManager {
         case .groupThread(let groupThreadCall):
             if !showNamesOnCallScreen {
                 let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
-                CallKitIdStore.setGroupThread(groupThreadCall.groupThread, forCallKitId: callKitId)
+                CallKitIdStore.setGroupId(groupThreadCall.groupId, forCallKitId: callKitId)
                 type = .generic
                 value = callKitId
             } else {
                 type = .generic
-                value = Self.kGroupThreadCallHandlePrefix + groupThreadCall.groupThread.groupModel.groupId.asBase64Url
+                value = Self.kGroupThreadCallHandlePrefix + groupThreadCall.groupId.serialize().asData.asBase64Url
             }
         case .callLink(let callLinkCall):
             let callKitId: String
@@ -91,7 +91,6 @@ final class CallKitCallManager {
     static func callTargetForHandleWithSneakyTransaction(_ handle: String) -> CallTarget? {
         owsAssertDebug(!handle.isEmpty)
 
-        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
@@ -100,9 +99,7 @@ final class CallKitCallManager {
         }
 
         if let groupId = decodeGroupId(fromIntentHandle: handle) {
-            return databaseStorage.read { tx in
-                return TSGroupThread.fetch(groupId: groupId, transaction: tx).map { .groupThread($0) }
-            }
+            return .groupThread(groupId)
         }
 
         if let serviceId = try? ServiceId.parseFrom(serviceIdString: handle) {
