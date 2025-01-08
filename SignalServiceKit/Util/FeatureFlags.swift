@@ -42,8 +42,12 @@ public enum FeatureFlags {
     public static let messageBackupFileAlpha = build.includes(.internal)
     public static let messageBackupRemoteExportAlpha = build.includes(.dev)
     public static let messageBackupFileAlphaRegistrationFlow = build.includes(.dev)
-    public static let linkAndSync = build.includes(.internal)
-    public static let linkAndSyncTimeoutSeconds: UInt32 = 60 * (build.includes(.internal) ? 5 : 1)
+    public static let linkAndSync = build.includes(.beta)
+    public static let linkAndSyncTimeoutSeconds: UInt32 = switch build {
+    case .dev, .internal: 300
+    case .beta: 150
+    case .production: 60
+    }
     public static let backupsMemorySamplerRatio: Float = build.includes(.internal) ? 0.1 : 0
     public static let messageBackupQuickRestoreFlow = false
 
