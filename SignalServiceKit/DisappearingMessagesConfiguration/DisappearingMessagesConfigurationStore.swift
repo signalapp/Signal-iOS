@@ -124,7 +124,7 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
         if
             token.version > 0,
             case let .thread(thread) = scope,
-            let serviceId = (thread as? TSContactThread)?.contactAddress.serviceId
+            thread is TSContactThread
         {
             // We got a dm timer; check against the version we have locally and reject if lower.
             if token.version < oldConfiguration.timerVersion {
