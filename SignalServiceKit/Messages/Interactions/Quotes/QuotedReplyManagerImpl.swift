@@ -637,8 +637,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         }
 
         // Find the original message and any attachment
-        let (originalMessage, originalAttachmentReference, originalAttachment): (
-            TSMessage?,
+        let (originalAttachmentReference, originalAttachment): (
             AttachmentReference?,
             Attachment?
         ) = db.read { tx in
@@ -651,14 +650,14 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                     transaction: SDSDB.shimOnlyBridge(tx)
                 )
             else {
-                return (nil, nil, nil)
+                return (nil, nil)
             }
             let attachmentReference = attachmentStore.attachmentToUseInQuote(
                 originalMessageRowId: originalMessage.sqliteRowId!,
                 tx: tx
             )
             let attachment = attachmentStore.fetch(ids: [attachmentReference?.attachmentRowId].compacted(), tx: tx).first
-            return (originalMessage, attachmentReference, attachment)
+            return (attachmentReference, attachment)
         }
 
         let quoteAttachment = { () -> DraftQuotedReplyModel.ForSending.Attachment? in

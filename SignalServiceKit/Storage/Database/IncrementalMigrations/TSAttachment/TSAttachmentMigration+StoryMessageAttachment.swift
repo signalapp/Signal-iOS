@@ -80,7 +80,7 @@ extension TSAttachmentMigration {
                     let storyAttachmentString,
                     let storyMessageAttachmentData = storyAttachmentString.data(using: .utf8)
                 else {
-                    try reservedFileIds.cleanUpFiles()
+                    reservedFileIds.cleanUpFiles()
                     continue
                 }
                 // The `attachment` column is a SerializedStoryMessageAttachment encoded as a JSON string.
@@ -89,7 +89,7 @@ extension TSAttachmentMigration {
                     from: storyMessageAttachmentData
                 )
                 guard let tsAttachmentUniqueId = storyAttachment.tsAttachmentUniqueId else {
-                    try reservedFileIds.cleanUpFiles()
+                    reservedFileIds.cleanUpFiles()
                     continue
                 }
                 try Self.migrateStoryMessageAttachment(
@@ -157,7 +157,7 @@ extension TSAttachmentMigration {
                 .filter(Column("uniqueId") == tsAttachmentUniqueId)
                 .fetchOne(tx.database)
             guard let oldAttachment else {
-                try reservedFileIds.cleanUpFiles()
+                reservedFileIds.cleanUpFiles()
                 return
             }
 
@@ -181,14 +181,14 @@ extension TSAttachmentMigration {
                 } catch {
                     Logger.error("Failed to read story attachment file \((error as NSError).domain) \((error as NSError).code)")
                     // Clean up files just in case.
-                    try reservedFileIds.cleanUpFiles()
+                    reservedFileIds.cleanUpFiles()
                     pendingAttachment = nil
                 }
             } else {
                 // A pointer; no validation needed.
                 pendingAttachment = nil
                 // Clean up files just in case.
-                try reservedFileIds.cleanUpFiles()
+                reservedFileIds.cleanUpFiles()
             }
 
             let v2AttachmentId: Int64
@@ -202,7 +202,7 @@ extension TSAttachmentMigration {
                 // create new references to it and drop the pending attachment.
                 v2AttachmentId = existingV2Attachment.id!
                 // Delete the reserved files being used by the pending attachment.
-                try reservedFileIds.cleanUpFiles()
+                reservedFileIds.cleanUpFiles()
             } else {
                 var v2Attachment: TSAttachmentMigration.V2Attachment
                 if let pendingAttachment {

@@ -36,12 +36,8 @@ public extension SDSModel {
 
         switch transaction.writeTransaction {
         case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
+            let record = asRecord()
+            record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
         }
 
         switch saveMode {

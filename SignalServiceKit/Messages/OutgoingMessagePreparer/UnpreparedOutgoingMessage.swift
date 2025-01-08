@@ -270,8 +270,7 @@ public class UnpreparedOutgoingMessage {
             let unsavedBodyMediaAttachments: [AttachmentDataSource]
             if quotedReplyBuilder != nil {
                 unsavedBodyMediaAttachments = message.unsavedBodyMediaAttachments.map {
-                    var attachment = $0
-                    return attachment.removeBorderlessRenderingFlagIfPresent()
+                    return $0.removeBorderlessRenderingFlagIfPresent()
                 }
             } else {
                 unsavedBodyMediaAttachments = message.unsavedBodyMediaAttachments
