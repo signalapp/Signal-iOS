@@ -22,7 +22,11 @@ public class AttachmentValidationBackfillRunner: BGProcessingTaskRunner {
 
     public static let logger = PrefixedLogger(prefix: "AttachmentValidationBackfillMigrator")
 
-    public static func runNextBatch(migrator: Migrator) async throws -> Bool {
+    public static func runNextBatch(
+        migrator: Migrator,
+        store: Store,
+        db: SDSDatabaseStorage
+    ) async throws -> Bool {
         return try await migrator.runNextBatch()
     }
 
@@ -36,4 +40,9 @@ public class AttachmentValidationBackfillRunner: BGProcessingTaskRunner {
             }
         }
     }
+
+    public static func willBeginBGProcessingTask(
+        store: Store,
+        db: SDSDatabaseStorage
+    ) {}
 }

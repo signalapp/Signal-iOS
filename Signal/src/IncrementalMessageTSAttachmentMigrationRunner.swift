@@ -24,12 +24,26 @@ public class IncrementalMessageTSAttachmentMigrationRunner: BGProcessingTaskRunn
 
     public static let logger = PrefixedLogger(prefix: "IncrementalMessageTSAttachmentMigrator")
 
-    public static func runNextBatch(migrator: Migrator) async throws -> Bool {
-        try await migrator.runNextBatch()
+    public static func runNextBatch(
+        migrator: Migrator,
+        store: Store,
+        db: SDSDatabaseStorage
+    ) async throws -> Bool {
+        return await migrator.runNextBatch(errorLogger: {
+            let logString = ScrubbingLogFormatter().redactMessage($0)
+            store.bgProcessingTaskDidExperienceError(logString: logString)
+        })
     }
 
     public static func shouldLaunchBGProcessingTask(store: Store, db: SDSDatabaseStorage) -> Bool {
         let state = db.read(block: store.getState(tx:))
         return state != .finished
+    }
+
+    public static func willBeginBGProcessingTask(
+        store: Store,
+        db: SDSDatabaseStorage
+    ) {
+        store.willAttemptMigrationUntilFinished()
     }
 }

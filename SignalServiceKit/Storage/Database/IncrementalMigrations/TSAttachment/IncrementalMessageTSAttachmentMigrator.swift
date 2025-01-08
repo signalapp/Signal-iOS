@@ -8,10 +8,12 @@ import Foundation
 /// Incrementally migrates TSAttachments owned by TSMessages to v2 attachments.
 public protocol IncrementalMessageTSAttachmentMigrator {
 
-    func runUntilFinished() async
+    /// - parameter ignorePastFailures: If true, will always run regardless of past failures.
+    /// If false, will skip running if previous attempts failed.
+    func runUntilFinished(ignorePastFailures: Bool) async
 
     // Returns true if done.
-    func runNextBatch() async throws -> Bool
+    func runNextBatch(errorLogger: (String) -> Void) async -> Bool
 }
 
 public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAttachmentMigrator {
@@ -20,38 +22,49 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
     private let databaseStorage: SDSDatabaseStorage
     private let remoteConfigManager: RemoteConfigManager
     private let store: IncrementalTSAttachmentMigrationStore
+    private let tsAccountManager: TSAccountManager
 
     public init(
         appContext: AppContext,
         appReadiness: AppReadiness,
         databaseStorage: SDSDatabaseStorage,
         remoteConfigManager: RemoteConfigManager,
-        store: IncrementalTSAttachmentMigrationStore
+        store: IncrementalTSAttachmentMigrationStore,
+        tsAccountManager: TSAccountManager
     ) {
         self.appContext = appContext
         self.databaseStorage = databaseStorage
         self.remoteConfigManager = remoteConfigManager
         self.store = store
+        self.tsAccountManager = tsAccountManager
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
             guard let self else { return }
-            self.databaseStorage.read { tx in
-                switch self.store.getState(tx: tx) {
-                case .unstarted:
-                    Logger.info("Has not started message attachment migration")
-                case .started:
-                    Logger.info("Partial progress on message attachment migration")
-                case .finished:
-                    Logger.info("Finished message attachment migration")
-                }
-            }
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(appDidBecomeActive),
+                name: .OWSApplicationDidBecomeActive,
+                object: nil
+            )
+            Task { await self.runInMainAppBackground() }
         }
     }
 
-    public func runUntilFinished() async {
+    @objc
+    private func appDidBecomeActive() {
+        Task { await self.runInMainAppBackground() }
+    }
+
+    public func runUntilFinished(ignorePastFailures: Bool) async {
         // We DO NOT check the incrementalMigrationBreakGlass feature flag here;
         // this is used by backups which require the migration to have finished
         // and aren't enabled outside internal builds anyway.
+
+        if !ignorePastFailures, !store.shouldAttemptMigrationUntilFinished() {
+            Logger.warn("Skipping migration because of past failed attempts")
+            return
+        }
+
         let state = databaseStorage.read(block: store.getState(tx:))
         switch state {
         case .finished:
@@ -60,18 +73,15 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
             Logger.info("Running until finished")
         }
 
+        store.willAttemptMigrationUntilFinished()
+
         var batchCount = 0
         var didFinish = false
         while !didFinish {
-            do {
-                // Run in batches, instead of one big write transaction, so that
-                // we can commit incremental progress if we are interrupted.
-                didFinish = try await self.runNextBatch()
-                batchCount += 1
-            } catch let error {
-                owsFailDebug("Failed migration batch, stopping after \(batchCount) batches: \(error)")
-                return
-            }
+            // Run in batches, instead of one big write transaction, so that
+            // we can commit incremental progress if we are interrupted.
+            didFinish = await self.runNextBatch(errorLogger: { _ in })
+            batchCount += 1
         }
         Logger.info("Ran until finished after \(batchCount) batches")
     }
@@ -80,6 +90,7 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
 
     private func runInMainAppBackground() async {
         guard
+            FeatureFlags.runTSAttachmentMigrationInMainAppBackground,
             appContext.isMainAppAndActive,
             isRunningInMainApp.tryToSetFlag()
         else {
@@ -99,48 +110,64 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
             return
         }
 
+        // Fetch remote config for kill switch; if fetch fails use cached local config.
+        let isAllowedByRemoteConfig: Bool
+        if tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
+            let remoteConfig = (try? await remoteConfigManager.refreshIfNeeded(account: .implicit()))
+                ?? remoteConfigManager.currentConfig()
+            isAllowedByRemoteConfig = remoteConfig.shouldRunTSAttachmentMigrationInMainAppBackground
+        } else {
+            // If we aren't registered, we can't fetch a remote config.
+            // Use default true, even if we have a cached remote config value.
+            // We want to try running; worst case these deregistered users fail/crash once
+            // and then are prevented from crashing further by the attempt counting.
+            isAllowedByRemoteConfig = true
+        }
+        guard isAllowedByRemoteConfig else {
+            Logger.info("Disabled via remote config, stopping")
+            return
+        }
+
+        if !store.shouldAttemptMigrationUntilFinished() {
+            Logger.warn("Skipping background migration because of past failed attempts")
+            return
+        }
+
+        store.willAttemptMigrationUntilFinished()
+
         var batchCount = 0
         var didFinish = false
         while !didFinish {
-            do {
-                guard appContext.isMainAppAndActive else {
-                    // If the main app goes into the background, we shouldn't be
-                    // grabbing the sql write lock. Stop.
-                    Logger.info("Stopping when backgrounding app after \(batchCount) batches")
-                    return
-                }
-                // Add a small delay between each batch to avoid locking the db write queue.
-                try await Task.sleep(nanoseconds: 500 * NSEC_PER_MSEC)
-                // Only migrate one message at a time so we don't hold the write lock
-                // too long while doing file i/o.
-                didFinish = try await self._runNextBatch(messageBatchSize: 1)
-                batchCount += 1
-            } catch let error {
-                owsFailDebug("Failed migration batch, stopping after \(batchCount) batches: \(error)")
+            guard appContext.isMainAppAndActive else {
+                // If the main app goes into the background, we shouldn't be
+                // grabbing the sql write lock. Stop.
+                Logger.info("Stopping when backgrounding app after \(batchCount) batches")
                 return
             }
+            // Add a small delay between each batch to avoid locking the db write queue.
+            try? await Task.sleep(nanoseconds: 500 * NSEC_PER_MSEC)
+            // Only migrate one message at a time so we don't hold the write lock
+            // too long while doing file i/o.
+            didFinish = await self._runNextBatch(messageBatchSize: 1, errorLogger: { _ in })
+            batchCount += 1
         }
         Logger.info("Finished in main app after \(batchCount) batches")
     }
 
     // Returns true if done.
-    public func runNextBatch() async throws -> Bool {
-        return try await _runNextBatch()
+    public func runNextBatch(errorLogger: (String) -> Void) async -> Bool {
+        return await _runNextBatch(errorLogger: errorLogger)
     }
 
     // Returns true if done.
-    private func _runNextBatch(messageBatchSize: Int = 5) async throws -> Bool {
+    private func _runNextBatch(messageBatchSize: Int = 5, errorLogger: (String) -> Void) async -> Bool {
         typealias Migrator = TSAttachmentMigration.TSMessageMigration
 
-        guard remoteConfigManager.currentConfig().shouldRunTSAttachmentMigration else {
-            struct MigrationDisabledByRemoteConfigError: Error {}
-            throw MigrationDisabledByRemoteConfigError()
-        }
-
-        return try await databaseStorage.awaitableWrite { tx in
+        let isDone = await databaseStorage.awaitableWrite { tx in
             // First we try to migrate a batch of prepared messages.
-            let didMigrateBatch = try Migrator.completeNextIterativeTSMessageMigrationBatch(
+            let didMigrateBatch = Migrator.completeNextIterativeTSMessageMigrationBatch(
                 batchSize: messageBatchSize,
+                errorLogger: errorLogger,
                 tx: tx.unwrapGrdbWrite
             )
             if didMigrateBatch {
@@ -148,29 +175,41 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
             }
 
             // If no messages are prepared, we try to prepare a batch of messages.
-            let didPrepareBatch = try Migrator.prepareNextIterativeTSMessageMigrationBatch(
+            let didPrepareBatch = Migrator.prepareNextIterativeTSMessageMigrationBatch(
                 tx: tx.unwrapGrdbWrite
             )
             if didPrepareBatch {
-                try self.store.setState(.started, tx: tx)
+                do {
+                    try self.store.setState(.started, tx: tx)
+                } catch let error {
+                    errorLogger("\(error)")
+                    owsFail("Failed to write state to db")
+                }
                 return false
             }
 
             // If there was nothing to migrate and nothing to prepare, wipe the files and finish.
-            try Migrator.cleanUpTSAttachmentFiles()
-            try self.store.setState(.finished, tx: tx)
+            Migrator.cleanUpTSAttachmentFiles()
+            do {
+                try self.store.setState(.finished, tx: tx)
+            } catch let error {
+                errorLogger("\(error)")
+                owsFail("Failed to write state to db")
+            }
             return true
         }
+        store.didSucceedMigrationBatch()
+        return isDone
     }
 }
 
 public class NoOpIncrementalMessageTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator {
     public init() {}
 
-    public func runUntilFinished() async {}
+    public func runUntilFinished(ignorePastFailures: Bool) async {}
 
     // Returns true if done.
-    public func runNextBatch() async throws -> Bool {
+    public func runNextBatch(errorLogger: (String) -> Void) async -> Bool {
         return true
     }
 }
@@ -181,10 +220,10 @@ public class IncrementalMessageTSAttachmentMigratorMock: IncrementalMessageTSAtt
 
     public init() {}
 
-    public func runUntilFinished() async {}
+    public func runUntilFinished(ignorePastFailures: Bool) async {}
 
     // Returns true if done.
-    public func runNextBatch() async throws -> Bool {
+    public func runNextBatch(errorLogger: (String) -> Void) async -> Bool {
         return true
     }
 }

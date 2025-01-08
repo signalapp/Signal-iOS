@@ -9,7 +9,8 @@ public protocol IncrementalMessageTSAttachmentMigratorFactory {
         appContext: AppContext,
         appReadiness: AppReadiness,
         databaseStorage: SDSDatabaseStorage,
-        remoteConfigManager: RemoteConfigManager
+        remoteConfigManager: RemoteConfigManager,
+        tsAccountManager: TSAccountManager
     ) -> IncrementalMessageTSAttachmentMigrator
 }
 
@@ -25,14 +26,16 @@ public class IncrementalMessageTSAttachmentMigratorFactoryImpl: IncrementalMessa
         appContext: AppContext,
         appReadiness: AppReadiness,
         databaseStorage: SDSDatabaseStorage,
-        remoteConfigManager: RemoteConfigManager
+        remoteConfigManager: RemoteConfigManager,
+        tsAccountManager: TSAccountManager
     ) -> IncrementalMessageTSAttachmentMigrator {
         return IncrementalMessageTSAttachmentMigratorImpl(
             appContext: appContext,
             appReadiness: appReadiness,
             databaseStorage: databaseStorage,
             remoteConfigManager: remoteConfigManager,
-            store: store
+            store: store,
+            tsAccountManager: tsAccountManager
         )
     }
 }
@@ -45,7 +48,8 @@ public class NoOpIncrementalMessageTSAttachmentMigratorFactory: IncrementalMessa
         appContext: AppContext,
         appReadiness: AppReadiness,
         databaseStorage: SDSDatabaseStorage,
-        remoteConfigManager: RemoteConfigManager
+        remoteConfigManager: RemoteConfigManager,
+        tsAccountManager: TSAccountManager
     ) -> IncrementalMessageTSAttachmentMigrator {
         return NoOpIncrementalMessageTSAttachmentMigrator()
     }
@@ -61,7 +65,8 @@ public class IncrementalMessageTSAttachmentMigratorFactoryMock: IncrementalMessa
         appContext: AppContext,
         appReadiness: AppReadiness,
         databaseStorage: SDSDatabaseStorage,
-        remoteConfigManager: RemoteConfigManager
+        remoteConfigManager: RemoteConfigManager,
+        tsAccountManager: TSAccountManager
     ) -> IncrementalMessageTSAttachmentMigrator {
         return IncrementalMessageTSAttachmentMigratorMock()
     }

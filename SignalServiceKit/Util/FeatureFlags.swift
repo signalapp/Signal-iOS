@@ -48,6 +48,9 @@ public enum FeatureFlags {
     public static let messageBackupQuickRestoreFlow = false
 
     public static let storageServiceRecordIkmMigration = true
+
+    public static let runTSAttachmentMigrationInMainAppBackground = true
+    public static let runTSAttachmentMigrationBlockingOnLaunch = false
 }
 
 // MARK: -

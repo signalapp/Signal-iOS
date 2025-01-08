@@ -32,11 +32,21 @@ public protocol BGProcessingTaskRunner {
         db: SDSDatabaseStorage
     ) -> Bool
 
+    /// Called before the first call to ``runNextBatch``
+    static func willBeginBGProcessingTask(
+        store: Store,
+        db: SDSDatabaseStorage
+    )
+
     /// Run the next batch of migration (or run it to completion), returning true if completed.
     ///
     /// Batching is preferred to gracefully handle BGProcessingTask termination while still
     /// making incremental progress.
-    static func runNextBatch(migrator: Migrator) async throws -> Bool
+    static func runNextBatch(
+        migrator: Migrator,
+        store: Store,
+        db: SDSDatabaseStorage
+    ) async throws -> Bool
 }
 
 extension BGProcessingTaskRunner {
@@ -117,6 +127,8 @@ extension BGProcessingTaskRunner {
 
         logger.info("Starting migration in BGProcessingTask")
         let task = Task {
+            self.willBeginBGProcessingTask(store: store, db: db)
+
             let migrator = await migrator.value
 
             var batchCount = 0
@@ -135,7 +147,7 @@ extension BGProcessingTaskRunner {
                 }
 
                 do {
-                    didFinish = try await self.runNextBatch(migrator: migrator)
+                    didFinish = try await self.runNextBatch(migrator: migrator, store: store, db: db)
                 } catch let error {
                     logger.error("Failed migration batch in BGProcessingTask, stopping after \(batchCount) batches: \(error)")
                     bgTask.setTaskCompleted(success: false)

@@ -6,7 +6,7 @@
 import CocoaLumberjack
 import Foundation
 
-class ScrubbingLogFormatter: NSObject, DDLogFormatter {
+public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
     private struct Replacement {
         let regex: NSRegularExpression
         let replacementTemplate: String
@@ -134,11 +134,11 @@ class ScrubbingLogFormatter: NSObject, DDLogFormatter {
         .base64(prefix: "", length: 16),
     ]
 
-    func format(message logMessage: DDLogMessage) -> String? {
+    public func format(message logMessage: DDLogMessage) -> String? {
         return LogFormatter.formatLogMessage(logMessage, modifiedMessage: redactMessage(logMessage.message))
     }
 
-    func redactMessage(_ logString: String) -> String {
+    public func redactMessage(_ logString: String) -> String {
         var logString = logString
 
         for replacement in replacements {

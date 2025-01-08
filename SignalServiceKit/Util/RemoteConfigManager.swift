@@ -247,8 +247,12 @@ public class RemoteConfig {
         return UInt64(messageQueueTime * Double(MSEC_PER_SEC))
     }
 
-    public var shouldRunTSAttachmentMigration: Bool {
-        return !isEnabled(.tsAttachmentMigrationKillSwitch)
+    public var shouldRunTSAttachmentMigrationInBGProcessingTask: Bool {
+        return !isEnabled(.tsAttachmentMigrationBGProcessingTaskKillSwitch)
+    }
+
+    public var shouldRunTSAttachmentMigrationInMainAppBackground: Bool {
+        return !isEnabled(.tsAttachmentMigrationMainAppBackgroundKillSwitch)
     }
 
     // MARK: UInt values
@@ -439,7 +443,8 @@ private enum IsEnabledFlag: String, FlagType {
     case paypalOneTimeDonationKillSwitch = "ios.paypalOneTimeDonationKillSwitch"
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
-    case tsAttachmentMigrationKillSwitch = "ios.tsAttachmentMigrationKillSwitch"
+    case tsAttachmentMigrationMainAppBackgroundKillSwitch = "ios.tsAttachmentMigrationMainAppBackgroundKillSwitch"
+    case tsAttachmentMigrationBGProcessingTaskKillSwitch = "ios.tsAttachmentMigrationBGProcessingTaskKillSwitch"
 
     var isSticky: Bool {
         switch self {
@@ -464,7 +469,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalOneTimeDonationKillSwitch: false
         case .ringrtcNwPathMonitorTrialKillSwitch: false
         case .serviceExtensionFailureKillSwitch: false
-        case .tsAttachmentMigrationKillSwitch: false
+        case .tsAttachmentMigrationMainAppBackgroundKillSwitch: false
+        case .tsAttachmentMigrationBGProcessingTaskKillSwitch: false
         }
     }
     var isHotSwappable: Bool {
@@ -490,7 +496,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .paypalOneTimeDonationKillSwitch: false
         case .ringrtcNwPathMonitorTrialKillSwitch: false
         case .serviceExtensionFailureKillSwitch: true
-        case .tsAttachmentMigrationKillSwitch: false
+        case .tsAttachmentMigrationMainAppBackgroundKillSwitch: true
+        case .tsAttachmentMigrationBGProcessingTaskKillSwitch: true
         }
     }
 }

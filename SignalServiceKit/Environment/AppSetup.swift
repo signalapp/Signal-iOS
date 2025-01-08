@@ -1046,7 +1046,8 @@ public class AppSetup {
             appContext: appContext,
             appReadiness: appReadiness,
             databaseStorage: databaseStorage,
-            remoteConfigManager: remoteConfigManager
+            remoteConfigManager: remoteConfigManager,
+            tsAccountManager: tsAccountManager
         )
 
         let messageBackupManager = MessageBackupManagerImpl(
@@ -1474,7 +1475,9 @@ public class AppSetup {
             sskEnvironment: sskEnvironment,
             backgroundTask: backgroundTask,
             authCredentialManager: authCredentialManager,
-            callLinkPublicParams: callLinkPublicParams
+            callLinkPublicParams: callLinkPublicParams,
+            incrementalTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator,
+            remoteConfigManager: remoteConfigManager
         )
     }
 
@@ -1491,6 +1494,8 @@ extension AppSetup {
         private let appReadiness: AppReadiness
         private let authCredentialStore: AuthCredentialStore
         private let dependenciesBridge: DependenciesBridge
+        private let incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator
+        private let remoteConfigManager: RemoteConfigManager
         private let sskEnvironment: SSKEnvironment
         private let backgroundTask: OWSBackgroundTask
 
@@ -1508,7 +1513,9 @@ extension AppSetup {
             sskEnvironment: SSKEnvironment,
             backgroundTask: OWSBackgroundTask,
             authCredentialManager: any AuthCredentialManager,
-            callLinkPublicParams: GenericServerPublicParams
+            callLinkPublicParams: GenericServerPublicParams,
+            incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
+            remoteConfigManager: RemoteConfigManager
         ) {
             self.appContext = appContext
             self.appReadiness = appReadiness
@@ -1518,6 +1525,8 @@ extension AppSetup {
             self.backgroundTask = backgroundTask
             self.authCredentialManager = authCredentialManager
             self.callLinkPublicParams = callLinkPublicParams
+            self.incrementalTSAttachmentMigrator = incrementalTSAttachmentMigrator
+            self.remoteConfigManager = remoteConfigManager
         }
     }
 }
@@ -1548,13 +1557,28 @@ extension AppSetup.DatabaseContinuation {
                     owsFail("Couldn't set up change observer: \(error.grdbErrorForLogging)")
                 }
                 self.sskEnvironment.warmCaches(appReadiness: self.appReadiness)
-                self.backgroundTask.end()
-                future.resolve(AppSetup.FinalContinuation(
-                    appReadiness: self.appReadiness,
-                    authCredentialStore: self.authCredentialStore,
-                    dependenciesBridge: self.dependenciesBridge,
-                    sskEnvironment: self.sskEnvironment
-                ))
+
+                let finish = {
+                    self.backgroundTask.end()
+                    future.resolve(AppSetup.FinalContinuation(
+                        appReadiness: self.appReadiness,
+                        authCredentialStore: self.authCredentialStore,
+                        dependenciesBridge: self.dependenciesBridge,
+                        sskEnvironment: self.sskEnvironment
+                    ))
+                }
+
+                if FeatureFlags.runTSAttachmentMigrationBlockingOnLaunch {
+                    Task {
+                        await self.incrementalTSAttachmentMigrator.runUntilFinished(ignorePastFailures: false)
+                        await MainActor.run {
+                            finish()
+                        }
+                    }
+                } else {
+                    finish()
+                }
+
             }
         }
         return guarantee
