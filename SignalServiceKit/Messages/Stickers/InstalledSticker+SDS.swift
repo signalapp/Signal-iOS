@@ -131,8 +131,8 @@ extension InstalledSticker: SDSModel {
         }
     }
 
-    public func asRecord() throws -> SDSRecord {
-        try serializer.asRecord()
+    public func asRecord() -> SDSRecord {
+        serializer.asRecord()
     }
 
     public var sdsTableName: String {
@@ -149,12 +149,12 @@ extension InstalledSticker: SDSModel {
 extension InstalledSticker: DeepCopyable {
 
     public func deepCopy() throws -> AnyObject {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
         guard let id = self.grdbId?.int64Value else {
             throw OWSAssertionError("Model missing grdbId.")
         }
+
+        // Any subclass can be cast to its superclass, so the order of these if
+        // statements matters. We need to do a "depth first" search by type.
 
         do {
             let modelToCopy = self
@@ -162,8 +162,6 @@ extension InstalledSticker: DeepCopyable {
             let uniqueId: String = modelToCopy.uniqueId
             let contentType: String? = modelToCopy.contentType
             let emojiString: String? = modelToCopy.emojiString
-            // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
             let info: StickerInfo = try DeepCopies.deepCopy(modelToCopy.info)
 
             return InstalledSticker(grdbId: id,
@@ -579,7 +577,7 @@ class InstalledStickerSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func asRecord() throws -> SDSRecord {
+    func asRecord() -> SDSRecord {
         let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .installedSticker
@@ -593,20 +591,3 @@ class InstalledStickerSerializer: SDSSerializer {
         return InstalledStickerRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, emojiString: emojiString, info: info, contentType: contentType)
     }
 }
-
-// MARK: - Deep Copy
-
-#if TESTABLE_BUILD
-@objc
-public extension InstalledSticker {
-    // We're not using this method at the moment,
-    // but we might use it for validation of
-    // other deep copy methods.
-    func deepCopyUsingRecord() throws -> InstalledSticker {
-        guard let record = try asRecord() as? InstalledStickerRecord else {
-            throw OWSAssertionError("Could not convert to record.")
-        }
-        return try InstalledSticker.fromRecord(record)
-    }
-}
-#endif

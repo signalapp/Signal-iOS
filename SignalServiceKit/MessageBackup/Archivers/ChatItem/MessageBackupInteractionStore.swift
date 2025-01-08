@@ -214,7 +214,7 @@ public final class MessageBackupInteractionStore {
         }
 
         let statement = try context.tx.databaseConnection.cachedStatement(sql: sql)
-        try statement.setUncheckedArguments((interaction.asRecord() as! InteractionRecord).asArguments())
+        statement.setUncheckedArguments((interaction.asRecord() as! InteractionRecord).asArguments())
         try statement.execute()
         interaction.updateRowId(context.tx.databaseConnection.lastInsertedRowID)
 

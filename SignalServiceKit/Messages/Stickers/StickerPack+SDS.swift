@@ -154,8 +154,8 @@ extension StickerPack: SDSModel {
         }
     }
 
-    public func asRecord() throws -> SDSRecord {
-        try serializer.asRecord()
+    public func asRecord() -> SDSRecord {
+        serializer.asRecord()
     }
 
     public var sdsTableName: String {
@@ -172,28 +172,22 @@ extension StickerPack: SDSModel {
 extension StickerPack: DeepCopyable {
 
     public func deepCopy() throws -> AnyObject {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
         guard let id = self.grdbId?.int64Value else {
             throw OWSAssertionError("Model missing grdbId.")
         }
+
+        // Any subclass can be cast to its superclass, so the order of these if
+        // statements matters. We need to do a "depth first" search by type.
 
         do {
             let modelToCopy = self
             assert(type(of: modelToCopy) == StickerPack.self)
             let uniqueId: String = modelToCopy.uniqueId
             let author: String? = modelToCopy.author
-            // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
             let cover: StickerPackItem = try DeepCopies.deepCopy(modelToCopy.cover)
             let dateCreated: Date = modelToCopy.dateCreated
-            // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
             let info: StickerPackInfo = try DeepCopies.deepCopy(modelToCopy.info)
             let isInstalled: Bool = modelToCopy.isInstalled
-            // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
             let items: [StickerPackItem] = try DeepCopies.deepCopy(modelToCopy.items)
             let title: String? = modelToCopy.title
 
@@ -604,7 +598,7 @@ class StickerPackSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func asRecord() throws -> SDSRecord {
+    func asRecord() -> SDSRecord {
         let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .stickerPack
@@ -622,20 +616,3 @@ class StickerPackSerializer: SDSSerializer {
         return StickerPackRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, author: author, cover: cover, dateCreated: dateCreated, info: info, isInstalled: isInstalled, items: items, title: title)
     }
 }
-
-// MARK: - Deep Copy
-
-#if TESTABLE_BUILD
-@objc
-public extension StickerPack {
-    // We're not using this method at the moment,
-    // but we might use it for validation of
-    // other deep copy methods.
-    func deepCopyUsingRecord() throws -> StickerPack {
-        guard let record = try asRecord() as? StickerPackRecord else {
-            throw OWSAssertionError("Could not convert to record.")
-        }
-        return try StickerPack.fromRecord(record)
-    }
-}
-#endif

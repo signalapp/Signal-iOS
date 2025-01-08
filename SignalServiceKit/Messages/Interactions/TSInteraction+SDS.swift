@@ -2337,8 +2337,8 @@ extension TSInteraction: SDSModel {
         }
     }
 
-    public func asRecord() throws -> SDSRecord {
-        try serializer.asRecord()
+    public func asRecord() -> SDSRecord {
+        serializer.asRecord()
     }
 
     public var sdsTableName: String {
@@ -2355,12 +2355,12 @@ extension TSInteraction: SDSModel {
 extension TSInteraction: DeepCopyable {
 
     public func deepCopy() throws -> AnyObject {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
         guard let id = self.grdbId?.int64Value else {
             throw OWSAssertionError("Model missing grdbId.")
         }
+
+        // Any subclass can be cast to its superclass, so the order of these if
+        // statements matters. We need to do a "depth first" search by type.
 
         if let modelToCopy = self as? TSUnreadIndicatorInteraction {
             assert(type(of: modelToCopy) == TSUnreadIndicatorInteraction.self)
@@ -2386,39 +2386,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -2430,13 +2409,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -2447,39 +2419,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -2499,13 +2450,6 @@ extension TSInteraction: DeepCopyable {
             let legacyMessageState: TSOutgoingMessageState = modelToCopy.legacyMessageState
             let legacyWasDelivered: Bool = modelToCopy.legacyWasDelivered
             let mostRecentFailureText: String? = modelToCopy.mostRecentFailureText
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let recipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]?
             if let recipientAddressStatesForCopy = modelToCopy.recipientAddressStates {
                recipientAddressStates = try DeepCopies.deepCopy(recipientAddressStatesForCopy)
@@ -2564,39 +2508,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -2608,13 +2531,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -2625,39 +2541,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -2677,13 +2572,6 @@ extension TSInteraction: DeepCopyable {
             let legacyMessageState: TSOutgoingMessageState = modelToCopy.legacyMessageState
             let legacyWasDelivered: Bool = modelToCopy.legacyWasDelivered
             let mostRecentFailureText: String? = modelToCopy.mostRecentFailureText
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let recipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]?
             if let recipientAddressStatesForCopy = modelToCopy.recipientAddressStates {
                recipientAddressStates = try DeepCopies.deepCopy(recipientAddressStatesForCopy)
@@ -2742,39 +2630,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -2786,13 +2653,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -2803,39 +2663,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -2855,13 +2694,6 @@ extension TSInteraction: DeepCopyable {
             let legacyMessageState: TSOutgoingMessageState = modelToCopy.legacyMessageState
             let legacyWasDelivered: Bool = modelToCopy.legacyWasDelivered
             let mostRecentFailureText: String? = modelToCopy.mostRecentFailureText
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let recipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]?
             if let recipientAddressStatesForCopy = modelToCopy.recipientAddressStates {
                recipientAddressStates = try DeepCopies.deepCopy(recipientAddressStatesForCopy)
@@ -2871,13 +2703,6 @@ extension TSInteraction: DeepCopyable {
             let storedMessageState: TSOutgoingMessageState = modelToCopy.storedMessageState
             let wasNotCreatedLocally: Bool = modelToCopy.wasNotCreatedLocally
             let paymentCancellation: Data? = modelToCopy.paymentCancellation
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let paymentNotification: TSPaymentNotification?
             if let paymentNotificationForCopy = modelToCopy.paymentNotification {
                paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
@@ -2938,39 +2763,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -2982,13 +2786,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -2999,39 +2796,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -3051,13 +2827,6 @@ extension TSInteraction: DeepCopyable {
             let legacyMessageState: TSOutgoingMessageState = modelToCopy.legacyMessageState
             let legacyWasDelivered: Bool = modelToCopy.legacyWasDelivered
             let mostRecentFailureText: String? = modelToCopy.mostRecentFailureText
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let recipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]?
             if let recipientAddressStatesForCopy = modelToCopy.recipientAddressStates {
                recipientAddressStates = try DeepCopies.deepCopy(recipientAddressStatesForCopy)
@@ -3066,8 +2835,6 @@ extension TSInteraction: DeepCopyable {
             }
             let storedMessageState: TSOutgoingMessageState = modelToCopy.storedMessageState
             let wasNotCreatedLocally: Bool = modelToCopy.wasNotCreatedLocally
-            // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
             let archivedPaymentInfo: TSArchivedPaymentInfo = try DeepCopies.deepCopy(modelToCopy.archivedPaymentInfo)
 
             return OWSOutgoingArchivedPaymentMessage(grdbId: id,
@@ -3120,39 +2887,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -3164,13 +2910,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -3181,39 +2920,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -3233,13 +2951,6 @@ extension TSInteraction: DeepCopyable {
             let legacyMessageState: TSOutgoingMessageState = modelToCopy.legacyMessageState
             let legacyWasDelivered: Bool = modelToCopy.legacyWasDelivered
             let mostRecentFailureText: String? = modelToCopy.mostRecentFailureText
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let recipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]?
             if let recipientAddressStatesForCopy = modelToCopy.recipientAddressStates {
                recipientAddressStates = try DeepCopies.deepCopy(recipientAddressStatesForCopy)
@@ -3298,39 +3009,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -3342,13 +3032,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -3359,39 +3042,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -3404,13 +3066,6 @@ extension TSInteraction: DeepCopyable {
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let customMessage: String? = modelToCopy.customMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let infoMessageUserInfo: [InfoMessageUserInfoKey: Any]?
             if let infoMessageUserInfoForCopy = modelToCopy.infoMessageUserInfo {
                infoMessageUserInfo = try DeepCopies.deepCopy(infoMessageUserInfoForCopy)
@@ -3420,13 +3075,6 @@ extension TSInteraction: DeepCopyable {
             let messageType: TSInfoMessageType = modelToCopy.messageType
             let read: Bool = modelToCopy.wasRead
             let serverGuid: String? = modelToCopy.serverGuid
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let unregisteredAddress: SignalServiceAddress?
             if let unregisteredAddressForCopy = modelToCopy.unregisteredAddress {
                unregisteredAddress = try DeepCopies.deepCopy(unregisteredAddressForCopy)
@@ -3434,8 +3082,6 @@ extension TSInteraction: DeepCopyable {
                unregisteredAddress = nil
             }
             let isLocalChange: Bool = modelToCopy.isLocalChange
-            // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
             let recipientAddress: SignalServiceAddress = try DeepCopies.deepCopy(modelToCopy.recipientAddress)
             let verificationState: OWSVerificationState = modelToCopy.verificationState
 
@@ -3486,39 +3132,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -3530,13 +3155,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -3547,39 +3165,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -3592,13 +3189,6 @@ extension TSInteraction: DeepCopyable {
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let customMessage: String? = modelToCopy.customMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let infoMessageUserInfo: [InfoMessageUserInfoKey: Any]?
             if let infoMessageUserInfoForCopy = modelToCopy.infoMessageUserInfo {
                infoMessageUserInfo = try DeepCopies.deepCopy(infoMessageUserInfoForCopy)
@@ -3608,13 +3198,6 @@ extension TSInteraction: DeepCopyable {
             let messageType: TSInfoMessageType = modelToCopy.messageType
             let read: Bool = modelToCopy.wasRead
             let serverGuid: String? = modelToCopy.serverGuid
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let unregisteredAddress: SignalServiceAddress?
             if let unregisteredAddressForCopy = modelToCopy.unregisteredAddress {
                unregisteredAddress = try DeepCopies.deepCopy(unregisteredAddressForCopy)
@@ -3622,13 +3205,6 @@ extension TSInteraction: DeepCopyable {
                unregisteredAddress = nil
             }
             let protocolVersion: UInt = modelToCopy.protocolVersion
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let sender: SignalServiceAddress?
             if let senderForCopy = modelToCopy.sender {
                sender = try DeepCopies.deepCopy(senderForCopy)
@@ -3682,39 +3258,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -3726,13 +3281,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -3743,39 +3291,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -3788,13 +3315,6 @@ extension TSInteraction: DeepCopyable {
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let customMessage: String? = modelToCopy.customMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let infoMessageUserInfo: [InfoMessageUserInfoKey: Any]?
             if let infoMessageUserInfoForCopy = modelToCopy.infoMessageUserInfo {
                infoMessageUserInfo = try DeepCopies.deepCopy(infoMessageUserInfoForCopy)
@@ -3804,13 +3324,6 @@ extension TSInteraction: DeepCopyable {
             let messageType: TSInfoMessageType = modelToCopy.messageType
             let read: Bool = modelToCopy.wasRead
             let serverGuid: String? = modelToCopy.serverGuid
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let unregisteredAddress: SignalServiceAddress?
             if let unregisteredAddressForCopy = modelToCopy.unregisteredAddress {
                unregisteredAddress = try DeepCopies.deepCopy(unregisteredAddressForCopy)
@@ -3870,39 +3383,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -3914,13 +3406,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -3931,39 +3416,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -3976,13 +3440,6 @@ extension TSInteraction: DeepCopyable {
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let customMessage: String? = modelToCopy.customMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let infoMessageUserInfo: [InfoMessageUserInfoKey: Any]?
             if let infoMessageUserInfoForCopy = modelToCopy.infoMessageUserInfo {
                infoMessageUserInfo = try DeepCopies.deepCopy(infoMessageUserInfoForCopy)
@@ -3992,13 +3449,6 @@ extension TSInteraction: DeepCopyable {
             let messageType: TSInfoMessageType = modelToCopy.messageType
             let read: Bool = modelToCopy.wasRead
             let serverGuid: String? = modelToCopy.serverGuid
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let unregisteredAddress: SignalServiceAddress?
             if let unregisteredAddressForCopy = modelToCopy.unregisteredAddress {
                unregisteredAddress = try DeepCopies.deepCopy(unregisteredAddressForCopy)
@@ -4050,39 +3500,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -4094,13 +3523,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -4111,39 +3533,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -4156,13 +3557,6 @@ extension TSInteraction: DeepCopyable {
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let customMessage: String? = modelToCopy.customMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let infoMessageUserInfo: [InfoMessageUserInfoKey: Any]?
             if let infoMessageUserInfoForCopy = modelToCopy.infoMessageUserInfo {
                infoMessageUserInfo = try DeepCopies.deepCopy(infoMessageUserInfoForCopy)
@@ -4172,13 +3566,6 @@ extension TSInteraction: DeepCopyable {
             let messageType: TSInfoMessageType = modelToCopy.messageType
             let read: Bool = modelToCopy.wasRead
             let serverGuid: String? = modelToCopy.serverGuid
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let unregisteredAddress: SignalServiceAddress?
             if let unregisteredAddressForCopy = modelToCopy.unregisteredAddress {
                unregisteredAddress = try DeepCopies.deepCopy(unregisteredAddressForCopy)
@@ -4230,39 +3617,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -4274,13 +3640,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -4291,39 +3650,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -4336,13 +3674,6 @@ extension TSInteraction: DeepCopyable {
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let customMessage: String? = modelToCopy.customMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let infoMessageUserInfo: [InfoMessageUserInfoKey: Any]?
             if let infoMessageUserInfoForCopy = modelToCopy.infoMessageUserInfo {
                infoMessageUserInfo = try DeepCopies.deepCopy(infoMessageUserInfoForCopy)
@@ -4352,13 +3683,6 @@ extension TSInteraction: DeepCopyable {
             let messageType: TSInfoMessageType = modelToCopy.messageType
             let read: Bool = modelToCopy.wasRead
             let serverGuid: String? = modelToCopy.serverGuid
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let unregisteredAddress: SignalServiceAddress?
             if let unregisteredAddressForCopy = modelToCopy.unregisteredAddress {
                unregisteredAddress = try DeepCopies.deepCopy(unregisteredAddressForCopy)
@@ -4410,39 +3734,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -4454,13 +3757,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -4471,39 +3767,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -4525,13 +3800,6 @@ extension TSInteraction: DeepCopyable {
             let viewed: Bool = modelToCopy.wasViewed
             let wasReceivedByUD: Bool = modelToCopy.wasReceivedByUD
             let paymentCancellation: Data? = modelToCopy.paymentCancellation
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let paymentNotification: TSPaymentNotification?
             if let paymentNotificationForCopy = modelToCopy.paymentNotification {
                paymentNotification = try DeepCopies.deepCopy(paymentNotificationForCopy)
@@ -4590,39 +3858,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -4634,13 +3881,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -4651,39 +3891,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -4704,8 +3923,6 @@ extension TSInteraction: DeepCopyable {
             let serverTimestamp: NSNumber? = modelToCopy.serverTimestamp
             let viewed: Bool = modelToCopy.wasViewed
             let wasReceivedByUD: Bool = modelToCopy.wasReceivedByUD
-            // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
             let archivedPaymentInfo: TSArchivedPaymentInfo = try DeepCopies.deepCopy(modelToCopy.archivedPaymentInfo)
 
             return OWSIncomingArchivedPaymentMessage(grdbId: id,
@@ -4756,39 +3973,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -4800,13 +3996,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -4817,39 +4006,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -4918,39 +4086,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -4962,13 +4109,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -4979,39 +4119,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -5025,26 +4144,12 @@ extension TSInteraction: DeepCopyable {
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let errorType: TSErrorMessageType = modelToCopy.errorType
             let read: Bool = modelToCopy.wasRead
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let recipientAddress: SignalServiceAddress?
             if let recipientAddressForCopy = modelToCopy.recipientAddress {
                recipientAddress = try DeepCopies.deepCopy(recipientAddressForCopy)
             } else {
                recipientAddress = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let sender: SignalServiceAddress?
             if let senderForCopy = modelToCopy.sender {
                sender = try DeepCopies.deepCopy(senderForCopy)
@@ -5100,39 +4205,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -5144,13 +4228,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -5161,39 +4238,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -5207,26 +4263,12 @@ extension TSInteraction: DeepCopyable {
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let errorType: TSErrorMessageType = modelToCopy.errorType
             let read: Bool = modelToCopy.wasRead
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let recipientAddress: SignalServiceAddress?
             if let recipientAddressForCopy = modelToCopy.recipientAddress {
                recipientAddress = try DeepCopies.deepCopy(recipientAddressForCopy)
             } else {
                recipientAddress = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let sender: SignalServiceAddress?
             if let senderForCopy = modelToCopy.sender {
                sender = try DeepCopies.deepCopy(senderForCopy)
@@ -5282,39 +4324,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -5326,13 +4347,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -5343,39 +4357,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -5389,26 +4382,12 @@ extension TSInteraction: DeepCopyable {
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let errorType: TSErrorMessageType = modelToCopy.errorType
             let read: Bool = modelToCopy.wasRead
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let recipientAddress: SignalServiceAddress?
             if let recipientAddressForCopy = modelToCopy.recipientAddress {
                recipientAddress = try DeepCopies.deepCopy(recipientAddressForCopy)
             } else {
                recipientAddress = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let sender: SignalServiceAddress?
             if let senderForCopy = modelToCopy.sender {
                sender = try DeepCopies.deepCopy(senderForCopy)
@@ -5460,39 +4439,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -5504,13 +4462,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -5521,39 +4472,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -5567,26 +4497,12 @@ extension TSInteraction: DeepCopyable {
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let errorType: TSErrorMessageType = modelToCopy.errorType
             let read: Bool = modelToCopy.wasRead
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let recipientAddress: SignalServiceAddress?
             if let recipientAddressForCopy = modelToCopy.recipientAddress {
                recipientAddress = try DeepCopies.deepCopy(recipientAddressForCopy)
             } else {
                recipientAddress = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let sender: SignalServiceAddress?
             if let senderForCopy = modelToCopy.sender {
                sender = try DeepCopies.deepCopy(senderForCopy)
@@ -5638,39 +4554,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -5682,13 +4577,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -5699,39 +4587,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -5745,26 +4612,12 @@ extension TSInteraction: DeepCopyable {
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let errorType: TSErrorMessageType = modelToCopy.errorType
             let read: Bool = modelToCopy.wasRead
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let recipientAddress: SignalServiceAddress?
             if let recipientAddressForCopy = modelToCopy.recipientAddress {
                recipientAddress = try DeepCopies.deepCopy(recipientAddressForCopy)
             } else {
                recipientAddress = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let sender: SignalServiceAddress?
             if let senderForCopy = modelToCopy.sender {
                sender = try DeepCopies.deepCopy(senderForCopy)
@@ -5816,39 +4669,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -5860,13 +4692,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -5877,39 +4702,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -5923,26 +4727,12 @@ extension TSInteraction: DeepCopyable {
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let errorType: TSErrorMessageType = modelToCopy.errorType
             let read: Bool = modelToCopy.wasRead
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let recipientAddress: SignalServiceAddress?
             if let recipientAddressForCopy = modelToCopy.recipientAddress {
                recipientAddress = try DeepCopies.deepCopy(recipientAddressForCopy)
             } else {
                recipientAddress = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let sender: SignalServiceAddress?
             if let senderForCopy = modelToCopy.sender {
                sender = try DeepCopies.deepCopy(senderForCopy)
@@ -5994,39 +4784,18 @@ extension TSInteraction: DeepCopyable {
             let timestamp: UInt64 = modelToCopy.timestamp
             let uniqueThreadId: String = modelToCopy.uniqueThreadId
             let body: String? = modelToCopy.body
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let bodyRanges: MessageBodyRanges?
             if let bodyRangesForCopy = modelToCopy.bodyRanges {
                bodyRanges = try DeepCopies.deepCopy(bodyRangesForCopy)
             } else {
                bodyRanges = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let contactShare: OWSContact?
             if let contactShareForCopy = modelToCopy.contactShare {
                contactShare = try DeepCopies.deepCopy(contactShareForCopy)
             } else {
                contactShare = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let deprecated_attachmentIds: [String]?
             if let deprecated_attachmentIdsForCopy = modelToCopy.deprecated_attachmentIds {
                deprecated_attachmentIds = try DeepCopies.deepCopy(deprecated_attachmentIdsForCopy)
@@ -6038,13 +4807,6 @@ extension TSInteraction: DeepCopyable {
             let expireTimerVersion: NSNumber? = modelToCopy.expireTimerVersion
             let expiresAt: UInt64 = modelToCopy.expiresAt
             let expiresInSeconds: UInt32 = modelToCopy.expiresInSeconds
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let giftBadge: OWSGiftBadge?
             if let giftBadgeForCopy = modelToCopy.giftBadge {
                giftBadge = try DeepCopies.deepCopy(giftBadgeForCopy)
@@ -6055,39 +4817,18 @@ extension TSInteraction: DeepCopyable {
             let isSmsMessageRestoredFromBackup: Bool = modelToCopy.isSmsMessageRestoredFromBackup
             let isViewOnceComplete: Bool = modelToCopy.isViewOnceComplete
             let isViewOnceMessage: Bool = modelToCopy.isViewOnceMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let linkPreview: OWSLinkPreview?
             if let linkPreviewForCopy = modelToCopy.linkPreview {
                linkPreview = try DeepCopies.deepCopy(linkPreviewForCopy)
             } else {
                linkPreview = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageSticker: MessageSticker?
             if let messageStickerForCopy = modelToCopy.messageSticker {
                messageSticker = try DeepCopies.deepCopy(messageStickerForCopy)
             } else {
                messageSticker = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let quotedMessage: TSQuotedMessage?
             if let quotedMessageForCopy = modelToCopy.quotedMessage {
                quotedMessage = try DeepCopies.deepCopy(quotedMessageForCopy)
@@ -6162,13 +4903,6 @@ extension TSInteraction: DeepCopyable {
             let creatorUuid: String? = modelToCopy.creatorUuid
             let eraId: String? = modelToCopy.eraId
             let hasEnded: Bool = modelToCopy.hasEnded
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let joinedMemberUuids: [String]?
             if let joinedMemberUuidsForCopy = modelToCopy.joinedMemberUuids {
                joinedMemberUuids = try DeepCopies.deepCopy(joinedMemberUuidsForCopy)
@@ -6822,7 +5556,7 @@ class TSInteractionSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func asRecord() throws -> SDSRecord {
+    func asRecord() -> SDSRecord {
         let id: Int64? = model.sortId > 0 ? Int64(model.sortId) : model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .interaction
@@ -6906,20 +5640,3 @@ class TSInteractionSerializer: SDSSerializer {
         return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, deprecated_attachmentIds: deprecated_attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, wasNotCreatedLocally: wasNotCreatedLocally, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, deprecated_sourceDeviceId: deprecated_sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, storyAuthorUuidString: storyAuthorUuidString, storyTimestamp: storyTimestamp, isGroupStoryReply: isGroupStoryReply, storyReactionEmoji: storyReactionEmoji, giftBadge: giftBadge, editState: editState, archivedPaymentInfo: archivedPaymentInfo, expireTimerVersion: expireTimerVersion, isSmsMessageRestoredFromBackup: isSmsMessageRestoredFromBackup)
     }
 }
-
-// MARK: - Deep Copy
-
-#if TESTABLE_BUILD
-@objc
-public extension TSInteraction {
-    // We're not using this method at the moment,
-    // but we might use it for validation of
-    // other deep copy methods.
-    func deepCopyUsingRecord() throws -> TSInteraction {
-        guard let record = try asRecord() as? InteractionRecord else {
-            throw OWSAssertionError("Could not convert to record.")
-        }
-        return try TSInteraction.fromRecord(record)
-    }
-}
-#endif

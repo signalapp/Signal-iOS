@@ -187,8 +187,8 @@ extension TSPaymentModel: SDSModel {
         }
     }
 
-    public func asRecord() throws -> SDSRecord {
-        try serializer.asRecord()
+    public func asRecord() -> SDSRecord {
+        serializer.asRecord()
     }
 
     public var sdsTableName: String {
@@ -205,12 +205,12 @@ extension TSPaymentModel: SDSModel {
 extension TSPaymentModel: DeepCopyable {
 
     public func deepCopy() throws -> AnyObject {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
         guard let id = self.grdbId?.int64Value else {
             throw OWSAssertionError("Model missing grdbId.")
         }
+
+        // Any subclass can be cast to its superclass, so the order of these if
+        // statements matters. We need to do a "depth first" search by type.
 
         do {
             let modelToCopy = self
@@ -224,26 +224,12 @@ extension TSPaymentModel: DeepCopyable {
             let mcReceiptData: Data? = modelToCopy.mcReceiptData
             let mcTransactionData: Data? = modelToCopy.mcTransactionData
             let memoMessage: String? = modelToCopy.memoMessage
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let mobileCoin: MobileCoinPayment?
             if let mobileCoinForCopy = modelToCopy.mobileCoin {
                mobileCoin = try DeepCopies.deepCopy(mobileCoinForCopy)
             } else {
                mobileCoin = nil
             }
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let paymentAmount: TSPaymentAmount?
             if let paymentAmountForCopy = modelToCopy.paymentAmount {
                paymentAmount = try DeepCopies.deepCopy(paymentAmountForCopy)
@@ -683,7 +669,7 @@ class TSPaymentModelSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func asRecord() throws -> SDSRecord {
+    func asRecord() -> SDSRecord {
         let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .paymentModel
@@ -708,20 +694,3 @@ class TSPaymentModelSerializer: SDSSerializer {
         return PaymentModelRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, addressUuidString: addressUuidString, createdTimestamp: createdTimestamp, isUnread: isUnread, mcLedgerBlockIndex: mcLedgerBlockIndex, mcReceiptData: mcReceiptData, mcTransactionData: mcTransactionData, memoMessage: memoMessage, mobileCoin: mobileCoin, paymentAmount: paymentAmount, paymentFailure: paymentFailure, paymentState: paymentState, paymentType: paymentType, requestUuidString: requestUuidString, interactionUniqueId: interactionUniqueId)
     }
 }
-
-// MARK: - Deep Copy
-
-#if TESTABLE_BUILD
-@objc
-public extension TSPaymentModel {
-    // We're not using this method at the moment,
-    // but we might use it for validation of
-    // other deep copy methods.
-    func deepCopyUsingRecord() throws -> TSPaymentModel {
-        guard let record = try asRecord() as? PaymentModelRecord else {
-            throw OWSAssertionError("Could not convert to record.")
-        }
-        return try TSPaymentModel.fromRecord(record)
-    }
-}
-#endif

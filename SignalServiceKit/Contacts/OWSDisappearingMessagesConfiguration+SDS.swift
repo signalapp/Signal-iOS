@@ -130,8 +130,8 @@ extension OWSDisappearingMessagesConfiguration: SDSModel {
         }
     }
 
-    public func asRecord() throws -> SDSRecord {
-        try serializer.asRecord()
+    public func asRecord() -> SDSRecord {
+        serializer.asRecord()
     }
 
     public var sdsTableName: String {
@@ -148,12 +148,12 @@ extension OWSDisappearingMessagesConfiguration: SDSModel {
 extension OWSDisappearingMessagesConfiguration: DeepCopyable {
 
     public func deepCopy() throws -> AnyObject {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
         guard let id = self.grdbId?.int64Value else {
             throw OWSAssertionError("Model missing grdbId.")
         }
+
+        // Any subclass can be cast to its superclass, so the order of these if
+        // statements matters. We need to do a "depth first" search by type.
 
         do {
             let modelToCopy = self
@@ -558,7 +558,7 @@ class OWSDisappearingMessagesConfigurationSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func asRecord() throws -> SDSRecord {
+    func asRecord() -> SDSRecord {
         let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .disappearingMessagesConfiguration
@@ -572,20 +572,3 @@ class OWSDisappearingMessagesConfigurationSerializer: SDSSerializer {
         return DisappearingMessagesConfigurationRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, durationSeconds: durationSeconds, enabled: enabled, timerVersion: timerVersion)
     }
 }
-
-// MARK: - Deep Copy
-
-#if TESTABLE_BUILD
-@objc
-public extension OWSDisappearingMessagesConfiguration {
-    // We're not using this method at the moment,
-    // but we might use it for validation of
-    // other deep copy methods.
-    func deepCopyUsingRecord() throws -> OWSDisappearingMessagesConfiguration {
-        guard let record = try asRecord() as? DisappearingMessagesConfigurationRecord else {
-            throw OWSAssertionError("Could not convert to record.")
-        }
-        return try OWSDisappearingMessagesConfiguration.fromRecord(record)
-    }
-}
-#endif

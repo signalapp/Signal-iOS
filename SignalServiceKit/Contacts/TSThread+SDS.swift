@@ -370,8 +370,8 @@ extension TSThread: SDSModel {
         }
     }
 
-    public func asRecord() throws -> SDSRecord {
-        try serializer.asRecord()
+    public func asRecord() -> SDSRecord {
+        serializer.asRecord()
     }
 
     public var sdsTableName: String {
@@ -388,12 +388,12 @@ extension TSThread: SDSModel {
 extension TSThread: DeepCopyable {
 
     public func deepCopy() throws -> AnyObject {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
         guard let id = self.grdbId?.int64Value else {
             throw OWSAssertionError("Model missing grdbId.")
         }
+
+        // Any subclass can be cast to its superclass, so the order of these if
+        // statements matters. We need to do a "depth first" search by type.
 
         if let modelToCopy = self as? TSPrivateStoryThread {
             assert(type(of: modelToCopy) == TSPrivateStoryThread.self)
@@ -409,13 +409,6 @@ extension TSThread: DeepCopyable {
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
             let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
             let messageDraft: String? = modelToCopy.messageDraft
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageDraftBodyRanges: MessageBodyRanges?
             if let messageDraftBodyRangesForCopy = modelToCopy.messageDraftBodyRanges {
                messageDraftBodyRanges = try DeepCopies.deepCopy(messageDraftBodyRangesForCopy)
@@ -426,8 +419,6 @@ extension TSThread: DeepCopyable {
             let mutedUntilTimestampObsolete: UInt64 = modelToCopy.mutedUntilTimestampObsolete
             let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
             let storyViewMode: TSThreadStoryViewMode = modelToCopy.storyViewMode
-            // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
             let addresses: [SignalServiceAddress] = try DeepCopies.deepCopy(modelToCopy.addresses)
             let allowsReplies: Bool = modelToCopy.allowsReplies
             let name: String = modelToCopy.name
@@ -469,13 +460,6 @@ extension TSThread: DeepCopyable {
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
             let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
             let messageDraft: String? = modelToCopy.messageDraft
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageDraftBodyRanges: MessageBodyRanges?
             if let messageDraftBodyRangesForCopy = modelToCopy.messageDraftBodyRanges {
                messageDraftBodyRanges = try DeepCopies.deepCopy(messageDraftBodyRangesForCopy)
@@ -486,8 +470,6 @@ extension TSThread: DeepCopyable {
             let mutedUntilTimestampObsolete: UInt64 = modelToCopy.mutedUntilTimestampObsolete
             let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
             let storyViewMode: TSThreadStoryViewMode = modelToCopy.storyViewMode
-            // NOTE: If this generates build errors, you made need to
-            // implement DeepCopyable for this type in DeepCopy.swift.
             let groupModel: TSGroupModel = try DeepCopies.deepCopy(modelToCopy.groupModel)
 
             return TSGroupThread(grdbId: id,
@@ -525,13 +507,6 @@ extension TSThread: DeepCopyable {
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
             let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
             let messageDraft: String? = modelToCopy.messageDraft
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageDraftBodyRanges: MessageBodyRanges?
             if let messageDraftBodyRangesForCopy = modelToCopy.messageDraftBodyRanges {
                messageDraftBodyRanges = try DeepCopies.deepCopy(messageDraftBodyRangesForCopy)
@@ -584,13 +559,6 @@ extension TSThread: DeepCopyable {
             let lastVisibleSortIdOnScreenPercentageObsolete: Double = modelToCopy.lastVisibleSortIdOnScreenPercentageObsolete
             let mentionNotificationMode: TSThreadMentionNotificationMode = modelToCopy.mentionNotificationMode
             let messageDraft: String? = modelToCopy.messageDraft
-            // NOTE: If this generates build errors, you made need to
-            // modify DeepCopy.swift to support this type.
-            //
-            // That might mean:
-            //
-            // * Implement DeepCopyable for this type (e.g. a model).
-            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let messageDraftBodyRanges: MessageBodyRanges?
             if let messageDraftBodyRangesForCopy = modelToCopy.messageDraftBodyRanges {
                messageDraftBodyRanges = try DeepCopies.deepCopy(messageDraftBodyRangesForCopy)
@@ -1048,7 +1016,7 @@ class TSThreadSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func asRecord() throws -> SDSRecord {
+    func asRecord() -> SDSRecord {
         let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .thread
@@ -1082,20 +1050,3 @@ class TSThreadSerializer: SDSSerializer {
         return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode, mutedUntilTimestamp: mutedUntilTimestamp, allowsReplies: allowsReplies, lastSentStoryTimestamp: lastSentStoryTimestamp, name: name, addresses: addresses, storyViewMode: storyViewMode, editTargetTimestamp: editTargetTimestamp)
     }
 }
-
-// MARK: - Deep Copy
-
-#if TESTABLE_BUILD
-@objc
-public extension TSThread {
-    // We're not using this method at the moment,
-    // but we might use it for validation of
-    // other deep copy methods.
-    func deepCopyUsingRecord() throws -> TSThread {
-        guard let record = try asRecord() as? ThreadRecord else {
-            throw OWSAssertionError("Could not convert to record.")
-        }
-        return try TSThread.fromRecord(record)
-    }
-}
-#endif

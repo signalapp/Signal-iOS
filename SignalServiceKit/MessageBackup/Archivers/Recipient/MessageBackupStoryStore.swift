@@ -45,7 +45,7 @@ public final class MessageBackupStoryStore {
             addresses: addresses.map({ $0.asInteropAddress() }),
             viewMode: viewMode
         )
-        var record = try myStory.asRecord()
+        var record = myStory.asRecord()
 
         let existingMyStoryRowId = try Int64.fetchOne(
             context.tx.databaseConnection,
@@ -66,7 +66,7 @@ public final class MessageBackupStoryStore {
         _ storyThread: TSPrivateStoryThread,
         context: MessageBackup.RecipientRestoringContext
     ) throws {
-        let record = try storyThread.asRecord()
+        let record = storyThread.asRecord()
         try record.insert(context.tx.databaseConnection)
     }
 

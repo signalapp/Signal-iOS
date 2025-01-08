@@ -68,7 +68,7 @@ public final class MessageBackupThreadStore {
         context: MessageBackup.ChatRestoringContext
     ) throws -> TSContactThread {
         let thread = TSContactThread(contactAddress: context.recipientContext.localIdentifiers.aciAddress)
-        let record = try thread.asRecord()
+        let record = thread.asRecord()
         try record.insert(context.tx.databaseConnection)
         return thread
     }
@@ -78,7 +78,7 @@ public final class MessageBackupThreadStore {
         context: MessageBackup.ChatRestoringContext
     ) throws -> TSContactThread {
         let thread = TSContactThread(contactAddress: address.asInteropAddress())
-        let record = try thread.asRecord()
+        let record = thread.asRecord()
         try record.insert(context.tx.databaseConnection)
         return thread
     }
@@ -97,7 +97,7 @@ public final class MessageBackupThreadStore {
         default:
             groupThread.storyViewMode = .default
         }
-        let record = try groupThread.asRecord()
+        let record = groupThread.asRecord()
         try record.insert(context.tx.databaseConnection)
         return groupThread
     }

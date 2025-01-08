@@ -146,8 +146,8 @@ extension IncomingGroupsV2MessageJob: SDSModel {
         }
     }
 
-    public func asRecord() throws -> SDSRecord {
-        try serializer.asRecord()
+    public func asRecord() -> SDSRecord {
+        serializer.asRecord()
     }
 
     public var sdsTableName: String {
@@ -164,12 +164,12 @@ extension IncomingGroupsV2MessageJob: SDSModel {
 extension IncomingGroupsV2MessageJob: DeepCopyable {
 
     public func deepCopy() throws -> AnyObject {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
         guard let id = self.grdbId?.int64Value else {
             throw OWSAssertionError("Model missing grdbId.")
         }
+
+        // Any subclass can be cast to its superclass, so the order of these if
+        // statements matters. We need to do a "depth first" search by type.
 
         do {
             let modelToCopy = self
@@ -586,7 +586,7 @@ class IncomingGroupsV2MessageJobSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func asRecord() throws -> SDSRecord {
+    func asRecord() -> SDSRecord {
         let id: Int64? = model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .incomingGroupsV2MessageJob
@@ -603,20 +603,3 @@ class IncomingGroupsV2MessageJobSerializer: SDSSerializer {
         return IncomingGroupsV2MessageJobRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD, groupId: groupId, serverDeliveryTimestamp: serverDeliveryTimestamp)
     }
 }
-
-// MARK: - Deep Copy
-
-#if TESTABLE_BUILD
-@objc
-public extension IncomingGroupsV2MessageJob {
-    // We're not using this method at the moment,
-    // but we might use it for validation of
-    // other deep copy methods.
-    func deepCopyUsingRecord() throws -> IncomingGroupsV2MessageJob {
-        guard let record = try asRecord() as? IncomingGroupsV2MessageJobRecord else {
-            throw OWSAssertionError("Could not convert to record.")
-        }
-        return try IncomingGroupsV2MessageJob.fromRecord(record)
-    }
-}
-#endif

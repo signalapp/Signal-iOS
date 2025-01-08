@@ -1022,13 +1022,6 @@ class ParsedProperty:
 
         if is_optional:
             return [
-                "// NOTE: If this generates build errors, you made need to",
-                "// modify DeepCopy.swift to support this type.",
-                "//",
-                "// That might mean:",
-                "//",
-                "// * Implement DeepCopyable for this type (e.g. a model).",
-                "// * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).",
                 "let %s: %s"
                 % (
                     value_name,
@@ -1050,8 +1043,6 @@ class ParsedProperty:
             ]
         else:
             return [
-                "// NOTE: If this generates build errors, you made need to",
-                "// implement DeepCopyable for this type in DeepCopy.swift.",
                 "let %s: %s = try DeepCopies.deepCopy(modelToCopy.%s)"
                 % (
                     value_name,
@@ -1655,8 +1646,8 @@ extension %s: SDSModel {
         }
     }
 
-    public func asRecord() throws -> SDSRecord {
-        try serializer.asRecord()
+    public func asRecord() -> SDSRecord {
+        serializer.asRecord()
     }
 
     public var sdsTableName: String {
@@ -1680,16 +1671,15 @@ extension %s: SDSModel {
 extension %(class_name)s: DeepCopyable {
 
     public func deepCopy() throws -> AnyObject {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
         guard let id = self.grdbId?.int64Value else {
             throw OWSAssertionError("Model missing grdbId.")
         }
+
+        // Any subclass can be cast to its superclass, so the order of these if
+        // statements matters. We need to do a "depth first" search by type.
 """ % {
             "class_name": str(clazz.name)
         }
-        # switch self {''' % { "class_name": str(clazz.name) }
 
         classes_to_copy = list(reversed(all_descendents_of_class(clazz))) + [
             clazz,
@@ -2444,7 +2434,7 @@ class %sSerializer: SDSSerializer {
     swift_body += """
     // MARK: - Record
 
-    func asRecord() throws -> SDSRecord {
+    func asRecord() -> SDSRecord {
         let id: Int64? = %(record_id_source)s
 
         let recordType: SDSRecordType = .%(record_type)s
@@ -2521,29 +2511,6 @@ class %sSerializer: SDSSerializer {
 
     swift_body += """}
 """
-
-    if not has_sds_superclass:
-        swift_body += """
-// MARK: - Deep Copy
-
-#if TESTABLE_BUILD
-@objc
-public extension %(model_name)s {
-    // We're not using this method at the moment,
-    // but we might use it for validation of
-    // other deep copy methods.
-    func deepCopyUsingRecord() throws -> %(model_name)s {
-        guard let record = try asRecord() as? %(record_name)s else {
-            throw OWSAssertionError("Could not convert to record.")
-        }
-        return try %(model_name)s.fromRecord(record)
-    }
-}
-#endif
-""" % {
-            "model_name": str(clazz.name),
-            "record_name": clazz.record_name(),
-        }
 
     print(f"Writing {swift_filename}")
 

@@ -13,7 +13,7 @@ extension SDSCodableModel {
 /// in BLOB columns. Specifically intended for use with types that previously
 /// used SDS codegen that have been migrated to ``SDSCodableModel``.
 struct SDSCodableModelLegacySerializer: SDSSerializer {
-    func asRecord() throws -> SDSRecord {
+    func asRecord() -> SDSRecord {
         owsFail("Not actually implemented! This type is a shim - did it accidentally get used in a non-shim context?")
     }
 

@@ -32,11 +32,6 @@ public class DeepCopies {
         return try dictToCopy.deepCopy()
     }
 
-    // NOTE: We do not get compile-time type safety with NSOrderedSet.
-    static func deepCopy(_ setToCopy: NSOrderedSet) throws -> NSOrderedSet {
-        return try setToCopy.deepCopy()
-    }
-
     // Swift does not appear to offer a way to let Array conform
     // to DeepCopyable IFF Array.Element conforms to DeepCopyable.
     // This if unfortunate and poses a decision.
@@ -96,21 +91,6 @@ extension Dictionary where Key: DeepCopyable, Value: DeepCopyable {
             let valueCopy: Value = try DeepCopies.deepCopy(value)
             return (keyCopy, valueCopy)
         }))
-    }
-}
-
-// MARK: -
-
-// NOTE: We do not get compile-time type safety with NSOrderedSet.
-extension NSOrderedSet {
-    public func deepCopy() throws -> NSOrderedSet {
-        let copiedElements: [AnyObject] = try self.array.map { (element: Any) throws -> AnyObject in
-            guard let objectToCopy = NSObject.asDeepCopyable(element) else {
-                throw OWSAssertionError("Could not copy: \(type(of: element))")
-            }
-            return try objectToCopy.deepCopy()
-        }
-        return NSOrderedSet(array: copiedElements)
     }
 }
 
@@ -361,7 +341,6 @@ extension TSInfoMessage.PersistableGroupUpdateItemsWrapper: DeepCopyable {
 
 // MARK: -
 
-// NOTE: We do not get compile-time type safety with NSOrderedSet.
 extension NSObject {
     public static func asDeepCopyable(_ value: Any) -> DeepCopyable? {
         if let string = value as? String {

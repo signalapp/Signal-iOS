@@ -56,7 +56,7 @@ class TSInvalidIdentityKeyReceivingErrorMessageSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func asRecord() throws -> SDSRecord {
+    func asRecord() -> SDSRecord {
         let id: Int64? = model.sortId > 0 ? Int64(model.sortId) : model.grdbId?.int64Value
 
         let recordType: SDSRecordType = .invalidIdentityKeyReceivingErrorMessage

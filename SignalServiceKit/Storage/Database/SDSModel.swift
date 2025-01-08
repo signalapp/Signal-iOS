@@ -9,7 +9,7 @@ public import GRDB
 public protocol SDSModel: TSYapDatabaseObject, SDSIdentifiableModel {
     var sdsTableName: String { get }
 
-    func asRecord() throws -> SDSRecord
+    func asRecord() -> SDSRecord
 
     var serializer: SDSSerializer { get }
 

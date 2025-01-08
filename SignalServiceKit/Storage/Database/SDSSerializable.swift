@@ -13,7 +13,7 @@ func convertDateForGrdb(_ value: Date) -> Double {
 // MARK: - SDSSerializer
 
 public protocol SDSSerializer {
-    func asRecord() throws -> SDSRecord
+    func asRecord() -> SDSRecord
 }
 
 // MARK: - SDSSerializer Helpers
