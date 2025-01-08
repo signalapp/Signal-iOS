@@ -520,48 +520,65 @@ class ProvisioningController: NSObject {
     @MainActor
     private func showError(error: SecondaryLinkNSyncError, viewController: UIViewController) async -> Bool {
         await withCheckedContinuation { continuation in
-            let promptToRetry: Bool
-            let errorMessage: String
+            let actionSheet: ActionSheetController
+
             switch error {
             case .timedOutWaitingForBackup, .errorDownloadingBackup, .networkError:
-                promptToRetry = true
-                errorMessage = OWSLocalizedString(
-                    "SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE",
-                    comment: "Message for action sheet when secondary device fails to sync messages due to network error."
+                actionSheet = ActionSheetController(
+                    title: CommonStrings.linkNSyncImportErrorTitle,
+                    message: OWSLocalizedString(
+                        "SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE",
+                        comment: "Message for action sheet when secondary device fails to sync messages due to network error."
+                    )
                 )
-            case .primaryFailedBackupExport, .errorWaitingForBackup, .errorRestoringBackup:
-                promptToRetry = false
-                errorMessage = OWSLocalizedString(
-                    "SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE",
-                    comment: "Message for action sheet when secondary device fails to sync messages due to an unspecified error."
-                )
-            }
 
-            let retryActionSheet = ActionSheetController(
-                title: OWSLocalizedString(
-                    "SECONDARY_LINKING_SYNCING_ERROR_TITLE",
-                    comment: "Title for action sheet when secondary device fails to sync messages."
-                ),
-                message: errorMessage
-            )
-            retryActionSheet.isCancelable = false
-
-            if promptToRetry {
-                retryActionSheet.addAction(.init(
+                actionSheet.addAction(.init(
                     title: CommonStrings.retryButton
                 ) { _ in
                     continuation.resume(returning: true)
                 })
+            case .primaryFailedBackupExport, .errorWaitingForBackup, .errorRestoringBackup:
+                actionSheet = ActionSheetController(
+                    title: CommonStrings.linkNSyncImportErrorTitle,
+                    message: OWSLocalizedString(
+                        "SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE",
+                        comment: "Message for action sheet when secondary device fails to sync messages due to an unspecified error."
+                    )
+                )
+            case .unsupportedBackupVersion:
+                actionSheet = ActionSheetController(
+                    title: OWSLocalizedString(
+                        "SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE",
+                        comment: "Title for action sheet when the secondary device fails to sync messages due to an app update being required."
+                    ),
+                    message: OWSLocalizedString(
+                        "SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_MESSAGE",
+                        comment: "Message for action sheet when the secondary device fails to sync messages due to an app update being required."
+                    )
+                )
+
+                actionSheet.addAction(ActionSheetAction(
+                    title: OWSLocalizedString(
+                        "SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_CHECK_FOR_UPDATE_BUTTON",
+                        comment: "Button on an action sheet to open Signal on the App Store."
+                    ),
+                    style: .default
+                ) { _ in
+                    UIApplication.shared.open(TSConstants.appStoreUrl)
+                    continuation.resume(returning: false)
+                })
             }
 
-            retryActionSheet.addAction(.init(
+            actionSheet.isCancelable = false
+
+            actionSheet.addAction(.init(
                 title: CommonStrings.cancelButton,
                 style: .cancel
             ) { _ in
                 continuation.resume(returning: false)
             })
 
-            viewController.presentActionSheet(retryActionSheet)
+            viewController.presentActionSheet(actionSheet)
         }
     }
 
@@ -707,5 +724,14 @@ extension ProvisioningController: ProvisioningSocketDelegate {
             attempts[matchingAttemptIndex].fetchProvisioningUrlParamsContinuation?.resume(throwing: error)
             attempts[matchingAttemptIndex].fetchProvisioningUrlParamsContinuation = nil
         }
+    }
+}
+
+private extension CommonStrings {
+    static var linkNSyncImportErrorTitle: String {
+        OWSLocalizedString(
+            "SECONDARY_LINKING_SYNCING_ERROR_TITLE",
+            comment: "Title for action sheet when secondary device fails to sync messages."
+        )
     }
 }

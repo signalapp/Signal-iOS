@@ -53,6 +53,7 @@ public enum SecondaryLinkNSyncError: Error {
     case errorWaitingForBackup
     case errorDownloadingBackup
     case errorRestoringBackup
+    case unsupportedBackupVersion
     case networkError
 }
 
@@ -551,6 +552,12 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             )
         } catch {
             owsFailDebug("Unable to restore link'n'sync backup: \(error)")
+            if let backupImportError = error as? BackupImportError {
+                switch backupImportError {
+                case .unsupportedVersion:
+                    throw SecondaryLinkNSyncError.unsupportedBackupVersion
+                }
+            }
             throw SecondaryLinkNSyncError.errorRestoringBackup
         }
     }

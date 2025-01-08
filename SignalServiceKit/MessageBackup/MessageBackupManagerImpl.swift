@@ -12,6 +12,10 @@ public enum BackupValidationError: Error {
     case unknownError
 }
 
+public enum BackupImportError: Error {
+    case unsupportedVersion
+}
+
 public class MessageBackupManagerImpl: MessageBackupManager {
     private enum Constants {
         static let keyValueStoreCollectionName = "MessageBackupManager"
@@ -762,7 +766,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 wasFatal: true,
                 protoFrame: backupInfo
             ))
-            throw BackupError()
+            throw BackupImportError.unsupportedVersion
         }
         do {
             try mrbkStore.setMediaRootBackupKey(fromRestoredBackup: backupInfo, tx: tx)
