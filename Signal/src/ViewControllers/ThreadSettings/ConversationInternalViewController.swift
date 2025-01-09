@@ -70,7 +70,7 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                     value: signalRecipient?.phoneNumber?.isDiscoverable == true ? "Yes" : "No"
                 ))
 
-                let userProfile = SSKEnvironment.shared.profileManagerRef.getUserProfile(for: address, transaction: transaction)
+                let userProfile = SSKEnvironment.shared.profileManagerRef.userProfile(for: address, tx: transaction)
 
                 section.add(.copyableItem(
                     label: "Sharing Phone Number?",

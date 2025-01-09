@@ -226,15 +226,11 @@ private class BannerView: UIView {
             avatarView.autoVCenterInSuperview()
             avatarView.autoMatch(.height, to: .width, of: avatarView)
 
-            if address.isLocalAddress,
-               let avatarImage = SSKEnvironment.shared.profileManagerRef.localProfileAvatarImage {
-                avatarView.image = avatarImage
-            } else {
-                let avatar = SSKEnvironment.shared.avatarBuilderRef.avatarImageWithSneakyTransaction(forAddress: address,
-                                                                                                     diameterPoints: 40,
-                                                                                                     localUserDisplayMode: .asUser)
-                avatarView.image = avatar
-            }
+            avatarView.image = SSKEnvironment.shared.avatarBuilderRef.avatarImageWithSneakyTransaction(
+                forAddress: address,
+                diameterPoints: 40,
+                localUserDisplayMode: .asUser
+            )
         }
 
         let label = UILabel()

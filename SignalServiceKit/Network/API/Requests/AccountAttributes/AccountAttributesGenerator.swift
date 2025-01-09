@@ -39,14 +39,10 @@ public struct AccountAttributesGenerator {
         let registrationId = tsAccountManager.getOrGenerateAciRegistrationId(tx: tx)
         let pniRegistrationId = tsAccountManager.getOrGeneratePniRegistrationId(tx: tx)
 
-        let udAccessKey: String
-        do {
-            let profileKey = profileManager.localProfileKey
-            udAccessKey = try SMKUDAccessKey(profileKey: profileKey.keyData).keyData.base64EncodedString()
-        } catch {
-            // Crash app if UD cannot be enabled.
-            owsFail("Could not determine UD access key: \(error).")
+        guard let profileKey = profileManager.localUserProfile(tx: sdsTx)?.profileKey else {
+            owsFail("Couldn't fetch local profile key.")
         }
+        let udAccessKey = SMKUDAccessKey(profileKey: profileKey).keyData.base64EncodedString()
 
         let allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(transaction: sdsTx)
         let hasSVRBackups = svrLocalStorage.getIsMasterKeyBackedUp(tx)

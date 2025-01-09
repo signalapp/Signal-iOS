@@ -421,7 +421,11 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
 
         // In order to properly show the "you have a new badge" UI after this job
         // succeeds, we need to know what badges we had beforehand.
-        let badgesSnapshotBeforeJob: ProfileBadgesSnapshot = .current()
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let badgesSnapshotBeforeJob = databaseStorage.read { tx in
+            ProfileBadgesSnapshot.forLocalProfile(profileManager: profileManager, tx: tx)
+        }
 
         let badge: ProfileBadge
         if let cachedBadge {

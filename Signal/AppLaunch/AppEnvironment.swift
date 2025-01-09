@@ -129,7 +129,7 @@ public class AppEnvironment: NSObject {
             }
 
             Task {
-                DonationSubscriptionManager.performMigrationToStorageServiceIfNecessary()
+                await DonationSubscriptionManager.performMigrationToStorageServiceIfNecessary()
                 do {
                     try await DonationSubscriptionManager.redeemSubscriptionIfNecessary()
                 } catch {

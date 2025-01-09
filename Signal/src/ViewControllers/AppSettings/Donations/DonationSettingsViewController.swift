@@ -142,6 +142,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     private func loadState() -> Guarantee<State> {
         let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
+        let profileManager = SSKEnvironment.shared.profileManagerRef
         let (
             subscriberID,
             hasEverRedeemedRecurringSubscriptionBadge,
@@ -149,7 +150,8 @@ class DonationSettingsViewController: OWSTableViewController2 {
             oneTimeBoostReceiptCredentialRequestError,
             hasAnyDonationReceipts,
             pendingIDEALOneTimeDonation,
-            pendingIDEALSubscription
+            pendingIDEALSubscription,
+            hasAnyBadges
         ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             let resultStore = DependenciesBridge.shared.donationReceiptCredentialResultStore
 
@@ -160,11 +162,10 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 oneTimeBoostReceiptCredentialRequestError: resultStore.getRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Read),
                 hasAnyDonationReceipts: DonationReceiptFinder.hasAny(transaction: tx),
                 idealStore.getPendingOneTimeDonation(tx: tx.asV2Read),
-                idealStore.getPendingSubscription(tx: tx.asV2Read)
+                idealStore.getPendingSubscription(tx: tx.asV2Read),
+                profileManager.localUserProfile(tx: tx)?.hasBadge == true
             )
         }
-
-        let hasAnyBadges: Bool = Self.hasAnyBadges()
 
         let subscriptionLevelsPromise = DonationViewsUtil.loadSubscriptionLevels(badgeStore: SSKEnvironment.shared.profileManagerRef.badgeStore)
         let currentSubscriptionPromise = DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
@@ -227,12 +228,6 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 return Guarantee.value(result)
             }
         }
-    }
-
-    private static func hasAnyBadges() -> Bool {
-        let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: false)
-        let allBadges = snapshot.profileBadgeInfo ?? []
-        return !allBadges.isEmpty
     }
 
     private func loadProfileBadgeLookup() -> Guarantee<ProfileBadgeLookup> {
@@ -524,7 +519,9 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 return
             }
 
-            let hasCurrentSubscription = DonationSubscriptionManager.probablyHasCurrentSubscription()
+            let hasCurrentSubscription = SSKEnvironment.shared.databaseStorageRef.read { tx -> Bool in
+                return DonationSubscriptionManager.probablyHasCurrentSubscription(tx: tx)
+            }
             Logger.info("[Gifting] Showing badge gift expiration sheet (hasCurrentSubscription: \(hasCurrentSubscription))")
             let sheet = BadgeIssueSheet(badge: profileBadge, mode: .giftBadgeExpired(hasCurrentSubscription: hasCurrentSubscription))
             sheet.delegate = self
@@ -726,18 +723,18 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
     }
 
     private func didCompleteBadgeConfiguration(_ badgeConfiguration: BadgeConfiguration, viewController: BadgeConfigurationViewController) async {
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         do {
-            let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: true)
-            let allBadges = snapshot.profileBadgeInfo ?? []
-            let oldVisibleBadges = allBadges.filter { $0.isVisible ?? true }
-            let oldVisibleBadgeIds = oldVisibleBadges.map { $0.badgeId }
+            let localProfile = databaseStorage.read { tx in profileManager.localUserProfile(tx: tx) }
+            let allBadgeIds = localProfile?.badges.map { $0.badgeId } ?? []
+            let oldVisibleBadgeIds = localProfile?.visibleBadges.map { $0.badgeId } ?? []
 
             let newVisibleBadgeIds: [String]
             switch badgeConfiguration {
             case .doNotDisplayPublicly:
                 newVisibleBadgeIds = []
             case .display(featuredBadge: let newFeaturedBadge):
-                let allBadgeIds = allBadges.map { $0.badgeId }
                 guard allBadgeIds.contains(newFeaturedBadge.badgeId) else {
                     throw OWSAssertionError("Invalid badge")
                 }

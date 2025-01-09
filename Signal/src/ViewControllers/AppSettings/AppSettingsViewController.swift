@@ -20,11 +20,13 @@ class AppSettingsViewController: OWSTableViewController2 {
     }
 
     private var localUsernameState: Usernames.LocalUsernameState!
+    private var localUserProfile: OWSUserProfile?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         SSKEnvironment.shared.databaseStorageRef.read { tx in
+            updateLocalUserProfile(tx: tx)
             localUsernameState = DependenciesBridge.shared.localUsernameManager
                 .usernameState(tx: tx.asV2Read)
         }
@@ -74,10 +76,17 @@ class AppSettingsViewController: OWSTableViewController2 {
         )
     }
 
+    private func updateLocalUserProfile(tx: SDSAnyReadTransaction) {
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        self.localUserProfile = profileManager.localUserProfile(tx: tx)
+    }
+
     @objc
     private func localProfileDidChange() {
         AssertIsOnMainThread()
 
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        databaseStorage.read(block: updateLocalUserProfile(tx:))
         updateTableContents()
     }
 
@@ -395,8 +404,6 @@ class AppSettingsViewController: OWSTableViewController2 {
 
     /// A view presenting quick info about the user's profile.
     private func profileCellProfileInfoStack() -> UIView {
-        let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: false)
-
         let profileInfoStack = UIStackView()
         profileInfoStack.axis = .vertical
         profileInfoStack.spacing = 0
@@ -404,7 +411,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         let nameLabel = UILabel()
         profileInfoStack.addArrangedSubview(nameLabel)
         nameLabel.font = UIFont.dynamicTypeTitle2Clamped.medium()
-        if let fullName = snapshot.fullName, !fullName.isEmpty {
+        if let fullName = localUserProfile?.filteredFullName?.nilIfEmpty {
             nameLabel.text = fullName
             nameLabel.textColor = Theme.primaryTextColor
         } else {
@@ -457,7 +464,7 @@ class AppSettingsViewController: OWSTableViewController2 {
             }
         }
 
-        if let bioText = OWSUserProfile.bioForDisplay(bio: snapshot.bio, bioEmoji: snapshot.bioEmoji) {
+        if let bioText = localUserProfile?.bioForDisplay {
             let bioLabel = addSubtitleLabel(
                 text: bioText,
                 textColor: Theme.secondaryTextAndIconColor

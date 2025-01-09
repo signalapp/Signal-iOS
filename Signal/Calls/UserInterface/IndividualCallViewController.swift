@@ -415,10 +415,10 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     @objc
     private func updateAvatarImage() {
-        SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            backgroundAvatarView.image = SSKEnvironment.shared.contactManagerImplRef.avatarImage(forAddress: thread.contactAddress,
-                                                                         shouldValidate: true,
-                                                                         transaction: transaction)
+        let contactManager = SSKEnvironment.shared.contactManagerImplRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        backgroundAvatarView.image = databaseStorage.read { tx in
+             return contactManager.avatarImage(forAddress: thread.contactAddress, transaction: tx)
         }
     }
 

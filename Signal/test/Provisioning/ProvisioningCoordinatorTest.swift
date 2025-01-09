@@ -152,7 +152,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
 
         XCTAssert(didSetLocalIdentifiers)
         XCTAssert(prekeyManagerMock.didFinalizeRegistrationPrekeys)
-        XCTAssertEqual(profileManagerMock.localProfileKeyMock, provisioningMessage.profileKey)
+        XCTAssertEqual(profileManagerMock.localUserProfileMock?.profileKey, provisioningMessage.profileKey)
         XCTAssertEqual(identityManagerMock.identityKeyPairs[.aci], provisioningMessage.aciIdentityKeyPair)
         XCTAssertEqual(identityManagerMock.identityKeyPairs[.pni], provisioningMessage.pniIdentityKeyPair)
         XCTAssertEqual(svrMock.syncedMasterKey, provisioningMessage.masterKey)

@@ -290,9 +290,11 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         // Profile
 
-        let profileKey = profileManager.profileKeyData(for: anyAddress, transaction: tx)
-        let profileGivenName = profileManager.unfilteredGivenName(for: anyAddress, transaction: tx)
-        let profileFamilyName = profileManager.unfilteredFamilyName(for: anyAddress, transaction: tx)
+        let userProfile = profileManager.userProfile(for: anyAddress, tx: tx)
+
+        let profileKey = userProfile?.profileKey?.keyData
+        let profileGivenName = userProfile?.givenName
+        let profileFamilyName = userProfile?.familyName
 
         if let profileKey = profileKey {
             builder.setProfileKey(profileKey)
@@ -488,7 +490,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         let localIsBlocked = blockingManager.isAddressBlocked(anyAddress, transaction: SDSDB.shimOnlyBridge(tx))
         let localIsHidden = recipientHidingManager.isHiddenAddress(anyAddress, tx: tx)
         let localIsWhitelisted = profileManager.isUser(inProfileWhitelist: anyAddress, transaction: SDSDB.shimOnlyBridge(tx))
-        let localUserProfile = profileManager.getUserProfile(for: anyAddress, transaction: SDSDB.shimOnlyBridge(tx))
+        let localUserProfile = profileManager.userProfile(for: anyAddress, tx: SDSDB.shimOnlyBridge(tx))
 
         // If our local profile key record differs from what's on the service, use the service's value.
         if let profileKey = record.profileKey, localUserProfile?.profileKey?.keyData != profileKey {
@@ -1154,8 +1156,10 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
         let localAddress = localIdentifiers.aciAddress
 
-        if let profileKey = profileManager.profileKeyData(for: localAddress, transaction: transaction) {
-            builder.setProfileKey(profileKey)
+        let localProfile = profileManager.localUserProfile(tx: transaction)
+
+        if let profileKey = localProfile?.profileKey {
+            builder.setProfileKey(profileKey.keyData)
         }
 
         let localUsernameState = localUsernameManager.usernameState(tx: transaction.asV2Read)
@@ -1177,21 +1181,14 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             }
         }
 
-        if let profileGivenName = profileManager.unfilteredGivenName(for: localAddress, transaction: transaction) {
+        if let profileGivenName = localProfile?.givenName {
             builder.setGivenName(profileGivenName)
         }
-        if let profileFamilyName = profileManager.unfilteredFamilyName(for: localAddress, transaction: transaction) {
+        if let profileFamilyName = localProfile?.familyName {
             builder.setFamilyName(profileFamilyName)
         }
-
-        if let profileAvatarUrlPath = profileManager.profileAvatarURLPath(
-            for: localAddress,
-            transaction: transaction
-        ) {
-            Logger.info("profileAvatarUrlPath: yes")
+        if let profileAvatarUrlPath = localProfile?.avatarUrlPath {
             builder.setAvatarURL(profileAvatarUrlPath)
-        } else {
-            Logger.info("profileAvatarUrlPath: no")
         }
 
         if let thread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction) {
@@ -1301,17 +1298,14 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let localAddress = localIdentifiers.aciAddress
 
         // Gather some local contact state to do comparisons against.
-        let localUserProfile = profileManager.getUserProfile(for: localAddress, transaction: transaction)
-        let localAvatarUrl = profileManager.profileAvatarURLPath(
-            for: localAddress,
-            transaction: transaction
-        )
+        let localUserProfile = profileManager.localUserProfile(tx: transaction)
+        let localAvatarUrl = localUserProfile?.avatarUrlPath
 
         // On the primary device, we only ever want to take the profile key from
         // storage service if we have no record of a local profile. This allows us
         // to restore your profile during onboarding but ensures no other device
         // can ever change the profile key other than the primary device.
-        let allowsRemoteProfileKeyChanges = !profileManager.hasLocalProfile || !isPrimaryDevice
+        let allowsRemoteProfileKeyChanges = !isPrimaryDevice || (localUserProfile?.givenName?.isEmpty != false && localUserProfile?.loadAvatarImage() == nil)
         if allowsRemoteProfileKeyChanges, let profileKey = record.profileKey, localUserProfile?.profileKey?.keyData != profileKey {
             profileManager.setProfileKeyData(
                 profileKey,

@@ -216,16 +216,20 @@ extension ContactsViewHelper {
                 )]
             }
 
-            SSKEnvironment.shared.databaseStorageRef.read { tx in
-                if let givenName = SSKEnvironment.shared.profileManagerImplRef.givenName(for: address, transaction: tx) {
-                    newContact.givenName = givenName
-                }
-                if let familyName = SSKEnvironment.shared.profileManagerImplRef.familyName(for: address, transaction: tx) {
-                    newContact.familyName = familyName
-                }
-                if let profileAvatar = SSKEnvironment.shared.profileManagerImplRef.profileAvatar(for: address, transaction: tx) {
-                    newContact.imageData = profileAvatar.pngData()
-                }
+            let profileManager = SSKEnvironment.shared.profileManagerRef
+            let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+            let userProfile = databaseStorage.read { tx in
+                return profileManager.userProfile(for: address, tx: tx)
+            }
+
+            if let givenName = userProfile?.filteredGivenName {
+                newContact.givenName = givenName
+            }
+            if let familyName = userProfile?.filteredFamilyName {
+                newContact.familyName = familyName
+            }
+            if let profileAvatar = userProfile?.loadAvatarImage() {
+                newContact.imageData = profileAvatar.pngData()
             }
 
             if let givenName = systemContactsFlow.nameComponents?.givenName {

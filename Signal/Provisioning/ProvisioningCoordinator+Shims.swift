@@ -54,7 +54,7 @@ public class _ProvisioningCoordinator_MessageFactoryWrapper: _ProvisioningCoordi
 
 public protocol _ProvisioningCoordinator_ProfileManagerShim {
 
-    func localProfileKey() -> Aes256Key
+    func localUserProfile(tx: DBReadTransaction) -> OWSUserProfile?
 
     func setLocalProfileKey(
         _ key: Aes256Key,
@@ -71,8 +71,8 @@ public class _ProvisioningCoordinator_ProfileManagerWrapper: _ProvisioningCoordi
         self.profileManager = profileManager
     }
 
-    public func localProfileKey() -> Aes256Key {
-        return profileManager.localProfileKey
+    public func localUserProfile(tx: DBReadTransaction) -> OWSUserProfile? {
+        return profileManager.localUserProfile(tx: SDSDB.shimOnlyBridge(tx))
     }
 
     public func setLocalProfileKey(

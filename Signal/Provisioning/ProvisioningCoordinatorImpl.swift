@@ -764,13 +764,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         // TODO: can we change this with atomic device linking?
         let isManualMessageFetchEnabled = true
 
-        let udAccessKey: String
-        do {
-            udAccessKey = try SMKUDAccessKey(profileKey: profileKey.keyData).keyData.base64EncodedString()
-        } catch {
-            // Crash app if UD cannot be enabled.
-            owsFail("Could not determine UD access key: \(error).")
-        }
+        let udAccessKey = SMKUDAccessKey(profileKey: profileKey).keyData.base64EncodedString()
         let allowUnrestrictedUD = udManager.shouldAllowUnrestrictedAccessLocal(tx: tx)
 
         // Historical note: secondary device registration uses the same AccountAttributes object,

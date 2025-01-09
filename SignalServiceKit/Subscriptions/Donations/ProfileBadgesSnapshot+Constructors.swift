@@ -6,16 +6,10 @@
 import Foundation
 
 public extension ProfileBadgesSnapshot {
-    static func current() -> ProfileBadgesSnapshot {
-        let profileSnapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: false)
-        return forSnapshot(profileSnapshot: profileSnapshot)
-    }
-
-    static func forSnapshot(profileSnapshot: OWSProfileSnapshot) -> ProfileBadgesSnapshot {
-        ProfileBadgesSnapshot(
-            existingBadges: (profileSnapshot.profileBadgeInfo ?? []).map {
-                ProfileBadgesSnapshot.Badge(id: $0.badgeId, isVisible: $0.isVisible ?? false)
-            }
-        )
+    static func forLocalProfile(profileManager: any ProfileManager, tx: SDSAnyReadTransaction) -> ProfileBadgesSnapshot {
+        let badgeInfos = profileManager.localUserProfile(tx: tx)?.badges ?? []
+        return ProfileBadgesSnapshot(existingBadges: badgeInfos.map {
+            return ProfileBadgesSnapshot.Badge(id: $0.badgeId, isVisible: $0.isVisible ?? false)
+        })
     }
 }

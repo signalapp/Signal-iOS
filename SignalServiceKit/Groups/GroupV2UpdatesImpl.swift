@@ -681,8 +681,9 @@ private extension GroupV2UpdatesImpl {
                     tx: transaction
                 )
             } else if
-                let profileKey = profileKeysByAci[localIdentifiers.aci],
-                profileKey != SSKEnvironment.shared.profileManagerRef.localProfileKey.keyData
+                let groupProfileKey = profileKeysByAci[localIdentifiers.aci],
+                let localProfileKey = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: transaction)?.profileKey,
+                groupProfileKey != localProfileKey.keyData
             {
                 // If the final group state includes a stale profile key for the
                 // local user, schedule an update to fix that. Note that we skip
@@ -955,7 +956,6 @@ private extension GroupV2UpdatesImpl {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
     ) async throws {
 
-        let localProfileKey = SSKEnvironment.shared.profileManagerRef.localProfileKey
         let groupV2Snapshot = snapshotResponse.groupSnapshot
 
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
@@ -963,6 +963,9 @@ private extension GroupV2UpdatesImpl {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
             let localAci = localIdentifiers.aci
+
+            let profileManager = SSKEnvironment.shared.profileManagerRef
+            let localProfileKey = profileManager.localUserProfile(tx: transaction)?.profileKey
 
             var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot, transaction: transaction)
             builder.apply(options: groupModelOptions)
@@ -1004,7 +1007,7 @@ private extension GroupV2UpdatesImpl {
 
             // If the group state includes a stale profile key for the
             // local user, schedule an update to fix that.
-            if let profileKey = groupV2Snapshot.profileKeys[localAci], profileKey != localProfileKey.keyData {
+            if let localProfileKey, let profileKey = groupV2Snapshot.profileKeys[localAci], profileKey != localProfileKey.keyData {
                 SSKEnvironment.shared.groupsV2Ref.updateLocalProfileKeyInGroup(groupId: newGroupModel.groupId, transaction: transaction)
             }
         }

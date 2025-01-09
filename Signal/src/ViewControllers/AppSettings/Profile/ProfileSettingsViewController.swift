@@ -111,17 +111,17 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
-        let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: true)
-        allBadges = snapshot.profileBadgeInfo ?? []
+        let localProfile = SSKEnvironment.shared.databaseStorageRef.read(block: SSKEnvironment.shared.profileManagerRef.localUserProfile(tx:))!
+
+        allBadges = localProfile.badges
         displayBadgesOnProfile = DonationSubscriptionManager.displayBadgesOnProfile
-        // TODO: Use `visibleBadges` when `localProfileSnapshot` is removed.
-        let visibleBadgeIds = allBadges.filter { $0.isVisible ?? true }.map { $0.badgeId }
+        let visibleBadgeIds = localProfile.visibleBadges.map { $0.badgeId }
         profileValues = ProfileValues(
-            givenName: .init(oldValue: snapshot.givenName, changedValue: .noChange),
-            familyName: .init(oldValue: snapshot.familyName, changedValue: .noChange),
-            bio: .init(oldValue: snapshot.bio, changedValue: .noChange),
-            bioEmoji: .init(oldValue: snapshot.bioEmoji, changedValue: .noChange),
-            avatarData: .init(oldValue: snapshot.avatarData, changedValue: .noChange),
+            givenName: .init(oldValue: localProfile.filteredGivenName, changedValue: .noChange),
+            familyName: .init(oldValue: localProfile.filteredFamilyName, changedValue: .noChange),
+            bio: .init(oldValue: localProfile.bio, changedValue: .noChange),
+            bioEmoji: .init(oldValue: localProfile.bioEmoji, changedValue: .noChange),
+            avatarData: .init(oldValue: localProfile.loadAvatarData(), changedValue: .noChange),
             visibleBadgeIds: .init(oldValue: visibleBadgeIds, changedValue: .noChange)
         )
 

@@ -32,7 +32,7 @@ extension Usernames {
         ) -> BetterIdentifierChecker {
             var checker = BetterIdentifierChecker(forRecipient: recipient)
 
-            let userProfile = profileManager.getUserProfile(for: recipient.address, transaction: transaction)
+            let userProfile = profileManager.userProfile(for: recipient.address, tx: transaction)
             if let userProfile, let profileNameComponents = userProfile.filteredNameComponents {
                 checker.add(profileGivenName: profileNameComponents.givenName)
                 checker.add(profileFamilyName: profileNameComponents.familyName)

@@ -182,13 +182,11 @@ public class _RegistrationCoordinator_ProfileManagerMock: _RegistrationCoordinat
 
     public init() {}
 
-    public var hasProfileNameMock: () -> Bool = { false }
+    public var localUserProfileMock: (_ tx: DBReadTransaction) -> OWSUserProfile? = { _ in nil }
 
-    public var hasProfileName: Bool { return hasProfileNameMock() }
-
-    public var localProfileKeyMock: () -> Aes256Key = { Aes256Key() }
-
-    public var localProfileKey: Aes256Key { return localProfileKeyMock() }
+    public func localUserProfile(tx: DBReadTransaction) -> OWSUserProfile? {
+        localUserProfileMock(tx)
+    }
 
     public var updateLocalProfileMock: ((
         _ givenName: OWSUserProfile.NameComponent,

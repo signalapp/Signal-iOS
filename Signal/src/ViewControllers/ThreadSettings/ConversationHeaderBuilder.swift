@@ -156,11 +156,8 @@ struct ConversationHeaderBuilder {
             transaction: transaction
         )
 
-        if !contactThread.contactAddress.isLocalAddress,
-           let bioText = SSKEnvironment.shared.profileManagerImplRef.profileBioForDisplay(
-            for: contactThread.contactAddress,
-            transaction: transaction
-           ) {
+        let address = contactThread.contactAddress
+        if !address.isLocalAddress, let bioText = SSKEnvironment.shared.profileManagerRef.userProfile(for: address, tx: transaction)?.bioForDisplay {
             let label = builder.addSubtitleLabel(text: bioText)
             label.numberOfLines = 0
             label.lineBreakMode = .byWordWrapping
@@ -561,14 +558,14 @@ extension ConversationHeaderDelegate {
     func threadName(renderLocalUserAsNoteToSelf: Bool, transaction: SDSAnyReadTransaction) -> String {
         var threadName: String
         if thread.isNoteToSelf, !renderLocalUserAsNoteToSelf {
-            threadName = SSKEnvironment.shared.profileManagerRef.localFullName ?? ""
+            let profileManager = SSKEnvironment.shared.profileManagerRef
+            threadName = profileManager.localUserProfile(tx: transaction)?.filteredFullName ?? ""
         } else {
             threadName = SSKEnvironment.shared.contactManagerRef.displayName(for: thread, transaction: transaction)
         }
 
         if let contactThread = thread as? TSContactThread {
-            if let phoneNumber = contactThread.contactAddress.phoneNumber,
-               phoneNumber == threadName {
+            if let phoneNumber = contactThread.contactAddress.phoneNumber, phoneNumber == threadName {
                 threadName = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(phoneNumber)
             }
         }

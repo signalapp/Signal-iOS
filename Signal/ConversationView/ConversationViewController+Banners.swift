@@ -84,12 +84,6 @@ public extension ConversationViewController {
         for address: SignalServiceAddress,
         tx: SDSAnyReadTransaction
     ) -> UIImage? {
-        if
-            address.isLocalAddress,
-            let profileAvatar = SSKEnvironment.shared.profileManagerRef.localProfileAvatarImage
-        {
-            return profileAvatar.resizedImage(to: CGSize(square: 24))
-        }
         return SSKEnvironment.shared.avatarBuilderRef.avatarImage(
             forAddress: address,
             diameterPoints: 24,

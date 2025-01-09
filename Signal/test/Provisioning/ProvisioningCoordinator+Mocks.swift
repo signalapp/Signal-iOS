@@ -41,10 +41,10 @@ public class _ProvisioningCoordinator_ProfileManagerMock: _ProvisioningCoordinat
 
     public init() {}
 
-    public var localProfileKeyMock: Aes256Key?
+    public var localUserProfileMock: OWSUserProfile?
 
-    public func localProfileKey() -> Aes256Key {
-        return localProfileKeyMock!
+    public func localUserProfile(tx: DBReadTransaction) -> OWSUserProfile? {
+        return localUserProfileMock!
     }
 
     public func setLocalProfileKey(
@@ -52,7 +52,24 @@ public class _ProvisioningCoordinator_ProfileManagerMock: _ProvisioningCoordinat
         userProfileWriter: UserProfileWriter,
         tx: DBWriteTransaction
     ) {
-        self.localProfileKeyMock = key
+        let localProfile = self.localUserProfileMock
+        self.localUserProfileMock = OWSUserProfile(
+            id: localProfile?.id,
+            uniqueId: localProfile?.uniqueId ?? "00000000-0000-4000-8000-000000000000",
+            serviceIdString: localProfile?.serviceIdString,
+            phoneNumber: localProfile?.phoneNumber,
+            avatarFileName: localProfile?.avatarFileName,
+            avatarUrlPath: localProfile?.avatarUrlPath,
+            profileKey: key,
+            givenName: localProfile?.givenName,
+            familyName: localProfile?.familyName,
+            bio: localProfile?.bio,
+            bioEmoji: localProfile?.bioEmoji,
+            badges: localProfile?.badges ?? [],
+            lastFetchDate: localProfile?.lastFetchDate,
+            lastMessagingDate: localProfile?.lastMessagingDate,
+            isPhoneNumberShared: localProfile?.isPhoneNumberShared
+        )
     }
 }
 

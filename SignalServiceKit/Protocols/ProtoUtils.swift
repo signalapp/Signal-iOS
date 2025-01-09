@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 // TODO: Convert to enum once no objc depends on this.
 @objc
@@ -12,24 +13,27 @@ internal class ProtoUtils: NSObject {
     @objc
     internal static func addLocalProfileKeyIfNecessary(_ thread: TSThread, dataMessageBuilder: SSKProtoDataMessageBuilder, transaction: SDSAnyReadTransaction) {
         if shouldMessageHaveLocalProfileKey(thread, transaction: transaction) {
-            dataMessageBuilder.setProfileKey(localProfileKey.keyData)
+            addLocalProfileKey(toDataMessageBuilder: dataMessageBuilder, transaction: transaction)
         }
     }
 
     @objc
-    internal static func addLocalProfileKey(toDataMessageBuilder dataMessageBuilder: SSKProtoDataMessageBuilder) {
-        dataMessageBuilder.setProfileKey(localProfileKey.keyData)
+    internal static func addLocalProfileKey(toDataMessageBuilder dataMessageBuilder: SSKProtoDataMessageBuilder, transaction: SDSAnyReadTransaction) {
+        dataMessageBuilder.setProfileKey(localProfileKey(tx: transaction).serialize().asData)
     }
 
     @objc
     internal static func addLocalProfileKeyIfNecessary(_ thread: TSThread, callMessageBuilder: SSKProtoCallMessageBuilder, transaction: SDSAnyReadTransaction) {
         if shouldMessageHaveLocalProfileKey(thread, transaction: transaction) {
-            callMessageBuilder.setProfileKey(localProfileKey.keyData)
+            callMessageBuilder.setProfileKey(localProfileKey(tx: transaction).serialize().asData)
         }
     }
 
-    private static var localProfileKey: Aes256Key {
-        SSKEnvironment.shared.profileManagerRef.localProfileKey
+    static func localProfileKey(tx: SDSAnyReadTransaction) -> ProfileKey {
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        // Force unwraps are from the original ObjC implementation. They are "safe"
+        // because we generate missing profile keys in warmCaches.
+        return ProfileKey(profileManager.localUserProfile(tx: tx)!.profileKey!)
     }
 
     private static func shouldMessageHaveLocalProfileKey(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {

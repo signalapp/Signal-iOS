@@ -9,6 +9,7 @@ public import XCTest
 
 open class SignalBaseTest: XCTestCase {
 
+    @MainActor
     public override func setUp() {
         super.setUp()
         MockSSKEnvironment.activate()

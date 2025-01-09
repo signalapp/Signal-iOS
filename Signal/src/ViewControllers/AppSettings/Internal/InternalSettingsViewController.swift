@@ -138,7 +138,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
         regSection.add(.copyableItem(label: "PNI", value: localIdentifiers?.pni?.serviceIdString))
         regSection.add(.copyableItem(label: "Device ID", value: "\(DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction)"))
         regSection.add(.copyableItem(label: "Push Token", value: SSKEnvironment.shared.preferencesRef.pushToken))
-        regSection.add(.copyableItem(label: "Profile Key", value: SSKEnvironment.shared.profileManagerRef.localProfileKey.keyData.hexadecimalString))
+        regSection.add(.copyableItem(label: "Profile Key", value: SSKEnvironment.shared.databaseStorageRef.read(block: SSKEnvironment.shared.profileManagerRef.localUserProfile(tx:))?.profileKey?.keyData.hexadecimalString ?? "none"))
         if let donationSubscriberID {
             regSection.add(.copyableItem(label: "Donation Subscriber ID", value: donationSubscriberID.asBase64Url))
         }

@@ -504,12 +504,8 @@ extension OWSContactsManager: ContactManager {
 
     // MARK: - Avatars
 
-    public func avatarImage(forAddress address: SignalServiceAddress?,
-                            shouldValidate: Bool,
-                            transaction: SDSAnyReadTransaction) -> UIImage? {
-        guard let imageData = avatarImageData(forAddress: address,
-                                              shouldValidate: shouldValidate,
-                                              transaction: transaction) else {
+    public func avatarImage(forAddress address: SignalServiceAddress?, transaction: SDSAnyReadTransaction) -> UIImage? {
+        guard let imageData = avatarImageData(forAddress: address, transaction: transaction) else {
             return nil
         }
         guard let image = UIImage(data: imageData) else {
@@ -519,98 +515,50 @@ extension OWSContactsManager: ContactManager {
         return image
     }
 
-    public func avatarImageData(forAddress address: SignalServiceAddress?,
-                                shouldValidate: Bool,
-                                transaction: SDSAnyReadTransaction) -> Data? {
-        guard let address = address,
-              address.isValid else {
-                  owsFailDebug("Missing or invalid address.")
-                  return nil
-              }
-
-        if SSKPreferences.preferContactAvatars(transaction: transaction) {
-            return (systemContactOrSyncedImageData(forAddress: address,
-                                                   shouldValidate: shouldValidate,
-                                                   transaction: transaction)
-                    ?? profileAvatarImageData(forAddress: address,
-                                              shouldValidate: shouldValidate,
-                                              transaction: transaction))
-        } else {
-            return (profileAvatarImageData(forAddress: address,
-                                           shouldValidate: shouldValidate,
-                                           transaction: transaction)
-                    ?? systemContactOrSyncedImageData(forAddress: address,
-                                                      shouldValidate: shouldValidate,
-                                                      transaction: transaction))
-        }
-    }
-
-    private func profileAvatarImageData(
-        forAddress address: SignalServiceAddress?,
-        shouldValidate: Bool,
-        transaction: SDSAnyReadTransaction
-    ) -> Data? {
-        func validateIfNecessary(_ imageData: Data) -> Data? {
-            guard shouldValidate else {
-                return imageData
-            }
-            guard imageData.ows_isValidImage else {
-                owsFailDebug("Invalid image data.")
-                return nil
-            }
-            return imageData
-        }
-
-        guard let address = address,
-              address.isValid else {
-                  owsFailDebug("Missing or invalid address.")
-                  return nil
-              }
-
-        if let avatarData = SSKEnvironment.shared.profileManagerImplRef.profileAvatarData(for: address, transaction: transaction),
-           let validData = validateIfNecessary(avatarData) {
-            return validData
-        }
-
-        return nil
-    }
-
-    private func systemContactOrSyncedImageData(
-        forAddress address: SignalServiceAddress?,
-        shouldValidate: Bool,
-        transaction: SDSAnyReadTransaction
-    ) -> Data? {
-        func validateIfNecessary(_ imageData: Data) -> Data? {
-            guard shouldValidate else {
-                return imageData
-            }
-            guard imageData.ows_isValidImage else {
-                owsFailDebug("Invalid image data.")
-                return nil
-            }
-            return imageData
-        }
-
-        guard let address, address.isValid else {
+    public func avatarImageData(forAddress address: SignalServiceAddress?, transaction: SDSAnyReadTransaction) -> Data? {
+        guard let address = address, address.isValid else {
             owsFailDebug("Missing or invalid address.")
             return nil
         }
 
+        if SSKPreferences.preferContactAvatars(transaction: transaction) {
+            return (
+                systemContactOrSyncedImageData(for: address, tx: transaction)
+                ?? profileAvatarImageData(for: address, tx: transaction)
+            )
+        } else {
+            return (
+                profileAvatarImageData(for: address, tx: transaction)
+                ?? systemContactOrSyncedImageData(for: address, tx: transaction)
+            )
+        }
+    }
+
+    private func profileAvatarImageData(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Data? {
+        return SSKEnvironment.shared.profileManagerImplRef.userProfile(for: address, tx: tx)?.loadAvatarData()
+    }
+
+    private func systemContactOrSyncedImageData(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Data? {
         guard !address.isLocalAddress else {
             // Never use system contact or synced image data for the local user
             return nil
         }
 
-        if
+        guard
             let phoneNumber = address.phoneNumber,
-            let signalAccount = self.fetchSignalAccount(forPhoneNumber: phoneNumber, transaction: transaction),
+            let signalAccount = self.fetchSignalAccount(forPhoneNumber: phoneNumber, transaction: tx),
             let cnContactId = signalAccount.cnContactId,
-            let avatarData = self.avatarData(for: cnContactId),
-            let validData = validateIfNecessary(avatarData)
-        {
-            return validData
+            let avatarData = self.avatarData(for: cnContactId)
+        else {
+            return nil
         }
-        return nil
+
+        guard avatarData.ows_isValidImage else {
+            owsFailDebug("Couldn't validate system contact avatar")
+            return nil
+        }
+
+        return avatarData
     }
 
     // MARK: - Intersection

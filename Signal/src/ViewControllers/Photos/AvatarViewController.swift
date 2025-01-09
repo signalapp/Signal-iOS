@@ -46,25 +46,15 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
     }
 
     init?(address: SignalServiceAddress, renderLocalUserAsNoteToSelf: Bool, readTx: SDSAnyReadTransaction) {
-        let diameter = UInt(UIScreen.main.bounds.size.smallerAxis)
-        guard let avatarImage: UIImage = {
-            let localUserDisplayMode: LocalUserDisplayMode = (renderLocalUserAsNoteToSelf
-                                                                ? .noteToSelf
-                                                                : .asUser)
-            if address.isLocalAddress, !renderLocalUserAsNoteToSelf {
-                if let avatar = SSKEnvironment.shared.profileManagerRef.localProfileAvatarImage {
-                    return avatar
-                }
-                return SSKEnvironment.shared.avatarBuilderRef.avatarImageForLocalUser(diameterPoints: diameter,
-                                                                                      localUserDisplayMode: localUserDisplayMode,
-                                                                                      transaction: readTx)
-            } else {
-                return SSKEnvironment.shared.avatarBuilderRef.avatarImage(forAddress: address,
-                                                                          diameterPoints: diameter,
-                                                                          localUserDisplayMode: localUserDisplayMode,
-                                                                          transaction: readTx)
-            }
-        }() else { return nil }
+        let avatarImage = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
+            forAddress: address,
+            diameterPoints: UInt(UIScreen.main.bounds.size.smallerAxis),
+            localUserDisplayMode: renderLocalUserAsNoteToSelf ? .noteToSelf : .asUser,
+            transaction: readTx
+        )
+        guard let avatarImage else {
+            return nil
+        }
 
         self.avatarImage = avatarImage
         super.init(nibName: nil, bundle: nil)

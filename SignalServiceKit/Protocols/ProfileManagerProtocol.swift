@@ -6,28 +6,14 @@
 import Foundation
 
 public protocol ProfileManagerProtocol: NSObjectProtocol {
-
-    /// - returns: true if there is a local profile with a name or avatar.
-    var hasLocalProfile: Bool { get }
-    var hasProfileName: Bool { get }
     var badgeStore: BadgeStore { get }
-    var localProfileKey: Aes256Key { get }
-    var localGivenName: String? { get }
-    var localFamilyName: String? { get }
-    var localFullName: String? { get }
-    var localProfileAvatarImage: UIImage? { get }
-    var localProfileAvatarData: Data? { get }
-    var localProfileBadgeInfo: [OWSUserProfileBadgeInfo]? { get }
 
-    /// - returns: true if there is _ANY_ local profile.
-    func localProfileExists(with transaction: SDSAnyReadTransaction) -> Bool
-    func fullName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String?
-    func getUserProfile(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSUserProfile?
-    func profileKeyData(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Data?
-    func profileKey(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Aes256Key?
-    func hasProfileAvatarData(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool
-    func profileAvatarData(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Data?
-    func profileAvatarURLPath(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String?
+    /// Fetch the profile for the local user. (It should always exist.)
+    func localUserProfile(tx: SDSAnyReadTransaction) -> OWSUserProfile?
+
+    /// Fetch the locally-cached profile for an address.
+    func userProfile(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> OWSUserProfile?
+
     func isUser(inProfileWhitelist address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool
     func normalizeRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: SDSAnyWriteTransaction)
     func isThread(inProfileWhitelist thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool
@@ -39,10 +25,6 @@ public protocol ProfileManagerProtocol: NSObjectProtocol {
     func isGroupId(inProfileWhitelist groupId: Data, transaction: SDSAnyReadTransaction) -> Bool
     func addGroupId(toProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction)
     func removeGroupId(fromProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction)
-    func warmCaches()
-
-    /// This is an internal implementation detail and should only be used by OWSUserProfile.
-    func localProfileWasUpdated(_ localUserProfile: OWSUserProfile)
 
     /// Rotates the local profile key. Intended specifically for the use case of recipient hiding.
     ///

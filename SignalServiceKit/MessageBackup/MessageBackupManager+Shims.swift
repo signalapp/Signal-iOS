@@ -116,7 +116,7 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
     }
 
     public func getUserProfile(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSUserProfile? {
-        profileManager.getUserProfile(for: address, transaction: SDSDB.shimOnlyBridge(tx))
+        profileManager.userProfile(for: address, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     public func getUserProfileForLocalUser(tx: any DBReadTransaction) -> OWSUserProfile? {
@@ -172,8 +172,6 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
             profileKey: profileKey,
             tx: sdsTx
         )
-
-        profileManager.localProfileWasUpdated(localUserProfile)
     }
 
     public func upsertOtherUserProfile(

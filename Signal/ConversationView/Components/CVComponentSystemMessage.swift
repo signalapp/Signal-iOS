@@ -1195,7 +1195,7 @@ extension CVComponentSystemMessage {
                 return nil
             }
             let newProfileName = OWSFormat.formatNameComponents(profileChangesNewNameComponents)
-            let currentProfileName = SSKEnvironment.shared.profileManagerRef.fullName(for: profileChangeAddress, transaction: transaction)
+            let currentProfileName = SSKEnvironment.shared.profileManagerRef.userProfile(for: profileChangeAddress, tx: transaction)?.filteredFullName
 
             // Only show the button if the address book contact's name is different
             // than the profile name.

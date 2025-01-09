@@ -17,13 +17,6 @@ class DebugUIProfile: DebugUIPage {
             OWSTableItem(title: "Clear Profile Whitelist") {
                 SSKEnvironment.shared.profileManagerImplRef.clearProfileWhitelist()
             },
-            OWSTableItem(title: "Log Profile Key") {
-                let localProfileKey = SSKEnvironment.shared.profileManagerImplRef.localProfileKey
-                Logger.info("localProfileKey: \(localProfileKey.keyData.hexadecimalString)")
-            },
-            OWSTableItem(title: "Regenerate Profile/ProfileKey") {
-                SSKEnvironment.shared.profileManagerImplRef.debug_regenerateLocalProfileWithSneakyTransaction()
-            },
             OWSTableItem(title: "Send Profile Key Message") { [weak self] in
                 guard self != nil else { return }
                 guard let aThread = aThread else {

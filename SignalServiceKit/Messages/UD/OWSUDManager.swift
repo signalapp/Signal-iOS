@@ -233,15 +233,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // Returns the UD access key for a given recipient
     // if we have a valid profile key for them.
     public func udAccessKey(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> SMKUDAccessKey? {
-        guard let profileKey = SSKEnvironment.shared.profileManagerRef.profileKeyData(for: SignalServiceAddress(serviceId), transaction: tx) else {
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        guard let profileKey = profileManager.userProfile(for: SignalServiceAddress(serviceId), tx: tx)?.profileKey else {
             return nil
         }
-        do {
-            return try SMKUDAccessKey(profileKey: profileKey)
-        } catch {
-            Logger.error("Could not determine udAccessKey: \(error)")
-            return nil
-        }
+        return SMKUDAccessKey(profileKey: profileKey)
     }
 
     // Returns the UD access key for sending to a given recipient or fetching a profile

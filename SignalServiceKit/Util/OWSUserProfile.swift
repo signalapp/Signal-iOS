@@ -559,12 +559,40 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         }
     }
 
-    @objc
+    public func hasAvatarData() -> Bool {
+        guard let avatarFileName = avatarFileName?.nilIfEmpty else {
+            return false
+        }
+        return FileManager.default.fileExists(atPath: Self.profileAvatarFilePath(for: avatarFileName))
+    }
+
+    public func loadAvatarData() -> Data? {
+        guard let avatarFileName else {
+            return nil
+        }
+        let avatarFileUrl = URL(fileURLWithPath: Self.profileAvatarFilePath(for: avatarFileName))
+        guard let avatarData = try? Data(contentsOf: avatarFileUrl), avatarData.ows_isValidImage else {
+            Logger.warn("Couldn't load or validate avatar image data")
+            return nil
+        }
+        return avatarData
+    }
+
+    public func loadAvatarImage() -> UIImage? {
+        guard let avatarData = loadAvatarData() else {
+            return nil
+        }
+        guard let avatarImage = UIImage(data: avatarData) else {
+            Logger.warn("Couldn't decode avatar image data")
+            return nil
+        }
+        return avatarImage
+    }
+
     public static var legacyProfileAvatarsDirPath: String {
         return OWSFileSystem.appDocumentDirectoryPath().appendingPathComponent("ProfileAvatars")
     }
 
-    @objc
     public static var sharedDataProfileAvatarsDirPath: String {
         return OWSFileSystem.appSharedDataDirectoryPath().appendingPathComponent("ProfileAvatars")
     }
@@ -600,6 +628,10 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
     // MARK: - Badges
 
+    public var hasBadge: Bool {
+        return !badges.isEmpty
+    }
+
     public var visibleBadges: [OWSUserProfileBadgeInfo] {
         return badges.filter { $0.isVisible ?? true }
     }
@@ -613,6 +645,10 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     }
 
     // MARK: - Bio
+
+    public var bioForDisplay: String? {
+        return Self.bioForDisplay(bio: bio, bioEmoji: bioEmoji)
+    }
 
     private static let bioComponentCache = LRUCache<String, String>(maxSize: 256)
     private static let unfairLock = UnfairLock()
@@ -635,7 +671,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
     /// Joins the two bio components into a single string ready for display. It
     /// filters and enforces length limits on the components.
-    @objc
     public static func bioForDisplay(bio: String?, bioEmoji: String?) -> String? {
         var components = [String]()
         // TODO: We could use EmojiWithSkinTones to check for availability of the emoji.
@@ -661,6 +696,14 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
     // MARK: - Name
 
+    public var filteredGivenName: String? { givenName?.filterForDisplay }
+
+    public var hasNonEmptyFilteredGivenName: Bool {
+        return filteredGivenName?.nilIfEmpty != nil
+    }
+
+    public var filteredFamilyName: String? { familyName?.filterForDisplay }
+
     public var nameComponents: PersonNameComponents? {
         guard let givenName = self.givenName?.strippedOrNil else {
             return nil
@@ -671,13 +714,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return result
     }
 
-    @objc
-    public var filteredGivenName: String? { givenName?.filterForDisplay }
-
-    @objc
-    public var filteredFamilyName: String? { familyName?.filterForDisplay }
-
-    @objc
     public var filteredNameComponents: PersonNameComponents? {
         guard let givenName = self.filteredGivenName?.nilIfEmpty else {
             return nil
@@ -688,7 +724,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return result
     }
 
-    @objc
     public var filteredFullName: String? {
         return filteredNameComponents.map(OWSFormat.formatNameComponents(_:))?.filterForDisplay
     }
@@ -779,18 +814,12 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
     // MARK: - Fetching & Creating
 
-    @objc
     public static func getUserProfileForLocalUser(tx: SDSAnyReadTransaction) -> OWSUserProfile? {
         return getUserProfile(for: .localUser, tx: tx)
     }
 
     public static func getUserProfile(for address: Address, tx: SDSAnyReadTransaction) -> OWSUserProfile? {
         return UserProfileFinder().userProfile(for: address, transaction: tx)
-    }
-
-    @objc
-    public static func doesLocalProfileExist(transaction tx: SDSAnyReadTransaction) -> Bool {
-        return UserProfileFinder().userProfile(for: .localUser, transaction: tx) != nil
     }
 
     public class func getOrBuildUserProfileForLocalUser(
@@ -1151,10 +1180,6 @@ extension OWSUserProfile {
 
         if let completion {
             tx.addAsyncCompletionOffMain(completion)
-        }
-
-        if case .localUser = internalAddress {
-            SSKEnvironment.shared.profileManagerRef.localProfileWasUpdated(self)
         }
 
         if case .localUser = internalAddress, case .setTo = changes.badges {

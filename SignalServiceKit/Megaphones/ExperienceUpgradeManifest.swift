@@ -636,10 +636,7 @@ extension ExperienceUpgradeManifest {
 
         switch conditionalCheck {
         case .standardDonate:
-            if
-                let localProfileBadgeInfo = SSKEnvironment.shared.profileManagerRef.localProfileBadgeInfo,
-                !localProfileBadgeInfo.isEmpty
-            {
+            if SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: tx)?.hasBadge == true {
                 // Fail the check if we currently have a badge.
                 return false
             } else if

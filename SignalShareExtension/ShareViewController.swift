@@ -282,11 +282,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             showNotRegisteredView()
             return
         }
-
-        let localProfileExists = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return SSKEnvironment.shared.profileManagerRef.localProfileExists(with: transaction)
-        }
-        guard localProfileExists else {
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let localProfile = databaseStorage.read(block: profileManager.localUserProfile(tx:))
+        guard localProfile != nil else {
             // This is a rare edge case, but we want to ensure that the user
             // has already saved their local profile key in the main app.
             showNotReadyView()

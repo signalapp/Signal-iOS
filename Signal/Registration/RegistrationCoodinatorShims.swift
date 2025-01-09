@@ -275,11 +275,10 @@ public class _RegistrationCoordinator_PreKeyManagerWrapper: _RegistrationCoordin
 
 public protocol _RegistrationCoordinator_ProfileManagerShim {
 
-    var hasProfileName: Bool { get }
+    func localUserProfile(tx: DBReadTransaction) -> OWSUserProfile?
 
     // NOTE: non-optional because OWSProfileManager generates a random key
     // if one doesn't already exist.
-    var localProfileKey: Aes256Key { get }
 
     func updateLocalProfile(
         givenName: OWSUserProfile.NameComponent,
@@ -297,9 +296,9 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
     private let manager: ProfileManager
     public init(_ manager: ProfileManager) { self.manager = manager }
 
-    public var hasProfileName: Bool { manager.hasProfileName }
-
-    public var localProfileKey: Aes256Key { manager.localProfileKey }
+    public func localUserProfile(tx: DBReadTransaction) -> OWSUserProfile? {
+        return manager.localUserProfile(tx: SDSDB.shimOnlyBridge(tx))
+    }
 
     public func updateLocalProfile(
         givenName: OWSUserProfile.NameComponent,

@@ -90,6 +90,7 @@ public class AppSetup {
         }
     }
 
+    @MainActor
     public func start(
         appContext: AppContext,
         appReadiness: AppReadiness,

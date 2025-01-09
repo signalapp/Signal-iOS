@@ -3266,27 +3266,19 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     private func loadProfileState() {
         Logger.info("")
 
-        let profileKey = deps.profileManager.localProfileKey
-        inMemoryState.profileKey = profileKey
-        let udAccessKey: SMKUDAccessKey
-        do {
-            udAccessKey = try SMKUDAccessKey(profileKey: profileKey.keyData)
-            if udAccessKey.keyData.count < 1 {
-                owsFail("Could not determine UD access key, empty key generated.")
-            }
-        } catch {
-            // Crash app if UD cannot be enabled.
-            owsFail("Could not determine UD access key: \(error).")
-        }
-        inMemoryState.udAccessKey = udAccessKey
-        inMemoryState.hasProfileName = deps.profileManager.hasProfileName
         db.read { tx in
+            let localProfile = deps.profileManager.localUserProfile(tx: tx)
+            inMemoryState.hasProfileName = localProfile?.hasNonEmptyFilteredGivenName == true
+            inMemoryState.profileKey = localProfile?.profileKey
+
             inMemoryState.phoneNumberDiscoverability =
                 deps.phoneNumberDiscoverabilityManager.phoneNumberDiscoverability(tx: tx)
 
             inMemoryState.usernameReclamationState =
                 .localUsernameStateLoaded(deps.localUsernameManager.usernameState(tx: tx))
         }
+        let udAccessKey = SMKUDAccessKey(profileKey: inMemoryState.profileKey)
+        inMemoryState.udAccessKey = udAccessKey
     }
 
     private func updateAccountAttributes(_ accountIdentity: AccountIdentity) -> Guarantee<Error?> {

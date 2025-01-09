@@ -71,7 +71,7 @@ public class DonationSubscriptionManager: NSObject {
         displayBadgesOnProfileCache.set(value)
     }
 
-    public static func performMigrationToStorageServiceIfNecessary() {
+    public static func performMigrationToStorageServiceIfNecessary() async {
         let hasMigratedToStorageService = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             subscriptionKVS.getBool(hasMigratedToStorageServiceKey, defaultValue: false, transaction: transaction.asV2Read)
         }
@@ -80,17 +80,11 @@ public class DonationSubscriptionManager: NSObject {
 
         Logger.info("[Donations] Migrating to storage service")
 
-        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             subscriptionKVS.setBool(true, key: hasMigratedToStorageServiceKey, transaction: transaction.asV2Write)
 
-            let localProfile = SSKEnvironment.shared.profileManagerImplRef.localUserProfile
-            let displayBadgesOnProfile = localProfile.badges.allSatisfy { badge in
-                badge.isVisible ?? {
-                    owsFailDebug("Local user badges should always have a non-nil visibility flag")
-                    return true
-                }()
-            }
-
+            let localProfile = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: transaction)
+            let displayBadgesOnProfile = localProfile?.badges.count == localProfile?.visibleBadges.count
             setDisplayBadgesOnProfile(displayBadgesOnProfile, transaction: transaction)
         }
 
@@ -125,20 +119,16 @@ public class DonationSubscriptionManager: NSObject {
 
     // MARK: Current subscription status
 
-    public class func currentProfileSubscriptionBadges() -> [OWSUserProfileBadgeInfo] {
-        let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: false)
-        let profileBadges = snapshot.profileBadgeInfo ?? []
-        return profileBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> OWSUserProfileBadgeInfo? in
-            guard SubscriptionBadgeIds.contains(badge.badgeId) else { return nil }
-            return badge
-        }
+    public class func currentProfileSubscriptionBadges(tx: SDSAnyReadTransaction) -> [OWSUserProfileBadgeInfo] {
+        let localProfile = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: tx)
+        return (localProfile?.badges ?? []).filter { SubscriptionBadgeIds.contains($0.badgeId) }
     }
 
     /// A low-overhead, synchronous check for whether we *probably* have a
     /// current donation subscription. Callers who need to know precise details
     /// about our subscription should use `getCurrentSubscriptionStatus`.
-    public class func probablyHasCurrentSubscription() -> Bool {
-        return !currentProfileSubscriptionBadges().isEmpty
+    public class func probablyHasCurrentSubscription(tx: SDSAnyReadTransaction) -> Bool {
+        return !currentProfileSubscriptionBadges(tx: tx).isEmpty
     }
 
     public class func getCurrentSubscriptionStatus(
@@ -1057,7 +1047,7 @@ extension DonationSubscriptionManager {
 
 extension DonationSubscriptionManager {
     public static func reconcileBadgeStates(transaction: SDSAnyWriteTransaction) {
-        let currentBadges = SSKEnvironment.shared.profileManagerImplRef.localUserProfile.badges
+        let currentBadges = SSKEnvironment.shared.profileManagerImplRef.localUserProfile(tx: transaction)?.badges ?? []
 
         let currentSubscriberBadgeIDs = currentBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> String? in
             guard SubscriptionBadgeIds.contains(badge.badgeId) else { return nil }

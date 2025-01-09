@@ -457,8 +457,9 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             if contactThread.isNoteToSelf {
                 return nil
             }
-            return SSKEnvironment.shared.profileManagerImplRef.profileBioForDisplay(for: contactThread.contactAddress,
-                                                                transaction: transaction)
+            let profileManager = SSKEnvironment.shared.profileManagerRef
+            let userProfile = profileManager.userProfile(for: contactThread.contactAddress, tx: transaction)
+            return userProfile?.bioForDisplay
         }()
 
         let detailsText = { () -> String? in

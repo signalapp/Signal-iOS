@@ -81,7 +81,9 @@ extension ConversationViewController {
         if isExpired {
             let mode: BadgeIssueSheetState.Mode
             if isRedeemed {
-                let hasCurrentSubscription = DonationSubscriptionManager.probablyHasCurrentSubscription()
+                let hasCurrentSubscription = SSKEnvironment.shared.databaseStorageRef.read { tx -> Bool in
+                    return DonationSubscriptionManager.probablyHasCurrentSubscription(tx: tx)
+                }
                 mode = .giftBadgeExpired(hasCurrentSubscription: hasCurrentSubscription)
             } else {
                 let fullName = SSKEnvironment.shared.databaseStorageRef.read { transaction -> String in
@@ -106,8 +108,14 @@ extension ConversationViewController {
 
     private func giftRedemptionSheet(incomingMessage: TSIncomingMessage, profileBadge: ProfileBadge) -> UIViewController {
         let authorAddress = incomingMessage.authorAddress
-        let shortName = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            SSKEnvironment.shared.contactManagerRef.displayName(for: authorAddress, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
+        let contactManager = SSKEnvironment.shared.contactManagerRef
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let (shortName, oldBadgesSnapshot) = databaseStorage.read { tx in
+            return (
+                contactManager.displayName(for: authorAddress, tx: tx).resolvedValue(useShortNameIfAvailable: true),
+                ProfileBadgesSnapshot.forLocalProfile(profileManager: profileManager, tx: tx)
+            )
         }
         return BadgeThanksSheet(
             newBadge: profileBadge,
@@ -116,7 +124,7 @@ extension ConversationViewController {
                 notNowAction: { [weak self] in self?.showRedeemBadgeLaterText() },
                 incomingMessage: incomingMessage
             ),
-            oldBadgesSnapshot: .current()
+            oldBadgesSnapshot: oldBadgesSnapshot
         )
     }
 

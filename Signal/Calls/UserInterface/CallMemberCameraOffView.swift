@@ -281,41 +281,31 @@ class BlurredAvatarBackgroundView: UIView {
         type: CallMemberView.MemberType,
         remoteGroupMemberDeviceState: RemoteDeviceState?
     ) {
-        let backgroundAvatarImage: UIImage?
-        var backgroundColor: UIColor?
+        let address: SignalServiceAddress
         switch type {
         case .local:
-            SSKEnvironment.shared.databaseStorageRef.read { tx in
-                guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
-                    owsFailDebug("missing local address")
-                    return
-                }
-                backgroundColor = AvatarTheme.forAddress(localAddress).backgroundColor
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard let localAddress = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
+                owsFailDebug("missing local address")
+                return
             }
-            backgroundAvatarImage = SSKEnvironment.shared.profileManagerRef.localProfileAvatarImage
+            address = localAddress
         case .remoteInGroup:
             guard let remoteGroupMemberDeviceState else { return }
-            let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: remoteGroupMemberDeviceState.address)
-            backgroundAvatarImage = image
-            backgroundColor = color
+            address = remoteGroupMemberDeviceState.address
         case .remoteInIndividual(let individualCall):
-            let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: individualCall.remoteAddress)
-            backgroundAvatarImage = image
-            backgroundColor = color
+            address = individualCall.remoteAddress
         }
-        backgroundAvatarView.image = backgroundAvatarImage
-        self.backgroundColor = backgroundColor
+        let (image, color) = self.avatarImageAndBackgroundColorWithSneakyTransaction(for: address)
+        backgroundAvatarView.image = image
+        self.backgroundColor = color
     }
 
     private func avatarImageAndBackgroundColorWithSneakyTransaction(
         for address: SignalServiceAddress
     ) -> (UIImage?, UIColor?) {
         let profileImage = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return SSKEnvironment.shared.contactManagerImplRef.avatarImage(
-                forAddress: address,
-                shouldValidate: true,
-                transaction: tx
-            )
+            return SSKEnvironment.shared.contactManagerImplRef.avatarImage(forAddress: address, transaction: tx)
         }
         return (
             profileImage,

@@ -322,11 +322,13 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             }
 
             try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx throws in
-                guard let currentProfileKey = SSKEnvironment.shared.profileManagerRef.profileKey(for: SignalServiceAddress(profileRequest.aci), transaction: tx) else {
-                    throw OWSAssertionError("Missing profile key in database.")
+                let profileManager = SSKEnvironment.shared.profileManagerRef
+                let userProfile = profileManager.userProfile(for: SignalServiceAddress(profileRequest.aci), tx: tx)
+                guard let userProfile else {
+                    throw OWSAssertionError("Missing profile in database.")
                 }
 
-                guard profileRequest.profileKey.serialize().asData == currentProfileKey.keyData else {
+                guard profileRequest.profileKey.serialize().asData == userProfile.profileKey?.keyData else {
                     Logger.warn("Profile key for versioned profile fetch does not match current profile key.")
                     return
                 }

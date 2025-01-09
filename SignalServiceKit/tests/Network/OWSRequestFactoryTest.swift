@@ -9,10 +9,9 @@ import XCTest
 @testable import SignalServiceKit
 
 class OWSRequestFactoryTest: SSKBaseTest {
-    private func getUdAccessKey() throws -> SMKUDAccessKey {
-        let profileKey = Data(count: Int(Aes256Key.keyByteLength))
-        let result = try? SMKUDAccessKey(profileKey: profileKey)
-        return try XCTUnwrap(result)
+    private func getUdAccessKey() -> SMKUDAccessKey {
+        let profileKey = Aes256Key(data: Data(count: Int(Aes256Key.keyByteLength)))!
+        return SMKUDAccessKey(profileKey: profileKey)
     }
 
     private func queryItemsAsDictionary(url: URL) throws -> [String: String] {
@@ -43,7 +42,7 @@ class OWSRequestFactoryTest: SSKBaseTest {
     // MARK: - Message requests
 
     func testSubmitMessageRequest() throws {
-        let udAccessKey = try getUdAccessKey()
+        let udAccessKey = getUdAccessKey()
 
         let serviceId = Aci.randomForTesting()
 
@@ -71,7 +70,7 @@ class OWSRequestFactoryTest: SSKBaseTest {
 
     func testSubmitMultiRecipientMessageRequest() throws {
         let ciphertext = try XCTUnwrap("hello".data(using: .utf8))
-        let udAccessKey = try getUdAccessKey()
+        let udAccessKey = getUdAccessKey()
 
         let request = OWSRequestFactory.submitMultiRecipientMessageRequest(
             ciphertext: ciphertext,

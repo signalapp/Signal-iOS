@@ -141,8 +141,12 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
     }
 
     func fetchContent() -> [GetStartedBannerEntry] {
-        SSKEnvironment.shared.databaseStorageRef.read { readTx in
-            let activeCards = Self.getActiveCards(readTx: readTx)
+        SSKEnvironment.shared.databaseStorageRef.read { readTx -> [GetStartedBannerEntry] in
+            var activeCards = Self.getActiveCards(readTx: readTx)
+
+            if activeCards.isEmpty {
+                return []
+            }
 
             let visibleThreadCount: UInt
             do {
@@ -155,22 +159,23 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
             }
 
             // If we have five or more threads, dismiss all cards
-            if activeCards.count > 0, visibleThreadCount >= 5 {
+            if visibleThreadCount >= 5 {
                 Logger.info("User has more than five threads. Dismissing Get Started banner.")
                 SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
                     Self.dismissAllCards(writeTx: writeTx)
                 }
                 return []
-            } else {
-                // Once you have an avatar, don't show the avatar builder card.
-                if SSKEnvironment.shared.profileManagerRef.localProfileAvatarData != nil {
-                    SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
-                        Self.completeCard(.avatarBuilder, writeTx: writeTx)
-                    }
-                    return activeCards.filter { $0 != .avatarBuilder }
-                }
-                return activeCards
             }
+
+            // Once you have an avatar, don't show the avatar builder card.
+            if activeCards.contains(.avatarBuilder), SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: readTx)?.loadAvatarData() != nil {
+                SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
+                    Self.completeCard(.avatarBuilder, writeTx: writeTx)
+                }
+                activeCards.removeAll(where: { $0 == .avatarBuilder })
+            }
+
+            return activeCards
         }
     }
 

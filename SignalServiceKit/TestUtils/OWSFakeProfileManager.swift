@@ -11,14 +11,6 @@ import LibSignalClient
 class OWSFakeProfileManager: NSObject {
     let badgeStore: BadgeStore = BadgeStore()
     var fakeUserProfiles: [SignalServiceAddress: OWSUserProfile]?
-    var profileKeys: [SignalServiceAddress: Aes256Key] = [:]
-    var stubbedStoriesCapabilityMap: [SignalServiceAddress: Bool] = [:]
-    let localProfileKey: Aes256Key = Aes256Key()
-    private(set) var localGivenName: String?
-    private(set) var localFamilyName: String?
-    private(set) var localFullName: String?
-    private(set) var localProfileAvatarData: Data?
-    private(set) var localProfileBadgeInfo: [OWSUserProfileBadgeInfo]?
 
     private var recipientWhitelist: Set<SignalServiceAddress> = []
     private var threadWhitelist: Set<String> = []
@@ -28,20 +20,13 @@ class OWSFakeProfileManager: NSObject {
 }
 
 extension OWSFakeProfileManager: ProfileManagerProtocol {
-    func getUserProfile(for addressParam: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
-        nil
+    func localUserProfile(tx: SDSAnyReadTransaction) -> OWSUserProfile? {
+        owsFail("Not implemented.")
     }
 
-    func fullName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
-        "some fake profile name"
-    }
-
-    func profileKeyData(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Data? {
-        profileKeys[address]?.keyData
-    }
-
-    func profileKey(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Aes256Key? {
-        profileKeys[address]
+    func userProfile(for addressParam: SignalServiceAddress, tx: SDSAnyReadTransaction) -> OWSUserProfile? {
+        owsPrecondition(!addressParam.isLocalAddress)
+        return fakeUserProfiles![addressParam]
     }
 
     func normalizeRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: SDSAnyWriteTransaction) {
@@ -91,46 +76,6 @@ extension OWSFakeProfileManager: ProfileManagerProtocol {
         }
     }
 
-    func warmCaches() {
-    }
-
-    var hasLocalProfile: Bool {
-        hasProfileName || localProfileAvatarData != nil
-    }
-
-    var hasProfileName: Bool {
-        guard let localGivenName else {
-            return false
-        }
-        return localGivenName.isEmpty
-    }
-
-    var localProfileAvatarImage: UIImage? {
-        guard let localProfileAvatarData else {
-            return nil
-        }
-        return UIImage(data: localProfileAvatarData)
-    }
-
-    func localProfileExists(with transaction: SDSAnyReadTransaction) -> Bool {
-        hasLocalProfile
-    }
-
-    func localProfileWasUpdated(_ localUserProfile: OWSUserProfile) {
-    }
-
-    func hasProfileAvatarData(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        false
-    }
-
-    func profileAvatarData(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Data? {
-        nil
-    }
-
-    func profileAvatarURLPath(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
-        nil
-    }
-
     func rotateProfileKeyUponRecipientHide(withTx tx: SDSAnyWriteTransaction) {
     }
 
@@ -139,6 +84,9 @@ extension OWSFakeProfileManager: ProfileManagerProtocol {
 }
 
 extension OWSFakeProfileManager: ProfileManager {
+    func warmCaches() {
+    }
+
     public func fetchLocalUsersProfile(authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
         return Promise(error: OWSGenericError("Not supported."))
     }
@@ -212,7 +160,25 @@ extension OWSFakeProfileManager: ProfileManager {
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction
     ) {
-        self.profileKeys[SignalServiceAddress(serviceId)] = Aes256Key(data: profileKeyData)!
+        let address = SignalServiceAddress(serviceId)
+        let userProfile = self.fakeUserProfiles![address]!
+        self.fakeUserProfiles![address] = OWSUserProfile(
+            id: userProfile.id,
+            uniqueId: userProfile.uniqueId,
+            serviceIdString: userProfile.serviceIdString,
+            phoneNumber: userProfile.phoneNumber,
+            avatarFileName: userProfile.avatarFileName,
+            avatarUrlPath: userProfile.avatarUrlPath,
+            profileKey: Aes256Key(data: profileKeyData)!,
+            givenName: userProfile.givenName,
+            familyName: userProfile.familyName,
+            bio: userProfile.bio,
+            bioEmoji: userProfile.bioEmoji,
+            badges: userProfile.badges,
+            lastFetchDate: userProfile.lastFetchDate,
+            lastMessagingDate: userProfile.lastMessagingDate,
+            isPhoneNumberShared: userProfile.isPhoneNumberShared
+        )
     }
 
     public func fillInProfileKeys(

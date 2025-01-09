@@ -28,19 +28,10 @@ class OWSUDManagerTest: SSKBaseTest {
             )
         }
 
-        // Configure UDManager
-        self.write { transaction in
-            SSKEnvironment.shared.profileManagerRef.setProfileKeyData(
-                Aes256Key.generateRandom().keyData,
-                for: localIdentifiers.aci,
-                onlyFillInIfMissing: false,
-                shouldFetchProfile: true,
-                userProfileWriter: .tests,
-                localIdentifiers: localIdentifiers,
-                authedAccount: .implicit(),
-                tx: transaction.asV2Write
-            )
-        }
+        let profileManager = SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager
+        profileManager.fakeUserProfiles = [
+            localIdentifiers.aciAddress: OWSUserProfile(address: .localUser, profileKey: Aes256Key.generateRandom()),
+        ]
     }
 
     // MARK: - Tests
@@ -102,19 +93,10 @@ class OWSUDManagerTest: SSKBaseTest {
             udManagerImpl.setUnidentifiedAccessMode(.enabled, for: localIdentifiers.aci, tx: tx)
         }
 
+        let profileManager = SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager
+
         let bobRecipientAci = Aci.randomForTesting()
-        self.write { transaction in
-            SSKEnvironment.shared.profileManagerRef.setProfileKeyData(
-                Aes256Key.generateRandom().keyData,
-                for: bobRecipientAci,
-                onlyFillInIfMissing: false,
-                shouldFetchProfile: true,
-                userProfileWriter: .tests,
-                localIdentifiers: localIdentifiers,
-                authedAccount: .implicit(),
-                tx: transaction.asV2Write
-            )
-        }
+        profileManager.fakeUserProfiles![SignalServiceAddress(bobRecipientAci)] = OWSUserProfile(address: .otherUser(SignalServiceAddress(bobRecipientAci)), profileKey: Aes256Key.generateRandom())
 
         write { tx in
             let udAccess = udManagerImpl.udAccess(for: bobRecipientAci, tx: tx)!

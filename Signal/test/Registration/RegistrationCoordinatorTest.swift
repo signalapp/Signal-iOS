@@ -3813,7 +3813,25 @@ public class RegistrationCoordinatorTest {
 
     private func setAllProfileInfo() {
         phoneNumberDiscoverabilityManagerMock.phoneNumberDiscoverabilityMock = { .everybody }
-        profileManagerMock.hasProfileNameMock = { true }
+        profileManagerMock.localUserProfileMock = { _ in
+            return OWSUserProfile(
+                id: nil,
+                uniqueId: "00000000-0000-4000-8000-000000000000",
+                serviceIdString: nil,
+                phoneNumber: nil,
+                avatarFileName: nil,
+                avatarUrlPath: nil,
+                profileKey: Aes256Key(data: Data(count: 32))!,
+                givenName: "Johnny",
+                familyName: "McJohnface",
+                bio: nil,
+                bioEmoji: nil,
+                badges: [],
+                lastFetchDate: Date(timeIntervalSince1970: 1735689600),
+                lastMessagingDate: nil,
+                isPhoneNumberShared: false
+            )
+        }
     }
 
     private static func attributesFromCreateAccountRequest(

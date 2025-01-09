@@ -126,12 +126,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         }
 
         let builder = SSKProtoStoryMessage.builder()
-        if let profileKey = SSKEnvironment.shared.profileManagerRef.profileKeyData(
-            for: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress,
-            transaction: transaction
-        ) {
-            builder.setProfileKey(profileKey)
-        }
+        builder.setProfileKey(ProtoUtils.localProfileKey(tx: transaction).serialize().asData)
 
         switch storyMessage.attachment {
         case .media:

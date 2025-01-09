@@ -853,9 +853,9 @@ public enum ConversationAvatarDataSource: Equatable, CustomStringConvertible {
             return nil
         }
 
-        let primaryBadge: ProfileBadge? = performWithTransaction(transaction) {
-            let userProfile = SSKEnvironment.shared.profileManagerRef.getUserProfile(for: targetAddress, transaction: $0)
-            return userProfile?.primaryBadge?.fetchBadgeContent(transaction: $0)
+        let primaryBadge: ProfileBadge? = performWithTransaction(transaction) { tx in
+            let userProfile: OWSUserProfile? = SSKEnvironment.shared.profileManagerRef.userProfile(for: targetAddress, tx: tx)
+            return userProfile?.primaryBadge?.fetchBadgeContent(transaction: tx)
         }
         guard let badgeAssets = primaryBadge?.assets else { return nil }
         return configuration.sizeClass.fetchImageFromBadgeAssets(badgeAssets)

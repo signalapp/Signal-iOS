@@ -240,8 +240,9 @@ class ContactAboutSheet: StackSheetViewController {
     private var secondaryName: String?
     private func updateContactNames(tx: SDSAnyReadTransaction) {
         if isLocalUser {
-            let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: false)
-            self.displayName = snapshot.fullName ?? ""
+            let profileManager = SSKEnvironment.shared.profileManagerRef
+            let localUserProfile = profileManager.localUserProfile(tx: tx)
+            self.displayName = localUserProfile?.filteredFullName ?? ""
             // contactShortName not needed for local user
             return
         }
@@ -300,7 +301,9 @@ class ContactAboutSheet: StackSheetViewController {
 
     private var profileBio: String?
     private func updateProfileBio(tx: SDSAnyReadTransaction) {
-        profileBio = SSKEnvironment.shared.profileManagerImplRef.profileBioForDisplay(for: thread.contactAddress, transaction: tx)
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let userProfile = profileManager.userProfile(for: thread.contactAddress, tx: tx)
+        profileBio = userProfile?.bioForDisplay
     }
 
     // MARK: Connection

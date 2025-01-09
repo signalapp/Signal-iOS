@@ -185,8 +185,8 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
 
     // Objective-C doesn't honor default arguments.
     @objc
-    public func addAsyncCompletionOnMain(_ block: @escaping () -> Void) {
-        addAsyncCompletion(queue: .main, block: block)
+    public func addAsyncCompletionOnMain(_ block: @escaping @MainActor () -> Void) {
+        addAsyncCompletion(queue: .main, block: { MainActor.assumeIsolated(block) })
     }
 
     // Objective-C doesn't honor default arguments.

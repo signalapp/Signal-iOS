@@ -130,10 +130,10 @@ public class ProfileFetcherJob {
         let (profileKey, udAccess, shouldRequestCredential) = try db.read { (tx) -> (ProfileKey?, OWSUDAccess?, Bool) in
             switch serviceId.concreteType {
             case .aci(let aci):
-                let profileKey = try self.profileManager.profileKey(
+                let profileKey = (self.profileManager.userProfile(
                     for: SignalServiceAddress(aci),
-                    transaction: SDSDB.shimOnlyBridge(tx)
-                ).map { try ProfileKey(contents: [UInt8]($0.keyData)) }
+                    tx: SDSDB.shimOnlyBridge(tx)
+                )?.profileKey).map(ProfileKey.init(_:))
                 let udAccess: OWSUDAccess?
                 if localIdentifiers.aci == aci {
                     // Don't use UD for "self" profile fetches.
@@ -237,14 +237,11 @@ public class ProfileFetcherJob {
         }
         let profileAddress = SignalServiceAddress(fetchedProfile.profile.serviceId)
         let didAlreadyDownloadAvatar = db.read { tx -> Bool in
-            let oldAvatarUrlPath = profileManager.profileAvatarURLPath(
-                for: profileAddress,
-                transaction: SDSDB.shimOnlyBridge(tx)
-            )
-            return (
-                oldAvatarUrlPath == newAvatarUrlPath
-                && profileManager.hasProfileAvatarData(profileAddress, transaction: SDSDB.shimOnlyBridge(tx))
-            )
+            let userProfile = profileManager.userProfile(for: profileAddress, tx: SDSDB.shimOnlyBridge(tx))
+            guard let userProfile else {
+                return false
+            }
+            return userProfile.avatarUrlPath == newAvatarUrlPath && userProfile.hasAvatarData()
         }
         if didAlreadyDownloadAvatar {
             return AvatarDownloadResult(remoteRelativePath: .noChange, localFileUrl: .noChange)

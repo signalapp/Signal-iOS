@@ -739,9 +739,10 @@ extension ConversationSettingsViewController {
 
                     if isVerified {
                         configuration.useVerifiedSubtitle()
-                    } else if !memberAddress.isLocalAddress,
-                              let bioForDisplay = (SSKEnvironment.shared.profileManagerImplRef.profileBioForDisplay(for: memberAddress,
-                                                                                                transaction: transaction)) {
+                    } else if
+                        !memberAddress.isLocalAddress,
+                        let bioForDisplay = SSKEnvironment.shared.profileManagerImplRef.userProfile(for: memberAddress, tx: transaction)?.bioForDisplay
+                    {
                         configuration.attributedSubtitle = NSAttributedString(string: bioForDisplay)
                     } else {
                         owsAssertDebug(configuration.attributedSubtitle == nil)

@@ -78,6 +78,7 @@ public enum OptionalAvatarChange<Wrapped: Equatable>: Equatable {
 }
 
 public protocol ProfileManager: ProfileManagerProtocol {
+    func warmCaches()
 
     // MARK: -
 

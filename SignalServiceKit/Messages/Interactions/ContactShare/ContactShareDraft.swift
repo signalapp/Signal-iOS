@@ -95,7 +95,7 @@ public class ContactShareDraft {
                 guard let recipient else {
                     continue
                 }
-                if let avatarData = profileManager.profileAvatarData(for: recipient.address, transaction: tx) {
+                if let avatarData = profileManager.userProfile(for: recipient.address, tx: tx)?.loadAvatarData() {
                     return avatarData
                 }
             }

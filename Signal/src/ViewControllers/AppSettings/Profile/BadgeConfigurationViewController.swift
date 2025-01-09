@@ -16,7 +16,7 @@ protocol BadgeConfigurationDelegate: AnyObject {
     func badgeConfirmationDidCancel(_: BadgeConfigurationViewController)
 }
 
-class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollectionDataSource {
+final class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollectionDataSource {
     private weak var badgeConfigDelegate: BadgeConfigurationDelegate?
 
     let availableBadges: [OWSUserProfileBadgeInfo]
@@ -60,12 +60,10 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
         }
     }
 
-    convenience init(fetchingDataFromLocalProfileWithDelegate delegate: BadgeConfigurationDelegate) {
-        let snapshot = SSKEnvironment.shared.profileManagerImplRef.localProfileSnapshot(shouldIncludeAvatar: false)
-        let allBadges = snapshot.profileBadgeInfo ?? []
+    static func load(delegate: BadgeConfigurationDelegate, tx: SDSAnyReadTransaction) -> Self {
+        let badges = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: tx)?.badges ?? []
         let shouldDisplayOnProfile = DonationSubscriptionManager.displayBadgesOnProfile
-
-        self.init(availableBadges: allBadges, shouldDisplayOnProfile: shouldDisplayOnProfile, delegate: delegate)
+        return Self(availableBadges: badges, shouldDisplayOnProfile: shouldDisplayOnProfile, delegate: delegate)
     }
 
     init(availableBadges: [OWSUserProfileBadgeInfo], shouldDisplayOnProfile: Bool, avatarImage: UIImage? = nil, delegate: BadgeConfigurationDelegate) {

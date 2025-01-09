@@ -112,8 +112,7 @@ extension ComposeViewController: RecipientPickerDelegate, UsernameLinkScanDelega
             guard !address.isLocalAddress else {
                 return nil
             }
-            if let bioForDisplay = SSKEnvironment.shared.profileManagerImplRef.profileBioForDisplay(for: address,
-                                                                                transaction: transaction) {
+            if let bioForDisplay = SSKEnvironment.shared.profileManagerRef.userProfile(for: address, tx: transaction)?.bioForDisplay {
                 return NSAttributedString(string: bioForDisplay)
             }
             return nil

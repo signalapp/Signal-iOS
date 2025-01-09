@@ -771,7 +771,7 @@ public class AvatarBuilder: NSObject {
                         )
                     }
                 } else {
-                    let imageData = SSKEnvironment.shared.contactManagerImplRef.avatarImageData(forAddress: address, shouldValidate: true, transaction: transaction)
+                    let imageData = SSKEnvironment.shared.contactManagerImplRef.avatarImageData(forAddress: address, transaction: transaction)
                     if let imageData {
                         let digestString = imageData.sha1HexadecimalDigestString
                         return AvatarContentTypes(
@@ -867,7 +867,6 @@ public class AvatarBuilder: NSObject {
                 }
                 guard let imageData = SSKEnvironment.shared.contactManagerImplRef.avatarImageData(
                     forAddress: contactAddress,
-                    shouldValidate: true,
                     transaction: transaction
                 ) else {
                     return nil

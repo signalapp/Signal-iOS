@@ -12,8 +12,8 @@ public struct SMKUDAccessKey {
 
     public let keyData: Data
 
-    public init(profileKey: Data) throws {
-        self.keyData = try Data(ProfileKey(contents: [UInt8](profileKey)).deriveAccessKey())
+    public init(profileKey: Aes256Key) {
+        self.keyData = Data(ProfileKey(profileKey).deriveAccessKey())
     }
 
     private init(keyData: Data) {

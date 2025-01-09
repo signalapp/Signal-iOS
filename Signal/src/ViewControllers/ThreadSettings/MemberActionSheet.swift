@@ -395,7 +395,7 @@ extension MemberActionSheet: ConversationHeaderDelegate {
         guard avatarView != nil else { return }
         let (profile, shortName) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return (
-                SSKEnvironment.shared.profileManagerRef.getUserProfile(for: address, transaction: transaction),
+                SSKEnvironment.shared.profileManagerRef.userProfile(for: address, tx: transaction),
                 SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
             )
         }

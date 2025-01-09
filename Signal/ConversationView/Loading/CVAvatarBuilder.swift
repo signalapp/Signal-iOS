@@ -52,7 +52,7 @@ public class CVAvatarBuilder {
         let badgeImage: UIImage?
         if includingBadge {
             // TODO: Badges — Unify with ConversationAvatarDataSource
-            let userProfile = SSKEnvironment.shared.profileManagerRef.getUserProfile(for: address, transaction: transaction)
+            let userProfile = SSKEnvironment.shared.profileManagerRef.userProfile(for: address, tx: transaction)
             let sizeClass = ConversationAvatarView.Configuration.SizeClass(avatarDiameter: diameterPoints)
             let badge = userProfile?.primaryBadge?.fetchBadgeContent(transaction: transaction)
             if let badgeAssets = badge?.assets {

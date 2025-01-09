@@ -30,6 +30,11 @@ class StoryManagerTest: SSKBaseTest {
         let author = Aci.randomForTesting()
         let storyMessage = try Self.makePrivateStory()
 
+        let profileManager = SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager
+        profileManager.fakeUserProfiles = [
+            SignalServiceAddress(author): OWSUserProfile(address: .otherUser(SignalServiceAddress(author))),
+        ]
+
         try write {
             SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
@@ -243,6 +248,11 @@ class StoryManagerTest: SSKBaseTest {
 
         let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
 
+        let profileManager = SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager
+        profileManager.fakeUserProfiles = [
+            SignalServiceAddress(author): OWSUserProfile(address: .otherUser(SignalServiceAddress(author))),
+        ]
+
         try write {
             SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
@@ -278,6 +288,11 @@ class StoryManagerTest: SSKBaseTest {
 
         let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
 
+        let profileManager = SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager
+        profileManager.fakeUserProfiles = [
+            SignalServiceAddress(author): OWSUserProfile(address: .otherUser(SignalServiceAddress(author))),
+        ]
+
         try write {
             SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
@@ -311,6 +326,11 @@ class StoryManagerTest: SSKBaseTest {
         let author = Aci.randomForTesting()
         let storyMessage = try Self.makePrivateStory()
 
+        let profileManager = SSKEnvironment.shared.profileManagerRef as! OWSFakeProfileManager
+        profileManager.fakeUserProfiles = [
+            SignalServiceAddress(author): OWSUserProfile(address: .otherUser(SignalServiceAddress(author))),
+        ]
+
         try write {
             SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
@@ -326,11 +346,12 @@ class StoryManagerTest: SSKBaseTest {
                 transaction: $0
             )
 
-            let profileKey = SSKEnvironment.shared.profileManagerRef.profileKeyData(
+            let profileManager = SSKEnvironment.shared.profileManagerRef
+            let profileKey = profileManager.userProfile(
                 for: SignalServiceAddress(author),
-                transaction: $0
-            )
-            XCTAssertEqual(profileKey, storyMessage.profileKey)
+                tx: $0
+            )?.profileKey
+            XCTAssertEqual(profileKey?.keyData, storyMessage.profileKey)
         }
     }
 

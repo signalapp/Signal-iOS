@@ -421,8 +421,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         guard !address.isLocalAddress else {
             return nil
         }
-        guard let bioForDisplay = SSKEnvironment.shared.profileManagerImplRef.profileBioForDisplay(for: address,
-                                                                               transaction: transaction) else {
+        guard let bioForDisplay = SSKEnvironment.shared.profileManagerRef.userProfile(for: address, tx: transaction)?.bioForDisplay else {
             return nil
         }
         return NSAttributedString(string: bioForDisplay)

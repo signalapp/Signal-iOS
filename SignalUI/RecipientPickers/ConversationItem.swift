@@ -168,10 +168,10 @@ extension ContactConversationItem: ConversationItem {
     }
 
     var image: UIImage? {
-        SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            SSKEnvironment.shared.contactManagerImplRef.avatarImage(forAddress: self.address,
-                                                 shouldValidate: true,
-                                                 transaction: transaction)
+        let contactManager = SSKEnvironment.shared.contactManagerImplRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        return databaseStorage.read { tx in
+            return contactManager.avatarImage(forAddress: self.address, transaction: tx)
         }
     }
 

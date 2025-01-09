@@ -123,7 +123,9 @@ extension DonationSettingsViewController {
                 withText: OWSLocalizedString("DONATION_VIEW_MANAGE_BADGES", comment: "Title for the 'Badges' button on the donation screen"),
                 actionBlock: { [weak self] in
                     guard let self = self else { return }
-                    let vc = BadgeConfigurationViewController(fetchingDataFromLocalProfileWithDelegate: self)
+                    let vc = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                        return BadgeConfigurationViewController.load(delegate: self, tx: tx)
+                    }
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             ))

@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
     [builder setTimestamp:self.timestamp];
-    [ProtoUtils addLocalProfileKeyToDataMessageBuilder:builder];
+    [ProtoUtils addLocalProfileKeyToDataMessageBuilder:builder transaction:transaction];
     [builder setFlags:SSKProtoDataMessageFlagsProfileKeyUpdate];
 
     NSError *error;

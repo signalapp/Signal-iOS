@@ -8,10 +8,9 @@ import GRDB
 
 #if TESTABLE_BUILD
 
-@objc
-public class MockSSKEnvironment: NSObject {
+public class MockSSKEnvironment {
     /// Set up a mock SSK environment as well as ``DependenciesBridge``.
-    @objc
+    @MainActor
     public static func activate() {
         let testAppContext = TestAppContext()
         SetCurrentAppContext(testAppContext)
@@ -61,7 +60,6 @@ public class MockSSKEnvironment: NSObject {
         owsPrecondition(finalContinuation.isSealed)
     }
 
-    @objc
     public static func flushAndWait() {
         AssertIsOnMainThread()
 

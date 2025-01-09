@@ -176,18 +176,17 @@ public class SendPaymentViewController: OWSViewController {
         var hasProfileKeyForRecipient = false
         var hasSentMessagesToRecipient = false
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            guard nil == SSKEnvironment.shared.profileManagerRef.profileKeyData(for: recipientAddress,
-                                                            transaction: transaction) else {
+            if SSKEnvironment.shared.profileManagerRef.userProfile(for: recipientAddress, tx: transaction)?.profileKey != nil {
                 hasProfileKeyForRecipient = true
                 return
             }
-            guard let thread = TSContactThread.getWithContactAddress(recipientAddress,
-                                                                     transaction: transaction) else {
-                hasSentMessagesToRecipient = false
+            guard let thread = TSContactThread.getWithContactAddress(recipientAddress, transaction: transaction) else {
                 return
             }
             let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
-            hasSentMessagesToRecipient = 0 < interactionFinder.outgoingMessageCount(transaction: transaction)
+            if interactionFinder.outgoingMessageCount(transaction: transaction) > 0 {
+                hasSentMessagesToRecipient = true
+            }
         }
         guard hasProfileKeyForRecipient else {
             let title = OWSLocalizedString("PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE",

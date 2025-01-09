@@ -259,8 +259,13 @@ class GroupsV2ProfileKeyUpdater {
             throw GroupsV2Error.redundantChange
         }
         let profileManager = SSKEnvironment.shared.profileManagerRef
-        let profileKeyData = profileManager.localProfileKey.keyData
-        guard snapshotResponse.groupSnapshot.profileKeys[localAci] != profileKeyData else {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let profileKey = databaseStorage.read(block: profileManager.localUserProfile(tx:))?.profileKey
+        guard let profileKey else {
+            owsFailDebug("missing local profile key")
+            throw GroupsV2Error.shouldDiscard
+        }
+        guard snapshotResponse.groupSnapshot.profileKeys[localAci] != profileKey.keyData else {
             // Group state already has our current key.
             throw GroupsV2Error.redundantChange
         }

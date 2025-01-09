@@ -16,6 +16,7 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     public static let maxAvatarDiameterPixels: UInt = 1024
     public static let notificationKeyUserProfileWriter = "kNSNotificationKey_UserProfileWriter"
 
+    private let metadataStore = KeyValueStore(collection: "kOWSProfileManager_Metadata")
     private let whitelistedPhoneNumbersStore = KeyValueStore(collection: "kOWSProfileManager_UserWhitelistCollection")
     private let whitelistedServiceIdsStore = KeyValueStore(collection: "kOWSProfileManager_UserUUIDWhitelistCollection")
     private let whitelistedGroupsStore = KeyValueStore(collection: "kOWSProfileManager_GroupWhitelistCollection")
@@ -23,27 +24,18 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
 
     private let pendingUpdateRequests = AtomicValue<[OWSProfileManager.ProfileUpdateRequest]>([], lock: .init())
 
-    /// This property is used by the Swift extension to ensure that only one
-    /// profile update is in flight at a time. It should only be accessed on the
-    /// main thread.
+    /// Ensures that only one profile update is in flight at a time.
+    @MainActor
     private var isUpdatingProfileOnService: Bool = false
 
-    // The old objc code used synchronized a lock which is a recursive lock so using NSRecursiveLock here to recreate that behavior.
-    private let lock = NSRecursiveLock()
-
-    // This may not need to be @Atomic, but it was in the old code. Most of the time it's accessed while holding lock, but sometimes
-    // it is not. The pattern of use in the objc code has been replicated here for the time being.
-    @Atomic private var _localUserProfile: OWSUserProfile?
-
-    private let metadataStore = KeyValueStore(collection: "kOWSProfileManager_Metadata")
-    @Atomic private var isRotatingProfileKey: Bool = false
+    @MainActor
+    private var isRotatingProfileKey: Bool = false
 
     private let appReadiness: AppReadiness
     public let badgeStore = BadgeStore()
 
+    @MainActor
     init(appReadiness: AppReadiness, databaseStorage: SDSDatabaseStorage) {
-        AssertIsOnMainThread()
-
         self.appReadiness = appReadiness
 
         super.init()
@@ -59,102 +51,6 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reachabilityChanged(_:)), name: SSKReachability.owsReachabilityDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(blockListDidChange(_:)), name: BlockingManager.blockListDidChange, object: nil)
-    }
-
-    // MARK: - User Profile Accessor
-
-    public func warmCaches() {
-        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
-
-        // Clear out so we re-initialize if we ever re-run the "on launch" logic,
-        // such as after a completed database transfer.
-        lock.withLock {
-            _localUserProfile = nil
-        }
-
-        // Since localUserProfile can create a transaction, we want to make sure it's not called for the first
-        // time unexpectedly (e.g. in a nested transaction.)
-        _ = localUserProfile
-    }
-
-    // MARK: - Local Profile
-
-    public func localProfileWasUpdated(_ localUserProfile: OWSUserProfile) {
-        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
-        lock.withLock {
-            _localUserProfile = localUserProfile.shallowCopy()
-        }
-    }
-
-    /// This computed var should only be accessed from the main thread.
-    public var localProfileKey: Aes256Key {
-        owsAssertDebug(self.localUserProfile.profileKey?.keyData.count ?? 0 == Aes256Key.keyByteLength)
-
-        // FIXME: The objc code ignored the nullability match here; for now we've forced it with `!` but this is unsatisfactory.
-        return self.localUserProfile.profileKey!
-    }
-    /// localUserProfileExists is true if there is _ANY_ local profile.
-    /// This method should only be called from the main thread.
-    public func localProfileExists(with transaction: SDSAnyReadTransaction) -> Bool {
-        OWSUserProfile.doesLocalProfileExist(transaction: transaction)
-    }
-
-    /// hasLocalProfile is true if there is a local profile with a name or avatar.
-    public var hasLocalProfile: Bool {
-        hasProfileName || localProfileAvatarImage != nil
-    }
-
-    public var hasProfileName: Bool {
-        !localGivenName.isEmptyOrNil
-    }
-
-    public var localGivenName: String? {
-        localUserProfile.filteredGivenName
-    }
-
-    public var localFamilyName: String? {
-        localUserProfile.filteredFamilyName
-    }
-
-    public var localFullName: String? {
-        localUserProfile.filteredFullName
-    }
-
-    public var localProfileAvatarImage: UIImage? {
-        guard let avatarFileName = localUserProfile.avatarFileName else {
-            return nil
-        }
-        return loadProfileAvatar(filename: avatarFileName)
-    }
-
-    public var localProfileAvatarData: Data? {
-        guard let filename = localUserProfile.avatarFileName, !filename.isEmpty else {
-            return nil
-        }
-        return loadProfileAvatarData(filename: filename)
-    }
-
-    public var localProfileBadgeInfo: [OWSUserProfileBadgeInfo]? {
-        localUserProfile.badges
-    }
-
-    @objc(localProfileSnapshotWithShouldIncludeAvatar:)
-    public func localProfileSnapshot(shouldIncludeAvatar: Bool) -> OWSProfileSnapshot {
-        profileSnapshot(for: localUserProfile, shouldIncludeAvatar: shouldIncludeAvatar)
-    }
-
-    private func profileSnapshot(for userProfile: OWSUserProfile, shouldIncludeAvatar: Bool) -> OWSProfileSnapshot {
-        var avatarData: Data?
-        if shouldIncludeAvatar, let avatarFilename = userProfile.avatarFileName, !avatarFilename.isEmpty {
-            avatarData = loadProfileAvatarData(filename: avatarFilename)
-        }
-        return OWSProfileSnapshot(givenName: userProfile.filteredGivenName,
-                                  familyName: userProfile.filteredFamilyName,
-                                  fullName: userProfile.filteredFullName,
-                                  bio: userProfile.bio,
-                                  bioEmoji: userProfile.bioEmoji,
-                                  avatarData: avatarData,
-                                  profileBadgeInfo: userProfile.badges)
     }
 
     public static func avatarData(avatarImage image: UIImage) -> Data? {
@@ -180,71 +76,6 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
         return data
     }
 
-    private var localUserProfileShallowCopy: OWSUserProfile? {
-        lock.withLock {
-            if let _localUserProfile {
-                owsAssertDebug(_localUserProfile.profileKey != nil)
-                return _localUserProfile.shallowCopy()
-            } else {
-                return nil
-            }
-        }
-    }
-
-    // comments in objc implied this should only be used internally within this file, but making
-    // this fileprivate revealed the comments were inaccurate
-    var localUserProfile: OWSUserProfile {
-        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
-        if let localUserProfileShallowCopy {
-            return localUserProfileShallowCopy
-        }
-
-        // copied from objc; thread-safety claims are ?
-        //
-        // We create the profile outside the lock critical section to avoid any risk
-        // of deadlock. Thanks to ensureLocalProfileCached, there should be no risk
-        // of races. And races should be harmless since: a)
-        // getOrBuildUserProfileForInternalAddress is idempotent and b) we use the
-        // "update with..." pattern.
-        //
-        // We first try using a read block to avoid opening a write block.
-        if let localUserProfile = SSKEnvironment.shared.databaseStorageRef.read(block: {getLocalUserProfile($0)}) {
-            return localUserProfile.shallowCopy()
-        }
-        let localUserProfile = SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            let localUserProfile = OWSUserProfile.getOrBuildUserProfileForLocalUser(userProfileWriter: .localUser, tx: transaction)
-            owsAssertDebug(localUserProfile.profileKey != nil)
-            return localUserProfile
-        }
-        return lock.withLock {
-            _localUserProfile = localUserProfile
-            return localUserProfile.shallowCopy()
-        }
-    }
-
-    fileprivate func getLocalUserProfile(_ tx: SDSAnyReadTransaction) -> OWSUserProfile? {
-        // This appears to be kludged in here by the objc code. It's unclear why this variable
-        // has the effect it has in this function. Likely this sort of thing should not be getting
-        // called at all if migrations are not already completed, but I guess we don't have a
-        // process wide guarantee of that?
-        let migrationsAreComplete = GRDBSchemaMigrator.areMigrationsComplete
-
-        if migrationsAreComplete, let localUserProfileShallowCopy {
-            return localUserProfileShallowCopy
-        }
-
-        let localUserProfile = OWSUserProfile.getUserProfileForLocalUser(tx: tx)
-
-        if migrationsAreComplete {
-            return lock.withLock {
-                _localUserProfile = localUserProfile
-                return localUserProfile?.shallowCopy()
-            }
-        }
-
-        return localUserProfile?.shallowCopy()
-    }
-
     // MARK: - Profile Whitelist
 
     #if USE_DEBUG_UI
@@ -263,40 +94,12 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
         }
     }
 
-    public func debug_regenerateLocalProfileWithSneakyTransaction() {
-        let userProfile = localUserProfile
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            userProfile.clearProfile(profileKey: Aes256Key(), userProfileWriter: .debugging, transaction: transaction, completion: nil)
-        }
-        Task {
-            do {
-                try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: .implicit())
-            } catch {
-                Logger.error("Error: \(error)")
-            }
-        }
-    }
-
     #endif
 
     public func setLocalProfileKey(_ key: Aes256Key, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
-        let localUserProfile = lock.withLock {
-            // If it didn't exist, create it in a safe way as accessing the property
-            // will do a sneaky transaction.
-            if let _localUserProfile {
-                return _localUserProfile
-            }
-
-            // We assert on the ivar directly here, as we want this to be cached already
-            // by the time this method is called. If it's not, we've changed our caching
-            // logic and should re-evaluate this method.
-            owsFailDebug("Missing local profile when setting key.")
-            let localUserProfile = OWSUserProfile.getOrBuildUserProfileForLocalUser(userProfileWriter: .localUser, tx: transaction)
-            _localUserProfile = localUserProfile
-            return localUserProfile
-        }
+        let localUserProfile = OWSUserProfile.getOrBuildUserProfileForLocalUser(userProfileWriter: .localUser, tx: transaction)
 
         localUserProfile.update(profileKey: .setTo(key), userProfileWriter: userProfileWriter, transaction: transaction, completion: nil)
     }
@@ -551,113 +354,12 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
 
     // MARK: Other User's Profiles
 
-    public func profileKeyData(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Data? {
-        profileKey(for: address, transaction: transaction)?.keyData
+    public func localUserProfile(tx: SDSAnyReadTransaction) -> OWSUserProfile? {
+        return OWSUserProfile.getUserProfile(for: .localUser, tx: tx)
     }
 
-    public func profileKey(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Aes256Key? {
-        owsAssertDebug(address.isValid)
-        let userProfile = getUserProfile(for: address, transaction: transaction)
-        return userProfile?.profileKey
-    }
-
-    public func unfilteredGivenName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
-        owsAssertDebug(address.isValid)
-        return getUserProfile(for: address, transaction: transaction)?.givenName
-    }
-
-    public func givenName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
-        owsAssertDebug(address.isValid)
-        return getUserProfile(for: address, transaction: transaction)?.filteredGivenName
-    }
-
-    public func unfilteredFamilyName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
-        owsAssertDebug(address.isValid)
-        return getUserProfile(for: address, transaction: transaction)?.familyName
-    }
-
-    public func familyName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
-        owsAssertDebug(address.isValid)
-        return getUserProfile(for: address, transaction: transaction)?.filteredFamilyName
-    }
-
-    public func fullName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
-        owsAssertDebug(address.isValid)
-        return getUserProfile(for: address, transaction: transaction)?.filteredFullName
-    }
-
-    public func profileAvatar(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> UIImage? {
-        owsAssertDebug(address.isValid)
-        let userProfile = getUserProfile(for: address, transaction: transaction)
-        guard let avatarFileName = userProfile?.avatarFileName, !avatarFileName.isEmpty else {
-            return nil
-        }
-        return loadProfileAvatar(filename: avatarFileName)
-    }
-
-    public func hasProfileAvatarData(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        let userProfile = getUserProfile(for: address, transaction: transaction)
-        guard let avatarFileName = userProfile?.avatarFileName, !avatarFileName.isEmpty else {
-            return false
-        }
-        let filePath = OWSUserProfile.profileAvatarFilePath(for: avatarFileName)
-        return OWSFileSystem.fileOrFolderExists(atPath: filePath)
-    }
-
-    public func profileAvatarData(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Data? {
-        owsAssertDebug(address.isValid)
-        let userProfile = getUserProfile(for: address, transaction: transaction)
-        guard let avatarFileName = userProfile?.avatarFileName, !avatarFileName.isEmpty else {
-            return nil
-        }
-        return loadProfileAvatarData(filename: avatarFileName)
-    }
-
-    public func profileAvatarURLPath(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
-        owsAssertDebug(address.isValid)
-        let userProfile = getUserProfile(for: address, transaction: transaction)
-        return userProfile?.avatarUrlPath
-    }
-
-    public func profileBioForDisplay(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
-        owsAssertDebug(address.isValid)
-        let userProfile = getUserProfile(for: address, transaction: transaction)
-        return OWSUserProfile.bioForDisplay(bio: userProfile?.bio, bioEmoji: userProfile?.bioEmoji)
-    }
-
-    public func getUserProfile(for addressParam: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
-        _getUserProfile(for: addressParam, tx: transaction)
-    }
-
-    // MARK: - Avatar Disk Cache
-
-    private func loadProfileAvatarData(filename: String) -> Data? {
-        owsAssertDebug(!filename.isEmpty)
-
-        let filePath = OWSUserProfile.profileAvatarFilePath(for: filename)
-        let avatarData = try? NSData(contentsOfFile: filePath) as Data
-
-        guard let avatarData, avatarData.ows_isValidImage else {
-            Logger.warn("Failed to get valid avatar data")
-            return nil
-        }
-        return avatarData
-    }
-
-    private func loadProfileAvatar(filename: String) -> UIImage? {
-        guard !filename.isEmpty else {
-            return nil
-        }
-
-        guard let data = loadProfileAvatarData(filename: filename) else {
-            return nil
-        }
-
-        guard let image = UIImage(data: data) else {
-            Logger.warn("Could not load profile avatar.")
-            return nil
-        }
-        return image
+    public func userProfile(for addressParam: SignalServiceAddress, tx: SDSAnyReadTransaction) -> OWSUserProfile? {
+        _getUserProfile(for: addressParam, tx: tx)
     }
 
     public func rotateProfileKeyUponRecipientHide(withTx tx: SDSAnyWriteTransaction) {
@@ -667,15 +369,15 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     // MARK: - Notifications
 
     @objc
+    @MainActor
     private func applicationDidBecomeActive(_ notification: NSNotification) {
-        AssertIsOnMainThread()
         // TODO: Sync if necessary.
         updateProfileOnServiceIfNecessary(authedAccount: .implicit())
     }
 
     @objc
+    @MainActor
     private func reachabilityChanged(_ notification: NSNotification) {
-        AssertIsOnMainThread()
         updateProfileOnServiceIfNecessary(authedAccount: .implicit())
     }
 
@@ -705,6 +407,16 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
 }
 
 extension OWSProfileManager: ProfileManager {
+    public func warmCaches() {
+        // Ensure we have a local profile for the current user.
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        if databaseStorage.read(block: localUserProfile(tx:)) == nil {
+            databaseStorage.write { tx in
+                OWSUserProfile.getOrBuildUserProfileForLocalUser(userProfileWriter: .localUser, tx: tx)
+            }
+        }
+    }
+
     public func fetchLocalUsersProfile(authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
         return Promise.wrapAsync {
             let profileFetcher = SSKEnvironment.shared.profileFetcherRef
@@ -957,8 +669,10 @@ extension OWSProfileManager: ProfileManager {
             return
         }
 
-        tx.addAsyncCompletionOffMain {
-            self.rotateProfileKey(triggers: triggers, authedAccount: AuthedAccount.implicit())
+        tx.addSyncCompletion {
+            Task {
+                await self.rotateProfileKey(triggers: triggers, authedAccount: AuthedAccount.implicit())
+            }
         }
     }
 
@@ -1026,20 +740,34 @@ extension OWSProfileManager: ProfileManager {
         return .leftGroupWithHiddenOrBlockedRecipient(triggerDate)
     }
 
-    @discardableResult
+    @MainActor
     private func rotateProfileKey(
         triggers: [RotateProfileKeyTrigger],
         authedAccount: AuthedAccount
-    ) -> Promise<Void> {
+    ) async {
         guard !isRotatingProfileKey else {
-            return .value(())
+            return
         }
+        let needsAnotherRotation: Bool
+        do {
+            isRotatingProfileKey = true
+            defer {
+                isRotatingProfileKey = false
+            }
+            needsAnotherRotation = (try? await _rotateProfileKey(triggers: triggers, authedAccount: authedAccount)) ?? false
+        }
+        if needsAnotherRotation {
+            self.rotateLocalProfileKeyIfNecessary()
+        }
+    }
 
+    private func _rotateProfileKey(
+        triggers: [RotateProfileKeyTrigger],
+        authedAccount: AuthedAccount
+    ) async throws -> Bool {
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
-            return Promise(error: OWSAssertionError("tsAccountManager.isRegistered was unexpectedly false"))
+            throw OWSAssertionError("tsAccountManager.isRegistered was unexpectedly false")
         }
-
-        isRotatingProfileKey = true
 
         let rotationStartDate = Date()
 
@@ -1050,86 +778,79 @@ extension OWSProfileManager: ProfileManager {
         // we avoid a case where other devices are operating with a *new* profile
         // key that we have yet to upload a profile for.
 
-        return Promise.wrapAsync {
-            Logger.info("Reuploading profile with new profile key")
+        Logger.info("Reuploading profile with new profile key")
 
-            // We re-upload our local profile with the new profile key *before* we
-            // persist it. This is safe, because versioned profiles allow other clients
-            // to continue using our old profile key with the old version of our
-            // profile. It is possible this operation will fail, in which case we will
-            // try to rotate your profile key again on the next app launch or blocklist
-            // change and continue to use the old profile key.
+        // We re-upload our local profile with the new profile key *before* we
+        // persist it. This is safe, because versioned profiles allow other clients
+        // to continue using our old profile key with the old version of our
+        // profile. It is possible this operation will fail, in which case we will
+        // try to rotate your profile key again on the next app launch or blocklist
+        // change and continue to use the old profile key.
 
-            let newProfileKey = Aes256Key.generateRandom()
-            let uploadPromise = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                self.reuploadLocalProfile(
-                    unsavedRotatedProfileKey: newProfileKey,
-                    mustReuploadAvatar: true,
-                    authedAccount: authedAccount,
-                    tx: tx.asV2Write
-                )
-            }
-            try await uploadPromise.awaitable()
-
-            guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-                throw OWSAssertionError("Missing localAci.")
-            }
-
-            Logger.info("Persisting rotated profile key and kicking off subsequent operations.")
-
-            let needsAnotherRotation = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                self.setLocalProfileKey(
-                    newProfileKey,
-                    userProfileWriter: .localUser,
-                    transaction: tx
-                )
-
-                // Whenever a user's profile key changes, we need to fetch a new profile
-                // key credential for them.
-                SSKEnvironment.shared.versionedProfilesRef.clearProfileKeyCredential(for: AciObjC(localAci), transaction: tx)
-
-                // We schedule the updates here but process them below using
-                // processProfileKeyUpdates. It's more efficient to process them after the
-                // intermediary steps are done.
-                SSKEnvironment.shared.groupsV2Ref.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: tx)
-
-                var needsAnotherRotation = false
-
-                triggers.forEach { trigger in
-                    switch trigger {
-                    case .blocklistChange(let values):
-                        self.didRotateProfileKeyFromBlocklistTrigger(values, tx: tx)
-                    case .recipientHiding(let triggerDate):
-                        needsAnotherRotation = needsAnotherRotation || self.didRotateProfileKeyFromHidingTrigger(
-                            rotationStartDate: rotationStartDate,
-                            triggerDate: triggerDate,
-                            tx: tx
-                        )
-                    case .leftGroupWithHiddenOrBlockedRecipient(let triggerDate):
-                        needsAnotherRotation = needsAnotherRotation || self.didRotateProfileKeyFromLeaveGroupTrigger(
-                            rotationStartDate: rotationStartDate,
-                            triggerDate: triggerDate,
-                            tx: tx
-                        )
-                    }
-                }
-
-                return needsAnotherRotation
-            }
-
-            Logger.info("Updating account attributes after profile key rotation.")
-            try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: authedAccount)
-
-            Logger.info("Completed profile key rotation.")
-            SSKEnvironment.shared.groupsV2Ref.processProfileKeyUpdates()
-
-            await MainActor.run {
-                self.isRotatingProfileKey = false
-            }
-            if needsAnotherRotation {
-                self.rotateLocalProfileKeyIfNecessary()
-            }
+        let newProfileKey = Aes256Key.generateRandom()
+        let uploadPromise = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            self.reuploadLocalProfile(
+                unsavedRotatedProfileKey: newProfileKey,
+                mustReuploadAvatar: true,
+                authedAccount: authedAccount,
+                tx: tx.asV2Write
+            )
         }
+        try await uploadPromise.awaitable()
+
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
+            throw OWSAssertionError("Missing localAci.")
+        }
+
+        Logger.info("Persisting rotated profile key and kicking off subsequent operations.")
+
+        let needsAnotherRotation = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            self.setLocalProfileKey(
+                newProfileKey,
+                userProfileWriter: .localUser,
+                transaction: tx
+            )
+
+            // Whenever a user's profile key changes, we need to fetch a new profile
+            // key credential for them.
+            SSKEnvironment.shared.versionedProfilesRef.clearProfileKeyCredential(for: AciObjC(localAci), transaction: tx)
+
+            // We schedule the updates here but process them below using
+            // processProfileKeyUpdates. It's more efficient to process them after the
+            // intermediary steps are done.
+            SSKEnvironment.shared.groupsV2Ref.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: tx)
+
+            var needsAnotherRotation = false
+
+            triggers.forEach { trigger in
+                switch trigger {
+                case .blocklistChange(let values):
+                    self.didRotateProfileKeyFromBlocklistTrigger(values, tx: tx)
+                case .recipientHiding(let triggerDate):
+                    needsAnotherRotation = needsAnotherRotation || self.didRotateProfileKeyFromHidingTrigger(
+                        rotationStartDate: rotationStartDate,
+                        triggerDate: triggerDate,
+                        tx: tx
+                    )
+                case .leftGroupWithHiddenOrBlockedRecipient(let triggerDate):
+                    needsAnotherRotation = needsAnotherRotation || self.didRotateProfileKeyFromLeaveGroupTrigger(
+                        rotationStartDate: rotationStartDate,
+                        triggerDate: triggerDate,
+                        tx: tx
+                    )
+                }
+            }
+
+            return needsAnotherRotation
+        }
+
+        Logger.info("Updating account attributes after profile key rotation.")
+        try await DependenciesBridge.shared.accountAttributesUpdater.updateAccountAttributes(authedAccount: authedAccount)
+
+        Logger.info("Completed profile key rotation.")
+        SSKEnvironment.shared.groupsV2Ref.processProfileKeyUpdates()
+
+        return needsAnotherRotation
     }
 
     private func didRotateProfileKeyFromBlocklistTrigger(
@@ -1294,27 +1015,34 @@ extension OWSProfileManager: ProfileManager {
             return
         }
 
-        let hasUpdated = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            storageServiceStore.getBool(Self.hasUpdatedStorageServiceKey,
-                                        defaultValue: false,
-                                        transaction: transaction.asV2Read)
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let hasUpdated = databaseStorage.read { transaction in
+            storageServiceStore.getBool(
+                Self.hasUpdatedStorageServiceKey,
+                defaultValue: false,
+                transaction: transaction.asV2Read
+            )
         }
 
         guard !hasUpdated else {
             return
         }
 
-        if SSKEnvironment.shared.profileManagerRef.localProfileAvatarData != nil {
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let userProfile = databaseStorage.read(block: profileManager.localUserProfile(tx:))
+        if userProfile?.loadAvatarData() != nil {
             Logger.info("Scheduling a backup.")
 
             // Schedule a backup.
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
 
-        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            storageServiceStore.setBool(true,
-                                        key: Self.hasUpdatedStorageServiceKey,
-                                        transaction: transaction.asV2Write)
+        databaseStorage.write { transaction in
+            storageServiceStore.setBool(
+                true,
+                key: Self.hasUpdatedStorageServiceKey,
+                transaction: transaction.asV2Write
+            )
         }
     }
 
@@ -1424,7 +1152,7 @@ extension OWSProfileManager: ProfileManager {
         // TODO: Don't reach out to global state.
         if address.isLocalAddress {
             // For "local reads", use the local user profile.
-            return getLocalUserProfile(tx)
+            return localUserProfile(tx: tx)
         } else {
             return OWSUserProfile.getUserProfiles(for: [.otherUser(address)], tx: tx).first!
         }
@@ -1435,7 +1163,7 @@ extension OWSProfileManager: ProfileManager {
             // TODO: Don't reach out to global state.
             return address.isLocalAddress
         }, then: { localAddresses in
-            lazy var profile = { self.getLocalUserProfile(tx) }()
+            lazy var profile = { self.localUserProfile(tx: tx) }()
             return localAddresses.lazy.map { _ in profile }
         }, otherwise: { otherAddresses in
             return OWSUserProfile.getUserProfiles(for: otherAddresses.map { .otherUser($0) }, tx: tx)
@@ -1450,8 +1178,8 @@ extension OWSProfileManager: ProfileManager {
 
     // MARK: -
 
-    @objc
-    public func updateProfileOnServiceIfNecessary(authedAccount: AuthedAccount) {
+    @MainActor
+    private func updateProfileOnServiceIfNecessary(authedAccount: AuthedAccount) {
         switch _updateProfileOnServiceIfNecessary() {
         case .notReady, .updating:
             return
@@ -1478,9 +1206,8 @@ extension OWSProfileManager: ProfileManager {
     }
 
     @discardableResult
+    @MainActor
     private func _updateProfileOnServiceIfNecessary(retryDelay: TimeInterval = 1) -> UpdateProfileStatus {
-        AssertIsOnMainThread()
-
         guard appReadiness.isAppReady else {
             return .notReady
         }
@@ -1504,7 +1231,6 @@ extension OWSProfileManager: ProfileManager {
 
         let backgroundTask = OWSBackgroundTask(label: #function)
         Task { @MainActor in
-            // We must be on the MainActor to touch isUpdatingProfileOnService.
             defer {
                 isUpdatingProfileOnService = false
                 backgroundTask.end()
@@ -1582,8 +1308,10 @@ extension OWSProfileManager: ProfileManager {
         return pendingRequests.result
     }
 
+    @MainActor
     private static var avatarRepairPromise: Promise<Void>?
 
+    @MainActor
     private func repairAvatarIfNeeded(authedAccount: AuthedAccount) {
         guard CurrentAppContext().isMainApp else {
             return
@@ -1602,7 +1330,7 @@ extension OWSProfileManager: ProfileManager {
         }
         guard
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false,
-            self.localProfileAvatarData != nil
+            SSKEnvironment.shared.databaseStorageRef.read(block: SSKEnvironment.shared.profileManagerRef.localUserProfile(tx:))?.loadAvatarData() != nil
         else {
             SSKEnvironment.shared.databaseStorageRef.write { tx in clearAvatarRepairNeeded(tx: tx) }
             return
@@ -1663,14 +1391,19 @@ extension OWSProfileManager: ProfileManager {
         authedAccount: AuthedAccount
     ) async throws {
         do {
+            let userProfile = SSKEnvironment.shared.databaseStorageRef.read(
+                block: SSKEnvironment.shared.profileManagerImplRef.localUserProfile(tx:)
+            )
+            guard let userProfile else {
+                throw OWSAssertionError("Can't upload profile without profile.")
+            }
+
             let avatarUpdate = try await buildAvatarUpdate(
                 avatarChange: profileChanges.profileAvatarData,
+                localUserProfile: userProfile,
                 authedAccount: authedAccount
             )
 
-            // We capture the local user profile early to eliminate the risk of opening
-            // a transaction within a transaction.
-            let userProfile = SSKEnvironment.shared.profileManagerImplRef.localUserProfile
             guard let profileKey = newProfileKey ?? userProfile.profileKey else {
                 throw OWSAssertionError("Can't upload profile without profileKey.")
             }
@@ -1761,6 +1494,7 @@ extension OWSProfileManager: ProfileManager {
     /// changed it, so we may need to download it to re-encrypt it.
     private func buildAvatarUpdate(
         avatarChange: OptionalAvatarChange<Data?>,
+        localUserProfile: OWSUserProfile,
         authedAccount: AuthedAccount
     ) async throws -> (remoteMutation: VersionedProfileAvatarMutation, filenameChange: OptionalChange<String?>) {
         switch avatarChange {
@@ -1781,7 +1515,7 @@ extension OWSProfileManager: ProfileManager {
                 // other than blowing it away.
                 Logger.warn("Dropping unfetchable avatar: \(error)")
             }
-            if let avatarFilename = localUserProfile.avatarFileName, let avatarData = localProfileAvatarData {
+            if let avatarFilename = localUserProfile.avatarFileName, let avatarData = localUserProfile.loadAvatarData() {
                 return (.changeAvatar(avatarData), .setTo(avatarFilename))
             }
             return (.clearAvatar, .setTo(nil))
@@ -2185,7 +1919,7 @@ extension OWSProfileManager {
         }
         let shouldRetry: Bool
         do {
-            let typedProfileKey = try ProfileKey(contents: [UInt8](profileKey.keyData))
+            let typedProfileKey = ProfileKey(profileKey)
             let temporaryFileUrl = try await downloadAndDecryptAvatar(avatarUrlPath: avatarUrlPath, profileKey: typedProfileKey)
             var didConsumeFilePath = false
             defer {

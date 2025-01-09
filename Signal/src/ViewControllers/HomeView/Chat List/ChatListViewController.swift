@@ -778,7 +778,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             DonationSubscriptionManager.mostRecentlyExpiredBadgeID(transaction: transaction),
             DonationSubscriptionManager.showExpirySheetOnHomeScreenKey(transaction: transaction),
             DonationSubscriptionManager.getMostRecentSubscriptionPaymentMethod(transaction: transaction),
-            DonationSubscriptionManager.probablyHasCurrentSubscription()
+            DonationSubscriptionManager.probablyHasCurrentSubscription(tx: transaction)
         )}
 
         if
