@@ -145,13 +145,14 @@ public final class MessageReceiver {
                 guard let plaintextData else {
                     throw OWSAssertionError("Missing plaintextData.")
                 }
-                let decryptedEnvelope = DecryptedIncomingEnvelope(
+                let decryptedEnvelope = try DecryptedIncomingEnvelope(
                     validatedEnvelope: validatedEnvelope,
                     updatedEnvelope: validatedEnvelope.envelope,
                     sourceAci: sourceAci,
                     sourceDeviceId: sourceDeviceId,
                     wasReceivedByUD: wasReceivedByUD,
-                    plaintextData: plaintextData
+                    plaintextData: plaintextData,
+                    isPlaintextCipher: nil
                 )
                 checkForUnknownLinkedDevice(in: decryptedEnvelope, tx: tx)
                 let buildResult = MessageReceiverRequest.buildRequest(

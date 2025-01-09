@@ -366,6 +366,7 @@ public class OWSMessageDecrypter {
         // won't have a source.
         let (sourceAci, sourceDeviceId) = try validatedEnvelope.validateSource(Aci.self)
         let localIdentity = validatedEnvelope.localIdentity
+        let plaintextData: Data
         do {
             guard let encryptedData = validatedEnvelope.envelope.content else {
                 throw OWSError(error: .failedToDecryptMessage,
@@ -415,8 +416,8 @@ public class OWSMessageDecrypter {
                 let plaintextMessage = try PlaintextContent(bytes: encryptedData)
                 plaintext = plaintextMessage.body
 
-            // FIXME: return this to @unknown default once cipherType is represented
-            // as a finite enum.
+                // FIXME: return this to @unknown default once cipherType is represented
+                // as a finite enum.
             default:
                 owsFailDebug("Unexpected ciphertext type: \(cipherType.rawValue)")
                 throw OWSError(error: .failedToDecryptMessage,
@@ -424,27 +425,7 @@ public class OWSMessageDecrypter {
                                isRetryable: false)
             }
 
-            let plaintextData = Data(plaintext).withoutPadding()
-            let decryptedEnvelope = DecryptedIncomingEnvelope(
-                validatedEnvelope: validatedEnvelope,
-                updatedEnvelope: validatedEnvelope.envelope,
-                sourceAci: sourceAci,
-                sourceDeviceId: sourceDeviceId,
-                wasReceivedByUD: false,
-                plaintextData: plaintextData
-            )
-
-            processDecryptedEnvelope(
-                decryptedEnvelope,
-                localIdentifiers: localIdentifiers,
-                mergeRecipient: { transaction in
-                    let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-                    return recipientFetcher.fetchOrCreate(serviceId: sourceAci, tx: transaction)
-                },
-                tx: transaction.asV2Write
-            )
-
-            return decryptedEnvelope
+            plaintextData = Data(plaintext).withoutPadding()
         } catch {
             throw processError(
                 error,
@@ -460,6 +441,28 @@ public class OWSMessageDecrypter {
                 tx: transaction
             )
         }
+
+        let decryptedEnvelope = try DecryptedIncomingEnvelope(
+            validatedEnvelope: validatedEnvelope,
+            updatedEnvelope: validatedEnvelope.envelope,
+            sourceAci: sourceAci,
+            sourceDeviceId: sourceDeviceId,
+            wasReceivedByUD: false,
+            plaintextData: plaintextData,
+            isPlaintextCipher: cipherType == .plaintext
+        )
+
+        processDecryptedEnvelope(
+            decryptedEnvelope,
+            localIdentifiers: localIdentifiers,
+            mergeRecipient: { transaction in
+                let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+                return recipientFetcher.fetchOrCreate(serviceId: sourceAci, tx: transaction)
+            },
+            tx: transaction.asV2Write
+        )
+
+        return decryptedEnvelope
     }
 
     private func sendReactiveProfileKeyIfNecessary(to sourceAci: Aci, tx transaction: SDSAnyWriteTransaction) {
@@ -580,13 +583,14 @@ public class OWSMessageDecrypter {
         envelopeBuilder.setSourceServiceID(decryptResult.senderAci.serviceIdString)
         envelopeBuilder.setSourceDevice(sourceDeviceId)
 
-        let decryptedEnvelope = DecryptedIncomingEnvelope(
+        let decryptedEnvelope = try DecryptedIncomingEnvelope(
             validatedEnvelope: validatedEnvelope,
             updatedEnvelope: try envelopeBuilder.build(),
             sourceAci: decryptResult.senderAci,
             sourceDeviceId: sourceDeviceId,
             wasReceivedByUD: validatedEnvelope.envelope.sourceServiceID == nil,
-            plaintextData: decryptResult.paddedPayload.withoutPadding()
+            plaintextData: decryptResult.paddedPayload.withoutPadding(),
+            isPlaintextCipher: decryptResult.messageType == .plaintext
         )
 
         processDecryptedEnvelope(

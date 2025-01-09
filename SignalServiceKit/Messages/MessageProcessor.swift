@@ -782,13 +782,14 @@ private struct ReceivedEnvelope {
                 guard let plaintextData else {
                     throw OWSAssertionError("Missing plaintextData for previously-encrypted message.")
                 }
-                return .decryptedMessage(DecryptedIncomingEnvelope(
+                return .decryptedMessage(try DecryptedIncomingEnvelope(
                     validatedEnvelope: validatedEnvelope,
                     updatedEnvelope: envelope,
                     sourceAci: sourceAci,
                     sourceDeviceId: sourceDeviceId,
                     wasReceivedByUD: wasReceivedByUD,
-                    plaintextData: plaintextData
+                    plaintextData: plaintextData,
+                    isPlaintextCipher: nil
                 ))
             }
         }
