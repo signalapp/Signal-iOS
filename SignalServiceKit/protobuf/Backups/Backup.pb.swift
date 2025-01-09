@@ -104,9 +104,9 @@ public struct BackupProto_BackupInfo: @unchecked Sendable {
 ///    e.g. a Recipient must come before any Chat referencing it.
 /// 3. All ChatItems must appear in global Chat rendering order.
 ///    (The order in which they were received by the client.)
-/// 4. ChatFolders must appear in render order (e.g., left to right for 
+/// 4. ChatFolders must appear in render order (e.g., left to right for
 ///    LTR locales), but can appear anywhere relative to other frames respecting
-///    rule 2.
+///    rule 2 (after Recipients and Chats).
 ///
 /// Recipients, Chats, StickerPacks, AdHocCalls, and NotificationProfiles
 /// can be in any order. (But must respect rule 2.)
@@ -2208,7 +2208,7 @@ public struct BackupProto_PaymentNotification: Sendable {
       public var status: BackupProto_PaymentNotification.TransactionDetails.Transaction.Status = .initial
 
       /// This identification is used to map the payment table to the ledger
-      /// and is likely required otherwise we may have issues reconciling with 
+      /// and is likely required otherwise we may have issues reconciling with
       /// the ledger
       public var mobileCoinIdentification: BackupProto_PaymentNotification.TransactionDetails.MobileCoinTxoIdentification {
         get {return _mobileCoinIdentification ?? BackupProto_PaymentNotification.TransactionDetails.MobileCoinTxoIdentification()}
@@ -2246,7 +2246,7 @@ public struct BackupProto_PaymentNotification: Sendable {
       /// Clears the value of `blockTimestamp`. Subsequent reads from it will return its default value.
       public mutating func clearBlockTimestamp() {self._blockTimestamp = nil}
 
-      /// mobile coin blobs 
+      /// mobile coin blobs
       public var transaction: Data {
         get {return _transaction ?? Data()}
         set {_transaction = newValue}
@@ -2256,7 +2256,7 @@ public struct BackupProto_PaymentNotification: Sendable {
       /// Clears the value of `transaction`. Subsequent reads from it will return its default value.
       public mutating func clearTransaction() {self._transaction = nil}
 
-      /// mobile coin blobs 
+      /// mobile coin blobs
       public var receipt: Data {
         get {return _receipt ?? Data()}
         set {_receipt = newValue}
@@ -2446,13 +2446,9 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
   public mutating func clearAvatar() {_uniqueStorage()._avatar = nil}
 
   public var organization: String {
-    get {return _storage._organization ?? String()}
+    get {return _storage._organization}
     set {_uniqueStorage()._organization = newValue}
   }
-  /// Returns true if `organization` has been explicitly set.
-  public var hasOrganization: Bool {return _storage._organization != nil}
-  /// Clears the value of `organization`. Subsequent reads from it will return its default value.
-  public mutating func clearOrganization() {_uniqueStorage()._organization = nil}
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2461,70 +2457,21 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    public var givenName: String {
-      get {return _givenName ?? String()}
-      set {_givenName = newValue}
-    }
-    /// Returns true if `givenName` has been explicitly set.
-    public var hasGivenName: Bool {return self._givenName != nil}
-    /// Clears the value of `givenName`. Subsequent reads from it will return its default value.
-    public mutating func clearGivenName() {self._givenName = nil}
+    public var givenName: String = String()
 
-    public var familyName: String {
-      get {return _familyName ?? String()}
-      set {_familyName = newValue}
-    }
-    /// Returns true if `familyName` has been explicitly set.
-    public var hasFamilyName: Bool {return self._familyName != nil}
-    /// Clears the value of `familyName`. Subsequent reads from it will return its default value.
-    public mutating func clearFamilyName() {self._familyName = nil}
+    public var familyName: String = String()
 
-    public var prefix: String {
-      get {return _prefix ?? String()}
-      set {_prefix = newValue}
-    }
-    /// Returns true if `prefix` has been explicitly set.
-    public var hasPrefix: Bool {return self._prefix != nil}
-    /// Clears the value of `prefix`. Subsequent reads from it will return its default value.
-    public mutating func clearPrefix() {self._prefix = nil}
+    public var prefix: String = String()
 
-    public var suffix: String {
-      get {return _suffix ?? String()}
-      set {_suffix = newValue}
-    }
-    /// Returns true if `suffix` has been explicitly set.
-    public var hasSuffix: Bool {return self._suffix != nil}
-    /// Clears the value of `suffix`. Subsequent reads from it will return its default value.
-    public mutating func clearSuffix() {self._suffix = nil}
+    public var suffix: String = String()
 
-    public var middleName: String {
-      get {return _middleName ?? String()}
-      set {_middleName = newValue}
-    }
-    /// Returns true if `middleName` has been explicitly set.
-    public var hasMiddleName: Bool {return self._middleName != nil}
-    /// Clears the value of `middleName`. Subsequent reads from it will return its default value.
-    public mutating func clearMiddleName() {self._middleName = nil}
+    public var middleName: String = String()
 
-    public var nickname: String {
-      get {return _nickname ?? String()}
-      set {_nickname = newValue}
-    }
-    /// Returns true if `nickname` has been explicitly set.
-    public var hasNickname: Bool {return self._nickname != nil}
-    /// Clears the value of `nickname`. Subsequent reads from it will return its default value.
-    public mutating func clearNickname() {self._nickname = nil}
+    public var nickname: String = String()
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     public init() {}
-
-    fileprivate var _givenName: String? = nil
-    fileprivate var _familyName: String? = nil
-    fileprivate var _prefix: String? = nil
-    fileprivate var _suffix: String? = nil
-    fileprivate var _middleName: String? = nil
-    fileprivate var _nickname: String? = nil
   }
 
   public struct Phone: Sendable {
@@ -2532,32 +2479,11 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    public var value: String {
-      get {return _value ?? String()}
-      set {_value = newValue}
-    }
-    /// Returns true if `value` has been explicitly set.
-    public var hasValue: Bool {return self._value != nil}
-    /// Clears the value of `value`. Subsequent reads from it will return its default value.
-    public mutating func clearValue() {self._value = nil}
+    public var value: String = String()
 
-    public var type: BackupProto_ContactAttachment.Phone.TypeEnum {
-      get {return _type ?? .unknown}
-      set {_type = newValue}
-    }
-    /// Returns true if `type` has been explicitly set.
-    public var hasType: Bool {return self._type != nil}
-    /// Clears the value of `type`. Subsequent reads from it will return its default value.
-    public mutating func clearType() {self._type = nil}
+    public var type: BackupProto_ContactAttachment.Phone.TypeEnum = .unknown
 
-    public var label: String {
-      get {return _label ?? String()}
-      set {_label = newValue}
-    }
-    /// Returns true if `label` has been explicitly set.
-    public var hasLabel: Bool {return self._label != nil}
-    /// Clears the value of `label`. Subsequent reads from it will return its default value.
-    public mutating func clearLabel() {self._label = nil}
+    public var label: String = String()
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2608,10 +2534,6 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
     }
 
     public init() {}
-
-    fileprivate var _value: String? = nil
-    fileprivate var _type: BackupProto_ContactAttachment.Phone.TypeEnum? = nil
-    fileprivate var _label: String? = nil
   }
 
   public struct Email: Sendable {
@@ -2619,32 +2541,11 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    public var value: String {
-      get {return _value ?? String()}
-      set {_value = newValue}
-    }
-    /// Returns true if `value` has been explicitly set.
-    public var hasValue: Bool {return self._value != nil}
-    /// Clears the value of `value`. Subsequent reads from it will return its default value.
-    public mutating func clearValue() {self._value = nil}
+    public var value: String = String()
 
-    public var type: BackupProto_ContactAttachment.Email.TypeEnum {
-      get {return _type ?? .unknown}
-      set {_type = newValue}
-    }
-    /// Returns true if `type` has been explicitly set.
-    public var hasType: Bool {return self._type != nil}
-    /// Clears the value of `type`. Subsequent reads from it will return its default value.
-    public mutating func clearType() {self._type = nil}
+    public var type: BackupProto_ContactAttachment.Email.TypeEnum = .unknown
 
-    public var label: String {
-      get {return _label ?? String()}
-      set {_label = newValue}
-    }
-    /// Returns true if `label` has been explicitly set.
-    public var hasLabel: Bool {return self._label != nil}
-    /// Clears the value of `label`. Subsequent reads from it will return its default value.
-    public mutating func clearLabel() {self._label = nil}
+    public var label: String = String()
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2695,10 +2596,6 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
     }
 
     public init() {}
-
-    fileprivate var _value: String? = nil
-    fileprivate var _type: BackupProto_ContactAttachment.Email.TypeEnum? = nil
-    fileprivate var _label: String? = nil
   }
 
   public struct PostalAddress: Sendable {
@@ -2706,86 +2603,23 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    public var type: BackupProto_ContactAttachment.PostalAddress.TypeEnum {
-      get {return _type ?? .unknown}
-      set {_type = newValue}
-    }
-    /// Returns true if `type` has been explicitly set.
-    public var hasType: Bool {return self._type != nil}
-    /// Clears the value of `type`. Subsequent reads from it will return its default value.
-    public mutating func clearType() {self._type = nil}
+    public var type: BackupProto_ContactAttachment.PostalAddress.TypeEnum = .unknown
 
-    public var label: String {
-      get {return _label ?? String()}
-      set {_label = newValue}
-    }
-    /// Returns true if `label` has been explicitly set.
-    public var hasLabel: Bool {return self._label != nil}
-    /// Clears the value of `label`. Subsequent reads from it will return its default value.
-    public mutating func clearLabel() {self._label = nil}
+    public var label: String = String()
 
-    public var street: String {
-      get {return _street ?? String()}
-      set {_street = newValue}
-    }
-    /// Returns true if `street` has been explicitly set.
-    public var hasStreet: Bool {return self._street != nil}
-    /// Clears the value of `street`. Subsequent reads from it will return its default value.
-    public mutating func clearStreet() {self._street = nil}
+    public var street: String = String()
 
-    public var pobox: String {
-      get {return _pobox ?? String()}
-      set {_pobox = newValue}
-    }
-    /// Returns true if `pobox` has been explicitly set.
-    public var hasPobox: Bool {return self._pobox != nil}
-    /// Clears the value of `pobox`. Subsequent reads from it will return its default value.
-    public mutating func clearPobox() {self._pobox = nil}
+    public var pobox: String = String()
 
-    public var neighborhood: String {
-      get {return _neighborhood ?? String()}
-      set {_neighborhood = newValue}
-    }
-    /// Returns true if `neighborhood` has been explicitly set.
-    public var hasNeighborhood: Bool {return self._neighborhood != nil}
-    /// Clears the value of `neighborhood`. Subsequent reads from it will return its default value.
-    public mutating func clearNeighborhood() {self._neighborhood = nil}
+    public var neighborhood: String = String()
 
-    public var city: String {
-      get {return _city ?? String()}
-      set {_city = newValue}
-    }
-    /// Returns true if `city` has been explicitly set.
-    public var hasCity: Bool {return self._city != nil}
-    /// Clears the value of `city`. Subsequent reads from it will return its default value.
-    public mutating func clearCity() {self._city = nil}
+    public var city: String = String()
 
-    public var region: String {
-      get {return _region ?? String()}
-      set {_region = newValue}
-    }
-    /// Returns true if `region` has been explicitly set.
-    public var hasRegion: Bool {return self._region != nil}
-    /// Clears the value of `region`. Subsequent reads from it will return its default value.
-    public mutating func clearRegion() {self._region = nil}
+    public var region: String = String()
 
-    public var postcode: String {
-      get {return _postcode ?? String()}
-      set {_postcode = newValue}
-    }
-    /// Returns true if `postcode` has been explicitly set.
-    public var hasPostcode: Bool {return self._postcode != nil}
-    /// Clears the value of `postcode`. Subsequent reads from it will return its default value.
-    public mutating func clearPostcode() {self._postcode = nil}
+    public var postcode: String = String()
 
-    public var country: String {
-      get {return _country ?? String()}
-      set {_country = newValue}
-    }
-    /// Returns true if `country` has been explicitly set.
-    public var hasCountry: Bool {return self._country != nil}
-    /// Clears the value of `country`. Subsequent reads from it will return its default value.
-    public mutating func clearCountry() {self._country = nil}
+    public var country: String = String()
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2832,16 +2666,6 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
     }
 
     public init() {}
-
-    fileprivate var _type: BackupProto_ContactAttachment.PostalAddress.TypeEnum? = nil
-    fileprivate var _label: String? = nil
-    fileprivate var _street: String? = nil
-    fileprivate var _pobox: String? = nil
-    fileprivate var _neighborhood: String? = nil
-    fileprivate var _city: String? = nil
-    fileprivate var _region: String? = nil
-    fileprivate var _postcode: String? = nil
-    fileprivate var _country: String? = nil
   }
 
   public init() {}
@@ -3276,7 +3100,7 @@ public struct BackupProto_FilePointer: @unchecked Sendable {
   }
 
   /// References attachments that are invalid in such a way where download
-  /// cannot be attempted. Could range from missing digests to missing 
+  /// cannot be attempted. Could range from missing digests to missing
   /// CDN keys or anything else that makes download attempts impossible.
   /// This serves as a 'tombstone' so that the UX can show that an attachment
   /// did exist, but for whatever reason it's not retrievable.
@@ -9214,7 +9038,7 @@ extension BackupProto_ContactAttachment: SwiftProtobuf.Message, SwiftProtobuf._M
     var _email: [BackupProto_ContactAttachment.Email] = []
     var _address: [BackupProto_ContactAttachment.PostalAddress] = []
     var _avatar: BackupProto_FilePointer? = nil
-    var _organization: String? = nil
+    var _organization: String = String()
 
     #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
@@ -9286,9 +9110,9 @@ extension BackupProto_ContactAttachment: SwiftProtobuf.Message, SwiftProtobuf._M
       try { if let v = _storage._avatar {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
       } }()
-      try { if let v = _storage._organization {
-        try visitor.visitSingularStringField(value: v, fieldNumber: 7)
-      } }()
+      if !_storage._organization.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._organization, fieldNumber: 7)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -9330,50 +9154,46 @@ extension BackupProto_ContactAttachment.Name: SwiftProtobuf.Message, SwiftProtob
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self._givenName) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self._familyName) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self._prefix) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self._suffix) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self._middleName) }()
-      case 6: try { try decoder.decodeSingularStringField(value: &self._nickname) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self.givenName) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.familyName) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.prefix) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self.suffix) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self.middleName) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self.nickname) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._givenName {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    } }()
-    try { if let v = self._familyName {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
-    } }()
-    try { if let v = self._prefix {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
-    } }()
-    try { if let v = self._suffix {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
-    } }()
-    try { if let v = self._middleName {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
-    } }()
-    try { if let v = self._nickname {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 6)
-    } }()
+    if !self.givenName.isEmpty {
+      try visitor.visitSingularStringField(value: self.givenName, fieldNumber: 1)
+    }
+    if !self.familyName.isEmpty {
+      try visitor.visitSingularStringField(value: self.familyName, fieldNumber: 2)
+    }
+    if !self.prefix.isEmpty {
+      try visitor.visitSingularStringField(value: self.prefix, fieldNumber: 3)
+    }
+    if !self.suffix.isEmpty {
+      try visitor.visitSingularStringField(value: self.suffix, fieldNumber: 4)
+    }
+    if !self.middleName.isEmpty {
+      try visitor.visitSingularStringField(value: self.middleName, fieldNumber: 5)
+    }
+    if !self.nickname.isEmpty {
+      try visitor.visitSingularStringField(value: self.nickname, fieldNumber: 6)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: BackupProto_ContactAttachment.Name, rhs: BackupProto_ContactAttachment.Name) -> Bool {
-    if lhs._givenName != rhs._givenName {return false}
-    if lhs._familyName != rhs._familyName {return false}
-    if lhs._prefix != rhs._prefix {return false}
-    if lhs._suffix != rhs._suffix {return false}
-    if lhs._middleName != rhs._middleName {return false}
-    if lhs._nickname != rhs._nickname {return false}
+    if lhs.givenName != rhs.givenName {return false}
+    if lhs.familyName != rhs.familyName {return false}
+    if lhs.prefix != rhs.prefix {return false}
+    if lhs.suffix != rhs.suffix {return false}
+    if lhs.middleName != rhs.middleName {return false}
+    if lhs.nickname != rhs.nickname {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -9393,35 +9213,31 @@ extension BackupProto_ContactAttachment.Phone: SwiftProtobuf.Message, SwiftProto
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self._value) }()
-      case 2: try { try decoder.decodeSingularEnumField(value: &self._type) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self._label) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self.value) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.type) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.label) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._value {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    } }()
-    try { if let v = self._type {
-      try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
-    } }()
-    try { if let v = self._label {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
-    } }()
+    if !self.value.isEmpty {
+      try visitor.visitSingularStringField(value: self.value, fieldNumber: 1)
+    }
+    if self.type != .unknown {
+      try visitor.visitSingularEnumField(value: self.type, fieldNumber: 2)
+    }
+    if !self.label.isEmpty {
+      try visitor.visitSingularStringField(value: self.label, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: BackupProto_ContactAttachment.Phone, rhs: BackupProto_ContactAttachment.Phone) -> Bool {
-    if lhs._value != rhs._value {return false}
-    if lhs._type != rhs._type {return false}
-    if lhs._label != rhs._label {return false}
+    if lhs.value != rhs.value {return false}
+    if lhs.type != rhs.type {return false}
+    if lhs.label != rhs.label {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -9451,35 +9267,31 @@ extension BackupProto_ContactAttachment.Email: SwiftProtobuf.Message, SwiftProto
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self._value) }()
-      case 2: try { try decoder.decodeSingularEnumField(value: &self._type) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self._label) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self.value) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.type) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.label) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._value {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    } }()
-    try { if let v = self._type {
-      try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
-    } }()
-    try { if let v = self._label {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
-    } }()
+    if !self.value.isEmpty {
+      try visitor.visitSingularStringField(value: self.value, fieldNumber: 1)
+    }
+    if self.type != .unknown {
+      try visitor.visitSingularEnumField(value: self.type, fieldNumber: 2)
+    }
+    if !self.label.isEmpty {
+      try visitor.visitSingularStringField(value: self.label, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: BackupProto_ContactAttachment.Email, rhs: BackupProto_ContactAttachment.Email) -> Bool {
-    if lhs._value != rhs._value {return false}
-    if lhs._type != rhs._type {return false}
-    if lhs._label != rhs._label {return false}
+    if lhs.value != rhs.value {return false}
+    if lhs.type != rhs.type {return false}
+    if lhs.label != rhs.label {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -9515,65 +9327,61 @@ extension BackupProto_ContactAttachment.PostalAddress: SwiftProtobuf.Message, Sw
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularEnumField(value: &self._type) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self._label) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self._street) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self._pobox) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self._neighborhood) }()
-      case 6: try { try decoder.decodeSingularStringField(value: &self._city) }()
-      case 7: try { try decoder.decodeSingularStringField(value: &self._region) }()
-      case 8: try { try decoder.decodeSingularStringField(value: &self._postcode) }()
-      case 9: try { try decoder.decodeSingularStringField(value: &self._country) }()
+      case 1: try { try decoder.decodeSingularEnumField(value: &self.type) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.label) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.street) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self.pobox) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self.neighborhood) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self.city) }()
+      case 7: try { try decoder.decodeSingularStringField(value: &self.region) }()
+      case 8: try { try decoder.decodeSingularStringField(value: &self.postcode) }()
+      case 9: try { try decoder.decodeSingularStringField(value: &self.country) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._type {
-      try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
-    } }()
-    try { if let v = self._label {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
-    } }()
-    try { if let v = self._street {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
-    } }()
-    try { if let v = self._pobox {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
-    } }()
-    try { if let v = self._neighborhood {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
-    } }()
-    try { if let v = self._city {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 6)
-    } }()
-    try { if let v = self._region {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 7)
-    } }()
-    try { if let v = self._postcode {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 8)
-    } }()
-    try { if let v = self._country {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 9)
-    } }()
+    if self.type != .unknown {
+      try visitor.visitSingularEnumField(value: self.type, fieldNumber: 1)
+    }
+    if !self.label.isEmpty {
+      try visitor.visitSingularStringField(value: self.label, fieldNumber: 2)
+    }
+    if !self.street.isEmpty {
+      try visitor.visitSingularStringField(value: self.street, fieldNumber: 3)
+    }
+    if !self.pobox.isEmpty {
+      try visitor.visitSingularStringField(value: self.pobox, fieldNumber: 4)
+    }
+    if !self.neighborhood.isEmpty {
+      try visitor.visitSingularStringField(value: self.neighborhood, fieldNumber: 5)
+    }
+    if !self.city.isEmpty {
+      try visitor.visitSingularStringField(value: self.city, fieldNumber: 6)
+    }
+    if !self.region.isEmpty {
+      try visitor.visitSingularStringField(value: self.region, fieldNumber: 7)
+    }
+    if !self.postcode.isEmpty {
+      try visitor.visitSingularStringField(value: self.postcode, fieldNumber: 8)
+    }
+    if !self.country.isEmpty {
+      try visitor.visitSingularStringField(value: self.country, fieldNumber: 9)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: BackupProto_ContactAttachment.PostalAddress, rhs: BackupProto_ContactAttachment.PostalAddress) -> Bool {
-    if lhs._type != rhs._type {return false}
-    if lhs._label != rhs._label {return false}
-    if lhs._street != rhs._street {return false}
-    if lhs._pobox != rhs._pobox {return false}
-    if lhs._neighborhood != rhs._neighborhood {return false}
-    if lhs._city != rhs._city {return false}
-    if lhs._region != rhs._region {return false}
-    if lhs._postcode != rhs._postcode {return false}
-    if lhs._country != rhs._country {return false}
+    if lhs.type != rhs.type {return false}
+    if lhs.label != rhs.label {return false}
+    if lhs.street != rhs.street {return false}
+    if lhs.pobox != rhs.pobox {return false}
+    if lhs.neighborhood != rhs.neighborhood {return false}
+    if lhs.city != rhs.city {return false}
+    if lhs.region != rhs.region {return false}
+    if lhs.postcode != rhs.postcode {return false}
+    if lhs.country != rhs.country {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

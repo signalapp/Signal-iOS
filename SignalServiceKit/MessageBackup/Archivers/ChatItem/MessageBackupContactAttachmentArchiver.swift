@@ -31,7 +31,7 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
 
         switch archiveContactName(contact.name).bubbleUp(resultType, partialErrors: &partialErrors) {
         case .continue(let nameProto):
-            contactProto.name = nameProto
+            nameProto.map { contactProto.name = $0 }
         case .bubbleUpError(let errorResult):
             return errorResult
         }
@@ -95,27 +95,40 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
 
     private func archiveContactName(
         _ contactName: OWSContactName
-    ) -> MessageBackup.ArchiveInteractionResult<BackupProto_ContactAttachment.Name> {
+    ) -> MessageBackup.ArchiveInteractionResult<BackupProto_ContactAttachment.Name?> {
         var nameProto = BackupProto_ContactAttachment.Name()
-        if let givenName = contactName.givenName {
+        var setSomeName = false
+
+        if let givenName = contactName.givenName?.strippedOrNil {
             nameProto.givenName = givenName
+            setSomeName = true
         }
-        if let familyName = contactName.familyName {
+        if let familyName = contactName.familyName?.strippedOrNil {
             nameProto.familyName = familyName
+            setSomeName = true
         }
-        if let namePrefix = contactName.namePrefix {
+        if let namePrefix = contactName.namePrefix?.strippedOrNil {
             nameProto.prefix = namePrefix
+            setSomeName = true
         }
-        if let nameSuffix = contactName.nameSuffix {
+        if let nameSuffix = contactName.nameSuffix?.strippedOrNil {
             nameProto.suffix = nameSuffix
+            setSomeName = true
         }
-        if let middleName = contactName.middleName {
+        if let middleName = contactName.middleName?.strippedOrNil {
             nameProto.middleName = middleName
+            setSomeName = true
         }
-        if let nickname = contactName.nickname {
+        if let nickname = contactName.nickname?.strippedOrNil {
             nameProto.nickname = nickname
+            setSomeName = true
         }
-        return .success(nameProto)
+
+        if setSomeName {
+            return .success(nameProto)
+        } else {
+            return .success(nil)
+        }
     }
 
     private func archiveContactPhoneNumber(
@@ -214,30 +227,15 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
         var middleName: String?
         var nickname: String?
         if contactProto.hasName {
-            if contactProto.name.hasGivenName {
-                givenName = contactProto.name.givenName.stripped
-            }
-            if contactProto.name.hasFamilyName {
-                familyName = contactProto.name.familyName.stripped
-            }
-            if contactProto.name.hasPrefix {
-                namePrefix = contactProto.name.prefix.stripped
-            }
-            if contactProto.name.hasSuffix {
-                nameSuffix = contactProto.name.suffix.stripped
-            }
-            if contactProto.name.hasMiddleName {
-                middleName = contactProto.name.middleName.stripped
-            }
-            if contactProto.name.hasNickname {
-                nickname = contactProto.name.nickname.stripped
-            }
+            givenName = contactProto.name.givenName.strippedOrNil
+            familyName = contactProto.name.familyName.strippedOrNil
+            namePrefix = contactProto.name.prefix.strippedOrNil
+            nameSuffix = contactProto.name.suffix.strippedOrNil
+            middleName = contactProto.name.middleName.strippedOrNil
+            nickname = contactProto.name.nickname.strippedOrNil
         }
 
-        var organizationName: String?
-        if contactProto.hasOrganization {
-            organizationName = contactProto.organization.stripped
-        }
+        let organizationName = contactProto.organization.strippedOrNil
 
         let contactName = OWSContactName(
             givenName: givenName,
@@ -297,10 +295,7 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
         proto: BackupProto_ContactAttachment.Phone,
         chatItemId: MessageBackup.ChatItemId
     ) -> RestoreInteractionResult<OWSContactPhoneNumber?> {
-        guard
-            proto.hasValue,
-            let phoneNumber = proto.value.strippedOrNil
-        else {
+        guard let phoneNumber = proto.value.strippedOrNil else {
             return .partialRestore(nil, [.restoreFrameError(
                 .invalidProtoData(.contactAttachmentPhoneNumberMissingValue),
                 chatItemId
@@ -326,7 +321,7 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
 
         return .success(OWSContactPhoneNumber(
             type: type,
-            label: proto.hasLabel ? proto.label.stripped : nil,
+            label: proto.label.strippedOrNil,
             phoneNumber: phoneNumber
         ))
     }
@@ -335,10 +330,7 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
         proto: BackupProto_ContactAttachment.Email,
         chatItemId: MessageBackup.ChatItemId
     ) -> RestoreInteractionResult<OWSContactEmail?> {
-        guard
-            proto.hasValue,
-            let email = proto.value.strippedOrNil
-        else {
+        guard let email = proto.value.strippedOrNil else {
             return .partialRestore(nil, [.restoreFrameError(
                 .invalidProtoData(.contactAttachmentEmailMissingValue),
                 chatItemId
@@ -364,7 +356,7 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
 
         return .success(OWSContactEmail(
             type: type,
-            label: proto.hasLabel ? proto.label.stripped : nil,
+            label: proto.label.strippedOrNil,
             email: email
         ))
     }
@@ -390,14 +382,14 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
 
         let address = OWSContactAddress(
             type: type,
-            label: proto.hasLabel ? proto.label.stripped : nil,
-            street: proto.hasStreet ? proto.street.stripped : nil,
-            pobox: proto.hasPobox ? proto.pobox.stripped : nil,
-            neighborhood: proto.hasNeighborhood ? proto.neighborhood.stripped : nil,
-            city: proto.hasCity ? proto.city.stripped : nil,
-            region: proto.hasRegion ? proto.region.stripped : nil,
-            postcode: proto.hasPostcode ? proto.postcode.stripped : nil,
-            country: proto.hasCountry ? proto.country.stripped : nil
+            label: proto.label.strippedOrNil,
+            street: proto.street.strippedOrNil,
+            pobox: proto.pobox.strippedOrNil,
+            neighborhood: proto.neighborhood.strippedOrNil,
+            city: proto.city.strippedOrNil,
+            region: proto.region.strippedOrNil,
+            postcode: proto.postcode.strippedOrNil,
+            country: proto.country.strippedOrNil
         )
 
         guard
