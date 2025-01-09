@@ -146,11 +146,11 @@ internal class MockSignalSignedPreKeyStore: SignalSignedPreKeyStore {
         tx: SignalServiceKit.DBWriteTransaction
     ) {}
 
-    // MARK: - Testing
-
     func removeAll(tx: DBWriteTransaction) {
         generatedSignedPreKeys.removeAll()
     }
+
+    // MARK: - Testing
 
     internal func setPrekeyUpdateFailureCount(
         _ count: Int,

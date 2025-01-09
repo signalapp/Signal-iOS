@@ -13,9 +13,7 @@ public protocol SignalPreKeyStore: LibSignalClient.PreKeyStore {
 
     func cullPreKeyRecords(tx: DBWriteTransaction)
 
-#if TESTABLE_BUILD
     func removeAll(tx: DBWriteTransaction)
-#endif
 }
 
 extension SSKPreKeyStore: SignalPreKeyStore {
@@ -31,9 +29,7 @@ extension SSKPreKeyStore: SignalPreKeyStore {
         generatePreKeyRecords(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-#if TESTABLE_BUILD
     public func removeAll(tx: DBWriteTransaction) {
         removeAll(SDSDB.shimOnlyBridge(tx))
     }
-#endif
 }

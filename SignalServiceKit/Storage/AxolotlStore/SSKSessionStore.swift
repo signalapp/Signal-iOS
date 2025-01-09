@@ -237,6 +237,10 @@ public final class SSKSessionStore: SignalSessionStore {
         Logger.warn("resetting session store")
         keyValueStore.removeAll(transaction: tx)
     }
+
+    public func removeAll(tx: DBWriteTransaction) {
+        keyValueStore.removeAll(transaction: tx)
+    }
 }
 
 extension SSKSessionStore {
@@ -299,10 +303,6 @@ extension SSKSessionStore {
     // Available through `@testable import`
     internal var keyValueStoreForTesting: KeyValueStore {
         self.keyValueStore
-    }
-
-    public func removeAll(tx: DBWriteTransaction) {
-        keyValueStore.removeAll(transaction: tx)
     }
 }
 

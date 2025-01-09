@@ -59,9 +59,7 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         tx: DBReadTransaction
     ) -> Date?
 
-#if TESTABLE_BUILD
     func removeAll(tx: DBWriteTransaction)
-#endif
 }
 
 public struct KyberPreKeyRecord: Codable {
@@ -290,12 +288,10 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
         }
     }
 
-#if TESTABLE_BUILD
     public func removeAll(tx: DBWriteTransaction) {
         self.keyStore.removeAll(transaction: tx)
         self.metadataStore.removeAll(transaction: tx)
     }
-#endif
 }
 
 extension SSKKyberPreKeyStore {
