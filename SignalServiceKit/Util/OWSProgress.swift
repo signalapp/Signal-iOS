@@ -292,7 +292,7 @@ private actor OWSProgressRootNode: OWSProgressSink {
                     source.completedUnitCountMultiplier
                     * Float(source.completedUnitCount)
                 let percent = Float(source.completedUnitCount) / Float(source.totalUnitCount)
-                if percent > highestPercent {
+                if source.completedUnitCount != source.totalUnitCount, percent > highestPercent {
                     highestPercent = percent
                     currentLabels = source.labels
                 }

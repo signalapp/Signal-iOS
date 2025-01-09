@@ -282,11 +282,20 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
 
         let progress = OWSProgress.createSink { progress in
             Task { @MainActor in
-                linkAndSyncProgressModal.progress = progress.percentComplete
+                let canBeCancelled: Bool
+                if let label = progress.currentSourceLabel {
+                    canBeCancelled = label != PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue
+                } else {
+                    canBeCancelled = false
+                }
+                linkAndSyncProgressModal.updateProgress(
+                    progress: progress.percentComplete,
+                    canBeCancelled: canBeCancelled
+                )
             }
         }
 
-        Task { @MainActor in
+        let linkNSyncTask = Task { @MainActor in
             do {
                 try await DependenciesBridge.shared.linkAndSyncManager.waitForLinkingAndUploadBackup(
                     ephemeralBackupKey: linkNSyncData.ephemeralBackupKey,
@@ -298,6 +307,9 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
                 }
             } catch {
                 linkAndSyncProgressModal.dismiss(animated: true) {
+                    if error as? PrimaryLinkNSyncError == .cancelled {
+                        return
+                    }
                     self.present.send(.linkAndSyncFailureAlert)
                 }
                 self.expectMoreDevices()
@@ -306,6 +318,7 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
             self.newDeviceExpectation = .linkAndSync
             await self.refreshDevices()
         }
+        linkAndSyncProgressModal.linkNSyncTask = linkNSyncTask
     }
 
     private func expectMoreDevices() {

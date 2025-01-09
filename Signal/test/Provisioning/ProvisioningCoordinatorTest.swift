@@ -147,7 +147,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         try await provisioningCoordinator.completeProvisioning(
             provisionMessage: provisioningMessage,
             deviceName: deviceName,
-            progressViewModel: LinkAndSyncProgressViewModel()
+            progressViewModel: LinkAndSyncSecondaryProgressViewModel()
         )
 
         XCTAssert(didSetLocalIdentifiers)

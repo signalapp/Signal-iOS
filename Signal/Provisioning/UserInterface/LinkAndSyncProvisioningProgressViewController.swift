@@ -8,19 +8,36 @@ import SwiftUI
 import SignalUI
 import SignalServiceKit
 
-class LinkAndSyncProvisioningProgressViewController: HostingController<LinkAndSyncProvisioningProgressView> {
-    private var viewModel: LinkAndSyncProgressViewModel
+class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
+    @Published private(set) var progress: Float = 0
+    @Published private(set) var canBeCancelled: Bool = false
+    @Published var linkNSyncTask: Task<Void, Error>?
+    @Published var didTapCancel: Bool = false
 
-    var progress: Float {
-        get {
-            viewModel.progress
+    func updateProgress(_ progress: OWSProgress) {
+        let canBeCancelled: Bool
+        if let label = progress.currentSourceLabel {
+            canBeCancelled = label != SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue
+        } else {
+            canBeCancelled = false
         }
+        self.progress = progress.percentComplete
+        self.canBeCancelled = canBeCancelled
+    }
+}
+
+class LinkAndSyncProvisioningProgressViewController: HostingController<LinkAndSyncProvisioningProgressView> {
+    fileprivate var viewModel: LinkAndSyncSecondaryProgressViewModel
+
+    var linkNSyncTask: Task<Void, Error>? {
+        get { viewModel.linkNSyncTask }
         set {
-            viewModel.progress = newValue
+            viewModel.linkNSyncTask = newValue
+            viewModel.didTapCancel = newValue?.isCancelled ?? false
         }
     }
 
-    init(viewModel: LinkAndSyncProgressViewModel) {
+    init(viewModel: LinkAndSyncSecondaryProgressViewModel) {
         self.viewModel = viewModel
         super.init(wrappedView: LinkAndSyncProvisioningProgressView(viewModel: viewModel))
         self.modalPresentationStyle = .fullScreen
@@ -30,7 +47,7 @@ class LinkAndSyncProvisioningProgressViewController: HostingController<LinkAndSy
 
 struct LinkAndSyncProvisioningProgressView: View {
 
-    @ObservedObject fileprivate var viewModel: LinkAndSyncProgressViewModel
+    @ObservedObject fileprivate var viewModel: LinkAndSyncSecondaryProgressViewModel
 
     private var subtitle: String {
         if viewModel.progress <= 0 {
@@ -69,6 +86,8 @@ struct LinkAndSyncProvisioningProgressView: View {
                 ProgressView(value: viewModel.progress)
                     .frame(maxWidth: 330)
                     .padding(.bottom, 12)
+                    // TODO: this should become an "indefinite" animation
+                    // when cancelled.
                     .animation(.default, value: viewModel.progress)
 
                 Text(verbatim: subtitle)
@@ -82,6 +101,14 @@ struct LinkAndSyncProvisioningProgressView: View {
                 .font(.subheadline)
 
                 Spacer()
+
+                if viewModel.canBeCancelled, let linkNSyncTask = viewModel.linkNSyncTask {
+                    Button(CommonStrings.cancelButton) {
+                        viewModel.didTapCancel = true
+                        linkNSyncTask.cancel()
+                    }
+                    .disabled(viewModel.didTapCancel)
+                }
 
                 SignalSymbol.lock.text(dynamicTypeBaseSize: 20)
                     .padding(.bottom, 6)
@@ -107,24 +134,36 @@ struct LinkAndSyncProvisioningProgressView: View {
 #if DEBUG
 @available(iOS 17, *)
 #Preview {
-    let view = LinkAndSyncProvisioningProgressViewController(viewModel: LinkAndSyncProgressViewModel())
+    let view = LinkAndSyncProvisioningProgressViewController(viewModel: LinkAndSyncSecondaryProgressViewModel())
 
-    Task { @MainActor in
+    let progressSink = OWSProgress.createSink { progress in
+        Task { @MainActor in
+            view.viewModel.updateProgress(progress)
+        }
+    }
+
+    let task = Task { @MainActor in
+        let nonCancellableProgressSource = await progressSink.addSource(
+            withLabel: SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue,
+            unitCount: 50
+        )
+        let cancellableProgressSource = await progressSink.addSource(withLabel: "", unitCount: 50)
+
         try? await Task.sleep(for: .seconds(1))
 
-        let loadingPoints = (0..<20)
-            .map { _ in Float.random(in: 0...1) }
-            .sorted()
-
-        for point in loadingPoints {
+        while nonCancellableProgressSource.completedUnitCount < 50 {
+            nonCancellableProgressSource.incrementCompletedUnitCount(by: 1)
             try? await Task.sleep(for: .milliseconds(100))
-            view.progress = point
         }
 
-        try? await Task.sleep(for: .milliseconds(100))
-        view.progress = 1
+        while cancellableProgressSource.completedUnitCount < 50 {
+            cancellableProgressSource.incrementCompletedUnitCount(by: 1)
+            try? await Task.sleep(for: .milliseconds(100))
+        }
+    }
 
-        try? await Task.sleep(for: .seconds(1))
+    view.linkNSyncTask = Task {
+        await task.value
     }
 
     return view

@@ -10,7 +10,15 @@ import SignalServiceKit
 // MARK: View Model
 
 class LinkAndSyncProgressViewModel: ObservableObject {
-    @Published var progress: Float = 0
+    @Published private(set) var progress: Float = 0
+    @Published private(set) var canBeCancelled: Bool = false
+    @Published var linkNSyncTask: Task<Void, Never>?
+    @Published var didTapCancel: Bool = false
+
+    func updateProgress(progress: Float, canBeCancelled: Bool) {
+        self.progress = progress
+        self.canBeCancelled = canBeCancelled
+    }
 }
 
 // MARK: Hosting Controller
@@ -19,9 +27,13 @@ class LinkAndSyncProgressModal: HostingController<LinkAndSyncProgressView> {
 
     private let viewModel = LinkAndSyncProgressViewModel()
 
-    var progress: Float {
-        get { viewModel.progress }
-        set { viewModel.progress = newValue }
+    func updateProgress(progress: Float, canBeCancelled: Bool) {
+        viewModel.updateProgress(progress: progress, canBeCancelled: canBeCancelled)
+    }
+
+    var linkNSyncTask: Task<Void, Never>? {
+        get { viewModel.linkNSyncTask }
+        set { viewModel.linkNSyncTask = newValue }
     }
 
     init() {
@@ -42,7 +54,7 @@ class LinkAndSyncProgressModal: HostingController<LinkAndSyncProgressView> {
 
     @MainActor
     func completeAndDismiss() async {
-        progress = 1
+        updateProgress(progress: 1, canBeCancelled: false)
         try? await Task.sleep(nanoseconds: NSEC_PER_SEC / 2)
         await withCheckedContinuation { continuation in
             dismiss(animated: true) {
@@ -74,6 +86,8 @@ struct LinkAndSyncProgressView: View {
         VStack(spacing: 8) {
             CircleProgressView(progress: progressToShow)
                 .padding(.bottom, 12)
+                // TODO: this should become an "indefinite" animation
+                // when cancelled.
                 .animation(.linear, value: progressToShow)
 
             Text(OWSLocalizedString(
@@ -92,6 +106,16 @@ struct LinkAndSyncProgressView: View {
             .font(.subheadline.monospacedDigit())
             .foregroundStyle(Color.Signal.secondaryLabel)
             .animation(.none, value: viewModel.progress)
+
+            // TODO: probably wanna make space for this if its not present
+            // so that things don't move around when it appears
+            if viewModel.canBeCancelled, let linkNSyncTask = viewModel.linkNSyncTask {
+                Button(CommonStrings.cancelButton) {
+                    linkNSyncTask.cancel()
+                    viewModel.didTapCancel = true
+                }
+                .disabled(viewModel.didTapCancel)
+            }
         }
         .padding(.horizontal, 26)
         .padding(.vertical, 42)
@@ -128,18 +152,18 @@ struct LinkAndSyncProgressView: View {
         let modal = LinkAndSyncProgressModal()
 
         Task { @MainActor in
-            modal.progress = 0.2
+            modal.updateProgress(progress: 0.2, canBeCancelled: true)
             let loadingPoints = (0..<20)
                 .map { _ in Float.random(in: (0.2)...1) }
                 .sorted()
 
             for point in loadingPoints {
                 try? await Task.sleep(for: .milliseconds(100))
-                modal.progress = point
+                modal.updateProgress(progress: point, canBeCancelled: true)
             }
 
             try? await Task.sleep(for: .milliseconds(100))
-            modal.progress = 1
+            modal.updateProgress(progress: 1, canBeCancelled: true)
 
             await modal.completeAndDismiss()
         }

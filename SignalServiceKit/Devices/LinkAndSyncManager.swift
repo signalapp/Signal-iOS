@@ -21,12 +21,13 @@ extension BackupKey {
 }
 
 /// Link'n'Sync errors thrown on the primary device.
-public enum PrimaryLinkNSyncError: Error {
+public enum PrimaryLinkNSyncError: Error, Equatable {
     case timedOutWaitingForLinkedDevice
     case errorWaitingForLinkedDevice
     case errorGeneratingBackup
     case errorUploadingBackup
     case networkError
+    case cancelled
 }
 
 /// Used as the label for OWSProgress.
@@ -47,7 +48,7 @@ public enum PrimaryLinkNSyncProgressPhase: String {
 }
 
 /// Link'n'Sync errors thrown on the secondary device.
-public enum SecondaryLinkNSyncError: Error {
+public enum SecondaryLinkNSyncError: Error, Equatable {
     case timedOutWaitingForBackup
     case primaryFailedBackupExport(canRetry: Bool)
     case errorWaitingForBackup
@@ -55,6 +56,7 @@ public enum SecondaryLinkNSyncError: Error {
     case errorRestoringBackup
     case unsupportedBackupVersion
     case networkError
+    case cancelled
 }
 
 /// Used as the label for OWSProgress.
@@ -85,6 +87,10 @@ public protocol LinkAndSyncManager {
     /// Once the primary sends the provisioning message to the linked device, call this method
     /// to wait on the linked device to link, generate a backup, and upload it. Once this method returns,
     /// the primary's role is complete and the user can exit.
+    ///
+    /// Supports cancellation, but note that a network request may be made after
+    /// cancellation has occured. Therefore, callers should expect to maybe wait
+    /// after cancelling (and indicate this in the UI).
     func waitForLinkingAndUploadBackup(
         ephemeralBackupKey: BackupKey,
         tokenId: DeviceProvisioningTokenId,
@@ -95,6 +101,8 @@ public protocol LinkAndSyncManager {
     /// Once the secondary links on the server, call this method to wait on the primary
     /// to upload a backup, download that backup, and restore data from it.
     /// Once this method returns, provisioning can continue and finish.
+    ///
+    /// Supports cancellation.
     func waitForBackupAndRestore(
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
@@ -177,6 +185,12 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             }
         }
 
+        do {
+            try Task.checkCancellation()
+        } catch {
+            throw .cancelled
+        }
+
         // Proportion progress percentages up front.
         let waitForLinkingProgress = await progress.addChild(
             withLabel: PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue,
@@ -200,6 +214,26 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             progress: waitForLinkingProgress
         )
 
+        func handleCancellation() async {
+            // If we cancel after linking, we want to let the
+            // linked device know we've cancelled.
+            try? await self.reportLinkNSyncBackupResultToServer(
+                waitForDeviceToLinkResponse: waitForLinkResponse,
+                // TODO: this should use a new error type that automatically
+                // delinks on the linked device (instead of "requesting" a
+                // relink, which gives the user the option in UI)
+                result: .error(.relinkRequested),
+                progress: markUploadedProgress
+            )
+        }
+
+        do {
+            try Task.checkCancellation()
+        } catch {
+            await handleCancellation()
+            throw .cancelled
+        }
+
         let backupMetadata: Upload.EncryptedBackupUploadMetadata
         do {
             backupMetadata = try await generateBackup(
@@ -208,14 +242,19 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 progress: exportingBackupProgress
             )
         } catch let error {
-            // At time of writing, iOS _only_ uses the continueWithoutUpload error;
-            // no backups errors succeed on retry and even if they did the user could
-            // always themselves unlink and relink after they continue.
-            try? await reportLinkNSyncBackupResultToServer(
-                waitForDeviceToLinkResponse: waitForLinkResponse,
-                result: .error(.continueWithoutUpload),
-                progress: markUploadedProgress
-            )
+            switch error {
+            case .cancelled:
+                await handleCancellation()
+            default:
+                // At time of writing, iOS _only_ uses the continueWithoutUpload error;
+                // no backups errors succeed on retry and even if they did the user could
+                // always themselves unlink and relink after they continue.
+                try? await reportLinkNSyncBackupResultToServer(
+                    waitForDeviceToLinkResponse: waitForLinkResponse,
+                    result: .error(.continueWithoutUpload),
+                    progress: markUploadedProgress
+                )
+            }
             throw error
         }
 
@@ -226,11 +265,16 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 progress: uploadingBackupProgress
             )
         } catch let error {
-            try? await reportLinkNSyncBackupResultToServer(
-                waitForDeviceToLinkResponse: waitForLinkResponse,
-                result: .error(.relinkRequested),
-                progress: markUploadedProgress
-            )
+            switch error {
+            case .cancelled:
+                await handleCancellation()
+            default:
+                try? await reportLinkNSyncBackupResultToServer(
+                    waitForDeviceToLinkResponse: waitForLinkResponse,
+                    result: .error(.relinkRequested),
+                    progress: markUploadedProgress
+                )
+            }
             throw error
         }
 
@@ -267,6 +311,12 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             Task { @MainActor in
                 appContext.ensureSleepBlocking(false, blockingObjectsDescription: Constants.sleepBlockingDescription)
             }
+        }
+
+        do {
+            try Task.checkCancellation()
+        } catch {
+            throw .cancelled
         }
 
         // Proportion progress percentages up front.
@@ -345,6 +395,9 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 Requests.waitForDeviceToLink(tokenId: tokenId)
             )
         } catch {
+            if error is CancellationError {
+                throw .cancelled
+            }
             throw PrimaryLinkNSyncError.networkError
         }
 
@@ -390,6 +443,9 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             )
             return metadata
         } catch let error {
+            if error is CancellationError {
+                throw .cancelled
+            }
             owsFailDebug("Unable to generate link'n'sync backup: \(error)")
             throw PrimaryLinkNSyncError.errorGeneratingBackup
         }
@@ -408,7 +464,9 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 progress: progress
             )
         } catch {
-            if error.isNetworkFailureOrTimeout {
+            if error is CancellationError {
+                throw .cancelled
+            } else if error.isNetworkFailureOrTimeout {
                 throw PrimaryLinkNSyncError.networkError
             } else {
                 throw PrimaryLinkNSyncError.errorUploadingBackup
@@ -421,20 +479,34 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         result: Requests.ExportAndUploadBackupResult,
         progress: OWSProgressSink
     ) async throws(PrimaryLinkNSyncError) -> Void {
-        let progressSource = await progress.addSource(
-            withLabel: PrimaryLinkNSyncProgressPhase.finishing.rawValue,
-            // Unit count is irrelevant as there's just one child source and we use a timer.
-            unitCount: 100
-        )
-        return try await progressSource.updatePeriodically(
-            estimatedTimeToCompletion: 3,
-            work: { () async throws(PrimaryLinkNSyncError) -> Void in
-                try await self._markEphemeralBackupUploaded(
-                    waitForDeviceToLinkResponse: waitForDeviceToLinkResponse,
-                    result: result
-                )
-            }
-        )
+        // Do this in a detachedtask; we want to report a status
+        // to the server even if the user cancels the current task.
+        let task = Task.detached(priority: Task.currentPriority) {
+            let progressSource = await progress.addSource(
+                withLabel: PrimaryLinkNSyncProgressPhase.finishing.rawValue,
+                // Unit count is irrelevant as there's just one child source and we use a timer.
+                unitCount: 100
+            )
+            return try await progressSource.updatePeriodically(
+                estimatedTimeToCompletion: 3,
+                work: { () async throws(PrimaryLinkNSyncError) -> Void in
+                    try await self._markEphemeralBackupUploaded(
+                        waitForDeviceToLinkResponse: waitForDeviceToLinkResponse,
+                        result: result
+                    )
+                }
+            )
+        }
+        // Task.detached doesn't support typed errors until iOS 18;
+        // we have to manually unwrap.
+        do {
+            try await task.value
+        } catch let error as PrimaryLinkNSyncError {
+            throw error
+        } catch {
+            owsFailDebug("Invalid error!")
+            throw .errorUploadingBackup
+        }
     }
 
     private func _markEphemeralBackupUploaded(
@@ -453,7 +525,9 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 throw PrimaryLinkNSyncError.errorUploadingBackup
             }
         } catch let error {
-            if error.isNetworkFailureOrTimeout {
+            if error is CancellationError {
+                throw .cancelled
+            } else if error.isNetworkFailureOrTimeout {
                 throw PrimaryLinkNSyncError.networkError
             } else {
                 throw PrimaryLinkNSyncError.errorUploadingBackup
@@ -489,6 +563,9 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 Requests.waitForLinkNSyncBackupUpload(auth: auth)
             )
         } catch {
+            if error is CancellationError {
+                throw SecondaryLinkNSyncError.cancelled
+            }
             throw SecondaryLinkNSyncError.networkError
         }
 
@@ -541,7 +618,9 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 progress: progress
             ).awaitable()
         } catch {
-            if error.isNetworkFailureOrTimeout {
+            if error is CancellationError {
+                throw SecondaryLinkNSyncError.cancelled
+            } else if error.isNetworkFailureOrTimeout {
                 throw SecondaryLinkNSyncError.networkError
             } else {
                 throw SecondaryLinkNSyncError.errorDownloadingBackup
@@ -563,6 +642,9 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 progress: progress
             )
         } catch {
+            if error is CancellationError {
+                throw SecondaryLinkNSyncError.cancelled
+            }
             owsFailDebug("Unable to restore link'n'sync backup: \(error)")
             if let backupImportError = error as? BackupImportError {
                 switch backupImportError {

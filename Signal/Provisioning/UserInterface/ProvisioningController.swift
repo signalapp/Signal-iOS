@@ -347,10 +347,10 @@ class ProvisioningController: NSObject {
         navigationController: UINavigationController,
         willLinkAndSync: Bool
     ) {
-        let progressViewModel = LinkAndSyncProgressViewModel()
+        let progressViewModel = LinkAndSyncSecondaryProgressViewModel()
 
         performCoordinatorTaskWithModal(
-            task: { () async throws(CompleteProvisioningError) -> Void in
+            task: Task {
                 try await self.provisioningCoordinator.completeProvisioning(
                     provisionMessage: provisionMessage,
                     deviceName: deviceName,
@@ -421,11 +421,11 @@ class ProvisioningController: NSObject {
     }
 
     private func performCoordinatorTaskWithModal(
-        task: @escaping () async throws(CompleteProvisioningError) -> Void,
+        task: Task<Void, Error>,
         viewController: ProvisioningQRCodeViewController,
         navigationController: UINavigationController,
         willLinkAndSync: Bool,
-        progressViewModel: LinkAndSyncProgressViewModel
+        progressViewModel: LinkAndSyncSecondaryProgressViewModel
     ) {
         if willLinkAndSync {
             Task { @MainActor in
@@ -448,13 +448,27 @@ class ProvisioningController: NSObject {
                 } else {
                     progressViewController = LinkAndSyncProvisioningProgressViewController(viewModel: progressViewModel)
                 }
+                progressViewController.linkNSyncTask = task
                 viewController.present(progressViewController, animated: false)
                 do {
-                    try await task()
+                    try await task.value
                     // Don't dismiss the progress view or it will quickly jump
                     // to that before jumping again to the chat list.
                     self.provisioningDidComplete(from: viewController)
-                } catch let error as CompleteProvisioningError {
+                } catch var error as CompleteProvisioningError {
+                    if
+                        case let .linkAndSyncError(provisioningLinkAndSyncError) = error,
+                        provisioningLinkAndSyncError.error == .cancelled
+                    {
+                        // Exit provisioning if we cancelled
+                        do {
+                            try await provisioningLinkAndSyncError.continueWithoutSyncing()
+                            self.provisioningDidComplete(from: viewController)
+                            return
+                        } catch let innerError as CompleteProvisioningError {
+                            error = innerError
+                        }
+                    }
                     let errorActionSheet = self.errorController(
                         error: error,
                         from: viewController,
@@ -472,7 +486,7 @@ class ProvisioningController: NSObject {
             ) { modal async -> Void in
                 let result: CompleteProvisioningError?
                 do {
-                    try await task()
+                    try await task.value
                     result = nil
                 } catch let error {
                     result = error as? CompleteProvisioningError
@@ -501,7 +515,7 @@ class ProvisioningController: NSObject {
         error: CompleteProvisioningError,
         from viewController: ProvisioningQRCodeViewController,
         navigationController: UINavigationController,
-        progressViewModel: LinkAndSyncProgressViewModel
+        progressViewModel: LinkAndSyncSecondaryProgressViewModel
     ) -> ActionSheetController {
         let alert: ActionSheetController
         switch error {
@@ -603,7 +617,7 @@ class ProvisioningController: NSObject {
         error: ProvisioningLinkAndSyncError,
         from viewController: ProvisioningQRCodeViewController,
         navigationController: UINavigationController,
-        progressViewModel: LinkAndSyncProgressViewModel
+        progressViewModel: LinkAndSyncSecondaryProgressViewModel
     ) -> ActionSheetController {
         let promptToRetryLinkNSync: Bool
         let promptToRestartProvisioning: Bool
@@ -623,7 +637,7 @@ class ProvisioningController: NSObject {
                 "SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE",
                 comment: "Message for action sheet when secondary device fails to sync messages due to an unspecified error."
             )
-        case .errorWaitingForBackup, .errorRestoringBackup:
+        case .errorWaitingForBackup, .errorRestoringBackup, .cancelled:
             promptToRetryLinkNSync = false
             promptToRestartProvisioning = true
             errorMessage = OWSLocalizedString(
@@ -676,7 +690,7 @@ class ProvisioningController: NSObject {
                 title: CommonStrings.retryButton
             ) { _ in
                 self.performCoordinatorTaskWithModal(
-                    task: { () async throws(CompleteProvisioningError) -> Void in
+                    task: Task {
                         try await error.retryLinkAndSync()
                     },
                     viewController: viewController,
@@ -706,7 +720,7 @@ class ProvisioningController: NSObject {
             style: .cancel
         ) { _ in
             self.performCoordinatorTaskWithModal(
-                task: { () async throws(CompleteProvisioningError) -> Void in
+                task: Task {
                     try await error.continueWithoutSyncing()
                 },
                 viewController: viewController,

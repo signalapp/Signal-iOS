@@ -80,7 +80,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     func completeProvisioning(
         provisionMessage: ProvisionMessage,
         deviceName: String,
-        progressViewModel: LinkAndSyncProgressViewModel
+        progressViewModel: LinkAndSyncSecondaryProgressViewModel
     ) async throws(CompleteProvisioningError) {
         // * Primary devices that are re-registering can provision instead as long as either
         // the phone number or aci matches.
@@ -150,7 +150,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         let error: SecondaryLinkNSyncError
         let ephemeralBackupKey: BackupKey
         let authedDevice: AuthedDevice.Explicit
-        let progressViewModel: LinkAndSyncProgressViewModel
+        let progressViewModel: LinkAndSyncSecondaryProgressViewModel
         let undoAllPreviousSteps: () async throws -> Void
         weak var provisioningCoordinator: ProvisioningCoordinatorImpl?
 
@@ -158,7 +158,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             error: SecondaryLinkNSyncError,
             ephemeralBackupKey: BackupKey,
             authedDevice: AuthedDevice.Explicit,
-            progressViewModel: LinkAndSyncProgressViewModel,
+            progressViewModel: LinkAndSyncSecondaryProgressViewModel,
             undoAllPreviousSteps: @escaping () async throws -> Void,
             provisioningCoordinator: ProvisioningCoordinatorImpl
         ) {
@@ -201,7 +201,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private func continueFromLinkNSync(
         authedDevice: AuthedDevice.Explicit,
         ephemeralBackupKey: BackupKey?,
-        progressViewModel: LinkAndSyncProgressViewModel,
+        progressViewModel: LinkAndSyncSecondaryProgressViewModel,
         undoAllPreviousSteps: @escaping () async throws -> Void
     ) async throws(CompleteProvisioningError) {
         var didLinkNSync = false
@@ -485,12 +485,12 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private func completeProvisioning_linkAndSync(
         ephemeralBackupKey: BackupKey,
         authedDevice: AuthedDevice.Explicit,
-        progressViewModel: LinkAndSyncProgressViewModel,
+        progressViewModel: LinkAndSyncSecondaryProgressViewModel,
         undoAllPreviousSteps: @escaping () async throws -> Void
     ) async throws(CompleteProvisioningError) -> OWSProgressSource? {
         let progress = OWSProgress.createSink { progress in
             Task { @MainActor in
-                progressViewModel.progress = progress.percentComplete
+                progressViewModel.updateProgress(progress)
             }
         }
         let linkNSyncProgress = await progress.addChild(
