@@ -795,8 +795,9 @@ extension CallControlsViewModel {
 
     public var ringButtonAccessibilityLabel: String? {
         switch call.mode {
-        case .individual:
-            owsFailDebug("Can't control ringing for an individual call.")
+        case .individual, .callLink:
+            // These call types do not use the ring button.
+            break
         case .groupThread(let call):
             switch call.groupCallRingState {
             case .shouldRing:
@@ -810,10 +811,9 @@ extension CallControlsViewModel {
                     comment: "Accessibility label for turning on call ringing"
                 )
             default:
-                owsFailBeta("Ring button should not have been available to press!")
+                // Ring button shouldn't be available.
+                break
             }
-        case .callLink:
-            owsFailDebug("Can't ring Call Link call.")
         }
         return nil
     }
