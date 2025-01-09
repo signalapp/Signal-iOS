@@ -8,6 +8,7 @@ import SignalServiceKit
 import SignalUI
 public import UIKit
 
+@MainActor
 struct ConversationHeaderBuilder {
     weak var delegate: ConversationHeaderDelegate!
     let transaction: SDSAnyReadTransaction
@@ -525,6 +526,7 @@ struct ConversationHeaderBuilder {
 
 // MARK: -
 
+@MainActor
 protocol ConversationHeaderDelegate: UIViewController, ConversationAvatarViewDelegate {
     var tableViewController: OWSTableViewController2 { get }
 

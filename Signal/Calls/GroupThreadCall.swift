@@ -10,8 +10,8 @@ import SignalServiceKit
 import SignalUI
 
 protocol GroupThreadCallDelegate: AnyObject {
-    func groupThreadCallRequestMembershipProof(_ call: GroupThreadCall)
-    func groupThreadCallRequestGroupMembers(_ call: GroupThreadCall)
+    @MainActor func groupThreadCallRequestMembershipProof(_ call: GroupThreadCall)
+    @MainActor func groupThreadCallRequestGroupMembers(_ call: GroupThreadCall)
 }
 
 final class GroupThreadCall: Signal.GroupCall {

@@ -338,14 +338,18 @@ public class MessageSenderJobQueue {
 
             // FIXME: The returned observer token is never unregistered.
             // In practice all our JobQueues live forever, so this isn't a problem.
+
             // We use "unowned" so that don't silently fail (or leak) when this changes.
+            let becameReachableBlock = { [unowned self] in
+                self.becameReachable()
+            }
             NotificationCenter.default.addObserver(
                 forName: SSKReachability.owsReachabilityDidChange,
                 object: nil,
                 queue: nil
-            ) { [unowned self] _ in
+            ) { _ in
                 if SSKEnvironment.shared.reachabilityManagerRef.isReachable {
-                    self.becameReachable()
+                    becameReachableBlock()
                 }
             }
 

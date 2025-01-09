@@ -7,6 +7,7 @@ import SignalRingRTC
 import SignalServiceKit
 import WebRTC
 
+@MainActor
 class GroupCallRemoteVideoManager {
     private let callServiceState: CallServiceState
 
@@ -29,8 +30,6 @@ class GroupCallRemoteVideoManager {
     private var videoViews = [UInt32: [CallMemberVisualContext: GroupCallRemoteVideoView]]()
 
     func remoteVideoView(for device: RemoteDeviceState, context: CallMemberVisualContext) -> GroupCallRemoteVideoView {
-        AssertIsOnMainThread()
-
         var currentVideoViewsDevice = videoViews[device.demuxId] ?? [:]
 
         if let current = currentVideoViewsDevice[context] { return current }
@@ -48,15 +47,11 @@ class GroupCallRemoteVideoManager {
     }
 
     private func destroyRemoteVideoView(for demuxId: UInt32) {
-        AssertIsOnMainThread()
-
         videoViews[demuxId]?.forEach { $0.value.removeFromSuperview() }
         videoViews[demuxId] = nil
     }
 
-    @MainActor
     private var updateVideoRequestsDebounceTimer: Timer?
-    @MainActor
     private func updateVideoRequests() {
         updateVideoRequestsDebounceTimer?.invalidate()
         updateVideoRequestsDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { [weak self] _ in

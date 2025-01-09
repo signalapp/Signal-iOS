@@ -535,6 +535,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
         owsFailDebug("Timed out while performing \(action)")
     }
 
+    @MainActor
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
 

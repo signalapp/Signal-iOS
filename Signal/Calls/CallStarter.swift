@@ -75,6 +75,7 @@ struct CallStarter {
     /// - Returns: A result of the attempt to start a call.
     /// See ``StartCallResult``.
     @discardableResult
+    @MainActor
     func startCall(from viewController: UIViewController) -> StartCallResult {
         let callTarget: CallTarget
         let callThread: TSThread?

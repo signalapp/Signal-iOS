@@ -66,9 +66,11 @@ public struct ScrollOffsetReader: ViewModifier {
         GeometryReader { geometry in
             content
                 .onPreferenceChange(ScrollAnchorPreferenceKey.self) { anchors in
-                    scrollOffset = anchors.map { scrollAnchor in
-                        -(geometry[scrollAnchor.topAnchor].y + scrollAnchor.correction)
-                    }.max() ?? 0
+                    MainActor.assumeIsolated {
+                        scrollOffset = anchors.map { scrollAnchor in
+                            -(geometry[scrollAnchor.topAnchor].y + scrollAnchor.correction)
+                        }.max() ?? 0
+                    }
                 }
         }
         .preference(key: ScrollOffsetPreferenceKey.self, value: scrollOffset)

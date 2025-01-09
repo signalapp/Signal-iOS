@@ -15,6 +15,7 @@ import WebRTC
 ///
 /// Responsible for the 1:1 or group call this device is currently active in, if
 /// any, as well as any other updates to other calls that we learn about.
+@MainActor
 final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     public typealias CallManagerType = CallManager<SignalCall, CallService>
 
@@ -37,7 +38,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     public var callUIAdapter: CallUIAdapter
 
-    let individualCallService: IndividualCallService
+    nonisolated let individualCallService: IndividualCallService
     let groupCallRemoteVideoManager: GroupCallRemoteVideoManager
     let callLinkManager: CallLinkManagerImpl
     let callLinkFetcher: CallLinkFetcherImpl
@@ -66,7 +67,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         )
     }()
 
-    @MainActor
     private(set) lazy var audioService: CallAudioService = {
         let result = CallAudioService(audioSession: self.audioSession)
         callServiceState.addObserver(result, syncStateImmediately: true)
@@ -78,7 +78,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     let callServiceState: CallServiceState
     var notificationObservers: [any NSObjectProtocol] = []
 
-    @MainActor
     public init(
         appContext: any AppContext,
         appReadiness: AppReadiness,
@@ -181,7 +180,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     /**
      * Choose whether to use CallKit or a Notification backed interface for calling.
      */
-    @MainActor
     public func rebuildCallUIAdapter() {
         if let currentCall = callServiceState.currentCall {
             Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
@@ -281,7 +279,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     /**
      * Local user toggled to mute audio.
      */
-    @MainActor
     func updateIsLocalAudioMuted(isLocalAudioMuted: Bool) {
         // Keep a reference to the call before permissions were requested...
         guard let currentCall = callServiceState.currentCall else {
@@ -318,7 +315,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
-    @MainActor
     private func updateIsLocalAudioMutedWithMicrophonePermission(call: SignalCall, isLocalAudioMuted: Bool) {
         owsPrecondition(call === callServiceState.currentCall)
 
@@ -335,7 +331,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     /**
      * Local user toggled video.
      */
-    @MainActor
     func updateIsLocalVideoMuted(isLocalVideoMuted: Bool) {
         // Keep a reference to the call before permissions were requested...
         guard let currentCall = callServiceState.currentCall else {
@@ -369,7 +364,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
-    @MainActor
     private func updateIsLocalVideoMutedWithCameraPermissions(call: SignalCall, isLocalVideoMuted: Bool) {
         owsPrecondition(call === callServiceState.currentCall)
 
@@ -384,12 +378,10 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         updateIsVideoEnabled()
     }
 
-    @MainActor
     func updateCameraSource(call: SignalCall, isUsingFrontCamera: Bool) {
         call.videoCaptureController.switchCamera(isUsingFrontCamera: isUsingFrontCamera)
     }
 
-    @MainActor
     private func configureDataMode() {
         guard appReadiness.isAppReady else { return }
         guard let currentCall = callServiceState.currentCall else { return }
@@ -429,7 +421,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     // * If we know which call it was, we should update that call's state
     //   to reflect the error.
     // * IFF that call is the current call, we want to terminate it.
-    @MainActor
     public func handleFailedCall(failedCall: SignalCall, error: Error) {
         switch failedCall.mode {
         case .individual:
@@ -444,7 +435,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
-    @MainActor
     func handleLocalHangupCall(_ call: SignalCall) {
         switch call.mode {
         case .individual:
@@ -474,7 +464,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     // MARK: - Video
 
-    @MainActor
     var shouldHaveLocalVideoTrack: Bool {
         guard let call = self.callServiceState.currentCall else {
             return false
@@ -494,7 +483,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
-    @MainActor
     func updateIsVideoEnabled() {
         guard let call = self.callServiceState.currentCall else { return }
 
@@ -520,7 +508,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     // MARK: -
 
-    @MainActor
     func buildAndConnectGroupCall(for groupId: GroupIdentifier, isVideoMuted: Bool) -> (SignalCall, GroupThreadCall)? {
         return _buildAndConnectGroupCall(isOutgoingVideoMuted: isVideoMuted) { () -> (SignalCall, GroupThreadCall)? in
             let videoCaptureController = VideoCaptureController()
@@ -558,7 +545,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         case fetch
     }
 
-    @MainActor
     func buildAndConnectCallLinkCall(
         callLink: CallLink,
         callLinkStateRetrievalStrategy: CallLinkStateRetrievalStrategy
@@ -607,7 +593,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
-    @MainActor
     private func _buildAndConnectGroupCall<T: GroupCall>(
         isOutgoingVideoMuted: Bool,
         createCall: () -> (SignalCall, T)?
@@ -638,7 +623,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         return (call, groupCall)
     }
 
-    @MainActor
     func joinGroupCallIfNecessary(_ call: SignalCall, groupCall: GroupCall) {
         guard call === self.callServiceState.currentCall else {
             owsFailDebug("Can't join a group call if it's not the current call")
@@ -667,7 +651,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
-    @MainActor
     private func connectGroupCallIfNeeded(_ groupCall: GroupCall) -> Bool {
         if groupCall.hasInvokedConnectMethod {
             return true
@@ -691,7 +674,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     ///
     /// We wait for the call to end before terminating to ensure that observers
     /// have an opportunity to handle the "call ended" event.
-    @MainActor
     private func leaveAndTerminateGroupCall(_ call: SignalCall, groupCall: GroupCall) {
         if groupCall.hasInvokedConnectMethod {
             groupCall.ringRtcCall.disconnect()
@@ -712,7 +694,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
-    @MainActor
     private func initiateIndividualCall(thread: TSContactThread, isVideo: Bool) async {
         let untrustedThreshold = Date(timeIntervalSinceNow: -OWSIdentityManagerImpl.Constants.defaultUntrustedInterval)
 
@@ -737,7 +718,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     }
 
     func buildOutgoingIndividualCallIfPossible(thread: TSContactThread, hasVideo: Bool) -> (SignalCall, IndividualCall)? {
-        AssertIsOnMainThread()
         guard callServiceState.currentCall == nil else { return nil }
 
         let individualCall = IndividualCall.outgoingIndividualCall(
@@ -752,17 +732,14 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     // MARK: - Notifications
 
-    @MainActor
     private func didEnterBackground() {
         self.updateIsVideoEnabled()
     }
 
-    @MainActor
     private func didBecomeActive() {
         self.updateIsVideoEnabled()
     }
 
-    @MainActor
     private func registrationChanged() {
         if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
             callManager.setSelfUuid(localAci.rawUUID)
@@ -772,7 +749,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     /// The object is the rotation angle necessary to match the new orientation.
     static var phoneOrientationDidChange = Notification.Name("CallService.phoneOrientationDidChange")
 
-    @MainActor
     private func phoneOrientationDidChange() {
         guard callServiceState.currentCall != nil else {
             return
@@ -780,7 +756,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         sendPhoneOrientationNotification()
     }
 
-    @MainActor
     private func shouldReorientUI(for call: SignalCall) -> Bool {
         owsAssertDebug(!UIDevice.current.isIPad, "iPad has full UIKit rotation support")
 
@@ -797,7 +772,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
-    @MainActor
     private func sendPhoneOrientationNotification() {
         owsAssertDebug(!UIDevice.current.isIPad, "iPad has full UIKit rotation support")
 
@@ -827,7 +801,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     }
 
     /// Pretend the phone just changed orientations so that the call UI will autorotate.
-    @MainActor
     func sendInitialPhoneOrientationNotification() {
         guard !UIDevice.current.isIPad else {
             return
@@ -862,12 +835,12 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     // MARK: - Data Modes
 
-    static let callServicePreferencesDidChange = Notification.Name("CallServicePreferencesDidChange")
-    private static let keyValueStore = KeyValueStore(collection: "CallService")
+    static nonisolated let callServicePreferencesDidChange = Notification.Name("CallServicePreferencesDidChange")
+    private static nonisolated let keyValueStore = KeyValueStore(collection: "CallService")
     // This used to be called "high bandwidth", but "data" is more accurate.
-    private static let highDataPreferenceKey = "HighBandwidthPreferenceKey"
+    private static nonisolated let highDataPreferenceKey = "HighBandwidthPreferenceKey"
 
-    static func setHighDataInterfaces(_ interfaceSet: NetworkInterfaceSet, writeTx: SDSAnyWriteTransaction) {
+    static nonisolated func setHighDataInterfaces(_ interfaceSet: NetworkInterfaceSet, writeTx: SDSAnyWriteTransaction) {
         Logger.info("Updating preferred low data interfaces: \(interfaceSet.rawValue)")
 
         keyValueStore.setUInt(interfaceSet.rawValue, key: highDataPreferenceKey, transaction: writeTx.asV2Write)
@@ -876,7 +849,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
-    static func highDataNetworkInterfaces(readTx: SDSAnyReadTransaction) -> NetworkInterfaceSet {
+    static nonisolated func highDataNetworkInterfaces(readTx: SDSAnyReadTransaction) -> NetworkInterfaceSet {
         guard let highDataPreference = keyValueStore.getUInt(
                 highDataPreferenceKey,
                 transaction: readTx.asV2Read) else { return .wifiAndCellular }
@@ -887,21 +860,17 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
 extension CallService: IndividualCallObserver {
     func individualCallStateDidChange(_ call: IndividualCall, state: CallState) {
-        AssertIsOnMainThread()
         updateIsVideoEnabled()
         configureDataMode()
     }
 
     func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {
-        AssertIsOnMainThread()
         updateIsVideoEnabled()
     }
 }
 
 extension CallService: GroupCallObserver {
-    @MainActor
     func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
-
         let ringRtcCall = call.ringRtcCall
 
         Logger.info("")
@@ -945,8 +914,6 @@ extension CallService: GroupCallObserver {
     }
 
     func groupCallPeekChanged(_ call: GroupCall) {
-        AssertIsOnMainThread()
-
         let ringRtcCall = call.ringRtcCall
         guard let peekInfo = ringRtcCall.peekInfo else {
             Logger.warn("No peek info for call: \(call)")
@@ -983,7 +950,6 @@ extension CallService: GroupCallObserver {
         }
     }
 
-    @MainActor
     func groupCallEnded(_ groupCall: GroupCall, reason: GroupCallEndReason) {
         groupCallAccessoryMessageDelegate.localDeviceGroupCallDidEnd()
 
@@ -999,7 +965,6 @@ extension CallService: GroupCallObserver {
         }
     }
 
-    @MainActor
     public func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
         switch call.concreteType {
         case .groupThread(let call):
@@ -1034,9 +999,7 @@ extension CallService: GroupThreadCallDelegate {
             }
             do {
                 let proof = try await groupCallManager.groupCallPeekClient.fetchGroupMembershipProof(secretParams: try groupModel.secretParams())
-                await MainActor.run {
-                    groupCall.updateMembershipProof(proof: proof)
-                }
+                groupCall.updateMembershipProof(proof: proof)
             } catch {
                 if error.isNetworkFailureOrTimeout {
                     Logger.warn("Failed to fetch group call credentials \(error)")
@@ -1120,7 +1083,6 @@ extension CallService: CallManagerDelegate {
         message: Data,
         urgency: CallMessageUrgency
     ) {
-        AssertIsOnMainThread()
         Logger.info("")
 
         let callAtStart = self.callServiceState.currentCall
@@ -1136,7 +1098,6 @@ extension CallService: CallManagerDelegate {
         }
     }
 
-    @MainActor
     private func sendCallMessage(
         _ opaqueMessage: SSKProtoCallMessageOpaque,
         to recipientAci: Aci,
@@ -1203,7 +1164,6 @@ extension CallService: CallManagerDelegate {
         }
     }
 
-    @MainActor
     private func sendCallMessageToGroup(
         _ opaqueMessage: SSKProtoCallMessageOpaque,
         groupId: Data,
@@ -1244,7 +1204,6 @@ extension CallService: CallManagerDelegate {
         }
     }
 
-    @MainActor
     private func publishUntrustedIdentityErrorIfNeeded(_ error: any Error, callAtStart: SignalCall?) {
         guard error is UntrustedIdentityError else {
             return
@@ -1259,7 +1218,7 @@ extension CallService: CallManagerDelegate {
         }
     }
 
-    public func callManager(
+    public nonisolated func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldCompareCalls call1: SignalCall,
         call2: SignalCall
@@ -1278,7 +1237,6 @@ extension CallService: CallManagerDelegate {
 
     // MARK: - 1:1 Call Delegates
 
-    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldStartCall call: SignalCall,
@@ -1316,7 +1274,6 @@ extension CallService: CallManagerDelegate {
         )
     }
 
-    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         onEvent call: SignalCall,
@@ -1333,7 +1290,6 @@ extension CallService: CallManagerDelegate {
      * onNetworkRouteChangedFor will be invoked when changes to the network routing (e.g. wifi/cellular) are detected.
      * Invoked on the main thread, asynchronously.
      */
-    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         onNetworkRouteChangedFor call: SignalCall,
@@ -1349,7 +1305,7 @@ extension CallService: CallManagerDelegate {
         }
     }
 
-    public func callManager(
+    public nonisolated func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         onAudioLevelsFor call: SignalCall,
         capturedLevel: UInt16,
@@ -1366,7 +1322,6 @@ extension CallService: CallManagerDelegate {
         // TODO: Implement handling of the "low outgoing bandwidth for video" notification.
     }
 
-    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldSendOffer callId: UInt64,
@@ -1385,7 +1340,6 @@ extension CallService: CallManagerDelegate {
         )
     }
 
-    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldSendAnswer callId: UInt64,
@@ -1402,7 +1356,6 @@ extension CallService: CallManagerDelegate {
         )
     }
 
-    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldSendIceCandidates callId: UInt64,
@@ -1419,7 +1372,6 @@ extension CallService: CallManagerDelegate {
         )
     }
 
-    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldSendHangup callId: UInt64,
@@ -1438,7 +1390,6 @@ extension CallService: CallManagerDelegate {
         )
     }
 
-    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldSendBusy callId: UInt64,
@@ -1453,7 +1404,6 @@ extension CallService: CallManagerDelegate {
         )
     }
 
-    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         onUpdateLocalVideoSession call: SignalCall,
@@ -1466,7 +1416,6 @@ extension CallService: CallManagerDelegate {
         )
     }
 
-    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         onAddRemoteVideoTrack call: SignalCall,
@@ -1486,7 +1435,6 @@ extension CallService: CallManagerDelegate {
      *
      * Invoked on the main thread, asynchronously.
      */
-    @MainActor
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         didUpdateRingForGroup groupId: Data,

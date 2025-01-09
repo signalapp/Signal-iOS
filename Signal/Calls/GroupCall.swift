@@ -204,9 +204,11 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
         observers.elements.forEach { $0.groupCallPeekChanged(self) }
     }
 
+    @MainActor
     func groupCall(requestMembershipProof groupCall: SignalRingRTC.GroupCall) {
     }
 
+    @MainActor
     func groupCall(requestGroupMembers groupCall: SignalRingRTC.GroupCall) {
     }
 

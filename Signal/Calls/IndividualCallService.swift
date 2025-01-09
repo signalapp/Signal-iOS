@@ -34,6 +34,7 @@ final class IndividualCallService: CallServiceStateObserver {
 
     private var audioSession: AudioSession { SUIEnvironment.shared.audioSessionRef }
     private var callService: CallService { AppEnvironment.shared.callService }
+    @MainActor
     private var callUIAdapter: CallUIAdapter { AppEnvironment.shared.callService.callUIAdapter }
     private var contactManager: any ContactManager { SSKEnvironment.shared.contactManagerRef }
     private var databaseStorage: SDSDatabaseStorage { SSKEnvironment.shared.databaseStorageRef }

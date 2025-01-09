@@ -13,6 +13,7 @@ protocol CallServiceStateObserver: AnyObject {
 }
 
 protocol CallServiceStateDelegate: AnyObject {
+    @MainActor
     func callServiceState(_ callServiceState: CallServiceState, didTerminateCall call: SignalCall)
 }
 
