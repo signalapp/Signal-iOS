@@ -69,6 +69,9 @@ extension MessageBackup {
             /// causing the containing message to be skipped.
             case invalidQuoteAuthor
 
+            /// A quote of type `NORMAL` was missing both text and attachments.
+            case quoteTypeNormalMissingTextAndAttachments
+
             /// A link preview is missing its url
             case linkPreviewMissingUrl
             /// A link preview's URL isn't in the message body
@@ -262,6 +265,7 @@ extension MessageBackup {
                     .incomingMessageFromSelf,
                     .invalidOutgoingMessageRecipient,
                     .invalidQuoteAuthor,
+                    .quoteTypeNormalMissingTextAndAttachments,
                     .linkPreviewMissingUrl,
                     .linkPreviewUrlNotInBody,
                     .stickerMessageMissingStickerAttachment,
@@ -372,6 +376,10 @@ extension MessageBackup {
                 // that don't have names on them. We filter these at render time
                 // (see `hasRenderableChanges`), so drop them from the backup
                 // with a warning but not an error.
+                return .warning
+            case .quoteTypeNormalMissingTextAndAttachments:
+                // We've seen real-world databases with "empty" quotes; we will
+                // drop the quote on export and issue a warning.
                 return .warning
             case .linkPreviewUrlNotInBody:
                 // We've seen real world databases with invalid link previews; we

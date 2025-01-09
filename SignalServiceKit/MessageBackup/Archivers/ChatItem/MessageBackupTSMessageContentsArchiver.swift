@@ -353,7 +353,6 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         }
 
         if let quotedMessage = message.quotedMessage {
-            let quote: BackupProto_Quote
             let quoteResult = archiveQuote(
                 quotedMessage,
                 interactionUniqueId: message.uniqueInteractionId,
@@ -361,13 +360,11 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 context: context
             )
             switch quoteResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
-            case .continue(let _quote):
-                quote = _quote
+            case .continue(let quote):
+                quote.map { standardMessage.quote = $0 }
             case .bubbleUpError(let errorResult):
                 return errorResult
             }
-
-            standardMessage.quote = quote
         }
 
         if let linkPreview = message.linkPreview {
@@ -448,7 +445,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         interactionUniqueId: MessageBackup.InteractionUniqueId,
         messageRowId: Int64,
         context: MessageBackup.RecipientArchivingContext
-    ) -> ArchiveInteractionResult<BackupProto_Quote> {
+    ) -> ArchiveInteractionResult<BackupProto_Quote?> {
         var partialErrors = [ArchiveFrameError]()
 
         guard let authorAddress = quotedMessage.authorAddress.asSingleServiceIdBackupAddress() else {
@@ -465,13 +462,6 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
 
         var quote = BackupProto_Quote()
         quote.authorID = authorId.value
-        if quotedMessage.isGiftBadge {
-            quote.type = .giftBadge
-        } else if quotedMessage.isTargetMessageViewOnce {
-            quote.type = .viewOnce
-        } else {
-            quote.type = .normal
-        }
 
         let targetSentTimestamp: UInt64? = {
             switch quotedMessage.bodySource {
@@ -490,13 +480,16 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             quote.targetSentTimestamp = targetSentTimestamp
         }
 
+        var didArchiveText = false
+        var didArchiveAttachments = false
+
         if let body = quotedMessage.body {
             let textResult = archiveText(
                 MessageBody(text: body, ranges: quotedMessage.bodyRanges ?? .empty),
                 interactionUniqueId: interactionUniqueId
             )
             let text: BackupProto_Text
-            switch textResult.bubbleUp(BackupProto_Quote.self, partialErrors: &partialErrors) {
+            switch textResult.bubbleUp(Optional<BackupProto_Quote>.self, partialErrors: &partialErrors) {
             case .continue(let value):
                 text = value
             case .bubbleUpError(let errorResult):
@@ -509,6 +502,8 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 quoteText.bodyRanges = text.bodyRanges
                 return quoteText
             }()
+
+            didArchiveText = true
         }
 
         if let attachmentInfo = quotedMessage.attachmentInfo() {
@@ -518,12 +513,33 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 messageRowId: messageRowId,
                 context: context
             )
-            switch quoteAttachmentResult.bubbleUp(BackupProto_Quote.self, partialErrors: &partialErrors) {
+            switch quoteAttachmentResult.bubbleUp(Optional<BackupProto_Quote>.self, partialErrors: &partialErrors) {
             case .continue(let quoteAttachmentProto):
                 quote.attachments = [quoteAttachmentProto]
             case .bubbleUpError(let errorResult):
                 return errorResult
             }
+
+            didArchiveAttachments = true
+        }
+
+        if quotedMessage.isGiftBadge {
+            quote.type = .giftBadge
+        } else if quotedMessage.isTargetMessageViewOnce {
+            quote.type = .viewOnce
+        } else {
+            guard didArchiveText || didArchiveAttachments else {
+                // NORMAL-type quotes must have either text or attachments, lest
+                // they be rejected by the validator.
+                partialErrors.append(.archiveFrameError(
+                    .quoteTypeNormalMissingTextAndAttachments,
+                    interactionUniqueId
+                ))
+
+                return .partialFailure(nil, partialErrors)
+            }
+
+            quote.type = .normal
         }
 
         if partialErrors.isEmpty {
