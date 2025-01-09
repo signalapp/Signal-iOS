@@ -99,14 +99,12 @@ class SSKPreKeyStore: NSObject {
         }
     }
 
-    #if TESTABLE_BUILD
     func removeAll(_ transaction: SDSAnyWriteTransaction) {
         Logger.warn("")
 
         keyStore.removeAll(transaction: transaction.asV2Write)
         metadataStore.removeAll(transaction: transaction.asV2Write)
     }
-    #endif
 
     private func nextPreKeyId(transaction: SDSAnyReadTransaction) -> Int32 {
         var lastPreKeyId = metadataStore.getInt(tsNextPrekeyIdKey, defaultValue: 0, transaction: transaction.asV2Read)
