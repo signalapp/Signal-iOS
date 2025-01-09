@@ -487,6 +487,9 @@
 /* return to the previous screen */
 "BACK_BUTTON" = "Back";
 
+/* Text used as placeholder in backup key text view. */
+"BACKUP_KEY_PLACEHOLDER" = "Backup Key";
+
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
 

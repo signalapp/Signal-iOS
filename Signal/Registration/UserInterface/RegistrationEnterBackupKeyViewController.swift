@@ -43,6 +43,9 @@ class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigation
 
             self.noKeyButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)
         ])
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
     }
 
     // MARK: OWSNavigationChildController
@@ -108,6 +111,11 @@ class RegistrationEnterBackupKeyViewController: OWSViewController, OWSNavigation
         // TODO [Reg UI]: IOS-5448.
     }
 
+    @objc
+    private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+
     private lazy var nextBarButton = UIBarButtonItem(
         title: CommonStrings.nextButton,
         style: .done,
@@ -141,9 +149,17 @@ private class BackupCodeTextView: UITextView, UITextViewDelegate {
         static let totalChunks = 16
         static let insets = UIEdgeInsets(top: 14, left: 20, bottom: 14, right: 20)
         static let font = UIFont.monospacedSystemFont(ofSize: 17, weight: .regular)
+        static let placeholderFont = UIFont.systemFont(ofSize: 17)
         static let lineSpacing = 10.0
-        static let backgroundColor = UIColor.ows_gray02
+        static let backgroundColor = UIColor.secondarySystemBackground
+        static let placeholderTextColor = UIColor.secondaryLabel
+        static let textColor = UIColor.label
     }
+
+    let placeholderText = OWSLocalizedString(
+        "BACKUP_KEY_PLACEHOLDER",
+        comment: "Text used as placeholder in backup key text view."
+    )
 
     convenience init() {
         self.init(frame: .zero, textContainer: nil)
@@ -159,12 +175,10 @@ private class BackupCodeTextView: UITextView, UITextViewDelegate {
         self.isEditable = true
         self.isSelectable = true
         self.layer.cornerRadius = 10
-        // TODO [Reg UI]: Add placeholder text. IOS-5451.
 
-        // The font is taken care of by the attributed string, but setting
-        // this here makes the cursor the right size to start with.
-        let font = Constants.font
-        self.font = font
+        self.text = placeholderText
+        self.font = Constants.placeholderFont
+        self.textColor = Constants.placeholderTextColor
 
         self.translatesAutoresizingMaskIntoConstraints = false
 
@@ -205,12 +219,33 @@ private class BackupCodeTextView: UITextView, UITextViewDelegate {
         paragraphStyle.lineSpacing = Constants.lineSpacing
         let attributes: [NSAttributedString.Key: Any] = [
             .paragraphStyle: paragraphStyle,
-            .font: Constants.font
+            .font: Constants.font,
+            .foregroundColor: Constants.textColor
         ]
         let attributedStr = NSAttributedString(string: formatted, attributes: attributes)
         textView.attributedText = attributedStr
 
         return false
+    }
+
+    private var isShowingPlaceholder = true
+
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if self.isShowingPlaceholder {
+            textView.text = nil
+            textView.font = Constants.font
+            // textView:shouldChangeTextIn takes care of the text color.
+            self.isShowingPlaceholder = false
+        }
+    }
+
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            textView.text = placeholderText
+            textView.font = Constants.placeholderFont
+            textView.textColor = Constants.placeholderTextColor
+            self.isShowingPlaceholder = true
+        }
     }
 }
 
