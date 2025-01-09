@@ -19,13 +19,14 @@ class LinkDeviceViewController: OWSViewController {
 
     private let preknownProvisioningUrl: DeviceProvisioningURL?
 
-    private var hasShownEducationSheet = false
+    private var hasShownEducationSheet: Bool
     private weak var educationSheet: HeroSheetViewController?
 
     private lazy var qrCodeScanViewController = QRCodeScanViewController(appearance: .framed)
 
-    init(preknownProvisioningUrl: DeviceProvisioningURL?) {
+    init(preknownProvisioningUrl: DeviceProvisioningURL?, skipEducationSheet: Bool) {
         self.preknownProvisioningUrl = preknownProvisioningUrl
+        self.hasShownEducationSheet = skipEducationSheet
         super.init()
     }
 

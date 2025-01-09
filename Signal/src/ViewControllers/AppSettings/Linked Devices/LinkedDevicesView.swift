@@ -31,7 +31,7 @@ class LinkedDevicesViewModel: ObservableObject {
         case unlinkFailureAlert(device: OWSDevice, error: Error)
         case activityIndicator(UIViewController)
         case linkedDeviceEducation
-        case linkAndSyncFailureAlert
+        case linkAndSyncFailureAlert(PrimaryLinkNSyncError)
     }
 
     fileprivate var present = PassthroughSubject<Presentation, Never>()
@@ -307,10 +307,22 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
                 }
             } catch {
                 linkAndSyncProgressModal.dismiss(animated: true) {
-                    if error as? PrimaryLinkNSyncError == .cancelled {
+                    guard let error = error as? PrimaryLinkNSyncError else {
+                        owsFailDebug("Unexpected error!")
                         return
                     }
-                    self.present.send(.linkAndSyncFailureAlert)
+                    switch error {
+                    case .cancelled:
+                        // Don't show anything
+                        return
+                    case
+                            .timedOutWaitingForLinkedDevice,
+                            .errorWaitingForLinkedDevice,
+                            .errorUploadingBackup,
+                            .errorMarkingBackupUploaded,
+                            .errorGeneratingBackup:
+                        self.present.send(.linkAndSyncFailureAlert(error))
+                    }
                 }
                 self.expectMoreDevices()
                 return
@@ -321,7 +333,7 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
         linkAndSyncProgressModal.linkNSyncTask = linkNSyncTask
     }
 
-    private func expectMoreDevices() {
+    fileprivate func expectMoreDevices() {
         newDeviceExpectation = .link
         editMode = .inactive
 
@@ -391,8 +403,15 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
                 self.present(modal, animated: true)
             case .linkedDeviceEducation:
                 self.present(LinkedDevicesEducationSheet(), animated: true)
-            case .linkAndSyncFailureAlert:
-                self.showLinkAndSyncFailureAlert()
+            case let .linkAndSyncFailureAlert(error):
+                switch error {
+                case .errorMarkingBackupUploaded(let retryHandler), .errorUploadingBackup(let retryHandler):
+                    self.showLinkAndSyncRetryableFailureAlert(errorRetryHandler: retryHandler)
+                case .errorWaitingForLinkedDevice, .timedOutWaitingForLinkedDevice, .errorGeneratingBackup:
+                    self.showLinkAndSyncUnretryableFailureAlert()
+                case .cancelled:
+                    break
+                }
             }
         }.store(in: &subscriptions)
 
@@ -498,7 +517,10 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
         presentActionSheet(alert)
     }
 
-    private func showLinkNewDeviceView(preknownProvisioningUrl: DeviceProvisioningURL?) {
+    private func showLinkNewDeviceView(
+        preknownProvisioningUrl: DeviceProvisioningURL?,
+        skipEducationSheet: Bool = false
+    ) {
         AssertIsOnMainThread()
 
         func presentLinkView(_ linkView: LinkDeviceViewController) {
@@ -507,14 +529,20 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
         }
 
         if let preknownProvisioningUrl {
-            presentLinkView(LinkDeviceViewController(preknownProvisioningUrl: preknownProvisioningUrl))
+            presentLinkView(LinkDeviceViewController(
+                preknownProvisioningUrl: preknownProvisioningUrl,
+                skipEducationSheet: skipEducationSheet
+            ))
         } else {
             self.ows_askForCameraPermissions { granted in
                 guard granted else {
                     return
                 }
 
-                presentLinkView(LinkDeviceViewController(preknownProvisioningUrl: nil))
+                presentLinkView(LinkDeviceViewController(
+                    preknownProvisioningUrl: nil,
+                    skipEducationSheet: skipEducationSheet
+                ))
             }
         }
     }
@@ -562,7 +590,49 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
         self.present(sheet, animated: true)
     }
 
-    private func showLinkAndSyncFailureAlert() {
+    private func showLinkAndSyncRetryableFailureAlert(errorRetryHandler: PrimaryLinkNSyncError.RetryHandler) {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "LINK_NEW_DEVICE_SYNC_FAILED_TITLE",
+                comment: "Title for a sheet indicating that a newly linked device failed to sync messages."
+            ),
+            message: OWSLocalizedString(
+                "LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE",
+                comment: "Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error."
+            )
+        )
+        actionSheet.addAction(
+            .init(
+                title: CommonStrings.retryButton,
+                style: .cancel
+            ) { [weak self] _ in
+                Task {
+                    await errorRetryHandler.tryToResetLinkedDevice()
+                    await MainActor.run {
+                        self?.showLinkNewDeviceView(preknownProvisioningUrl: nil, skipEducationSheet: true)
+                    }
+                }
+            }
+        )
+        actionSheet.addAction(
+            .init(
+                title: OWSLocalizedString(
+                    "LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON",
+                    comment: "Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring."
+                )
+            ) { _ in
+                Task {
+                    await errorRetryHandler.tryToContinueWithoutSyncing()
+                }
+            }
+        )
+        actionSheet.onDismiss = { [weak self] in
+            self?.viewModel.expectMoreDevices()
+        }
+        presentActionSheet(actionSheet)
+    }
+
+    private func showLinkAndSyncUnretryableFailureAlert() {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE",
@@ -577,7 +647,8 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
             UIApplication.shared.open(URL(string: "https://support.signal.org/hc/articles/360007320551")!)
         })
         actionSheet.addAction(.init(title: CommonStrings.continueButton, style: .cancel))
-        actionSheet.onDismiss = {
+        actionSheet.onDismiss = { [weak self] in
+            self?.viewModel.expectMoreDevices()
             DependenciesBridge.shared.messageBackupErrorPresenter.presentOverTopmostViewController(completion: {})
         }
         presentActionSheet(actionSheet)

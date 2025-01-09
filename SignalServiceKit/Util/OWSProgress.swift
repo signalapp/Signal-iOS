@@ -171,6 +171,7 @@ extension OWSProgressSource {
                 do {
                     result = .success(try await work())
                 } catch let error as E {
+                    didComplete.set(true)
                     return .failure(error)
                 } catch {
                     // Impossible; work only throws E
