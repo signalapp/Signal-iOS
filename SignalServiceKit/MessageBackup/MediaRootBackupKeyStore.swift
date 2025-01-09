@@ -69,6 +69,10 @@ public class MediaRootBackupKeyStore {
         try setMediaRootBackupKey(mrbk, tx: tx)
     }
 
+    public func wipeMediaRootBackupKeyFromFailedProvisioning(tx: DBWriteTransaction) {
+        kvStore.removeValue(forKey: Self.keyName, transaction: tx)
+    }
+
     private func setMediaRootBackupKey(
         _ mrbk: Data,
         tx: DBWriteTransaction

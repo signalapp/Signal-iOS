@@ -43,6 +43,16 @@ public enum AuthedDevice {
         public var localIdentifiers: LocalIdentifiers {
             return LocalIdentifiers(aci: aci, pni: pni, e164: phoneNumber)
         }
+
+        public var authedAccount: AuthedAccount.Explicit {
+            return .init(
+                aci: aci,
+                pni: pni,
+                e164: phoneNumber,
+                deviceId: deviceId,
+                authPassword: authPassword
+            )
+        }
     }
 
     public func orIfImplicitUse(_ other: Self) -> Self {

@@ -49,7 +49,7 @@ public enum PrimaryLinkNSyncProgressPhase: String {
 /// Link'n'Sync errors thrown on the secondary device.
 public enum SecondaryLinkNSyncError: Error {
     case timedOutWaitingForBackup
-    case primaryFailedBackupExport
+    case primaryFailedBackupExport(canRetry: Bool)
     case errorWaitingForBackup
     case errorDownloadingBackup
     case errorRestoringBackup
@@ -219,10 +219,20 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             throw error
         }
 
-        let uploadResult = try await uploadEphemeralBackup(
-            metadata: backupMetadata,
-            progress: uploadingBackupProgress
-        )
+        let uploadResult: Upload.Result<Upload.LinkNSyncUploadMetadata>
+        do {
+            uploadResult = try await uploadEphemeralBackup(
+                metadata: backupMetadata,
+                progress: uploadingBackupProgress
+            )
+        } catch let error {
+            try? await reportLinkNSyncBackupResultToServer(
+                waitForDeviceToLinkResponse: waitForLinkResponse,
+                result: .error(.relinkRequested),
+                progress: markUploadedProgress
+            )
+            throw error
+        }
 
         try await reportLinkNSyncBackupResultToServer(
             waitForDeviceToLinkResponse: waitForLinkResponse,
@@ -284,11 +294,13 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         case let .success(_cdnNumber, _cdnKey):
             cdnNumber = _cdnNumber
             cdnKey = _cdnKey
-        case .error(_):
-            // At time of writing, iOS _only_ supports the continueWithoutUpload error;
-            // no backups errors succeed on retry and even if they did the user could
-            // always themselves unlink and relink after they continue.
-            throw .primaryFailedBackupExport
+        case .error(let errorResult):
+            switch errorResult {
+            case .continueWithoutUpload:
+                throw .primaryFailedBackupExport(canRetry: false)
+            case .relinkRequested:
+                throw .primaryFailedBackupExport(canRetry: true)
+            }
         }
 
         let downloadedFileUrl = try await downloadEphemeralBackup(

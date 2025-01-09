@@ -9,12 +9,15 @@ import SignalUI
 class ProvisioningSetDeviceNameViewController: ProvisioningBaseViewController {
 
     private let provisionMessage: ProvisionMessage
+    private let qrCodeViewController: ProvisioningQRCodeViewController
 
     init(
         provisionMessage: ProvisionMessage,
-        provisioningController: ProvisioningController
+        provisioningController: ProvisioningController,
+        qrCodeViewController: ProvisioningQRCodeViewController
     ) {
         self.provisionMessage = provisionMessage
+        self.qrCodeViewController = qrCodeViewController
         super.init(provisioningController: provisioningController)
     }
 
@@ -161,14 +164,15 @@ class ProvisioningSetDeviceNameViewController: ProvisioningBaseViewController {
 
     @objc
     func didTapFinalizeLinking() {
-        guard let deviceName = validateDeviceName() else {
+        guard let deviceName = validateDeviceName(), let navigationController else {
             return
         }
 
         provisioningController.didSetDeviceName(
             String(deviceName),
             provisionMessage: provisionMessage,
-            from: self,
+            from: qrCodeViewController,
+            navigationController: navigationController,
             willLinkAndSync: false
         )
     }

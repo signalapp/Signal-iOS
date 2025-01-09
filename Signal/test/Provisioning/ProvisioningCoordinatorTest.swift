@@ -64,6 +64,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         self.provisioningCoordinator = ProvisioningCoordinatorImpl(
             chatConnectionManager: chatConnectionManagerMock,
             db: mockDb,
+            deviceService: MockOWSDeviceService(),
             identityManager: identityManagerMock,
             linkAndSyncManager: MockLinkAndSyncManager(),
             messageFactory: messageFactoryMock,
@@ -73,6 +74,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             pushRegistrationManager: pushRegistrationManagerMock,
             receiptManager: receiptManagerMock,
             registrationStateChangeManager: registrationStateChangeManagerMock,
+            signalProtocolStoreManager: MockSignalProtocolStoreManager(),
             signalService: signalServiceMock,
             storageServiceManager: storageServiceManagerMock,
             svr: svrMock,
@@ -142,11 +144,10 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             didSetLocalIdentifiers = true
         }
 
-        let provisioningResult = await provisioningCoordinator.completeProvisioning(
+        try await provisioningCoordinator.completeProvisioning(
             provisionMessage: provisioningMessage,
             deviceName: deviceName,
-            progressViewModel: LinkAndSyncProgressViewModel(),
-            shouldRetry: { _ in false }
+            progressViewModel: LinkAndSyncProgressViewModel()
         )
 
         XCTAssert(didSetLocalIdentifiers)
@@ -155,13 +156,6 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         XCTAssertEqual(identityManagerMock.identityKeyPairs[.aci], provisioningMessage.aciIdentityKeyPair)
         XCTAssertEqual(identityManagerMock.identityKeyPairs[.pni], provisioningMessage.pniIdentityKeyPair)
         XCTAssertEqual(svrMock.syncedMasterKey, provisioningMessage.masterKey)
-
-        switch provisioningResult {
-        case .success:
-            break
-        default:
-            XCTFail("Got failure result!")
-        }
     }
 
     private func keyPairForTesting() throws -> ECKeyPair {
@@ -216,4 +210,32 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
     ) async throws(SecondaryLinkNSyncError) {
         return
     }
+}
+
+private class MockOWSDeviceService: OWSDeviceService {
+
+    init() {}
+
+    func refreshDevices() async throws -> Bool {
+        return true
+    }
+
+    func renameDevice(device: SignalServiceKit.OWSDevice, toEncryptedName encryptedName: String) async throws {
+        // do nothing
+    }
+
+    func unlinkDevice(deviceId: Int, auth: SignalServiceKit.ChatServiceAuth) async throws {
+        // do nothing
+    }
+}
+
+private class MockSignalProtocolStoreManager: SignalProtocolStoreManager {
+
+    init() {}
+
+    func signalProtocolStore(for identity: SignalServiceKit.OWSIdentity) -> any SignalServiceKit.SignalProtocolStore {
+        return MockSignalProtocolStore()
+    }
+
+    func removeAllKeys(tx: DBWriteTransaction) {}
 }

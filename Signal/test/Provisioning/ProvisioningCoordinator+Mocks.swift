@@ -50,7 +50,6 @@ public class _ProvisioningCoordinator_ProfileManagerMock: _ProvisioningCoordinat
     public func setLocalProfileKey(
         _ key: Aes256Key,
         userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
         tx: DBWriteTransaction
     ) {
         self.localProfileKeyMock = key

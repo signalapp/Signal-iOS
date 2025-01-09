@@ -42,6 +42,8 @@ public class SignalProtocolStoreImpl: SignalProtocolStore {
 /// Wrapper for ACI/PNI protocol stores that can be passed around to dependencies
 public protocol SignalProtocolStoreManager {
     func signalProtocolStore(for identity: OWSIdentity) -> SignalProtocolStore
+
+    func removeAllKeys(tx: DBWriteTransaction)
 }
 
 public struct SignalProtocolStoreManagerImpl: SignalProtocolStoreManager {
@@ -61,6 +63,16 @@ public struct SignalProtocolStoreManagerImpl: SignalProtocolStoreManager {
             return aciProtocolStore
         case .pni:
             return pniProtocolStore
+        }
+    }
+
+    public func removeAllKeys(tx: DBWriteTransaction) {
+        for identity in [OWSIdentity.aci, OWSIdentity.pni] {
+            let signalProtocolStore = self.signalProtocolStore(for: identity)
+            signalProtocolStore.sessionStore.removeAll(tx: tx)
+            signalProtocolStore.preKeyStore.removeAll(tx: tx)
+            signalProtocolStore.signedPreKeyStore.removeAll(tx: tx)
+            signalProtocolStore.kyberPreKeyStore.removeAll(tx: tx)
         }
     }
 }

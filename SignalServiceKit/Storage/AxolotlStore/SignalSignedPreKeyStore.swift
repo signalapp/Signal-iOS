@@ -30,12 +30,7 @@ public protocol SignalSignedPreKeyStore: LibSignalClient.SignedPreKeyStore {
     func setLastSuccessfulRotationDate(_ date: Date, tx: DBWriteTransaction)
     func getLastSuccessfulRotationDate(tx: DBReadTransaction) -> Date?
 
-    // MARK: - Testing
-#if TESTABLE_BUILD
-
     func removeAll(tx: DBWriteTransaction)
-
-#endif
 }
 
 extension SSKSignedPreKeyStore: SignalSignedPreKeyStore {
@@ -75,13 +70,7 @@ extension SSKSignedPreKeyStore: SignalSignedPreKeyStore {
         getLastSuccessfulRotationDate(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    // MARK: - Testing
-
-#if TESTABLE_BUILD
-
     public func removeAll(tx: DBWriteTransaction) {
         removeAll(transaction: SDSDB.shimOnlyBridge(tx))
     }
-
-#endif
 }

@@ -10,7 +10,7 @@ public protocol OWSDeviceService {
     func refreshDevices() async throws -> Bool
 
     /// Unlink the given device.
-    func unlinkDevice(deviceId: Int) async throws
+    func unlinkDevice(deviceId: Int, auth: ChatServiceAuth) async throws
 
     /// Renames a device with the given encrypted name.
     func renameDevice(
@@ -21,8 +21,12 @@ public protocol OWSDeviceService {
 
 extension OWSDeviceService {
 
-    public func unlinkDevice(_ device: OWSDevice) async throws {
-        try await unlinkDevice(deviceId: device.deviceId)
+    public func unlinkDevice(deviceId: Int) async throws {
+        try await self.unlinkDevice(deviceId: deviceId, auth: .implicit())
+    }
+
+    public func unlinkDevice(_ device: OWSDevice, auth: ChatServiceAuth = .implicit()) async throws {
+        try await unlinkDevice(deviceId: device.deviceId, auth: auth)
     }
 }
 
@@ -131,10 +135,10 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
 
     // MARK: -
 
-    func unlinkDevice(deviceId: Int) async throws {
-        _ = try await networkManager.asyncRequest(
-            .deleteDevice(deviceId: deviceId)
-        )
+    func unlinkDevice(deviceId: Int, auth: ChatServiceAuth) async throws {
+        let request = TSRequest.deleteDevice(deviceId: deviceId)
+        request.setAuth(auth)
+        _ = try await networkManager.asyncRequest(request)
     }
 
     func renameDevice(

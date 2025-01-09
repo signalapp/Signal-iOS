@@ -68,6 +68,9 @@ open class MockIdentityManager: OWSIdentityManager {
     open func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction) {
         identityKeyPairs[identity] = keyPair
     }
+    open func wipeIdentityKeysFromFailedProvisioning(tx: DBWriteTransaction) {
+        identityKeyPairs = [:]
+    }
     open func identityKey(for address: SignalServiceAddress, tx: DBReadTransaction) -> Data? { fatalError() }
     open func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<Bool, RecipientIdError> { fatalError() }
     open func untrustedIdentityForSending(to address: SignalServiceAddress, untrustedThreshold: Date?, tx: DBReadTransaction) -> OWSRecipientIdentity? { fatalError() }

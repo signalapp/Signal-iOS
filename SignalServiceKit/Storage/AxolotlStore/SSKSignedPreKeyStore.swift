@@ -109,15 +109,11 @@ public class SSKSignedPreKeyStore: NSObject {
         metadataStore.getDate(lastPreKeyRotationDate, transaction: transaction.asV2Read)
     }
 
-    // MARK: - Debugging
-
-    #if TESTABLE_BUILD
     public func removeAll(transaction: SDSAnyWriteTransaction) {
         Logger.warn("")
         keyStore.removeAll(transaction: transaction.asV2Write)
         metadataStore.removeAll(transaction: transaction.asV2Write)
     }
-    #endif
 }
 
 extension SSKSignedPreKeyStore {

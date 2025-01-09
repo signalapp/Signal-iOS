@@ -23,6 +23,7 @@ public protocol OWSIdentityManager {
 
     func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair?
     func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction)
+    func wipeIdentityKeysFromFailedProvisioning(tx: DBWriteTransaction)
 
     func identityKey(for address: SignalServiceAddress, tx: DBReadTransaction) -> Data?
     func identityKey(for serviceId: ServiceId, tx: DBReadTransaction) throws -> IdentityKey?
@@ -311,6 +312,11 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         // Under no circumstances may we *clear* our *ACI* identity key.
         owsPrecondition(keyPair != nil || identity != .aci)
         ownIdentityKeyValueStore.setObject(keyPair, key: identity.persistenceKey, transaction: tx)
+    }
+
+    public func wipeIdentityKeysFromFailedProvisioning(tx: DBWriteTransaction) {
+        ownIdentityKeyValueStore.removeValue(forKey: OWSIdentity.aci.persistenceKey, transaction: tx)
+        ownIdentityKeyValueStore.removeValue(forKey: OWSIdentity.pni.persistenceKey, transaction: tx)
     }
 
     // MARK: - Remote Identity Keys

@@ -59,7 +59,6 @@ public protocol _ProvisioningCoordinator_ProfileManagerShim {
     func setLocalProfileKey(
         _ key: Aes256Key,
         userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
         tx: DBWriteTransaction
     )
 }
@@ -79,7 +78,6 @@ public class _ProvisioningCoordinator_ProfileManagerWrapper: _ProvisioningCoordi
     public func setLocalProfileKey(
         _ key: Aes256Key,
         userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
         tx: DBWriteTransaction
     ) {
         profileManager.setLocalProfileKey(

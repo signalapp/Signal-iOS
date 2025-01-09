@@ -225,6 +225,11 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         updateHasCensoredPhoneNumber(e164.stringValue)
     }
 
+    public func resetHasCensoredPhoneNumberFromProvisioning() {
+        self.hasCensoredPhoneNumber = false
+        updateIsCensorshipCircumventionActive()
+    }
+
     private func updateHasCensoredPhoneNumber(_ localNumber: String?) {
         if let localNumber {
             self.hasCensoredPhoneNumber = OWSCensorshipConfiguration.isCensored(e164: localNumber)

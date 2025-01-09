@@ -40,6 +40,7 @@ public protocol TSAccountManager {
 
     func getOrGenerateAciRegistrationId(tx: DBWriteTransaction) -> UInt32
     func getOrGeneratePniRegistrationId(tx: DBWriteTransaction) -> UInt32
+    func wipeRegistrationIdsFromFailedProvisioning(tx: DBWriteTransaction)
 
     /// Set the PNI registration ID.
     ///

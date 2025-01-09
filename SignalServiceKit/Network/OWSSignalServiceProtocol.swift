@@ -17,6 +17,7 @@ public protocol OWSSignalServiceProtocol: AnyObject {
     var manualCensorshipCircumventionCountryCode: String? { get set }
 
     func updateHasCensoredPhoneNumberDuringProvisioning(_ e164: E164)
+    func resetHasCensoredPhoneNumberFromProvisioning()
 
     func buildUrlEndpoint(for signalServiceInfo: SignalServiceInfo) -> OWSURLSessionEndpoint
     func buildUrlSession(

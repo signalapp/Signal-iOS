@@ -100,6 +100,8 @@ public class MockTSAccountManager: TSAccountManager {
         return pniRegistrationIdMock()
     }
 
+    open func wipeRegistrationIdsFromFailedProvisioning(tx: DBWriteTransaction) {}
+
     public lazy var setPniRegistrationIdMock: (_ id: UInt32) -> Void = { [weak self] id in
         self?.pniRegistrationIdMock = { id }
     }

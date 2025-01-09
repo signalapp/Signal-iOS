@@ -119,6 +119,11 @@ public class TSAccountManagerImpl: TSAccountManager {
         )
     }
 
+    public func wipeRegistrationIdsFromFailedProvisioning(tx: DBWriteTransaction) {
+        kvStore.removeValue(forKey: Self.aciRegistrationIdKey, transaction: tx)
+        kvStore.removeValue(forKey: Self.pniRegistrationIdKey, transaction: tx)
+    }
+
     public func setPniRegistrationId(_ newRegistrationId: UInt32, tx: DBWriteTransaction) {
         kvStore.setUInt32(newRegistrationId, key: Self.pniRegistrationIdKey, transaction: tx)
     }

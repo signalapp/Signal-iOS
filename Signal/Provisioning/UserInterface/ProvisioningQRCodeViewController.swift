@@ -171,6 +171,13 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
 
     // MARK: -
 
+    func reset() {
+        rotateQRCodeTask?.cancel()
+        rotateQRCodeTask = nil
+        setDisplayMode(.loading)
+        startQRCodeRotationTask()
+    }
+
     private func startQRCodeRotationTask() {
         AssertIsOnMainThread()
 
