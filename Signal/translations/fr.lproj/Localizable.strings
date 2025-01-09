@@ -163,6 +163,9 @@
 /* Audio file type in All Meda file type picker. */
 "ALL_MEDIA_FILE_TYPE_AUDIO" = "Audio";
 
+/* Generic All Media file type for non-audiovisual files used in file type picker */
+"ALL_MEDIA_FILE_TYPE_FILES" = "Files";
+
 /* Media (i.e., graphical) file type in All Meda file type picker. */
 "ALL_MEDIA_FILE_TYPE_MEDIA" = "Médias";
 
@@ -278,7 +281,7 @@
 "APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Le numéro de votre carte est incorrect. Vérifiez si votre mode de paiement a bien été saisi dans Apple Pay. Dans le cas contraire, mettez-le à jour et réessayez.";
 
 /* Apple Pay donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Votre code de sécurité est incorrect. Vérifiez si votre code de sécurité a bien été saisi dans Apple Pay. Dans le cas contraire, mettez-le à jour et réessayez.";
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Cryptogramme visuel incorrect. Vérifiez si le cryptogramme visuel saisi dans Apple Pay est le bon. Dans le cas contraire, veuillez le mettre à jour et réessayer.";
 
 /* Apple Pay donation error for decline failures where the card has insufficient funds. */
 "APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Les fonds disponibles sur votre carte sont insuffisants. Veuillez essayer un autre mode de paiement ou contacter votre banque pour en savoir plus.";
@@ -335,10 +338,10 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Enregistré";
 
 /* Subtitle for the 'high' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Lent, plus lourd";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Moins rapide, consomme plus de données";
 
 /* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Plus rapide, moins de données";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Plus rapide, consomme moins de données";
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Qualité du média";
@@ -527,7 +530,7 @@
 "BADGE_THANKS_BODY" = "Vous pouvez afficher ce macaron sur votre profil pour montrer que vous soutenez Signal.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Afficher sur le profil";
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Afficher sur mon profil";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_MAKE_FEATURED" = "Afficher ce macaron";
@@ -638,7 +641,7 @@
 "BUTTON_ADD" = "Ajouter";
 
 /* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "Poursuivre";
+"BUTTON_CONTINUE" = "Continuer";
 
 /* Label for the 'copy' button. */
 "BUTTON_COPY" = "Copier";
@@ -880,6 +883,12 @@
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Intervertir les appareils photos";
 
+/* Accessibility label for turning off call ringing */
+"CALL_VIEW_TURN_OFF_RINGING" = "Turn off ringing";
+
+/* Accessibility label for turning on call ringing */
+"CALL_VIEW_TURN_ON_RINGING" = "Turn on ringing";
+
 /* Accessibility label for turning off the camera */
 "CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "Désactiver la caméra";
 
@@ -1106,10 +1115,10 @@
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Ancien numéro de téléphone invalide. Veuillez saisir un numéro de téléphone valide pour changer votre numéro.";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "Voici un aperçu de la couleur de la conversation.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "Voici un aperçu de la couleur des bulles pour cette conversation.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "Voici un aperçu de la couleur de la conversation.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "Voici un aperçu de la couleur des bulles pour cette conversation.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "Une autre bulle";
@@ -1130,13 +1139,13 @@
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Supprimer la couleur";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "Couleur de la conversation";
+"CHAT_COLOR_SETTINGS_TITLE" = "Couleur des bulles";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Modifier la couleur";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "Adaptez automatiquement la couleur au fond d’écran";
+"CHAT_COLORS_AUTO_TOOLTIP" = "Couleur automatiquement assortie au fond d'écran";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
 "CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Supprimer le filtre \"Conversations non lues\"";
@@ -1157,7 +1166,7 @@
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "Aucune conversation non lue";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Couleur et fond d’écran des conversations";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Couleur des bulles et fond d'écran";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Comparer avec le numéro copié dans le presse-papiers";
@@ -1550,7 +1559,7 @@
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Appel vocal sortant";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Modifier les informations du groupe";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Modifier les infos du groupe";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Les administrateurs";
@@ -1568,13 +1577,13 @@
 "CONVERSATION_SETTINGS_GROUP_LINK" = "Lien de groupe";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Nommer administrateur";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Accorder des droits d'admin";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ pourra modifier ce groupe et ses membres.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ pourra apporter des modifications à ce groupe, y ajouter et en supprimer des membres.";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Demandes et invitations";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Demandes d'adhésion et invitations";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Toujours m’avertir";
@@ -1736,7 +1745,7 @@
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Le numéro de votre carte est erroné. Veuillez vérifier que les informations de votre carte sont correctes puis réessayez.";
 
 /* Credit/debit card donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Le code CVV de votre carte est erroné. Veuillez vérifier que les informations de votre carte sont correctes puis réessayez.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Cryptogramme visuel incorrect. Veuillez vérifier que les informations associées à votre carte sont correctes et réessayer.";
 
 /* Credit/debit card donation error for decline failures where the expiration month on the payment method is incorrect. */
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "Le mois d’expiration de votre carte est erroné. Veuillez vérifier que les informations de votre carte sont correctes puis réessayez.";
@@ -1772,7 +1781,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Couleur personnalisée";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Faites glisser pour modifier la direction du dégradé";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Faites glisser pour choisir le sens du dégradé";
 
 /* Button to run the database integrity check */
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Lancer";
@@ -1907,7 +1916,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Suppression du compte…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Aucune connexion à Internet. Assurez-vous d’avoir activé le Wi-Fi ou les données mobiles puis réessayez.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Aucune connexion Internet. Vérifiez que vous avez activé le Wi-Fi ou les données mobiles et réessayez.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Numéro de téléphone";
@@ -1985,7 +1994,7 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Impossible de mettre à jour la liste des appareils";
 
 /* Message appearing on a toast indicating a new device was successfully linked and synced. */
-"DEVICE_LIST_UPDATE_NEW_DEVICE_SYNCED_TOAST" = "Message sync complete";
+"DEVICE_LIST_UPDATE_NEW_DEVICE_SYNCED_TOAST" = "Synchronisation des messages terminée";
 
 /* Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }} */
 "DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "\"%1$@\" associé.";
@@ -2009,16 +2018,16 @@
 "DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Si vous utilisiez jusqu’ici Signal sur un iPad associé, vous pouvez transférer votre compte et vos messages vers cet appareil en toute sécurité.";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Poursuivre sans transférer ni compte ni messages";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Continuer sans transférer le compte ni les messages";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Associer cet iPad en tant que nouvel appareil sans transférer l’historique des messages";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Ajouter en tant que nouvel appareil";
 
 /* The title for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "S’inscrire sans transférer";
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Inscription sans transfert";
 
 /* The title for the device transfer 'choice' view */
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Transférer compte et messages";
@@ -2411,7 +2420,7 @@
 "DONATION_RECEIPT_ONE_TIME" = "Une fois";
 
 /* Title for recurring donation receipts */
-"DONATION_RECEIPT_RECURRING" = "Périodique";
+"DONATION_RECEIPT_RECURRING" = "Mensuel";
 
 /* Title on donation receipts */
 "DONATION_RECEIPT_TITLE" = "Reçu de don";
@@ -2830,17 +2839,11 @@
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
 "FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "L'icône \"Changer de caméra\" se trouve désormais ici. Touchez la vidéo pour l'essayer.";
 
-/* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Transférer un contact";
-
-/* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Transférer un message";
-
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Les messages transférés sont désormais immédiatement envoyés.";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Lorsque vous transférez un message, son envoi est maintenant immédiat.";
 
 /* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Transferts plus rapides";
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Des transferts plus rapides";
 
 /* Indicates that a single message was forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message envoyé";
@@ -2909,13 +2912,13 @@
 "GO_TO_SETTINGS_BUTTON" = "Accéder aux réglages";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Vous avez défini l'autorisation de modifier les informations du groupe sur \"%1$@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Vous avez défini l'autorisation de modifier les infos du groupe sur \"%1$@\".";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ a défini l'autorisation de modifier les informations du groupe sur \"%2$@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ a défini l'autorisation de modifier les infos du groupe sur \"%2$@\".";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Les informations du groupe peuvent être modifiées par %1$@.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Les infos du groupe peuvent être modifiées par \"%1$@\".";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Les administrateurs";
@@ -2960,7 +2963,7 @@
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ est bloqué";
 
 /* Button to continue an ongoing group call */
-"GROUP_CALL_CONTINUE_BUTTON" = "Poursuivre l’appel";
+"GROUP_CALL_CONTINUE_BUTTON" = "Poursuivre l'appel";
 
 /* Text in conversation view for a group call that has since ended */
 "GROUP_CALL_ENDED_MESSAGE" = "L’appel de groupe a pris fin";
@@ -3512,7 +3515,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Invitations";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Demandes et invitations";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Demandes d'adhésion et invitations";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "%1$@ à %2$@";
@@ -3998,7 +4001,7 @@
 "LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Groupes hérités";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Ce groupe est un groupe hérité qui n’est plus pris en charge. Pour poursuivre cette conversation, veuillez créer un nouveau groupe. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Ce groupe est un groupe hérité. Il n'est plus pris en charge. Pour poursuivre cette conversation, veuillez créer un nouveau groupe. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Les Nouveaux groupes offrent des fonctions telles que les @mentions et les administrateurs de groupes et en offriront d’autres dans le futur.\n\nTout l’historique des messages et tous les médias d’avant la conversion ont été conservés.";
@@ -4058,16 +4061,16 @@
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Terminer l'association sur l'autre appareil";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages. */
-"LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Your device was successfully linked, but your messages could not be transferred.";
+"LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Association de l'appareil bien effectuée, mais impossible de transférer vos messages.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
-"LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Message Sync Failed";
+"LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Impossible de synchroniser les messages";
 
 /* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ complete";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ effectués";
 
 /* Title for a progress modal indicating the sync progress */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "Syncing Messages…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "Synchronisation des messages…";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Associer un nouvel appareil";
@@ -4083,6 +4086,12 @@
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "En savoir plus";
+
+/* Body for system notification when a new device is linked. Embeds {{ time the device was linked }} */
+"LINKED_DEVICE_NOTIFICATION_BODY" = "A new device was linked to your account at %1$@. Tap to view.";
+
+/* Title for system notification when a new device is linked. */
+"LINKED_DEVICE_NOTIFICATION_TITLE" = "You Linked a New Device";
 
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
 "LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "Avec l'autre appareil, rendez-vous sur %1$@ pour installer Signal pour iPad ou sur %2$@ pour installer Signal Desktop.";
@@ -4112,16 +4121,16 @@
 "LINKED_DEVICES_LIST_TITLE" = "Appareils associés";
 
 /* Button title for renaming a linked device */
-"LINKED_DEVICES_RENAME_BUTTON" = "Rename";
+"LINKED_DEVICES_RENAME_BUTTON" = "Renommer";
 
 /* Message on a sheet indicating the device rename attempt received an error. */
-"LINKED_DEVICES_RENAME_FAILURE_MESSAGE" = "Unable to change device name. Try again later.";
+"LINKED_DEVICES_RENAME_FAILURE_MESSAGE" = "Impossible de renommer l'appareil. Veuillez réessayer plus tard.";
 
 /* Message on a toast indicating the device was renamed. */
-"LINKED_DEVICES_RENAME_SUCCESS_MESSAGE" = "Device name updated";
+"LINKED_DEVICES_RENAME_SUCCESS_MESSAGE" = "Appareil renommé.";
 
 /* Title for the screen for renaming a linked device */
-"LINKED_DEVICES_RENAME_TITLE" = "Edit Device Name";
+"LINKED_DEVICES_RENAME_TITLE" = "Renommer l'appareil";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Appareils associés";
@@ -4130,19 +4139,22 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Impossible d’associer l’appareil.";
 
 /* Progress label when the message loading has nearly completed during the device linking process */
-"LINKING_SYNCING_FINALIZING" = "Finalizing message transfer…";
+"LINKING_SYNCING_FINALIZING" = "Finalisation du transfert des messages…";
 
 /* Footer text when loading messages during linking process. */
-"LINKING_SYNCING_FOOTER" = "Messages and chat info are protected by end-to-end encryption, including the sync process.";
+"LINKING_SYNCING_FOOTER" = "Avec son protocole de chiffrement de bout en bout, Signal protège systématiquement vos messages et vos conversations. Même pendant la synchronisation.";
 
 /* Title shown when loading messages during linking process */
 "LINKING_SYNCING_MESSAGES_TITLE" = "Synchronisation des messages";
 
 /* Progress label when the message loading has not yet started during the device linking process */
-"LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Preparing to download…";
+"LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Préparation du téléchargement…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes depending on the size of your message history";
+"LINKING_SYNCING_TIMING_INFO" = "Selon la taille des messages, cela peut prendre quelques minutes.";
+
+/* Shown to users while the app is loading, asking them not to close the app. */
+"LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Ne fermez pas Signal.";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Afin de transférer votre compte Signal, vous devez activer l’accès au réseau local sur les deux appareils.";
@@ -4210,6 +4222,9 @@
 /* VoiceOver description for a generic audio file in All Media */
 "MEDIA_GALLERY_A11Y_AUDIO_FILE" = "fichier audio";
 
+/* VoiceOver description for a generic non-audiovisual file in All Media */
+"MEDIA_GALLERY_A11Y_OTHER_FILE" = "file";
+
 /* VoiceOver description for a voice messages in All Media */
 "MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "message vocal";
 
@@ -4227,6 +4242,12 @@
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
 "MEDIA_GALLERY_NO_AUDIO_TITLE" = "Aucun fichier audio";
+
+/* Displayed in All Media (Audio) screen when there's no non-audiovisual files - second line. */
+"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "Files that you send and receive will appear here";
+
+/* Displayed in All Media (Audio) screen when there's no non-audiovisual files - first line. */
+"MEDIA_GALLERY_NO_FILES_TITLE" = "No Files";
 
 /* Displayed in All Media screen when there's no media - first line. */
 "MEDIA_GALLERY_NO_FILTER_RESULTS" = "Aucun média";
@@ -4511,10 +4532,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Supprimer";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Poursuivre cette conversation avec %1$@ et partager vos nom et photo avec cette personne ?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Poursuivre cette conversation et partager votre nom et votre photo avec %1$@ ?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Poursuivre votre conversation avec ce groupe et partager vos nom et photo avec ses membres ?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Poursuivre votre conversation avec ce groupe et partager votre nom et votre photo avec ses membres ?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Partager votre nom et votre photo avec %1$@ et l'autoriser à échanger des messages avec vous ? Cet utilisateur ne saura pas que vous avez vu ses messages tant que vous n'aurez pas accepté.";
@@ -5911,6 +5932,9 @@
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "Les notifications push ont bien été réactivées.";
 
+/* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %1$@.";
+
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
 
@@ -6062,7 +6086,7 @@
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Mettre à jour";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "Merci d'installer la dernière version de Signal pour poursuivre l'inscription.";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "Pour poursuivre l'inscription, merci d'installer la dernière version de Signal.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Mise à jour requise";
@@ -6078,6 +6102,12 @@
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Transférer compte et messages";
+
+/* Description for the screen that allows users to enter their backup key. */
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your backup key is a 64-digit code required to recover your account and data.";
+
+/* Title for the screen that allows users to enter their backup key. */
+"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Enter Your Backup Key";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Saisissez le numéro";
@@ -6095,10 +6125,13 @@
 "REGISTRATION_LOCK_TIMEOUT_TITLE" = "Le compte est verrouillé";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_BODY" = "Afin de poursuivre, veuillez vérifier la connexion à Internet de votre téléphone et réessayer.";
+"REGISTRATION_NETWORK_ERROR_BODY" = "Pour continuer, vérifiez la connexion Internet de votre téléphone et réessayez.";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
 "REGISTRATION_NETWORK_ERROR_TITLE" = "Vérifiez la connexion";
+
+/* Title of button to tap if you do not have a backup key during registration. */
+"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "No Backup Key?";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Saisir votre numéro de téléphone pour commencer.";
@@ -6107,7 +6140,7 @@
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Votre numéro de téléphone";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "Is your phone number above correct?";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "Le numéro de téléphone ci-dessus est-il correct ?";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Numéro de téléphone";
@@ -6161,16 +6194,16 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Vous devez d’abord vous inscrire avant de pouvoir envoyer un message.";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
-"REGISTRATION_SCAN_QR_CODE_TITLE" = "Scan this code with your old phone";
+"REGISTRATION_SCAN_QR_CODE_TITLE" = "Scannez ce code avec votre ancien téléphone";
 
 /* Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal */
-"REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "Open Signal on your old device";
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "Ouvrez Signal sur votre ancien appareil";
 
 /* Tutorial text describing the third step to scanning the restore/transfer QR code with your old phone: scan the code */
-"REGISTRATION_SCAN_QR_CODE_TUTORIAL_SCAN" = "Scan this code with the camera";
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_SCAN" = "Scannez ce code avec l'appareil photo";
 
 /* Tutorial text describing the second step to scanning the restore/transfer QR code with your old phone: tap the camera icon */
-"REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA" = "Tap the camera icon";
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA" = "Touchez l'icône de l'appareil photo";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Appel vocal";
@@ -6407,13 +6440,22 @@
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Impossible d’associer l’appareil.";
 
 /* Title for action sheet when secondary device fails to sync messages. */
-"SECONDARY_LINKING_SYNCING_ERROR_TITLE" = "Error transferring your messages";
+"SECONDARY_LINKING_SYNCING_ERROR_TITLE" = "Erreur lors du transfert des messages";
 
 /* Message for action sheet when secondary device fails to sync messages due to network error. */
-"SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE" = "Your messages could not be transferred. Check your internet connection and try again.";
+"SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE" = "Impossible de transférer vos messages pour le moment. Vérifiez votre connexion Internet et réessayez.";
 
 /* Message for action sheet when secondary device fails to sync messages due to an unspecified error. */
-"SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE" = "Your messages could not be transferred due to an error. Try again by re-linking this device.";
+"SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE" = "Une erreur nous empêche de transférer vos messages. Veuillez associer cet appareil de nouveau et réessayer.";
+
+/* Button on an action sheet to open Signal on the App Store. */
+"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_CHECK_FOR_UPDATE_BUTTON" = "Check For Updates";
+
+/* Message for action sheet when the secondary device fails to sync messages due to an app update being required. */
+"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_MESSAGE" = "To complete syncing your messages, update Signal now.";
+
+/* Title for action sheet when the secondary device fails to sync messages due to an app update being required. */
+"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE" = "Update Required";
 
 /* header text when this device is being added as a secondary */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choisir un nom pour cet appareil";
@@ -6446,7 +6488,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Besoin d'aide pour associer votre iPad ? C'est par ici !";
 
 /* Text for a button offering to refresh the QR code to link an iPad. */
-"SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "Refresh code";
+"SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "Actualiser le code";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Lire le code QR avec votre téléphone";
@@ -6459,6 +6501,9 @@
 
 /* Label for the 'see all' button. */
 "SEE_ALL_BUTTON" = "Tout afficher";
+
+/* Button text to select all in any list selection mode */
+"SELECT_ALL" = "Select All";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Envoyer de nouveau";
@@ -6488,7 +6533,7 @@
 "SEND_MEDIA_TURN_OFF_MM_TITLE" = "Désactiver la fonction multimode ?";
 
 /* String describing high quality sent media */
-"SENT_MEDIA_QUALITY_HIGH" = "Élevée";
+"SENT_MEDIA_QUALITY_HIGH" = "Haute qualité";
 
 /* String describing standard quality sent media */
 "SENT_MEDIA_QUALITY_STANDARD" = "Standard";
@@ -6500,7 +6545,7 @@
 "SEPA_DONATION_EMAIL_PLACEHOLDER" = "Adresse mail";
 
 /* SEPA bank account donation error for insufficient funds. */
-"SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Les fonds disponibles sur le compte bancaire renseigné sont insuffisants pour effectuer cet achat. Veuillez réessayer ou contacter votre banque pour plus d’informations.";
+"SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Les fonds disponibles sur ce compte bancaire sont insuffisants pour effectuer cet achat. Veuillez réessayer ou contacter votre banque pour en savoir plus.";
 
 /* SEPA bank account donation error for missing or incorrect mandate information. */
 "SEPA_DONATION_ERROR_NOT_AUTHORIZED" = "Une erreur s’est produite lors du traitement de ce paiement. Veuillez réessayer.";
@@ -6548,13 +6593,13 @@
 "SESSION_SWITCHOVER_EVENT" = "%1$@ appartient à %2$@";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "Choisir dans Photos";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "Sélectionner une photo";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "Préréglages";
+"SET_WALLPAPER_PRESETS" = "Couleurs prédéfinies";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "Définir un fond d’écran";
+"SET_WALLPAPER_TITLE" = "Définir un fond d'écran";
 
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "Compte";
@@ -6719,7 +6764,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Réinitialiser les paramètres de téléchargement automatique";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Qualité des médias envoyés";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Qualité des médias";
 
 /* Section footer for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choisissez la qualité des photos et vidéos que vous envoyez.";
@@ -6770,7 +6815,7 @@
 "SETTINGS_INVITE_TITLE" = "Invitez vos amis";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Couleur et fond d’écran des conversations";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Couleur des bulles et fond d'écran";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Son des messages";
@@ -7160,7 +7205,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirmer la phrase de récupération";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Compte Paiements restauré.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Compte de paiement restauré.";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Saisir manuellement";
@@ -7175,7 +7220,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Phrase invalide";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Coller depuis le presse-papier";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Coller depuis le presse-papiers";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Phrase de récupération";
@@ -7445,7 +7490,7 @@
 "SETTINGS_SECURITY_TITLE" = "Sécurité de l'app";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Envoyer des médias de haute qualité demande plus de données.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "L'envoi de médias de haute qualité consomme plus de données.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos et vidéos";
@@ -7553,7 +7598,7 @@
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Si vous choisissez d’ignorer la confirmation, vous pourriez manquer les messages des autres et vos messages pourraient ne pas être envoyés.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Poursuivre sans confirmer ?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continuer sans confirmer ?";
 
 /* Body for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_BODY" = "Afin d'éviter les spam sur Signal, merci de terminer la vérification.\n        \nAprès vérification, vous pourrez continuer d'échanger des messages. Tous les messages en pause seront envoyés automatiquement.";
@@ -8471,91 +8516,91 @@
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Appuyez et maintenez pour enregistrer.";
 
 /* Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }} */
-"WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "Dégradé avec du %1$@ et du %2$@";
+"WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "Dégradé contenant du %1$@ et du %2$@";
 
 /* Placeholder text for header of the wallpaper mini preview */
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Nom du contact";
 
 /* Blur button on wallpaper preview. */
-"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Rendre la photo floue";
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "Flouter la photo";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pincer pour zoomer, glisser pour ajuster.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pincez pour zoomer, faites glisser pour ajuster.";
 
 /* The incoming bubble text when setting a preset */
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Balayez pour afficher d'autres fonds d'écran.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Définir le fond d’écran pour toutes les conversations.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Définir ce fond d'écran pour toutes les conversations.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Définir le fond d’écran pour %1$@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Définir ce fond d'écran pour %1$@.";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "Aperçu";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Réinitialiser la couleur de la conversation";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Réinitialiser la couleur des bulles";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Réinitialiser la couleur de cette conversation ?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Réinitialiser la couleur des bulles de cette conversation ?";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Réinitialiser le fond d’écran";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Réinitialiser le fond d'écran";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Réinitialiser le fond d’écran de cette conversation ?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Réinitialiser le fond d'écran de cette conversation ?";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Le thème sombre atténue le fond d’écran";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Adapter le fond d'écran au mode sombre";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Le fond d’écran n’a pas pu être effacé. Veuillez essayer plus tard ou contacter l’assistance si l’erreur persiste.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Impossible de supprimer le fond d'écran. Veuillez réessayer plus tard ou contacter l'assistance si l'erreur persiste.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Tous les fonds d’écran n’ont pas pu être réinitialisés. Veuillez essayer plus tard ou contacter l’assistance si l’erreur persiste.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Impossible de réinitialiser tous les fonds d'écran. Veuillez réessayer plus tard ou contacter l'assistance si l'erreur persiste.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Réinitialiser toutes les couleurs";
+"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Toutes les couleurs de toutes les conversations";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Réinitialiser tous les fonds d’écran";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Tous les fonds d'écran";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Voulez-vous remplacer toutes les couleurs des conversations ?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Réinitialiser la couleur des bulles dans toutes les conversations ?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Réinitialiser les couleurs des conversations";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Réinitialiser la couleur des bulles";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Réinitialiser la couleur de la conversation";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Réinitialiser la couleur des bulles";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Réinitialiser le fond d’écran";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Réinitialiser le fond d'écran";
 
 /* Label for 'reset default chat color' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Remettre les couleurs par défaut";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Seulement la couleur que j'ai choisie par défaut";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Réinitialiser les couleurs des conversations";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Réinitialiser la couleur des bulles";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Remettre le fond d’écran par défaut";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Seulement celui que j'ai choisi par défaut";
 
 /* Reset wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Réinitialiser les fonds d’écran";
+"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Réinitialiser les fonds d'écran";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Voulez-vous remplacer tous les fonds d’écran ?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Réinitialiser tous les fonds d'écran ?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Réinitialiser le fond d’écran";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Réinitialiser les fonds d'écran";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Couleur de la conversation";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Couleur des bulles";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Définir un fond d’écran";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Définir un fond d'écran";
 
 /* Second person pronoun to represent the local user. */
 "YOU" = "Vous";

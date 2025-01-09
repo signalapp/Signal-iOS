@@ -2,7 +2,42 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
+	<key>ACCESSIBILITY_LABEL_LONG_VOICE_MEMO_%d_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@minutes@ and %2$#@seconds@</string>
+		<key>minutes</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d minute</string>
+			<key>few</key>
+			<string>%1$d minutes</string>
+			<key>many</key>
+			<string>%1$d minutes</string>
+			<key>other</key>
+			<string>%1$d minutes</string>
+		</dict>
+		<key>seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$d second</string>
+			<key>few</key>
+			<string>%2$d seconds</string>
+			<key>many</key>
+			<string>%2$d seconds</string>
+			<key>other</key>
+			<string>%2$d seconds</string>
+		</dict>
+	</dict>
+	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -13,13 +48,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Wiadomość głosowa %1$d sekunda</string>
+			<string>Voice message %1$d second</string>
 			<key>few</key>
-			<string>Wiadomość głosowa %1$d sekundy</string>
+			<string>Voice message %1$d seconds</string>
 			<key>many</key>
-			<string>Wiadomość głosowa %1$d sekund</string>
+			<string>Voice message %1$d seconds</string>
 			<key>other</key>
-			<string>Wiadomość głosowa %1$d sekund</string>
+			<string>Voice message %1$d seconds</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
@@ -1008,13 +1043,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ zaprosił(a) %1$d osobę do grupy.</string>
+			<string>%2$@ zaprasza %1$d osobę do grupy.</string>
 			<key>few</key>
-			<string>%2$@ zaprosił(a) %1$d osoby do grupy.</string>
+			<string>%2$@ zaprasza %1$d osoby do grupy.</string>
 			<key>many</key>
-			<string>%2$@ zaprosił(a) %1$d osób do grupy.</string>
+			<string>%2$@ zaprasza %1$d osób do grupy.</string>
 			<key>other</key>
-			<string>%2$@ zaprosił(a) %1$d osób do grupy.</string>
+			<string>%2$@ zaprasza %1$d osoby do grupy.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -1048,13 +1083,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ anulował(a) zaproszenia do grupy dla %1$d osoby.</string>
+			<string>%2$@ cofa zaproszenie do grupy dla %1$d osoby.</string>
 			<key>few</key>
-			<string>%2$@ anulował(a) zaproszenia do grupy dla %1$d osób.</string>
+			<string>%2$@ cofa zaproszenia do grupy dla %1$d osób.</string>
 			<key>many</key>
-			<string>%2$@ anulował(a) zaproszenia do grupy dla %1$d osób.</string>
+			<string>%2$@ cofa zaproszenia do grupy dla %1$d osób.</string>
 			<key>other</key>
-			<string>%2$@ anulował(a) zaproszenia do grupy dla %1$d osób.</string>
+			<string>%2$@ cofa zaproszenia do grupy dla %1$d osoby.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
@@ -1068,13 +1103,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ poprosił(a) i anulował(a) swoją prośbę o przyjęcie do grupy przez link.</string>
+			<string>%2$@ wysyła, a potem cofa %1$d prośbę o przyjęcie do grupy przez link.</string>
 			<key>few</key>
-			<string>%2$@ poprosił(a) i anulował(a) %1$d prośby o przyjęcie do grupy przez link.</string>
+			<string>%2$@ wysyła, a potem cofa %1$d prośby o przyjęcie do grupy przez link.</string>
 			<key>many</key>
-			<string>%2$@ poprosił(a) i anulował(a) %1$d próśb o przyjęcie do grupy przez link.</string>
+			<string>%2$@ wysyła, a potem cofa %1$d próśb o przyjęcie do grupy przez link.</string>
 			<key>other</key>
-			<string>%2$@ poprosił(a) i anulował(a) %1$d próśb o przyjęcie do grupy przez link.</string>
+			<string>%2$@ wysyła, a potem cofa %1$d prośby o przyjęcie do grupy przez link.</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -1548,13 +1583,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ zaprosił(a) %1$d osobę</string>
+			<string>%2$@ zaprasza %1$d osobę</string>
 			<key>few</key>
-			<string>%2$@ zaprosił(a) %1$d osoby</string>
+			<string>%2$@ zaprasza %1$d osoby</string>
 			<key>many</key>
-			<string>%2$@ zaprosił(a) %1$d osób</string>
+			<string>%2$@ zaprasza %1$d osób</string>
 			<key>other</key>
-			<string>%2$@ zaprosił(a) %1$d osób</string>
+			<string>%2$@ zaprasza %1$d osoby</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>

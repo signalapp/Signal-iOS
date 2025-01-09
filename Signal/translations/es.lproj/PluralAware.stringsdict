@@ -2,7 +2,34 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
+	<key>ACCESSIBILITY_LABEL_LONG_VOICE_MEMO_%d_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@minutes@ and %2$#@seconds@</string>
+		<key>minutes</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d minute</string>
+			<key>other</key>
+			<string>%1$d minutes</string>
+		</dict>
+		<key>seconds</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$d second</string>
+			<key>other</key>
+			<string>%2$d seconds</string>
+		</dict>
+	</dict>
+	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -13,9 +40,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Mensaje de voz de %1$d segundo</string>
+			<string>Voice message %1$d second</string>
 			<key>other</key>
-			<string>Mensaje de voz de %1$d segundos</string>
+			<string>Voice message %1$d seconds</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
@@ -269,9 +296,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Este color se usa en %1$d chat. ¿Quieres guardar los cambios en ese chat?</string>
+			<string>Tienes %1$d chat con este color. ¿Quieres guardar los cambios en ese chat?</string>
 			<key>other</key>
-			<string>Este color se usa en %1$d chats. ¿Quieres guardar los cambios en todos los chats?</string>
+			<string>Tienes %1$d chats con este color. ¿Quieres guardar los cambios en todos los chats?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -680,9 +707,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d participante tiene el mismo nombre.</string>
+			<string>%1$d participante usa el mismo nombre.</string>
 			<key>other</key>
-			<string>%1$d participantes tienen el mismo nombre.</string>
+			<string>%1$d participantes usan el mismo nombre.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -936,7 +963,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Para mantener &quot;%2$@&quot; vinculado, abre Signal en ese dispositivo en un plazo de  %1$d  día.</string>
+			<string>Para mantener &quot;%2$@&quot; vinculado, abre Signal en ese dispositivo en un plazo de %1$d día.</string>
 			<key>other</key>
 			<string>Para mantener &quot;%2$@&quot; vinculado, abre Signal en ese dispositivo en un plazo de %1$d días.</string>
 		</dict>
@@ -1096,9 +1123,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d persona excluida</string>
+			<string>excepto %1$d</string>
 			<key>other</key>
-			<string>%1$d personas excluidas</string>
+			<string>excepto %1$d</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
@@ -1160,9 +1187,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Mis contactos de Signal · excepto %1$d persona</string>
+			<string>Mis contactos de Signal · excepto %1$d</string>
 			<key>other</key>
-			<string>Mis contactos de Signal · excepto %1$d personas</string>
+			<string>Mis contactos de Signal · excepto %1$d</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -1336,9 +1363,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ y %1$ld más levantaron la mano</string>
+			<string>%2$@ y %1$ld más han levantado la mano</string>
 			<key>other</key>
-			<string>%2$@ y %1$ld más levantaron la mano</string>
+			<string>%2$@ y %1$ld más han levantado la mano</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>
@@ -1416,9 +1443,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d persona excluida</string>
+			<string>excepto %1$d</string>
 			<key>other</key>
-			<string>%1$d personas excluidas</string>
+			<string>excepto %1$d</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>
@@ -1480,9 +1507,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Los alias deben contener al menos %1$d carácter</string>
+			<string>Los alias deben comenzar con al menos %1$d carácter</string>
 			<key>other</key>
-			<string>Los alias deben contener al menos %1$d caracteres</string>
+			<string>Los alias deben comenzar con al menos %1$d caracteres</string>
 		</dict>
 	</dict>
 </dict>
