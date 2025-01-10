@@ -31,6 +31,8 @@ class AuthCredentialStore {
         return "\(redemptionTime)"
     }
 
+    // MARK: -
+
     func callLinkAuthCredential(
         for redemptionTime: UInt64,
         tx: DBReadTransaction
@@ -59,6 +61,8 @@ class AuthCredentialStore {
         callLinkAuthCredentialStore.removeAll(transaction: tx)
     }
 
+    // MARK: -
+
     func groupAuthCredential(
         for redemptionTime: UInt64,
         tx: DBReadTransaction
@@ -86,6 +90,8 @@ class AuthCredentialStore {
     func removeAllGroupAuthCredentials(tx: DBWriteTransaction) {
         groupAuthCredentialStore.removeAll(transaction: tx)
     }
+
+    // MARK: -
 
     func backupAuthCredential(
         for credentialType: MessageBackupAuthCredentialType,
@@ -120,8 +126,14 @@ class AuthCredentialStore {
         )
     }
 
-    func removeAllBackupAuthCredentials(for credentialType: MessageBackupAuthCredentialType, tx: DBWriteTransaction) {
+    func removeAllBackupAuthCredentials(ofType credentialType: MessageBackupAuthCredentialType, tx: DBWriteTransaction) {
         let store = credentialType == .messages ? backupAuthCredentialStore : mediaAuthCredentialStore
         store.removeAll(transaction: tx)
+    }
+
+    func removeAllBackupAuthCredentials(tx: DBWriteTransaction) {
+        for credentialType in MessageBackupAuthCredentialType.allCases {
+            removeAllBackupAuthCredentials(ofType: credentialType, tx: tx)
+        }
     }
 }

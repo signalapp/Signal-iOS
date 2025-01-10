@@ -97,7 +97,7 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
                     }
                     return
                 }
-                self.authCredentialStore.removeAllBackupAuthCredentials(for: credentialType, tx: tx)
+                self.authCredentialStore.removeAllBackupAuthCredentials(ofType: credentialType, tx: tx)
                 for receivedCredential in receivedCredentials {
                     self.authCredentialStore.setBackupAuthCredential(
                         receivedCredential.credential,

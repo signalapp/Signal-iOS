@@ -954,6 +954,7 @@ public class AppSetup {
         )
 
         let backupReceiptCredentialRedemptionJobQueue = BackupReceiptCredentialRedemptionJobQueue(
+            authCredentialStore: authCredentialStore,
             db: db,
             networkManager: networkManager,
             reachabilityManager: reachabilityManager

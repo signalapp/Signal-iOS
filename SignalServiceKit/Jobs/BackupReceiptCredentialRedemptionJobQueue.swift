@@ -17,11 +17,13 @@ class BackupReceiptCredentialRedemptionJobQueue {
     private let jobRunnerFactory: BackupReceiptCredentialRedemptionJobRunnerFactory
 
     public init(
+        authCredentialStore: AuthCredentialStore,
         db: any DB,
         networkManager: NetworkManager,
         reachabilityManager: SSKReachabilityManager
     ) {
         self.jobRunnerFactory = BackupReceiptCredentialRedemptionJobRunnerFactory(
+            authCredentialStore: authCredentialStore,
             db: db,
             networkManager: networkManager
         )
@@ -65,16 +67,23 @@ class BackupReceiptCredentialRedemptionJobQueue {
 }
 
 private class BackupReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactory {
+    private let authCredentialStore: AuthCredentialStore
     private let db: any DB
     private let networkManager: NetworkManager
 
-    init(db: any DB, networkManager: NetworkManager) {
+    init(
+        authCredentialStore: AuthCredentialStore,
+        db: any DB,
+        networkManager: NetworkManager
+    ) {
+        self.authCredentialStore = authCredentialStore
         self.db = db
         self.networkManager = networkManager
     }
 
     func buildRunner() -> BackupReceiptCredentialRedemptionJobRunner {
         return BackupReceiptCredentialRedemptionJobRunner(
+            authCredentialStore: authCredentialStore,
             db: db,
             networkManager: networkManager,
             continuation: nil
@@ -83,6 +92,7 @@ private class BackupReceiptCredentialRedemptionJobRunnerFactory: JobRunnerFactor
 
     func buildRunner(continuation: CheckedContinuation<Void, Error>) -> BackupReceiptCredentialRedemptionJobRunner {
         return BackupReceiptCredentialRedemptionJobRunner(
+            authCredentialStore: authCredentialStore,
             db: db,
             networkManager: networkManager,
             continuation: continuation
@@ -106,16 +116,19 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
         static let paidTierBackupReceiptLevel = 201
     }
 
+    private let authCredentialStore: AuthCredentialStore
     private let db: any DB
     private let networkManager: NetworkManager
 
     private let continuation: CheckedContinuation<Void, Error>?
 
     init(
+        authCredentialStore: AuthCredentialStore,
         db: any DB,
         networkManager: NetworkManager,
         continuation: CheckedContinuation<Void, Error>?
     ) {
+        self.authCredentialStore = authCredentialStore
         self.db = db
         self.networkManager = networkManager
         self.continuation = continuation
@@ -326,6 +339,11 @@ private class BackupReceiptCredentialRedemptionJobRunner: JobRunner {
 
                 await db.awaitableWrite { tx in
                     jobRecord.delete(tx: tx)
+
+                    /// Clear out any cached Backup auth credentials, since we
+                    /// may now be able to fetch credentials with a higher level
+                    /// of access than we had cached.
+                    authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
                 }
                 return
 
