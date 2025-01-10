@@ -188,7 +188,7 @@ public class GroupsV2Protos {
 
     public class func validateInviteLinkState(inviteLinkPassword: Data?, groupAccess: GroupAccess) {
         let canJoinFromInviteLink = groupAccess.canJoinFromInviteLink
-        let hasInviteLinkPassword = inviteLinkPassword?.count ?? 0 > 0
+        let hasInviteLinkPassword = inviteLinkPassword?.nilIfEmpty != nil
         if canJoinFromInviteLink, !hasInviteLinkPassword {
             owsFailDebug("Invite links enabled without inviteLinkPassword.")
         } else if !canJoinFromInviteLink, hasInviteLinkPassword {
