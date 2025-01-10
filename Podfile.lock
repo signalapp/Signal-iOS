@@ -117,7 +117,7 @@ CHECKOUT OPTIONS:
     :submodules: true
     :tag: signal/6.0.2
   libPhoneNumber-iOS:
-    :commit: 830f8ce343efb0f06a44e4eb44eb3bcac24c16e8
+    :commit: 60482f7c0341e7c13e037ae1edbe8b359de7e6f3
     :git: https://github.com/signalapp/libPhoneNumber-iOS
   LibSignalClient:
     :git: https://github.com/signalapp/libsignal.git
