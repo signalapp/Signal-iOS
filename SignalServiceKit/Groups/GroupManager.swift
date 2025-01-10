@@ -1061,9 +1061,8 @@ public class GroupManager: NSObject {
 
             if
                 DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? true,
-                let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci,
-                oldGroupModel.membership.hasProfileKeyInGroup(serviceId: localAci),
-                !newGroupModel.membership.hasProfileKeyInGroup(serviceId: localAci)
+                oldGroupModel.membership.hasProfileKeyInGroup(serviceId: localIdentifiers.aci),
+                !newGroupModel.membership.hasProfileKeyInGroup(serviceId: localIdentifiers.aci)
             {
                 // If our profile key is no longer exposed to the group - for
                 // example, we've left the group - check if the group had any
@@ -1089,7 +1088,7 @@ public class GroupManager: NSObject {
                         // Best effort.
                         let mutualGroupThreads = Self.mutualGroupThreads(
                             with: member,
-                            localAci: localAci,
+                            localAci: localIdentifiers.aci,
                             tx: transaction
                         )
 
