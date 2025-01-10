@@ -289,14 +289,16 @@ extension BlockingManager {
             }
 
             if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-                // Refresh unblocked group.
-                SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(groupThread)
-
                 // Insert an info message that we unblocked.
                 DependenciesBridge.shared.interactionStore.insertInteraction(
                     TSInfoMessage(thread: groupThread, messageType: .unblockedGroup),
                     tx: transaction.asV2Write
                 )
+
+                // Refresh unblocked group.
+                transaction.addSyncCompletion {
+                    SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(groupThread)
+                }
             }
         }
     }
