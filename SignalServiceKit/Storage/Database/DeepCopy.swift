@@ -64,7 +64,7 @@ public class DeepCopies {
     }
 
     // "Cannot explicitly specialize a generic function."
-    fileprivate static func shallowCopy<T: NSObject>(_ objectToCopy: T) throws -> T {
+    fileprivate static func shallowCopy<T: NSObject & NSCopying>(_ objectToCopy: T) throws -> T {
         guard let newCopy = objectToCopy.copy() as? T else {
             throw OWSAssertionError("Could not copy: \(type(of: objectToCopy))")
         }
@@ -214,26 +214,6 @@ extension StickerPackItem: DeepCopyable {
 // MARK: -
 
 @objc
-extension Contact: DeepCopyable {
-    public func deepCopy() throws -> AnyObject {
-        // This class can use shallow copies.
-        return try DeepCopies.shallowCopy(self)
-    }
-}
-
-// MARK: -
-
-@objc
-extension Aes256Key: DeepCopyable {
-    public func deepCopy() throws -> AnyObject {
-        // This class can use shallow copies.
-        return try DeepCopies.shallowCopy(self)
-    }
-}
-
-// MARK: -
-
-@objc
 extension TSGroupModel: DeepCopyable {
     public func deepCopy() throws -> AnyObject {
         // This class can use shallow copies.
@@ -305,16 +285,6 @@ extension TSArchivedPaymentInfo: DeepCopyable {
 
 @objc
 extension MobileCoinPayment: DeepCopyable {
-    public func deepCopy() throws -> AnyObject {
-        // This class can use shallow copies.
-        return try DeepCopies.shallowCopy(self)
-    }
-}
-
-// MARK: -
-
-@objc
-extension OWSUserProfileBadgeInfo: DeepCopyable {
     public func deepCopy() throws -> AnyObject {
         // This class can use shallow copies.
         return try DeepCopies.shallowCopy(self)
