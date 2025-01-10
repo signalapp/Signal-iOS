@@ -40,9 +40,6 @@ class DebugUIGroupsV2: DebugUIPage {
             sectionItems.append(OWSTableItem(title: "Send partially-invalid group messages.") { [weak self] in
                 self?.sendPartiallyInvalidGroupMessages(groupThread: groupThread)
             })
-            sectionItems.append(OWSTableItem(title: "Update v2 group immediately.") { [weak self] in
-                self?.updateV2GroupImmediately(groupThread: groupThread)
-            })
         }
 
         return OWSTableSection(title: "Groups v2", items: sectionItems)
@@ -415,26 +412,6 @@ class DebugUIGroupsV2: DebugUIPage {
         Task {
             await GroupManager.sendGroupUpdateMessage(thread: groupThread)
             Logger.info("Success.")
-        }
-    }
-
-    private func updateV2GroupImmediately(groupThread: TSGroupThread) {
-        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
-            owsFailDebug("Invalid groupModel.")
-            return
-        }
-        let groupId = groupModelV2.groupId
-        let groupSecretParamsData = groupModelV2.secretParamsData
-        Task {
-            do {
-                try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
-                    groupId: groupId,
-                    groupSecretParams: try GroupSecretParams(contents: [UInt8](groupSecretParamsData))
-                )
-                Logger.info("Success.")
-            } catch {
-                owsFailDebug("Error: \(error)")
-            }
         }
     }
 }
