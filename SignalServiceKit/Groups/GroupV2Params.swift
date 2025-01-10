@@ -280,7 +280,7 @@ public extension GroupV2Params {
             owsFailDebug("Error: \(error)")
             throw error
         }
-}
+    }
 
     func encryptGroupAvatar(_ value: Data) throws -> Data {
         do {

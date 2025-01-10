@@ -35,8 +35,7 @@ class DebugUIGroupsV2: DebugUIPage {
             })
         }
 
-        if let groupThread = thread as? TSGroupThread,
-            groupThread.isGroupV2Thread {
+        if let groupThread = thread as? TSGroupThread, groupThread.isGroupV2Thread {
             sectionItems.append(OWSTableItem(title: "Send partially-invalid group messages.") { [weak self] in
                 self?.sendPartiallyInvalidGroupMessages(groupThread: groupThread)
             })

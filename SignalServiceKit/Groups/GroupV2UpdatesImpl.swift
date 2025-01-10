@@ -369,9 +369,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
                 Logger.warn("Group update failed: \(error)")
             } else {
                 switch error {
-                case GroupsV2Error.localUserNotInGroup,
-                    GroupsV2Error.timeout,
-                    GroupsV2Error.missingGroupChangeProtos:
+                case GroupsV2Error.localUserNotInGroup, GroupsV2Error.timeout, GroupsV2Error.missingGroupChangeProtos:
                     Logger.warn("Group update failed: \(error)")
                 default:
                     owsFailDebug("Group update failed: \(error)")

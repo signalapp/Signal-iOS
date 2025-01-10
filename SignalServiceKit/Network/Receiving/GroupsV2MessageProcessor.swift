@@ -852,8 +852,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
             return true
         }
         if let statusCode = error.httpStatusCode {
-            if statusCode == 401 ||
-               (500 <= statusCode && statusCode <= 599) {
+            if statusCode == 401 || (500 <= statusCode && statusCode <= 599) {
                 return true
             }
         }
