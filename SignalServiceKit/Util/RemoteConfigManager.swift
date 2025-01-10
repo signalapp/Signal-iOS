@@ -854,8 +854,8 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         let fetchedConfig = try await fetchRemoteConfig(auth: account.chatServiceAuth)
 
         let clockSkew: TimeInterval
-        if let serverEpochTimeSeconds = fetchedConfig.serverEpochTimeSeconds {
-            let dateAccordingToServer = Date(timeIntervalSince1970: TimeInterval(serverEpochTimeSeconds))
+        if let serverEpochTimeMs = fetchedConfig.serverEpochTimeMs {
+            let dateAccordingToServer = Date(timeIntervalSince1970: TimeInterval(serverEpochTimeMs) / 1000)
             clockSkew = dateAccordingToServer.timeIntervalSince(Date())
         } else {
             clockSkew = 0
@@ -981,8 +981,8 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     }
 
     private struct FetchedRemoteConfigResponse {
-        public let items: [String: FetchedRemoteConfigItem]
-        public let serverEpochTimeSeconds: UInt64?
+        let items: [String: FetchedRemoteConfigItem]
+        let serverEpochTimeMs: UInt64?
     }
 
     private func fetchRemoteConfig(auth: ChatServiceAuth) async throws -> FetchedRemoteConfigResponse {
@@ -998,7 +998,8 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         }
 
         let config: [[String: Any]] = try parser.required(key: "config")
-        let serverEpochTimeSeconds: UInt64? = try parser.optional(key: "serverEpochTime")
+        let serverEpochTimeMs = response.responseHeaders["x-signal-timestamp"].flatMap(UInt64.init(_:))
+        owsAssertDebug(serverEpochTimeMs != nil, "Must have X-Signal-Timestamp.")
 
         let items: [String: FetchedRemoteConfigItem] = try config.reduce([:]) { accum, item in
             var accum = accum
@@ -1020,7 +1021,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
         return FetchedRemoteConfigResponse(
             items: items,
-            serverEpochTimeSeconds: serverEpochTimeSeconds
+            serverEpochTimeMs: serverEpochTimeMs
         )
     }
 
