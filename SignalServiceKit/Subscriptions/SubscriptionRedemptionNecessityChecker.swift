@@ -143,19 +143,30 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
                 subscription
             )
 
-            guard let currentEntitlementExpiration else {
-                /// Since we have a subscription but no current entitlement at
-                /// all, we know we have not redeemed yet for this subscription
-                /// period.
-                return true
+            if let currentEntitlementExpiration {
+                /// If the subscription expiration is after the entitlement
+                /// expiration, we know it's renewed since we last redeemed.
+                /// (The entitlement will last till the subscription expiration
+                /// + a grace period, so if the subscription expiration is
+                /// larger, it must have renewed since the entitlement was last
+                /// set.)
+                ///
+                /// This also covers starting a new subscription after a
+                /// previous one expired; we'll have an entitlement from prior
+                /// redemptions, but the new subscription will definitely expire
+                /// after that entitlement.
+                return currentEntitlementExpiration < subscription.endOfCurrentPeriod
             }
 
-            /// If the subscription expiration is after the entitlement
-            /// expiration, we know it's renewed since we last redeemed. (The
-            /// entitlement will last till the subscription expiration + a grace
-            /// period, so if the subscription expiration is larger, it must
-            /// have renewed since the entitlement was last set.)
-            return currentEntitlementExpiration < subscription.endOfCurrentPeriod
+            /// We have no entitlement, so if we have an active subscription
+            /// we know we should redeem. (For example, this is the first
+            /// time this user has set up a subscription.)
+            ///
+            /// It's important to check the subscription status, because we
+            /// don't want to attempt redemption for a long-canceled
+            /// subscription just because the entitlements we had from that
+            /// subscription have been removed from our account.
+            return subscription.active
         }()
 
         if
