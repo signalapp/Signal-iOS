@@ -146,6 +146,10 @@ public final class DebugLogger {
         // file size). Keep extra log files in internal builds.
         logFileManager.maximumNumberOfLogFiles = DebugFlags.extraDebugLogs ? 32 : 3
 
+        // Don't limit the total size on disk explicitly. Rely on "max file size" *
+        // "max number of files" to limit the space we consume.
+        logFileManager.logFilesDiskQuota = 0
+
         let fileLogger = DDFileLogger(logFileManager: logFileManager)
         fileLogger.rollingFrequency = kDayInterval
         fileLogger.maximumFileSize = 3 * 1024 * 1024
