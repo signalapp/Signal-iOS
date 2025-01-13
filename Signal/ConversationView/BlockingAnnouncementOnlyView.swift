@@ -76,14 +76,18 @@ class BlockingAnnouncementOnlyView: UIStackView {
         lineView.autoPinEdge(toSuperviewEdge: .top)
     }
 
-    private func groupAdmins() -> [SignalServiceAddress] {
-        guard let groupThread = thread as? TSGroupThread,
-              let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+    private func fetchGroupAdminAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+        guard
+            let groupThread = thread as? TSGroupThread,
+            let groupModel = groupThread.groupModel as? TSGroupModelV2
+        else {
             owsFailDebug("Invalid group.")
             return []
         }
         owsAssertDebug(groupModel.isAnnouncementsOnly)
-        return Array(groupModel.groupMembership.fullMemberAdministrators)
+        let groupAdminAddresses = Array(groupModel.groupMembership.fullMemberAdministrators)
+        let contactManager = SSKEnvironment.shared.contactManagerRef
+        return contactManager.sortSignalServiceAddresses(groupAdminAddresses, transaction: tx)
 
     }
 
@@ -104,7 +108,10 @@ class BlockingAnnouncementOnlyView: UIStackView {
             return
         }
 
-        let groupAdmins = self.groupAdmins()
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let groupAdmins = databaseStorage.read { tx in
+            return self.fetchGroupAdminAddresses(tx: tx)
+        }
         guard !groupAdmins.isEmpty else {
             owsFailDebug("No group admins.")
             return
@@ -123,7 +130,7 @@ class MessageUserSubsetSheet: OWSTableSheetViewController {
 
     init(addresses: [SignalServiceAddress], forceDarkMode: Bool) {
         owsAssertDebug(!addresses.isEmpty)
-        self.addresses = addresses.stableSort()
+        self.addresses = addresses
         self.forceDarkMode = forceDarkMode
 
         super.init()
