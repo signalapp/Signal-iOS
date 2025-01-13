@@ -95,7 +95,6 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         guard let existingCallRecord = callRecordStore.fetch(
             interactionRowId: individualCallInteractionRowId, tx: tx
         ) else {
-            logger.info("No existing call record found!")
             return
         }
 
@@ -174,8 +173,6 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         shouldSendSyncMessage: Bool,
         tx: DBWriteTransaction
     ) throws -> CallRecord {
-        logger.info("Creating new 1:1 call record from interaction.")
-
         let callRecord = CallRecord(
             callId: callId,
             interactionRowId: individualCallInteractionRowId,

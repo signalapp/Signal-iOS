@@ -334,15 +334,25 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         firstAppVersion: String,
         tx: DBWriteTransaction
     ) throws {
-        let startTimeMs = Date().ows_millisecondsSince1970
+        let startTimeMs = dateProvider().ows_millisecondsSince1970
+        let backupVersion = Constants.supportedBackupVersion
+        let purposeString: String = switch backupPurpose {
+        case .deviceTransfer: "LinkNSync"
+        case .remoteBackup: "RemoteBackup"
+        }
+
         var errors = [LoggableErrorAndProto]()
         defer {
             self.processErrors(errors: errors, tx: tx)
         }
 
+        Logger.info("Exporting for \(purposeString) with version \(backupVersion), timestamp \(startTimeMs)")
+
         try autoreleasepool {
             try writeHeader(
                 stream: stream,
+                backupVersion: backupVersion,
+                backupTimeMs: startTimeMs,
                 currentAppVersion: currentAppVersion,
                 firstAppVersion: firstAppVersion,
                 tx: tx
@@ -548,24 +558,25 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             }
         }
 
-        let endTimeMs = Date().ows_millisecondsSince1970
+        let endTimeMs = dateProvider().ows_millisecondsSince1970
         Logger.info("Exported \(stream.numberOfWrittenFrames) in \(endTimeMs - startTimeMs)ms")
     }
 
     private func writeHeader(
         stream: MessageBackupProtoOutputStream,
+        backupVersion: UInt64,
+        backupTimeMs: UInt64,
         currentAppVersion: String,
         firstAppVersion: String,
         tx: DBWriteTransaction
     ) throws {
         var backupInfo = BackupProto_BackupInfo()
-        backupInfo.version = Constants.supportedBackupVersion
-        backupInfo.backupTimeMs = dateProvider().ows_millisecondsSince1970
-
-        backupInfo.mediaRootBackupKey = mrbkStore.getOrGenerateMediaRootBackupKey(tx: tx)
-
+        backupInfo.version = backupVersion
+        backupInfo.backupTimeMs = backupTimeMs
         backupInfo.currentAppVersion = currentAppVersion
         backupInfo.firstAppVersion = firstAppVersion
+
+        backupInfo.mediaRootBackupKey = mrbkStore.getOrGenerateMediaRootBackupKey(tx: tx)
 
         switch stream.writeHeader(backupInfo) {
         case .success:
@@ -722,7 +733,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) throws -> BackupProto_BackupInfo {
-        let startTimeMs = Date().ows_millisecondsSince1970
+        let startTimeMs = dateProvider().ows_millisecondsSince1970
 
         guard !hasRestoredFromBackup(tx: tx) else {
             throw OWSAssertionError("Restoring from backup twice!")
@@ -755,7 +766,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw error
         }
 
-        Logger.info("Reading backup with version: \(backupInfo.version) backed up at \(backupInfo.backupTimeMs)")
+        Logger.info("Importing with version \(backupInfo.version), timestamp \(backupInfo.backupTimeMs)")
 
         guard backupInfo.version == Constants.supportedBackupVersion else {
             frameErrors.append(LoggableErrorAndProto(
@@ -1005,9 +1016,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             disappearingMessagesJob.startIfNecessary()
         }
 
-        let endTimeMs = Date().ows_millisecondsSince1970
-        Logger.info("Imported backup generated at \(backupInfo.backupTimeMs)")
-        Logger.info("Backup version \(backupInfo.version)")
+        let endTimeMs = dateProvider().ows_millisecondsSince1970
+        Logger.info("Imported with version \(backupInfo.version), timestamp \(backupInfo.backupTimeMs)")
         Logger.info("Backup app version: \(backupInfo.currentAppVersion)")
         Logger.info("Backup first app version \(backupInfo.firstAppVersion)")
         Logger.info("Imported \(stream.numberOfReadFrames) in \(endTimeMs - startTimeMs)ms")
