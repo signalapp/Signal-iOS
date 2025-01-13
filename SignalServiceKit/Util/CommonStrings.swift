@@ -207,10 +207,6 @@ public class CommonStrings: NSObject {
         OWSLocalizedString("BUTTON_VIEW", comment: "Label for the 'view' button.")
     }
 
-    static public var startButton: String {
-        OWSLocalizedString("BUTTON_START", comment: "Label for the 'start' button.")
-    }
-
     static public var seeAllButton: String {
         OWSLocalizedString("SEE_ALL_BUTTON", comment: "Label for the 'see all' button.")
     }

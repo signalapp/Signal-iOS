@@ -685,9 +685,6 @@
 /* Label for the 'share' button. */
 "BUTTON_SHARE" = "Share";
 
-/* Label for the 'start' button. */
-"BUTTON_START" = "Start";
-
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Submit";
 
