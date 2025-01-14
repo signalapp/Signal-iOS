@@ -87,6 +87,9 @@ extension MessageBackup {
             /// reaction to be skipped.
             case invalidReactionAddress
 
+            /// A reaction has an invalid (too large) timestamp.
+            case invalidReactionTimestamp
+
             /// A group update message with no updates actually inside it, which is invalid.
             case emptyGroupUpdate
 
@@ -111,6 +114,8 @@ extension MessageBackup {
             case invalidDistributionListMemberAddress
             /// The story distribution list was marked as deleted but missing a deletion timestamp
             case distributionListMissingDeletionTimestamp
+            /// The story distribution list was marked as deleted but had an invalid deletion timestamp.
+            case distributionListInvalidTimestamp
 
             /// An interaction used to create a verification-state update was
             /// missing info as to its author.
@@ -198,6 +203,8 @@ extension MessageBackup {
             /// An ad hoc call's ``CallRecord/conversationId`` is not a
             /// call link, which is illegal.
             case adHocCallDoesNotHaveCallLinkAsConversationId
+            /// An ad hoc call has an invalid start timestamp.
+            case invalidAdHocCallTimestamp
         }
 
         private let type: ErrorType
@@ -260,6 +267,7 @@ extension MessageBackup {
                     .distributionListHasDefaultViewMode,
                     .customDistributionListBlocklistViewMode,
                     .distributionListMissingDeletionTimestamp,
+                    .distributionListInvalidTimestamp,
                     .invalidDistributionListMemberAddress,
                     .invalidIncomingMessageAuthor,
                     .incomingMessageFromSelf,
@@ -271,6 +279,7 @@ extension MessageBackup {
                     .stickerMessageMissingStickerAttachment,
                     .failedToEnqueueAttachmentForUpload,
                     .invalidReactionAddress,
+                    .invalidReactionTimestamp,
                     .emptyGroupUpdate,
                     .missingLocalProfile,
                     .missingLocalProfileKey,
@@ -302,7 +311,8 @@ extension MessageBackup {
                     .unviewedViewOnceMessageMissingAttachment,
                     .unviewedViewOnceMessageTooManyAttachments,
                     .callLinkRestrictionsUnknown,
-                    .adHocCallDoesNotHaveCallLinkAsConversationId:
+                    .adHocCallDoesNotHaveCallLinkAsConversationId,
+                    .invalidAdHocCallTimestamp:
                 // Log any others as we see them.
                 return nil
             }
@@ -324,6 +334,7 @@ extension MessageBackup {
                     .distributionListHasDefaultViewMode,
                     .customDistributionListBlocklistViewMode,
                     .distributionListMissingDeletionTimestamp,
+                    .distributionListInvalidTimestamp,
                     .invalidDistributionListMemberAddress,
                     .invalidIncomingMessageAuthor,
                     .invalidOutgoingMessageRecipient,
@@ -332,6 +343,7 @@ extension MessageBackup {
                     .stickerMessageMissingStickerAttachment,
                     .failedToEnqueueAttachmentForUpload,
                     .invalidReactionAddress,
+                    .invalidReactionTimestamp,
                     .emptyGroupUpdate,
                     .missingLocalProfile,
                     .missingLocalProfileKey,
@@ -362,7 +374,8 @@ extension MessageBackup {
                     .unviewedViewOnceMessageMissingAttachment,
                     .unviewedViewOnceMessageTooManyAttachments,
                     .callLinkRestrictionsUnknown,
-                    .adHocCallDoesNotHaveCallLinkAsConversationId:
+                    .adHocCallDoesNotHaveCallLinkAsConversationId,
+                    .invalidAdHocCallTimestamp:
                 return .error
             case .contactThreadMissingAddress:
                 // We've seen real-world databases with TSContactThreads that

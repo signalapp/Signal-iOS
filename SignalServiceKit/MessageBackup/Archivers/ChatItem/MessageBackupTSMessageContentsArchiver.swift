@@ -476,9 +476,13 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         // The proto's targetSentTimestamp is an optional field
         // and should be unset (not 0) if the target message could
         // not be found at the time the quote was received.
-        if let targetSentTimestamp, targetSentTimestamp > 0 {
-            quote.targetSentTimestamp = targetSentTimestamp
-        }
+        MessageBackup.Timestamps.setTimestampIfValid(
+            from: targetSentTimestamp,
+            \.self,
+            on: &quote,
+            \.targetSentTimestamp,
+            allowZero: false
+        )
 
         var didArchiveText = false
         var didArchiveAttachments = false
@@ -616,7 +620,13 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         proto.url = url
         linkPreview.title.map { proto.title = $0 }
         linkPreview.previewDescription.map { proto.description_p = $0 }
-        linkPreview.date.map { proto.date = $0.ows_millisecondsSince1970 }
+        MessageBackup.Timestamps.setTimestampIfValid(
+            from: linkPreview,
+            \.date?.ows_millisecondsSince1970,
+            on: &proto,
+            \.date,
+            allowZero: true
+        )
 
         // Returns nil if no link preview image; this is both how we check presence and how we archive.
         let imageResult = attachmentsArchiver.archiveLinkPreviewAttachment(

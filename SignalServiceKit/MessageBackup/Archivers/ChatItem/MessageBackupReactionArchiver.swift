@@ -51,10 +51,19 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
                 continue
             }
 
+            let sentAtTimestamp = reaction.sentAtTimestamp
+            guard MessageBackup.Timestamps.isValid(sentAtTimestamp) else {
+                errors.append(.archiveFrameError(
+                    .invalidReactionTimestamp,
+                    message.uniqueInteractionId
+                ))
+                continue
+            }
+
             var reactionProto = BackupProto_Reaction()
             reactionProto.emoji = reaction.emoji
             reactionProto.authorID = authorId.value
-            reactionProto.sentTimestamp = reaction.sentAtTimestamp
+            reactionProto.sentTimestamp = sentAtTimestamp
             reactionProto.sortOrder = reaction.sortOrder
 
             reactionProtos.append(reactionProto)

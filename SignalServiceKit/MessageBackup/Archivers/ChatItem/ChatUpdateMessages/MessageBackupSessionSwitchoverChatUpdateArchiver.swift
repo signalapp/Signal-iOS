@@ -61,7 +61,7 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
         chatUpdateMessage.update = .sessionSwitchover(sessionSwitchoverChatUpdate)
 
-        let interactionArchiveDetails = Details(
+        return Details.validateAndBuild(
             author: threadRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: infoMessage.timestamp,
@@ -71,8 +71,6 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false
         )
-
-        return .success(interactionArchiveDetails)
     }
 
     // MARK: -

@@ -283,7 +283,12 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         }
         chat.expireTimerVersion = versionedExpireTimerToken.version
         if threadAssociatedData.isMuted {
-            chat.muteUntilMs = threadAssociatedData.mutedUntilTimestamp
+            let muteUntilMs = threadAssociatedData.mutedUntilTimestamp
+            if MessageBackup.Timestamps.isValid(muteUntilMs) {
+                chat.muteUntilMs = muteUntilMs
+            } else {
+                chat.muteUntilMs = ThreadAssociatedData.alwaysMutedTimestamp
+            }
         }
         chat.markedUnread = threadAssociatedData.isMarkedUnread
         chat.dontNotifyForMentionsIfMuted = dontNotifyForMentionsIfMuted

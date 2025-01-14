@@ -85,11 +85,25 @@ final class MessageBackupIndividualCallArchiver {
             }
         }()
 
+        var partialErrors = [MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>]()
+
         /// Prefer the call record timestamp if available, since it'll have the
         /// more accurate timestamp. (In practice this won't matter, since for
         /// 1:1 calls the call record takes the same "call started" timestamp as
         /// the interaction: when the call offer message arrives.)
-        individualCallUpdate.startedCallTimestamp = associatedCallRecord?.callBeganTimestamp ?? individualCallInteraction.timestamp
+        let startedCallTimestamp = associatedCallRecord?.callBeganTimestamp ?? individualCallInteraction.timestamp
+
+        switch
+            MessageBackup.Timestamps.validateTimestamp(startedCallTimestamp)
+                .bubbleUp(Details.self, partialErrors: &partialErrors)
+        {
+        case .continue:
+            break
+        case .bubbleUpError(let error):
+            return error
+        }
+
+        individualCallUpdate.startedCallTimestamp = startedCallTimestamp
 
         if let associatedCallRecord {
             individualCallUpdate.callID = associatedCallRecord.callId
@@ -107,7 +121,7 @@ final class MessageBackupIndividualCallArchiver {
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
         chatUpdateMessage.update = .individualCall(individualCallUpdate)
 
-        let interactionArchiveDetails = Details(
+        switch Details.validateAndBuild(
             author: context.recipientContext.localRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: individualCallInteraction.timestamp,
@@ -116,9 +130,16 @@ final class MessageBackupIndividualCallArchiver {
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false
-        )
-
-        return .success(interactionArchiveDetails)
+        ).bubbleUp(Details.self, partialErrors: &partialErrors) {
+        case .continue(let details):
+            if partialErrors.isEmpty {
+                return .success(details)
+            } else {
+                return .partialFailure(details, partialErrors)
+            }
+        case .bubbleUpError(let error):
+            return error
+        }
     }
 
     func restoreIndividualCall(

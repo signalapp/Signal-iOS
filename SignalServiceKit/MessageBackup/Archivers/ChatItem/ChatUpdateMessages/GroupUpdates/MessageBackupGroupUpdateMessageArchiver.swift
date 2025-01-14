@@ -97,7 +97,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
 
         let directionlessDetails = BackupProto_ChatItem.DirectionlessMessageDetails()
 
-        let details = Details(
+        let detailsResult = Details.validateAndBuild(
             author: context.recipientContext.localRecipientId,
             directionalDetails: .directionless(directionlessDetails),
             dateCreated: interaction.timestamp,
@@ -107,6 +107,14 @@ final class MessageBackupGroupUpdateMessageArchiver {
             chatItemType: .updateMessage(chatUpdate),
             isSmsPreviouslyRestoredFromBackup: false
         )
+
+        let details: Details
+        switch detailsResult.bubbleUp(Details.self, partialErrors: &partialErrors) {
+        case .continue(let _details):
+            details = _details
+        case .bubbleUpError(let error):
+            return error
+        }
 
         if partialErrors.isEmpty {
             return .success(details)

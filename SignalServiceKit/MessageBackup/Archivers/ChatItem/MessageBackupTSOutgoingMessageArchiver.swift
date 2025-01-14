@@ -169,7 +169,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             expireStartDate = nil
         }
 
-        let details = Details(
+        let detailsResult = Details.validateAndBuild(
             author: context.recipientContext.localRecipientId,
             directionalDetails: .outgoing(outgoingDetails),
             dateCreated: outgoingMessage.timestamp,
@@ -179,6 +179,14 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             chatItemType: chatItemType,
             isSmsPreviouslyRestoredFromBackup: outgoingMessage.isSmsMessageRestoredFromBackup
         )
+
+        let details: Details
+        switch detailsResult.bubbleUp(Details.self, partialErrors: &partialErrors) {
+        case .continue(let _details):
+            details = _details
+        case .bubbleUpError(let error):
+            return error
+        }
 
         if partialErrors.isEmpty {
             return .success(details)
@@ -385,6 +393,8 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
         context: MessageBackup.ChatItemRestoringContext,
         chatThread: MessageBackup.ChatThread
     ) -> MessageBackup.RestoreInteractionResult<TSOutgoingMessage> {
+        // We don't _really_ need to check the upper limit here because
+        // its enforced by the validator, but it doesn't hurt.
         guard SDS.fitsInInt64(chatItem.dateSent), chatItem.dateSent > 0 else {
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.chatItemInvalidDateSent),

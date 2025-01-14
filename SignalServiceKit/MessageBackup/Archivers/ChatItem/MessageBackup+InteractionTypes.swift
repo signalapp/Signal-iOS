@@ -62,6 +62,67 @@ extension MessageBackup {
         mutating func addPastRevision(_ pastRevision: InteractionArchiveDetails) {
             pastRevisions.append(pastRevision)
         }
+
+        private init(
+            author: RecipientId,
+            directionalDetails: DirectionalDetails,
+            dateCreated: UInt64,
+            expireStartDate: UInt64?,
+            expiresInMs: UInt64?,
+            isSealedSender: Bool,
+            chatItemType: ChatItemType,
+            isSmsPreviouslyRestoredFromBackup: Bool,
+            pastRevisions: [InteractionArchiveDetails]
+        ) {
+            self.author = author
+            self.directionalDetails = directionalDetails
+            self.dateCreated = dateCreated
+            self.expireStartDate = expireStartDate
+            self.expiresInMs = expiresInMs
+            self.isSealedSender = isSealedSender
+            self.chatItemType = chatItemType
+            self.isSmsPreviouslyRestoredFromBackup = isSmsPreviouslyRestoredFromBackup
+            self.pastRevisions = pastRevisions
+        }
+
+        static func validateAndBuild(
+            author: RecipientId,
+            directionalDetails: DirectionalDetails,
+            dateCreated: UInt64,
+            expireStartDate: UInt64?,
+            expiresInMs: UInt64?,
+            isSealedSender: Bool,
+            chatItemType: ChatItemType,
+            isSmsPreviouslyRestoredFromBackup: Bool,
+            pastRevisions: [InteractionArchiveDetails] = []
+        ) -> MessageBackup.ArchiveInteractionResult<Self> {
+            var partialErrors = [MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>]()
+            for timestamp in [dateCreated, expireStartDate, expiresInMs] {
+                switch MessageBackup.Timestamps.validateTimestamp(timestamp).bubbleUp(Self.self, partialErrors: &partialErrors) {
+                case .continue:
+                    break
+                case .bubbleUpError(let error):
+                    return error
+                }
+            }
+
+            let details = InteractionArchiveDetails(
+                author: author,
+                directionalDetails: directionalDetails,
+                dateCreated: dateCreated,
+                expireStartDate: expireStartDate,
+                expiresInMs: expiresInMs,
+                isSealedSender: isSealedSender,
+                chatItemType: chatItemType,
+                isSmsPreviouslyRestoredFromBackup: isSmsPreviouslyRestoredFromBackup,
+                pastRevisions: pastRevisions
+            )
+            if partialErrors.isEmpty {
+                return .success(details)
+            } else {
+                return .partialFailure(details, partialErrors)
+            }
+        }
     }
 
     enum SkippableChatUpdate {
@@ -157,6 +218,11 @@ extension MessageBackup {
 
         /// This is a message that is expiring soon, so we don't back it up at all.
         case soonToExpireMessage
+
+        /// This message has a timestamp that exceeds the maximum allowed timestamp in backups.
+        /// No legitimate message should have timestamps this size, so any message we see is the
+        /// result of either intentional or unintentional fuzzing, and we just drop it.
+        case timestampTooLarge
     }
 
     enum ArchiveInteractionResult<Component> {

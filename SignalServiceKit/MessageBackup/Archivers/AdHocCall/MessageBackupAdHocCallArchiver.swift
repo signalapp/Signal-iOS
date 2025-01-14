@@ -89,6 +89,17 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
             try callRecordStore.enumerateAdHocCallRecords(tx: context.tx) { record in
                 try Task.checkCancellation()
                 autoreleasepool {
+                    let recordId = AdHocCallAppId(callRecord: record)
+
+                    let callTimestamp = record.callBeganTimestamp
+                    guard MessageBackup.Timestamps.isValid(callTimestamp) else {
+                        partialErrors.append(.archiveFrameError(
+                            .invalidAdHocCallTimestamp,
+                            recordId
+                        ))
+                        return
+                    }
+
                     var adHocCallProto = BackupProto_AdHocCall()
                     adHocCallProto.callID = record.callId
                     adHocCallProto.callTimestamp = record.callBeganTimestamp
@@ -97,8 +108,6 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
                     // ever be `.generic` (even if the client state is
                     // actually `.joined`).
                     adHocCallProto.state = .generic
-
-                    let recordId = AdHocCallAppId(callRecord: record)
 
                     guard
                         let callLinkRecordId = MessageBackup.CallLinkRecordId(callRecordConversationId: record.conversationId)

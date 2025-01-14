@@ -231,7 +231,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
         chatUpdateMessage.update = .simpleUpdate(simpleChatUpdate)
 
-        let interactionArchiveDetails = Details(
+        return Details.validateAndBuild(
             author: updateAuthorRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: infoMessage.timestamp,
@@ -241,8 +241,6 @@ final class MessageBackupSimpleChatUpdateArchiver {
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false
         )
-
-        return .success(interactionArchiveDetails)
     }
 
     func archiveSimpleChatUpdate(
@@ -330,7 +328,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
         chatUpdateMessage.update = .simpleUpdate(simpleChatUpdate)
 
-        let interactionArchiveDetails = Details(
+        return Details.validateAndBuild(
             author: updateAuthorRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: errorMessage.timestamp,
@@ -340,8 +338,6 @@ final class MessageBackupSimpleChatUpdateArchiver {
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false
         )
-
-        return .success(interactionArchiveDetails)
     }
 
     // MARK: -

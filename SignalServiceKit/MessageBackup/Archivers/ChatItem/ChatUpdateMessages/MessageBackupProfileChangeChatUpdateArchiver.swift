@@ -56,7 +56,7 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
         chatUpdateMessage.update = .profileChange(profileChangeChatUpdate)
 
-        let interactionArchiveDetails = Details(
+        return Details.validateAndBuild(
             author: profileRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: infoMessage.timestamp,
@@ -66,8 +66,6 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false
         )
-
-        return .success(interactionArchiveDetails)
     }
 
     // MARK: -

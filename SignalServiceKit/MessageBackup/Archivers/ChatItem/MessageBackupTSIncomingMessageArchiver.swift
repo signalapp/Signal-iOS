@@ -160,7 +160,7 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
             expireStartDate = nil
         }
 
-        let details = Details(
+        let detailsResult = Details.validateAndBuild(
             author: author,
             directionalDetails: directionalDetails,
             dateCreated: incomingMessage.timestamp,
@@ -170,6 +170,14 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
             chatItemType: chatItemType,
             isSmsPreviouslyRestoredFromBackup: incomingMessage.isSmsMessageRestoredFromBackup
         )
+
+        let details: Details
+        switch detailsResult.bubbleUp(Details.self, partialErrors: &partialErrors) {
+        case .continue(let _details):
+            details = _details
+        case .bubbleUpError(let error):
+            return error
+        }
 
         if partialErrors.isEmpty {
             return .success(details)

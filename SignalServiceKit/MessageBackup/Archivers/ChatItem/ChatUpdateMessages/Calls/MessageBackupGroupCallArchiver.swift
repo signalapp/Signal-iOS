@@ -58,11 +58,23 @@ final class MessageBackupGroupCallArchiver {
             groupCallState = .generic
         }
 
+        var partialErrors = [MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>]()
+
         /// The call record will store the best record of when the call began,
         /// since we update its timestamp if we learn the group call started
         /// earlier than we originally learned about it. If there's no call
         /// record, though, we can fall back to the interaction.
         let startedCallTimestamp: UInt64 = associatedCallRecord?.callBeganTimestamp ?? groupCallInteraction.timestamp
+
+        switch
+            MessageBackup.Timestamps.validateTimestamp(startedCallTimestamp)
+                .bubbleUp(Details.self, partialErrors: &partialErrors)
+        {
+        case .continue:
+            break
+        case .bubbleUpError(let error):
+            return error
+        }
 
         var groupCallUpdate = BackupProto_GroupCall()
         groupCallUpdate.state = groupCallState
@@ -73,9 +85,13 @@ final class MessageBackupGroupCallArchiver {
             case .read: true
             case .unread: false
             }
-            if associatedCallRecord.callEndedTimestamp > 0 {
-                groupCallUpdate.endedCallTimestamp = associatedCallRecord.callEndedTimestamp
-            }
+            MessageBackup.Timestamps.setTimestampIfValid(
+                from: associatedCallRecord,
+                \.callEndedTimestamp,
+                on: &groupCallUpdate,
+                \.endedCallTimestamp,
+                allowZero: false
+            )
         } else {
             /// This property is non-optional, but we only track it for calls
             /// with an `associatedCallRecord`. For those without, mark them as
@@ -104,7 +120,7 @@ final class MessageBackupGroupCallArchiver {
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
         chatUpdateMessage.update = .groupCall(groupCallUpdate)
 
-        let interactionArchiveDetails = Details(
+        switch Details.validateAndBuild(
             author: context.recipientContext.localRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: groupCallInteraction.timestamp,
@@ -113,9 +129,16 @@ final class MessageBackupGroupCallArchiver {
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false
-        )
-
-        return .success(interactionArchiveDetails)
+        ).bubbleUp(Details.self, partialErrors: &partialErrors) {
+        case .continue(let details):
+            if partialErrors.isEmpty {
+                return .success(details)
+            } else {
+                return .partialFailure(details, partialErrors)
+            }
+        case .bubbleUpError(let error):
+            return error
+        }
     }
 
     func restoreGroupCall(

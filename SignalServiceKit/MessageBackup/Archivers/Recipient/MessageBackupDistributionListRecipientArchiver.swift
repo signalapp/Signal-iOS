@@ -188,6 +188,11 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
             return
         }
 
+        guard MessageBackup.Timestamps.isValid(deletionTimestamp) else {
+            errors.append(.archiveFrameError(.distributionListInvalidTimestamp, distributionListAppId))
+            return
+        }
+
         let recipientId = context.assignRecipientId(to: distributionListAppId)
 
         var distributionList = BackupProto_DistributionListItem()

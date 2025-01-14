@@ -773,6 +773,7 @@
 		661396AB28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */; };
 		661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */; };
 		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
+		661429192D35B9F10043AA22 /* MessageBackup+Timestamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661429182D35B9EA0043AA22 /* MessageBackup+Timestamp.swift */; };
 		66144B2F2BF7FB5200E2C9CD /* WallpaperImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B2E2BF7FB5200E2C9CD /* WallpaperImageStore.swift */; };
 		66144B312BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B302BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift */; };
 		66144B382BF8155F00E2C9CD /* MockWallpaperImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B372BF8155F00E2C9CD /* MockWallpaperImageStore.swift */; };
@@ -4523,6 +4524,7 @@
 		661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenStoryHeaderCell.swift; sourceTree = "<group>"; };
 		661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromise.swift; sourceTree = "<group>"; };
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
+		661429182D35B9EA0043AA22 /* MessageBackup+Timestamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageBackup+Timestamp.swift"; sourceTree = "<group>"; };
 		66144B2E2BF7FB5200E2C9CD /* WallpaperImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperImageStore.swift; sourceTree = "<group>"; };
 		66144B302BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperImageStoreImpl.swift; sourceTree = "<group>"; };
 		66144B372BF8155F00E2C9CD /* MockWallpaperImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockWallpaperImageStore.swift; sourceTree = "<group>"; };
@@ -9221,6 +9223,7 @@
 				667BB2042C58073600E79B57 /* Attachments */,
 				66CD25732B08079C00139E17 /* FileStreams */,
 				669874E62CCC133E00CDD7E9 /* MediaRootBackupKeyStore.swift */,
+				661429182D35B9EA0043AA22 /* MessageBackup+Timestamp.swift */,
 				66CD25902B0EC20800139E17 /* MessageBackupConstants.swift */,
 				66FFDADB2C823C270079C0E7 /* MessageBackupContexts.swift */,
 				D90D4D832BBB61680097C573 /* MessageBackupEmptyFrameId.swift */,
@@ -17162,6 +17165,7 @@
 				5052AF5E2ACB0E9700D7EE9F /* MergePair.swift in Sources */,
 				66BB4D592AD8BF6200A84219 /* MergingDict.swift in Sources */,
 				66CD258D2B0EB3A700139E17 /* MessageBackup+InteractionTypes.swift in Sources */,
+				661429192D35B9F10043AA22 /* MessageBackup+Timestamp.swift in Sources */,
 				66CD25642B06949C00139E17 /* MessageBackupAccountDataArchiver.swift in Sources */,
 				D9CA61482C2E2D0000F99EA3 /* MessageBackupAdHocCallArchiver.swift in Sources */,
 				C18806342BD8080B0024044A /* MessageBackupAuthCredentialManager.swift in Sources */,

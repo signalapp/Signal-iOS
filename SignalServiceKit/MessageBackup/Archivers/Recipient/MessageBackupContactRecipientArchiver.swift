@@ -213,7 +213,14 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 registration: { () -> BackupProto_Contact.OneOf_Registration in
                     if !recipient.isRegistered {
                         var notRegistered = BackupProto_Contact.NotRegistered()
-                        notRegistered.unregisteredTimestamp = recipient.unregisteredAtTimestamp ?? SignalRecipient.Constants.distantPastUnregisteredTimestamp
+                        if
+                            let unregisteredTimestamp = recipient.unregisteredAtTimestamp,
+                            MessageBackup.Timestamps.isValid(unregisteredTimestamp)
+                        {
+                            notRegistered.unregisteredTimestamp = unregisteredTimestamp
+                        } else {
+                            notRegistered.unregisteredTimestamp = SignalRecipient.Constants.distantPastUnregisteredTimestamp
+                        }
 
                         return .notRegistered(notRegistered)
                     }

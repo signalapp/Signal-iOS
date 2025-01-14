@@ -81,13 +81,17 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
 
                     let callLinkRecordId = CallLinkRecordId(record)
                     let callLinkAppId: RecipientAppId = .callLink(callLinkRecordId)
-                    if let expirationMs = record.expirationMs {
-                        // Lacking an expiration is a valid state. It can occur 1) if we hadn't
-                        // yet fetched the expiration from the server at the time of backup, or
-                        // 2) if someone deletes a call link before we're able to fetch the
-                        // expiration.
-                        callLink.expirationMs = expirationMs
-                    }
+                    // Lacking an expiration is a valid state. It can occur 1) if we hadn't
+                    // yet fetched the expiration from the server at the time of backup, or
+                    // 2) if someone deletes a call link before we're able to fetch the
+                    // expiration.
+                    MessageBackup.Timestamps.setTimestampIfValid(
+                        from: record,
+                        \.expirationMs,
+                        on: &callLink,
+                        \.expirationMs,
+                        allowZero: true
+                    )
 
                     let recipientId = context.assignRecipientId(to: callLinkAppId)
                     Self.writeFrameToStream(

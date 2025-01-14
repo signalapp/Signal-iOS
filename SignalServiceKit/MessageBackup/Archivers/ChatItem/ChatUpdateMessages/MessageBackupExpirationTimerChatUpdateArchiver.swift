@@ -100,7 +100,7 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
         chatUpdateMessage.update = .expirationTimerChange(expirationTimerChatUpdate)
 
-        let interactionArchiveDetails = Details(
+        return Details.validateAndBuild(
             author: chatUpdateAuthorRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: infoMessage.timestamp,
@@ -110,8 +110,6 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
             chatItemType: .updateMessage(chatUpdateMessage),
             isSmsPreviouslyRestoredFromBackup: false
         )
-
-        return .success(interactionArchiveDetails)
     }
 
     /// Its possible to have had a gv1 group that had an expiration timer
