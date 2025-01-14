@@ -2279,7 +2279,7 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "التبرُّّع مُعلَّق";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "تبرُّعك لمرّة واحدة مُعلَّق. ستتمكَّن من عرض شارتك %%1$@ على حسابك الشخصي فور استلام تبرُّعك.⏎⏎عادة ما تستغرق التحويلات المصرفية يوم عمل واحد للمعالجة.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "تبرُّعك لمرّة واحدة مُعلَّق. ستتمكَّن من عرض شارتك %1$@ على حسابك الشخصي فور استلام تبرُّعك.⏎⏎عادة ما تستغرق التحويلات المصرفية يوم عمل واحد للمعالجة.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
 "DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "تبرُّعك الشهري مُعلَّق. ستتمكّن من عرض شارتك %1$@ على حسابك الشخصي فور استلام تبرُّعك.⏎⏎عادةً ما تستغرق التحويلات المصرفية يوم عمل واحد للمعالجة.";
