@@ -288,7 +288,21 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
                 } else {
                     canBeCancelled = false
                 }
-                linkAndSyncProgressModal.updateProgress(
+
+                switch progress.currentSourceLabel {
+                case
+                    PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue,
+                    PrimaryLinkNSyncProgressPhase.exportingBackup.rawValue:
+                    linkAndSyncProgressModal.viewModel.phase = .preparing
+                case
+                    PrimaryLinkNSyncProgressPhase.uploadingBackup.rawValue,
+                    PrimaryLinkNSyncProgressPhase.finishing.rawValue:
+                    linkAndSyncProgressModal.viewModel.phase = .syncing
+                default:
+                    break
+                }
+
+                linkAndSyncProgressModal.viewModel.updateProgress(
                     progress: progress.percentComplete,
                     canBeCancelled: canBeCancelled
                 )

@@ -10,10 +10,36 @@ import SignalServiceKit
 // MARK: View Model
 
 class LinkAndSyncProgressViewModel: ObservableObject {
+
+    enum Phase {
+        case preparing
+        case syncing
+    }
+
     @Published private(set) var progress: Float = 0
     @Published private(set) var canBeCancelled: Bool = false
+    @Published var phase: Phase = .preparing
     @Published var linkNSyncTask: Task<Void, Never>?
     @Published var didTapCancel: Bool = false
+
+    var cancelButtonEnabled: Bool {
+        linkNSyncTask != nil && canBeCancelled && !didTapCancel
+    }
+
+    var title: String {
+        switch phase {
+        case .preparing:
+            OWSLocalizedString(
+                "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING",
+                comment: "Title for a progress modal indicating the sync progress while it's preparing for upload"
+            )
+        case .syncing:
+            OWSLocalizedString(
+                "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE",
+                comment: "Title for a progress modal indicating the sync progress"
+            )
+        }
+    }
 
     func updateProgress(progress: Float, canBeCancelled: Bool) {
         self.progress = progress
@@ -25,11 +51,7 @@ class LinkAndSyncProgressViewModel: ObservableObject {
 
 class LinkAndSyncProgressModal: HostingController<LinkAndSyncProgressView> {
 
-    private let viewModel = LinkAndSyncProgressViewModel()
-
-    func updateProgress(progress: Float, canBeCancelled: Bool) {
-        viewModel.updateProgress(progress: progress, canBeCancelled: canBeCancelled)
-    }
+    let viewModel = LinkAndSyncProgressViewModel()
 
     var linkNSyncTask: Task<Void, Never>? {
         get { viewModel.linkNSyncTask }
@@ -54,7 +76,7 @@ class LinkAndSyncProgressModal: HostingController<LinkAndSyncProgressView> {
 
     @MainActor
     func completeAndDismiss() async {
-        updateProgress(progress: 1, canBeCancelled: false)
+        viewModel.updateProgress(progress: 1, canBeCancelled: false)
         try? await Task.sleep(nanoseconds: NSEC_PER_SEC / 2)
         await withCheckedContinuation { continuation in
             dismiss(animated: true) {
@@ -83,18 +105,16 @@ struct LinkAndSyncProgressView: View {
     }
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 0) {
+            // TODO: this should become an "indefinite" animation when cancelled
             CircleProgressView(progress: progressToShow)
-                .padding(.bottom, 12)
-                // TODO: this should become an "indefinite" animation
-                // when cancelled.
+                .padding(.top, 14)
+                .padding(.bottom, 20)
                 .animation(.linear, value: progressToShow)
 
-            Text(OWSLocalizedString(
-                "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE",
-                comment: "Title for a progress modal indicating the sync progress"
-            ))
-            .font(.headline)
+            Text(viewModel.title)
+                .font(.headline)
+                .padding(.bottom, 8)
 
             Text(String(
                 format: OWSLocalizedString(
@@ -104,22 +124,29 @@ struct LinkAndSyncProgressView: View {
                 progressToShow.formatted(.percent.precision(.fractionLength(0)))
             ))
             .font(.subheadline.monospacedDigit())
-            .foregroundStyle(Color.Signal.secondaryLabel)
             .animation(.none, value: viewModel.progress)
+            .padding(.bottom, 2)
 
-            // TODO: probably wanna make space for this if its not present
-            // so that things don't move around when it appears
-            if viewModel.canBeCancelled, let linkNSyncTask = viewModel.linkNSyncTask {
-                Button(CommonStrings.cancelButton) {
-                    linkNSyncTask.cancel()
-                    viewModel.didTapCancel = true
-                }
-                .disabled(viewModel.didTapCancel)
+            Text(OWSLocalizedString(
+                "LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP",
+                comment: "On a progress modal"
+            ))
+            .font(.subheadline)
+            .foregroundStyle(Color.Signal.secondaryLabel)
+            .padding(.bottom, 36)
+
+            Button(CommonStrings.cancelButton) {
+                viewModel.linkNSyncTask?.cancel()
+                viewModel.didTapCancel = true
             }
+            .disabled(!viewModel.cancelButtonEnabled)
+            .font(.body.weight(.semibold))
         }
         .padding(.horizontal, 26)
-        .padding(.vertical, 42)
+        .padding(.vertical, 28)
+        .frame(maxWidth: .infinity)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 32))
+        .padding(.horizontal, 60)
     }
 
     private struct CircleProgressView: View {
@@ -150,20 +177,22 @@ struct LinkAndSyncProgressView: View {
 #Preview {
     SheetPreviewViewController {
         let modal = LinkAndSyncProgressModal()
+        modal.linkNSyncTask = Task {}
 
         Task { @MainActor in
-            modal.updateProgress(progress: 0.2, canBeCancelled: true)
+            modal.viewModel.updateProgress(progress: 0.2, canBeCancelled: false)
             let loadingPoints = (0..<20)
                 .map { _ in Float.random(in: (0.2)...1) }
                 .sorted()
 
             for point in loadingPoints {
                 try? await Task.sleep(for: .milliseconds(100))
-                modal.updateProgress(progress: point, canBeCancelled: true)
+                modal.viewModel.updateProgress(progress: point, canBeCancelled: point >= 0.4)
+                modal.viewModel.phase = point >= 0.6 ? .syncing : .preparing
             }
 
             try? await Task.sleep(for: .milliseconds(100))
-            modal.updateProgress(progress: 1, canBeCancelled: true)
+            modal.viewModel.updateProgress(progress: 1, canBeCancelled: true)
 
             await modal.completeAndDismiss()
         }
