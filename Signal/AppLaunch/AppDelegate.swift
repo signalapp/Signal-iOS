@@ -336,7 +336,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let loadingViewController = LoadingViewController()
 
         let window = initializeWindow(mainAppContext: mainAppContext, rootViewController: loadingViewController)
-        self.launchApp(in: window, launchContext: launchContext)
+        self.launchApp(in: window, launchContext: launchContext, loadingViewController: loadingViewController)
         return true
     }
 
@@ -362,12 +362,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func launchApp(
         in window: UIWindow,
-        launchContext: LaunchContext
+        launchContext: LaunchContext,
+        loadingViewController: LoadingViewController
     ) {
-        assert(window.rootViewController is LoadingViewController)
+        assert(window.rootViewController == loadingViewController)
         configureGlobalUI(in: window)
         setUpMainAppEnvironment(
-            launchContext: launchContext
+            launchContext: launchContext,
+            loadingViewController: loadingViewController
         ).done(on: DispatchQueue.main) { (finalContinuation, sleepBlockObject) in
             self.didLoadDatabase(
                 finalContinuation: finalContinuation,
@@ -389,7 +391,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func setUpMainAppEnvironment(
-        launchContext: LaunchContext
+        launchContext: LaunchContext,
+        loadingViewController: LoadingViewController?
     ) -> Guarantee<(AppSetup.FinalContinuation, DeviceSleepManager.BlockObject)> {
         let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "app launch")
         DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
@@ -431,7 +434,30 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             )
         )
         let result = databaseContinuation.prepareDatabase()
-        return result.map(on: SyncScheduler()) { ($0, sleepBlockObject) }
+        return result.then(
+            on: SyncScheduler()
+        ) { continuation in
+            if FeatureFlags.runTSAttachmentMigrationBlockingOnLaunch {
+                return Guarantee.wrapAsync {
+                    let progressSink = OWSProgress.createSink { [weak loadingViewController] progress in
+                        Task { @MainActor in
+                            loadingViewController?.updateProgress(progress)
+                        }
+                    }
+                    let migrateTask = Task {
+                        await continuation.dependenciesBridge.incrementalMessageTSAttachmentMigrator
+                            .runUntilFinished(ignorePastFailures: false, progress: progressSink)
+                    }
+                    Task { @MainActor in
+                        loadingViewController?.setCancellableTask(migrateTask)
+                    }
+                    await migrateTask.value
+                    return (continuation, sleepBlockObject)
+                }
+            } else {
+                return .value((continuation, sleepBlockObject))
+            }
+        }
     }
 
     private func checkSomeDiskSpaceAvailable() -> Bool {
@@ -996,7 +1022,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 firstly(on: DispatchQueue.main) {
                     launchContext.databaseStorage = databaseStorage
                     return self.setUpMainAppEnvironment(
-                        launchContext: launchContext
+                        launchContext: launchContext,
+                        loadingViewController: nil
                     )
                 }
             },
@@ -1087,7 +1114,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             launchContext.incrementalMessageTSAttachmentMigrationStore.didReportFailureInUI()
             let loadingViewController = LoadingViewController()
             window.rootViewController = loadingViewController
-            self.launchApp(in: window, launchContext: launchContext)
+            self.launchApp(
+                in: window,
+                launchContext: launchContext,
+                loadingViewController: loadingViewController
+            )
         }
 
         for action in actions {

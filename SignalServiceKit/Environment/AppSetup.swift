@@ -1478,7 +1478,6 @@ public class AppSetup {
             backgroundTask: backgroundTask,
             authCredentialManager: authCredentialManager,
             callLinkPublicParams: callLinkPublicParams,
-            incrementalTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator,
             remoteConfigManager: remoteConfigManager
         )
     }
@@ -1496,7 +1495,6 @@ extension AppSetup {
         private let appReadiness: AppReadiness
         private let authCredentialStore: AuthCredentialStore
         private let dependenciesBridge: DependenciesBridge
-        private let incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator
         private let remoteConfigManager: RemoteConfigManager
         private let sskEnvironment: SSKEnvironment
         private let backgroundTask: OWSBackgroundTask
@@ -1516,7 +1514,6 @@ extension AppSetup {
             backgroundTask: OWSBackgroundTask,
             authCredentialManager: any AuthCredentialManager,
             callLinkPublicParams: GenericServerPublicParams,
-            incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
             remoteConfigManager: RemoteConfigManager
         ) {
             self.appContext = appContext
@@ -1527,7 +1524,6 @@ extension AppSetup {
             self.backgroundTask = backgroundTask
             self.authCredentialManager = authCredentialManager
             self.callLinkPublicParams = callLinkPublicParams
-            self.incrementalTSAttachmentMigrator = incrementalTSAttachmentMigrator
             self.remoteConfigManager = remoteConfigManager
         }
     }
@@ -1560,26 +1556,13 @@ extension AppSetup.DatabaseContinuation {
                 }
                 self.sskEnvironment.warmCaches(appReadiness: self.appReadiness)
 
-                let finish = {
-                    self.backgroundTask.end()
-                    future.resolve(AppSetup.FinalContinuation(
-                        appReadiness: self.appReadiness,
-                        authCredentialStore: self.authCredentialStore,
-                        dependenciesBridge: self.dependenciesBridge,
-                        sskEnvironment: self.sskEnvironment
-                    ))
-                }
-
-                if FeatureFlags.runTSAttachmentMigrationBlockingOnLaunch {
-                    Task {
-                        await self.incrementalTSAttachmentMigrator.runUntilFinished(ignorePastFailures: false)
-                        await MainActor.run {
-                            finish()
-                        }
-                    }
-                } else {
-                    finish()
-                }
+                self.backgroundTask.end()
+                future.resolve(AppSetup.FinalContinuation(
+                    appReadiness: self.appReadiness,
+                    authCredentialStore: self.authCredentialStore,
+                    dependenciesBridge: self.dependenciesBridge,
+                    sskEnvironment: self.sskEnvironment
+                ))
 
             }
         }
@@ -1603,7 +1586,7 @@ extension AppSetup {
     public class FinalContinuation {
         private let appReadiness: AppReadiness
         private let authCredentialStore: AuthCredentialStore
-        private let dependenciesBridge: DependenciesBridge
+        public let dependenciesBridge: DependenciesBridge
         private let sskEnvironment: SSKEnvironment
 
         fileprivate init(

@@ -207,7 +207,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
-        await migrateAttachmentsBeforeBackup()
+        await migrateAttachmentsBeforeBackup(progress: progress)
 
         let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
         defer {
@@ -272,7 +272,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
-        await migrateAttachmentsBeforeBackup()
+        await migrateAttachmentsBeforeBackup(progress: progress)
 
         let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
         defer {
@@ -607,7 +607,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
-        await migrateAttachmentsBeforeBackup()
+        await migrateAttachmentsBeforeBackup(progress: progress)
 
         let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
         defer {
@@ -674,7 +674,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
-        await migrateAttachmentsBeforeBackup()
+        await migrateAttachmentsBeforeBackup(progress: progress)
 
         let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
         defer {
@@ -1048,8 +1048,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     /// TSAttachments must be migrated to v2 Attachments before we can create or restore backups.
     /// Normally this migration happens in the background; force it to run and finish now.
-    private func migrateAttachmentsBeforeBackup() async {
-        await incrementalTSAttachmentMigrator.runUntilFinished(ignorePastFailures: true)
+    private func migrateAttachmentsBeforeBackup(progress: OWSProgressSink?) async {
+        await incrementalTSAttachmentMigrator.runUntilFinished(ignorePastFailures: true, progress: progress)
     }
 
     public func validateEncryptedBackup(

@@ -16,19 +16,11 @@ class LoadingViewController: UIViewController {
     private var progressView = UIProgressView()
     private lazy var percentCompleteLabel = UILabel()
     private lazy var unitCountLabel = UILabel()
+    private lazy var cancelButton = OWSButton()
     private let labelStack = UIStackView()
     private var topLabelTimer: Timer?
     private var bottomLabelTimer: Timer?
-
-    private var progressObserver: NSKeyValueObservation?
-    var progress: Progress? {
-        didSet {
-            self.progressObserver = progress?
-                .observe(\.fractionCompleted) { [weak self] progress, _ in
-                    self?.updateProgress(progress)
-                }
-        }
-    }
+    private var cancelButtonTimer: Timer?
 
     override func loadView() {
         self.view = UIView()
@@ -83,6 +75,18 @@ class LoadingViewController: UIViewController {
         unitCountLabel.textColor = .Signal.secondaryLabel
         labelStack.addArrangedSubview(unitCountLabel)
 
+        cancelButton.isHiddenInStackView = true
+        cancelButton.isEnabled = false
+        cancelButton.titleLabel?.font = .dynamicTypeBody.monospaced()
+        cancelButton.backgroundColor = .clear
+        cancelButton.setTitle(CommonStrings.cancelButton, for: .normal)
+        cancelButton.setTitleColor(.Signal.ultramarine, for: .normal)
+        labelStack.addArrangedSubview(cancelButton)
+        cancelButton.block = { [weak self] in
+            self?.cancellableTask?.cancel()
+            self?.setCancellableTask(nil)
+        }
+
         labelStack.axis = .vertical
         labelStack.alignment = .center
         labelStack.spacing = 8
@@ -127,6 +131,15 @@ class LoadingViewController: UIViewController {
         let kBottomLabelThreshold: TimeInterval = 10
         bottomLabelTimer = Timer.scheduledTimer(withTimeInterval: kBottomLabelThreshold, repeats: false) { [weak self] _ in
             self?.showBottomLabelAnimated()
+        }
+
+        let kCancelButtonThreshold: TimeInterval = 60
+        cancelButtonTimer?.invalidate()
+        self.canShowCancelButton = false
+        self.updateCancelButton()
+        cancelButtonTimer = Timer.scheduledTimer(withTimeInterval: kCancelButtonThreshold, repeats: false) { [weak self] _ in
+            self?.canShowCancelButton = true
+            self?.updateCancelButton()
         }
     }
 
@@ -198,10 +211,13 @@ class LoadingViewController: UIViewController {
         view.backgroundColor = Theme.launchScreenBackgroundColor
     }
 
-    private func updateProgress(_ progress: Progress) {
-        let percentComplete = Float(progress.fractionCompleted)
-        let unitCountToComplete = 0
-        let unitCountCompleted = Int(Double(unitCountToComplete) * progress.fractionCompleted)
+    private var progress: OWSProgress?
+
+    public func updateProgress(_ progress: OWSProgress) {
+        self.progress = progress
+        let percentComplete = progress.percentComplete
+        let unitCountToComplete = progress.totalUnitCount
+        let unitCountCompleted = Int(Float(unitCountToComplete) * progress.percentComplete)
 
         progressView.setProgress(percentComplete, animated: true)
         percentCompleteLabel.text = String(
@@ -221,11 +237,34 @@ class LoadingViewController: UIViewController {
             progressView.alpha = 0
         }
 
-//        if unitCountToComplete > 0 {
-//            unitCountLabel.alpha = bottomLabel.alpha
-//        } else {
-//            unitCountLabel.alpha = 0
-//        }
+        if unitCountToComplete > 0, percentComplete > 0 {
+            unitCountLabel.alpha = bottomLabel.alpha
+        } else {
+            unitCountLabel.alpha = 0
+        }
+    }
+
+    private var cancellableTask: Task<Void, Never>?
+    private var canShowCancelButton = false
+
+    // Sets the running task that is running and which is
+    // cancellable (will display a cancel button).
+    // Typically this task's work is represented in `updateProgress`
+    // if that has been called; its ok to set this without
+    // setting progress, however.
+    public func setCancellableTask(_ task: Task<Void, Never>?) {
+        self.cancellableTask = task
+        updateCancelButton()
+    }
+
+    private func updateCancelButton() {
+        if cancellableTask != nil, canShowCancelButton {
+            cancelButton.isHiddenInStackView = false
+            cancelButton.isEnabled = true
+        } else {
+            cancelButton.isHiddenInStackView = true
+            cancelButton.isEnabled = false
+        }
     }
 
     // MARK: Orientation
@@ -248,18 +287,28 @@ class LoadingViewController: UIViewController {
 #if DEBUG
 @available(iOS 17, *)
 #Preview {
-    let progress = Progress()
-    progress.totalUnitCount = 100
     let viewController = LoadingViewController()
-    viewController.progress = progress
-
-    Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-        progress.completedUnitCount += Int64.random(in: 2...8)
-        if progress.fractionCompleted >= 1 {
-            progress.completedUnitCount = 100
-            timer.invalidate()
+    let progressSink = OWSProgress.createSink { progress in
+        Task { @MainActor in
+            viewController.updateProgress(progress)
         }
     }
+
+    let task = Task {
+        let source = await progressSink.addSource(withLabel: "count", unitCount: 100)
+        while source.completedUnitCount < 100 {
+            do {
+                try Task.checkCancellation()
+            } catch {
+                source.incrementCompletedUnitCount(by: 100)
+                return
+            }
+            try? await Task.sleep(nanoseconds: 100 * NSEC_PER_SEC)
+            source.incrementCompletedUnitCount(by: UInt64.random(in: 2...8))
+        }
+    }
+
+    viewController.setCancellableTask(task)
 
     return viewController
 }
