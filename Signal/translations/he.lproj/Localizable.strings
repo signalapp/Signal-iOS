@@ -164,7 +164,7 @@
 "ALL_MEDIA_FILE_TYPE_AUDIO" = "שמע";
 
 /* Generic All Media file type for non-audiovisual files used in file type picker */
-"ALL_MEDIA_FILE_TYPE_FILES" = "Files";
+"ALL_MEDIA_FILE_TYPE_FILES" = "קבצים";
 
 /* Media (i.e., graphical) file type in All Meda file type picker. */
 "ALL_MEDIA_FILE_TYPE_MEDIA" = "מדיה";
@@ -884,10 +884,10 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "החלף כיוון מצלמה";
 
 /* Accessibility label for turning off call ringing */
-"CALL_VIEW_TURN_OFF_RINGING" = "Turn off ringing";
+"CALL_VIEW_TURN_OFF_RINGING" = "השבתת צלצול";
 
 /* Accessibility label for turning on call ringing */
-"CALL_VIEW_TURN_ON_RINGING" = "Turn on ringing";
+"CALL_VIEW_TURN_ON_RINGING" = "הפעלת צלצול";
 
 /* Accessibility label for turning off the camera */
 "CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "כבה מצלמה";
@@ -2021,7 +2021,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "המשך בלי להעביר את החשבון וההודעות שלך";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "הוספת iPad זה כמכשיר מקושר חדש";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "הוסף כמכשיר חדש";
@@ -4088,10 +4088,10 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "למידע נוסף";
 
 /* Body for system notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_BODY" = "A new device was linked to your account at %1$@. Tap to view.";
+"LINKED_DEVICE_NOTIFICATION_BODY" = "מכשיר חדש קושר לחשבון שלך בשעה %1$@. אפשר ללחוץ לתצוגה.";
 
 /* Title for system notification when a new device is linked. */
-"LINKED_DEVICE_NOTIFICATION_TITLE" = "You Linked a New Device";
+"LINKED_DEVICE_NOTIFICATION_TITLE" = "קישרת מכשיר חדש";
 
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
 "LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "במכשיר האחר שלך, יש לבקר ב–%1$@ כדי להתקין את האפליקציה למכשיר iPad או %2$@ כדי להתקין את האפליקציה לשולחן העבודה.";
@@ -4223,7 +4223,7 @@
 "MEDIA_GALLERY_A11Y_AUDIO_FILE" = "קובץ אודיו";
 
 /* VoiceOver description for a generic non-audiovisual file in All Media */
-"MEDIA_GALLERY_A11Y_OTHER_FILE" = "file";
+"MEDIA_GALLERY_A11Y_OTHER_FILE" = "קובץ";
 
 /* VoiceOver description for a voice messages in All Media */
 "MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "הודעה קולית";
@@ -4244,10 +4244,10 @@
 "MEDIA_GALLERY_NO_AUDIO_TITLE" = "אין שמע";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - second line. */
-"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "Files that you send and receive will appear here";
+"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "קבצים ששלחת וקיבלת יופיעו כאן";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - first line. */
-"MEDIA_GALLERY_NO_FILES_TITLE" = "No Files";
+"MEDIA_GALLERY_NO_FILES_TITLE" = "אין קבצים";
 
 /* Displayed in All Media screen when there's no media - first line. */
 "MEDIA_GALLERY_NO_FILTER_RESULTS" = "אין מדיה";
@@ -5933,7 +5933,7 @@
 "PUSH_REGISTER_SUCCESS" = "נרשם מחדש בהצלחה עבור התראות דחיפה.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %1$@.";
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "תשובה אל %1$@.";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
@@ -6104,10 +6104,10 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "העברת חשבון והודעות";
 
 /* Description for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your backup key is a 64-digit code required to recover your account and data.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "מפתח הגיבוי שלך הוא קוד בן 64 ספרות שמאפשר לך לשחזר את החשבון והנתונים שלך.";
 
 /* Title for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Enter Your Backup Key";
+"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "הזנת מפתח הגיבוי שלך";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "הכנס מספר";
@@ -6131,7 +6131,7 @@
 "REGISTRATION_NETWORK_ERROR_TITLE" = "בדיקת חיבור";
 
 /* Title of button to tap if you do not have a backup key during registration. */
-"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "No Backup Key?";
+"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "אין לך מפתח גיבוי?";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "יש להכניס את מספר הטלפון שלך כדי להתחיל.";
@@ -6449,13 +6449,13 @@
 "SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE" = "לא ניתן היה להעביר את ההודעות שלך עקב שגיאה. יש לנסות שוב באמצעות קישור מחדש של המכשיר הזה.";
 
 /* Button on an action sheet to open Signal on the App Store. */
-"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_CHECK_FOR_UPDATE_BUTTON" = "Check For Updates";
+"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_CHECK_FOR_UPDATE_BUTTON" = "בדיקת עדכונים";
 
 /* Message for action sheet when the secondary device fails to sync messages due to an app update being required. */
-"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_MESSAGE" = "To complete syncing your messages, update Signal now.";
+"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_MESSAGE" = "כדי להשלים את סנכרון ההודעות, יש לעדכן את Signal כעת.";
 
 /* Title for action sheet when the secondary device fails to sync messages due to an app update being required. */
-"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE" = "Update Required";
+"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE" = "נדרש עדכון";
 
 /* header text when this device is being added as a secondary */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "בחר שם עבור מכשיר זה";
@@ -6503,7 +6503,7 @@
 "SEE_ALL_BUTTON" = "ראה את כולם";
 
 /* Button text to select all in any list selection mode */
-"SELECT_ALL" = "Select All";
+"SELECT_ALL" = "בחר הכל";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "שלח שוב";

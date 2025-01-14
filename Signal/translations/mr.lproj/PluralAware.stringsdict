@@ -5,7 +5,7 @@
 	<key>ACCESSIBILITY_LABEL_LONG_VOICE_MEMO_%d_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@minutes@ and %2$#@seconds@</string>
+		<string>%1$#@minutes@ आणि %2$#@seconds@</string>
 		<key>minutes</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d minute</string>
+			<string>%1$dमिनिट</string>
 			<key>other</key>
-			<string>%1$d minutes</string>
+			<string>%1$d मिनिटे</string>
 		</dict>
 		<key>seconds</key>
 		<dict>
@@ -24,9 +24,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$d second</string>
+			<string>%2$d सेकंद</string>
 			<key>other</key>
-			<string>%2$d seconds</string>
+			<string>%2$d सेकंद</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>
@@ -40,9 +40,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Voice message %1$d second</string>
+			<string>व्हॉईस संदेश %1$d सेकंद</string>
 			<key>other</key>
-			<string>Voice message %1$d seconds</string>
+			<string>व्हॉईस संदेश %1$d सेकंद</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>

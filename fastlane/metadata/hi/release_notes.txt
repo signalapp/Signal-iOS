@@ -1,4 +1,4 @@
-• The “Files” filter in the media gallery can help you quickly find PDFs and other attachments, like the TXT that really could have been a text.
-• We switched the emoji reaction picker in the Stories tab to work with the dark theme, but the right reaction can still provide enlightenment.
-• VoiceOver accessibility improvements, including a label for the call ring button and new functionality to indicate when a message includes a quoted reply.
-• We also updated the design of the QR codes throughout the app. They’ve always looked good in front of a camera, but they’re practically ready for a photo shoot now.
+• मीडिया गैलेरी में, “फ़ाइलें” फ़िल्टर की मदद से, आप तेज़ी से PDF और दूसरे अटैचमेंट ढूँढ सकते हैं, जैसे कि TXT, जो टेक्स्ट में भी भेजा जा सकता था।
+• हमने गहरी थीम के साथ काम करने के लिए, स्टोरीज़ टैब में इमोजी प्रतिक्रिया पिकर को स्विच कर दिया है, लेकिन अब भी सही प्रतिक्रिया से जानकारी मिल सकती है।
+• वॉयसओवर ऐक्सेसेबिलिटी में सुधार, जिसमें कॉल रिंग बटन के लिए लेबल और यह बताने के लिए नई सुविधा शामिल है कि किसी संदेश में क्वोट किया गया जवाब है।
+• हमने पूरे ऐप में QR कोड का डिज़ाइन भी अपडेट कर दिया है। वे हमेशा से कैमरे के सामने अच्छे लगते थे, लेकिन अब वे फ़ोटो शूट के लिए तैयार हैं।

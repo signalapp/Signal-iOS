@@ -1,4 +1,4 @@
-• The “Files” filter in the media gallery can help you quickly find PDFs and other attachments, like the TXT that really could have been a text.
-• We switched the emoji reaction picker in the Stories tab to work with the dark theme, but the right reaction can still provide enlightenment.
-• VoiceOver accessibility improvements, including a label for the call ring button and new functionality to indicate when a message includes a quoted reply.
-• We also updated the design of the QR codes throughout the app. They’ve always looked good in front of a camera, but they’re practically ready for a photo shoot now.
+• A médiagaléria „Fájlok” szűrője segítségével gyorsan megtalálhatod a PDF-fájlokat és egyéb mellékleteket.
+• A Történetek lap emoji reakcióválasztóját a sötét témára állítottuk.
+• Továbbfejlesztettük a VoiceOver kisegítő lehetőségeket.
+• Az alkalmazásban mindenütt frissítettük a QR-kódok kialakítását is.

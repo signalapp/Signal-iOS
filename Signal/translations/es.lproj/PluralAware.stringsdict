@@ -5,7 +5,7 @@
 	<key>ACCESSIBILITY_LABEL_LONG_VOICE_MEMO_%d_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@minutes@ and %2$#@seconds@</string>
+		<string>%1$#@minutes@ y %2$#@seconds@</string>
 		<key>minutes</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d minute</string>
+			<string>%1$d minuto</string>
 			<key>other</key>
-			<string>%1$d minutes</string>
+			<string>%1$d minutos</string>
 		</dict>
 		<key>seconds</key>
 		<dict>
@@ -24,9 +24,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$d second</string>
+			<string>%2$d segundo</string>
 			<key>other</key>
-			<string>%2$d seconds</string>
+			<string>%2$d segundos</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>
@@ -40,9 +40,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Voice message %1$d second</string>
+			<string>Mensaje de voz de %1$d segundo</string>
 			<key>other</key>
-			<string>Voice message %1$d seconds</string>
+			<string>Mensaje de voz de %1$d segundos</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
@@ -755,9 +755,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se encontró %1$d conflicto de nombre en este grupo. Revisa la siguiente lista de participantes y selecciona la opción que desees.</string>
+			<string>Hemos encontrado %1$d conflicto de nombre en este grupo. Revisa la lista de participantes a continuación y selecciona la opción que desees.</string>
 			<key>other</key>
-			<string>Se encontraron %1$d conflictos de nombre en este grupo. Revisa la siguiente lista de participantes y selecciona la opción que desees.</string>
+			<string>Hemos encontrado %1$d conflictos de nombre en este grupo. Revisa la lista de participantes a continuación y selecciona la opción que desees.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -771,9 +771,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d participante del grupo tiene el mismo nombre. Revisa la lista de participantes debajo y selecciona la opción que desees.</string>
+			<string>%1$d participante del grupo tiene el mismo nombre. Revisa la lista de participantes a continuación y selecciona la opción que desees.</string>
 			<key>other</key>
-			<string>%1$d participantes del grupo tienen el mismo nombre. Revisa la lista de participantes debajo y selecciona la opción que desees.</string>
+			<string>%1$d participantes del grupo tienen el mismo nombre. Revisa la lista de participantes a continuación y selecciona la opción que desees.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -931,9 +931,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>No se ha podido añadir automáticamente a %1$d persona al nuevo grupo. Se le ha enviado una invitación para unirse.</string>
+			<string>No se ha podido añadir automáticamente a %1$d persona al nuevo grupo, pero le hemos enviado una invitación para unirse.</string>
 			<key>other</key>
-			<string>No se ha podido añadir automáticamente a %1$d personas al nuevo grupo. Se les ha enviado una invitación para unirse.</string>
+			<string>No se ha podido añadir automáticamente a %1$d personas al nuevo grupo, pero le hemos enviado una invitación para unirse.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

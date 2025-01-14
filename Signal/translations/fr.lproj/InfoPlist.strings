@@ -1,9 +1,9 @@
 NSAppleMusicUsageDescription = "Pour lire les médias en pièce jointe, Signal doit utiliser Apple Music.";
-NSCameraUsageDescription = "Signal utilise votre appareil photo pour prendre des photos et pour les appels vidéo.";
-NSContactsUsageDescription = "Signal utilise vos contacts pour trouver des utilisateurs que vous connaissez. Nous n’enregistrons pas vos contacts sur le serveur.";
+NSCameraUsageDescription = "Signal utilise votre appareil photo lorsque vous prenez des photos et passez des appels vidéo.";
+NSContactsUsageDescription = "Signal accède à vos contacts pour trouver des utilisateurs que vous connaissez. Nous n'enregistrons pas vos contacts sur le serveur.";
 NSFaceIDUsageDescription = "Le verrouillage d'écran de Signal utilise la technologie Face ID.";
-NSLocationWhenInUseUsageDescription = "Signal a besoin d’accéder à votre position afin de partager votre position actuelle.";
-NSMicrophoneUsageDescription = "Signal a besoin d’accéder à votre microphone pour passer et recevoir des appels téléphoniques et pour enregistrer des messages vocaux.";
+NSLocationWhenInUseUsageDescription = "Pour partager votre position actuelle, Signal doit accéder à votre position.";
+NSMicrophoneUsageDescription = "Pour passer et recevoir des appels téléphoniques et pour enregistrer des messages vocaux, Signal doit accéder à votre microphone.";
 NSPhotoLibraryAddUsageDescription = "Signal enregistrera les photos dans votre photothèque.";
-NSPhotoLibraryUsageDescription = "Signal vous permettra de choisir quelles photos envoyer de votre photothèque.";
-NSLocalNetworkUsageDescription = "Signal utilise le réseau local pour vous permettre de transférer directement votre compte vers un nouveau téléphone. Il ne sera pas utilisé à moins que vous ne choisissiez explicitement d’entreprendre un transfert vers un nouvel appareil.";
+NSPhotoLibraryUsageDescription = "Signal vous permettra de choisir les photos à envoyer depuis votre photothèque.";
+NSLocalNetworkUsageDescription = "Signal utilise votre réseau local pour vous permettre de transférer directement votre compte vers un nouveau téléphone. Ce réseau local n'est utilisé que lorsque vous choisissez explicitement d'effectuer un transfert vers un nouvel appareil.";
