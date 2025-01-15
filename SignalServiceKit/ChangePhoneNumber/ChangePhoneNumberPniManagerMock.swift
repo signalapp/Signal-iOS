@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import LibSignalClient
-
 #if TESTABLE_BUILD
+
+public import LibSignalClient
 
 public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
 

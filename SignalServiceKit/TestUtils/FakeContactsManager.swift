@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import Contacts
-
 #if TESTABLE_BUILD
+
+public import Contacts
 
 @objc(OWSFakeContactsManager)
 public class FakeContactsManager: NSObject, ContactManager {

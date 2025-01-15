@@ -89,9 +89,11 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 {
     OWSAssertDebug(groupModel);
     OWSAssertDebug(groupModel.groupId.length > 0);
+#ifdef DEBUG
     for (SignalServiceAddress *address in groupModel.groupMembers) {
         OWSAssertDebug(address.isValid);
     }
+#endif
 
     NSString *uniqueIdentifier = [[self class] defaultThreadIdForGroupId:groupModel.groupId];
     self = [super initWithUniqueId:uniqueIdentifier];

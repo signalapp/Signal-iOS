@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+#if TESTABLE_BUILD
+
 import Foundation
 public import LibSignalClient
 
-#if TESTABLE_BUILD
 /// A helper for tests which can initializes Signal Protocol sessions
 /// and then encrypt and decrypt messages for those sessions.
 public struct TestProtocolRunner {

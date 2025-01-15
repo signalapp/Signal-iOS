@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import GRDB
-
 #if TESTABLE_BUILD
+
+public import GRDB
 
 public final class InMemoryDB: DB {
 

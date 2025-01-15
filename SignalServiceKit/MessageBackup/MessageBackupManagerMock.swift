@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+#if TESTABLE_BUILD
+
 import Foundation
 public import LibSignalClient
-
-#if TESTABLE_BUILD
 
 open class MessageBackupManagerMock: MessageBackupManager {
     public func downloadEncryptedBackup(
