@@ -1608,6 +1608,7 @@
 		B93296672BB5CF7500B8BD39 /* NicknameRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93296662BB5CF7500B8BD39 /* NicknameRecordStore.swift */; };
 		B93296692BBB3FF200B8BD39 /* ProfileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95BBAC12BB36025009EFB4A /* ProfileName.swift */; };
 		B9488E752CDED27200C1294B /* ScrollOffset.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9488E742CDED27200C1294B /* ScrollOffset.swift */; };
+		B94E48012D385D7800128318 /* linear_indeterminate.json in Resources */ = {isa = PBXBuildFile; fileRef = B94E48002D385D7800128318 /* linear_indeterminate.json */; };
 		B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */; };
 		B95A765E2B76E93500AA7E97 /* FindByUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */; };
 		B96D6D792B9F83270039EB99 /* SignalSymbols-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96D6D782B9F83270039EB99 /* SignalSymbols-Regular.otf */; };
@@ -5361,6 +5362,7 @@
 		B93296642BB5CF3200B8BD39 /* NicknameRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameRecord.swift; sourceTree = "<group>"; };
 		B93296662BB5CF7500B8BD39 /* NicknameRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameRecordStore.swift; sourceTree = "<group>"; };
 		B9488E742CDED27200C1294B /* ScrollOffset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollOffset.swift; sourceTree = "<group>"; };
+		B94E48002D385D7800128318 /* linear_indeterminate.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = linear_indeterminate.json; sourceTree = "<group>"; };
 		B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarViewPresentationContextProvider.swift; sourceTree = "<group>"; };
 		B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByUsernameViewController.swift; sourceTree = "<group>"; };
 		B95BBAC12BB36025009EFB4A /* ProfileName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileName.swift; sourceTree = "<group>"; };
@@ -10531,6 +10533,7 @@
 				6605D5022A86D305004DC345 /* indeterminate_spinner_white.json */,
 				887CD48924735D4200FDD265 /* launchApp-iPad.json */,
 				887CD48824735D4200FDD265 /* launchApp-iPhone.json */,
+				B94E48002D385D7800128318 /* linear_indeterminate.json */,
 				B9E322D62CD024A2006DAF3B /* linking-device-dark.json */,
 				B9E322D72CD024A2006DAF3B /* linking-device-light.json */,
 				3406D32A25DD80D600885B14 /* payments_spinner.json */,
@@ -14500,6 +14503,7 @@
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
 				887CD48B24735D4200FDD265 /* launchApp-iPad.json in Resources */,
 				887CD48A24735D4200FDD265 /* launchApp-iPhone.json in Resources */,
+				B94E48012D385D7800128318 /* linear_indeterminate.json in Resources */,
 				B9E322D92CD024A2006DAF3B /* linking-device-dark.json in Resources */,
 				B9E322D82CD024A2006DAF3B /* linking-device-light.json in Resources */,
 				B6F509971AA53F760068F56A /* Localizable.strings in Resources */,

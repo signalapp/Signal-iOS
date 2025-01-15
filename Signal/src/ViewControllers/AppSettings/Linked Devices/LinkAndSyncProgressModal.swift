@@ -65,9 +65,8 @@ class LinkAndSyncProgressViewModel: ObservableObject {
     func cancel() {
         linkNSyncTask?.cancel()
         withAnimation(.smooth(duration: 0.2)) {
-            taskProgress = 0
+            didTapCancel = true
         }
-        didTapCancel = true
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
             self?.isIndeterminate = true
@@ -176,7 +175,6 @@ struct LinkAndSyncProgressView: View {
                     LottieView(animation: .named("circular_indeterminate"))
                         .playing(loopMode: loopMode)
                         .animationDidFinish { completed in
-                            print("animationDidFinish: \(completed)")
                             guard completed else { return }
                             indeterminateProgressShouldShow = false
                         }

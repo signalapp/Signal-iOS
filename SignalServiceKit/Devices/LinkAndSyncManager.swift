@@ -85,11 +85,11 @@ public enum SecondaryLinkNSyncProgressPhase: String {
     case downloadingBackup
     case importingBackup
 
-    var percentOfTotalProgress: UInt64 {
+    public var percentOfTotalProgress: UInt64 {
         return switch self {
-        case .waitingForBackup: 50
-        case .downloadingBackup: 30
-        case .importingBackup: 20
+        case .waitingForBackup: 5
+        case .downloadingBackup: 55
+        case .importingBackup: 40
         }
     }
 }
