@@ -498,6 +498,11 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             unitCount: 95
         )
 
+        let postLinkNSyncProgress = await progress.addSource(
+            withLabel: LocalizationNotNeeded("Post-link'n'sync"),
+            unitCount: 5
+        )
+
         do {
             try await self.linkAndSyncManager.waitForBackupAndRestore(
                 localIdentifiers: authedDevice.localIdentifiers,
@@ -505,10 +510,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 ephemeralBackupKey: ephemeralBackupKey,
                 progress: linkNSyncProgress
             )
-            return await progress.addSource(
-                withLabel: LocalizationNotNeeded("Post-link'n'sync"),
-                unitCount: 5
-            )
+            return postLinkNSyncProgress
         } catch let error {
             Logger.error("Failed link'n'sync \(error)")
             throw .linkAndSyncError(LinkAndSyncError(
