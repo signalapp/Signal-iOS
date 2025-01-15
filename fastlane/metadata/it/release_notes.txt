@@ -1,4 +1,4 @@
-• The “Files” filter in the media gallery can help you quickly find PDFs and other attachments, like the TXT that really could have been a text.
-• We switched the emoji reaction picker in the Stories tab to work with the dark theme, but the right reaction can still provide enlightenment.
-• VoiceOver accessibility improvements, including a label for the call ring button and new functionality to indicate when a message includes a quoted reply.
-• We also updated the design of the QR codes throughout the app. They’ve always looked good in front of a camera, but they’re practically ready for a photo shoot now.
+• Il filtro dei file nella raccolta dei tuoi media può aiutarti a trovare subito i PDF e altri allegati… si sa che spesso si fa prima a inviare un intero documento che spiegarlo a parole in chat.
+• Abbiamo aggiornato il selettore di emoji nella scheda Storie: da ora funziona con il tema scuro di Signal (così il passaggio al "lato oscuro" dell'app sarà finalmente completato).
+• Abbiamo migliorato la funzione di voice over per rendere l'app più accessibile, aggiungendo un testo per indicare il pulsante per le chiamate e inserendo una nuova funzionalità per segnalare quando un messaggio include una risposta citata.
+• Abbiamo anche aggiornato il design dei codice QR mostrati all'interno dell'app. Già erano belli, visto quanto tempo passavano di fronte alle fotocamere, ma ora sono su un altro livello!

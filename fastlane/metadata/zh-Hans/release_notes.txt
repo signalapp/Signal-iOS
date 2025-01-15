@@ -1,4 +1,4 @@
-• The “Files” filter in the media gallery can help you quickly find PDFs and other attachments, like the TXT that really could have been a text.
-• We switched the emoji reaction picker in the Stories tab to work with the dark theme, but the right reaction can still provide enlightenment.
-• VoiceOver accessibility improvements, including a label for the call ring button and new functionality to indicate when a message includes a quoted reply.
-• We also updated the design of the QR codes throughout the app. They’ve always looked good in front of a camera, but they’re practically ready for a photo shoot now.
+• 媒体库中的“文件”筛选功能可以帮助您快速找到 PDF 和其他附件。
+• 我们切换了动态选项卡中的表情符号回应选择器，以适配夜间模式。
+• VoiceOver 旁白辅助功能得到了优化。
+• 我们还更新了整个应用中的二维码设计。
