@@ -155,9 +155,9 @@ private extension NSAttributedString {
 
 private extension NSAttributedString {
     static let aliceMadeBobAdmin_Arabic: NSAttributedString = {
-        let mutable = NSMutableAttributedString(string: "إنَّ \(user: .alice) قد جعلَ \(user: .bob) مُشرفاً.")
-        mutable.addAddress(.alice, toRange: NSRange(location: 5, length: 7))
-        mutable.addAddress(.bob, toRange: NSRange(location: 21, length: 5))
+        let mutable = NSMutableAttributedString(string: "\u{0642}\u{0627}\u{0645} \(user: .alice) \u{0628}\u{0627}\u{062e}\u{062a}\u{064a}\u{0627}\u{0631} \(user: .bob) \u{0643}\u{0645}\u{064f}\u{0634}\u{0631}\u{0650}\u{0641}.")
+        mutable.addAddress(.alice, toRange: NSRange(location: 4, length: 7))
+        mutable.addAddress(.bob, toRange: NSRange(location: 20, length: 5))
 
         return mutable
     }()
@@ -179,9 +179,9 @@ private extension NSAttributedString {
     }()
 
     static let qiInChineseMadeFatimaInArabicAdmin_Arabic: NSAttributedString = {
-        let mutable = NSMutableAttributedString(string: "إنَّ \(user: .qi) قد جعلَ \(user: .fatima) مُشرفاً.")
-        mutable.addAddress(.qi, toRange: NSRange(location: 5, length: 3))
-        mutable.addAddress(.fatima, toRange: NSRange(location: 17, length: 10))
+        let mutable = NSMutableAttributedString(string: "\u{0642}\u{0627}\u{0645} \(user: .qi) \u{0628}\u{0627}\u{062e}\u{062a}\u{064a}\u{0627}\u{0631} \(user: .fatima) \u{0643}\u{0645}\u{064f}\u{0634}\u{0631}\u{0650}\u{0641}.")
+        mutable.addAddress(.qi, toRange: NSRange(location: 4, length: 3))
+        mutable.addAddress(.fatima, toRange: NSRange(location: 16, length: 10))
 
         return mutable
     }()
