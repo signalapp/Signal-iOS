@@ -164,7 +164,7 @@
 "ALL_MEDIA_FILE_TYPE_AUDIO" = "Аудио";
 
 /* Generic All Media file type for non-audiovisual files used in file type picker */
-"ALL_MEDIA_FILE_TYPE_FILES" = "Files";
+"ALL_MEDIA_FILE_TYPE_FILES" = "Фајлови";
 
 /* Media (i.e., graphical) file type in All Meda file type picker. */
 "ALL_MEDIA_FILE_TYPE_MEDIA" = "Медиј";
@@ -487,6 +487,9 @@
 /* return to the previous screen */
 "BACK_BUTTON" = "Назад";
 
+/* Text used as placeholder in backup key text view. */
+"BACKUP_KEY_PLACEHOLDER" = "Backup Key";
+
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Моје значке";
 
@@ -681,9 +684,6 @@
 
 /* Label for the 'share' button. */
 "BUTTON_SHARE" = "Подели";
-
-/* Label for the 'start' button. */
-"BUTTON_START" = "Започни";
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Пошаљи";
@@ -884,10 +884,10 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Промени смер камере";
 
 /* Accessibility label for turning off call ringing */
-"CALL_VIEW_TURN_OFF_RINGING" = "Turn off ringing";
+"CALL_VIEW_TURN_OFF_RINGING" = "Искључи звоно";
 
 /* Accessibility label for turning on call ringing */
-"CALL_VIEW_TURN_ON_RINGING" = "Turn on ringing";
+"CALL_VIEW_TURN_ON_RINGING" = "Укључи звоно";
 
 /* Accessibility label for turning off the camera */
 "CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "Угаси камеру";
@@ -2021,7 +2021,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Наставите без преношења налога и порука";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Додај овај iPad као нови повезани уређај";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Додајте као нови уређај";
@@ -4060,17 +4060,32 @@
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Завршите повезивање на другом уређају";
 
+/* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
+"LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Continue without transferring";
+
 /* Message for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Ваш уређај је повезан, али ваше поруке нису пренете.";
+
+/* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your message couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Синхронизација порука није успела";
 
+/* On a progress modal */
+"LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP" = "Do not close the app";
+
 /* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ синхронизовано";
 
+/* Title for a progress modal that would be indicating the sync progress while it's cancelling that sync */
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "Cancelling…";
+
 /* Title for a progress modal indicating the sync progress */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "Синхронизују се поруке…";
+
+/* Title for a progress modal indicating the sync progress while it's preparing for upload */
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "Preparing…";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Повежи нови уређај";
@@ -4088,10 +4103,10 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Сазнајте више";
 
 /* Body for system notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_BODY" = "A new device was linked to your account at %1$@. Tap to view.";
+"LINKED_DEVICE_NOTIFICATION_BODY" = "Нови уређај је повезан са вашим налогом у %1$@. Додирните да видите.";
 
 /* Title for system notification when a new device is linked. */
-"LINKED_DEVICE_NOTIFICATION_TITLE" = "You Linked a New Device";
+"LINKED_DEVICE_NOTIFICATION_TITLE" = "Повезали сте нови уређај";
 
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
 "LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "На другом уређају посетите %1$@ да бисте инсталирали апликацију за iPad или %2$@ да бисте инсталирали апликацију за десктоп-рачунар.";
@@ -4223,7 +4238,7 @@
 "MEDIA_GALLERY_A11Y_AUDIO_FILE" = "аудио фајл";
 
 /* VoiceOver description for a generic non-audiovisual file in All Media */
-"MEDIA_GALLERY_A11Y_OTHER_FILE" = "file";
+"MEDIA_GALLERY_A11Y_OTHER_FILE" = "Фајл";
 
 /* VoiceOver description for a voice messages in All Media */
 "MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "Гласовна порука";
@@ -4244,10 +4259,10 @@
 "MEDIA_GALLERY_NO_AUDIO_TITLE" = "Нема аудио фајлова";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - second line. */
-"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "Files that you send and receive will appear here";
+"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "Фајлови које шаљете и примате појавиће се овде";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - first line. */
-"MEDIA_GALLERY_NO_FILES_TITLE" = "No Files";
+"MEDIA_GALLERY_NO_FILES_TITLE" = "Нема фајлова";
 
 /* Displayed in All Media screen when there's no media - first line. */
 "MEDIA_GALLERY_NO_FILTER_RESULTS" = "Нема медија";
@@ -5933,7 +5948,7 @@
 "PUSH_REGISTER_SUCCESS" = "Поново сте се пријавили на обавештења.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %1$@.";
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Одговор за: %1$@.";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
@@ -6104,10 +6119,10 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Пренесите налог и поруке";
 
 /* Description for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your backup key is a 64-digit code required to recover your account and data.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Кључ за резервне копије је 64-цифрена шифра потребна за враћање вашег налога и података.";
 
 /* Title for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Enter Your Backup Key";
+"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Унесите кључ за резервне копије";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Унесите број";
@@ -6131,7 +6146,7 @@
 "REGISTRATION_NETWORK_ERROR_TITLE" = "Проверите да ли сте повезани на интернет";
 
 /* Title of button to tap if you do not have a backup key during registration. */
-"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "No Backup Key?";
+"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Немате кључ за резервне копије?";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "За почетак, унесите свој број телефона.";
@@ -6449,13 +6464,13 @@
 "SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE" = "Ваше поруке нису пренете због грешке која се догодила. Пробајте да поново повежете овај уређај.";
 
 /* Button on an action sheet to open Signal on the App Store. */
-"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_CHECK_FOR_UPDATE_BUTTON" = "Check For Updates";
+"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_CHECK_FOR_UPDATE_BUTTON" = "Провери да ли има ажурирања";
 
 /* Message for action sheet when the secondary device fails to sync messages due to an app update being required. */
-"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_MESSAGE" = "To complete syncing your messages, update Signal now.";
+"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_MESSAGE" = "Да бисте обавили синхронизацију порука, ажурирајте Signal.";
 
 /* Title for action sheet when the secondary device fails to sync messages due to an app update being required. */
-"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE" = "Update Required";
+"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE" = "Неопходно је ажурирање апликације";
 
 /* header text when this device is being added as a secondary */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Изаберите назив за овај уређај";
@@ -6503,7 +6518,7 @@
 "SEE_ALL_BUTTON" = "Прикажи све";
 
 /* Button text to select all in any list selection mode */
-"SELECT_ALL" = "Select All";
+"SELECT_ALL" = "Изабери све";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Пошаљи поново";

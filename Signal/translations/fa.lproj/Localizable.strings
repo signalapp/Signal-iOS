@@ -164,7 +164,7 @@
 "ALL_MEDIA_FILE_TYPE_AUDIO" = "صوت";
 
 /* Generic All Media file type for non-audiovisual files used in file type picker */
-"ALL_MEDIA_FILE_TYPE_FILES" = "Files";
+"ALL_MEDIA_FILE_TYPE_FILES" = "فایل‌ها";
 
 /* Media (i.e., graphical) file type in All Meda file type picker. */
 "ALL_MEDIA_FILE_TYPE_MEDIA" = "رسانه‌ها";
@@ -487,6 +487,9 @@
 /* return to the previous screen */
 "BACK_BUTTON" = "بازگشت";
 
+/* Text used as placeholder in backup key text view. */
+"BACKUP_KEY_PLACEHOLDER" = "Backup Key";
+
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "نشان‌های من";
 
@@ -681,9 +684,6 @@
 
 /* Label for the 'share' button. */
 "BUTTON_SHARE" = "اشتراک‌گذاری";
-
-/* Label for the 'start' button. */
-"BUTTON_START" = "شروع";
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "ارسال";
@@ -884,10 +884,10 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "جهت دوربین را تغییر دهید.";
 
 /* Accessibility label for turning off call ringing */
-"CALL_VIEW_TURN_OFF_RINGING" = "Turn off ringing";
+"CALL_VIEW_TURN_OFF_RINGING" = "خاموش کردن زنگ";
 
 /* Accessibility label for turning on call ringing */
-"CALL_VIEW_TURN_ON_RINGING" = "Turn on ringing";
+"CALL_VIEW_TURN_ON_RINGING" = "روشن کردن زنگ";
 
 /* Accessibility label for turning off the camera */
 "CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "خاموش کردن دوربین";
@@ -2021,7 +2021,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "ادامه بدون انتقال حساب و پیام های شما";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "این آی‌پد را به‌عنوان یک دستگاه متصل‌شده جدید اضافه کنید";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "افزودن به عنوان دستگاه جدید";
@@ -4060,17 +4060,32 @@
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "اتصال را در دستگاه دیگر خود به پایان برسانید";
 
+/* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
+"LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Continue without transferring";
+
 /* Message for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "دستگاهتان با موفقیت متصل شد، اما پیام‌هایتان منتقل نشد.";
+
+/* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your message couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "همگام‌سازی پیام انجام نشد";
 
+/* On a progress modal */
+"LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP" = "Do not close the app";
+
 /* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ کامل شده";
 
+/* Title for a progress modal that would be indicating the sync progress while it's cancelling that sync */
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "Cancelling…";
+
 /* Title for a progress modal indicating the sync progress */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "در حال همگام‌سازی پیام‌ها…";
+
+/* Title for a progress modal indicating the sync progress while it's preparing for upload */
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "Preparing…";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "اتصال دستگاه جدید";
@@ -4088,10 +4103,10 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "بیشتر بدانید";
 
 /* Body for system notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_BODY" = "A new device was linked to your account at %1$@. Tap to view.";
+"LINKED_DEVICE_NOTIFICATION_BODY" = "دستگاه جدیدی به حسابتان در %1$@ متصل شد. برای مشاهده، ضربه بزنید.";
 
 /* Title for system notification when a new device is linked. */
-"LINKED_DEVICE_NOTIFICATION_TITLE" = "You Linked a New Device";
+"LINKED_DEVICE_NOTIFICATION_TITLE" = "دستگاه جدیدی را متصل کردید";
 
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
 "LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "در دستگاه دیگرتان، برای نصب برنامه iPad به %1$@ یا برای نصب برنامه دسک‌تاپ به %2$@ بروید.";
@@ -4223,7 +4238,7 @@
 "MEDIA_GALLERY_A11Y_AUDIO_FILE" = "فایل صوتی";
 
 /* VoiceOver description for a generic non-audiovisual file in All Media */
-"MEDIA_GALLERY_A11Y_OTHER_FILE" = "file";
+"MEDIA_GALLERY_A11Y_OTHER_FILE" = "فایل";
 
 /* VoiceOver description for a voice messages in All Media */
 "MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "پیام صوتی";
@@ -4244,10 +4259,10 @@
 "MEDIA_GALLERY_NO_AUDIO_TITLE" = "هیچ فایل صوتی وجود ندارد";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - second line. */
-"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "Files that you send and receive will appear here";
+"MEDIA_GALLERY_NO_FILES_SUBTITLE" = "فایل‌های ارسالی و دریافتی‌تان اینجا ظاهر خواهند شد";
 
 /* Displayed in All Media (Audio) screen when there's no non-audiovisual files - first line. */
-"MEDIA_GALLERY_NO_FILES_TITLE" = "No Files";
+"MEDIA_GALLERY_NO_FILES_TITLE" = "فایلی وجود ندارد";
 
 /* Displayed in All Media screen when there's no media - first line. */
 "MEDIA_GALLERY_NO_FILTER_RESULTS" = "رسانه‌ای موجود نیست";
@@ -5933,7 +5948,7 @@
 "PUSH_REGISTER_SUCCESS" = "اعلان‌های فوری با موفقیت فعال شد.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
-"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Replying to %1$@.";
+"QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "در حال پاسخ به %1$@.";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
@@ -6104,10 +6119,10 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "انتقال حساب و پیام‌ها";
 
 /* Description for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "Your backup key is a 64-digit code required to recover your account and data.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "رمز پشتیبان شما یک کد ۶۴ رقمی است که برای بازیابی حساب و اطلاعاتتان الزامی است.";
 
 /* Title for the screen that allows users to enter their backup key. */
-"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Enter Your Backup Key";
+"REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "رمز پشتیبان خود را وارد کنید";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "شناره را وارد کنید";
@@ -6131,7 +6146,7 @@
 "REGISTRATION_NETWORK_ERROR_TITLE" = "اتصال را بررسی کنید";
 
 /* Title of button to tap if you do not have a backup key during registration. */
-"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "No Backup Key?";
+"REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "رمز پشتیبان ندارید؟";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
 "REGISTRATION_PHONE_NUMBER_SUBTITLE" = "برای شروع، شماره تلفن خود را وارد کنید.";
@@ -6449,13 +6464,13 @@
 "SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE" = "پیام‌هایتان به‌دلیل بروز خطا منتقل نشد. با اتصال مجدد این دستگاه، دوباره امتحان کنید.";
 
 /* Button on an action sheet to open Signal on the App Store. */
-"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_CHECK_FOR_UPDATE_BUTTON" = "Check For Updates";
+"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_CHECK_FOR_UPDATE_BUTTON" = "بررسی به‌روزرسانی‌ها";
 
 /* Message for action sheet when the secondary device fails to sync messages due to an app update being required. */
-"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_MESSAGE" = "To complete syncing your messages, update Signal now.";
+"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_MESSAGE" = "برای تکمیل همگام‌سازی پیام‌هایتان، همین حالا سیگنال را به‌روزرسانی کنید.";
 
 /* Title for action sheet when the secondary device fails to sync messages due to an app update being required. */
-"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE" = "Update Required";
+"SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE" = "به‌روزرسانی لازم است";
 
 /* header text when this device is being added as a secondary */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "انتخاب یک نام برای این دستگاه";
@@ -6503,7 +6518,7 @@
 "SEE_ALL_BUTTON" = "مشاهده همه";
 
 /* Button text to select all in any list selection mode */
-"SELECT_ALL" = "Select All";
+"SELECT_ALL" = "انتخاب همه";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "ارسال مجدد";
