@@ -7,6 +7,7 @@ import UIKit
 
 #if DEBUG
 public class SheetPreviewViewController: UIViewController {
+    private let animateFirstAppearance: Bool
     private let presentAction: PresentAction
 
     private enum PresentAction {
@@ -25,21 +26,31 @@ public class SheetPreviewViewController: UIViewController {
     }
 
     public init(
+        animateFirstAppearance: Bool = false,
         presentSheet: @escaping (
             _ viewController: SheetPreviewViewController,
             _ animated: Bool
         ) -> Void
     ) {
+        self.animateFirstAppearance = animateFirstAppearance
         self.presentAction = .presentSheet(presentSheet)
         super.init(nibName: nil, bundle: nil)
     }
 
-    public init(sheet: @escaping @autoclosure () -> UIViewController) {
+    public init(
+        animateFirstAppearance: Bool = false,
+        sheet: @escaping @autoclosure () -> UIViewController
+    ) {
+        self.animateFirstAppearance = animateFirstAppearance
         self.presentAction = .createSheet(sheet)
         super.init(nibName: nil, bundle: nil)
     }
 
-    public init(createSheet: @escaping () -> UIViewController) {
+    public init(
+        animateFirstAppearance: Bool = false,
+        createSheet: @escaping () -> UIViewController
+    ) {
+        self.animateFirstAppearance = animateFirstAppearance
         self.presentAction = .createSheet(createSheet)
         super.init(nibName: nil, bundle: nil)
     }
@@ -60,7 +71,7 @@ public class SheetPreviewViewController: UIViewController {
 
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.presentAction.present(from: self, animated: false)
+        self.presentAction.present(from: self, animated: animateFirstAppearance)
     }
 }
 #endif

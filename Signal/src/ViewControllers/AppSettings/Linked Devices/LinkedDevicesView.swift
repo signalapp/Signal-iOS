@@ -282,30 +282,7 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
 
         let progress = OWSProgress.createSink { progress in
             Task { @MainActor in
-                let canBeCancelled: Bool
-                if let label = progress.currentSourceLabel {
-                    canBeCancelled = label != PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue
-                } else {
-                    canBeCancelled = false
-                }
-
-                switch progress.currentSourceLabel {
-                case
-                    PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue,
-                    PrimaryLinkNSyncProgressPhase.exportingBackup.rawValue:
-                    linkAndSyncProgressModal.viewModel.phase = .preparing
-                case
-                    PrimaryLinkNSyncProgressPhase.uploadingBackup.rawValue,
-                    PrimaryLinkNSyncProgressPhase.finishing.rawValue:
-                    linkAndSyncProgressModal.viewModel.phase = .syncing
-                default:
-                    break
-                }
-
-                linkAndSyncProgressModal.viewModel.updateProgress(
-                    progress: progress.percentComplete,
-                    canBeCancelled: canBeCancelled
-                )
+                linkAndSyncProgressModal.viewModel.updateProgress(progress: progress)
             }
         }
 
