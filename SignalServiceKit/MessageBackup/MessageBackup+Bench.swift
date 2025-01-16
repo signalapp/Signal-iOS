@@ -194,6 +194,7 @@ extension MessageBackup {
             case ChatItem_PaymentNotification
             case ChatItem_GiftBadge
             case ChatItem_ViewOnceMessage
+            case ChatItem_DirectStoryReplyMessage
 
             case StickerPack
 
@@ -244,6 +245,8 @@ extension MessageBackup {
                         self = .ChatItem_GiftBadge
                     case .viewOnceMessage:
                         self = .ChatItem_ViewOnceMessage
+                    case .directStoryReplyMessage:
+                        self = .ChatItem_DirectStoryReplyMessage
                     case .none:
                         // We don't restore and therefore don't benchmark these.
                         return nil

@@ -17,7 +17,7 @@
 // Copyright 2024 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 
-public import Foundation
+import Foundation
 public import SwiftProtobuf
 
 // If the compiler emits an error on this type, it is because this file
@@ -640,105 +640,138 @@ public struct BackupProto_Contact: @unchecked Sendable {
 
   /// should be 16 bytes
   public var aci: Data {
-    get {return _aci ?? Data()}
-    set {_aci = newValue}
+    get {return _storage._aci ?? Data()}
+    set {_uniqueStorage()._aci = newValue}
   }
   /// Returns true if `aci` has been explicitly set.
-  public var hasAci: Bool {return self._aci != nil}
+  public var hasAci: Bool {return _storage._aci != nil}
   /// Clears the value of `aci`. Subsequent reads from it will return its default value.
-  public mutating func clearAci() {self._aci = nil}
+  public mutating func clearAci() {_uniqueStorage()._aci = nil}
 
   /// should be 16 bytes
   public var pni: Data {
-    get {return _pni ?? Data()}
-    set {_pni = newValue}
+    get {return _storage._pni ?? Data()}
+    set {_uniqueStorage()._pni = newValue}
   }
   /// Returns true if `pni` has been explicitly set.
-  public var hasPni: Bool {return self._pni != nil}
+  public var hasPni: Bool {return _storage._pni != nil}
   /// Clears the value of `pni`. Subsequent reads from it will return its default value.
-  public mutating func clearPni() {self._pni = nil}
+  public mutating func clearPni() {_uniqueStorage()._pni = nil}
 
   public var username: String {
-    get {return _username ?? String()}
-    set {_username = newValue}
+    get {return _storage._username ?? String()}
+    set {_uniqueStorage()._username = newValue}
   }
   /// Returns true if `username` has been explicitly set.
-  public var hasUsername: Bool {return self._username != nil}
+  public var hasUsername: Bool {return _storage._username != nil}
   /// Clears the value of `username`. Subsequent reads from it will return its default value.
-  public mutating func clearUsername() {self._username = nil}
+  public mutating func clearUsername() {_uniqueStorage()._username = nil}
 
   public var e164: UInt64 {
-    get {return _e164 ?? 0}
-    set {_e164 = newValue}
+    get {return _storage._e164 ?? 0}
+    set {_uniqueStorage()._e164 = newValue}
   }
   /// Returns true if `e164` has been explicitly set.
-  public var hasE164: Bool {return self._e164 != nil}
+  public var hasE164: Bool {return _storage._e164 != nil}
   /// Clears the value of `e164`. Subsequent reads from it will return its default value.
-  public mutating func clearE164() {self._e164 = nil}
+  public mutating func clearE164() {_uniqueStorage()._e164 = nil}
 
-  public var blocked: Bool = false
+  public var blocked: Bool {
+    get {return _storage._blocked}
+    set {_uniqueStorage()._blocked = newValue}
+  }
 
-  public var visibility: BackupProto_Contact.Visibility = .visible
+  public var visibility: BackupProto_Contact.Visibility {
+    get {return _storage._visibility}
+    set {_uniqueStorage()._visibility = newValue}
+  }
 
-  public var registration: BackupProto_Contact.OneOf_Registration? = nil
+  public var registration: OneOf_Registration? {
+    get {return _storage._registration}
+    set {_uniqueStorage()._registration = newValue}
+  }
 
   public var registered: BackupProto_Contact.Registered {
     get {
-      if case .registered(let v)? = registration {return v}
+      if case .registered(let v)? = _storage._registration {return v}
       return BackupProto_Contact.Registered()
     }
-    set {registration = .registered(newValue)}
+    set {_uniqueStorage()._registration = .registered(newValue)}
   }
 
   public var notRegistered: BackupProto_Contact.NotRegistered {
     get {
-      if case .notRegistered(let v)? = registration {return v}
+      if case .notRegistered(let v)? = _storage._registration {return v}
       return BackupProto_Contact.NotRegistered()
     }
-    set {registration = .notRegistered(newValue)}
+    set {_uniqueStorage()._registration = .notRegistered(newValue)}
   }
 
   public var profileKey: Data {
-    get {return _profileKey ?? Data()}
-    set {_profileKey = newValue}
+    get {return _storage._profileKey ?? Data()}
+    set {_uniqueStorage()._profileKey = newValue}
   }
   /// Returns true if `profileKey` has been explicitly set.
-  public var hasProfileKey: Bool {return self._profileKey != nil}
+  public var hasProfileKey: Bool {return _storage._profileKey != nil}
   /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
-  public mutating func clearProfileKey() {self._profileKey = nil}
+  public mutating func clearProfileKey() {_uniqueStorage()._profileKey = nil}
 
-  public var profileSharing: Bool = false
+  public var profileSharing: Bool {
+    get {return _storage._profileSharing}
+    set {_uniqueStorage()._profileSharing = newValue}
+  }
 
   public var profileGivenName: String {
-    get {return _profileGivenName ?? String()}
-    set {_profileGivenName = newValue}
+    get {return _storage._profileGivenName ?? String()}
+    set {_uniqueStorage()._profileGivenName = newValue}
   }
   /// Returns true if `profileGivenName` has been explicitly set.
-  public var hasProfileGivenName: Bool {return self._profileGivenName != nil}
+  public var hasProfileGivenName: Bool {return _storage._profileGivenName != nil}
   /// Clears the value of `profileGivenName`. Subsequent reads from it will return its default value.
-  public mutating func clearProfileGivenName() {self._profileGivenName = nil}
+  public mutating func clearProfileGivenName() {_uniqueStorage()._profileGivenName = nil}
 
   public var profileFamilyName: String {
-    get {return _profileFamilyName ?? String()}
-    set {_profileFamilyName = newValue}
+    get {return _storage._profileFamilyName ?? String()}
+    set {_uniqueStorage()._profileFamilyName = newValue}
   }
   /// Returns true if `profileFamilyName` has been explicitly set.
-  public var hasProfileFamilyName: Bool {return self._profileFamilyName != nil}
+  public var hasProfileFamilyName: Bool {return _storage._profileFamilyName != nil}
   /// Clears the value of `profileFamilyName`. Subsequent reads from it will return its default value.
-  public mutating func clearProfileFamilyName() {self._profileFamilyName = nil}
+  public mutating func clearProfileFamilyName() {_uniqueStorage()._profileFamilyName = nil}
 
-  public var hideStory: Bool = false
+  public var hideStory: Bool {
+    get {return _storage._hideStory}
+    set {_uniqueStorage()._hideStory = newValue}
+  }
 
   public var identityKey: Data {
-    get {return _identityKey ?? Data()}
-    set {_identityKey = newValue}
+    get {return _storage._identityKey ?? Data()}
+    set {_uniqueStorage()._identityKey = newValue}
   }
   /// Returns true if `identityKey` has been explicitly set.
-  public var hasIdentityKey: Bool {return self._identityKey != nil}
+  public var hasIdentityKey: Bool {return _storage._identityKey != nil}
   /// Clears the value of `identityKey`. Subsequent reads from it will return its default value.
-  public mutating func clearIdentityKey() {self._identityKey = nil}
+  public mutating func clearIdentityKey() {_uniqueStorage()._identityKey = nil}
 
-  public var identityState: BackupProto_Contact.IdentityState = .default
+  public var identityState: BackupProto_Contact.IdentityState {
+    get {return _storage._identityState}
+    set {_uniqueStorage()._identityState = newValue}
+  }
+
+  /// absent iff both `given` and `family` are empty
+  public var nickname: BackupProto_Contact.Name {
+    get {return _storage._nickname ?? BackupProto_Contact.Name()}
+    set {_uniqueStorage()._nickname = newValue}
+  }
+  /// Returns true if `nickname` has been explicitly set.
+  public var hasNickname: Bool {return _storage._nickname != nil}
+  /// Clears the value of `nickname`. Subsequent reads from it will return its default value.
+  public mutating func clearNickname() {_uniqueStorage()._nickname = nil}
+
+  public var note: String {
+    get {return _storage._note}
+    set {_uniqueStorage()._note = newValue}
+  }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -846,16 +879,23 @@ public struct BackupProto_Contact: @unchecked Sendable {
     public init() {}
   }
 
+  public struct Name: Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var given: String = String()
+
+    public var family: String = String()
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+  }
+
   public init() {}
 
-  fileprivate var _aci: Data? = nil
-  fileprivate var _pni: Data? = nil
-  fileprivate var _username: String? = nil
-  fileprivate var _e164: UInt64? = nil
-  fileprivate var _profileKey: Data? = nil
-  fileprivate var _profileGivenName: String? = nil
-  fileprivate var _profileFamilyName: String? = nil
-  fileprivate var _identityKey: Data? = nil
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 public struct BackupProto_Group: @unchecked Sendable {
@@ -1694,6 +1734,15 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     set {_uniqueStorage()._item = .viewOnceMessage(newValue)}
   }
 
+  /// group story reply messages are not backed up
+  public var directStoryReplyMessage: BackupProto_DirectStoryReplyMessage {
+    get {
+      if case .directStoryReplyMessage(let v)? = _storage._item {return v}
+      return BackupProto_DirectStoryReplyMessage()
+    }
+    set {_uniqueStorage()._item = .directStoryReplyMessage(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_DirectionalDetails: Equatable, Sendable {
@@ -1712,6 +1761,8 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     case paymentNotification(BackupProto_PaymentNotification)
     case giftBadge(BackupProto_GiftBadge)
     case viewOnceMessage(BackupProto_ViewOnceMessage)
+    /// group story reply messages are not backed up
+    case directStoryReplyMessage(BackupProto_DirectStoryReplyMessage)
 
   }
 
@@ -2047,13 +2098,99 @@ public struct BackupProto_ContactMessage: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var contact: [BackupProto_ContactAttachment] = []
+  public var contact: BackupProto_ContactAttachment {
+    get {return _contact ?? BackupProto_ContactAttachment()}
+    set {_contact = newValue}
+  }
+  /// Returns true if `contact` has been explicitly set.
+  public var hasContact: Bool {return self._contact != nil}
+  /// Clears the value of `contact`. Subsequent reads from it will return its default value.
+  public mutating func clearContact() {self._contact = nil}
 
   public var reactions: [BackupProto_Reaction] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
+
+  fileprivate var _contact: BackupProto_ContactAttachment? = nil
+}
+
+public struct BackupProto_DirectStoryReplyMessage: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var reply: BackupProto_DirectStoryReplyMessage.OneOf_Reply? = nil
+
+  public var textReply: BackupProto_DirectStoryReplyMessage.TextReply {
+    get {
+      if case .textReply(let v)? = reply {return v}
+      return BackupProto_DirectStoryReplyMessage.TextReply()
+    }
+    set {reply = .textReply(newValue)}
+  }
+
+  public var emoji: String {
+    get {
+      if case .emoji(let v)? = reply {return v}
+      return String()
+    }
+    set {reply = .emoji(newValue)}
+  }
+
+  public var reactions: [BackupProto_Reaction] = []
+
+  public var storySentTimestamp: UInt64 {
+    get {return _storySentTimestamp ?? 0}
+    set {_storySentTimestamp = newValue}
+  }
+  /// Returns true if `storySentTimestamp` has been explicitly set.
+  public var hasStorySentTimestamp: Bool {return self._storySentTimestamp != nil}
+  /// Clears the value of `storySentTimestamp`. Subsequent reads from it will return its default value.
+  public mutating func clearStorySentTimestamp() {self._storySentTimestamp = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public enum OneOf_Reply: Equatable, Sendable {
+    case textReply(BackupProto_DirectStoryReplyMessage.TextReply)
+    case emoji(String)
+
+  }
+
+  public struct TextReply: @unchecked Sendable {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    public var text: BackupProto_Text {
+      get {return _storage._text ?? BackupProto_Text()}
+      set {_uniqueStorage()._text = newValue}
+    }
+    /// Returns true if `text` has been explicitly set.
+    public var hasText: Bool {return _storage._text != nil}
+    /// Clears the value of `text`. Subsequent reads from it will return its default value.
+    public mutating func clearText() {_uniqueStorage()._text = nil}
+
+    public var longText: BackupProto_FilePointer {
+      get {return _storage._longText ?? BackupProto_FilePointer()}
+      set {_uniqueStorage()._longText = newValue}
+    }
+    /// Returns true if `longText` has been explicitly set.
+    public var hasLongText: Bool {return _storage._longText != nil}
+    /// Clears the value of `longText`. Subsequent reads from it will return its default value.
+    public mutating func clearLongText() {_uniqueStorage()._longText = nil}
+
+    public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    public init() {}
+
+    fileprivate var _storage = _StorageClass.defaultInstance
+  }
+
+  public init() {}
+
+  fileprivate var _storySentTimestamp: UInt64? = nil
 }
 
 public struct BackupProto_PaymentNotification: Sendable {
@@ -6527,131 +6664,213 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     13: .same(proto: "hideStory"),
     14: .same(proto: "identityKey"),
     15: .same(proto: "identityState"),
+    16: .same(proto: "nickname"),
+    17: .same(proto: "note"),
   ]
 
+  fileprivate class _StorageClass {
+    var _aci: Data? = nil
+    var _pni: Data? = nil
+    var _username: String? = nil
+    var _e164: UInt64? = nil
+    var _blocked: Bool = false
+    var _visibility: BackupProto_Contact.Visibility = .visible
+    var _registration: BackupProto_Contact.OneOf_Registration?
+    var _profileKey: Data? = nil
+    var _profileSharing: Bool = false
+    var _profileGivenName: String? = nil
+    var _profileFamilyName: String? = nil
+    var _hideStory: Bool = false
+    var _identityKey: Data? = nil
+    var _identityState: BackupProto_Contact.IdentityState = .default
+    var _nickname: BackupProto_Contact.Name? = nil
+    var _note: String = String()
+
+    #if swift(>=5.10)
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+    #else
+      static let defaultInstance = _StorageClass()
+    #endif
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _aci = source._aci
+      _pni = source._pni
+      _username = source._username
+      _e164 = source._e164
+      _blocked = source._blocked
+      _visibility = source._visibility
+      _registration = source._registration
+      _profileKey = source._profileKey
+      _profileSharing = source._profileSharing
+      _profileGivenName = source._profileGivenName
+      _profileFamilyName = source._profileFamilyName
+      _hideStory = source._hideStory
+      _identityKey = source._identityKey
+      _identityState = source._identityState
+      _nickname = source._nickname
+      _note = source._note
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularBytesField(value: &self._aci) }()
-      case 2: try { try decoder.decodeSingularBytesField(value: &self._pni) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self._username) }()
-      case 4: try { try decoder.decodeSingularUInt64Field(value: &self._e164) }()
-      case 5: try { try decoder.decodeSingularBoolField(value: &self.blocked) }()
-      case 6: try { try decoder.decodeSingularEnumField(value: &self.visibility) }()
-      case 7: try {
-        var v: BackupProto_Contact.Registered?
-        var hadOneofValue = false
-        if let current = self.registration {
-          hadOneofValue = true
-          if case .registered(let m) = current {v = m}
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularBytesField(value: &_storage._aci) }()
+        case 2: try { try decoder.decodeSingularBytesField(value: &_storage._pni) }()
+        case 3: try { try decoder.decodeSingularStringField(value: &_storage._username) }()
+        case 4: try { try decoder.decodeSingularUInt64Field(value: &_storage._e164) }()
+        case 5: try { try decoder.decodeSingularBoolField(value: &_storage._blocked) }()
+        case 6: try { try decoder.decodeSingularEnumField(value: &_storage._visibility) }()
+        case 7: try {
+          var v: BackupProto_Contact.Registered?
+          var hadOneofValue = false
+          if let current = _storage._registration {
+            hadOneofValue = true
+            if case .registered(let m) = current {v = m}
+          }
+          try decoder.decodeSingularMessageField(value: &v)
+          if let v = v {
+            if hadOneofValue {try decoder.handleConflictingOneOf()}
+            _storage._registration = .registered(v)
+          }
+        }()
+        case 8: try {
+          var v: BackupProto_Contact.NotRegistered?
+          var hadOneofValue = false
+          if let current = _storage._registration {
+            hadOneofValue = true
+            if case .notRegistered(let m) = current {v = m}
+          }
+          try decoder.decodeSingularMessageField(value: &v)
+          if let v = v {
+            if hadOneofValue {try decoder.handleConflictingOneOf()}
+            _storage._registration = .notRegistered(v)
+          }
+        }()
+        case 9: try { try decoder.decodeSingularBytesField(value: &_storage._profileKey) }()
+        case 10: try { try decoder.decodeSingularBoolField(value: &_storage._profileSharing) }()
+        case 11: try { try decoder.decodeSingularStringField(value: &_storage._profileGivenName) }()
+        case 12: try { try decoder.decodeSingularStringField(value: &_storage._profileFamilyName) }()
+        case 13: try { try decoder.decodeSingularBoolField(value: &_storage._hideStory) }()
+        case 14: try { try decoder.decodeSingularBytesField(value: &_storage._identityKey) }()
+        case 15: try { try decoder.decodeSingularEnumField(value: &_storage._identityState) }()
+        case 16: try { try decoder.decodeSingularMessageField(value: &_storage._nickname) }()
+        case 17: try { try decoder.decodeSingularStringField(value: &_storage._note) }()
+        default: break
         }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.registration = .registered(v)
-        }
-      }()
-      case 8: try {
-        var v: BackupProto_Contact.NotRegistered?
-        var hadOneofValue = false
-        if let current = self.registration {
-          hadOneofValue = true
-          if case .notRegistered(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.registration = .notRegistered(v)
-        }
-      }()
-      case 9: try { try decoder.decodeSingularBytesField(value: &self._profileKey) }()
-      case 10: try { try decoder.decodeSingularBoolField(value: &self.profileSharing) }()
-      case 11: try { try decoder.decodeSingularStringField(value: &self._profileGivenName) }()
-      case 12: try { try decoder.decodeSingularStringField(value: &self._profileFamilyName) }()
-      case 13: try { try decoder.decodeSingularBoolField(value: &self.hideStory) }()
-      case 14: try { try decoder.decodeSingularBytesField(value: &self._identityKey) }()
-      case 15: try { try decoder.decodeSingularEnumField(value: &self.identityState) }()
-      default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._aci {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
-    } }()
-    try { if let v = self._pni {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
-    } }()
-    try { if let v = self._username {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
-    } }()
-    try { if let v = self._e164 {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 4)
-    } }()
-    if self.blocked != false {
-      try visitor.visitSingularBoolField(value: self.blocked, fieldNumber: 5)
-    }
-    if self.visibility != .visible {
-      try visitor.visitSingularEnumField(value: self.visibility, fieldNumber: 6)
-    }
-    switch self.registration {
-    case .registered?: try {
-      guard case .registered(let v)? = self.registration else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
-    }()
-    case .notRegistered?: try {
-      guard case .notRegistered(let v)? = self.registration else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
-    }()
-    case nil: break
-    }
-    try { if let v = self._profileKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 9)
-    } }()
-    if self.profileSharing != false {
-      try visitor.visitSingularBoolField(value: self.profileSharing, fieldNumber: 10)
-    }
-    try { if let v = self._profileGivenName {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 11)
-    } }()
-    try { if let v = self._profileFamilyName {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 12)
-    } }()
-    if self.hideStory != false {
-      try visitor.visitSingularBoolField(value: self.hideStory, fieldNumber: 13)
-    }
-    try { if let v = self._identityKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 14)
-    } }()
-    if self.identityState != .default {
-      try visitor.visitSingularEnumField(value: self.identityState, fieldNumber: 15)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      try { if let v = _storage._aci {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+      } }()
+      try { if let v = _storage._pni {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+      } }()
+      try { if let v = _storage._username {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+      } }()
+      try { if let v = _storage._e164 {
+        try visitor.visitSingularUInt64Field(value: v, fieldNumber: 4)
+      } }()
+      if _storage._blocked != false {
+        try visitor.visitSingularBoolField(value: _storage._blocked, fieldNumber: 5)
+      }
+      if _storage._visibility != .visible {
+        try visitor.visitSingularEnumField(value: _storage._visibility, fieldNumber: 6)
+      }
+      switch _storage._registration {
+      case .registered?: try {
+        guard case .registered(let v)? = _storage._registration else { preconditionFailure() }
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+      }()
+      case .notRegistered?: try {
+        guard case .notRegistered(let v)? = _storage._registration else { preconditionFailure() }
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
+      }()
+      case nil: break
+      }
+      try { if let v = _storage._profileKey {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 9)
+      } }()
+      if _storage._profileSharing != false {
+        try visitor.visitSingularBoolField(value: _storage._profileSharing, fieldNumber: 10)
+      }
+      try { if let v = _storage._profileGivenName {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 11)
+      } }()
+      try { if let v = _storage._profileFamilyName {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 12)
+      } }()
+      if _storage._hideStory != false {
+        try visitor.visitSingularBoolField(value: _storage._hideStory, fieldNumber: 13)
+      }
+      try { if let v = _storage._identityKey {
+        try visitor.visitSingularBytesField(value: v, fieldNumber: 14)
+      } }()
+      if _storage._identityState != .default {
+        try visitor.visitSingularEnumField(value: _storage._identityState, fieldNumber: 15)
+      }
+      try { if let v = _storage._nickname {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
+      } }()
+      if !_storage._note.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._note, fieldNumber: 17)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: BackupProto_Contact, rhs: BackupProto_Contact) -> Bool {
-    if lhs._aci != rhs._aci {return false}
-    if lhs._pni != rhs._pni {return false}
-    if lhs._username != rhs._username {return false}
-    if lhs._e164 != rhs._e164 {return false}
-    if lhs.blocked != rhs.blocked {return false}
-    if lhs.visibility != rhs.visibility {return false}
-    if lhs.registration != rhs.registration {return false}
-    if lhs._profileKey != rhs._profileKey {return false}
-    if lhs.profileSharing != rhs.profileSharing {return false}
-    if lhs._profileGivenName != rhs._profileGivenName {return false}
-    if lhs._profileFamilyName != rhs._profileFamilyName {return false}
-    if lhs.hideStory != rhs.hideStory {return false}
-    if lhs._identityKey != rhs._identityKey {return false}
-    if lhs.identityState != rhs.identityState {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._aci != rhs_storage._aci {return false}
+        if _storage._pni != rhs_storage._pni {return false}
+        if _storage._username != rhs_storage._username {return false}
+        if _storage._e164 != rhs_storage._e164 {return false}
+        if _storage._blocked != rhs_storage._blocked {return false}
+        if _storage._visibility != rhs_storage._visibility {return false}
+        if _storage._registration != rhs_storage._registration {return false}
+        if _storage._profileKey != rhs_storage._profileKey {return false}
+        if _storage._profileSharing != rhs_storage._profileSharing {return false}
+        if _storage._profileGivenName != rhs_storage._profileGivenName {return false}
+        if _storage._profileFamilyName != rhs_storage._profileFamilyName {return false}
+        if _storage._hideStory != rhs_storage._hideStory {return false}
+        if _storage._identityKey != rhs_storage._identityKey {return false}
+        if _storage._identityState != rhs_storage._identityState {return false}
+        if _storage._nickname != rhs_storage._nickname {return false}
+        if _storage._note != rhs_storage._note {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -6719,6 +6938,44 @@ extension BackupProto_Contact.NotRegistered: SwiftProtobuf.Message, SwiftProtobu
 
   public static func ==(lhs: BackupProto_Contact.NotRegistered, rhs: BackupProto_Contact.NotRegistered) -> Bool {
     if lhs.unregisteredTimestamp != rhs.unregisteredTimestamp {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_Contact.Name: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_Contact.protoMessageName + ".Name"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "given"),
+    2: .same(proto: "family"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.given) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.family) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.given.isEmpty {
+      try visitor.visitSingularStringField(value: self.given, fieldNumber: 1)
+    }
+    if !self.family.isEmpty {
+      try visitor.visitSingularStringField(value: self.family, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_Contact.Name, rhs: BackupProto_Contact.Name) -> Bool {
+    if lhs.given != rhs.given {return false}
+    if lhs.family != rhs.family {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -7662,6 +7919,7 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     16: .same(proto: "paymentNotification"),
     17: .same(proto: "giftBadge"),
     18: .same(proto: "viewOnceMessage"),
+    19: .same(proto: "directStoryReplyMessage"),
   ]
 
   fileprivate class _StorageClass {
@@ -7865,6 +8123,19 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
             _storage._item = .viewOnceMessage(v)
           }
         }()
+        case 19: try {
+          var v: BackupProto_DirectStoryReplyMessage?
+          var hadOneofValue = false
+          if let current = _storage._item {
+            hadOneofValue = true
+            if case .directStoryReplyMessage(let m) = current {v = m}
+          }
+          try decoder.decodeSingularMessageField(value: &v)
+          if let v = v {
+            if hadOneofValue {try decoder.handleConflictingOneOf()}
+            _storage._item = .directStoryReplyMessage(v)
+          }
+        }()
         default: break
         }
       }
@@ -7945,6 +8216,10 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
       case .viewOnceMessage?: try {
         guard case .viewOnceMessage(let v)? = _storage._item else { preconditionFailure() }
         try visitor.visitSingularMessageField(value: v, fieldNumber: 18)
+      }()
+      case .directStoryReplyMessage?: try {
+        guard case .directStoryReplyMessage(let v)? = _storage._item else { preconditionFailure() }
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 19)
       }()
       case nil: break
       }
@@ -8625,7 +8900,7 @@ extension BackupProto_ContactMessage: SwiftProtobuf.Message, SwiftProtobuf._Mess
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.contact) }()
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._contact) }()
       case 2: try { try decoder.decodeRepeatedMessageField(value: &self.reactions) }()
       default: break
       }
@@ -8633,9 +8908,13 @@ extension BackupProto_ContactMessage: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.contact.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.contact, fieldNumber: 1)
-    }
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._contact {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
     if !self.reactions.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.reactions, fieldNumber: 2)
     }
@@ -8643,8 +8922,169 @@ extension BackupProto_ContactMessage: SwiftProtobuf.Message, SwiftProtobuf._Mess
   }
 
   public static func ==(lhs: BackupProto_ContactMessage, rhs: BackupProto_ContactMessage) -> Bool {
-    if lhs.contact != rhs.contact {return false}
+    if lhs._contact != rhs._contact {return false}
     if lhs.reactions != rhs.reactions {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_DirectStoryReplyMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DirectStoryReplyMessage"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "textReply"),
+    2: .same(proto: "emoji"),
+    3: .same(proto: "reactions"),
+    4: .same(proto: "storySentTimestamp"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try {
+        var v: BackupProto_DirectStoryReplyMessage.TextReply?
+        var hadOneofValue = false
+        if let current = self.reply {
+          hadOneofValue = true
+          if case .textReply(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.reply = .textReply(v)
+        }
+      }()
+      case 2: try {
+        var v: String?
+        try decoder.decodeSingularStringField(value: &v)
+        if let v = v {
+          if self.reply != nil {try decoder.handleConflictingOneOf()}
+          self.reply = .emoji(v)
+        }
+      }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.reactions) }()
+      case 4: try { try decoder.decodeSingularUInt64Field(value: &self._storySentTimestamp) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    switch self.reply {
+    case .textReply?: try {
+      guard case .textReply(let v)? = self.reply else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    }()
+    case .emoji?: try {
+      guard case .emoji(let v)? = self.reply else { preconditionFailure() }
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }()
+    case nil: break
+    }
+    if !self.reactions.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.reactions, fieldNumber: 3)
+    }
+    try { if let v = self._storySentTimestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 4)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_DirectStoryReplyMessage, rhs: BackupProto_DirectStoryReplyMessage) -> Bool {
+    if lhs.reply != rhs.reply {return false}
+    if lhs.reactions != rhs.reactions {return false}
+    if lhs._storySentTimestamp != rhs._storySentTimestamp {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_DirectStoryReplyMessage.TextReply: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = BackupProto_DirectStoryReplyMessage.protoMessageName + ".TextReply"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "text"),
+    2: .same(proto: "longText"),
+  ]
+
+  fileprivate class _StorageClass {
+    var _text: BackupProto_Text? = nil
+    var _longText: BackupProto_FilePointer? = nil
+
+    #if swift(>=5.10)
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+    #else
+      static let defaultInstance = _StorageClass()
+    #endif
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _text = source._text
+      _longText = source._longText
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._text) }()
+        case 2: try { try decoder.decodeSingularMessageField(value: &_storage._longText) }()
+        default: break
+        }
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      try { if let v = _storage._text {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      } }()
+      try { if let v = _storage._longText {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      } }()
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_DirectStoryReplyMessage.TextReply, rhs: BackupProto_DirectStoryReplyMessage.TextReply) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._text != rhs_storage._text {return false}
+        if _storage._longText != rhs_storage._longText {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

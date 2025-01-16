@@ -80,6 +80,13 @@ extension MessageBackup {
             /// A sticker message had no associated attachment for the sticker's image contents.
             case stickerMessageMissingStickerAttachment
 
+            /// A story reply did not have an aci author.
+            case storyReplyAuthorMissingAci
+            /// A story reply had empty context (text or reaction).
+            case storyReplyEmptyContents
+            /// We only support backing up 1:1 story replies.
+            case storyReplyInGroupThread
+
             /// An attachment failed to be enqueued for upload, and will not be uploaded to the media tier.
             case failedToEnqueueAttachmentForUpload
 
@@ -277,6 +284,9 @@ extension MessageBackup {
                     .linkPreviewMissingUrl,
                     .linkPreviewUrlNotInBody,
                     .stickerMessageMissingStickerAttachment,
+                    .storyReplyAuthorMissingAci,
+                    .storyReplyEmptyContents,
+                    .storyReplyInGroupThread,
                     .failedToEnqueueAttachmentForUpload,
                     .invalidReactionAddress,
                     .invalidReactionTimestamp,
@@ -341,6 +351,9 @@ extension MessageBackup {
                     .invalidQuoteAuthor,
                     .linkPreviewMissingUrl,
                     .stickerMessageMissingStickerAttachment,
+                    .storyReplyAuthorMissingAci,
+                    .storyReplyEmptyContents,
+                    .storyReplyInGroupThread,
                     .failedToEnqueueAttachmentForUpload,
                     .invalidReactionAddress,
                     .invalidReactionTimestamp,
@@ -572,6 +585,15 @@ extension MessageBackup {
                 /// A ``BackupProto_StandardMessage`` had neither body text nor any attachments.
                 case emptyStandardMessage
 
+                /// A ``BackupProto_DirectStoryReplyMessage`` had an empty text body.
+                case emptyDirectStoryReplyMessage
+                /// A ``BackupProto_DirectStoryReplyMessage/OneOf_Reply`` has an unknown case.
+                case directStoryReplyMessageUnknownType
+                /// A ``BackupProto_DirectStoryReplyMessage`` author didn't have an aci.
+                case directStoryReplyFromNonAci
+                /// A ``BackupProto_DirectStoryReplyMessage`` was in a group thread.
+                case directStoryReplyInGroupThread
+
                 /// A ``BackupProto_StandardMessage/longText`` was present despite an empty
                 /// message body (the body text must always be a prefix of the long text)
                 case longTextStandardMessageMissingBody
@@ -589,8 +611,8 @@ extension MessageBackup {
                 /// this error is for when they are not.
                 case linkPreviewUrlNotInBody
 
-                /// A ``BackupProto_ContactMessage/contact`` had 0 or multiple values.
-                case contactMessageNonSingularContactAttachmentCount
+                /// A ``BackupProto_ContactMessage/contact`` is missing.
+                case contactMessageMissingContactAttachment
                 /// A ``BackupProto_ContactAttachment/Phone/value`` was missing or empty.
                 case contactAttachmentPhoneNumberMissingValue
                 /// A ``BackupProto_ContactAttachment/Phone/type`` was unknown.
@@ -878,12 +900,16 @@ extension MessageBackup {
                         .unrecognizedMessageSendStatus,
                         .reactionNotFromAciOrE164,
                         .emptyStandardMessage,
+                        .emptyDirectStoryReplyMessage,
+                        .directStoryReplyMessageUnknownType,
+                        .directStoryReplyFromNonAci,
+                        .directStoryReplyInGroupThread,
                         .longTextStandardMessageMissingBody,
                         .unrecognizedBodyRangeStyle,
                         .quotedMessageEmptyContent,
                         .linkPreviewEmptyUrl,
                         .linkPreviewUrlNotInBody,
-                        .contactMessageNonSingularContactAttachmentCount,
+                        .contactMessageMissingContactAttachment,
                         .contactAttachmentPhoneNumberMissingValue,
                         .contactAttachmentPhoneNumberUnknownType,
                         .contactAttachmentEmailMissingValue,
@@ -1009,11 +1035,15 @@ extension MessageBackup {
                         .unrecognizedMessageSendStatus,
                         .reactionNotFromAciOrE164,
                         .emptyStandardMessage,
+                        .emptyDirectStoryReplyMessage,
+                        .directStoryReplyMessageUnknownType,
+                        .directStoryReplyFromNonAci,
+                        .directStoryReplyInGroupThread,
                         .longTextStandardMessageMissingBody,
                         .unrecognizedBodyRangeStyle,
                         .linkPreviewEmptyUrl,
                         .linkPreviewUrlNotInBody,
-                        .contactMessageNonSingularContactAttachmentCount,
+                        .contactMessageMissingContactAttachment,
                         .contactAttachmentPhoneNumberMissingValue,
                         .contactAttachmentPhoneNumberUnknownType,
                         .contactAttachmentEmailMissingValue,

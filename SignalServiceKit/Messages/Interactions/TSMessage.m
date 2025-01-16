@@ -307,7 +307,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (BOOL)isStoryReply
 {
-    return self.storyAuthorUuidString != nil && self.storyTimestamp != nil;
+    return self.storyAuthorUuidString != nil;
 }
 
 - (NSString *)debugDescription

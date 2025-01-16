@@ -76,6 +76,17 @@ extension MessageBackup {
             fileprivate let reactions: [BackupProto_Reaction]
         }
 
+        struct StoryReply {
+            enum ReplyType {
+                case textReply(MessageBody)
+                case emoji(String)
+            }
+
+            let replyType: ReplyType
+            let storySentTimestamp: UInt64?
+            fileprivate let reactions: [BackupProto_Reaction]
+        }
+
         case archivedPayment(Payment)
         case remoteDeleteTombstone
         case text(Text)
@@ -83,6 +94,8 @@ extension MessageBackup {
         case stickerMessage(StickerMessage)
         case giftBadge(GiftBadge)
         case viewOnceMessage(ViewOnceMessage)
+        /// Note: only includes 1:1 story replies, not group story replies.
+        case storyReply(StoryReply)
     }
 }
 
@@ -120,7 +133,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
 
     func archiveMessageContents(
         _ message: TSMessage,
-        context: MessageBackup.RecipientArchivingContext
+        context: MessageBackup.ChatArchivingContext
     ) -> ArchiveInteractionResult<ChatItemType> {
         guard let messageRowId = message.sqliteRowId else {
             return .completeFailure(.fatalArchiveError(
@@ -132,41 +145,48 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             return archivePaymentMessageContents(
                 paymentMessage,
                 uniqueInteractionId: message.uniqueInteractionId,
-                context: context
+                context: context.recipientContext
             )
         } else if let archivedPayment = message as? OWSArchivedPaymentMessage {
             return archivePaymentArchiveContents(
                 archivedPayment,
                 uniqueInteractionId: message.uniqueInteractionId,
-                context: context
+                context: context.recipientContext
             )
         } else if message.wasRemotelyDeleted {
             return archiveRemoteDeleteTombstone(
                 message,
-                context: context
+                context: context.recipientContext
             )
         } else if let contactShare = message.contactShare {
             return archiveContactShareMessageContents(
                 message,
                 contactShare: contactShare,
                 messageRowId: messageRowId,
-                context: context
+                context: context.recipientContext
             )
         } else if let messageSticker = message.messageSticker {
             return archiveStickerMessageContents(
                 message,
                 messageSticker: messageSticker,
                 messageRowId: messageRowId,
-                context: context
+                context: context.recipientContext
             )
         } else if let giftBadge = message.giftBadge {
             return archiveGiftBadge(
                 giftBadge,
-                context: context
+                context: context.recipientContext
             )
         } else if message.isViewOnceMessage {
             return archiveViewOnceMessage(
                 message,
+                messageRowId: messageRowId,
+                context: context.recipientContext
+            )
+        } else if message.isStoryReply && !message.isGroupStoryReply {
+            return archiveDirectStoryReplyMessage(
+                message,
+                interactionUniqueId: message.uniqueInteractionId,
                 messageRowId: messageRowId,
                 context: context
             )
@@ -174,7 +194,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             return archiveStandardMessageContents(
                 message,
                 messageRowId: messageRowId,
-                context: context
+                context: context.recipientContext
             )
         }
     }
@@ -668,7 +688,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         )
         switch contactResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
         case .continue(let contactProto):
-            proto.contact = [contactProto]
+            proto.contact = contactProto
         case .bubbleUpError(let errorResult):
             return errorResult
         }
@@ -831,7 +851,120 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         } else {
             return .partialFailure(.viewOnceMessage(proto), partialErrors)
         }
+    }
 
+    // MARK: -
+
+    /// Note this only covers 1:1 story replies which are rendered in-chat;
+    /// group story replies are rendered in the story UI and are not backed
+    /// up since stories are not backed up.
+    private func archiveDirectStoryReplyMessage(
+        _ message: TSMessage,
+        interactionUniqueId: MessageBackup.InteractionUniqueId,
+        messageRowId: Int64,
+        context: MessageBackup.ChatArchivingContext
+    ) -> ArchiveInteractionResult<ChatItemType> {
+        guard
+            let chatId = context[message.uniqueThreadIdentifier],
+            let threadInfo = context[chatId]
+        else {
+            return .messageFailure([.archiveFrameError(
+                .referencedThreadIdMissing(message.uniqueThreadIdentifier),
+                interactionUniqueId
+            )])
+        }
+
+        switch threadInfo {
+        case .groupThread:
+            return .messageFailure([.archiveFrameError(
+                .storyReplyInGroupThread,
+                interactionUniqueId
+            )])
+        case .contactThread:
+            break
+        }
+
+        guard !message.isGroupStoryReply else {
+            return .messageFailure([.archiveFrameError(
+                .storyReplyInGroupThread,
+                interactionUniqueId
+            )])
+        }
+
+        var partialErrors = [ArchiveFrameError]()
+
+        var proto = BackupProto_DirectStoryReplyMessage()
+
+        // We don't put the story author aci on the proto; it can be inferred
+        // since you can't 1:1 reply to your own stories.
+        // If this is an outgoing reply, it must be to a story from the contact
+        // in the contact thread containing it.
+        // If this an incoming reply, it must be a story from the local user.
+
+        if let emoji = message.storyReactionEmoji {
+            guard !emoji.isEmpty else {
+                return .messageFailure([.archiveFrameError(
+                    .storyReplyEmptyContents,
+                    interactionUniqueId
+                )])
+            }
+            proto.reply = .emoji(emoji)
+        } else if let body = message.body {
+            guard !body.isEmpty else {
+                return .messageFailure([.archiveFrameError(
+                    .storyReplyEmptyContents,
+                    interactionUniqueId
+                )])
+            }
+
+            let textResult = archiveText(
+                MessageBody(text: body, ranges: message.bodyRanges ?? .empty),
+                interactionUniqueId: interactionUniqueId
+            )
+            let text: BackupProto_Text
+            switch textResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+            case .continue(let value):
+                text = value
+            case .bubbleUpError(let errorResult):
+                return errorResult
+            }
+            var textReply = BackupProto_DirectStoryReplyMessage.TextReply()
+            textReply.text = text
+            // Note: iOS does not support oversize text in story replies.
+            proto.reply = .textReply(textReply)
+        }
+
+        if let storyTimestamp = message.storyTimestamp?.uint64Value {
+            switch
+                MessageBackup.Timestamps
+                    .validateTimestamp(storyTimestamp)
+                    .bubbleUp(ChatItemType.self, partialErrors: &partialErrors)
+            {
+            case .continue:
+                proto.storySentTimestamp = storyTimestamp
+            case .bubbleUpError(let error):
+                return error
+            }
+        }
+
+        let reactions: [BackupProto_Reaction]
+        let reactionsResult = reactionArchiver.archiveReactions(
+            message,
+            context: context.recipientContext
+        )
+        switch reactionsResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+        case .continue(let values):
+            reactions = values
+        case .bubbleUpError(let errorResult):
+            return errorResult
+        }
+        proto.reactions = reactions
+
+        if partialErrors.isEmpty {
+            return .success(.directStoryReplyMessage(proto))
+        } else {
+            return .partialFailure(.directStoryReplyMessage(proto), partialErrors)
+        }
     }
 
     // MARK: - Restoring
@@ -896,6 +1029,13 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         case .viewOnceMessage(let viewOnceMessage):
             return restoreViewOnceMessage(
                 viewOnceMessage,
+                chatItemId: chatItemId,
+                chatThread: chatThread,
+                context: context
+            )
+        case .directStoryReplyMessage(let storyReply):
+            return restoreDirectStoryReplyMessage(
+                storyReply,
                 chatItemId: chatItemId,
                 chatThread: chatThread,
                 context: context
@@ -1037,6 +1177,13 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             case .complete:
                 break
             }
+        case .storyReply(let storyReply):
+            downstreamObjectResults.append(reactionArchiver.restoreReactions(
+                storyReply.reactions,
+                chatItemId: chatItemId,
+                message: message,
+                context: context.recipientContext
+            ))
         case .remoteDeleteTombstone, .giftBadge:
             // Nothing downstream to restore.
             break
@@ -1544,15 +1691,13 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
     ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
         var partialErrors = [RestoreFrameError]()
 
-        guard
-            contactMessage.contact.count == 1,
-            let contactAttachment = contactMessage.contact.first
-        else {
+        guard contactMessage.hasContact else {
             return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.contactMessageNonSingularContactAttachmentCount),
+                .invalidProtoData(.contactMessageMissingContactAttachment),
                 chatItemId
             )])
         }
+        let contactAttachment = contactMessage.contact
 
         let contactResult = contactAttachmentArchiver.restoreContact(
             contactAttachment,
@@ -1668,6 +1813,64 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         return .success(.viewOnceMessage(.init(
             state: state,
             reactions: viewOnceMessage.reactions
+        )))
+    }
+
+    // MARK: -
+
+    /// Note this only covers 1:1 story replies which are rendered in-chat;
+    /// group story replies are rendered in the story UI and are not backed
+    /// up since stories are not backed up.
+    private func restoreDirectStoryReplyMessage(
+        _ storyReply: BackupProto_DirectStoryReplyMessage,
+        chatItemId: MessageBackup.ChatItemId,
+        chatThread: MessageBackup.ChatThread,
+        context: MessageBackup.ChatItemRestoringContext
+    ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
+        var partialErrors = [RestoreFrameError]()
+
+        let replyType: MessageBackup.RestoredMessageContents.StoryReply.ReplyType
+
+        switch storyReply.reply {
+        case .textReply(let textReply):
+            // Note: iOS does not support oversize text in
+            // story replies, so we drop it on restore.
+            guard
+                let messageBody = restoreMessageBody(
+                    textReply.text,
+                    chatItemId: chatItemId
+                ).unwrap(partialErrors: &partialErrors)
+            else {
+                return .messageFailure(partialErrors)
+            }
+            guard let messageBody else {
+                return .messageFailure(
+                    [.restoreFrameError(
+                        .invalidProtoData(.emptyDirectStoryReplyMessage),
+                    chatItemId
+                )] + partialErrors)
+            }
+            replyType = .textReply(messageBody)
+        case .emoji(let string):
+            replyType = .emoji(string)
+        case .none:
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.directStoryReplyMessageUnknownType),
+                chatItemId
+            )])
+        }
+
+        let storySentTimestamp: UInt64?
+        if storyReply.hasStorySentTimestamp, storyReply.storySentTimestamp > 0 {
+            storySentTimestamp = storyReply.storySentTimestamp
+        } else {
+            storySentTimestamp = nil
+        }
+
+        return .success(.storyReply(.init(
+            replyType: replyType,
+            storySentTimestamp: storySentTimestamp,
+            reactions: storyReply.reactions
         )))
     }
 }

@@ -127,6 +127,9 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 @property (nonatomic, readonly) BOOL isSmsMessageRestoredFromBackup;
 
 // Story Context
+/// StoryTimestamp may be nil for 1:1 story reply messages or story reply reactions for which
+/// the story is since expired. If you want to determine if a message is a story reply/reaction, do
+/// not use presence of this field; use `isStoryReply` instead. Treat nil values as expired stories.
 @property (nonatomic, readonly, nullable) NSNumber *storyTimestamp;
 @property (nonatomic, readonly, nullable) AciObjC *storyAuthorAci;
 @property (nonatomic, readonly, nullable) SignalServiceAddress *storyAuthorAddress;

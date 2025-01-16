@@ -280,15 +280,18 @@ public class QuotedReplyModel {
 
     public static func build(
         storyReplyMessage message: TSMessage,
-        storyTimestamp: UInt64,
+        storyTimestamp: UInt64?,
         storyAuthorAci: Aci,
         transaction: SDSAnyReadTransaction
     ) -> QuotedReplyModel {
-        guard let storyMessage = StoryFinder.story(
-            timestamp: storyTimestamp,
-            author: storyAuthorAci,
-            transaction: transaction
-        ) else {
+        guard
+            let storyTimestamp,
+            let storyMessage = StoryFinder.story(
+                timestamp: storyTimestamp,
+                author: storyAuthorAci,
+                transaction: transaction
+            )
+        else {
             let isOriginalMessageAuthorLocalUser = DependenciesBridge.shared.tsAccountManager
                 .localIdentifiers(tx: transaction.asV2Read)?
                 .aci == storyAuthorAci

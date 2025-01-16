@@ -21,6 +21,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     private let avatarFetcher: MessageBackupAvatarFetcher
     private let blockingManager: MessageBackup.Shims.BlockingManager
     private let dateProvider: DateProvider
+    private let nicknameManager: NicknameManager
     private let profileManager: MessageBackup.Shims.ProfileManager
     private let recipientHidingManager: RecipientHidingManager
     private let recipientManager: any SignalRecipientManager
@@ -35,6 +36,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         avatarFetcher: MessageBackupAvatarFetcher,
         blockingManager: MessageBackup.Shims.BlockingManager,
         dateProvider: @escaping DateProvider,
+        nicknameManager: NicknameManager,
         profileManager: MessageBackup.Shims.ProfileManager,
         recipientHidingManager: RecipientHidingManager,
         recipientManager: any SignalRecipientManager,
@@ -48,6 +50,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         self.avatarFetcher = avatarFetcher
         self.blockingManager = blockingManager
         self.dateProvider = dateProvider
+        self.nicknameManager = nicknameManager
         self.profileManager = profileManager
         self.recipientHidingManager = recipientHidingManager
         self.recipientManager = recipientManager
@@ -186,6 +189,10 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                         transaction: context.tx
                     )
                 },
+                nicknameRecord: self.nicknameManager.fetchNickname(
+                    for: recipient,
+                    tx: context.tx
+                ),
                 isBlocked: blockedAddresses.contains(recipient.address),
                 isWhitelisted: whitelistedAddresses.contains(recipient.address),
                 isStoryHidden: isStoryHidden,
@@ -327,6 +334,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                     pni: contactAddress.pni,
                     e164: contactAddress.e164,
                     username: nil, // If we have a user profile, we have no username.
+                    nicknameRecord: nil, // Only contacts with SignalRecipients can have nicknames.
                     isBlocked: blockedAddresses.contains(signalServiceAddress),
                     isWhitelisted: whitelistedAddresses.contains(signalServiceAddress),
                     isStoryHidden: false, // Can't have a story if there's no recipient.
@@ -397,6 +405,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             pni: address.pni,
             e164: address.e164,
             username: nil,
+            nicknameRecord: nil, // Only contacts with SignalRecipients can have nicknames.
             isBlocked: blockingManager.blockedAddresses(tx: context.tx)
                 .contains(address.asInteropAddress()),
             isWhitelisted: profileManager.allWhitelistedAddresses(tx: context.tx)
@@ -439,6 +448,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         pni: Pni?,
         e164: E164?,
         username: String?,
+        nicknameRecord: NicknameRecord?,
         isBlocked: Bool,
         isWhitelisted: Bool,
         isStoryHidden: Bool,
@@ -487,6 +497,23 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         }
         if let familyName = userProfile?.familyName?.nilIfEmpty {
             contact.profileFamilyName = familyName
+        }
+        if
+            let nicknameRecord,
+            // The rule is we don't set the nickname proto if both are nil
+            !(nicknameRecord.givenName.isEmptyOrNil && nicknameRecord.familyName.isEmptyOrNil)
+        {
+            var nicknameProto = BackupProto_Contact.Name()
+            if let givenName = nicknameRecord.givenName?.nilIfEmpty {
+                nicknameProto.given = givenName
+            }
+            if let familyName = nicknameRecord.familyName?.nilIfEmpty {
+                nicknameProto.family = familyName
+            }
+            contact.nickname = nicknameProto
+        }
+        if let note = nicknameRecord?.note?.nilIfEmpty {
+            contact.note = note
         }
 
         return contact
@@ -658,6 +685,27 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                     recipientProto.recipientId
                 )])
             }
+        }
+
+        let nicknameGivenName = contactProto.nickname.given.nilIfEmpty
+        let nicknameFamilyName = contactProto.nickname.family.nilIfEmpty
+        let nicknameNote = contactProto.note.nilIfEmpty
+        if
+            nicknameGivenName != nil
+            || nicknameFamilyName != nil
+            || nicknameNote != nil,
+            let nicknameRecord = NicknameRecord(
+                recipient: recipient,
+                givenName: nicknameGivenName,
+                familyName: nicknameFamilyName,
+                note: nicknameNote
+            )
+        {
+            self.nicknameManager.createOrUpdate(
+                nicknameRecord: nicknameRecord,
+                updateStorageServiceFor: nil,
+                tx: context.tx
+            )
         }
 
         if contactProto.profileSharing {

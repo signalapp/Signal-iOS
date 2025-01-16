@@ -118,7 +118,7 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
         let chatItemType: MessageBackupTSMessageContentsArchiver.ChatItemType
         switch contentsArchiver.archiveMessageContents(
             incomingMessage,
-            context: context.recipientContext
+            context: context
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let _chatItemType):
             chatItemType = _chatItemType
@@ -370,6 +370,20 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 case .complete:
                     messageBuilder.isViewOnceComplete = true
                 }
+            case .storyReply(let storyReply):
+                switch storyReply.replyType {
+                case .textReply(let messageBody):
+                    messageBuilder.messageBody = messageBody.text
+                    messageBuilder.bodyRanges = messageBody.ranges
+                case .emoji(let emoji):
+                    messageBuilder.storyReactionEmoji = emoji
+                }
+                if let storySentTimestamp = storyReply.storySentTimestamp {
+                    messageBuilder.storyTimestamp = NSNumber(value: storySentTimestamp)
+                }
+                // Peers can't reply to their own stories; if a 1:1 story reply is incoming
+                // that means the author of the story being replied to was the local user.
+                messageBuilder.storyAuthorAci = AciObjC(context.recipientContext.localIdentifiers.aci)
             }
 
             return messageBuilder.build()

@@ -1030,6 +1030,7 @@ public class AppSetup {
             avatarFetcher: messageBackupAvatarFetcher,
             blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
             dateProvider: dateProvider,
+            nicknameManager: nicknameManager,
             profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
             recipientHidingManager: recipientHidingManager,
             recipientManager: recipientManager,

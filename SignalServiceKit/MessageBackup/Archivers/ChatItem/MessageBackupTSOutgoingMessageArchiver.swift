@@ -154,7 +154,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
         let chatItemType: MessageBackup.InteractionArchiveDetails.ChatItemType
         switch contentsArchiver.archiveMessageContents(
             outgoingMessage,
-            context: context.recipientContext
+            context: context
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let t):
             chatItemType = t
@@ -476,7 +476,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             expireStartDate = 0
         }
 
-        let outgoingMessage: TSOutgoingMessage = {
+        let outgoingMessageResult: MessageBackup.RestoreInteractionResult<TSOutgoingMessage> = {
             /// A "base" message builder, onto which we attach the data we
             /// unwrap from `contents`.
             let outgoingMessageBuilder = TSOutgoingMessageBuilder(
@@ -510,13 +510,13 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
 
             switch contents {
             case .archivedPayment(let archivedPayment):
-                return OWSOutgoingArchivedPaymentMessage(
+                return .success(OWSOutgoingArchivedPaymentMessage(
                     outgoingArchivedPaymentMessageWith: outgoingMessageBuilder,
                     amount: archivedPayment.amount,
                     fee: archivedPayment.fee,
                     note: archivedPayment.note,
                     recipientAddressStates: recipientAddressStates
-                )
+                ))
             case .remoteDeleteTombstone:
                 outgoingMessageBuilder.wasRemotelyDeleted = true
             case .text(let text):
@@ -539,13 +539,45 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 case .complete:
                     outgoingMessageBuilder.isViewOnceComplete = true
                 }
+            case .storyReply(let storyReply):
+                switch storyReply.replyType {
+                case .textReply(let messageBody):
+                    outgoingMessageBuilder.messageBody = messageBody.text
+                    outgoingMessageBuilder.bodyRanges = messageBody.ranges
+                case .emoji(let emoji):
+                    outgoingMessageBuilder.storyReactionEmoji = emoji
+                }
+                if let storySentTimestamp = storyReply.storySentTimestamp {
+                    outgoingMessageBuilder.storyTimestamp = NSNumber(value: storySentTimestamp)
+                }
+                // We can't reply to our own stories; if a 1:1 story reply is outgoing
+                // that means the author of the story being replied to was the peer.
+                switch chatThread.threadType {
+                case .contact(let contactThread):
+                    guard let aci = contactThread.contactAddress.aci else {
+                        return .messageFailure(
+                            [.restoreFrameError(.invalidProtoData(.directStoryReplyFromNonAci), chatItem.id)]
+                            + partialErrors
+                        )
+                    }
+                    outgoingMessageBuilder.storyAuthorAci = AciObjC(aci)
+                case .groupV2:
+                    return .messageFailure(
+                        [.restoreFrameError(.invalidProtoData(.directStoryReplyInGroupThread), chatItem.id)]
+                        + partialErrors
+                    )
+                }
             }
 
-            return TSOutgoingMessage(
+            return .success(TSOutgoingMessage(
                 outgoingMessageWith: outgoingMessageBuilder,
                 recipientAddressStates: recipientAddressStates
-            )
+            ))
         }()
+
+        guard let outgoingMessage: TSOutgoingMessage = outgoingMessageResult.unwrap(partialErrors: &partialErrors) else {
+            return .messageFailure(partialErrors)
+        }
 
         do {
             try interactionStore.insert(

@@ -1307,12 +1307,11 @@ fileprivate extension CVComponentState.Builder {
         let quotedReplyModel: QuotedReplyModel? = {
             if
                 message.isStoryReply,
-                let storyTimestamp = message.storyTimestamp?.uint64Value,
                 let storyAuthorAci = message.storyAuthorAci?.wrappedAciValue
             {
                 return QuotedReplyModel.build(
                     storyReplyMessage: message,
-                    storyTimestamp: storyTimestamp,
+                    storyTimestamp: message.storyTimestamp?.uint64Value,
                     storyAuthorAci: storyAuthorAci,
                     transaction: transaction
                 )
