@@ -206,7 +206,7 @@ public final class MessageReceiver {
         case .typingMessage(let typingMessage):
             handleIncomingEnvelope(request: request, typingMessage: typingMessage, tx: tx)
         case .nullMessage:
-            Logger.info("Received null message.")
+            break
         case .receiptMessage(let receiptMessage):
             handleIncomingEnvelope(request: request, receiptMessage: receiptMessage, context: context, tx: tx)
         case .decryptionErrorMessage(let decryptionErrorMessage):

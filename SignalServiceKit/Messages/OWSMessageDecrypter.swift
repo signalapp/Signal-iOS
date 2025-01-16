@@ -182,7 +182,7 @@ public class OWSMessageDecrypter {
                     unsealedEnvelope: unsealedEnvelope
                 )
             {
-                Logger.info("Performing modern resend of \(unsealedEnvelope.contentHint) content with timestamp \(validatedEnvelope.timestamp)")
+                Logger.info("Requesting modern resend of \(unsealedEnvelope.contentHint) content with timestamp \(validatedEnvelope.timestamp)")
 
                 switch unsealedEnvelope.contentHint {
                 case .default:
