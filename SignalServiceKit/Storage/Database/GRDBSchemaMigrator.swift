@@ -377,6 +377,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_ensureLocalDeviceId
         case dataMigration_indexSearchableNames
         case dataMigration_removeSystemContacts
+        case dataMigration_clearLaunchScreenCache2
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -3899,7 +3900,6 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(.dataMigration_clearLaunchScreenCache) { _ in
-            OWSFileSystem.deleteFileIfExists(NSHomeDirectory() + "/Library/SplashBoard")
             return .success(())
         }
 
@@ -4322,6 +4322,11 @@ public class GRDBSchemaMigrator: NSObject {
                 KeyValueStore(collection: collection).removeAll(transaction: transaction.asAnyWrite.asV2Write)
             }
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.dataMigration_clearLaunchScreenCache2) { _ in
+            OWSFileSystem.deleteFileIfExists(NSHomeDirectory() + "/Library/SplashBoard")
             return .success(())
         }
 
