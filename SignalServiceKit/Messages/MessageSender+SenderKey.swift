@@ -6,8 +6,6 @@
 import LibSignalClient
 
 extension MessageSender {
-    private static var maxSenderKeyEnvelopeSize: UInt64 { 256 * 1024 }
-
     struct Recipient {
         let serviceId: ServiceId
         let devices: [UInt32]
