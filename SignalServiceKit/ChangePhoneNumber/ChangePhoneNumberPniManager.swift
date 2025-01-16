@@ -58,7 +58,7 @@ public protocol ChangePhoneNumberPniManager {
 public enum ChangePhoneNumberPni {
 
     /// Represents a change-number operation that has not yet been finalized.
-    public struct PendingState: Equatable {
+    public struct PendingState {
         public let newE164: E164
         public let pniIdentityKeyPair: ECKeyPair
         public let localDevicePniSignedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord

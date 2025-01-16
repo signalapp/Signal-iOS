@@ -27,7 +27,7 @@ public protocol RegistrationCoordinatorLoader {
 
 public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
 
-    public enum Mode: Codable, Equatable {
+    public enum Mode: Codable {
         case registering(RegisteringState)
         case reRegistering(ReRegisteringState)
         case changingNumber(ChangeNumberState)
@@ -46,7 +46,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
             }
         }
 
-        public struct ChangeNumberState: Codable, Equatable {
+        public struct ChangeNumberState: Codable {
             public let oldE164: E164
             public let oldAuthToken: String
             @AciUuid public var localAci: Aci
@@ -54,7 +54,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
             public let localDeviceId: UInt32
             public let localUserAllDeviceIds: [UInt32]
 
-            public struct PendingPniState: Equatable {
+            public struct PendingPniState {
                 public let newE164: E164
                 public let pniIdentityKeyPair: ECKeyPair
                 public let localDevicePniSignedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord

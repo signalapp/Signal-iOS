@@ -61,13 +61,13 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         XCTAssertEqual(parameters.pniIdentityKey, pniKeyPair.keyPair.identityKey)
 
         XCTAssertEqual(
-            Set(parameters.devicePniSignedPreKeys.values),
-            Set(pniSignedPreKeyStoreMock.generatedSignedPreKeys)
+            Set(parameters.devicePniSignedPreKeys.values.map(\.id)),
+            Set(pniSignedPreKeyStoreMock.generatedSignedPreKeys.map(\.id))
         )
 
         XCTAssertEqual(
-            Set(parameters.devicePniPqLastResortPreKeys.values),
-            Set(pniKyberPreKeyStoreMock.lastResortRecords)
+            Set(parameters.devicePniPqLastResortPreKeys.values.map(\.id)),
+            Set(pniKyberPreKeyStoreMock.lastResortRecords.map(\.id))
         )
 
         XCTAssertEqual(

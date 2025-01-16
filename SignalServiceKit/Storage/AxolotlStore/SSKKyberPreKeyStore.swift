@@ -111,26 +111,6 @@ public struct KyberPreKeyRecord: Codable {
     }
 }
 
-extension KyberPreKeyRecord: Equatable {
-    public static func == (lhs: KyberPreKeyRecord, rhs: KyberPreKeyRecord) -> Bool {
-        return (
-            lhs.id == rhs.id
-            && lhs.isLastResort == rhs.isLastResort
-            && lhs.generatedAt == rhs.generatedAt
-            && lhs.signature == rhs.signature
-        )
-    }
-}
-
-extension KyberPreKeyRecord: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(isLastResort)
-        hasher.combine(generatedAt)
-        hasher.combine(signature)
-    }
-}
-
 public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
 
     internal enum Constants {
