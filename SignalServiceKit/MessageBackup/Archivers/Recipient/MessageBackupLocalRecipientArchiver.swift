@@ -24,28 +24,32 @@ public class MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver {
     }
 
     /// Archive the local recipient.
-    public func archiveLocalRecipient(
-        stream: MessageBackupProtoOutputStream
+    func archiveLocalRecipient(
+        stream: MessageBackupProtoOutputStream,
+        bencher: MessageBackup.Bencher
     ) -> MessageBackup.ArchiveLocalRecipientResult {
-        let error = Self.writeFrameToStream(
-            stream,
-            objectId: MessageBackup.LocalRecipientId()
-        ) {
-            let selfRecipient = BackupProto_Self()
+        return bencher.processFrame { frameBencher in
+            let error = Self.writeFrameToStream(
+                stream,
+                objectId: MessageBackup.LocalRecipientId(),
+                frameBencher: frameBencher
+            ) {
+                let selfRecipient = BackupProto_Self()
 
-            var recipient = BackupProto_Recipient()
-            recipient.id = Self.localRecipientId.value
-            recipient.destination = .self_p(selfRecipient)
+                var recipient = BackupProto_Recipient()
+                recipient.id = Self.localRecipientId.value
+                recipient.destination = .self_p(selfRecipient)
 
-            var frame = BackupProto_Frame()
-            frame.item = .recipient(recipient)
-            return frame
-        }
+                var frame = BackupProto_Frame()
+                frame.item = .recipient(recipient)
+                return frame
+            }
 
-        if let error {
-            return .failure(error)
-        } else {
-            return .success(Self.localRecipientId)
+            if let error {
+                return .failure(error)
+            } else {
+                return .success(Self.localRecipientId)
+            }
         }
     }
 

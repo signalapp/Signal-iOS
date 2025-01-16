@@ -124,6 +124,7 @@ extension MessageBackup {
 
         init(
             backupPurpose: MessageBackupPurpose,
+            bencher: MessageBackup.Bencher,
             currentBackupAttachmentUploadEra: String?,
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             localIdentifiers: LocalIdentifiers,
@@ -148,6 +149,7 @@ extension MessageBackup {
 
             super.init(
                 backupPurpose: backupPurpose,
+                bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 backupAttachmentUploadManager: backupAttachmentUploadManager,
                 tx: tx

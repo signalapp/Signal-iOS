@@ -334,7 +334,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         firstAppVersion: String,
         tx: DBWriteTransaction
     ) throws {
-        let startTimeMs = dateProvider().ows_millisecondsSince1970
+        let bencher = MessageBackup.Bencher(dateProvider: dateProvider)
         let backupVersion = Constants.supportedBackupVersion
         let purposeString: String = switch backupPurpose {
         case .deviceTransfer: "LinkNSync"
@@ -346,13 +346,13 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             self.processErrors(errors: errors, tx: tx)
         }
 
-        Logger.info("Exporting for \(purposeString) with version \(backupVersion), timestamp \(startTimeMs)")
+        Logger.info("Exporting for \(purposeString) with version \(backupVersion), timestamp \(bencher.startTimestamp)")
 
         try autoreleasepool {
             try writeHeader(
                 stream: stream,
                 backupVersion: backupVersion,
-                backupTimeMs: startTimeMs,
+                backupTimeMs: bencher.startTimestamp,
                 currentAppVersion: currentAppVersion,
                 firstAppVersion: firstAppVersion,
                 tx: tx
@@ -369,6 +369,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let customChatColorContext = MessageBackup.CustomChatColorArchivingContext(
             backupPurpose: backupPurpose,
+            bencher: bencher,
             currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             tx: tx
@@ -389,7 +390,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         try Task.checkCancellation()
 
         let localRecipientResult = localRecipientArchiver.archiveLocalRecipient(
-            stream: stream
+            stream: stream,
+            bencher: bencher
         )
 
         try Task.checkCancellation()
@@ -405,6 +407,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let recipientArchivingContext = MessageBackup.RecipientArchivingContext(
             backupPurpose: backupPurpose,
+            bencher: bencher,
             currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             localIdentifiers: localIdentifiers,
@@ -480,6 +483,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let chatArchivingContext = MessageBackup.ChatArchivingContext(
             backupPurpose: backupPurpose,
+            bencher: bencher,
             currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             customChatColorContext: customChatColorContext,
@@ -516,6 +520,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let archivingContext = MessageBackup.ArchivingContext(
             backupPurpose: backupPurpose,
+            bencher: bencher,
             currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             tx: tx
@@ -558,8 +563,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             }
         }
 
-        let endTimeMs = dateProvider().ows_millisecondsSince1970
-        Logger.info("Exported \(stream.numberOfWrittenFrames) in \(endTimeMs - startTimeMs)ms")
+        Logger.info("Finished exporting backup")
+        bencher.logResults()
     }
 
     private func writeHeader(
@@ -733,7 +738,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) throws -> BackupProto_BackupInfo {
-        let startTimeMs = dateProvider().ows_millisecondsSince1970
+        let bencher = MessageBackup.Bencher(dateProvider: dateProvider)
 
         guard !hasRestoredFromBackup(tx: tx) else {
             throw OWSAssertionError("Restoring from backup twice!")
@@ -843,151 +848,159 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     throw error
                 }
 
-                switch frame?.item {
-                case .recipient(let recipient):
-                    let recipientResult: MessageBackup.RestoreFrameResult<MessageBackup.RecipientId>
-                    switch recipient.destination {
-                    case nil:
-                        recipientResult = .failure([.restoreFrameError(
-                            .invalidProtoData(.recipientMissingDestination),
-                            recipient.recipientId
-                        )])
-                    case .self_p(let selfRecipientProto):
-                        recipientResult = localRecipientArchiver.restoreSelfRecipient(
-                            selfRecipientProto,
-                            recipient: recipient,
-                            context: contexts.recipient
-                        )
-                    case .contact(let contactRecipientProto):
-                        recipientResult = contactRecipientArchiver.restoreContactRecipientProto(
-                            contactRecipientProto,
-                            recipient: recipient,
-                            context: contexts.recipient
-                        )
-                    case .group(let groupRecipientProto):
-                        recipientResult = groupRecipientArchiver.restoreGroupRecipientProto(
-                            groupRecipientProto,
-                            recipient: recipient,
-                            context: contexts.recipient
-                        )
-                    case .distributionList(let distributionListRecipientProto):
-                        recipientResult = distributionListRecipientArchiver.restoreDistributionListRecipientProto(
-                            distributionListRecipientProto,
-                            recipient: recipient,
-                            context: contexts.recipient
-                        )
-                    case .releaseNotes(let releaseNotesRecipientProto):
-                        recipientResult = releaseNotesRecipientArchiver.restoreReleaseNotesRecipientProto(
-                            releaseNotesRecipientProto,
-                            recipient: recipient,
-                            context: contexts.recipient
-                        )
-                    case .callLink(let callLinkRecipientProto):
-                        recipientResult = callLinkRecipientArchiver.restoreCallLinkRecipientProto(
-                            callLinkRecipientProto,
-                            recipient: recipient,
-                            context: contexts.recipient
-                        )
+                try bencher.processFrame { frameBencher in
+                    defer {
+                        if let frame {
+                            frameBencher.didProcessFrame(frame)
+                        }
                     }
 
-                    switch recipientResult {
-                    case .success:
-                        return
-                    case .partialRestore(let errors):
-                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: recipient) })
-                    case .failure(let errors):
-                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: recipient) })
-                        throw BackupError()
-                    }
-                case .chat(let chat):
-                    let chatResult = chatArchiver.restore(
-                        chat,
-                        context: contexts.chat
-                    )
-                    switch chatResult {
-                    case .success:
-                        return
-                    case .partialRestore(let errors):
-                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: chat) })
-                    case .failure(let errors):
-                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: chat) })
-                        throw BackupError()
-                    }
-                case .chatItem(let chatItem):
-                    let chatItemResult = chatItemArchiver.restore(
-                        chatItem,
-                        context: contexts.chatItem
-                    )
-                    switch chatItemResult {
-                    case .success:
-                        return
-                    case .partialRestore(let errors):
-                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: chatItem) })
-                    case .failure(let errors):
-                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: chatItem) })
-                        throw BackupError()
-                    }
-                case .account(let backupProtoAccountData):
-                    let accountDataResult = accountDataArchiver.restore(
-                        backupProtoAccountData,
-                        chatColorsContext: contexts.customChatColor,
-                        chatItemContext: contexts.chatItem
-                    )
-                    switch accountDataResult {
-                    case .success:
-                        return
-                    case .partialRestore(let errors):
-                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoAccountData) })
-                    case .failure(let errors):
-                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoAccountData) })
-                        throw BackupError()
-                    }
-                case .stickerPack(let backupProtoStickerPack):
-                    let stickerPackResult = stickerPackArchiver.restore(
-                        backupProtoStickerPack,
-                        context: MessageBackup.RestoringContext(tx: tx)
-                    )
-                    switch stickerPackResult {
-                    case .success:
-                        return
-                    case .partialRestore(let errors):
-                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoStickerPack) })
-                    case .failure(let errors):
-                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoStickerPack) })
-                        throw BackupError()
-                    }
-                case .adHocCall(let backupProtoAdHocCall):
-                    let adHocCallResult = adHocCallArchiver.restore(
-                        backupProtoAdHocCall,
-                        context: contexts.chatItem
-                    )
-                    switch adHocCallResult {
-                    case .success:
-                        return
-                    case .partialRestore(let errors):
-                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoAdHocCall) })
-                    case .failure(let errors):
-                        frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoAdHocCall) })
-                        throw BackupError()
-                    }
-                case .notificationProfile:
-                    // Notification profiles are unsupported on iOS and
-                    // we do not even round trip them per spec.
-                    break
-                case .chatFolder:
-                    // Chat folders are unsupported on iOS and
-                    // we do not even round trip them per spec.
-                    break
-                case nil:
-                    if hasMoreFrames {
-                        owsFailDebug("Frame missing item!")
-                        frameErrors.append(LoggableErrorAndProto(
-                            error: MessageBackup.RestoreFrameError.restoreFrameError(
-                                .invalidProtoData(.frameMissingItem),
-                                MessageBackup.EmptyFrameId.shared
-                            ),
-                            wasFatal: false
-                        ))
+                    switch frame?.item {
+                    case .recipient(let recipient):
+                        let recipientResult: MessageBackup.RestoreFrameResult<MessageBackup.RecipientId>
+                        switch recipient.destination {
+                        case nil:
+                            recipientResult = .failure([.restoreFrameError(
+                                .invalidProtoData(.recipientMissingDestination),
+                                recipient.recipientId
+                            )])
+                        case .self_p(let selfRecipientProto):
+                            recipientResult = localRecipientArchiver.restoreSelfRecipient(
+                                selfRecipientProto,
+                                recipient: recipient,
+                                context: contexts.recipient
+                            )
+                        case .contact(let contactRecipientProto):
+                            recipientResult = contactRecipientArchiver.restoreContactRecipientProto(
+                                contactRecipientProto,
+                                recipient: recipient,
+                                context: contexts.recipient
+                            )
+                        case .group(let groupRecipientProto):
+                            recipientResult = groupRecipientArchiver.restoreGroupRecipientProto(
+                                groupRecipientProto,
+                                recipient: recipient,
+                                context: contexts.recipient
+                            )
+                        case .distributionList(let distributionListRecipientProto):
+                            recipientResult = distributionListRecipientArchiver.restoreDistributionListRecipientProto(
+                                distributionListRecipientProto,
+                                recipient: recipient,
+                                context: contexts.recipient
+                            )
+                        case .releaseNotes(let releaseNotesRecipientProto):
+                            recipientResult = releaseNotesRecipientArchiver.restoreReleaseNotesRecipientProto(
+                                releaseNotesRecipientProto,
+                                recipient: recipient,
+                                context: contexts.recipient
+                            )
+                        case .callLink(let callLinkRecipientProto):
+                            recipientResult = callLinkRecipientArchiver.restoreCallLinkRecipientProto(
+                                callLinkRecipientProto,
+                                recipient: recipient,
+                                context: contexts.recipient
+                            )
+                        }
+
+                        switch recipientResult {
+                        case .success:
+                            return
+                        case .partialRestore(let errors):
+                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: recipient) })
+                        case .failure(let errors):
+                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: recipient) })
+                            throw BackupError()
+                        }
+                    case .chat(let chat):
+                        let chatResult = chatArchiver.restore(
+                            chat,
+                            context: contexts.chat
+                        )
+                        switch chatResult {
+                        case .success:
+                            return
+                        case .partialRestore(let errors):
+                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: chat) })
+                        case .failure(let errors):
+                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: chat) })
+                            throw BackupError()
+                        }
+                    case .chatItem(let chatItem):
+                        let chatItemResult = chatItemArchiver.restore(
+                            chatItem,
+                            context: contexts.chatItem
+                        )
+                        switch chatItemResult {
+                        case .success:
+                            return
+                        case .partialRestore(let errors):
+                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: chatItem) })
+                        case .failure(let errors):
+                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: chatItem) })
+                            throw BackupError()
+                        }
+                    case .account(let backupProtoAccountData):
+                        let accountDataResult = accountDataArchiver.restore(
+                            backupProtoAccountData,
+                            chatColorsContext: contexts.customChatColor,
+                            chatItemContext: contexts.chatItem
+                        )
+                        switch accountDataResult {
+                        case .success:
+                            return
+                        case .partialRestore(let errors):
+                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoAccountData) })
+                        case .failure(let errors):
+                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoAccountData) })
+                            throw BackupError()
+                        }
+                    case .stickerPack(let backupProtoStickerPack):
+                        let stickerPackResult = stickerPackArchiver.restore(
+                            backupProtoStickerPack,
+                            context: MessageBackup.RestoringContext(tx: tx)
+                        )
+                        switch stickerPackResult {
+                        case .success:
+                            return
+                        case .partialRestore(let errors):
+                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoStickerPack) })
+                        case .failure(let errors):
+                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoStickerPack) })
+                            throw BackupError()
+                        }
+                    case .adHocCall(let backupProtoAdHocCall):
+                        let adHocCallResult = adHocCallArchiver.restore(
+                            backupProtoAdHocCall,
+                            context: contexts.chatItem
+                        )
+                        switch adHocCallResult {
+                        case .success:
+                            return
+                        case .partialRestore(let errors):
+                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoAdHocCall) })
+                        case .failure(let errors):
+                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoAdHocCall) })
+                            throw BackupError()
+                        }
+                    case .notificationProfile:
+                        // Notification profiles are unsupported on iOS and
+                        // we do not even round trip them per spec.
+                        break
+                    case .chatFolder:
+                        // Chat folders are unsupported on iOS and
+                        // we do not even round trip them per spec.
+                        break
+                    case nil:
+                        if hasMoreFrames {
+                            owsFailDebug("Frame missing item!")
+                            frameErrors.append(LoggableErrorAndProto(
+                                error: MessageBackup.RestoreFrameError.restoreFrameError(
+                                    .invalidProtoData(.frameMissingItem),
+                                    MessageBackup.EmptyFrameId.shared
+                                ),
+                                wasFatal: false
+                            ))
+                        }
                     }
                 }
             }
@@ -999,11 +1012,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         try postFrameRestoreActionManager.performPostFrameRestoreActions(
             recipientActions: contexts.recipient.postFrameRestoreActions,
             chatActions: contexts.chat.postFrameRestoreActions,
+            bencher: bencher,
             chatItemContext: contexts.chatItem
         )
 
         // Index threads synchronously
-        fullTextSearchIndexer.indexThreads(tx: tx)
+        bencher.benchPostFrameAction(.IndexThreads) {
+            fullTextSearchIndexer.indexThreads(tx: tx)
+        }
         // Schedule message indexing asynchronously
         try fullTextSearchIndexer.scheduleMessagesJob(tx: tx)
 
@@ -1016,11 +1032,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             disappearingMessagesJob.startIfNecessary()
         }
 
-        let endTimeMs = dateProvider().ows_millisecondsSince1970
         Logger.info("Imported with version \(backupInfo.version), timestamp \(backupInfo.backupTimeMs)")
         Logger.info("Backup app version: \(backupInfo.currentAppVersion)")
         Logger.info("Backup first app version \(backupInfo.firstAppVersion)")
-        Logger.info("Imported \(stream.numberOfReadFrames) in \(endTimeMs - startTimeMs)ms")
+        bencher.logResults()
 
         kvStore.setBool(true, key: Constants.keyValueStoreHasRestoredBackupKey, transaction: tx)
 

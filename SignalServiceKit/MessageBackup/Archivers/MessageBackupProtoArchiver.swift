@@ -70,9 +70,11 @@ extension MessageBackupProtoArchiver {
     internal static func writeFrameToStream<AppIdType>(
         _ stream: MessageBackupProtoOutputStream,
         objectId: AppIdType,
+        frameBencher: MessageBackup.Bencher.FrameBencher,
         frameBuilder: () -> BackupProto_Frame
     ) -> MessageBackup.ArchiveFrameError<AppIdType>? {
         let frame = frameBuilder()
+        frameBencher.didProcessFrame(frame)
         switch stream.writeFrame(frame) {
         case .success:
             return nil

@@ -72,11 +72,13 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
 
         func writeToStream(
             contact: BackupProto_Contact,
-            contactAddress: MessageBackup.ContactAddress
+            contactAddress: MessageBackup.ContactAddress,
+            frameBencher: MessageBackup.Bencher.FrameBencher
         ) {
             let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
                 stream,
                 objectId: .contact(contactAddress),
+                frameBencher: frameBencher,
                 frameBuilder: {
                     let recipientAddress = contactAddress.asArchivingAddress()
                     let recipientId = context.assignRecipientId(to: recipientAddress)
@@ -107,7 +109,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         /// key" for contacts. They directly contain many of the fields we store
         /// in a `Contact` recipient, with the other fields keyed off data in
         /// the recipient.
-        let recipientBlock: (SignalRecipient) -> Void = { recipient in
+        let recipientBlock: (SignalRecipient, MessageBackup.Bencher.FrameBencher) -> Void = { recipient, frameBencher in
             guard
                 let contactAddress = MessageBackup.ContactAddress(
                     aci: recipient.aci,
@@ -234,13 +236,18 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 identity: identity
             )
 
-            writeToStream(contact: contact, contactAddress: contactAddress)
+            writeToStream(contact: contact, contactAddress: contactAddress, frameBencher: frameBencher)
         }
 
         do {
-            try recipientStore.enumerateAllSignalRecipients(context, block: { recipient in
-                autoreleasepool { recipientBlock(recipient) }
-            })
+            try context.bencher.wrapEnumeration(
+                recipientStore.enumerateAllSignalRecipients(_: block:),
+                context
+            ) { recipient, frameBencher in
+                autoreleasepool {
+                    recipientBlock(recipient, frameBencher)
+                }
+            }
         } catch let error as CancellationError {
             throw error
         } catch {
@@ -267,7 +274,10 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         /// like `OWSUserProfile`. If, in the future, we have an enforced 1:1
         /// relationship between `SignalRecipient` and `OWSUserProfile`, we can
         /// remove this code.
-        profileManager.enumerateUserProfiles(tx: context.tx) { userProfile in
+        context.bencher.wrapEnumeration(
+            profileManager.enumerateUserProfiles(tx:block:),
+            context.tx
+        ) { userProfile, frameBencher in
             autoreleasepool {
                 if let serviceId = userProfile.serviceId {
                     let (inserted, _) = archivedServiceIds.insert(serviceId)
@@ -312,7 +322,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                     signalServiceAddress = _signalServiceAddress
                 }
 
-                let contact = buildContactRecipient(
+                let contact = self.buildContactRecipient(
                     aci: contactAddress.aci,
                     pni: contactAddress.pni,
                     e164: contactAddress.e164,
@@ -337,7 +347,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
 
                 writeToStream(
                     contact: contact,
-                    contactAddress: contactAddress
+                    contactAddress: contactAddress,
+                    frameBencher: frameBencher
                 )
             }
         }
@@ -360,6 +371,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         _ contactThread: TSContactThread,
         address: MessageBackup.ContactAddress,
         stream: MessageBackupProtoOutputStream,
+        frameBencher: MessageBackup.Bencher.FrameBencher,
         context: MessageBackup.ChatArchivingContext
     ) -> MessageBackup.ArchiveSingleFrameResult<RecipientId, MessageBackup.ThreadUniqueId> {
         let existingRecipient = recipientStore.fetchRecipient(
@@ -404,6 +416,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         maybeError = Self.writeFrameToStream(
             stream,
             objectId: .init(thread: contactThread),
+            frameBencher: frameBencher,
             frameBuilder: {
                 var recipient = BackupProto_Recipient()
                 recipient.id = recipientId.value

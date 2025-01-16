@@ -70,7 +70,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         var completeFailureError: MessageBackup.FatalArchivingError?
         var partialErrors = [ArchiveFrameError]()
 
-        func archiveThread(_ thread: TSThread) -> Bool {
+        func archiveThread(_ thread: TSThread, _ frameBencher: MessageBackup.Bencher.FrameBencher) -> Bool {
             var stop = false
             autoreleasepool {
                 let result: ArchiveMultiFrameResult
@@ -80,12 +80,14 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                         result = self.archiveNoteToSelfThread(
                             thread,
                             stream: stream,
+                            frameBencher: frameBencher,
                             context: context
                         )
                     } else {
                         result = self.archiveContactThread(
                             thread,
                             stream: stream,
+                            frameBencher: frameBencher,
                             context: context
                         )
                     }
@@ -93,6 +95,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                     result = self.archiveGroupV2Thread(
                         thread,
                         stream: stream,
+                        frameBencher: frameBencher,
                         context: context
                     )
                 } else if let thread = thread as? TSGroupThread, thread.isGroupV1Thread {
@@ -120,10 +123,10 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         }
 
         do {
-            try threadStore.enumerateNonStoryThreads(context: context, block: { thread in
+            try context.bencher.wrapEnumeration(threadStore.enumerateNonStoryThreads(context: block:), context) { thread, frameBencher in
                 try Task.checkCancellation()
-                return archiveThread(thread)
-            })
+                return archiveThread(thread, frameBencher)
+            }
         } catch let error as CancellationError {
             throw error
         } catch let error {
@@ -142,6 +145,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     private func archiveNoteToSelfThread(
         _ thread: TSContactThread,
         stream: MessageBackupProtoOutputStream,
+        frameBencher: MessageBackup.Bencher.FrameBencher,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
         guard let threadRowId = thread.sqliteRowId else {
@@ -154,6 +158,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             MessageBackup.ChatThread(threadType: .contact(thread), threadRowId: threadRowId),
             recipientId: context.recipientContext.localRecipientId,
             stream: stream,
+            frameBencher: frameBencher,
             context: context
         )
     }
@@ -161,6 +166,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     private func archiveContactThread(
         _ thread: TSContactThread,
         stream: MessageBackupProtoOutputStream,
+        frameBencher: MessageBackup.Bencher.FrameBencher,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
         let contactServiceId: ServiceId? = thread.contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
@@ -187,6 +193,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 thread,
                 address: contactAddress,
                 stream: stream,
+                frameBencher: frameBencher,
                 context: context
             ) {
             case .success(let _recipientId):
@@ -206,6 +213,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             MessageBackup.ChatThread(threadType: .contact(thread), threadRowId: threadRowId),
             recipientId: recipientId,
             stream: stream,
+            frameBencher: frameBencher,
             context: context
         )
     }
@@ -213,6 +221,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     private func archiveGroupV2Thread(
         _ thread: TSGroupThread,
         stream: MessageBackupProtoOutputStream,
+        frameBencher: MessageBackup.Bencher.FrameBencher,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
         let recipientAddress = MessageBackup.RecipientArchivingContext.Address.group(
@@ -235,6 +244,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             MessageBackup.ChatThread(threadType: .groupV2(thread), threadRowId: threadRowId),
             recipientId: recipientId,
             stream: stream,
+            frameBencher: frameBencher,
             context: context
         )
     }
@@ -243,6 +253,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         _ thread: MessageBackup.ChatThread,
         recipientId: MessageBackup.RecipientId,
         stream: MessageBackupProtoOutputStream,
+        frameBencher: MessageBackup.Bencher.FrameBencher,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()
@@ -308,7 +319,8 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         let error = Self.writeFrameToStream(
             stream,
-            objectId: thread.tsThread.uniqueThreadIdentifier
+            objectId: thread.tsThread.uniqueThreadIdentifier,
+            frameBencher: frameBencher
         ) {
             var frame = BackupProto_Frame()
             frame.item = .chat(chat)

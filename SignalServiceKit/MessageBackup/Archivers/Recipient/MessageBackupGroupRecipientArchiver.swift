@@ -55,12 +55,16 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         var errors = [ArchiveFrameError]()
 
         do {
-            try threadStore.enumerateGroupThreads(context: context) { groupThread in
+            try context.bencher.wrapEnumeration(
+                threadStore.enumerateGroupThreads(context:block:),
+                context
+            ) { groupThread, frameBencher in
                 try Task.checkCancellation()
                 autoreleasepool {
                     self.archiveGroupThread(
                         groupThread,
                         stream: stream,
+                        frameBencher: frameBencher,
                         context: context,
                         errors: &errors
                     )
@@ -85,6 +89,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
     private func archiveGroupThread(
         _ groupThread: TSGroupThread,
         stream: MessageBackupProtoOutputStream,
+        frameBencher: MessageBackup.Bencher.FrameBencher,
         context: MessageBackup.RecipientArchivingContext,
         errors: inout [ArchiveFrameError]
     ) {
@@ -207,6 +212,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         Self.writeFrameToStream(
             stream,
             objectId: groupAppId,
+            frameBencher: frameBencher,
             frameBuilder: {
                 var recipient = BackupProto_Recipient()
                 let recipientId = context.assignRecipientId(to: groupAppId)

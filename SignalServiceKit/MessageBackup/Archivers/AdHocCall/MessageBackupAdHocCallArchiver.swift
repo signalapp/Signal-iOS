@@ -86,7 +86,10 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()
         do {
-            try callRecordStore.enumerateAdHocCallRecords(tx: context.tx) { record in
+            try context.bencher.wrapEnumeration(
+                callRecordStore.enumerateAdHocCallRecords(tx:block:),
+                context.tx
+            ) { record, frameBencher in
                 try Task.checkCancellation()
                 autoreleasepool {
                     let recordId = AdHocCallAppId(callRecord: record)
@@ -129,7 +132,8 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
 
                     let error = Self.writeFrameToStream(
                         stream,
-                        objectId: recordId
+                        objectId: recordId,
+                        frameBencher: frameBencher
                     ) {
                         var frame = BackupProto_Frame()
                         frame.adHocCall = adHocCallProto

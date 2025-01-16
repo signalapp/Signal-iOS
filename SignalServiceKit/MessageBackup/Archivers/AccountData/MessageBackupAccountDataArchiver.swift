@@ -121,52 +121,57 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.CustomChatColorArchivingContext
     ) -> MessageBackup.ArchiveAccountDataResult {
+        return context.bencher.processFrame { frameBencher in
+            guard let localProfile = profileManager.getUserProfileForLocalUser(tx: context.tx) else {
+                return .failure(.archiveFrameError(.missingLocalProfile, .localUser))
+            }
+            guard let profileKeyData = localProfile.profileKey?.keyData else {
+                return .failure(.archiveFrameError(.missingLocalProfileKey, .localUser))
+            }
 
-        guard let localProfile = profileManager.getUserProfileForLocalUser(tx: context.tx) else {
-            return .failure(.archiveFrameError(.missingLocalProfile, .localUser))
-        }
-        guard let profileKeyData = localProfile.profileKey?.keyData else {
-            return .failure(.archiveFrameError(.missingLocalProfileKey, .localUser))
-        }
+            var accountData = BackupProto_AccountData()
+            accountData.profileKey = profileKeyData
+            accountData.givenName = localProfile.givenName ?? ""
+            accountData.familyName = localProfile.familyName ?? ""
+            accountData.avatarURLPath = localProfile.avatarUrlPath ?? ""
 
-        var accountData = BackupProto_AccountData()
-        accountData.profileKey = profileKeyData
-        accountData.givenName = localProfile.givenName ?? ""
-        accountData.familyName = localProfile.familyName ?? ""
-        accountData.avatarURLPath = localProfile.avatarUrlPath ?? ""
+            if let donationSubscriberId = donationSubscriptionManager.getSubscriberID(tx: context.tx) {
+                var donationSubscriberData = BackupProto_AccountData.SubscriberData()
+                donationSubscriberData.subscriberID = donationSubscriberId
+                donationSubscriberData.currencyCode = donationSubscriptionManager.getSubscriberCurrencyCode(tx: context.tx) ?? ""
+                donationSubscriberData.manuallyCancelled = donationSubscriptionManager.userManuallyCancelledSubscription(tx: context.tx)
 
-        if let donationSubscriberId = donationSubscriptionManager.getSubscriberID(tx: context.tx) {
-            var donationSubscriberData = BackupProto_AccountData.SubscriberData()
-            donationSubscriberData.subscriberID = donationSubscriberId
-            donationSubscriberData.currencyCode = donationSubscriptionManager.getSubscriberCurrencyCode(tx: context.tx) ?? ""
-            donationSubscriberData.manuallyCancelled = donationSubscriptionManager.userManuallyCancelledSubscription(tx: context.tx)
+                accountData.donationSubscriberData = donationSubscriberData
+            }
 
-            accountData.donationSubscriberData = donationSubscriberData
-        }
+            if let result = buildUsernameLinkProto(context: context) {
+                accountData.username = result.username
+                accountData.usernameLink = result.usernameLink
+            }
 
-        if let result = buildUsernameLinkProto(context: context) {
-            accountData.username = result.username
-            accountData.usernameLink = result.usernameLink
-        }
+            let accountSettingsResult = buildAccountSettingsProto(context: context)
+            switch accountSettingsResult {
+            case .success(let accountSettings):
+                accountData.accountSettings = accountSettings
+            case .failure(let error):
+                return .failure(error)
+            }
 
-        let accountSettingsResult = buildAccountSettingsProto(context: context)
-        switch accountSettingsResult {
-        case .success(let accountSettings):
-            accountData.accountSettings = accountSettings
-        case .failure(let error):
-            return .failure(error)
-        }
+            let error = Self.writeFrameToStream(
+                stream,
+                objectId: MessageBackup.AccountDataId.localUser,
+                frameBencher: frameBencher
+            ) {
+                var frame = BackupProto_Frame()
+                frame.item = .account(accountData)
+                return frame
+            }
 
-        let error = Self.writeFrameToStream(stream, objectId: MessageBackup.AccountDataId.localUser) {
-            var frame = BackupProto_Frame()
-            frame.item = .account(accountData)
-            return frame
-        }
-
-        if let error {
-            return .failure(error)
-        } else {
-            return .success(())
+            if let error {
+                return .failure(error)
+            } else {
+                return .success(())
+            }
         }
     }
 

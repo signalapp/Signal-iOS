@@ -78,21 +78,26 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
 
         var handledPacks = Set<Data>()
 
-        func archiveInstalledStickerPack(_ installedStickerPack: StickerPack) {
+        func archiveInstalledStickerPack(
+            _ installedStickerPack: StickerPack,
+            _ frameBencher: MessageBackup.Bencher.FrameBencher
+        ) {
             autoreleasepool {
                 guard !handledPacks.contains(installedStickerPack.packId) else { return }
                 let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
                     stream,
-                    objectId: StickerPackId(installedStickerPack.packId)) {
-                        var stickerPack = BackupProto_StickerPack()
-                        stickerPack.packID = installedStickerPack.packId
-                        stickerPack.packKey = installedStickerPack.packKey
+                    objectId: StickerPackId(installedStickerPack.packId),
+                    frameBencher: frameBencher
+                ) {
+                    var stickerPack = BackupProto_StickerPack()
+                    stickerPack.packID = installedStickerPack.packId
+                    stickerPack.packKey = installedStickerPack.packKey
 
-                        var frame = BackupProto_Frame()
-                        frame.item = .stickerPack(stickerPack)
+                    var frame = BackupProto_Frame()
+                    frame.item = .stickerPack(stickerPack)
 
-                        return frame
-                    }
+                    return frame
+                }
 
                 if let maybeError {
                     errors.append(maybeError)
@@ -102,15 +107,24 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
             }
         }
 
-        // Iterate over the installed sticker packs
-        do {
+        func enumerateStickerPackRecord(tx: DBReadTransaction, _ block: (StickerPack) throws -> Void) throws {
             let cursor = try StickerPackRecord
                 .filter(Column(StickerPackRecord.CodingKeys.isInstalled) == true)
-                .fetchCursor(context.tx.databaseConnection)
+                .fetchCursor(tx.databaseConnection)
             while let next = try cursor.next() {
-                try Task.checkCancellation()
                 let stickerPack = try StickerPack.fromRecord(next)
-                archiveInstalledStickerPack(stickerPack)
+                try block(stickerPack)
+            }
+        }
+
+        // Iterate over the installed sticker packs
+        do {
+            try context.bencher.wrapEnumeration(
+                enumerateStickerPackRecord(tx:_:),
+                context.tx
+            ) { stickerPack, frameBencher in
+                try Task.checkCancellation()
+                archiveInstalledStickerPack(stickerPack, frameBencher)
             }
         } catch let error as CancellationError {
             throw error
@@ -120,13 +134,18 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
 
         // Iterate over any restored sticker packs that have yet to be downloaded via StickerManager.
         do {
-            try backupStickerPackDownloadStore.iterateAllEnqueued(tx: context.tx) { record in
+            try context.bencher.wrapEnumeration(
+                backupStickerPackDownloadStore.iterateAllEnqueued(tx:block:),
+                context.tx
+            ) { record, frameBencher in
                 try Task.checkCancellation()
                 autoreleasepool {
                     guard !handledPacks.contains(record.packId) else { return }
                     let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
                         stream,
-                        objectId: StickerPackId(record.packId)) {
+                        objectId: StickerPackId(record.packId),
+                        frameBencher: frameBencher
+                    ) {
                             var stickerPack = BackupProto_StickerPack()
                             stickerPack.packID = record.packId
                             stickerPack.packKey = record.packKey

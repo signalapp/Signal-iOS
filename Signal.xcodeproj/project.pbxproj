@@ -759,6 +759,7 @@
 		66076B5E2BC06CA70043D547 /* EditManagerAttachmentsImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B5A2BC06CA70043D547 /* EditManagerAttachmentsImpl.swift */; };
 		66076B5F2BC06CA70043D547 /* EditManagerAttachments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B5B2BC06CA70043D547 /* EditManagerAttachments.swift */; };
 		6609A3BA2D137908007D04A2 /* MediaGalleryFileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6609A3B92D137900007D04A2 /* MediaGalleryFileCell.swift */; };
+		660A603E2D371C9100D2765B /* MessageBackup+Bench.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660A603D2D371C8B00D2765B /* MessageBackup+Bench.swift */; };
 		660FA9112CE58CD7006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660FA9102CE58CD0006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift */; };
 		661170C12ABA459D00A1B16D /* RegistrationIdGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */; };
 		661170C42ABA4D9900A1B16D /* TSAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661170C32ABA4D9900A1B16D /* TSAccountManager.swift */; };
@@ -4512,6 +4513,7 @@
 		66076B5A2BC06CA70043D547 /* EditManagerAttachmentsImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditManagerAttachmentsImpl.swift; sourceTree = "<group>"; };
 		66076B5B2BC06CA70043D547 /* EditManagerAttachments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditManagerAttachments.swift; sourceTree = "<group>"; };
 		6609A3B92D137900007D04A2 /* MediaGalleryFileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryFileCell.swift; sourceTree = "<group>"; };
+		660A603D2D371C8B00D2765B /* MessageBackup+Bench.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageBackup+Bench.swift"; sourceTree = "<group>"; };
 		660FA9102CE58CD0006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkAndSyncProvisioningProgressViewController.swift; sourceTree = "<group>"; };
 		661170C02ABA459D00A1B16D /* RegistrationIdGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationIdGenerator.swift; sourceTree = "<group>"; };
 		661170C32ABA4D9900A1B16D /* TSAccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManager.swift; sourceTree = "<group>"; };
@@ -9227,6 +9229,7 @@
 				667BB2042C58073600E79B57 /* Attachments */,
 				66CD25732B08079C00139E17 /* FileStreams */,
 				669874E62CCC133E00CDD7E9 /* MediaRootBackupKeyStore.swift */,
+				660A603D2D371C8B00D2765B /* MessageBackup+Bench.swift */,
 				661429182D35B9EA0043AA22 /* MessageBackup+Timestamp.swift */,
 				66CD25902B0EC20800139E17 /* MessageBackupConstants.swift */,
 				66FFDADB2C823C270079C0E7 /* MessageBackupContexts.swift */,
@@ -17172,6 +17175,7 @@
 				66FC637629DF7FCC00F00DAC /* MentionHydrator.swift in Sources */,
 				5052AF5E2ACB0E9700D7EE9F /* MergePair.swift in Sources */,
 				66BB4D592AD8BF6200A84219 /* MergingDict.swift in Sources */,
+				660A603E2D371C9100D2765B /* MessageBackup+Bench.swift in Sources */,
 				66CD258D2B0EB3A700139E17 /* MessageBackup+InteractionTypes.swift in Sources */,
 				661429192D35B9F10043AA22 /* MessageBackup+Timestamp.swift in Sources */,
 				66CD25642B06949C00139E17 /* MessageBackupAccountDataArchiver.swift in Sources */,

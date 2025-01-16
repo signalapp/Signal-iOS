@@ -38,20 +38,27 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
             for item in privateStoryThreadDeletionManager.allDeletedIdentifiers(tx: context.tx) {
                 try Task.checkCancellation()
                 autoreleasepool {
-                    self.archiveDeletedStoryList(
-                        rawDistributionId: item,
-                        stream: stream,
-                        context: context,
-                        errors: &errors
-                    )
+                    context.bencher.processFrame { frameBencher in
+                        self.archiveDeletedStoryList(
+                            rawDistributionId: item,
+                            stream: stream,
+                            frameBencher: frameBencher,
+                            context: context,
+                            errors: &errors
+                        )
+                    }
                 }
             }
-            try threadStore.enumerateStoryThreads(context: context) { storyThread in
+            try context.bencher.wrapEnumeration(
+                threadStore.enumerateStoryThreads(context:block:),
+                context
+            ) { storyThread, frameBencher in
                 try Task.checkCancellation()
                 autoreleasepool {
                     self.archiveStoryThread(
                         storyThread,
                         stream: stream,
+                        frameBencher: frameBencher,
                         context: context,
                         errors: &errors
                     )
@@ -76,6 +83,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
     private func archiveStoryThread(
         _ storyThread: TSPrivateStoryThread,
         stream: MessageBackupProtoOutputStream,
+        frameBencher: MessageBackup.Bencher.FrameBencher,
         context: MessageBackup.RecipientArchivingContext,
         errors: inout [ArchiveFrameError]
     ) {
@@ -148,7 +156,11 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
 
         let recipientId = context.assignRecipientId(to: distributionListAppId)
 
-        Self.writeFrameToStream(stream, objectId: distributionListAppId) {
+        Self.writeFrameToStream(
+            stream,
+            objectId: distributionListAppId,
+            frameBencher: frameBencher
+        ) {
             var recipient = BackupProto_Recipient()
             recipient.id = recipientId.value
             recipient.destination = .distributionList(distributionListItem)
@@ -162,6 +174,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
     private func archiveDeletedStoryList(
         rawDistributionId: Data,
         stream: MessageBackupProtoOutputStream,
+        frameBencher: MessageBackup.Bencher.FrameBencher,
         context: MessageBackup.RecipientArchivingContext,
         errors: inout [ArchiveFrameError]
     ) {
@@ -199,7 +212,11 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
         distributionList.distributionID = distributionId.value.data
         distributionList.item = .deletionTimestamp(deletionTimestamp)
 
-        Self.writeFrameToStream(stream, objectId: distributionListAppId) {
+        Self.writeFrameToStream(
+            stream,
+            objectId: distributionListAppId,
+            frameBencher: frameBencher
+        ) {
             var recipient = BackupProto_Recipient()
             recipient.id = recipientId.value
             recipient.destination = .distributionList(distributionList)

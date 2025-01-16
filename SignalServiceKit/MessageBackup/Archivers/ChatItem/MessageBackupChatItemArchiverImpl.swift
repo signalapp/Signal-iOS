@@ -108,13 +108,15 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         var partialFailures = [ArchiveFrameError]()
 
         func archiveInteraction(
-            _ interaction: TSInteraction
+            _ interaction: TSInteraction,
+            _ frameBencher: MessageBackup.Bencher.FrameBencher
         ) -> Bool {
             var stop = false
             autoreleasepool {
                 let result = self.archiveInteraction(
                     interaction,
                     stream: stream,
+                    frameBencher: frameBencher,
                     context: context
                 )
                 switch result {
@@ -133,11 +135,12 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         }
 
         do {
-            try interactionStore.enumerateAllInteractions(
-                tx: context.tx,
-                block: { interaction in
+            try context.bencher.wrapEnumeration(
+                interactionStore.enumerateAllInteractions(tx:block:),
+                context.tx,
+                block: { interaction, frameBencher in
                     try Task.checkCancellation()
-                    return archiveInteraction(interaction)
+                    return archiveInteraction(interaction, frameBencher)
                 }
             )
         } catch let error as CancellationError {
@@ -160,6 +163,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private func archiveInteraction(
         _ interaction: TSInteraction,
         stream: MessageBackupProtoOutputStream,
+        frameBencher: MessageBackup.Bencher.FrameBencher,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()
@@ -270,7 +274,8 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
 
         let error = Self.writeFrameToStream(
             stream,
-            objectId: interaction.uniqueInteractionId
+            objectId: interaction.uniqueInteractionId,
+            frameBencher: frameBencher
         ) {
             var frame = BackupProto_Frame()
             frame.item = .chatItem(chatItem)

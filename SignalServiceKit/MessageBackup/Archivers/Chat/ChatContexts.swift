@@ -105,6 +105,7 @@ extension MessageBackup {
 
         internal init(
             backupPurpose: MessageBackupPurpose,
+            bencher: MessageBackup.Bencher,
             currentBackupAttachmentUploadEra: String?,
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             customChatColorContext: CustomChatColorArchivingContext,
@@ -115,6 +116,7 @@ extension MessageBackup {
             self.recipientContext = recipientContext
             super.init(
                 backupPurpose: backupPurpose,
+                bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 backupAttachmentUploadManager: backupAttachmentUploadManager,
                 tx: tx
@@ -325,12 +327,14 @@ extension MessageBackup {
 
         internal override init(
             backupPurpose: MessageBackupPurpose,
+            bencher: MessageBackup.Bencher,
             currentBackupAttachmentUploadEra: String?,
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             tx: DBWriteTransaction
         ) {
             super.init(
                 backupPurpose: backupPurpose,
+                bencher: bencher,
                 currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
                 backupAttachmentUploadManager: backupAttachmentUploadManager,
                 tx: tx

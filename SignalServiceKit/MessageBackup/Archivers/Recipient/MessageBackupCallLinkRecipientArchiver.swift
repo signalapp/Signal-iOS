@@ -52,7 +52,7 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
         do {
-            try self.callLinkStore.enumerateAll(tx: context.tx) { record in
+            try context.bencher.wrapEnumeration(callLinkStore.enumerateAll(tx:block:), context.tx) { record, frameBencher in
                 try Task.checkCancellation()
                 autoreleasepool {
                     var callLink = BackupProto_CallLink()
@@ -96,7 +96,8 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
                     let recipientId = context.assignRecipientId(to: callLinkAppId)
                     Self.writeFrameToStream(
                         stream,
-                        objectId: callLinkAppId
+                        objectId: callLinkAppId,
+                        frameBencher: frameBencher
                     ) {
                         var recipient = BackupProto_Recipient()
                         recipient.id = recipientId.value

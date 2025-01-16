@@ -43,11 +43,14 @@ public class MessageBackupPostFrameRestoreActionManager {
     func performPostFrameRestoreActions(
         recipientActions: SharedMap<RecipientId, RecipientActions>,
         chatActions: SharedMap<ChatId, ChatActions>,
+        bencher: MessageBackup.Bencher,
         chatItemContext: MessageBackup.ChatItemRestoringContext
     ) throws {
         for (recipientId, actions) in recipientActions {
             if actions.insertContactHiddenInfoMessage {
-                try insertContactHiddenInfoMessage(recipientId: recipientId, chatItemContext: chatItemContext)
+                try bencher.benchPostFrameAction(.InsertContactHiddenInfoMessage) {
+                    try insertContactHiddenInfoMessage(recipientId: recipientId, chatItemContext: chatItemContext)
+                }
             }
         }
         // Note: This should happen after recipient actions; the recipient actions insert
@@ -59,40 +62,42 @@ public class MessageBackupPostFrameRestoreActionManager {
             guard let thread = chatItemContext.chatContext[chatId] else {
                 continue
             }
-            if actions.shouldBeMarkedVisible {
-                wasAnyThreadVisible = true
-                try threadStore.markVisible(
-                    thread: thread,
-                    lastInteractionRowId: actions.lastVisibleInteractionRowId,
-                    context: chatItemContext.chatContext
-                )
-            }
-            if
-                let lastVisibleInteractionRowId = actions.lastVisibleInteractionRowId,
-                let lastVisibleInteractionRowId = UInt64(exactly: lastVisibleInteractionRowId),
-                !actions.hadAnyUnreadMessages
-            {
-                // If we had no unread messages but we have some message,
-                // set that as the last visible message so that thats what
-                // we scroll to.
-                lastVisibleInteractionStore.setLastVisibleInteraction(
-                    TSThread.LastVisibleInteraction(
-                        sortId: lastVisibleInteractionRowId,
-                        onScreenPercentage: 1
-                    ),
-                    for: thread.tsThread,
-                    tx: chatItemContext.tx
-                )
-            }
-            switch thread.threadType {
-            case .contact:
-                break
-            case .groupV2(let groupThread):
-                try updateLastInteractionTimestamps(
-                    for: groupThread,
-                    actions: actions,
-                    context: chatItemContext.chatContext
-                )
+            try bencher.benchPostFrameAction(.UpdateThreadMetadata) {
+                if actions.shouldBeMarkedVisible {
+                    wasAnyThreadVisible = true
+                    try threadStore.markVisible(
+                        thread: thread,
+                        lastInteractionRowId: actions.lastVisibleInteractionRowId,
+                        context: chatItemContext.chatContext
+                    )
+                }
+                if
+                    let lastVisibleInteractionRowId = actions.lastVisibleInteractionRowId,
+                    let lastVisibleInteractionRowId = UInt64(exactly: lastVisibleInteractionRowId),
+                    !actions.hadAnyUnreadMessages
+                {
+                    // If we had no unread messages but we have some message,
+                    // set that as the last visible message so that thats what
+                    // we scroll to.
+                    lastVisibleInteractionStore.setLastVisibleInteraction(
+                        TSThread.LastVisibleInteraction(
+                            sortId: lastVisibleInteractionRowId,
+                            onScreenPercentage: 1
+                        ),
+                        for: thread.tsThread,
+                        tx: chatItemContext.tx
+                    )
+                }
+                switch thread.threadType {
+                case .contact:
+                    break
+                case .groupV2(let groupThread):
+                    try updateLastInteractionTimestamps(
+                        for: groupThread,
+                        actions: actions,
+                        context: chatItemContext.chatContext
+                    )
+                }
             }
         }
         if wasAnyThreadVisible {
@@ -115,36 +120,38 @@ public class MessageBackupPostFrameRestoreActionManager {
                 return action.lastVisibleInteractionRowId
             }
 
-            switch recipientAddress {
-            case .releaseNotesChannel, .distributionList, .callLink:
-                continue
-            case .localAddress:
-                try avatarFetcher.enqueueFetchOfUserProfile(
-                    serviceId: chatItemContext.recipientContext.localIdentifiers.aci,
-                    currentTimestamp: avatarFetchTimestamp,
-                    lastVisibleInteractionRowIdInContactThread: getLastVisibleInteractionRowId(),
-                    tx: chatItemContext.tx
-                )
-            case .contact(let contactAddress):
-                guard let serviceId: ServiceId = contactAddress.aci ?? contactAddress.pni else {
-                    continue
+            try bencher.benchPostFrameAction(.EnqueueAvatarFetch) {
+                switch recipientAddress {
+                case .releaseNotesChannel, .distributionList, .callLink:
+                    return
+                case .localAddress:
+                    try avatarFetcher.enqueueFetchOfUserProfile(
+                        serviceId: chatItemContext.recipientContext.localIdentifiers.aci,
+                        currentTimestamp: avatarFetchTimestamp,
+                        lastVisibleInteractionRowIdInContactThread: getLastVisibleInteractionRowId(),
+                        tx: chatItemContext.tx
+                    )
+                case .contact(let contactAddress):
+                    guard let serviceId: ServiceId = contactAddress.aci ?? contactAddress.pni else {
+                        return
+                    }
+                    try avatarFetcher.enqueueFetchOfUserProfile(
+                        serviceId: serviceId,
+                        currentTimestamp: avatarFetchTimestamp,
+                        lastVisibleInteractionRowIdInContactThread: getLastVisibleInteractionRowId(),
+                        tx: chatItemContext.tx
+                    )
+                case .group(let groupId):
+                    guard let groupThread = chatItemContext.recipientContext[groupId] else {
+                        return
+                    }
+                    try avatarFetcher.enqueueFetchOfGroupAvatar(
+                        groupThread,
+                        currentTimestamp: avatarFetchTimestamp,
+                        lastVisibleInteractionRowIdInGroupThread: getLastVisibleInteractionRowId(),
+                        tx: chatItemContext.tx
+                    )
                 }
-                try avatarFetcher.enqueueFetchOfUserProfile(
-                    serviceId: serviceId,
-                    currentTimestamp: avatarFetchTimestamp,
-                    lastVisibleInteractionRowIdInContactThread: getLastVisibleInteractionRowId(),
-                    tx: chatItemContext.tx
-                )
-            case .group(let groupId):
-                guard let groupThread = chatItemContext.recipientContext[groupId] else {
-                    continue
-                }
-                try avatarFetcher.enqueueFetchOfGroupAvatar(
-                    groupThread,
-                    currentTimestamp: avatarFetchTimestamp,
-                    lastVisibleInteractionRowIdInGroupThread: getLastVisibleInteractionRowId(),
-                    tx: chatItemContext.tx
-                )
             }
         }
     }
