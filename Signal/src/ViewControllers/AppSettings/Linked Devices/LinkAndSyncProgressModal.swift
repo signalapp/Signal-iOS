@@ -41,16 +41,15 @@ class LinkAndSyncProgressViewModel: ObservableObject {
         // This seems to help with the Lottie bug mentioned below
         objectWillChange.send()
 
-        let canBeCancelled: Bool
-        if let label = progress.currentSourceLabel {
-            canBeCancelled = label != PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue
-        } else {
-            canBeCancelled = false
-        }
+        let canBeCancelled = progress
+            .sourceProgresses[PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue]?
+            .isFinished
+            ?? false
 
-        if progress.completedUnitCount > PrimaryLinkNSyncProgressPhase.waitingForLinking.percentOfTotalProgress {
-            self.isIndeterminate = false
-        }
+        self.isIndeterminate = progress
+            .sourceProgresses[PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue]?
+            .isFinished.negated
+            ?? true
 
         updateProgress(
             progress: progress.percentComplete,
@@ -58,7 +57,13 @@ class LinkAndSyncProgressViewModel: ObservableObject {
         )
 
 #if DEBUG
-        progressSourceLabel = progress.currentSourceLabel
+        progressSourceLabel = progress.sourceProgresses
+            .lazy
+            .filter(\.value.isFinished.negated)
+            .filter({ $0.value.completedUnitCount > 0 })
+            .max(by: { $0.value.percentComplete < $1.value.percentComplete })?
+            .key
+            ?? progressSourceLabel
 #endif
     }
 

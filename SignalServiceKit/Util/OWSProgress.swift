@@ -59,16 +59,41 @@ import Foundation
 /// OWSProgress optimizes for single-threaded updates; batching observer updates to do so efficiently.
 /// * NSProgress requires you to know unit counts for all children up-front and they must all share units.
 /// OWSProgress lets you add children lazily and renormalizes disparate units at each level of the tree.
-public struct OWSProgress: Equatable {
+public struct OWSProgress: Equatable, SomeOWSProgress {
     /// The completed unit count across all direct children.
     public let completedUnitCount: UInt64
     /// The total unit count of all direct children.
     public let totalUnitCount: UInt64
-    /// The chain of labels (ending with the source's label) from the root
-    /// sink to the source with the highest percentage completion.
-    /// In case of ties, sources added later are preferred.
-    public let currentLabels: [String]
 
+    public struct SourceProgress: Equatable, SomeOWSProgress {
+        /// The completed unit count of this particular source.
+        /// The units DO NOT necessarily correspond to the units of the root OWSProgress.
+        public let completedUnitCount: UInt64
+        /// The total unit count of this particular source.
+        /// The units DO NOT necessarily correspond to the units of the root OWSProgress.
+        public let totalUnitCount: UInt64
+        /// The chain of labels (ending with the source's label) from the root
+        /// sink to this particular source.
+        public let labels: [String]
+    }
+
+    /// All sources at all layers of the progress tree, which have emitted progress values.
+    /// Maps from source label to the source.
+    public let sourceProgresses: [String: SourceProgress]
+
+    /// Create a root sink, taking the single observer block of progress updates.
+    /// See class docs for this type for usage.
+    public static func createSink(_ observer: @escaping OWSProgressSink.Observer) -> OWSProgressSink {
+        return OWSProgressRootNode(observer: observer)
+    }
+}
+
+public protocol SomeOWSProgress {
+    var completedUnitCount: UInt64 { get }
+    var totalUnitCount: UInt64 { get }
+}
+
+extension SomeOWSProgress {
     /// Percentage completion measured as (completedUnitCount / totalUnitCount)
     /// 0 if no children or sources have been added.
     public var percentComplete: Float {
@@ -79,16 +104,6 @@ public struct OWSProgress: Equatable {
     /// Percent = 1. False if no children or sources have been added.
     public var isFinished: Bool {
         totalUnitCount != 0 && completedUnitCount == totalUnitCount
-    }
-
-    /// See ``currentLabels``; label of the final source in the chain.
-    /// Nil if no progress has been made.
-    public var currentSourceLabel: String? { currentLabels.last }
-
-    /// Create a root sink, taking the single observer block of progress updates.
-    /// See class docs for this type for usage.
-    public static func createSink(_ observer: @escaping OWSProgressSink.Observer) -> OWSProgressSink {
-        return OWSProgressRootNode(observer: observer)
     }
 }
 
@@ -213,12 +228,15 @@ private actor OWSProgressRootNode: OWSProgressSink {
         /// Sources hold strong references to their root sink, so the sink must hold weak references to sources.
         /// If callers release sources, they can't be updated anyway so no point retaining them.
         weak var node: OWSProgressSourceNode?
-        /// Hold onto the last completed unit count (pre-weighted) in case
+        /// Hold onto the last progress in case
         /// the source gets released e.g. after hitting 100%.
-        var lastCompletedUnitCount: Float?
+        var lastProgress: OWSProgress.SourceProgress
+        var lastCompletedUnitCountMultiplier: Float
 
         init(node: OWSProgressSourceNode) {
             self.node = node
+            self.lastProgress = node.sourceProgress
+            self.lastCompletedUnitCountMultiplier = node.completedUnitCountMultiplier
         }
     }
 
@@ -268,6 +286,7 @@ private actor OWSProgressRootNode: OWSProgressSink {
 
     fileprivate func addSource(_ source: OWSProgressSourceNode) {
         allSources.append(SourceNode(node: source))
+        source.emitProgressIfNeeded()
     }
 
     private func updateUnitCountsOnChildren() async {
@@ -284,30 +303,23 @@ private actor OWSProgressRootNode: OWSProgressSink {
             return
         }
         var completedUnitCount: Float = 0
-        var highestPercent: Float = -1
-        var currentLabels: [String] = []
+        var sourceProgresses = [String: OWSProgress.SourceProgress]()
         allSources.forEach { sourceNode in
-            let sourceCompletedUnitCount: Float
-            if let source = sourceNode.node {
-                sourceCompletedUnitCount =
-                    source.completedUnitCountMultiplier
-                    * Float(source.completedUnitCount)
-                let percent = Float(source.completedUnitCount) / Float(source.totalUnitCount)
-                if source.completedUnitCount != source.totalUnitCount, percent > highestPercent {
-                    highestPercent = percent
-                    currentLabels = source.labels
-                }
-            } else {
-                sourceCompletedUnitCount = sourceNode.lastCompletedUnitCount ?? 0
-            }
-            sourceNode.lastCompletedUnitCount = sourceCompletedUnitCount
-            completedUnitCount += sourceCompletedUnitCount
+            let sourceProgress = sourceNode.node?.sourceProgress
+                ?? sourceNode.lastProgress
+            let sourceCompletedUnitCountMultiplier = sourceNode.node?.completedUnitCountMultiplier
+                ?? sourceNode.lastCompletedUnitCountMultiplier
+            sourceNode.lastProgress = sourceProgress
+            sourceNode.lastCompletedUnitCountMultiplier = sourceCompletedUnitCountMultiplier
+            sourceProgresses[sourceProgress.labels.last!] = sourceProgress
+            completedUnitCount += sourceCompletedUnitCountMultiplier
+                * Float(sourceProgress.completedUnitCount)
         }
         let progress = OWSProgress(
             // Round up optimistically.
             completedUnitCount: UInt64(ceil(completedUnitCount)),
             totalUnitCount: totalDirectChildUnitCount,
-            currentLabels: currentLabels
+            sourceProgresses: sourceProgresses
         )
         defer { latestEmittedProgress = progress }
 
@@ -440,6 +452,7 @@ private actor OWSProgressSinkNode: OWSProgressSink, OWSProgressChildNode {
         await updateUnitCountsOnChildren()
         // All sources at all levels talk to the root to issue observer updates.
         await rootNode.addSource(source)
+        source.emitProgressIfNeeded()
         return source
     }
 
@@ -468,6 +481,14 @@ private class OWSProgressSourceNode: OWSProgressSource, OWSProgressChildNode {
     fileprivate let labels: [String]
     var completedUnitCount: UInt64 = 0
     let totalUnitCount: UInt64
+
+    var sourceProgress: OWSProgress.SourceProgress {
+        return OWSProgress.SourceProgress(
+            completedUnitCount: completedUnitCount,
+            totalUnitCount: totalUnitCount,
+            labels: labels
+        )
+    }
 
     /// See ``OWSProgressChildNode/updateCompletedUnitCountMultiplier``.
     /// This gets set immediately after initialization before it can possibly be read.
@@ -508,7 +529,7 @@ private class OWSProgressSourceNode: OWSProgressSource, OWSProgressChildNode {
     /// will early exit.
     private var dirtyBit = false
 
-    private func emitProgressIfNeeded() {
+    fileprivate func emitProgressIfNeeded() {
         guard !dirtyBit else {
             return
         }

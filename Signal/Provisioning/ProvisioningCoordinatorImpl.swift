@@ -495,12 +495,12 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         }
         let linkNSyncProgress = await progress.addChild(
             withLabel: LocalizationNotNeeded("Link'n'sync"),
-            unitCount: 95
+            unitCount: 99
         )
 
         let postLinkNSyncProgress = await progress.addSource(
             withLabel: LocalizationNotNeeded("Post-link'n'sync"),
-            unitCount: 5
+            unitCount: 1
         )
 
         do {

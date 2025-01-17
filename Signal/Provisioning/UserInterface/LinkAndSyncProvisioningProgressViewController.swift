@@ -14,6 +14,7 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
     @Published private(set) var taskProgress: Float = 0
     @Published private(set) var canBeCancelled: Bool = false
     @Published var isIndeterminate = true
+    @Published var isFinalizing = false
     @Published var linkNSyncTask: Task<Void, Error>?
     @Published var didTapCancel: Bool = false
 
@@ -29,21 +30,38 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
         objectWillChange.send()
 
 #if DEBUG
-        progressSourceLabel = progress.currentSourceLabel
+        progressSourceLabel = progress.sourceProgresses
+            .lazy
+            .filter(\.value.isFinished.negated)
+            .filter({ $0.value.completedUnitCount > 0 })
+            .max(by: { $0.value.percentComplete < $1.value.percentComplete })?
+            .key
+            ?? progressSourceLabel
 #endif
 
-        let canBeCancelled: Bool
-        if let label = progress.currentSourceLabel {
-            canBeCancelled = label != SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue
-        } else {
-            canBeCancelled = false
-        }
+        let canBeCancelled = progress
+            .sourceProgresses[SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue]?
+            .isFinished
+            ?? false
 
         guard !didTapCancel else { return }
 
-        if progress.completedUnitCount > SecondaryLinkNSyncProgressPhase.waitingForBackup.percentOfTotalProgress {
-            isIndeterminate = false
-        }
+        self.isIndeterminate = progress
+            .sourceProgresses[SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue]?
+            .isFinished.negated
+            ?? true
+
+        self.isFinalizing = {
+            for phase in SecondaryLinkNSyncProgressPhase.allCases {
+                let progresses = progress.sourceProgresses.values.lazy
+                    .filter({ $0.labels.contains(phase.rawValue) })
+                if progresses.contains(where: \.isFinished.negated) || progresses.isEmpty {
+                    return false
+                }
+            }
+            return true
+        }()
+
         withAnimation(.smooth) {
             self.taskProgress = progress.percentComplete
         }
@@ -107,12 +125,12 @@ struct LinkAndSyncProvisioningProgressView: View {
                 "LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING",
                 comment: "Title for a progress modal that would be indicating the sync progress while it's cancelling that sync"
             )
-        } else if indeterminateProgressShouldShow && viewModel.progress < 0.95 {
+        } else if indeterminateProgressShouldShow && !viewModel.isFinalizing {
             OWSLocalizedString(
                 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD",
                 comment: "Progress label when the message loading has not yet started during the device linking process"
             )
-        } else if viewModel.progress < 0.95 {
+        } else if !viewModel.isFinalizing {
             String(
                 format: OWSLocalizedString(
                     "LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT",

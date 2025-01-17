@@ -80,7 +80,7 @@ public enum SecondaryLinkNSyncError: Error, Equatable {
 }
 
 /// Used as the label for OWSProgress.
-public enum SecondaryLinkNSyncProgressPhase: String {
+public enum SecondaryLinkNSyncProgressPhase: String, CaseIterable {
     case waitingForBackup
     case downloadingBackup
     case importingBackup
@@ -88,8 +88,8 @@ public enum SecondaryLinkNSyncProgressPhase: String {
     public var percentOfTotalProgress: UInt64 {
         return switch self {
         case .waitingForBackup: 5
-        case .downloadingBackup: 55
-        case .importingBackup: 40
+        case .downloadingBackup: 30
+        case .importingBackup: 65
         }
     }
 }
@@ -208,6 +208,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         do {
             try Task.checkCancellation()
         } catch {
+            Logger.info("Cancelled!")
             throw .cancelled
         }
 
@@ -228,6 +229,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             withLabel: PrimaryLinkNSyncProgressPhase.finishing.rawValue,
             unitCount: PrimaryLinkNSyncProgressPhase.finishing.percentOfTotalProgress
         )
+
+        Logger.info("Beginning link'n'sync")
 
         let waitForLinkResponse = try await waitForDeviceToLink(
             tokenId: tokenId,
@@ -408,9 +411,11 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     ) async throws(PrimaryLinkNSyncError) -> Requests.WaitForDeviceToLinkResponse {
         let response: HTTPResponse
         do {
+            Logger.info("Waiting for device to link")
             response = try await networkManager.asyncRequest(
                 Requests.waitForDeviceToLink(tokenId: tokenId)
             )
+            Logger.info("Device linked!")
         } catch {
             if error is CancellationError {
                 throw .cancelled

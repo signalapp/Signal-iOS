@@ -207,6 +207,110 @@ class OWSProgressTest: XCTestCase {
         XCTAssertEqual(outputs.last!.percentComplete, 0.5)
     }
 
+    func testSourceProgresses() async {
+        let expectation1_50p = XCTestExpectation(description: "source1_50p")
+        let expectation1_100p = XCTestExpectation(description: "source1_100p")
+        let expectationA1_50p = XCTestExpectation(description: "sourceA1_50p")
+        let expectationA2_0p = XCTestExpectation(description: "sourceA2_0p")
+        let expectationA2_100p = XCTestExpectation(description: "sourceA2_100p")
+        let expectationA1_100p = XCTestExpectation(description: "sourcA1_100p")
+        let expectation2_0p = XCTestExpectation(description: "source2_0p")
+        let expectation2_100p = XCTestExpectation(description: "source2_100p")
+        let rootProgress = OWSProgress.createSink { progress in
+            guard
+                let source1Progress = progress.sourceProgresses["source1"]
+            else {
+                XCTFail("First progress missing")
+                return
+            }
+            XCTAssertEqual(source1Progress.labels, ["source1"])
+            XCTAssertEqual(source1Progress.totalUnitCount, 10)
+            guard
+                let sourceA1Progress = progress.sourceProgresses["sourceA1"]
+            else {
+                return
+            }
+            XCTAssertEqual(sourceA1Progress.labels, ["sinkA", "sourceA1"])
+            XCTAssertEqual(sourceA1Progress.totalUnitCount, 100)
+
+            guard source1Progress.percentComplete >= 0.5 else {
+                return
+            }
+            expectation1_50p.fulfill()
+
+            guard source1Progress.isFinished else {
+                return
+            }
+            expectation1_100p.fulfill()
+
+            guard sourceA1Progress.percentComplete >= 0.5 else {
+                return
+            }
+            expectationA1_50p.fulfill()
+
+            guard
+                let sourceA2Progress = progress.sourceProgresses["sourceA2"]
+            else {
+                return
+            }
+            expectationA2_0p.fulfill()
+            XCTAssertEqual(sourceA2Progress.labels, ["sinkA", "sourceA2"])
+            XCTAssertEqual(sourceA2Progress.totalUnitCount, 200)
+
+            guard sourceA2Progress.isFinished else {
+                return
+            }
+            expectationA2_100p.fulfill()
+
+            guard sourceA1Progress.isFinished else {
+                return
+            }
+            expectationA1_100p.fulfill()
+
+            guard
+                let source2Progress = progress.sourceProgresses["source2"]
+            else {
+                return
+            }
+            expectation2_0p.fulfill()
+            XCTAssertEqual(source2Progress.labels, ["source2"])
+            XCTAssertEqual(source2Progress.totalUnitCount, 20)
+
+            guard source2Progress.isFinished else {
+                return
+            }
+            expectation2_100p.fulfill()
+        }
+
+        let source1 = await rootProgress.addSource(withLabel: "source1", unitCount: 10)
+        let sinkA = await rootProgress.addChild(withLabel: "sinkA", unitCount: 10)
+        let sourceA1 = await sinkA.addSource(withLabel: "sourceA1", unitCount: 100)
+
+        source1.incrementCompletedUnitCount(by: 5)
+        await fulfillment(of: [expectation1_50p])
+
+        source1.incrementCompletedUnitCount(by: 5)
+        await fulfillment(of: [expectation1_100p])
+
+        sourceA1.incrementCompletedUnitCount(by: 50)
+        await fulfillment(of: [expectationA1_50p])
+
+        let sourceA2 = await sinkA.addSource(withLabel: "sourceA2", unitCount: 200)
+        await fulfillment(of: [expectationA2_0p])
+
+        sourceA2.incrementCompletedUnitCount(by: 200)
+        await fulfillment(of: [expectationA2_100p])
+
+        sourceA1.incrementCompletedUnitCount(by: 50)
+        await fulfillment(of: [expectationA1_100p])
+
+        let source2 = await rootProgress.addSource(withLabel: "source2", unitCount: 20)
+        await fulfillment(of: [expectation2_0p])
+
+        source2.incrementCompletedUnitCount(by: 20)
+        await fulfillment(of: [expectation2_100p])
+    }
+
     func testUpdatePeriodically_estimatedTimeFinishesFirst() async {
         let outputs: [UInt64] = await withCheckedContinuation { outputsContinuation in
             Task {
