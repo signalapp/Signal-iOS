@@ -265,13 +265,19 @@ public class GroupsV2Protos {
             throw OWSAssertionError("Missing group state in response.")
         }
         return GroupV2SnapshotResponse(
-            groupSnapshot: try parse(groupProto: groupProto, downloadedAvatars: downloadedAvatars, groupV2Params: groupV2Params),
+            groupSnapshot: try parse(
+                groupProto: groupProto,
+                fetchedAlongsideChangeActionsProto: nil,
+                downloadedAvatars: downloadedAvatars,
+                groupV2Params: groupV2Params
+            ),
             groupSendEndorsements: groupResponseProto.groupSendEndorsementsResponse
         )
     }
 
     class func parse(
         groupProto: GroupsProtoGroup,
+        fetchedAlongsideChangeActionsProto: GroupsProtoGroupChangeActions?,
         downloadedAvatars: GroupV2DownloadedAvatars,
         groupV2Params: GroupV2Params
     ) throws -> GroupV2Snapshot {
@@ -300,6 +306,15 @@ public class GroupsV2Protos {
 
         var groupMembershipBuilder = GroupMembership.Builder()
 
+        /// "Add Member" change actions contain a boolean flag indicating if the
+        /// added member joined via an invite link, which is not data available
+        /// from solely a snapshot. If we fetched a change action alongisde this
+        /// snapshot, and it contains "this member joined via invite link" data,
+        /// we can use incorporate that info as we parse the snapshot.
+        let membersJoinedViaInviteLink: Set<Aci> = fetchedAlongsideChangeActionsProto.map {
+            parseMembersJoinedViaInviteLink(changeActionsProto: $0, groupV2Params: groupV2Params)
+        } ?? []
+
         for memberProto in groupProto.members {
             guard let userID = memberProto.userID else {
                 throw OWSAssertionError("Group member missing userID.")
@@ -320,7 +335,7 @@ public class GroupsV2Protos {
             groupMembershipBuilder.addFullMember(
                 aci,
                 role: role,
-                didJoinFromInviteLink: false,
+                didJoinFromInviteLink: membersJoinedViaInviteLink.contains(aci),
                 didJoinFromAcceptedJoinRequest: false
             )
 
@@ -450,6 +465,28 @@ public class GroupsV2Protos {
             isAnnouncementsOnly: isAnnouncementsOnly,
             profileKeys: profileKeys
         )
+    }
+
+    /// Returns ACIs for all members who, in the given change actions, joined
+    /// the group via the invite link.
+    private class func parseMembersJoinedViaInviteLink(
+        changeActionsProto: GroupsProtoGroupChangeActions,
+        groupV2Params: GroupV2Params
+    ) -> Set<Aci> {
+        let acis: [Aci] = changeActionsProto.addMembers.compactMap { addMemberAction in
+            guard
+                addMemberAction.joinFromInviteLink,
+                let member = addMemberAction.added,
+                let userId = member.userID,
+                let aci = try? groupV2Params.aci(for: userId)
+            else {
+                return nil
+            }
+
+            return aci
+        }
+
+        return Set(acis)
     }
 
     // MARK: -

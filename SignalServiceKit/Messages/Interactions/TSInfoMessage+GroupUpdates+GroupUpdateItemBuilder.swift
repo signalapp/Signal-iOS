@@ -1030,7 +1030,7 @@ private struct NewGroupUpdateItemBuilder {
                 )
             case .localUser:
                 if newGroupModel.didJustAddSelfViaGroupLink || newGroupMembership.didJoinFromInviteLink(forFullMember: localIdentifiers.aciAddress) {
-                    return .localUserJoined
+                    return .localUserJoinedViaInviteLink
                 } else {
                     // Displaying a message like "You added yourself to the group" isn't useful, so skip it.
                     return nil

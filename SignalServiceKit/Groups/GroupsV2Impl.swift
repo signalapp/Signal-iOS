@@ -724,12 +724,17 @@ public class GroupsV2Impl: GroupsV2 {
             changeActionsProtos: parsedChanges.compactMap(\.changeActionsProto),
             groupV2Params: groupV2Params
         )
-        let changes = try parsedChanges.map {
+        let changes = try parsedChanges.map { parsedChange in
             return GroupV2Change(
-                snapshot: try $0.groupProto.map {
-                    return try GroupsV2Protos.parse(groupProto: $0, downloadedAvatars: downloadedAvatars, groupV2Params: groupV2Params)
+                snapshot: try parsedChange.groupProto.map {
+                    return try GroupsV2Protos.parse(
+                        groupProto: $0,
+                        fetchedAlongsideChangeActionsProto: parsedChange.changeActionsProto,
+                        downloadedAvatars: downloadedAvatars,
+                        groupV2Params: groupV2Params
+                    )
                 },
-                changeActionsProto: $0.changeActionsProto,
+                changeActionsProto: parsedChange.changeActionsProto,
                 downloadedAvatars: downloadedAvatars
             )
         }

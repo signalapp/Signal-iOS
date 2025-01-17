@@ -238,12 +238,14 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     // This is probably a v2 group update.
                     Logger.warn("Ignoring message transcript for empty v2 group message.")
                 } else {
-                    fallthrough
+                    owsFailDebug("Got empty message transcript for v1 group. Who sent this?")
                 }
             case .contact:
                 Logger.warn("Ignoring message transcript for empty message.")
             }
-            return .failure(OWSAssertionError("Empty message transcript"))
+
+            struct EmptyMessageTranscriptError: Error {}
+            return .failure(EmptyMessageTranscriptError())
         }
 
         let existingFailedMessage = interactionStore.findMessage(
