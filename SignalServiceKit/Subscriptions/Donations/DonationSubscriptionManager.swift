@@ -138,27 +138,32 @@ public class DonationSubscriptionManager: NSObject {
         let request = OWSRequestFactory.subscriptionGetCurrentSubscriptionLevelRequest(subscriberID: subscriberID)
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response in
+        }.map(on: DispatchQueue.global()) { response throws -> Subscription? in
             let statusCode = response.responseStatusCode
 
-            if statusCode != 200 {
-                throw OWSAssertionError("Got bad response code \(statusCode).")
-            }
-
-            if let json = response.responseBodyJson as? [String: Any] {
-                guard let parser = ParamParser(responseObject: json) else {
-                    throw OWSAssertionError("Missing or invalid response.")
+            switch statusCode {
+            case 200:
+                guard
+                    let responseJson = response.responseBodyJson,
+                    let parser = ParamParser(responseObject: responseJson)
+                else {
+                    throw OWSAssertionError("Missing or invalid response body!")
                 }
 
                 guard let subscriptionDict: [String: Any] = try parser.optional(key: "subscription") else {
                     return nil
                 }
-                let chargeFailureDict: [String: Any]? = try? parser.optional(key: "chargeFailure")
 
-                return try Subscription(subscriptionDict: subscriptionDict,
-                                        chargeFailureDict: chargeFailureDict)
-            } else {
+                let chargeFailureDict: [String: Any]? = try parser.optional(key: "chargeFailure")
+
+                return try Subscription(
+                    subscriptionDict: subscriptionDict,
+                    chargeFailureDict: chargeFailureDict
+                )
+            case 404:
                 return nil
+            default:
+                throw OWSAssertionError("Got bad response code! \(statusCode)")
             }
         }
     }
@@ -711,9 +716,6 @@ public class DonationSubscriptionManager: NSObject {
         let params = GroupsV2Protos.serverPublicParams()
         return ClientZkReceiptOperations(serverPublicParams: params)
     }
-
-    // 3 day heartbeat interval
-    private static let heartbeatInterval: TimeInterval = 3 * kDayInterval
 
     // MARK: Heartbeat
 

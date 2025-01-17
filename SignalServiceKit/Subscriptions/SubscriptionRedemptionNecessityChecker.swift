@@ -10,6 +10,19 @@ protocol SubscriptionRedemptionNecessityCheckerStore {
     func setLastRedemptionNecessaryCheck(_ now: Date, tx: DBWriteTransaction)
 }
 
+/// Responsible for determining if we need to attempt redemption for a
+/// subscription.
+///
+/// Broadly, once per some fixed period (at the time of writing, 1x/3d) we make
+/// a series of network requests and parse/compare the results to determine if
+/// we believe the subscription has been renewed. If so, we enqueue and kick off
+/// a durable redemption job.
+///
+/// At the time of writing we have two subscription types – donations and
+/// backups – which differ in their details but which also reuse much of the
+/// same "subscriber ID" anonymization infrastructure. Consequently, the logic
+/// we use to decide if they should be redeemed is largely the same for both,
+/// and customized by blocks passed by specific callers.
 struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
     typealias ParseEntitlementExpirationBlock = (
         _ entitlements: WhoAmIRequestFactory.Responses.WhoAmI.Entitlements,
