@@ -21,6 +21,7 @@ final class MessageBackupLearnedProfileChatUpdateArchiver {
 
     func archiveLearnedProfileChatUpdate(
         infoMessage: TSInfoMessage,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(
@@ -54,14 +55,17 @@ final class MessageBackupLearnedProfileChatUpdateArchiver {
         chatUpdateMessage.update = .learnedProfileChange(learnedProfileChatUpdate)
 
         return Details.validateAndBuild(
-            author: context.recipientContext.localRecipientId,
+            interactionUniqueId: infoMessage.uniqueInteractionId,
+            author: .localUser,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: infoMessage.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdateMessage),
-            isSmsPreviouslyRestoredFromBackup: false
+            isSmsPreviouslyRestoredFromBackup: false,
+            threadInfo: threadInfo,
+            context: context.recipientContext
         )
     }
 

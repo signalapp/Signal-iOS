@@ -113,6 +113,14 @@ extension MessageBackup {
         let localRecipientId: RecipientId
         let localIdentifiers: LocalIdentifiers
 
+        var localRecipientAddress: ContactAddress {
+            return .init(
+                aci: localIdentifiers.aci,
+                pni: localIdentifiers.pni,
+                e164: E164(localIdentifiers.phoneNumber)
+            )
+        }
+
         private var currentRecipientId: RecipientId
         private var releaseNotesChannelRecipientId: RecipientId?
         private let groupIdMap = SharedMap<GroupId, RecipientId>()

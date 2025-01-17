@@ -51,10 +51,6 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
             return messageFailure(.sessionSwitchoverUpdateMissingAuthor)
         }
 
-        guard let threadRecipientId = context.recipientContext[.contact(switchedOverContactAddress)] else {
-            return messageFailure(.referencedRecipientIdMissing(.contact(switchedOverContactAddress)))
-        }
-
         var sessionSwitchoverChatUpdate = BackupProto_SessionSwitchoverChatUpdate()
         sessionSwitchoverChatUpdate.e164 = sessionSwitchoverPhoneNumber.uint64Value
 
@@ -62,14 +58,17 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
         chatUpdateMessage.update = .sessionSwitchover(sessionSwitchoverChatUpdate)
 
         return Details.validateAndBuild(
-            author: threadRecipientId,
+            interactionUniqueId: infoMessage.uniqueInteractionId,
+            author: .contact(switchedOverContactAddress),
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: infoMessage.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdateMessage),
-            isSmsPreviouslyRestoredFromBackup: false
+            isSmsPreviouslyRestoredFromBackup: false,
+            threadInfo: threadInfo,
+            context: context.recipientContext
         )
     }
 

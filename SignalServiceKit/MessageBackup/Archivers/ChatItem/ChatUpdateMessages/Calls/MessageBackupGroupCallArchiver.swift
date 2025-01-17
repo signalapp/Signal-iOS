@@ -26,6 +26,7 @@ final class MessageBackupGroupCallArchiver {
 
     func archiveGroupCall(
         _ groupCallInteraction: OWSGroupCallMessage,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         let associatedCallRecord: CallRecord? = callRecordStore.fetch(
@@ -121,14 +122,17 @@ final class MessageBackupGroupCallArchiver {
         chatUpdateMessage.update = .groupCall(groupCallUpdate)
 
         switch Details.validateAndBuild(
-            author: context.recipientContext.localRecipientId,
+            interactionUniqueId: groupCallInteraction.uniqueInteractionId,
+            author: .localUser,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: groupCallInteraction.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdateMessage),
-            isSmsPreviouslyRestoredFromBackup: false
+            isSmsPreviouslyRestoredFromBackup: false,
+            threadInfo: threadInfo,
+            context: context.recipientContext
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let details):
             if partialErrors.isEmpty {

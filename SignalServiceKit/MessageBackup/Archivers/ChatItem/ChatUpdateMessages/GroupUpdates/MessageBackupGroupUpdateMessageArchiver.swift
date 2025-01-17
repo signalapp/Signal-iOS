@@ -30,6 +30,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
 
     func archiveGroupUpdate(
         infoMessage: TSInfoMessage,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         let groupUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem]
@@ -67,6 +68,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
         return archiveGroupUpdateItems(
             groupUpdateItems,
             for: infoMessage,
+            threadInfo: threadInfo,
             context: context
         )
     }
@@ -74,6 +76,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
     func archiveGroupUpdateItems(
         _ groupUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem],
         for interaction: TSInteraction,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         var partialErrors = [ArchiveFrameError]()
@@ -98,14 +101,17 @@ final class MessageBackupGroupUpdateMessageArchiver {
         let directionlessDetails = BackupProto_ChatItem.DirectionlessMessageDetails()
 
         let detailsResult = Details.validateAndBuild(
-            author: context.recipientContext.localRecipientId,
+            interactionUniqueId: interaction.uniqueInteractionId,
+            author: .localUser,
             directionalDetails: .directionless(directionlessDetails),
             dateCreated: interaction.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdate),
-            isSmsPreviouslyRestoredFromBackup: false
+            isSmsPreviouslyRestoredFromBackup: false,
+            threadInfo: threadInfo,
+            context: context.recipientContext
         )
 
         let details: Details

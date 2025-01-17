@@ -51,10 +51,6 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
             return messageFailure(.threadMergeUpdateMissingAuthor)
         }
 
-        guard let threadRecipientId = context.recipientContext[.contact(mergedContactAddress)] else {
-            return messageFailure(.referencedRecipientIdMissing(.contact(mergedContactAddress)))
-        }
-
         var threadMergeChatUpdate = BackupProto_ThreadMergeChatUpdate()
         threadMergeChatUpdate.previousE164 = threadMergePhoneNumber.uint64Value
 
@@ -62,14 +58,17 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
         chatUpdateMessage.update = .threadMerge(threadMergeChatUpdate)
 
         return Details.validateAndBuild(
-            author: threadRecipientId,
+            interactionUniqueId: infoMessage.uniqueInteractionId,
+            author: .contact(mergedContactAddress),
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: infoMessage.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdateMessage),
-            isSmsPreviouslyRestoredFromBackup: false
+            isSmsPreviouslyRestoredFromBackup: false,
+            threadInfo: threadInfo,
+            context: context.recipientContext
         )
     }
 

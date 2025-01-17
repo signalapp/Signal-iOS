@@ -33,6 +33,7 @@ class MessageBackupTSIncomingMessageArchiver {
 
     func archiveIncomingMessage(
         _ incomingMessage: TSIncomingMessage,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         var partialErrors = [ArchiveFrameError]()
@@ -40,6 +41,7 @@ class MessageBackupTSIncomingMessageArchiver {
         let incomingMessageDetails: Details
         switch editHistoryArchiver.archiveMessageAndEditHistory(
             incomingMessage,
+            threadInfo: threadInfo,
             context: context,
             builder: self
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
@@ -94,6 +96,7 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
     func buildMessageArchiveDetails(
         message incomingMessage: EditHistoryMessageType,
         editRecord: EditRecord?,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         var partialErrors = [ArchiveFrameError]()
@@ -103,14 +106,14 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 // Incoming message authors are always ACIs, not PNIs
                 aci: Aci.parseFrom(aciString: incomingMessage.authorUUID),
                 e164: E164(incomingMessage.authorPhoneNumber)
-            )?.asArchivingAddress()
+            )
         else {
             // This is an invalid message.
             return .messageFailure([.archiveFrameError(.invalidIncomingMessageAuthor, incomingMessage.uniqueInteractionId)])
         }
-        guard let author = context.recipientContext[authorAddress] else {
+        guard let author = context.recipientContext[authorAddress.asArchivingAddress()] else {
             return .messageFailure([.archiveFrameError(
-                .referencedRecipientIdMissing(authorAddress),
+                .referencedRecipientIdMissing(authorAddress.asArchivingAddress()),
                 incomingMessage.uniqueInteractionId
             )])
         }
@@ -126,6 +129,7 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
             return errorResult
         }
 
+        let detailsAuthor: Details.AuthorAddress
         let directionalDetails: BackupProto_ChatItem.OneOf_DirectionalDetails
         if author == context.recipientContext.localRecipientId {
             // Incoming messages from self are not allowed in backups
@@ -145,12 +149,14 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
                 .incomingMessageFromSelf,
                 incomingMessage.uniqueInteractionId
             ))
+            detailsAuthor = .localUser
         } else {
             let incomingMessageDetails: BackupProto_ChatItem.IncomingMessageDetails = buildIncomingMessageDetails(
                 incomingMessage,
                 editRecord: editRecord
             )
             directionalDetails = .incoming(incomingMessageDetails)
+            detailsAuthor = .contact(authorAddress)
         }
 
         let expireStartDate: UInt64?
@@ -161,14 +167,17 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
         }
 
         let detailsResult = Details.validateAndBuild(
-            author: author,
+            interactionUniqueId: incomingMessage.uniqueInteractionId,
+            author: detailsAuthor,
             directionalDetails: directionalDetails,
             dateCreated: incomingMessage.timestamp,
             expireStartDate: expireStartDate,
             expiresInMs: UInt64(incomingMessage.expiresInSeconds) * 1000,
             isSealedSender: incomingMessage.wasReceivedByUD.negated,
             chatItemType: chatItemType,
-            isSmsPreviouslyRestoredFromBackup: incomingMessage.isSmsMessageRestoredFromBackup
+            isSmsPreviouslyRestoredFromBackup: incomingMessage.isSmsMessageRestoredFromBackup,
+            threadInfo: threadInfo,
+            context: context.recipientContext
         )
 
         let details: Details

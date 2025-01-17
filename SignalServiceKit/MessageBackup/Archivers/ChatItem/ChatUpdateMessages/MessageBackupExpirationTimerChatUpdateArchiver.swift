@@ -76,22 +76,19 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
                 dmUpdateInfoMessage: dmUpdateInfoMessage,
                 wasAuthoredByLocalUser: wasAuthoredByLocalUser,
                 updatedExpiresInMs: chatUpdateExpiresInMs,
+                threadInfo: threadInfo,
                 context: context
             )
         }
 
-        let chatUpdateAuthorRecipientId: MessageBackup.RecipientId
+        let chatUpdateAuthorAddress: Details.AuthorAddress
         if wasAuthoredByLocalUser {
-            chatUpdateAuthorRecipientId = context.recipientContext.localRecipientId
+            chatUpdateAuthorAddress = .localUser
         } else {
             guard let recipientAddress else {
                 return messageFailure(.disappearingMessageConfigUpdateMissingAuthor)
             }
-            guard let recipientId = context.recipientContext[.contact(recipientAddress)] else {
-                return messageFailure(.referencedRecipientIdMissing(.contact(recipientAddress)))
-            }
-
-            chatUpdateAuthorRecipientId = recipientId
+            chatUpdateAuthorAddress = .contact(recipientAddress)
         }
 
         var expirationTimerChatUpdate = BackupProto_ExpirationTimerChatUpdate()
@@ -101,14 +98,17 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
         chatUpdateMessage.update = .expirationTimerChange(expirationTimerChatUpdate)
 
         return Details.validateAndBuild(
-            author: chatUpdateAuthorRecipientId,
+            interactionUniqueId: infoMessage.uniqueInteractionId,
+            author: chatUpdateAuthorAddress,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: infoMessage.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdateMessage),
-            isSmsPreviouslyRestoredFromBackup: false
+            isSmsPreviouslyRestoredFromBackup: false,
+            threadInfo: threadInfo,
+            context: context.recipientContext
         )
     }
 
@@ -119,6 +119,7 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
         dmUpdateInfoMessage: OWSDisappearingConfigurationUpdateInfoMessage,
         wasAuthoredByLocalUser: Bool,
         updatedExpiresInMs: UInt64,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
 
@@ -136,6 +137,7 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
         return groupUpdateArchiver.archiveGroupUpdateItems(
             [swizzledGroupUpdateItem],
             for: dmUpdateInfoMessage,
+            threadInfo: threadInfo,
             context: context
         )
     }

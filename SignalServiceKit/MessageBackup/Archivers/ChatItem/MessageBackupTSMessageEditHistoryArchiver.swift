@@ -27,6 +27,7 @@ protocol MessageBackupTSMessageEditHistoryBuilder<EditHistoryMessageType>: AnyOb
     func buildMessageArchiveDetails(
         message: EditHistoryMessageType,
         editRecord: EditRecord?,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<Details>
 
@@ -93,6 +94,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
         Builder: MessageBackupTSMessageEditHistoryBuilder<MessageType>
     >(
         _ message: MessageType,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext,
         builder: Builder
     ) -> MessageBackup.ArchiveInteractionResult<Details>
@@ -116,6 +118,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
         switch builder.buildMessageArchiveDetails(
             message: message,
             editRecord: nil,
+            threadInfo: threadInfo,
             context: context
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let _messageDetails):
@@ -128,6 +131,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
             switch addEditHistoryArchiveDetails(
                 toLatestRevisionArchiveDetails: &messageDetails,
                 latestRevisionMessage: message,
+                threadInfo: threadInfo,
                 context: context,
                 builder: builder
             ).bubbleUp(Details.self, partialErrors: &partialErrors) {
@@ -153,6 +157,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
     >(
         toLatestRevisionArchiveDetails latestRevisionDetails: inout Details,
         latestRevisionMessage: MessageType,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext,
         builder: Builder
     ) -> MessageBackup.ArchiveInteractionResult<Void> {
@@ -191,6 +196,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
             switch builder.buildMessageArchiveDetails(
                 message: pastRevisionMessage,
                 editRecord: editRecord,
+                threadInfo: threadInfo,
                 context: context
             ) {
             case .success(let _pastRevisionDetails):

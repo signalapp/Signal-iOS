@@ -33,6 +33,7 @@ class MessageBackupTSOutgoingMessageArchiver {
 
     func archiveOutgoingMessage(
         _ outgoingMessage: TSOutgoingMessage,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         var partialErrors = [ArchiveFrameError]()
@@ -40,6 +41,7 @@ class MessageBackupTSOutgoingMessageArchiver {
         let outgoingMessageDetails: Details
         switch editHistoryArchiver.archiveMessageAndEditHistory(
             outgoingMessage,
+            threadInfo: threadInfo,
             context: context,
             builder: self
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
@@ -134,6 +136,7 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
     func buildMessageArchiveDetails(
         message outgoingMessage: EditHistoryMessageType,
         editRecord: EditRecord?,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         var partialErrors = [ArchiveFrameError]()
@@ -170,14 +173,17 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
         }
 
         let detailsResult = Details.validateAndBuild(
-            author: context.recipientContext.localRecipientId,
+            interactionUniqueId: outgoingMessage.uniqueInteractionId,
+            author: .localUser,
             directionalDetails: .outgoing(outgoingDetails),
             dateCreated: outgoingMessage.timestamp,
             expireStartDate: expireStartDate,
             expiresInMs: UInt64(outgoingMessage.expiresInSeconds) * 1000,
             isSealedSender: wasAnySendSealedSender,
             chatItemType: chatItemType,
-            isSmsPreviouslyRestoredFromBackup: outgoingMessage.isSmsMessageRestoredFromBackup
+            isSmsPreviouslyRestoredFromBackup: outgoingMessage.isSmsMessageRestoredFromBackup,
+            threadInfo: threadInfo,
+            context: context.recipientContext
         )
 
         let details: Details

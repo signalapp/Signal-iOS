@@ -63,6 +63,11 @@ extension MessageBackup {
             pastRevisions.append(pastRevision)
         }
 
+        public enum AuthorAddress {
+            case localUser
+            case contact(MessageBackup.ContactAddress)
+        }
+
         private init(
             author: RecipientId,
             directionalDetails: DirectionalDetails,
@@ -86,7 +91,8 @@ extension MessageBackup {
         }
 
         static func validateAndBuild(
-            author: RecipientId,
+            interactionUniqueId: InteractionUniqueId,
+            author: AuthorAddress,
             directionalDetails: DirectionalDetails,
             dateCreated: UInt64,
             expireStartDate: UInt64?,
@@ -94,8 +100,24 @@ extension MessageBackup {
             isSealedSender: Bool,
             chatItemType: ChatItemType,
             isSmsPreviouslyRestoredFromBackup: Bool,
-            pastRevisions: [InteractionArchiveDetails] = []
+            pastRevisions: [InteractionArchiveDetails] = [],
+            threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
+            context: MessageBackup.RecipientArchivingContext
         ) -> MessageBackup.ArchiveInteractionResult<Self> {
+            var authorRecipientId: RecipientId
+            switch author {
+            case .localUser:
+                authorRecipientId = context.localRecipientId
+            case .contact(let contactAddress):
+                guard let recipientId = context[.contact(contactAddress)] else {
+                    return .messageFailure([.archiveFrameError(
+                        .referencedRecipientIdMissing(.contact(contactAddress)),
+                        interactionUniqueId
+                    )])
+                }
+                authorRecipientId = recipientId
+            }
+
             var partialErrors = [MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>]()
             for timestamp in [dateCreated, expireStartDate, expiresInMs] {
                 switch MessageBackup.Timestamps.validateTimestamp(timestamp).bubbleUp(Self.self, partialErrors: &partialErrors) {
@@ -106,8 +128,37 @@ extension MessageBackup {
                 }
             }
 
+            switch (threadInfo, author) {
+            case (.groupThread, _), (.contactThread, .localUser):
+                break
+            case (.contactThread(let threadContactAddress), .contact(let authorAddress)):
+                let threadRecipientId = threadContactAddress.map { context[.contact($0)] } ?? nil
+
+                // If this message is in a contact thread, the author must either
+                // be the local user or that contact.
+                if let threadRecipientId, threadRecipientId != authorRecipientId {
+                    // There's a mismatch; the author of the message
+                    // isn't in the 1:1 chat. This can happen if there
+                    // was a chat before the existence of ACIs where
+                    // the contact later changed number.
+                    if authorAddress.aci != nil {
+                        // This is an unexpected case, fail.
+                        // The only known scenario involves an aci-less
+                        // address and a change number.
+                        partialErrors.append(.archiveFrameError(
+                            .messageFromOtherRecipientInContactThread,
+                            interactionUniqueId
+                        ))
+                    } else {
+                        // The change number case; we recover from this by swizzling
+                        // the author on export to the chat-level author.
+                        authorRecipientId = threadRecipientId
+                    }
+                }
+            }
+
             let details = InteractionArchiveDetails(
-                author: author,
+                author: authorRecipientId,
                 directionalDetails: directionalDetails,
                 dateCreated: dateCreated,
                 expireStartDate: expireStartDate,

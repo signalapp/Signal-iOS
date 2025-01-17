@@ -55,7 +55,7 @@ extension MessageBackup {
 
         // MARK: - Non-Failable Initializers
 
-        public init(aci: Aci, pni: Pni, e164: E164) {
+        public init(aci: Aci, pni: Pni?, e164: E164?) {
             self.aci = aci
             self.pni = pni
             self.e164 = e164

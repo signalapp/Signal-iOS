@@ -196,26 +196,31 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         } else if let incomingMessage = interaction as? TSIncomingMessage {
             archiveInteractionResult = incomingMessageArchiver.archiveIncomingMessage(
                 incomingMessage,
+                threadInfo: threadInfo,
                 context: context
             )
         } else if let outgoingMessage = interaction as? TSOutgoingMessage {
             archiveInteractionResult = outgoingMessageArchiver.archiveOutgoingMessage(
                 outgoingMessage,
+                threadInfo: threadInfo,
                 context: context
             )
         } else if let individualCallInteraction = interaction as? TSCall {
             archiveInteractionResult = chatUpdateMessageArchiver.archiveIndividualCall(
                 individualCallInteraction,
+                threadInfo: threadInfo,
                 context: context
             )
         } else if let groupCallInteraction = interaction as? OWSGroupCallMessage {
             archiveInteractionResult = chatUpdateMessageArchiver.archiveGroupCall(
                 groupCallInteraction,
+                threadInfo: threadInfo,
                 context: context
             )
         } else if let errorMessage = interaction as? TSErrorMessage {
             archiveInteractionResult = chatUpdateMessageArchiver.archiveErrorMessage(
                 errorMessage,
+                threadInfo: threadInfo,
                 context: context
             )
         } else if let infoMessage = interaction as? TSInfoMessage {

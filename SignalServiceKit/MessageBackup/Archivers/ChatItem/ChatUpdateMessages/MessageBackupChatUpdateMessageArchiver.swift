@@ -68,31 +68,37 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
 
     func archiveIndividualCall(
         _ individualCallInteraction: TSCall,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         return individualCallArchiver.archiveIndividualCall(
             individualCallInteraction,
+            threadInfo: threadInfo,
             context: context
         )
     }
 
     func archiveGroupCall(
         _ groupCallInteraction: OWSGroupCallMessage,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         return groupCallArchiver.archiveGroupCall(
             groupCallInteraction,
+            threadInfo: threadInfo,
             context: context
         )
     }
 
     func archiveErrorMessage(
         _ errorMessage: TSErrorMessage,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         /// All `TSErrorMessage`s map to simple chat updates.
         return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
             errorMessage: errorMessage,
+            threadInfo: threadInfo,
             context: context
         )
     }
@@ -111,6 +117,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
         case .precomputed, .modelDiff, .newGroup:
             return groupUpdateMessageArchiver.archiveGroupUpdate(
                 infoMessage: infoMessage,
+                threadInfo: threadInfo,
                 context: context
             )
         case .nonGroupUpdate:
@@ -161,6 +168,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
         case .profileUpdate:
             return profileChangeChatUpdateArchiver.archive(
                 infoMessage: infoMessage,
+                threadInfo: threadInfo,
                 context: context
             )
         case .typeDisappearingMessagesUpdate:
@@ -184,6 +192,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
         case .learnedProfileName:
             return learnedProfileChatUpdateArchiver.archiveLearnedProfileChatUpdate(
                 infoMessage: infoMessage,
+                threadInfo: threadInfo,
                 context: context
             )
         }

@@ -21,6 +21,7 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
 
     func archive(
         infoMessage: TSInfoMessage,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(
@@ -38,10 +39,6 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
             return messageFailure(.profileChangeUpdateMissingAuthor)
         }
 
-        guard let profileRecipientId = context.recipientContext[.contact(profileAddress)] else {
-            return messageFailure(.referencedRecipientIdMissing(.contact(profileAddress)))
-        }
-
         guard
             let oldProfileName: String = infoMessage.profileChangesOldFullName,
             let newProfileName: String = infoMessage.profileChangesNewFullName
@@ -57,14 +54,17 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
         chatUpdateMessage.update = .profileChange(profileChangeChatUpdate)
 
         return Details.validateAndBuild(
-            author: profileRecipientId,
+            interactionUniqueId: infoMessage.uniqueInteractionId,
+            author: .contact(profileAddress),
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: infoMessage.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdateMessage),
-            isSmsPreviouslyRestoredFromBackup: false
+            isSmsPreviouslyRestoredFromBackup: false,
+            threadInfo: threadInfo,
+            context: context.recipientContext
         )
     }
 

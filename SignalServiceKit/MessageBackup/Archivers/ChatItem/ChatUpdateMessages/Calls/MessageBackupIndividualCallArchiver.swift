@@ -26,6 +26,7 @@ final class MessageBackupIndividualCallArchiver {
 
     func archiveIndividualCall(
         _ individualCallInteraction: TSCall,
+        threadInfo: MessageBackup.ChatArchivingContext.CachedThreadInfo,
         context: MessageBackup.ChatArchivingContext
     ) -> ArchiveChatUpdateMessageResult {
         let associatedCallRecord: CallRecord? = callRecordStore.fetch(
@@ -122,14 +123,17 @@ final class MessageBackupIndividualCallArchiver {
         chatUpdateMessage.update = .individualCall(individualCallUpdate)
 
         switch Details.validateAndBuild(
-            author: context.recipientContext.localRecipientId,
+            interactionUniqueId: individualCallInteraction.uniqueInteractionId,
+            author: .localUser,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             dateCreated: individualCallInteraction.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
             chatItemType: .updateMessage(chatUpdateMessage),
-            isSmsPreviouslyRestoredFromBackup: false
+            isSmsPreviouslyRestoredFromBackup: false,
+            threadInfo: threadInfo,
+            context: context.recipientContext
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let details):
             if partialErrors.isEmpty {

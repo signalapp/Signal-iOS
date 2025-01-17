@@ -49,6 +49,10 @@ extension MessageBackup {
             /// A contact thread has an invalid or missing address information, causing the
             /// thread to be skipped.
             case contactThreadMissingAddress
+            /// There was a message in a contact thread with a recipient that was not self
+            /// or the contact in the thread. There is an allowed case of this involving change
+            /// number; to not be an error the author must not have an ACI.
+            case messageFromOtherRecipientInContactThread
 
             /// Custom chat colors should never have light/dark theme. The UI
             /// disallows it and the proto cannot represent it.
@@ -267,6 +271,7 @@ extension MessageBackup {
                     .fileIOError,
                     .groupMasterKeyError,
                     .contactThreadMissingAddress,
+                    .messageFromOtherRecipientInContactThread,
                     .themedCustomChatColor,
                     .unknownWallpaper,
                     .unableToFetchRecipientIdentity,
@@ -338,6 +343,7 @@ extension MessageBackup {
                     .unableToFetchRecipientIdentity,
                     .fileIOError,
                     .groupMasterKeyError,
+                    .messageFromOtherRecipientInContactThread,
                     .themedCustomChatColor,
                     .unknownWallpaper,
                     .distributionListMissingDistributionId,
