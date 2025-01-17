@@ -288,7 +288,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>adler2 2.0.0, anyhow 1.0.88, anyhow 1.0.94, async-trait 0.1.82, atomic-waker 1.1.2, curve25519-dalek-derive 0.1.1, displaydoc 0.2.5, dyn-clone 1.0.17, fastrand 2.1.1, fastrand 2.2.0, home 0.5.9, itoa 1.0.11, itoa 1.0.14, linkme 0.3.28, linkme-impl 0.3.28, linux-raw-sys 0.4.14, minimal-lexical 0.2.1, num_enum 0.6.1, num_enum 0.7.3, num_enum_derive 0.6.1, num_enum_derive 0.7.3, once_cell 1.19.0, once_cell 1.20.2, paste 1.0.15, pin-project 1.1.5, pin-project-internal 1.1.5, pin-project-lite 0.2.14, pin-project-lite 0.2.15, prettyplease 0.2.22, prettyplease 0.2.25, proc-macro-crate 1.3.1, proc-macro-crate 3.2.0, proc-macro2 1.0.86, proc-macro2 1.0.92, quote 1.0.37, rustc-hash 1.1.0, rustix 0.38.37, rustix 0.38.41, rustversion 1.0.17, semver 1.0.23, send_wrapper 0.6.0, serde 1.0.210, serde 1.0.215, serde_derive 1.0.210, serde_derive 1.0.215, serde_json 1.0.128, serde_json 1.0.133, syn 1.0.109, syn 2.0.77, syn 2.0.90, syn-mid 0.6.0, thiserror 1.0.63, thiserror 1.0.69, thiserror-impl 1.0.63, thiserror-impl 1.0.69, unicode-ident 1.0.13, unicode-ident 1.0.14, utf-8 0.7.6</string>
+			<string>adler2 2.0.0, anyhow 1.0.88, anyhow 1.0.94, async-trait 0.1.82, atomic-waker 1.1.2, curve25519-dalek-derive 0.1.1, displaydoc 0.2.5, dyn-clone 1.0.17, fastrand 2.1.1, fastrand 2.2.0, home 0.5.9, itoa 1.0.11, itoa 1.0.14, linkme 0.3.28, linkme-impl 0.3.28, linux-raw-sys 0.4.14, minimal-lexical 0.2.1, num_enum 0.7.3, num_enum_derive 0.7.3, once_cell 1.19.0, once_cell 1.20.2, paste 1.0.15, pin-project 1.1.5, pin-project-internal 1.1.5, pin-project-lite 0.2.14, pin-project-lite 0.2.15, prettyplease 0.2.22, prettyplease 0.2.25, proc-macro-crate 1.3.1, proc-macro-crate 3.2.0, proc-macro2 1.0.86, proc-macro2 1.0.92, quote 1.0.37, rustc-hash 1.1.0, rustix 0.38.37, rustix 0.38.41, rustversion 1.0.17, semver 1.0.23, send_wrapper 0.6.0, serde 1.0.210, serde 1.0.215, serde_derive 1.0.210, serde_derive 1.0.215, serde_json 1.0.128, serde_json 1.0.133, syn 1.0.109, syn 2.0.77, syn 2.0.90, syn-mid 0.6.0, thiserror 1.0.63, thiserror 1.0.69, thiserror-impl 1.0.63, thiserror-impl 1.0.69, unicode-ident 1.0.13, unicode-ident 1.0.14, utf-8 0.7.6</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -1099,7 +1099,7 @@ You should also get your employer (if you work as a programmer) or school, if an
 			<key>License</key>
 			<string>GNU Affero General Public License v3.0</string>
 			<key>Title</key>
-			<string>attest, device-transfer, libsignal-account-keys, libsignal-bridge, libsignal-bridge-macros, libsignal-bridge-testing, libsignal-bridge-types, libsignal-core, libsignal-core 0.1.0, libsignal-ffi, libsignal-jni, libsignal-jni-testing, libsignal-keytrans, libsignal-message-backup, libsignal-message-backup-macros, libsignal-net, libsignal-net-infra, libsignal-node, libsignal-protocol, libsignal-svr3, mrp 2.49.2, partial-default-derive 0.1.0, poksho, protobuf 2.49.2, regex-aot 0.1.0, ringrtc 2.49.2, signal-crypto, signal-media, signal-neon-futures, signal-neon-futures-tests, usernames, zkcredential, zkgroup</string>
+			<string>attest, device-transfer, libsignal-account-keys, libsignal-account-keys 0.1.0, libsignal-bridge, libsignal-bridge-macros, libsignal-bridge-testing, libsignal-bridge-types, libsignal-core, libsignal-core 0.1.0, libsignal-ffi, libsignal-jni, libsignal-jni-testing, libsignal-keytrans, libsignal-message-backup, libsignal-message-backup-macros, libsignal-net, libsignal-net-infra, libsignal-node, libsignal-protocol, libsignal-svr3, mrp 2.49.3, partial-default-derive 0.1.0, poksho, protobuf 2.49.3, regex-aot 0.1.0, ringrtc 2.49.3, signal-crypto, signal-media, signal-neon-futures, signal-neon-futures-tests, usernames, zkcredential, zkgroup</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -3054,7 +3054,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 			<key>License</key>
 			<string>ISC License</string>
 			<key>Title</key>
-			<string>cubeb 0.18.0, cubeb-core 0.18.0, cubeb-sys 0.18.0</string>
+			<string>cubeb 0.20.0, cubeb-core 0.20.0, cubeb-sys 0.20.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -10246,6 +10246,10 @@ DEALINGS IN THE SOFTWARE.
 
    END OF TERMS AND CONDITIONS
 
+------------------
+
+Files: * except those files noted below
+
    Copyright (c) 2017, The Android Open Source Project
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -10257,6 +10261,10 @@ DEALINGS IN THE SOFTWARE.
    See the License for the specific language governing permissions and
    limitations under the License.
 
+
+------------------
+
+Files: src/trace_processor/perfetto_sql/stdlib/chromium/*, protos/third_party/chromium/*, test/trace_processor/diff_tests/stdlib/chrome/*
 
    Copyright 2015 The Chromium Authors
 
@@ -10285,6 +10293,17 @@ DEALINGS IN THE SOFTWARE.
    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+------------------
+
+Files: src/trace_processor/perfetto_sql/preprocessor/preprocessor_grammar.{c, h}
+
+The author disclaims copyright to this source code. In place of a legal notice, here is a blessing:
+
+May you do good and not evil.
+May you find forgiveness for yourself and forgive others.
+May you share freely, never taking more than you give.
 
 </string>
 			<key>Title</key>
