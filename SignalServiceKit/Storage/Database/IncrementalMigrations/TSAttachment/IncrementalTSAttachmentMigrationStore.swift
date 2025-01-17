@@ -36,12 +36,15 @@ public class IncrementalTSAttachmentMigrationStore {
     /// Value should be incremented when we apply a forward fix to the TSAttachment migration.
     /// When this value changes, users who had previously failed to migrate and are now skipping the migration
     /// will attempt to migrate once again.
-    private static let currentMigrationVersion = 1
+    /// v1 = initial launch
+    /// v2 = bug where we'd count migrations that got interrupted by app termination before finishing one batch
+    ///    as "failed"; we increment the number so they retry now that this is resolved.
+    private static let currentMigrationVersion = 2
     /// NOTE: in reality one more attempt than this number may happen before we give up. This is because
     /// we count an attempt as successful if it completes a single batch; if a subsequent batch fails the attempt
     /// was still counted as success so we will try again (with the failing batch now being the first batch) and
     /// a second failure in the now-first batch will count as a failed attempt and prevent future attempts.
-    private static let maxNumAttemptsBeforeSkipping = 1
+    private static let maxNumAttemptsBeforeSkipping = 2
     private static let lastMigrationAttemptVersionKey = "TSAttachmentMigration_lastMigrationAttemptVersionKey"
     private static let migrationIncompleteAttemptCountKey = "TSAttachmentMigration_migrationIncompleteAttemptCountKey"
     private static let didReportFailureInUIKey = "TSAttachmentMigration_didReportFailureInUIKey"
@@ -71,6 +74,15 @@ public class IncrementalTSAttachmentMigrationStore {
     public func didSucceedMigrationBatch() {
         userDefaults.set(0, forKey: Self.migrationIncompleteAttemptCountKey)
         userDefaults.set(false, forKey: Self.didReportFailureInUIKey)
+    }
+
+    public func didEarlyExitBeforeAttemptingBatch() {
+        let prevIncompleteAttemptCount = userDefaults.integer(forKey: Self.migrationIncompleteAttemptCountKey)
+        guard prevIncompleteAttemptCount > 0 else {
+            owsFailDebug("Not marked as making an attempt")
+            return
+        }
+        userDefaults.set(prevIncompleteAttemptCount - 1, forKey: Self.migrationIncompleteAttemptCountKey)
     }
 
     public func shouldReportFailureInUI() -> Bool {
