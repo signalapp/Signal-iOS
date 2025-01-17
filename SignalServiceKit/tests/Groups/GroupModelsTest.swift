@@ -169,8 +169,7 @@ class GroupModelsTest: SSKBaseTest {
                 isJoinRequestPlaceholder: isJoinRequestPlaceholder,
                 wasJustMigrated: false,
                 didJustAddSelfViaGroupLink: false,
-                addedByAddress: nil,
-                droppedMembers: []
+                addedByAddress: nil
             )
 
             return try! NSKeyedArchiver.archivedData(
@@ -225,7 +224,6 @@ class GroupModelsTest: SSKBaseTest {
             XCTAssertFalse(groupModel.wasJustMigrated)
             XCTAssertFalse(groupModel.didJustAddSelfViaGroupLink)
             XCTAssertNil(groupModel.addedByAddress)
-            XCTAssertEqual(groupModel.droppedMembers, [])
         }
     }
 }

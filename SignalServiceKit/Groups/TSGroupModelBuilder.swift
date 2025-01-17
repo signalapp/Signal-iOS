@@ -26,7 +26,6 @@ public struct TSGroupModelBuilder {
     public var addedByAddress: SignalServiceAddress?
     public var wasJustMigrated: Bool = false
     public var didJustAddSelfViaGroupLink: Bool = false
-    public var droppedMembers = [SignalServiceAddress]()
 
     public init() {}
 
@@ -51,19 +50,7 @@ public struct TSGroupModelBuilder {
     }
 
     static func builderForSnapshot(groupV2Snapshot: GroupV2Snapshot, transaction: SDSAnyWriteTransaction) throws -> TSGroupModelBuilder {
-        var builder = try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot)
-
-        guard let groupId = builder.groupId else {
-            owsFailDebug("Missing groupId.")
-            return builder
-        }
-        guard let oldGroupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-            // Group not yet in db.
-            return builder
-        }
-        let oldGroupModel = oldGroupThread.groupModel
-        builder.droppedMembers = oldGroupModel.asBuilder.droppedMembers
-        return builder
+        return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot)
     }
 
     public mutating func apply(options: TSGroupModelOptions) {
@@ -195,8 +182,6 @@ public struct TSGroupModelBuilder {
             // Don't set avatarUrlPath unless we have avatarData.
             let avatarUrlPath = avatarData != nil ? self.avatarUrlPath : nil
 
-            // Update droppedMembers, removing any current members.
-            let droppedMembers = Array(Set(self.droppedMembers).subtracting(groupMembership.allMembersOfAnyKind))
             return TSGroupModelV2(
                 groupId: groupId,
                 name: name,
@@ -212,8 +197,7 @@ public struct TSGroupModelBuilder {
                 isJoinRequestPlaceholder: isJoinRequestPlaceholder,
                 wasJustMigrated: wasJustMigrated,
                 didJustAddSelfViaGroupLink: didJustAddSelfViaGroupLink,
-                addedByAddress: addedByAddress,
-                droppedMembers: droppedMembers
+                addedByAddress: addedByAddress
             )
         }
     }
@@ -258,7 +242,6 @@ public extension TSGroupModel {
             builder.avatarUrlPath = v2.avatarUrlPath
             builder.inviteLinkPassword = v2.inviteLinkPassword
             builder.isAnnouncementsOnly = v2.isAnnouncementsOnly
-            builder.droppedMembers = v2.droppedMembers
             builder.descriptionText = v2.descriptionText
 
             // Do not copy transient properties:

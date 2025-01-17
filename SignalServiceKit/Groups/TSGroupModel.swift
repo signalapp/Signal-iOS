@@ -45,8 +45,6 @@ public class TSGroupModelV2: TSGroupModel {
     @objc
     public var didJustAddSelfViaGroupLink: Bool = false
     @objc
-    public var droppedMembers = [SignalServiceAddress]()
-    @objc
     public var descriptionText: String?
 
     @objc
@@ -64,8 +62,7 @@ public class TSGroupModelV2: TSGroupModel {
                 isJoinRequestPlaceholder: Bool,
                 wasJustMigrated: Bool,
                 didJustAddSelfViaGroupLink: Bool,
-                addedByAddress: SignalServiceAddress?,
-                droppedMembers: [SignalServiceAddress]) {
+                addedByAddress: SignalServiceAddress?) {
         self.descriptionText = descriptionText
         self.membership = groupMembership
         self.secretParamsData = secretParamsData
@@ -77,7 +74,6 @@ public class TSGroupModelV2: TSGroupModel {
         self.isJoinRequestPlaceholder = isJoinRequestPlaceholder
         self.wasJustMigrated = wasJustMigrated
         self.didJustAddSelfViaGroupLink = didJustAddSelfViaGroupLink
-        self.droppedMembers = droppedMembers
 
         super.init(groupId: groupId,
                    name: name,
@@ -197,7 +193,6 @@ public class TSGroupModelV2: TSGroupModel {
         result += "isJoinRequestPlaceholder: \(isJoinRequestPlaceholder),\n"
         result += "wasJustMigrated: \(wasJustMigrated),\n"
         result += "didJustAddSelfViaGroupLink: \(didJustAddSelfViaGroupLink),\n"
-        result += "droppedMembers: \(droppedMembers),\n"
         result += "descriptionText: \(String(describing: descriptionText)),\n"
         result += "]"
         return result
@@ -257,13 +252,6 @@ public extension TSGroupModel {
             return false
         }
         return groupModelV2.didJustAddSelfViaGroupLink
-    }
-
-    var getDroppedMembers: [SignalServiceAddress] {
-        guard let groupModelV2 = self as? TSGroupModelV2 else {
-            return []
-        }
-        return groupModelV2.droppedMembers
     }
 }
 

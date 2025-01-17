@@ -385,10 +385,7 @@ public final class ConversationViewController: OWSViewController {
         self.updateNavigationBarSubtitleLabel()
         _ = self.autoLoadMoreIfNecessary()
         if !DebugFlags.reduceLogChatter {
-            var addresses = Set(thread.recipientAddressesWithSneakyTransaction)
-            if let groupThread = thread as? TSGroupThread, let groupModel = groupThread.groupModel as? TSGroupModelV2 {
-                addresses.formUnion(groupModel.droppedMembers)
-            }
+            let addresses = Set(thread.recipientAddressesWithSneakyTransaction)
             let serviceIds = addresses.compactMap { $0.serviceId }
             Task {
                 let profileFetcher = SSKEnvironment.shared.profileFetcherRef

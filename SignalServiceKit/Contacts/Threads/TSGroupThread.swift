@@ -172,8 +172,7 @@ extension TSGroupThread {
                 isJoinRequestPlaceholder: false,
                 wasJustMigrated: false,
                 didJustAddSelfViaGroupLink: false,
-                addedByAddress: nil,
-                droppedMembers: []
+                addedByAddress: nil
             )
         )
         groupThread.clearRowId()
