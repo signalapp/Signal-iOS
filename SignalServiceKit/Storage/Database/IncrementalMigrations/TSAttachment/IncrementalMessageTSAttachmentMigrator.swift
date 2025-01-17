@@ -168,13 +168,15 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
             return
         }
 
+        let delayMs = remoteConfigManager.currentConfig().tsAttachmentMigrationBatchDelayMs
+
         store.willAttemptMigrationUntilFinished()
 
         var batchCount = 0
         var didFinish = false
         while !didFinish {
             // Add a small delay between each batch to avoid locking the db write queue.
-            try? await Task.sleep(nanoseconds: 50 * NSEC_PER_MSEC)
+            try? await Task.sleep(nanoseconds: delayMs * NSEC_PER_MSEC)
 
             guard appContext.isMainAppAndActive else {
                 // If the main app goes into the background, we shouldn't be
