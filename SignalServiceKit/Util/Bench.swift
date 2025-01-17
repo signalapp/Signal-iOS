@@ -23,15 +23,13 @@ import Foundation
 private func BenchAsync(title: String, logInProduction: Bool = false, block: (@escaping () -> Void) -> Void) {
     let startTime = CACurrentMediaTime()
     block {
-        if !DebugFlags.reduceLogChatter {
-            let timeElapsed = CACurrentMediaTime() - startTime
-            let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
-            let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
-            if logInProduction {
-                Logger.info(logMessage)
-            } else {
-                Logger.debug(logMessage)
-            }
+        let timeElapsed = CACurrentMediaTime() - startTime
+        let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
+        let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
+        if logInProduction {
+            Logger.info(logMessage)
+        } else {
+            Logger.debug(logMessage)
         }
     }
 }
@@ -56,14 +54,12 @@ public func Bench<T>(title: String, logIfLongerThan intervalLimit: TimeInterval 
     let timeElapsed = CACurrentMediaTime() - startTime
 
     if timeElapsed > intervalLimit {
-        if !DebugFlags.reduceLogChatter {
-            let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
-            let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
-            if logInProduction {
-                Logger.info(logMessage)
-            } else {
-                Logger.debug(logMessage)
-            }
+        let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
+        let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
+        if logInProduction {
+            Logger.info(logMessage)
+        } else {
+            Logger.debug(logMessage)
         }
     }
     return value

@@ -384,17 +384,16 @@ public final class ConversationViewController: OWSViewController {
         self.startReadTimer()
         self.updateNavigationBarSubtitleLabel()
         _ = self.autoLoadMoreIfNecessary()
-        if !DebugFlags.reduceLogChatter {
-            let addresses = Set(thread.recipientAddressesWithSneakyTransaction)
-            let serviceIds = addresses.compactMap { $0.serviceId }
-            Task {
-                let profileFetcher = SSKEnvironment.shared.profileFetcherRef
-                for serviceId in serviceIds {
-                    _ = try? await profileFetcher.fetchProfile(for: serviceId, options: [.opportunistic])
-                }
+
+        let addresses = Set(thread.recipientAddressesWithSneakyTransaction)
+        let serviceIds = addresses.compactMap { $0.serviceId }
+        Task {
+            let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+            for serviceId in serviceIds {
+                _ = try? await profileFetcher.fetchProfile(for: serviceId, options: [.opportunistic])
             }
-            self.updateV2GroupIfNecessary()
         }
+        self.updateV2GroupIfNecessary()
 
         if !self.viewHasEverAppeared {
             // To minimize time to initial apearance, we initially disable prefetching, but then
