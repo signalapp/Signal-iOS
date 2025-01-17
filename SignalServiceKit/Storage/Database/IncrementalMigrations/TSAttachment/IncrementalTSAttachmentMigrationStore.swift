@@ -46,12 +46,17 @@ public class IncrementalTSAttachmentMigrationStore {
     /// a second failure in the now-first batch will count as a failed attempt and prevent future attempts.
     private static let maxNumAttemptsBeforeSkipping = 2
     private static let lastMigrationAttemptVersionKey = "TSAttachmentMigration_lastMigrationAttemptVersionKey"
+    private static let lastMigrationAttemptDateKey = "TSAttachmentMigration_lastMigrationAttemptDateKey"
     private static let migrationIncompleteAttemptCountKey = "TSAttachmentMigration_migrationIncompleteAttemptCountKey"
     private static let didReportFailureInUIKey = "TSAttachmentMigration_didReportFailureInUIKey"
 
     public func shouldAttemptMigrationUntilFinished() -> Bool {
         let lastAttemptVersion = userDefaults.integer(forKey: Self.lastMigrationAttemptVersionKey)
         if lastAttemptVersion != Self.currentMigrationVersion {
+            return true
+        }
+        let lastAttemptDate: Date? = userDefaults.object(forKey: Self.lastMigrationAttemptDateKey) as? Date
+        if Date().timeIntervalSince((lastAttemptDate ?? .distantPast)) >= kWeekInterval {
             return true
         }
         let incompleteAttemptCount = userDefaults.integer(forKey: Self.migrationIncompleteAttemptCountKey)
@@ -67,12 +72,14 @@ public class IncrementalTSAttachmentMigrationStore {
             prevIncompleteAttemptCount = 0
         }
         userDefaults.set(Self.currentMigrationVersion, forKey: Self.lastMigrationAttemptVersionKey)
+        userDefaults.set(Date(), forKey: Self.lastMigrationAttemptDateKey)
         userDefaults.set(prevIncompleteAttemptCount + 1, forKey: Self.migrationIncompleteAttemptCountKey)
         userDefaults.set(false, forKey: Self.didReportFailureInUIKey)
     }
 
     public func didSucceedMigrationBatch() {
         userDefaults.set(0, forKey: Self.migrationIncompleteAttemptCountKey)
+        userDefaults.set(Date(), forKey: Self.lastMigrationAttemptDateKey)
         userDefaults.set(false, forKey: Self.didReportFailureInUIKey)
     }
 
