@@ -173,14 +173,20 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
         var batchCount = 0
         var didFinish = false
         while !didFinish {
+            // Add a small delay between each batch to avoid locking the db write queue.
+            try? await Task.sleep(nanoseconds: 50 * NSEC_PER_MSEC)
+
             guard appContext.isMainAppAndActive else {
                 // If the main app goes into the background, we shouldn't be
                 // grabbing the sql write lock. Stop.
                 Logger.info("Stopping when backgrounding app after \(batchCount) batches")
+                if batchCount == 0 {
+                    // If we exit before doing a single batch, don't count it as a failure.
+                    store.didEarlyExitBeforeAttemptingBatch()
+                }
                 return
             }
-            // Add a small delay between each batch to avoid locking the db write queue.
-            try? await Task.sleep(nanoseconds: 500 * NSEC_PER_MSEC)
+
             // Only migrate one message at a time so we don't hold the write lock
             // too long while doing file i/o.
             didFinish = await self._runNextBatch(messageBatchSize: 1, errorLogger: { _ in })
