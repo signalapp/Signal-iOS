@@ -141,6 +141,10 @@ public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
     public func redactMessage(_ logString: String) -> String {
         var logString = logString
 
+        if logString.contains("/Attachments/") {
+            return "[USER_PATH]"
+        }
+
         for replacement in replacements {
             logString = replacement.regex.stringByReplacingMatches(
                 in: logString,
