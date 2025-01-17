@@ -207,6 +207,10 @@ public class RemoteConfig {
         return getUIntValue(forFlag: .maxAttachmentDownloadSizeBytes, defaultValue: 100 * 1024 * 1024)
     }
 
+    public var tsAttachmentMigrationBatchDelayMs: UInt64 {
+        getUInt64Value(forFlag: .tsAttachmentMigrationBatchDelayMs, defaultValue: 50)
+    }
+
     // Hardcoded value (but lives alongside `maxAttachmentDownloadSizeBytes`).
     public var maxMediaTierThumbnailDownloadSizeBytes: UInt = 1024 * 8
 
@@ -271,6 +275,16 @@ public class RemoteConfig {
         forFlag flag: ValueFlag,
         defaultValue: UInt32
     ) -> UInt32 {
+        getStringConvertibleValue(
+            forFlag: flag,
+            defaultValue: defaultValue
+        )
+    }
+
+    private func getUInt64Value(
+        forFlag flag: ValueFlag,
+        defaultValue: UInt64
+    ) -> UInt64 {
         getStringConvertibleValue(
             forFlag: flag,
             defaultValue: defaultValue
@@ -525,6 +539,7 @@ private enum ValueFlag: String, FlagType {
     case replaceableInteractionExpiration = "ios.replaceableInteractionExpiration"
     case sepaEnabledRegions = "global.donations.sepaEnabledRegions"
     case standardMediaQualityLevel = "ios.standardMediaQualityLevel"
+    case tsAttachmentMigrationBatchDelayMs = "ios.tsAttachmentMigrationBatchDelayMs"
 
     var isSticky: Bool {
         switch self {
@@ -550,6 +565,7 @@ private enum ValueFlag: String, FlagType {
         case .replaceableInteractionExpiration: false
         case .sepaEnabledRegions: false
         case .standardMediaQualityLevel: false
+        case .tsAttachmentMigrationBatchDelayMs: false
         }
     }
 
@@ -577,6 +593,7 @@ private enum ValueFlag: String, FlagType {
         case .replaceableInteractionExpiration: false
         case .sepaEnabledRegions: true
         case .standardMediaQualityLevel: false
+        case .tsAttachmentMigrationBatchDelayMs: true
         }
     }
 }
