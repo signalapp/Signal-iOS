@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class OWSRequestFactoryTest: SSKBaseTest {
+class OWSRequestFactoryTest: XCTestCase {
     private func getUdAccessKey() -> SMKUDAccessKey {
         let profileKey = Aes256Key(data: Data(count: Int(Aes256Key.keyByteLength)))!
         return SMKUDAccessKey(profileKey: profileKey)

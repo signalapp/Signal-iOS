@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class LRUCacheTest: SSKBaseTest {
+class LRUCacheTest: XCTestCase {
     func testStringString() {
         let cache = LRUCache<String, String>(maxSize: 16)
         let key1 = "a"
