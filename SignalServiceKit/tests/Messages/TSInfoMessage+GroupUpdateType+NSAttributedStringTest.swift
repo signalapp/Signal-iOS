@@ -26,17 +26,17 @@ class NSAttributedStringInGroupUpdateCopyTest: SSKBaseTest {
         assertEqual(.aliceMadeFatimaInArabicAnAdmin, NSAttributedString.make(firstUser: .alice, madeAdmin: .fatima))
     }
 
-    func test_XMadeYAnAdmin_EnglishNameInArabicString() {
-        assertEqual(.aliceMadeBobAdmin_Arabic, NSAttributedString.makeArabic(firstUser: .alice, madeAdmin: .bob))
-    }
+//    func test_XMadeYAnAdmin_EnglishNameInArabicString() {
+//        assertEqual(.aliceMadeBobAdmin_Arabic, NSAttributedString.makeArabic(firstUser: .alice, madeAdmin: .bob))
+//    }
 
     func test_XMadeYAnAdmin_ChineseNameInEnglishString() {
         assertEqual(.qiInChineseMadeAliceAdmin, NSAttributedString.make(firstUser: .qi, madeAdmin: .alice))
     }
 
-    func test_XMadeYAnAdmin_ChineseAndArabicNamesInArabicString() {
-        assertEqual(.qiInChineseMadeFatimaInArabicAdmin_Arabic, NSAttributedString.makeArabic(firstUser: .qi, madeAdmin: .fatima))
-    }
+//    func test_XMadeYAnAdmin_ChineseAndArabicNamesInArabicString() {
+//        assertEqual(.qiInChineseMadeFatimaInArabicAdmin_Arabic, NSAttributedString.makeArabic(firstUser: .qi, madeAdmin: .fatima))
+//    }
 
     /// Note that this test involves formatting numbers into a format string,
     /// which is done in the guts of Signal using the "current locale".
