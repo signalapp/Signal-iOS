@@ -592,7 +592,9 @@ extension MessageBackup {
                 case emptyStandardMessage
 
                 /// A ``BackupProto_DirectStoryReplyMessage`` had an empty text body.
-                case emptyDirectStoryReplyMessage
+                case directStoryReplyMessageEmpty
+                /// A ``BackupProto_DirectStoryReplyMessage`` had an empty text body, but a long-text attachment was present.
+                case directStoryReplyMessageEmptyWithLongText
                 /// A ``BackupProto_DirectStoryReplyMessage/OneOf_Reply`` has an unknown case.
                 case directStoryReplyMessageUnknownType
                 /// A ``BackupProto_DirectStoryReplyMessage`` author didn't have an aci.
@@ -906,7 +908,8 @@ extension MessageBackup {
                         .unrecognizedMessageSendStatus,
                         .reactionNotFromAciOrE164,
                         .emptyStandardMessage,
-                        .emptyDirectStoryReplyMessage,
+                        .directStoryReplyMessageEmpty,
+                        .directStoryReplyMessageEmptyWithLongText,
                         .directStoryReplyMessageUnknownType,
                         .directStoryReplyFromNonAci,
                         .directStoryReplyInGroupThread,
@@ -1041,7 +1044,8 @@ extension MessageBackup {
                         .unrecognizedMessageSendStatus,
                         .reactionNotFromAciOrE164,
                         .emptyStandardMessage,
-                        .emptyDirectStoryReplyMessage,
+                        .directStoryReplyMessageEmpty,
+                        .directStoryReplyMessageEmptyWithLongText,
                         .directStoryReplyMessageUnknownType,
                         .directStoryReplyFromNonAci,
                         .directStoryReplyInGroupThread,

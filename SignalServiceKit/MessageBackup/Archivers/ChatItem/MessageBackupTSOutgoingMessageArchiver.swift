@@ -547,9 +547,9 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 }
             case .storyReply(let storyReply):
                 switch storyReply.replyType {
-                case .textReply(let messageBody):
-                    outgoingMessageBuilder.messageBody = messageBody.text
-                    outgoingMessageBuilder.bodyRanges = messageBody.ranges
+                case .textReply(let textReply):
+                    outgoingMessageBuilder.messageBody = textReply.body.text
+                    outgoingMessageBuilder.bodyRanges = textReply.body.ranges
                 case .emoji(let emoji):
                     outgoingMessageBuilder.storyReactionEmoji = emoji
                 }

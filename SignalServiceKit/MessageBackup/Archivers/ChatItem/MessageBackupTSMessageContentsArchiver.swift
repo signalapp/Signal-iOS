@@ -78,7 +78,12 @@ extension MessageBackup {
 
         struct StoryReply {
             enum ReplyType {
-                case textReply(MessageBody)
+                struct TextReply {
+                    let body: MessageBody
+                    fileprivate let oversizeTextAttachment: BackupProto_FilePointer?
+                }
+
+                case textReply(TextReply)
                 case emoji(String)
             }
 
@@ -930,7 +935,21 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             }
             var textReply = BackupProto_DirectStoryReplyMessage.TextReply()
             textReply.text = text
-            // Note: iOS does not support oversize text in story replies.
+
+            // We'll only have oversize text if we also have a message body. If
+            // the following returns `nil`, we had no oversize text.
+            let oversizeTextResult = attachmentsArchiver.archiveOversizeTextAttachment(
+                messageRowId: messageRowId,
+                messageId: message.uniqueInteractionId,
+                context: context
+            )
+            switch oversizeTextResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
+            case .continue(let oversizeTextAttachmentProto):
+                oversizeTextAttachmentProto.map { textReply.longText = $0 }
+            case .bubbleUpError(let errorResult):
+                return errorResult
+            }
+
             proto.reply = .textReply(textReply)
         }
 
@@ -1184,6 +1203,22 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 message: message,
                 context: context.recipientContext
             ))
+
+            switch storyReply.replyType {
+            case .textReply(let textReply):
+                if let oversizeTextAttachment = textReply.oversizeTextAttachment {
+                    downstreamObjectResults.append(attachmentsArchiver.restoreOversizeTextAttachment(
+                        oversizeTextAttachment,
+                        chatItemId: chatItemId,
+                        messageRowId: messageRowId,
+                        message: message,
+                        thread: thread,
+                        context: context
+                    ))
+                }
+            case .emoji:
+                break
+            }
         case .remoteDeleteTombstone, .giftBadge:
             // Nothing downstream to restore.
             break
@@ -1833,8 +1868,12 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
 
         switch storyReply.reply {
         case .textReply(let textReply):
-            // Note: iOS does not support oversize text in
-            // story replies, so we drop it on restore.
+            let oversizeTextAttachment: BackupProto_FilePointer? = if textReply.hasLongText {
+                textReply.longText
+            } else {
+                nil
+            }
+
             guard
                 let messageBody = restoreMessageBody(
                     textReply.text,
@@ -1843,14 +1882,25 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             else {
                 return .messageFailure(partialErrors)
             }
-            guard let messageBody else {
-                return .messageFailure(
-                    [.restoreFrameError(
-                        .invalidProtoData(.emptyDirectStoryReplyMessage),
+
+            if let messageBody {
+                replyType = .textReply(.init(
+                    body: messageBody,
+                    oversizeTextAttachment: oversizeTextAttachment
+                ))
+            } else {
+                let restoreErrorType: RestoreFrameError.ErrorType
+                if let oversizeTextAttachment {
+                    restoreErrorType = .invalidProtoData(.directStoryReplyMessageEmptyWithLongText)
+                } else {
+                    restoreErrorType = .invalidProtoData(.directStoryReplyMessageEmpty)
+                }
+
+                return .messageFailure([.restoreFrameError(
+                    restoreErrorType,
                     chatItemId
                 )] + partialErrors)
             }
-            replyType = .textReply(messageBody)
         case .emoji(let string):
             replyType = .emoji(string)
         case .none:
