@@ -46,6 +46,11 @@ public class MessageBackupPostFrameRestoreActionManager {
         bencher: MessageBackup.Bencher,
         chatItemContext: MessageBackup.ChatItemRestoringContext
     ) throws {
+        // Proactively mark the group call tooltip shown; we don't know
+        // definitively if it was shown prior to restore, but it's a good
+        // guess that it was and its annoying to see again.
+        sskPreferences.setWasGroupCallTooltipShown(tx: chatItemContext.tx)
+
         for (recipientId, actions) in recipientActions {
             if actions.insertContactHiddenInfoMessage {
                 try bencher.benchPostFrameAction(.InsertContactHiddenInfoMessage) {
@@ -225,6 +230,8 @@ extension MessageBackupPostFrameRestoreActionManager {
 
 public protocol _MessageBackupPostFrameRestoreActionManager_SSKPreferencesShim {
     func setHasSavedThread(_ newValue: Bool, tx: DBWriteTransaction)
+
+    func setWasGroupCallTooltipShown(tx: DBWriteTransaction)
 }
 
 public class _MessageBackupPostFrameRestoreActionManager_SSKPreferencesWrapper: MessageBackupPostFrameRestoreActionManager.Shims.SSKPreferences {
@@ -233,5 +240,9 @@ public class _MessageBackupPostFrameRestoreActionManager_SSKPreferencesWrapper: 
 
     public func setHasSavedThread(_ newValue: Bool, tx: DBWriteTransaction) {
         SSKPreferences.setHasSavedThread(newValue, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func setWasGroupCallTooltipShown(tx: DBWriteTransaction) {
+        SSKEnvironment.shared.preferencesRef.setWasGroupCallTooltipShown(tx: SDSDB.shimOnlyBridge(tx))
     }
 }
