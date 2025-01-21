@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Foundation
 public import LibSignalClient
 
 // MARK: -
@@ -136,7 +137,30 @@ extension TSGroupThread {
         groupId: UInt8 = 0,
         groupMembers: [SignalServiceAddress] = []
     ) -> TSGroupThread {
-        let groupId = Data(repeating: groupId, count: 32)
+        return _forUnitTest(
+            groupId: Data(repeating: groupId, count: 32),
+            secretParamsData: Data(count: 1),
+            groupMembers: groupMembers
+        )
+    }
+
+    static func forUnitTest(
+        masterKey: GroupMasterKey,
+        groupMembers: [SignalServiceAddress] = []
+    ) -> TSGroupThread {
+        let secretParams = try! GroupSecretParams.deriveFromMasterKey(groupMasterKey: masterKey)
+        return _forUnitTest(
+            groupId: try! secretParams.getPublicParams().getGroupIdentifier().serialize().asData,
+            secretParamsData: secretParams.serialize().asData,
+            groupMembers: groupMembers
+        )
+    }
+
+    private static func _forUnitTest(
+        groupId: Data,
+        secretParamsData: Data,
+        groupMembers: [SignalServiceAddress] = []
+    ) -> TSGroupThread {
         let groupThreadId = TSGroupThread.defaultThreadId(forGroupId: groupId)
         let groupThread = TSGroupThread(
             grdbId: 1,
@@ -165,7 +189,7 @@ extension TSGroupThread {
                 groupMembership: GroupMembership(membersForTest: groupMembers),
                 groupAccess: .defaultForV2,
                 revision: 1,
-                secretParamsData: Data(count: 1),
+                secretParamsData: secretParamsData,
                 avatarUrlPath: nil,
                 inviteLinkPassword: nil,
                 isAnnouncementsOnly: false,

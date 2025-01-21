@@ -110,27 +110,6 @@ public class GroupManager: NSObject {
 
     // MARK: - Group Models
 
-    @objc
-    public static func fakeGroupModel(groupId: Data) -> TSGroupModel? {
-        do {
-            var builder = TSGroupModelBuilder()
-            builder.groupId = groupId
-
-            if GroupManager.isV1GroupId(groupId) {
-                builder.groupsVersion = .V1
-            } else if GroupManager.isV2GroupId(groupId) {
-                builder.groupsVersion = .V2
-            } else {
-                throw OWSAssertionError("Invalid group id: \(groupId).")
-            }
-
-            return try builder.build()
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return nil
-        }
-    }
-
     /// Confirms that a given address supports V2 groups.
     ///
     /// This check will succeed for any currently-registered users. It is

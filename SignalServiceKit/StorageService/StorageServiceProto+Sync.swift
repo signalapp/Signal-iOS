@@ -1021,7 +1021,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         // If our local blocked state differs from the service state, use the service's value.
         if record.blocked != localIsBlocked {
             if record.blocked {
-                blockingManager.addBlockedGroup(groupId: groupId, blockMode: .remote, transaction: transaction)
+                blockingManager.addBlockedGroupId(groupId, blockMode: .remote, transaction: transaction)
             } else {
                 blockingManager.removeBlockedGroup(groupId: groupId, wasLocallyInitiated: false, transaction: transaction)
             }

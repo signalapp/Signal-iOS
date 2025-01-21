@@ -53,8 +53,10 @@ class BlockListViewController: OWSTableViewController2 {
 
         let (addresses, groups) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let addresses = SSKEnvironment.shared.blockingManagerRef.blockedAddresses(transaction: transaction)
-            let groups = SSKEnvironment.shared.blockingManagerRef.blockedGroupModels(transaction: transaction)
-            return (addresses.sorted(by: { $0.compare($1) == .orderedAscending }), groups)
+                .sorted(by: { $0.compare($1) == .orderedAscending })
+            let groups = ((try? SSKEnvironment.shared.blockingManagerRef.blockedGroupIds(transaction: transaction)) ?? [])
+                .map({ ($0, TSGroupThread.fetch(groupId: $0, transaction: transaction)?.groupModel) })
+            return (addresses, groups)
         }
 
         // Contacts
@@ -96,18 +98,18 @@ class BlockListViewController: OWSTableViewController2 {
         }
 
         // Groups
-        let groupsSectionItems = groups.map { group in
-            let image = group.avatarImage ?? SSKEnvironment.shared.avatarBuilderRef.avatarImage(forGroupId: group.groupId,
-                                                                                                diameterPoints: AvatarBuilder.standardAvatarSizePoints)
+        let groupsSectionItems = groups.map { (groupId, groupModel) in
+            let name = groupModel?.groupNameOrDefault ?? TSGroupThread.defaultGroupName
+            let image = groupModel?.avatarImage ?? SSKEnvironment.shared.avatarBuilderRef.avatarImage(forGroupId: groupId, diameterPoints: AvatarBuilder.standardAvatarSizePoints)
             return OWSTableItem(
                 customCellBlock: {
                     let cell = AvatarTableViewCell()
-                    cell.configure(image: image, text: group.groupNameOrDefault)
+                    cell.configure(image: image, text: name)
                     return cell
                 },
                 actionBlock: { [weak self] in
                     guard let self else { return }
-                    BlockListUIUtils.showUnblockGroupActionSheet(group, from: self) { isBlocked in
+                    BlockListUIUtils.showUnblockGroupActionSheet(groupId: groupId, groupNameOrDefault: name, from: self) { isBlocked in
                         if !isBlocked {
                             self.updateContactList(reloadTableView: true)
                         }

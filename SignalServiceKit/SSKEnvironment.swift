@@ -245,7 +245,6 @@ public class SSKEnvironment: NSObject {
         SSKEnvironment.shared.signalServiceAddressCacheRef.warmCaches()
         SSKEnvironment.shared.signalServiceRef.warmCaches()
         SSKEnvironment.shared.remoteConfigManagerRef.warmCaches()
-        SSKEnvironment.shared.blockingManagerRef.warmCaches()
         SSKEnvironment.shared.profileManagerRef.warmCaches()
         SSKEnvironment.shared.receiptManagerRef.prepareCachedValues()
         DependenciesBridge.shared.svr.warmCaches()

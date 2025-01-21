@@ -172,8 +172,8 @@ private extension ConversationViewController {
                 // Do not leave the group while blocking the thread; we'll
                 // that below so that we can surface an error to the user
                 // if leaving the group fails.
-                SSKEnvironment.shared.blockingManagerRef.addBlockedGroup(
-                    groupModel: groupThread.groupModel,
+                SSKEnvironment.shared.blockingManagerRef.addBlockedGroupId(
+                    groupThread.groupId,
                     blockMode: .localShouldNotLeaveGroups,
                     transaction: transaction
                 )

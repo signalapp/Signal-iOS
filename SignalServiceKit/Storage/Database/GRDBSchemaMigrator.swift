@@ -319,6 +319,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addBackupsReceiptCredentialStateToJobRecord
         case recreateTSAttachment
         case recreateTSAttachmentMigration
+        case addBlockedGroup
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -381,7 +382,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 107
+    public static let grdbSchemaVersionLatest: UInt = 108
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3881,6 +3882,20 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
+        migrator.registerMigration(.addBlockedGroup) { tx in
+            try tx.database.create(table: "BlockedGroup", options: [.withoutRowID]) { table in
+                table.column("groupId", .blob).notNull().primaryKey()
+            }
+
+            let groupIds = try fetchAndClearBlockedGroupIds(tx: tx)
+
+            for groupId in groupIds {
+                try tx.database.execute(sql: "INSERT INTO BlockedGroup VALUES (?)", arguments: [groupId])
+            }
+
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -5282,6 +5297,43 @@ public class GRDBSchemaMigrator: NSObject {
             on: "DeletedCallRecord",
             columns: ["deletedAtTimestamp"]
         )
+    }
+
+    private static func fetchAndClearBlockedGroupIds(tx: GRDBWriteTransaction) throws -> [Data] {
+        let collection = "kOWSBlockingManager_BlockedPhoneNumbersCollection"
+        let key = "kOWSBlockingManager_BlockedGroupMapKey"
+        let dataValue = try Data.fetchOne(
+            tx.database,
+            sql: "SELECT value FROM keyvalue WHERE collection IS ? AND key IS ?",
+            arguments: [collection, key]
+        )
+        try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection IS ? AND key IS ?", arguments: [collection, key])
+        guard let dataValue else {
+            return []
+        }
+        do {
+            return try decodeBlockedGroupIds(dataValue: dataValue)
+        } catch {
+            Logger.warn("Couldn't decode blocked identifiers.")
+            return []
+        }
+    }
+
+    static func decodeBlockedGroupIds(dataValue: Data) throws -> [Data] {
+        @objc(TSBlockedGroupModel)
+        class TSBlockedGroupModel: NSObject, NSSecureCoding {
+            static var supportsSecureCoding: Bool { true }
+            required init?(coder: NSCoder) {}
+            func encode(with coder: NSCoder) {}
+        }
+        let coder = try NSKeyedUnarchiver(forReadingFrom: dataValue)
+        coder.requiresSecureCoding = true
+        coder.setClass(TSBlockedGroupModel.self, forClassName: "TSGroupModel")
+        coder.setClass(TSBlockedGroupModel.self, forClassName: "SignalServiceKit.TSGroupModelV2")
+        let groupIdMap = try coder.decodeTopLevelObject(of: [
+            NSDictionary.self, NSData.self, TSBlockedGroupModel.self
+        ], forKey: NSKeyedArchiveRootObjectKey)
+        return Array(((groupIdMap as? [Data: TSBlockedGroupModel]) ?? [:]).keys)
     }
 }
 

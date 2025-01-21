@@ -668,6 +668,7 @@
 		50A76F562AF573CE00FCF02D /* AppActivePrecondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A76F552AF573CE00FCF02D /* AppActivePrecondition.swift */; };
 		50A76F582AF5765000FCF02D /* FullTextSearchOptimizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F0B53E2982D7800012C590 /* FullTextSearchOptimizer.swift */; };
 		50AA3EC329F1C4B900EC50A3 /* RecipientFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */; };
+		50AABEE82CDD9A440077E306 /* BlockedGroupStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50AABEE72CDD9A440077E306 /* BlockedGroupStore.swift */; };
 		50B0E9482AC73C3B005D46AB /* RecipientStateMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B0E9472AC73C3B005D46AB /* RecipientStateMerger.swift */; };
 		50B0E94A2AC747B3005D46AB /* RecipientStateMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B0E9492AC747B3005D46AB /* RecipientStateMergerTest.swift */; };
 		50B62C742AB211E800705A89 /* PniSignatureProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B62C732AB211E800705A89 /* PniSignatureProcessor.swift */; };
@@ -2958,7 +2959,6 @@
 		F9426269289B1B5500460798 /* MathOWSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FC289B1B5400460798 /* MathOWSTests.swift */; };
 		F942626A289B1B5500460798 /* ViewOnceMessagesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FD289B1B5400460798 /* ViewOnceMessagesTest.swift */; };
 		F942626C289B1B5500460798 /* SignalAccountFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426200289B1B5400460798 /* SignalAccountFinderTest.swift */; };
-		F9426273289B1B5500460798 /* BlockingManagerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426208289B1B5500460798 /* BlockingManagerStateTests.swift */; };
 		F9426274289B1B5500460798 /* PhoneNumberTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426209289B1B5500460798 /* PhoneNumberTest.swift */; };
 		F9426277289B1B5600460798 /* PhoneNumberUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942620C289B1B5500460798 /* PhoneNumberUtilTest.swift */; };
 		F942627A289B1B5600460798 /* OWSRecipientIdentityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942620F289B1B5500460798 /* OWSRecipientIdentityTest.swift */; };
@@ -4440,6 +4440,7 @@
 		50A76F522AF565AC00FCF02D /* Preconditions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preconditions.swift; sourceTree = "<group>"; };
 		50A76F552AF573CE00FCF02D /* AppActivePrecondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppActivePrecondition.swift; sourceTree = "<group>"; };
 		50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientFetcher.swift; sourceTree = "<group>"; };
+		50AABEE72CDD9A440077E306 /* BlockedGroupStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedGroupStore.swift; sourceTree = "<group>"; };
 		50B0E9472AC73C3B005D46AB /* RecipientStateMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientStateMerger.swift; sourceTree = "<group>"; };
 		50B0E9492AC747B3005D46AB /* RecipientStateMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientStateMergerTest.swift; sourceTree = "<group>"; };
 		50B62C732AB211E800705A89 /* PniSignatureProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PniSignatureProcessor.swift; sourceTree = "<group>"; };
@@ -6763,7 +6764,6 @@
 		F94261FC289B1B5400460798 /* MathOWSTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MathOWSTests.swift; sourceTree = "<group>"; };
 		F94261FD289B1B5400460798 /* ViewOnceMessagesTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnceMessagesTest.swift; sourceTree = "<group>"; };
 		F9426200289B1B5400460798 /* SignalAccountFinderTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAccountFinderTest.swift; sourceTree = "<group>"; };
-		F9426208289B1B5500460798 /* BlockingManagerStateTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingManagerStateTests.swift; sourceTree = "<group>"; };
 		F9426209289B1B5500460798 /* PhoneNumberTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneNumberTest.swift; sourceTree = "<group>"; };
 		F942620C289B1B5500460798 /* PhoneNumberUtilTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneNumberUtilTest.swift; sourceTree = "<group>"; };
 		F942620F289B1B5500460798 /* OWSRecipientIdentityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSRecipientIdentityTest.swift; sourceTree = "<group>"; };
@@ -12677,7 +12677,6 @@
 			children = (
 				5075004528B09CCC001922C9 /* Discovery */,
 				50B6BCB52AEC68940010FB3B /* AuthorMergeHelperTest.swift */,
-				F9426208289B1B5500460798 /* BlockingManagerStateTests.swift */,
 				F9426218289B1B5500460798 /* BlockingManagerTests.swift */,
 				508622AC2D026F5200931BF9 /* CanonicalPhoneNumberTest.swift */,
 				50EF8DD22A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift */,
@@ -13018,6 +13017,7 @@
 				F9C5C917289453B100548EEE /* Stickers */,
 				F9C5C968289453B100548EEE /* Stories */,
 				F9C5C95F289453B100548EEE /* UD */,
+				50AABEE72CDD9A440077E306 /* BlockedGroupStore.swift */,
 				50F039C32C6D239500162B99 /* BlockedRecipientStore.swift */,
 				F9C5C940289453B100548EEE /* BlockingManager.swift */,
 				50A5AA982A7449A100CF2ECC /* DecryptedIncomingEnvelope.swift */,
@@ -16930,6 +16930,7 @@
 				6600F369298DA57200B1EDB7 /* BaseOWSURLSessionMock.swift in Sources */,
 				F9C5CE36289453B400548EEE /* Batching.swift in Sources */,
 				F9C5CE12289453B400548EEE /* Bench.swift in Sources */,
+				50AABEE82CDD9A440077E306 /* BlockedGroupStore.swift in Sources */,
 				50F039C42C6D239500162B99 /* BlockedRecipientStore.swift in Sources */,
 				F9C5CC31289453B300548EEE /* BlockingManager.swift in Sources */,
 				F9C5CC74289453B300548EEE /* BlurHash.swift in Sources */,
@@ -18027,7 +18028,6 @@
 				50B6BCB62AEC68940010FB3B /* AuthorMergeHelperTest.swift in Sources */,
 				66681CDF2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift in Sources */,
 				66C795302C9B83A200C13937 /* BackupAttachmentUploadStoreTests.swift in Sources */,
-				F9426273289B1B5500460798 /* BlockingManagerStateTests.swift in Sources */,
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,
 				D9C42C2F2B6C60600086B142 /* CallRecordDeleteManagerTest.swift in Sources */,
 				D9A81C6F2BAB43D900C07D2B /* CallRecordMissedCallManagerTest.swift in Sources */,

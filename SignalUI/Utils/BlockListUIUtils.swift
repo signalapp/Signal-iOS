@@ -197,8 +197,8 @@ public class BlockListUIUtils {
         // block the group regardless of the ability to deliver the
         // "leave group" message.
         SSKEnvironment.shared.databaseStorageRef.write(block: { tx in
-            SSKEnvironment.shared.blockingManagerRef.addBlockedGroup(
-                groupModel: groupThread.groupModel,
+            SSKEnvironment.shared.blockingManagerRef.addBlockedGroupId(
+                groupThread.groupId,
                 blockMode: .localShouldLeaveGroups,
                 transaction: tx
             )
@@ -229,7 +229,12 @@ public class BlockListUIUtils {
             return
         }
         if let groupThread = thread as? TSGroupThread {
-            showUnblockGroupActionSheet(groupThread.groupModel, from: viewController, completion: completion)
+            showUnblockGroupActionSheet(
+                groupId: groupThread.groupModel.groupId,
+                groupNameOrDefault: groupThread.groupModel.groupNameOrDefault,
+                from: viewController,
+                completion: completion
+            )
             return
         }
         owsFailDebug("unexpected thread type: \(thread.self)")
@@ -273,7 +278,8 @@ public class BlockListUIUtils {
     }
 
     public static func showUnblockGroupActionSheet(
-        _ groupModel: TSGroupModel,
+        groupId: Data,
+        groupNameOrDefault: String,
         from viewController: UIViewController,
         completion: Completion?
     ) {
@@ -291,7 +297,7 @@ public class BlockListUIUtils {
             accessibilityIdentifier: "BlockListUIUtils.unblock",
             style: .destructive,
             handler: { _ in
-                unblockGroup(groupModel, from: viewController) { _ in
+                unblockGroup(groupId: groupId, groupNameOrDefault: groupNameOrDefault, from: viewController) { _ in
                     completion?(false)
                 }
             }
@@ -329,19 +335,20 @@ public class BlockListUIUtils {
     }
 
     private static func unblockGroup(
-        _ groupModel: TSGroupModel,
+        groupId: Data,
+        groupNameOrDefault: String,
         from viewController: UIViewController,
         completion: ((ActionSheetAction) -> Void)?
     ) {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
-            SSKEnvironment.shared.blockingManagerRef.removeBlockedGroup(groupId: groupModel.groupId, wasLocallyInitiated: true, transaction: tx)
+            SSKEnvironment.shared.blockingManagerRef.removeBlockedGroup(groupId: groupId, wasLocallyInitiated: true, transaction: tx)
         }
 
         let actionSheetTitleFormat = OWSLocalizedString(
             "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
             comment: "Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}."
         )
-        let actionSheetTitle = String(format: actionSheetTitleFormat, groupModel.groupNameOrDefault.formattedForActionSheetMessage())
+        let actionSheetTitle = String(format: actionSheetTitleFormat, groupNameOrDefault.formattedForActionSheetMessage())
         let actionSheetMessage = OWSLocalizedString(
             "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY",
             comment: "Alert body after unblocking a group."

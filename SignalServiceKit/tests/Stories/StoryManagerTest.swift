@@ -137,7 +137,8 @@ class StoryManagerTest: SSKBaseTest {
         let author = Aci.randomForTesting()
         let storyMessage = try Self.makeGroupStory()
 
-        let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
+        let groupMasterKey = try GroupMasterKey(contents: [UInt8](storyMessage.group!.masterKey!))
+        let groupId = try GroupSecretParams.deriveFromMasterKey(groupMasterKey: groupMasterKey).getPublicParams().getGroupIdentifier().serialize().asData
 
         try write {
             SSKEnvironment.shared.profileManagerRef.addUser(
@@ -146,8 +147,11 @@ class StoryManagerTest: SSKBaseTest {
                 transaction: $0
             )
 
-            SSKEnvironment.shared.blockingManagerRef.addBlockedGroup(
-                groupId: groupId,
+            TSGroupThread.forUnitTest(
+                masterKey: groupMasterKey
+            ).anyInsert(transaction: $0)
+            SSKEnvironment.shared.blockingManagerRef.addBlockedGroupId(
+                groupId,
                 blockMode: .localShouldNotLeaveGroups,
                 transaction: $0
             )

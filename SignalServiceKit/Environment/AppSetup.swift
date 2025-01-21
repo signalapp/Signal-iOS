@@ -175,6 +175,7 @@ public class AppSetup {
         let blockedRecipientStore = BlockedRecipientStoreImpl()
         let blockingManager = BlockingManager(
             appReadiness: appReadiness,
+            blockedGroupStore: BlockedGroupStoreImpl(),
             blockedRecipientStore: blockedRecipientStore
         )
         let earlyMessageManager = EarlyMessageManager(appReadiness: appReadiness)

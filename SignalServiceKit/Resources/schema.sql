@@ -2262,3 +2262,10 @@ CREATE
 WHERE
     "storyMessageRowId" IS NOT NULL
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "BlockedGroup" (
+            "groupId" BLOB PRIMARY KEY NOT NULL
+        ) WITHOUT ROWID
+;

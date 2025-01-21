@@ -531,4 +531,33 @@ extension GRDBSchemaMigratorTest {
             XCTAssertEqual(deletedCallRecords[1]["callId"], "18446744073709551612")
         }
     }
+
+    func testMigrateBlockedGroups() throws {
+        @objc(TSGroupModelMigrateBlockedGroups)
+        class TSGroupModelMigrateBlockedGroups: NSObject, NSSecureCoding {
+            class var supportsSecureCoding: Bool { true }
+            override init() {}
+            required init?(coder: NSCoder) {}
+            func encode(with coder: NSCoder) {}
+        }
+        @objc(TSGroupModelV2MigrateBlockedGroups)
+        class TSGroupModelV2MigrateBlockedGroups: TSGroupModelMigrateBlockedGroups {
+            class override var supportsSecureCoding: Bool { true }
+            override init() { super.init() }
+            required init?(coder: NSCoder) { super.init(coder: coder) }
+        }
+
+        let blockedGroups = [
+            Data(count: 16): TSGroupModelMigrateBlockedGroups(),
+            Data(count: 32): TSGroupModelV2MigrateBlockedGroups(),
+        ]
+
+        let coder = NSKeyedArchiver(requiringSecureCoding: true)
+        coder.setClassName("TSGroupModel", for: TSGroupModelMigrateBlockedGroups.self)
+        coder.setClassName("SignalServiceKit.TSGroupModelV2", for: TSGroupModelV2MigrateBlockedGroups.self)
+        coder.encode(blockedGroups, forKey: NSKeyedArchiveRootObjectKey)
+
+        let groupIds = Set(try GRDBSchemaMigrator.decodeBlockedGroupIds(dataValue: coder.encodedData))
+        XCTAssertEqual(groupIds, [Data(count: 16), Data(count: 32)])
+    }
 }
