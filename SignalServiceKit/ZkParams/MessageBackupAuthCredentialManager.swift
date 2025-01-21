@@ -11,6 +11,11 @@ public enum MessageBackupAuthCredentialType: String, Codable, CaseIterable, Codi
     case messages
 }
 
+public enum MessageBackupAuthCredentialFetchError: Error {
+    /// The server told us we had no existing backup id and therefore no backup credentials.
+    case noExistingBackupId
+}
+
 public protocol MessageBackupAuthCredentialManager {
     func fetchBackupCredential(
         for credentialType: MessageBackupAuthCredentialType,
@@ -132,8 +137,17 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
             auth: auth
         )
 
-        // TODO: Switch this back to true when reg supports websockets
-        let response = try await networkManager.asyncRequest(request, canUseWebSocket: false)
+        let response: HTTPResponse
+        do {
+            // TODO: Switch this back to true when reg supports websockets
+            response = try await networkManager.asyncRequest(request, canUseWebSocket: false)
+        } catch let error {
+            if error.httpStatusCode == 404 {
+                throw MessageBackupAuthCredentialFetchError.noExistingBackupId
+            } else {
+                throw error
+            }
+        }
         guard let data = response.responseBodyData else {
             throw OWSAssertionError("Missing response body data")
         }

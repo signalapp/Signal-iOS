@@ -294,11 +294,23 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 throw OWSAssertionError("Not registered")
             }
 
-            let messageBackupAuth = try await messageBackupRequestManager.fetchBackupServiceAuth(
-                for: .media,
-                localAci: localAci,
-                auth: .implicit()
-            )
+            let messageBackupAuth: MessageBackupServiceAuth
+            do {
+                messageBackupAuth = try await messageBackupRequestManager.fetchBackupServiceAuth(
+                    for: .media,
+                    localAci: localAci,
+                    auth: .implicit()
+                )
+            } catch let error as MessageBackupAuthCredentialFetchError {
+                switch error {
+                case .noExistingBackupId:
+                    // If we have no backup, there's no media tier to compare
+                    // against, so early exit without failing.
+                    return
+                }
+            } catch let error {
+                throw error
+            }
 
             // We go popping entries off this map as we process them.
             // By the end, anything left in here was not in the list response.

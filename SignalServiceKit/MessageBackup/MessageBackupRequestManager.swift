@@ -84,10 +84,6 @@ public protocol MessageBackupRequestManager {
     /// Creates a ``MessageBackupServiceAuth``, which wraps a ``MessageBackupAuthCredential``.
     /// Created from local ACI and the current valid backup credential. This
     /// `MessageBackupServiceAuth` is used to authenticate all further `/v1/archive` operations.
-    ///
-    /// - Parameter purpose
-    /// The intended purpose for this service auth. This influences the steps
-    /// taken in fetching the credentials underlying the returned service auth.
     func fetchBackupServiceAuth(
         for credentialType: MessageBackupAuthCredentialType,
         localAci: Aci,
