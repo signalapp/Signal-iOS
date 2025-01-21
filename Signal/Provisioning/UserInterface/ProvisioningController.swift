@@ -489,7 +489,7 @@ class ProvisioningController: NSObject {
                             break
                         }
                     }
-                    let errorActionSheet = self.errorController(
+                    let errorActionSheet = self.errorActionSheet(
                         error: error,
                         from: viewController,
                         navigationController: navigationController,
@@ -513,7 +513,7 @@ class ProvisioningController: NSObject {
                 }
 
                 let errorActionSheet = result.map {
-                    self.errorController(
+                    self.errorActionSheet(
                         error: $0,
                         from: viewController,
                         navigationController: navigationController,
@@ -531,7 +531,7 @@ class ProvisioningController: NSObject {
         }
     }
 
-    private func errorController(
+    private func errorActionSheet(
         error: CompleteProvisioningError,
         from viewController: ProvisioningQRCodeViewController,
         navigationController: UINavigationController,
@@ -623,7 +623,7 @@ class ProvisioningController: NSObject {
                 }
             ))
         case .linkAndSyncError(let error):
-            return self.linkAndSyncRetryController(
+            return self.linkAndSyncRetryActionSheet(
                 error: error,
                 from: viewController,
                 navigationController: navigationController,
@@ -633,19 +633,26 @@ class ProvisioningController: NSObject {
         return alert
     }
 
-    private func linkAndSyncRetryController(
+    private func linkAndSyncRetryActionSheet(
         error: ProvisioningLinkAndSyncError,
         from viewController: ProvisioningQRCodeViewController,
         navigationController: UINavigationController,
         progressViewModel: LinkAndSyncSecondaryProgressViewModel
     ) -> ActionSheetController {
-        let promptToRetryLinkNSync: Bool
-        let promptToRestartProvisioning: Bool
-        let errorMessage: String
+        enum ErrorPromptMode {
+            case contactSupport
+            case networkErrorRetry
+            case restartProvisioning
+        }
+
+        let errorPromptMode: ErrorPromptMode
+        let errorMessage: String?
         switch error.error {
+        case .errorRestoringBackup:
+            errorPromptMode = .contactSupport
+            errorMessage = nil
         case .timedOutWaitingForBackup, .errorDownloadingBackup, .networkError:
-            promptToRetryLinkNSync = true
-            promptToRestartProvisioning = false
+            errorPromptMode = .networkErrorRetry
             errorMessage = OWSLocalizedString(
                 "SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE",
                 comment: "Message for action sheet when secondary device fails to sync messages due to network error."
@@ -653,9 +660,8 @@ class ProvisioningController: NSObject {
         case .primaryFailedBackupExport:
             owsFailDebug("No prompt for this case")
             fallthrough
-        case .errorWaitingForBackup, .errorRestoringBackup, .cancelled:
-            promptToRetryLinkNSync = false
-            promptToRestartProvisioning = true
+        case .errorWaitingForBackup, .cancelled:
+            errorPromptMode = .restartProvisioning
             errorMessage = OWSLocalizedString(
                 "SECONDARY_LINKING_SYNCING_OTHER_ERROR_MESSAGE",
                 comment: "Message for action sheet when secondary device fails to sync messages due to an unspecified error."
@@ -701,10 +707,27 @@ class ProvisioningController: NSObject {
         )
         retryActionSheet.isCancelable = false
 
-        if promptToRetryLinkNSync {
-            retryActionSheet.addAction(.init(
-                title: CommonStrings.retryButton
-            ) { _ in
+        switch errorPromptMode {
+        case .contactSupport:
+            retryActionSheet.addAction(ActionSheetAction(title: CommonStrings.contactSupport) { _ in
+                Task { @MainActor in
+                    // Crash if this fails; things have gone horribly wrong.
+                    try! await error.restartProvisioning()
+                    self.resetBackToQrCodeController(
+                        from: viewController,
+                        navigationController: navigationController
+                    )
+
+                    // Wait to present until we've reset back to the QR code
+                    // view controller.
+                    ContactSupportActionSheet.present(
+                        emailFilter: .backupImportFailed,
+                        fromViewController: viewController
+                    )
+                }
+            })
+        case .networkErrorRetry:
+            retryActionSheet.addAction(ActionSheetAction(title: CommonStrings.retryButton) { _ in
                 self.performCoordinatorTaskWithModal(
                     task: Task {
                         try await error.retryLinkAndSync()
@@ -715,11 +738,8 @@ class ProvisioningController: NSObject {
                     progressViewModel: progressViewModel
                 )
             })
-        }
-        if promptToRestartProvisioning && !promptToRetryLinkNSync {
-            retryActionSheet.addAction(.init(
-                title: CommonStrings.retryButton
-            ) { _ in
+        case .restartProvisioning:
+            retryActionSheet.addAction(ActionSheetAction(title: CommonStrings.retryButton) { _ in
                 Task { @MainActor in
                     // Crash if this fails; things have gone horribly wrong.
                     try! await error.restartProvisioning()
@@ -731,7 +751,7 @@ class ProvisioningController: NSObject {
             })
         }
 
-        retryActionSheet.addAction(.init(
+        retryActionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
             style: .cancel
         ) { _ in

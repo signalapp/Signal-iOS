@@ -18,6 +18,7 @@ enum ContactSupportActionSheet {
         case registrationPINMode(RegistrationPINMode)
         case deviceTransfer
         case backupExportFailed
+        case backupImportFailed
         case custom(String)
 
         fileprivate var asString: String {
@@ -28,6 +29,7 @@ enum ContactSupportActionSheet {
             case .registrationPINMode(.v2WithUnknownReglockState): "Signal PIN - iOS (V2 PIN with unknown reglock)"
             case .deviceTransfer: "Signal iOS Transfer"
             case .backupExportFailed: "iOS Backup Export Failed"
+            case .backupImportFailed: "iOS Backup Import Failed"
             case .custom(let string): string
             }
         }
