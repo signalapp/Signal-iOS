@@ -66,8 +66,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
 
     func refreshDevices() async throws -> Bool {
         let getDevicesResponse = try await networkManager.asyncRequest(
-            .getDevices(),
-            canUseWebSocket: true
+            .getDevices()
         )
 
         guard let devices = Self.parseDeviceList(response: getDevicesResponse) else {
@@ -138,7 +137,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
     func unlinkDevice(deviceId: Int, auth: ChatServiceAuth) async throws {
         let request = TSRequest.deleteDevice(deviceId: deviceId)
         request.setAuth(auth)
-        _ = try await networkManager.asyncRequest(request)
+        _ = try await networkManager.asyncRequest(request, canUseWebSocket: false)
     }
 
     func renameDevice(
@@ -223,7 +222,7 @@ private extension TSRequest {
         deviceId: Int
     ) -> TSRequest {
         return TSRequest(
-            url: URL(string: "/v1/devices/\(deviceId)")!,
+            url: URL(string: "v1/devices/\(deviceId)")!,
             method: "DELETE",
             parameters: nil
         )

@@ -166,7 +166,7 @@ public class MessageFetcherJob: NSObject {
                 throw OWSAssertionError("Can't ACK message without serverGuid.")
             }
             let request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(serverGuid: serverGuid)
-            _ = try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request).awaitable()
+            _ = try await SSKEnvironment.shared.networkManagerRef.makePromise(request: request, canUseWebSocket: false).awaitable()
         }
     }
 
@@ -320,7 +320,7 @@ public class MessageFetcherJob: NSObject {
 
     private func fetchBatchViaRest() async throws -> RESTBatch {
         let request = OWSRequestFactory.getMessagesRequest()
-        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: false)
         guard let json = response.responseBodyJson else {
             throw OWSAssertionError("Missing or invalid JSON")
         }

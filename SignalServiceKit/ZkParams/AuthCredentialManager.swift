@@ -141,7 +141,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
 
         let request = OWSRequestFactory.authCredentialRequest(from: startTimestamp, to: endTimestamp)
 
-        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: true)
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 
         guard let bodyData = response.responseBodyData else {
             throw OWSAssertionError("Missing or invalid JSON")

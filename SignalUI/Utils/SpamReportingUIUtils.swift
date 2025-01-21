@@ -193,7 +193,7 @@ public struct ReportSpamUIUtils {
                             _ = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
                         }
                     }
-                    for try await _ in group {}
+                    try await group.waitForAll()
                 }
                 Logger.info("Successfully reported \(guidsToReport.count) message(s) from \(aci) as spam.")
             } catch {

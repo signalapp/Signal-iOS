@@ -141,7 +141,7 @@ public class MessageSender {
             // TODO: (PreKey Cleanup)
             accessKey: isStoryMessage ? nil : sealedSenderParameters?.accessKey,
             authedAccount: .implicit(),
-            options: []
+            options: [.waitForWebSocketToOpen]
         )
 
         do {
@@ -1421,7 +1421,7 @@ public class MessageSender {
             serviceId: messageSend.serviceId,
             accessKey: sealedSenderParameters?.accessKey,
             authedAccount: .implicit(),
-            options: []
+            options: [.waitForWebSocketToOpen]
         )
 
         do {

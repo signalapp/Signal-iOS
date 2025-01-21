@@ -229,7 +229,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             commitment: commitmentData,
             auth: authedAccount.chatServiceAuth
         )
-        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: false)
 
         let avatarUrlPath: OptionalChange<String?>
         switch profileAvatarMutation {

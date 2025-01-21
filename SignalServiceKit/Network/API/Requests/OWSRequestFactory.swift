@@ -34,7 +34,7 @@ public enum OWSRequestFactory {
     static func getRemoteConfigRequest(
         auth: ChatServiceAuth
     ) -> TSRequest {
-        let result = TSRequest(url: URL(string: "/v1/config/")!, method: "GET", parameters: [:])
+        let result = TSRequest(url: URL(string: "v1/config/")!, method: "GET", parameters: [:])
         result.setAuth(auth)
         return result
     }
@@ -54,7 +54,7 @@ public enum OWSRequestFactory {
     }
 
     public static func paymentsAuthenticationCredentialRequest() -> TSRequest {
-        return TSRequest(url: URL(string: "/v1/payments/auth")!, method: "GET", parameters: [:])
+        return TSRequest(url: URL(string: "v1/payments/auth")!, method: "GET", parameters: [:])
     }
 
     static func remoteAttestationAuthRequestForCDSI() -> TSRequest {
@@ -74,15 +74,15 @@ public enum OWSRequestFactory {
     // MARK: - Challenges
 
     static func pushChallengeRequest() -> TSRequest {
-        return TSRequest(url: URL(string: "/v1/challenge/push")!, method: "POST", parameters: [:])
+        return TSRequest(url: URL(string: "v1/challenge/push")!, method: "POST", parameters: [:])
     }
 
     static func pushChallengeResponse(token: String) -> TSRequest {
-        return TSRequest(url: URL(string: "/v1/challenge")!, method: "PUT", parameters: ["type": "rateLimitPushChallenge", "challenge": token])
+        return TSRequest(url: URL(string: "v1/challenge")!, method: "PUT", parameters: ["type": "rateLimitPushChallenge", "challenge": token])
     }
 
     static func recaptchChallengeResponse(serverToken: String, captchaToken: String) -> TSRequest {
-        return TSRequest(url: URL(string: "/v1/challenge")!, method: "PUT", parameters: ["type": "captcha", "token": serverToken, "captcha": captchaToken])
+        return TSRequest(url: URL(string: "v1/challenge")!, method: "PUT", parameters: ["type": "captcha", "token": serverToken, "captcha": captchaToken])
     }
 
     // MARK: - Messages

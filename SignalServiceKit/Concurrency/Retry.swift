@@ -5,9 +5,9 @@
 
 import Foundation
 
-enum Retry {
+public enum Retry {
     /// Performs `block` repeatedly until `onError` throws an error (or until cancellation).
-    static func performRepeatedly<T>(block: () async throws -> T, onError: (any Error, _ attemptCount: Int) async throws -> Void) async throws -> T {
+    public static func performRepeatedly<T>(block: () async throws -> T, onError: (any Error, _ attemptCount: Int) async throws -> Void) async throws -> T {
         var attemptCount = 0
         while true {
             try Task.checkCancellation()
@@ -26,7 +26,7 @@ enum Retry {
     /// the error from the final attempt. If `block` throws a fatal error or
     /// non-retryable error on an earlier attempt, that error will be propagated
     /// immediately. This method supports cancellation.
-    static func performWithBackoff<T>(maxAttempts: Int, block: () async throws -> T) async throws -> T {
+    public static func performWithBackoff<T>(maxAttempts: Int, block: () async throws -> T) async throws -> T {
         return try await performRepeatedly(
             block: block,
             onError: { error, attemptCount in

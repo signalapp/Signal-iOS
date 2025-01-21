@@ -37,7 +37,7 @@ public class NetworkManager {
         }
     }
 
-    public func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool = false) async throws -> HTTPResponse {
+    public func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool = true) async throws -> HTTPResponse {
         if canUseWebSocket && OWSChatConnection.canAppUseSocketsToMakeRequests {
             return try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)
         } else {
@@ -46,7 +46,7 @@ public class NetworkManager {
     }
 
     /// Deprecated. Please use ``asyncRequest(_:canUseWebSocket:)``.
-    public func makePromise(request: TSRequest, canUseWebSocket: Bool = false) -> Promise<HTTPResponse> {
+    public func makePromise(request: TSRequest, canUseWebSocket: Bool = true) -> Promise<HTTPResponse> {
         // Try the web socket first if it's allowed for this request.
         let useWebSocket = canUseWebSocket && OWSChatConnection.canAppUseSocketsToMakeRequests
         return useWebSocket ? websocketRequestPromise(request: request) : restRequestPromise(request: request)
@@ -69,13 +69,13 @@ public class NetworkManager {
 
 public class OWSFakeNetworkManager: NetworkManager {
 
-    public override func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool = false) async throws -> any HTTPResponse {
+    public override func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool) async throws -> any HTTPResponse {
         Logger.info("Ignoring request: \(request)")
         // Never resolve.
         return try await withUnsafeThrowingContinuation { (_ continuation: UnsafeContinuation<any HTTPResponse, any Error>) -> Void in }
     }
 
-    public override func makePromise(request: TSRequest, canUseWebSocket: Bool = false) -> Promise<HTTPResponse> {
+    public override func makePromise(request: TSRequest, canUseWebSocket: Bool) -> Promise<HTTPResponse> {
         Logger.info("Ignoring request: \(request)")
         // Never resolve.
         let (promise, _) = Promise<HTTPResponse>.pending()

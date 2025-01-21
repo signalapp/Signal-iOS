@@ -1005,7 +1005,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     private func fetchRemoteConfig(auth: ChatServiceAuth) async throws -> FetchedRemoteConfigResponse {
         let request = OWSRequestFactory.getRemoteConfigRequest(auth: auth)
 
-        let response = try await networkManager.asyncRequest(request)
+        let response = try await networkManager.asyncRequest(request, canUseWebSocket: false)
 
         guard let json = response.responseBodyJson else {
             throw OWSAssertionError("Missing or invalid JSON.")

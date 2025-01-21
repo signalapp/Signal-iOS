@@ -53,6 +53,10 @@ final class RequestMaker {
         /// This RequestMaker is used when fetching profiles, so it shouldn't kick
         /// off additional profile fetches when errors occur.
         static let isProfileFetch = Options(rawValue: 1 << 1)
+
+        /// This Request can *always* use the web socket and should never fall back
+        /// to REST.
+        static let waitForWebSocketToOpen = Options(rawValue: 1 << 2)
     }
 
     private let label: String
@@ -140,14 +144,14 @@ final class RequestMaker {
         let connectionType: OWSChatConnectionType = (request.isUDRequest ? .unidentified : .identified)
         let shouldUseWebsocket: Bool = (
             OWSChatConnection.canAppUseSocketsToMakeRequests
-            && DependenciesBridge.shared.chatConnectionManager.canMakeRequests(connectionType: connectionType)
+            && (self.options.contains(.waitForWebSocketToOpen) || DependenciesBridge.shared.chatConnectionManager.canMakeRequests(connectionType: connectionType))
         )
 
         let response: HTTPResponse
         if shouldUseWebsocket {
             response = try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)
         } else {
-            response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+            response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: false)
         }
         return RequestMakerResult(response: response, wasSentByUD: request.isUDRequest)
     }

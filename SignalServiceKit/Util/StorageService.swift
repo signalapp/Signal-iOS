@@ -682,7 +682,7 @@ public struct StorageService {
         let request = OWSRequestFactory.storageAuthRequest(auth: chatServiceAuth)
 
         let response = try await SSKEnvironment.shared.networkManagerRef
-            .asyncRequest(request)
+            .asyncRequest(request, canUseWebSocket: false)
 
         guard let json = response.responseBodyJson else {
             throw OWSAssertionError("Missing or invalid JSON.")

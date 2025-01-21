@@ -251,7 +251,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
                 }
             }
 
-            return SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
+            return SSKEnvironment.shared.networkManagerRef.makePromise(request: request, canUseWebSocket: false)
                 .map { (response: HTTPResponse) -> Bool in
                     return isConnected(response.responseStatusCode)
                 }

@@ -61,6 +61,6 @@ struct PreKeyTaskAPIClientImpl: PreKeyTaskAPIClient {
             auth: auth
         )
 
-        _ = try await networkManager.asyncRequest(request)
+        _ = try await networkManager.asyncRequest(request, canUseWebSocket: false)
     }
 }

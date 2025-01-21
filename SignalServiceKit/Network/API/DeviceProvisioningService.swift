@@ -41,7 +41,7 @@ public class DeviceProvisioningServiceImpl: DeviceProvisioningService {
     public func requestDeviceProvisioningCode() -> Promise<DeviceProvisioningCodeResponse> {
         let request = OWSRequestFactory.deviceProvisioningCode()
         return firstly(on: schedulers.sharedUserInitiated) {
-            self.networkManager.makePromise(request: request, canUseWebSocket: true)
+            self.networkManager.makePromise(request: request)
         }.map(on: schedulers.sharedUserInitiated) { (httpResponse: HTTPResponse) -> DeviceProvisioningCodeResponse in
             guard let httpResponseData = httpResponse.responseBodyData else {
                 throw OWSAssertionError("Missing responseBodyData.")
@@ -62,7 +62,7 @@ public class DeviceProvisioningServiceImpl: DeviceProvisioningService {
             ephemeralDeviceId: ephemeralDeviceId
         )
         return firstly(on: schedulers.sharedUserInitiated) {
-            self.networkManager.makePromise(request: request, canUseWebSocket: true)
+            self.networkManager.makePromise(request: request)
                 .asVoid(on: self.schedulers.sync)
         }.recover(on: schedulers.sharedUserInitiated) { (error: Error) -> Promise<Void> in
             owsFailDebugUnlessNetworkFailure(error)

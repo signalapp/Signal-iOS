@@ -413,7 +413,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         do {
             Logger.info("Waiting for device to link")
             response = try await networkManager.asyncRequest(
-                Requests.waitForDeviceToLink(tokenId: tokenId)
+                Requests.waitForDeviceToLink(tokenId: tokenId),
+                canUseWebSocket: false
             )
             Logger.info("Device linked!")
         } catch {
@@ -619,7 +620,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         let response: HTTPResponse
         do {
             response = try await networkManager.asyncRequest(
-                Requests.waitForLinkNSyncBackupUpload(auth: auth)
+                Requests.waitForLinkNSyncBackupUpload(auth: auth),
+                canUseWebSocket: false
             )
         } catch {
             if error is CancellationError {

@@ -338,7 +338,7 @@ extension Upload {
             return try await fetchUploadForm(request: request)
         }
 
-        private func fetchUploadForm<T: Decodable>(request: TSRequest ) async throws -> T {
+        private func fetchUploadForm<T: Decodable>(request: TSRequest) async throws -> T {
             guard let data = try await performRequest(request).responseBodyData else {
                 throw OWSAssertionError("Invalid JSON")
             }
@@ -346,7 +346,7 @@ extension Upload {
         }
 
         private func performRequest(_ request: TSRequest) async throws -> HTTPResponse {
-            try await networkManager.asyncRequest(request, canUseWebSocket: chatConnectionManager.canMakeRequests(connectionType: .identified))
+            try await networkManager.asyncRequest(request)
         }
     }
 }
