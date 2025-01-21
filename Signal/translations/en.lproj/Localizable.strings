@@ -4166,7 +4166,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Preparing to download…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes depending on the size of your message history";
+"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Do not close the app.";
