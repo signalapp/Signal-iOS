@@ -51,11 +51,30 @@ class BlockListViewController: OWSTableViewController2 {
         )
         contents.add(sectionAddContact)
 
-        let (addresses, groups) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            let addresses = SSKEnvironment.shared.blockingManagerRef.blockedAddresses(transaction: transaction)
-                .sorted(by: { $0.compare($1) == .orderedAscending })
-            let groups = ((try? SSKEnvironment.shared.blockingManagerRef.blockedGroupIds(transaction: transaction)) ?? [])
-                .map({ ($0, TSGroupThread.fetch(groupId: $0, transaction: transaction)?.groupModel) })
+        let addresses: [SignalServiceAddress]
+        let groups: [(groupId: Data, groupName: String, groupModel: TSGroupModel?)]
+        (addresses, groups) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            let blockingManager = SSKEnvironment.shared.blockingManagerRef
+            let contactManager = SSKEnvironment.shared.contactManagerRef
+            let addresses = contactManager.sortSignalServiceAddresses(
+                blockingManager.blockedAddresses(transaction: transaction),
+                transaction: transaction
+            )
+            let groups: [(groupId: Data, groupName: String, groupModel: TSGroupModel?)]
+            groups = ((try? blockingManager.blockedGroupIds(transaction: transaction)) ?? []).map {
+                let groupModel = TSGroupThread.fetch(groupId: $0, transaction: transaction)?.groupModel
+                let groupName = groupModel?.groupNameOrDefault ?? TSGroupThread.defaultGroupName
+                return ($0, groupName, groupModel)
+            }.sorted(by: {
+                switch $0.groupName.localizedCaseInsensitiveCompare($1.groupName) {
+                case .orderedAscending:
+                    return true
+                case .orderedDescending:
+                    return false
+                case .orderedSame:
+                    return $0.groupId.hexadecimalString < $0.groupId.hexadecimalString
+                }
+            })
             return (addresses, groups)
         }
 
@@ -98,18 +117,17 @@ class BlockListViewController: OWSTableViewController2 {
         }
 
         // Groups
-        let groupsSectionItems = groups.map { (groupId, groupModel) in
-            let name = groupModel?.groupNameOrDefault ?? TSGroupThread.defaultGroupName
+        let groupsSectionItems = groups.map { (groupId, groupName, groupModel) in
             let image = groupModel?.avatarImage ?? SSKEnvironment.shared.avatarBuilderRef.avatarImage(forGroupId: groupId, diameterPoints: AvatarBuilder.standardAvatarSizePoints)
             return OWSTableItem(
                 customCellBlock: {
                     let cell = AvatarTableViewCell()
-                    cell.configure(image: image, text: name)
+                    cell.configure(image: image, text: groupName)
                     return cell
                 },
                 actionBlock: { [weak self] in
                     guard let self else { return }
-                    BlockListUIUtils.showUnblockGroupActionSheet(groupId: groupId, groupNameOrDefault: name, from: self) { isBlocked in
+                    BlockListUIUtils.showUnblockGroupActionSheet(groupId: groupId, groupNameOrDefault: groupName, from: self) { isBlocked in
                         if !isBlocked {
                             self.updateContactList(reloadTableView: true)
                         }
