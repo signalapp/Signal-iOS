@@ -23,6 +23,8 @@ final class ChatListContainerView: UIView {
 
     init(tableView: CLVTableView, searchBar: UISearchBar) {
         self.searchBar = searchBar
+        searchBar.disableAiWritingTools()
+
         self.tableView = tableView
         super.init(frame: .zero)
 
