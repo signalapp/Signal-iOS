@@ -512,7 +512,7 @@
 		4C5250D221E7BD7D00CE3D95 /* PhoneNumberValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5250D121E7BD7D00CE3D95 /* PhoneNumberValidator.swift */; };
 		4C5250D421E7C51900CE3D95 /* PhoneNumberValidatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5250D321E7C51900CE3D95 /* PhoneNumberValidatorTest.swift */; };
 		4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */; };
-		4C751BE523FA0284002A8AF1 /* ContactSupportAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */; };
+		4C751BE523FA0284002A8AF1 /* ContactSupportActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C751BE423FA0284002A8AF1 /* ContactSupportActionSheet.swift */; };
 		4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest.swift */; };
 		4C8A6DFC22E5499300469AE7 /* MediaZoomAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */; };
 		4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A6DFD22E54AFA00469AE7 /* MediaInteractiveDismiss.swift */; };
@@ -1200,7 +1200,6 @@
 		66FC638429E2201500F00DAC /* ThemedColor+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638329E2201500F00DAC /* ThemedColor+Theme.swift */; };
 		66FC638C29E9E9D200F00DAC /* TextCheckingDataItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638B29E9E9D200F00DAC /* TextCheckingDataItem.swift */; };
 		66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */; };
-		66FC639029EDC1E600F00DAC /* ContactSupportAlert+Registration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */; };
 		66FFDADC2C823C270079C0E7 /* MessageBackupContexts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FFDADB2C823C270079C0E7 /* MessageBackupContexts.swift */; };
 		720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FD1269F642F00841DF9 /* AvatarModel.swift */; };
 		720547F52B9C97EC00E2CF2F /* APNSRotationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64C2925C012007A311E /* APNSRotationStore.swift */; };
@@ -4245,7 +4244,7 @@
 		4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAccountDiscovery.swift; sourceTree = "<group>"; };
 		4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewControllerTest.swift; sourceTree = "<group>"; };
 		4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalUBSan.supp; sourceTree = "<group>"; };
-		4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSupportAlert.swift; sourceTree = "<group>"; };
+		4C751BE423FA0284002A8AF1 /* ContactSupportActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSupportActionSheet.swift; sourceTree = "<group>"; };
 		4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalBaseTest.swift; sourceTree = "<group>"; };
 		4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaZoomAnimationController.swift; sourceTree = "<group>"; };
 		4C8A6DFD22E54AFA00469AE7 /* MediaInteractiveDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaInteractiveDismiss.swift; sourceTree = "<group>"; };
@@ -4977,7 +4976,6 @@
 		66FC638329E2201500F00DAC /* ThemedColor+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThemedColor+Theme.swift"; sourceTree = "<group>"; };
 		66FC638B29E9E9D200F00DAC /* TextCheckingDataItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCheckingDataItem.swift; sourceTree = "<group>"; };
 		66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDisplayConfigurations.swift; sourceTree = "<group>"; };
-		66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactSupportAlert+Registration.swift"; sourceTree = "<group>"; };
 		66FFDADB2C823C270079C0E7 /* MessageBackupContexts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupContexts.swift; sourceTree = "<group>"; };
 		67391FF368D9A60FC8B73F0E /* Pods-Signal.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.profiling.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.profiling.xcconfig"; sourceTree = "<group>"; };
 		675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -9639,7 +9637,6 @@
 		66B35EA1299F077F00130204 /* UserInterface */ = {
 			isa = PBXGroup;
 			children = (
-				66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */,
 				F9480120299E89F8005442BE /* RegistrationCaptchaViewController.swift */,
 				66AAC2C329CB6F1100566AD6 /* RegistrationChangeNumberSplashViewController.swift */,
 				66AAC2C729CB9ED900566AD6 /* RegistrationChangePhoneNumberConfirmationViewController.swift */,
@@ -10145,7 +10142,7 @@
 			children = (
 				F9B3A92C293553930071EB95 /* ASWebAuthenticationSession+Util.swift */,
 				34F1071F26D005340053EF4D /* BatchUpdate.swift */,
-				4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */,
+				4C751BE423FA0284002A8AF1 /* ContactSupportActionSheet.swift */,
 				50A1CE392A00931900730C40 /* DebugLogger+MainApp.swift */,
 				34067EAA2710D61A000407C3 /* DebugLogs.swift */,
 				34A95500271B503E00B05242 /* DisplayableText.swift */,
@@ -16185,8 +16182,7 @@
 				B9B2AA942BC598B60060B56C /* ContactNoteSheet.swift in Sources */,
 				8806EF1B248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift in Sources */,
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
-				66FC639029EDC1E600F00DAC /* ContactSupportAlert+Registration.swift in Sources */,
-				4C751BE523FA0284002A8AF1 /* ContactSupportAlert.swift in Sources */,
+				4C751BE523FA0284002A8AF1 /* ContactSupportActionSheet.swift in Sources */,
 				32ECD08A24BFBF9500EDDED0 /* ContactSupportViewController.swift in Sources */,
 				34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */,
 				F05F51C926A90D6B00861034 /* ContextMenuActionsAccessory.swift in Sources */,

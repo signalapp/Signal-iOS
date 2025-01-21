@@ -4,39 +4,44 @@
 //
 
 import SignalServiceKit
-public import SignalUI
+import SignalUI
 
-public class ContactSupportAlert: NSObject {
-
-    public class func presentAlert(title: String, message: String, emailSupportFilter: String, fromViewController: UIViewController, additionalActions: [ActionSheetAction] = [], customHeader: UIView? = nil, showCancel: Bool = true) {
-        presentStep1(title: title, message: message, emailSupportFilter: emailSupportFilter, fromViewController: fromViewController, additionalActions: additionalActions, customHeader: customHeader, showCancel: showCancel)
-    }
-
-    // MARK: -
-
-    private class func presentStep1(title: String, message: String, emailSupportFilter: String, fromViewController: UIViewController, additionalActions: [ActionSheetAction], customHeader: UIView? = nil, showCancel: Bool = true) {
-        let actionSheet = ActionSheetController(title: title, message: message)
-        actionSheet.customHeader = customHeader
-
-        additionalActions.forEach { actionSheet.addAction($0) }
-
-        let proceedAction = ActionSheetAction(title: CommonStrings.contactSupport, style: .default) { [weak fromViewController] _ in
-            guard let fromViewController = fromViewController else { return }
-            self.presentStep2(emailSupportFilter: emailSupportFilter, fromViewController: fromViewController)
+enum ContactSupportActionSheet {
+    enum EmailFilter: Equatable {
+        enum RegistrationPINMode: String {
+            case v1
+            case v2NoReglock
+            case v2WithReglock
+            case v2WithUnknownReglockState
         }
-        actionSheet.addAction(proceedAction)
-        if showCancel { actionSheet.addAction(OWSActionSheets.cancelAction) }
 
-        fromViewController.present(actionSheet, animated: true)
+        case registrationPINMode(RegistrationPINMode)
+        case deviceTransfer
+        case backupExportFailed
+        case custom(String)
+
+        fileprivate var asString: String {
+            return switch self {
+            case .registrationPINMode(.v1): "Signal PIN - iOS (V1 PIN)"
+            case .registrationPINMode(.v2NoReglock): "Signal PIN - iOS (V2 PIN without RegLock)"
+            case .registrationPINMode(.v2WithReglock): "Signal PIN - iOS (V2 PIN)"
+            case .registrationPINMode(.v2WithUnknownReglockState): "Signal PIN - iOS (V2 PIN with unknown reglock)"
+            case .deviceTransfer: "Signal iOS Transfer"
+            case .backupExportFailed: "iOS Backup Export Failed"
+            case .custom(let string): string
+            }
+        }
     }
 
-    public class func presentStep2(emailSupportFilter: String, fromViewController: UIViewController) {
+    static func present(emailFilter: EmailFilter, fromViewController: UIViewController) {
+        Logger.warn("Presenting contact-support action sheet!")
+
         let submitWithLogTitle = OWSLocalizedString("CONTACT_SUPPORT_SUBMIT_WITH_LOG", comment: "Button text")
         let submitWithLogAction = ActionSheetAction(title: submitWithLogTitle, style: .default) { [weak fromViewController] _ in
             guard let fromViewController = fromViewController else { return }
 
             var emailRequest = SupportEmailModel()
-            emailRequest.supportFilter = emailSupportFilter
+            emailRequest.supportFilter = emailFilter.asString
             emailRequest.debugLogPolicy = .requireUpload
             let operation = ComposeSupportEmailOperation(model: emailRequest)
 
@@ -53,7 +58,7 @@ public class ContactSupportAlert: NSObject {
                 }.catch { error in
                     guard !modal.wasCancelled else { return }
                     modal.dismiss(completion: {
-                        showError(error, emailSupportFilter: emailSupportFilter, fromViewController: fromViewController)
+                        showError(error, emailFilter: emailFilter, fromViewController: fromViewController)
                     })
                 }
             }
@@ -63,8 +68,8 @@ public class ContactSupportAlert: NSObject {
         let submitWithoutLogAction = ActionSheetAction(title: submitWithoutLogTitle, style: .default) { [weak fromViewController] _ in
             guard let fromViewController = fromViewController else { return }
 
-            ComposeSupportEmailOperation.sendEmail(supportFilter: emailSupportFilter).catch { error in
-                showError(error, emailSupportFilter: emailSupportFilter, fromViewController: fromViewController)
+            ComposeSupportEmailOperation.sendEmail(supportFilter: emailFilter.asString).catch { error in
+                showError(error, emailFilter: emailFilter, fromViewController: fromViewController)
             }
         }
 
@@ -78,12 +83,12 @@ public class ContactSupportAlert: NSObject {
         fromViewController.present(actionSheet, animated: true)
     }
 
-    private class func showError(_ error: Error, emailSupportFilter: String, fromViewController: UIViewController) {
+    private static func showError(_ error: Error, emailFilter: EmailFilter, fromViewController: UIViewController) {
         let retryTitle = OWSLocalizedString("CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN", comment: "button text")
         let retryAction = ActionSheetAction(title: retryTitle, style: .default) { [weak fromViewController] _ in
             guard let fromViewController = fromViewController else { return }
 
-            presentStep2(emailSupportFilter: emailSupportFilter, fromViewController: fromViewController)
+            present(emailFilter: emailFilter, fromViewController: fromViewController)
         }
 
         let message = OWSLocalizedString("CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY", comment: "Alert body")
@@ -95,19 +100,13 @@ public class ContactSupportAlert: NSObject {
     }
 }
 
-enum ContactSupportError: Error {
-    case debugLogsError(localizedDescription: String)
-}
-extension ContactSupportError: LocalizedError, UserErrorDescriptionProvider {
+// MARK: -
+
+private struct DebugLogsUploadError: Error, LocalizedError, UserErrorDescriptionProvider {
+    let localizedDescription: String
+
     var errorDescription: String? {
         localizedDescription
-    }
-
-    public var localizedDescription: String {
-        switch self {
-        case .debugLogsError(let localizedDescription):
-            return localizedDescription
-        }
     }
 }
 
@@ -121,8 +120,8 @@ extension DebugLogs {
                     if let logArchiveOrDirectoryPath = logArchiveOrDirectoryPath {
                         _ = OWSFileSystem.deleteFile(logArchiveOrDirectoryPath)
                     }
-                    let error = ContactSupportError.debugLogsError(localizedDescription: localizedErrorDescription)
-                    future.reject(error)
+
+                    future.reject(DebugLogsUploadError(localizedDescription: localizedErrorDescription))
                 }
             )
         }

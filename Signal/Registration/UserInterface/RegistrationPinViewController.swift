@@ -64,7 +64,7 @@ public struct RegistrationPinState: Equatable {
 
     let operation: RegistrationPinOperation
     let error: RegistrationPinValidationError?
-    let contactSupportMode: ContactSupportRegistrationPINMode
+    let contactSupportMode: ContactSupportActionSheet.EmailFilter.RegistrationPINMode
 
     public enum ExitConfiguration: Equatable {
         case noExitAllowed
@@ -716,7 +716,7 @@ class RegistrationPinViewController: OWSViewController {
 
         actionSheet.addAction(.init(title: CommonStrings.contactSupport) { [weak self] _ in
             guard let self else { return }
-            ContactSupportAlert.showForRegistrationPINMode(self.state.contactSupportMode, from: self)
+            ContactSupportActionSheet.present(emailFilter: .registrationPINMode(state.contactSupportMode), fromViewController: self)
         })
 
         actionSheet.addAction(OWSActionSheets.cancelAction)

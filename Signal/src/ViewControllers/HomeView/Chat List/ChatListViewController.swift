@@ -1330,7 +1330,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             title: CommonStrings.contactSupport,
             handler: { [weak self] _ in
                 guard let self else { return }
-                ContactSupportAlert.presentStep2(emailSupportFilter: "NotLaunchingNSE", fromViewController: self)
+                ContactSupportActionSheet.present(emailFilter: .custom("NotLaunchingNSE"), fromViewController: self)
             }
         ))
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton))

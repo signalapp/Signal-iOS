@@ -646,20 +646,26 @@ extension ConversationViewController: CVComponentDelegate {
         headerImageView.autoSetDimension(.width, toSize: 200)
         headerImageView.autoSetDimension(.height, toSize: 110)
 
-        ContactSupportAlert.presentAlert(title: OWSLocalizedString("SESSION_REFRESH_ALERT_TITLE",
-                                                                  comment: "Title for the session refresh alert"),
-                                         message: OWSLocalizedString("SESSION_REFRESH_ALERT_MESSAGE",
-                                                                    comment: "Description for the session refresh alert"),
-                                         emailSupportFilter: "Signal iOS Session Refresh",
-                                         fromViewController: self,
-                                         additionalActions: [
-                                            ActionSheetAction(title: CommonStrings.okayButton,
-                                                              accessibilityIdentifier: "okay",
-                                                              style: .default,
-                                                              handler: nil)
-                                         ],
-                                         customHeader: headerView,
-                                         showCancel: false)
+        let sessionRefreshedActionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "SESSION_REFRESH_ALERT_TITLE",
+                comment: "Title for the session refresh alert"
+            ),
+            message: OWSLocalizedString(
+                "SESSION_REFRESH_ALERT_MESSAGE",
+                comment: "Description for the session refresh alert"
+            )
+        )
+        sessionRefreshedActionSheet.addAction(ActionSheetAction(title: CommonStrings.contactSupport) { _ in
+            ContactSupportActionSheet.present(
+                emailFilter: .custom("Signal iOS Session Refresh"),
+                fromViewController: self
+            )
+        })
+        sessionRefreshedActionSheet.addAction(OWSActionSheets.okayAction)
+        sessionRefreshedActionSheet.customHeader = headerView
+
+        presentActionSheet(sessionRefreshedActionSheet)
     }
 
     // See: resendGroupUpdate

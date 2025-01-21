@@ -398,8 +398,10 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
                 switch error {
                 case .errorMarkingBackupUploaded(let retryHandler), .errorUploadingBackup(let retryHandler):
                     self.showLinkAndSyncRetryableFailureAlert(errorRetryHandler: retryHandler)
-                case .errorWaitingForLinkedDevice, .timedOutWaitingForLinkedDevice, .errorGeneratingBackup:
-                    self.showLinkAndSyncUnretryableFailureAlert()
+                case .errorWaitingForLinkedDevice, .timedOutWaitingForLinkedDevice:
+                    self.showLinkAndSyncUnretryableFailureAlert(contactSupportEmailFilter: nil)
+                case .errorGeneratingBackup:
+                    self.showLinkAndSyncUnretryableFailureAlert(contactSupportEmailFilter: .backupExportFailed)
                 case .cancelled:
                     break
                 }
@@ -623,7 +625,9 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
         presentActionSheet(actionSheet)
     }
 
-    private func showLinkAndSyncUnretryableFailureAlert() {
+    private func showLinkAndSyncUnretryableFailureAlert(
+        contactSupportEmailFilter: ContactSupportActionSheet.EmailFilter?
+    ) {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE",
@@ -634,10 +638,21 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
                 comment: "Message for a sheet indicating that a newly linked device failed to sync messages."
             )
         )
+        if let contactSupportEmailFilter {
+            actionSheet.addAction(ActionSheetAction(title: CommonStrings.contactSupport) { [weak self] _ in
+                guard let self else { return }
+
+                ContactSupportActionSheet.present(
+                    emailFilter: contactSupportEmailFilter,
+                    fromViewController: self
+                )
+            })
+        }
         actionSheet.addAction(.init(title: CommonStrings.learnMore) { _ in
             UIApplication.shared.open(URL(string: "https://support.signal.org/hc/articles/360007320551")!)
         })
-        actionSheet.addAction(.init(title: CommonStrings.continueButton, style: .cancel))
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.continueButton, style: .cancel))
+
         actionSheet.onDismiss = { [weak self] in
             self?.viewModel.expectMoreDevices()
             DependenciesBridge.shared.messageBackupErrorPresenter.presentOverTopmostViewController(completion: {})

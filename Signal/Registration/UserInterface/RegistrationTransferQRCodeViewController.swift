@@ -368,8 +368,8 @@ public class RegistrationTransferQRCodeViewController: OWSViewController, OWSNav
         permissionActionSheetController?.dismiss(animated: true)
         permissionActionSheetController = nil
 
-        ContactSupportAlert.presentStep2(
-            emailSupportFilter: "Signal iOS Transfer",
+        ContactSupportActionSheet.present(
+            emailFilter: .deviceTransfer,
             fromViewController: self
         )
     }

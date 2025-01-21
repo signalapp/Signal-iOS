@@ -108,27 +108,19 @@ public enum OWSActionSheets {
     }
 
     public static var okayAction: ActionSheetAction {
-        let action = ActionSheetAction(
+        return ActionSheetAction(
             title: CommonStrings.okButton,
-            accessibilityIdentifier: "OWSActionSheets.okay",
-            style: .cancel
-        ) { _ in
-            Logger.debug("Okay item")
-            // Do nothing.
-        }
-        return action
+            style: .cancel,
+            handler: nil
+        )
     }
 
     public static var cancelAction: ActionSheetAction {
-        let action = ActionSheetAction(
+        return ActionSheetAction(
             title: CommonStrings.cancelButton,
-            accessibilityIdentifier: "OWSActionSheets.cancel",
-            style: .cancel
-        ) { _ in
-            Logger.debug("Cancel item")
-            // Do nothing.
-        }
-        return action
+            style: .cancel,
+            handler: nil
+        )
     }
 
     public static var notNowAction: ActionSheetAction {

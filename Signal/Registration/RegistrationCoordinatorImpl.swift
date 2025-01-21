@@ -4053,7 +4053,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    private func contactSupportRegistrationPINMode() -> ContactSupportRegistrationPINMode {
+    private func contactSupportRegistrationPINMode() -> ContactSupportActionSheet.EmailFilter.RegistrationPINMode {
         switch getPathway() {
         case .opening:
             owsFailBeta("Should not be asking for PIN during opening path.")
