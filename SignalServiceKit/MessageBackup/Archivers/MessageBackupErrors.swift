@@ -1048,7 +1048,6 @@ extension MessageBackup {
                         .longTextStandardMessageMissingBody,
                         .unrecognizedBodyRangeStyle,
                         .linkPreviewEmptyUrl,
-                        .linkPreviewUrlNotInBody,
                         .contactMessageMissingContactAttachment,
                         .contactAttachmentPhoneNumberMissingValue,
                         .contactAttachmentPhoneNumberUnknownType,
@@ -1119,6 +1118,12 @@ extension MessageBackup {
                     // had no contents (no body, no OWSAttachmentInfo, not view-once
                     // or a gift badge). The way this renders is as a quote of an
                     // attachment with no preview, just the text "Attachment".
+                    return .warning
+                case .linkPreviewUrlNotInBody:
+                    // Other client platforms had different validation rules
+                    // that make it possible to restore what we consider an
+                    // invalid link preview. We drop these link previews
+                    // without dropping the containing message.
                     return .warning
                 }
             case
