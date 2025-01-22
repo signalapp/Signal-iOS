@@ -1,4 +1,1 @@
-• Filtret Filer i mediagalleriet kan hjälpa dig att snabbt hitta PDF-filer och andra bilagor.
-• Vi har bytt ut väljaren för emojireaktioner på fliken Stories så att den fungerar med det mörka temat.
-• Förbättringar av VoiceOver-tillgängligheten.
-• Vi har också uppdaterat designen på QR-koderna i hela appen.
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.

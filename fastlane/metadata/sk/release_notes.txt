@@ -1,4 +1,1 @@
-• Filter „Súbory“ v galérii médií vám pomôže rýchlo nájsť súbory PDF a iné prílohy.
-• Výber reakcie pomocou emotikonov na karte Príbehy sme prepli tak, aby ladil s tmavou témou.
-• Lepšia dostupnosť funkcie VoiceOver.
-• Aktualizovali sme tiež vzhľad QR kódov v celej aplikácii.
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.

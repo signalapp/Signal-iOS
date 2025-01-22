@@ -1,4 +1,1 @@
-• Фильтр «Файлы» в галерее медиафайлов поможет вам быстро найти PDF-файлы и другие вложения, такие как TXT, которые на самом деле могли быть текстом.
-• Мы переключили меню реакций на эмодзи во вкладке «Истории» для работы с тёмной темой.
-• Улучшения доступности VoiceOver, в том числе метка для кнопки звонка и новая функция, указывающая, когда сообщение содержит ответ с цитатой.
-• Мы также обновили дизайн QR-кодов во всём приложении. Они всегда хорошо смотрелись на фото, но теперь они просто супер фотогеничны.
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.

@@ -1,4 +1,1 @@
-• El filtro "Archivos" de la galería multimedia puede ayudarte a encontrar rápidamente un PDF o algún otro archivo adjunto, como ese TXT que podría haberse enviado como un simple mensaje.
-• Hemos cambiado el selector de reacciones emoji en la pestaña Historias para que funcione con el tema oscuro (porque un buen emoji siempre nos da claridad sobre la reacción honesta de las personas).
-• Mejoras en la accesibilidad de VoiceOver: hemos añadido una etiqueta al botón de llamada y una nueva funcionalidad para indicar cuándo un mensaje contiene una respuesta citada.
-• También hemos actualizado el diseño de los códigos QR en toda la app. Siempre han sido bastante fotogénicos, pero ahora están más listos que nunca para un primer plano.
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.

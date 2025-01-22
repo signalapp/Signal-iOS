@@ -1,4 +1,1 @@
-• Το φίλτρο «Αρχεία» στη γκαλερί πολυμέσων μπορεί να σε βοηθήσει να βρεις γρήγορα PDF και άλλα συνημμένα αρχεία.
-• Αλλάξαμε τον επιλογέα αντιδράσεων emoji στην καρτέλα Ιστορίες για να λειτουργεί με το σκούρο θέμα.
-• Βελτιώσεις προσβασιμότητας VoiceOver.
-• Ενημερώσαμε επίσης τη σχεδίαση των κωδικών QR σε όλη την εφαρμογή.
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.

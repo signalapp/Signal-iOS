@@ -1,4 +1,1 @@
-• Filter “File” di galeri media dapat membantu Anda menemukan PDF dan lampiran lainnya dengan cepat.
-• Kami mengganti pemilih reaksi emoji di tab Story agar dapat digunakan dengan tema gelap.
-• Peningkatan aksesibilitas VoiceOver.
-• Kami juga memperbarui desain kode QR di seluruh bagian aplikasi.
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.

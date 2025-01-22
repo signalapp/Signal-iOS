@@ -1,4 +1,1 @@
-• ตัวกรอง “ไฟล์” ในหน้ารวมสื่อจะช่วยให้คุณค้นเจอไฟล์แนบต่างๆ รวมถึง PDF ได้ง่ายและรวดเร็วขึ้น
-• เราปรับรูปแบบตัวเลือกอีโมจิที่ใช้แสดงความรู้สึกในแท็บสตอรี่ให้เข้ากันได้ดีกับธีมมืด
-• พัฒนาความสามารถเพื่อรองรับการทำงานของ VoiceOver
-• นอกจากนี้ ยังมีการปรับโฉมคิวอาร์โค้ดของทั้งแอปอีกด้วย
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.

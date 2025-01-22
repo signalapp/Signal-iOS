@@ -1,4 +1,1 @@
-• 미디어 갤러리의 '파일' 필터를 사용하면 빠르게 PDF와 기타 첨부 파일을 찾을 수 있습니다.
-• 스토리 탭의 이모지 반응 선택기가 어두운 테마와 작동하도록 변경했습니다.
-• 보이스오버 접근성 향상.
-• 앱 전반의 QR 코드 디자인도 업데이트했습니다.
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.

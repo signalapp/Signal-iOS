@@ -1,4 +1,1 @@
-• Il filtro dei file nella raccolta dei tuoi media può aiutarti a trovare subito i PDF e altri allegati… si sa che spesso si fa prima a inviare un intero documento che spiegarlo a parole in chat.
-• Abbiamo aggiornato il selettore di emoji nella scheda Storie: da ora funziona con il tema scuro di Signal (così il passaggio al "lato oscuro" dell'app sarà finalmente completato).
-• Abbiamo migliorato la funzione di voice over per rendere l'app più accessibile, aggiungendo un testo per indicare il pulsante per le chiamate e inserendo una nuova funzionalità per segnalare quando un messaggio include una risposta citata.
-• Abbiamo anche aggiornato il design dei codice QR mostrati all'interno dell'app. Già erano belli, visto quanto tempo passavano di fronte alle fotocamere, ma ora sono su un altro livello!
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.

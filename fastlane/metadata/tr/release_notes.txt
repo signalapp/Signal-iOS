@@ -1,4 +1,1 @@
-• Medya galerisindeki "Dosyalar" filtresi, aslında bir metin olabilecek TXT gibi PDF'leri ve diğer ekleri hızla bulmana yardımcı olabilir.
-• Kısa Hikayeler sekmesindeki emoji tepki seçicisini koyu temayla çalışacak şekilde değiştirdik.
-• Arama zili düğmesi için bir etiket ve bir mesajın alıntılanmış bir yanıt içerdiğini gösteren yeni işlevsellik dahil olmak üzere VoiceOver erişilebilirlik iyileştirmeleri.
-• Ayrıca uygulama genelinde kare kodların tasarımını da güncelledik. Yani artık kare kodların eskisinden daha sevimli duracağından emin olabilirsin.
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.

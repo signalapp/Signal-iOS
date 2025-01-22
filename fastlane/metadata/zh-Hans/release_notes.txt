@@ -1,4 +1,1 @@
-• 媒体库中的“文件”筛选功能可以帮助您快速找到 PDF 和其他附件。
-• 我们切换了动态选项卡中的表情符号回应选择器，以适配夜间模式。
-• VoiceOver 旁白辅助功能得到了优化。
-• 我们还更新了整个应用中的二维码设计。
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.

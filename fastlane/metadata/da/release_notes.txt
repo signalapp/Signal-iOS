@@ -1,4 +1,1 @@
-• Filteret"Filer" i mediegalleriet kan hjælpe dig med hurtigt at finde PDF'er og andre vedhæftede filer, f.eks. TXT, der virkelig kunne have været en tekst.
-• Vi har skiftet emoji-reaktionsvælgeren på fanen Historier, så den fungerer med det mørke tema, men den rigtige reaktion kan stadig give oplysning.
-• VoiceOver-tilgængelighedsforbedringer, herunder en etiket til ringeknappen til opkald og ny funktionalitet til at angive, når en besked indeholder et citeret svar.
-• Vi har også opdateret designet af QR-koderne i hele appen. De har altid set godt ud foran et kamera, men de er praktisk talt klar til et photoshoot nu.
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.

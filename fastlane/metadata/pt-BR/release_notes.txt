@@ -1,4 +1,1 @@
-•  O filtro “Arquivos” na galeria de mídia ajuda você a encontrar rapidamente PDFs e outros anexos.
-• Trocamos o seletor de reação de emojis na aba Stories para que ele funcione no modo escuro.
-• Melhorias na acessibilidade da locução, incluindo um rótulo para o botão de toque de chamada e uma nova funcionalidade para indicar quando uma mensagem inclui uma citação de resposta.
-• Também atualizamos o design dos QR codes no app.
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.

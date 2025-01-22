@@ -1,4 +1,1 @@
-• Un nouveau filtre fait son entrée dans la galerie multimédias :  avec le filtre "Fichiers", retrouvez rapidement vos PDF et autres pièces jointes, comme ce fichier TXT qui s'est transformé en roman.
-• Dans l'onglet "Stories", le sélecteur d'émojis fait peau neuve pour s'adapter au thème sombre. Parce qu'un émoji bien choisi peut illuminer une journée.
-• Des améliorations aussi du côté de l'accessibilité, avec de nouvelles descriptions vocales. Le bouton d'appel se dote quant à lui d'un libellé, et une nouvelle fonctionnalité informe l'utilisateur lorsqu'un message donné est cité dans une réponse.
-• Les codes QR changent de look dans toute l'application. Et il n'y a pas photo : s'ils étaient déjà très à l'aise devant la caméra, ils sont maintenant prêts pour le tapis rouge.
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.

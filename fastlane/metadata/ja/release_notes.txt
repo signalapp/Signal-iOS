@@ -1,4 +1,1 @@
-• メディアギャラリーの「ファイル」フィルターは、PDFやその他の添付ファイルを素早く見つけるのに便利です。
-• ストーリーズタブの絵文字リアクションピッカーをダークテーマに対応するように調整しました。
-•VoiceOverのアクセシビリティを改良しました。
-• アプリ全体のQRコードのデザインもアップデートしました。
+• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.
