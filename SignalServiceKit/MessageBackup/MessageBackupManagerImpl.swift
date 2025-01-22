@@ -31,6 +31,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private typealias LoggableErrorAndProto = MessageBackup.LoggableErrorAndProto
 
     private let accountDataArchiver: MessageBackupAccountDataArchiver
+    private let adHocCallArchiver: MessageBackupAdHocCallArchiver
     private let appVersion: AppVersion
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentUploadManager: AttachmentUploadManager
@@ -45,6 +46,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let databaseChangeObserver: DatabaseChangeObserver
     private let dateProvider: DateProvider
     private let db: any DB
+    private let dbFileSizeProvider: DBFileSizeProvider
     private let disappearingMessagesJob: OWSDisappearingMessagesJob
     private let distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver
     private let encryptedStreamProvider: MessageBackupEncryptedProtoStreamProvider
@@ -61,10 +63,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager
     private let releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver
     private let stickerPackArchiver: MessageBackupStickerPackArchiver
-    private let adHocCallArchiver: MessageBackupAdHocCallArchiver
 
     public init(
         accountDataArchiver: MessageBackupAccountDataArchiver,
+        adHocCallArchiver: MessageBackupAdHocCallArchiver,
         appVersion: AppVersion,
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadManager: AttachmentUploadManager,
@@ -79,6 +81,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         databaseChangeObserver: DatabaseChangeObserver,
         dateProvider: @escaping DateProvider,
         db: any DB,
+        dbFileSizeProvider: DBFileSizeProvider,
         disappearingMessagesJob: OWSDisappearingMessagesJob,
         distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver,
         encryptedStreamProvider: MessageBackupEncryptedProtoStreamProvider,
@@ -93,8 +96,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider,
         postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager,
         releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver,
-        stickerPackArchiver: MessageBackupStickerPackArchiver,
-        adHocCallArchiver: MessageBackupAdHocCallArchiver
+        stickerPackArchiver: MessageBackupStickerPackArchiver
     ) {
         self.accountDataArchiver = accountDataArchiver
         self.appVersion = appVersion
@@ -111,6 +113,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.databaseChangeObserver = databaseChangeObserver
         self.dateProvider = dateProvider
         self.db = db
+        self.dbFileSizeProvider = dbFileSizeProvider
         self.disappearingMessagesJob = disappearingMessagesJob
         self.distributionListRecipientArchiver = distributionListRecipientArchiver
         self.encryptedStreamProvider = encryptedStreamProvider
@@ -334,7 +337,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         firstAppVersion: String,
         tx: DBWriteTransaction
     ) throws {
-        let bencher = MessageBackup.Bencher(dateProvider: dateProvider)
+        let bencher = MessageBackup.Bencher(
+            dateProvider: dateProvider,
+            dbFileSizeProvider: dbFileSizeProvider
+        )
         let backupVersion = Constants.supportedBackupVersion
         let purposeString: String = switch backupPurpose {
         case .deviceTransfer: "LinkNSync"
@@ -738,7 +744,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) throws -> BackupProto_BackupInfo {
-        let bencher = MessageBackup.Bencher(dateProvider: dateProvider)
+        let bencher = MessageBackup.Bencher(
+            dateProvider: dateProvider,
+            dbFileSizeProvider: dbFileSizeProvider
+        )
 
         guard !hasRestoredFromBackup(tx: tx) else {
             throw OWSAssertionError("Restoring from backup twice!")
@@ -1033,8 +1042,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         Logger.info("Imported with version \(backupInfo.version), timestamp \(backupInfo.backupTimeMs)")
-        Logger.info("Backup app version: \(backupInfo.currentAppVersion)")
-        Logger.info("Backup first app version \(backupInfo.firstAppVersion)")
+        Logger.info("Backup app version: \(backupInfo.currentAppVersion.nilIfEmpty ?? "Missing!")")
+        Logger.info("Backup first app version: \(backupInfo.firstAppVersion.nilIfEmpty ?? "Missing!")")
         bencher.logResults()
 
         kvStore.setBool(true, key: Constants.keyValueStoreHasRestoredBackupKey, transaction: tx)

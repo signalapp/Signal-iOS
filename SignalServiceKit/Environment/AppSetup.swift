@@ -146,6 +146,7 @@ public class AppSetup {
         )
 
         let db = SDSDB(databaseStorage: databaseStorage)
+        let dbFileSizeProvider = SDSDBFileSizeProvider(databaseStorage: databaseStorage)
 
         let tsAccountManager = TSAccountManagerImpl(
             appReadiness: appReadiness,
@@ -1073,6 +1074,11 @@ public class AppSetup {
                 udManager: MessageBackup.AccountData.Wrappers.UDManager(udManager: udManager),
                 usernameEducationManager: usernameEducationManager
             ),
+            adHocCallArchiver: MessageBackupAdHocCallArchiverImpl(
+                callRecordStore: callRecordStore,
+                callLinkRecordStore: callLinkStore,
+                adHocCallRecordManager: adHocCallRecordManager
+            ),
             appVersion: appVersion,
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
@@ -1111,6 +1117,7 @@ public class AppSetup {
             databaseChangeObserver: databaseStorage.databaseChangeObserver,
             dateProvider: dateProvider,
             db: db,
+            dbFileSizeProvider: dbFileSizeProvider,
             disappearingMessagesJob: disappearingMessagesJob,
             distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver(
                 privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
@@ -1157,11 +1164,6 @@ public class AppSetup {
             releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver(),
             stickerPackArchiver: MessageBackupStickerPackArchiverImpl(
                 backupStickerPackDownloadStore: backupStickerPackDownloadStore
-            ),
-            adHocCallArchiver: MessageBackupAdHocCallArchiverImpl(
-                callRecordStore: callRecordStore,
-                callLinkRecordStore: callLinkStore,
-                adHocCallRecordManager: adHocCallRecordManager
             )
         )
 

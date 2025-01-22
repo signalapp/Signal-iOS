@@ -13,9 +13,22 @@ extension MessageBackup {
         private let dateProvider: DateProvider
 
         let startTimestamp: UInt64
+        private var totalFramesProcessed: UInt64 = 0
+        private var metrics = [FrameType: Metrics]()
+        private var postFrameMetrics = [PostFrameRestoreAction: Metrics]()
+        private let dbFileSizeBencher: DBFileSizeBencher?
 
-        init(dateProvider: @escaping DateProvider) {
+        init(
+            dateProvider: @escaping DateProvider,
+            dbFileSizeProvider: DBFileSizeProvider
+        ) {
             self.dateProvider = dateProvider
+            self.dbFileSizeBencher = if FeatureFlags.verboseBackupBenchLogging {
+                DBFileSizeBencher(dateProvider: dateProvider, dbFileSizeProvider: dbFileSizeProvider)
+            } else {
+                nil
+            }
+
             self.startTimestamp = dateProvider().ows_millisecondsSince1970
         }
 
@@ -24,6 +37,10 @@ extension MessageBackup {
         /// The provided block takes a ``FrameBencher`` which can itself be provided the
         /// ``BackupProto_Frame``; this is done so the return type doesn't have to be a frame.
         func processFrame<T>(_ block: (FrameBencher) throws -> T) rethrows -> T {
+            defer {
+                dbFileSizeBencher?.logDBFileSizeIfNecessary(totalFramesProcessed: totalFramesProcessed)
+            }
+
             let startMs = dateProvider().ows_millisecondsSince1970
             let frameBencher = FrameBencher(bencher: self, beforeEnumerationStartMs: nil, startMs: startMs)
             return try block(frameBencher)
@@ -83,6 +100,38 @@ extension MessageBackup {
             }
         }
 
+        class DBFileSizeBencher {
+            private let dateProvider: DateProvider
+            private let dbFileSizeProvider: DBFileSizeProvider
+
+            /// The last time we logged the sizes of database files.
+            private var lastDBFileSizeLogDate: Date?
+
+            init(
+                dateProvider: @escaping DateProvider,
+                dbFileSizeProvider: DBFileSizeProvider
+            ) {
+                self.dateProvider = dateProvider
+                self.dbFileSizeProvider = dbFileSizeProvider
+            }
+
+            func logDBFileSizeIfNecessary(totalFramesProcessed: UInt64) {
+                if
+                    let lastDBFileSizeLogDate,
+                    dateProvider().timeIntervalSince(lastDBFileSizeLogDate) < 15 * kSecondInterval
+                {
+                    // Bail if we logged recently.
+                    return
+                }
+
+                let dbFileSize = dbFileSizeProvider.getDatabaseFileSize()
+                let walFileSize = dbFileSizeProvider.getDatabaseWALFileSize()
+                Logger.info("DB file size: \(dbFileSize), WAL file size: \(walFileSize), frames processed: \(totalFramesProcessed)")
+
+                lastDBFileSizeLogDate = dateProvider()
+            }
+        }
+
         /// For measuring processing (import or export) of a single frame.
         class FrameBencher {
             // A bit confusing but if present, this measures the time spent by the
@@ -102,14 +151,31 @@ extension MessageBackup {
                 guard let frameType = FrameType(frame: frame) else {
                     return
                 }
+
                 let durationMs = bencher.dateProvider().ows_millisecondsSince1970 - startMs
+                bencher.totalFramesProcessed += 1
+
                 var metrics = bencher.metrics[frameType] ?? Metrics()
                 metrics.frameCount += 1
                 metrics.totalDurationMs += durationMs
                 metrics.maxDurationMs = max(durationMs, metrics.maxDurationMs)
+
+                if durationMs > Metrics.durationWarningThresholdMs {
+                    metrics.frameCountAboveDurationWarningThreshold += 1
+
+                    if FeatureFlags.verboseBackupBenchLogging {
+                        metrics.universalFrameCountWhenAboveWarningThreshold.append(bencher.totalFramesProcessed)
+                    }
+                }
+
+                if FeatureFlags.verboseBackupBenchLogging {
+                    metrics.allFrameDurationsMs.append(durationMs)
+                }
+
                 if let beforeEnumerationStartMs {
                     metrics.totalEnumerationDurationMs += startMs - beforeEnumerationStartMs
                 }
+
                 bencher.metrics[frameType] = metrics
             }
         }
@@ -130,6 +196,21 @@ extension MessageBackup {
                 }
                 if metrics.totalEnumerationDurationMs > 0 {
                     logString += " Enum:\(metrics.totalEnumerationDurationMs)ms"
+                }
+                if metrics.frameCountAboveDurationWarningThreshold > 0 {
+                    logString += " AboveThreshold:\(metrics.frameCountAboveDurationWarningThreshold)"
+                }
+                if metrics.allFrameDurationsMs.count > 0 {
+                    let percentileStrings = Percentile.computePercentiles(values: metrics.allFrameDurationsMs)
+                        .map { (percentile, duration) in "p\(percentile.rawValue):\(duration)ms" }
+
+                    logString += " FrameDurations:{\(percentileStrings.joined(separator: ","))}"
+                }
+                if metrics.universalFrameCountWhenAboveWarningThreshold.count > 0 {
+                    let percentileStrings = Percentile.computePercentiles(values: metrics.universalFrameCountWhenAboveWarningThreshold)
+                        .map { (percentile, totalFrameCount) in "p\(percentile.rawValue):\(totalFrameCount)" }
+
+                    logString += " UnivFrameCountWhenAboveThreshold:{\(percentileStrings.joined(separator: ","))}"
                 }
                 Logger.info(logString)
             }
@@ -156,14 +237,51 @@ extension MessageBackup {
             return "~\(nearestOrderOfMagnitude)"
         }
 
-        private var metrics = [FrameType: Metrics]()
-        private var postFrameMetrics = [PostFrameRestoreAction: Metrics]()
-
         private struct Metrics {
+            static let durationWarningThresholdMs: UInt64 = 30
+
             var frameCount: UInt64 = 0
+            var frameCountAboveDurationWarningThreshold: UInt64 = 0
             var totalDurationMs: UInt64 = 0
             var maxDurationMs: UInt64 = 0
             var totalEnumerationDurationMs: UInt64 = 0
+
+            /// - Important
+            /// Only set if verbose bench logging is enabled!
+            var allFrameDurationsMs: [UInt64] = []
+
+            /// The total frame count, across all frame types, when we processed
+            /// a frame for this metric that was above the duration-warning
+            /// threshold.
+            /// - Important
+            /// Only set if verbose bench logging is enabled!
+            var universalFrameCountWhenAboveWarningThreshold: [UInt64] = []
+        }
+
+        private enum Percentile: Int, CaseIterable {
+            case p25 = 25
+            case p50 = 50
+            case p75 = 75
+            case p90 = 90
+            case p95 = 95
+            case p99 = 99
+
+            static func computePercentiles<T: Comparable>(
+                values: [T],
+                percentiles: [Percentile] = Percentile.allCases
+            ) -> [(Percentile, T)] {
+                var percentileValues = [(Percentile, T)]()
+                let sortedValues = values.sorted()
+
+                for percentile in percentiles {
+                    let index = Int(Double(sortedValues.count) * Double(percentile.rawValue) / 100)
+                    let clampedIndex = min(sortedValues.count - 1, index)
+
+                    percentileValues.append((percentile, sortedValues[clampedIndex]))
+                }
+
+                return percentileValues
+            }
         }
 
         private enum FrameType: String, CaseIterable {
@@ -188,6 +306,13 @@ extension MessageBackup {
             case ChatItem_RemoteDeletedMessage
 
             case ChatItem_ChatUpdateMessage
+            case ChatItem_ChatUpdateMessage_SimpleUpdate
+            case ChatItem_ChatUpdateMessage_GroupChange
+            case ChatItem_ChatUpdateMessage_ExpirationTimerChange
+            case ChatItem_ChatUpdateMessage_ProfileChange
+            case ChatItem_ChatUpdateMessage_ThreadMerge
+            case ChatItem_ChatUpdateMessage_SessionSwitchover
+            case ChatItem_ChatUpdateMessage_LearnedProfileChange
             case ChatItem_ChatUpdateMessage_IndividualCall
             case ChatItem_ChatUpdateMessage_GroupCall
 
@@ -266,20 +391,27 @@ extension MessageBackup {
 
                     case .updateMessage(let updateMessage):
                         switch updateMessage.update {
-                        case
-                            .simpleUpdate,
-                            .groupChange,
-                            .expirationTimerChange,
-                            .profileChange,
-                            .threadMerge,
-                            .sessionSwitchover,
-                            .learnedProfileChange,
-                            .none:
-                            self = .ChatItem_ChatUpdateMessage
+                        case .simpleUpdate:
+                            self = .ChatItem_ChatUpdateMessage_SimpleUpdate
+                        case .groupChange:
+                            self = .ChatItem_ChatUpdateMessage_GroupChange
+                        case .expirationTimerChange:
+                            self = .ChatItem_ChatUpdateMessage_ExpirationTimerChange
+                        case .profileChange:
+                            self = .ChatItem_ChatUpdateMessage_ProfileChange
+                        case .threadMerge:
+                            self = .ChatItem_ChatUpdateMessage_ThreadMerge
+                        case .sessionSwitchover:
+                            self = .ChatItem_ChatUpdateMessage_SessionSwitchover
+                        case .learnedProfileChange:
+                            self = .ChatItem_ChatUpdateMessage_LearnedProfileChange
                         case .groupCall:
                             self = .ChatItem_ChatUpdateMessage_GroupCall
                         case .individualCall:
                             self = .ChatItem_ChatUpdateMessage_IndividualCall
+                        case .none:
+                            // We don't restore and therefore don't benchmark these.
+                            return nil
                         }
                     }
                 }

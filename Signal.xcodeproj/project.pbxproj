@@ -2565,6 +2565,7 @@
 		D9AE0ADB29188A170063488B /* LegacyMessageDecryptJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ADA29188A170063488B /* LegacyMessageDecryptJobRecord.swift */; };
 		D9AE0ADD2918B2960063488B /* JobRecord+Columns.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AE0ADC2918B2960063488B /* JobRecord+Columns.swift */; };
 		D9B0AC7429EF42960070F31C /* TSInfoMessage+GroupUpdates+DisplayableGroupUpdateItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B0AC7329EF42960070F31C /* TSInfoMessage+GroupUpdates+DisplayableGroupUpdateItem.swift */; };
+		D9B3E6352D4067CA00594475 /* DBFileSizeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B3E6342D4067C400594475 /* DBFileSizeProvider.swift */; };
 		D9B8541229137C150058F97B /* JobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B8541129137C150058F97B /* JobRecord.swift */; };
 		D9B95A9629E6830B00D7CB95 /* JobRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9429E682E900D7CB95 /* JobRecordTest.swift */; };
 		D9B95A9829E8906200D7CB95 /* OWSDeviceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */; };
@@ -6365,6 +6366,7 @@
 		D9AE0ADA29188A170063488B /* LegacyMessageDecryptJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyMessageDecryptJobRecord.swift; sourceTree = "<group>"; };
 		D9AE0ADC2918B2960063488B /* JobRecord+Columns.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JobRecord+Columns.swift"; sourceTree = "<group>"; };
 		D9B0AC7329EF42960070F31C /* TSInfoMessage+GroupUpdates+DisplayableGroupUpdateItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdates+DisplayableGroupUpdateItem.swift"; sourceTree = "<group>"; };
+		D9B3E6342D4067C400594475 /* DBFileSizeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBFileSizeProvider.swift; sourceTree = "<group>"; };
 		D9B8541129137C150058F97B /* JobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobRecord.swift; sourceTree = "<group>"; };
 		D9B91D8D2B17E2A600BCB11A /* GroupCallRecordRingUpdateDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallRecordRingUpdateDelegate.swift; sourceTree = "<group>"; };
 		D9B95A9429E682E900D7CB95 /* JobRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobRecordTest.swift; sourceTree = "<group>"; };
@@ -9370,6 +9372,7 @@
 			isa = PBXGroup;
 			children = (
 				6673FF86297B694C00F96CFD /* DB.swift */,
+				D9B3E6342D4067C400594475 /* DBFileSizeProvider.swift */,
 				6673FF88297B6AF800F96CFD /* DBTransaction.swift */,
 				6673FF8A297B6FA800F96CFD /* SDSDB.swift */,
 			);
@@ -17086,6 +17089,7 @@
 				6600F36C298DAA6200B1EDB7 /* DateProvider.swift in Sources */,
 				72345D1F2B9A1FCF000237B3 /* DateUtil.swift in Sources */,
 				6673FF87297B694C00F96CFD /* DB.swift in Sources */,
+				D9B3E6352D4067CA00594475 /* DBFileSizeProvider.swift in Sources */,
 				6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */,
 				F9C5CDD8289453B400548EEE /* DebouncedEvent.swift in Sources */,
 				668A00DF2C2B5ECF007B8808 /* DebuggerUtils.m in Sources */,
