@@ -1399,7 +1399,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 if let inputProgressSource {
                     progressSource = inputProgressSource
                 } else if let expectedDownloadSizeBytes {
-                    progressSource = await progress?.addSource(withLabel: "download", unitCount: UInt64(expectedDownloadSizeBytes))
+                    progressSource = await progress?.addSource(
+                        withLabel: AttachmentDownloads.downloadProgressLabel,
+                        unitCount: UInt64(expectedDownloadSizeBytes)
+                    )
                 } else {
                     // Perform a HEAD request just to get the byte length from cdn.
                     let request = try urlSession.endpoint.buildRequest(urlPath, method: .head, headers: headers)
@@ -1414,7 +1417,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         throw OWSUnretryableError()
                     }
                     expectedDownloadSizeBytes = contentLengthBytes
-                    progressSource = await progress?.addSource(withLabel: "download", unitCount: UInt64(contentLengthBytes))
+                    progressSource = await progress?.addSource(
+                        withLabel: AttachmentDownloads.downloadProgressLabel,
+                        unitCount: UInt64(contentLengthBytes)
+                    )
                 }
 
                 let wrappedProgress = OWSProgress.createSink { progressValue in

@@ -17,6 +17,7 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
     @Published var isFinalizing = false
     @Published var linkNSyncTask: Task<Void, Error>?
     @Published var didTapCancel: Bool = false
+    @Published var downloadProgress: (totalByteCount: UInt64, downloadedByteCount: UInt64)?
 
 #if DEBUG
     @Published var progressSourceLabel: String?
@@ -50,6 +51,16 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
             .sourceProgresses[SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue]?
             .isFinished.negated
             ?? true
+
+        if
+            let downloadSource = progress.sourceProgresses[AttachmentDownloads.downloadProgressLabel],
+            downloadSource.completedUnitCount > 0,
+            !downloadSource.isFinished
+        {
+            self.downloadProgress = (downloadSource.totalUnitCount, downloadSource.completedUnitCount)
+        } else {
+            self.downloadProgress = nil
+        }
 
         self.isFinalizing = {
             for phase in SecondaryLinkNSyncProgressPhase.allCases {
@@ -119,6 +130,10 @@ struct LinkAndSyncProvisioningProgressView: View {
         indeterminateProgressShouldShow ? 0 : viewModel.progress
     }
 
+    private var byteCountFormat: ByteCountFormatStyle {
+        .byteCount(style: .decimal, allowedUnits: [.mb, .gb])
+    }
+
     private var subtitle: String {
         if viewModel.didTapCancel {
             OWSLocalizedString(
@@ -129,6 +144,16 @@ struct LinkAndSyncProvisioningProgressView: View {
             OWSLocalizedString(
                 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD",
                 comment: "Progress label when the message loading has not yet started during the device linking process"
+            )
+        } else if let downloadProgress = viewModel.downloadProgress {
+            String(
+                format: OWSLocalizedString(
+                    "LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS",
+                    comment: "Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }}"
+                ),
+                downloadProgress.downloadedByteCount.formatted(byteCountFormat),
+                downloadProgress.totalByteCount.formatted(byteCountFormat),
+                progressToShow.formatted(.percent.precision(.fractionLength(0)))
             )
         } else if !viewModel.isFinalizing {
             String(
@@ -270,14 +295,27 @@ struct LinkAndSyncProvisioningProgressView: View {
     }
 
     let task = Task { @MainActor in
-        let nonCancellableProgressSource = await progressSink.addSource(
+
+        let linkNSyncProgress = await progressSink.addChild(
+            withLabel: LocalizationNotNeeded("Link'n'sync"),
+            unitCount: 99
+        )
+
+        let postLinkNSyncProgress = await progressSink.addSource(
+            withLabel: LocalizationNotNeeded("Post-link'n'sync"),
+            unitCount: 1
+        )
+
+        let nonCancellableProgressSource = await linkNSyncProgress.addSource(
             withLabel: SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue,
             unitCount: 10
         )
-        let cancellableProgressSource = await progressSink.addSource(
+        let downloadBackupSink = await linkNSyncProgress.addChild(
             withLabel: SecondaryLinkNSyncProgressPhase.downloadingBackup.rawValue,
             unitCount: 90
         )
+
+        let download = await downloadBackupSink.addSource(withLabel: "download", unitCount: 10_000_000)
 
         try? await Task.sleep(for: .seconds(1))
 
@@ -286,14 +324,16 @@ struct LinkAndSyncProvisioningProgressView: View {
             try? await Task.sleep(for: .milliseconds(100))
         }
 
-        while cancellableProgressSource.completedUnitCount < 90 {
-            cancellableProgressSource.incrementCompletedUnitCount(by: 1)
-            try? await Task.sleep(for: .milliseconds(100))
+        while download.completedUnitCount < 10_000_000 {
+            download.incrementCompletedUnitCount(by: 100_000)
+            try await Task.sleep(for: .milliseconds(100))
         }
+
+        postLinkNSyncProgress.incrementCompletedUnitCount(by: 1)
     }
 
     view.linkNSyncTask = Task {
-        await task.value
+        try? await task.value
     }
 
     return view

@@ -12,6 +12,9 @@ public enum AttachmentDownloads {
     /// Key for a CGFloat progress value from 0 to 1
     public static var attachmentDownloadProgressKey: String { "attachmentDownloadProgressKey" }
 
+    /// Label for ``AttachmentDownloadManager`` download progress source.
+    public static var downloadProgressLabel: String { "download" }
+
     /// Key for a ``Attachment.IdType`` value.
     public static var attachmentDownloadAttachmentIDKey: String { "attachmentDownloadAttachmentIDKey" }
 
