@@ -17,7 +17,7 @@ class DeviceProvisioningURL {
     /// scoped specifically to provisioning to communicate between the primary
     /// and secondary device.
     public enum Capability: String {
-        case linknsync = "backup"
+        case linknsync = "backup2"
     }
 
     let ephemeralDeviceId: String
