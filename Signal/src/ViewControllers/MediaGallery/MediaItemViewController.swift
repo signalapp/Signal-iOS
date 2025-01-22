@@ -9,9 +9,9 @@ import SignalUI
 import YYImage
 
 protocol MediaItemViewControllerDelegate: AnyObject {
-
     func mediaItemViewControllerDidTapMedia(_ viewController: MediaItemViewController)
     func mediaItemViewControllerWillBeginZooming(_ viewController: MediaItemViewController)
+    func mediaItemViewControllerFullyZoomedOut(_ viewController: MediaItemViewController)
 }
 
 protocol VideoPlaybackStatusProvider: AnyObject {
@@ -403,6 +403,13 @@ extension MediaItemViewController: UIScrollViewDelegate {
         delegate?.mediaItemViewControllerWillBeginZooming(self)
     }
 
+    //This is called at the end of whenever we zoom in, or zoom out. "Zooming" in this context means both zooming in and out.
+    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        if scale <= scrollView.minimumZoomScale {
+            delegate?.mediaItemViewControllerFullyZoomedOut(self)
+        }
+    }
+    
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         updateZoomScaleAndConstraints()
         view.layoutIfNeeded()
