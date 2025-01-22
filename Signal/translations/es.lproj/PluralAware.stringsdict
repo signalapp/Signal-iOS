@@ -1283,9 +1283,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d solicitud pendiente.</string>
+			<string>%1$d solicitud para unirse.</string>
 			<key>other</key>
-			<string>%1$d solicitudes pendientes.</string>
+			<string>%1$d solicitudes para unirse.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>

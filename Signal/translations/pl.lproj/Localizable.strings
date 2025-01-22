@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Nie teraz";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "O Signal";
+"ABOUT_SECTION_TITLE" = "O aplikacji Signal";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Zaakceptuj nowy numer bezpieczeństwa";
@@ -17,7 +17,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "Kontakt";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Kontakt dla %1$@";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Kontakt do %1$@";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Multimedia";
@@ -68,28 +68,28 @@
 "ACCOUNT_DATA_REPORT_TITLE" = "Dane Twojego konta";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Zaproś do Signal";
+"ACTION_INVITE" = "Zaproś do komunikatora Signal";
 
 /* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Wyślij wiadomość";
 
 /* A label for 'tap to download' buttons. */
-"ACTION_TAP_TO_DOWNLOAD" = "Stuknij, aby pobrać";
+"ACTION_TAP_TO_DOWNLOAD" = "Dotknij, aby pobrać";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "Wideo rozmowa";
+"ACTION_VIDEO_CALL" = "Połączenie wideo";
 
 /* Label for 'voice call' button in contact view. */
 "ACTION_VOICE_CALL" = "Połączenie Signal";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Dodaj członków";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Dodaj osoby";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Czy chcesz udostępnić swój profil w tej grupie?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Czy chcesz udostępnić tej grupie swój profil?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Czy chcesz dodać tego użytkownika do listy kontaktów?";
+"ADD_TO_CONTACTS_OFFER" = "Czy chcesz dodać tego użytkownika do kontaktów?";
 
 /* Label for button or row which allows users to add to another group. */
 "ADD_TO_GROUP" = "Dodaj do innej grupy";
@@ -98,16 +98,16 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Dodaj do grupy";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Dodać „%1$@” do „%2$@”?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Czy %1$@ ma należeć do  grupy %2$@?";
 
 /* The title on the 'add to group' confirmation action sheet. */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Dodaj nowego członka";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Dodaj osobę";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Należy już do grupy";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Ta osoba należy już do grupy";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ jest już członkiem grupy %2$@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ należy już do grupy %2$@";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ należy teraz do grupy %2$@";
@@ -116,7 +116,7 @@
 "ADD_TO_GROUP_TITLE" = "Dodaj do grupy";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Czy chcesz udostępnić swój profil temu użytkownikowi?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Czy chcesz udostępnić temu użytkownikowi swój profil?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Rozumiem";
@@ -143,10 +143,10 @@
 "ALERT_SAVE" = "Zapisz";
 
 /* Message for UI warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Nie masz wspólnych grup z tą osobą. Uważnie sprawdzaj wszystkie prośby o kontakt, przed ich akceptacją, aby uniknąć niechcianych wiadomości";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Nie masz z tą osobą wspólnych grup. Aby uniknąć niechcianych wiadomości, uważnie sprawdzaj wszystkie prośby o kontakt, zanim je zaakceptujesz.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Żaden z członków tej grupy nie jest Twoim kontaktem. Uważnie sprawdzaj wszystkie prośby o kontakt, przed ich akceptacją, aby uniknąć niechcianych wiadomości";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Żadna osoba z tej grupy nie jest Twoim kontaktem. Aby uniknąć niechcianych wiadomości, uważnie sprawdzaj wszystkie prośby o kontakt, zanim je zaakceptujesz.";
 
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "O prośbach o kontakt";
@@ -203,10 +203,10 @@
 "APN_Message" = "Możesz mieć nowe wiadomości";
 
 /* Default message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal nie może się uruchomić. Wyślij dziennik debugowania na adres support@signal.org, abyśmy mogli rozwiązać ten problem.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal nie może się uruchomić. Abyśmy mogli rozwiązać ten problem, wyślij dziennik debugowania na adres support@signal.org.";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "Otwórz Signal";
+"APP_LAUNCH_FAILURE_CONTINUE" = "Mimo to otwórz Signal";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Prześlij logi debugowania pod adres support@signal.org, abyśmy mogli przyjrzeć się temu problemowi.";
@@ -215,22 +215,22 @@
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Nie udało się otworzyć aplikacji Signal";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Wczytanie bazy danych nie powiodło się";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Nie udało się wczytać bazy danych";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Uaktualnij Signal do najnowszej wersji.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Zaktualizuj Signal do najnowszej wersji.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Nieznana wersja bazy danych.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Aplikacja Signal napotkała problem podczas próby jej otwarcia. Wyślij logi debugowania na adres support@signal.org, aby pomóc w rozwiązaniu tego problemu.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Wystąpił problem z uruchomieniem aplikacji Signal. Abyśmy mogli rozwiązać ten problem, wyślij dziennik debugowania na adres support@signal.org.";
 
 /* Error indicating that the app crashed during the previous launch. */
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Nie udało się otworzyć aplikacji Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Nie można otworzyć aplikacji Signal, ponieważ w urządzeniu jest za mało miejsca. Aby korzystać z aplikacji Signal, zwolnij miejsce, zarządzając pamięcią masową w Ustawieniach.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Nie można otworzyć aplikacji Signal, ponieważ na urządzeniu jest za mało miejsca. Aby korzystać z aplikacji Signal, przejdź do ustawień pamięci urządzenia i zwolnij miejsce.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Za mało miejsca na urządzeniu";
@@ -239,22 +239,22 @@
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Dane przeniesione z Twojego starego urządzenia nie mogły zostać przywrócone. Wyślij logi debugowania na adres support@signal.org, abyśmy mogli rozwiązać ten problem. Jeśli ponownie zainstalujesz Signal, Twoja historia wiadomości może zostać utracona.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Nie udało się dokończyć przenoszenia";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Nie udało się przenieść danych";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Wprowadź swoje imię";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Wpisz swoje imię";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Nie teraz";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Wersja %1$@ jest już dostępna w App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "W App Store jest już dostępna wersja %1$@.";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "Dostępna jest nowa wersja aplikacji Signal";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Uaktualnij";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Zaktualizuj";
 
 /* Name indicating that the dark theme is enabled. */
 "APPEARANCE_SETTINGS_DARK_THEME_NAME" = "Ciemny";
@@ -308,7 +308,7 @@
 "APPLICATION_SHORTCUT_NEW_MESSAGE" = "Nowa wiadomość";
 
 /* Label for the archive button for conversations list view */
-"ARCHIVE_ACTION" = "Archiwizuj";
+"ARCHIVE_ACTION" = "Zarchiwizuj";
 
 /* Button to try to join a call. The admin may need to approve the request before the user can join. */
 "ASK_TO_JOIN_CALL" = "Poproś o dołączenie do rozmowy";
@@ -338,10 +338,10 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Zapisano";
 
 /* Subtitle for the 'high' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Wolniej, większy plik";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Wolniejsze przesyłanie, większe pliki";
 
 /* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Szybciej, mniejszy plik";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Szybsze przesyłanie, mniejsze pliki";
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Jakość multimediów";
@@ -350,7 +350,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Załącznik";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Wystąpił błąd podczas wysyłania załącznika";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Podczas wysyłania załącznika wystąpił błąd";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Nie można przekonwertować obrazu.";
@@ -359,7 +359,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Nie można przetworzyć wideo.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Nie można przetworzyć załączonej grafiki.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Nie można przetworzyć obrazu.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Nie można usunąć metadanych z obrazu.";
@@ -371,10 +371,10 @@
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Załącznik jest za duży.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Załącznik zawiera nieprawidłową zawartość.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Załącznik ma nieprawidłową zawartość.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Załącznik ma nieprawidłowy format pliku.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Załącznik ma nieprawidłowy format.";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Załącznik jest pusty.";
@@ -431,7 +431,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Nie udało się wybrać dokumentu.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Nieobsługiwany typ pliku. Spróbuj go skompresować przed ponownym wysyłaniem.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Skompresuj ten plik lub folder i spróbuj go wysłać jeszcze raz.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Nieobsługiwany plik";
@@ -473,22 +473,22 @@
 "AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Tekst";
 
 /* Text indicating the user can select an avatar from their camera */
-"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "aparat";
+"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "Aparat";
 
 /* Text indicating the user can select an avatar from their photos */
-"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "zdjęcie";
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "Zdjęcie";
 
 /* Title for the previously used and preset avatar section. */
 "AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Wybierz awatar";
 
 /* Text indicating the user can create a new avatar with text */
-"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "tekst";
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "Tekst";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "Wróć";
 
 /* Text used as placeholder in backup key text view. */
-"BACKUP_KEY_PLACEHOLDER" = "Backup Key";
+"BACKUP_KEY_PLACEHOLDER" = "Kod kopii zapasowej";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Moje odznaki";
@@ -542,7 +542,7 @@
 "BADGE_THANKS_TITLE" = "Dziękujemy za Twoje wsparcie!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "Kiedy masz więcej, niż jedną odznakę, możesz zdecydować, którą z nich pokazać na swoim profilu.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "Kiedy masz więcej niż jedną odznakę, możesz zdecydować, którą z nich pokazać w swoim profilu.";
 
 /* On the bank donation screen, show a link below the input form to show help about finding account info. */
 "BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "Znajdź informacje o koncie";
@@ -566,7 +566,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Zamknij baner";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Nie będziesz już otrzymywać wiadomości ani aktualizacji z tej grupy.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Nie będziesz już otrzymywać wiadomości ani powiadomień z tej grupy.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Zablokuj";
@@ -593,13 +593,13 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Odblokuj";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Będziecie w stanie wysyłać wiadomości i wykonywać połączenia do siebie nawzajem.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Będziecie w stanie do siebie nawzajem dzwonić i wysyłać wiadomości.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Istniejący członkowie będą mogli ponownie dodać Cię do grupy.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Osoby z tej grupy znów będą mogły Cię do niej dodać.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Członkowie grupy będą mogli ponownie dodać Cię do grupy.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Członkowie grupy znów będą mogli Cię do niej dodać.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Odblokować grupę?";
@@ -629,7 +629,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Odblokowano %1$@.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Istniejący członkowie mogą teraz ponownie dodać Cię do grupy.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Osoby z tej grupy znów mogą Cię do niej dodać.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Zablokowani użytkownicy nie będą mogli do Ciebie dzwonić ani wysyłać Ci wiadomości.";
@@ -1349,7 +1349,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "Nieprawidłowy kontakt.";
 
 /* Alert body when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal potrzebuje dostępu do Twoich kontaktów. Idź do Ustawień iOS i włącz dostęp do kontaktów. Twoje kontakty są szyfrowane i niewidoczne dla usługi Signal.";
+"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal potrzebuje dostępu do Twoich kontaktów. Przejdź do ustawień urządzenia z iOS i włącz dostęp do kontaktów. Twoje kontakty są szyfrowane i niewidoczne dla usługi Signal.";
 
 /* Alert title when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "Zezwól na dostęp do kontaktów";
@@ -2564,7 +2564,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Możesz przyznać dostęp w Ustawieniach iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal potrzebuje dostępu do kontaktów w celu edycji";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Aby edytować informacje o kontakcie, Signal potrzebuje dostępu do kontaktów";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Edytuj grupę";
@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Dokończ łączenie";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Wiadomości i najnowsze multimedia zostaną przeniesione na połączone urządzenie.";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Przenieś historię wiadomości";
@@ -4060,32 +4060,35 @@
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Dokończ łączenie na drugim urządzeniu";
 
+/* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
-"LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Continue without transferring";
+"LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Kontynuuj bez przenoszenia";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Urządzenie zostało połączone, ale nie udało się przenieść wiadomości.";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your message couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Nieudana synchronizacja wiadomości";
 
 /* On a progress modal */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP" = "Do not close the app";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP" = "Nie wyłączaj aplikacji";
 
 /* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "Ukończono %1$@";
 
 /* Title for a progress modal that would be indicating the sync progress while it's cancelling that sync */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "Cancelling…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "Anulowanie…";
 
 /* Title for a progress modal indicating the sync progress */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "Synchronizowanie wiadomości…";
 
 /* Title for a progress modal indicating the sync progress while it's preparing for upload */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "Preparing…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "Przygotowywanie…";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Powiąż nowe urządzenie";
@@ -4166,7 +4169,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Przygotowywanie do pobierania…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "W zależności od rozmiaru historii wiadomości może to zająć kilka minut";
+"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Nie wyłączaj aplikacji.";
@@ -6599,7 +6602,7 @@
 "SEPA_DONATION_NAME_PLACEHOLDER" = "Imię i nazwisko na koncie bankowym";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal używa szyfrowania metodą end-to-end i czasem może potrzebować odświeżenia sesji czatu. To nie wpłynie na bezpieczeństwo Twojego czatu, ale możesz przegapić wiadomość od tego kontaktu. Możesz go wtedy poprosić o ponowne przesłanie tej wiadomości.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal stosuje metodę szyfrowania end-to-end i z tego powodu czasem może być konieczne odświeżenie sesji czatu. Nie wpływa to na bezpieczeństwo czatu, ale mogło się zdarzyć, że wiadomość od tego kontaktu do Ciebie nie dotarła. Poproś tę osobę o ponowne przesłanie wiadomości.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Sesja czatu odświeżona";

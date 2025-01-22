@@ -413,7 +413,7 @@
 "ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "Aucune photo ou vidéo";
 
 /* Text in chat attachment panel explaining that user needs to give Signal permission to access photos. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal n'a pas accès à vos photos et vidéos. Pour autoriser Signal à y accéder, ouvrez les Paramètres et appuyez sur \"Photos\".";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal n'a pas accès à vos photos et vidéos. Pour autoriser Signal à y accéder, ouvrez les réglages iOS et appuyez sur \"Photos\".";
 
 /* Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos. */
 "ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "Ouvrir les réglages";
@@ -488,7 +488,7 @@
 "BACK_BUTTON" = "Retour";
 
 /* Text used as placeholder in backup key text view. */
-"BACKUP_KEY_PLACEHOLDER" = "Backup Key";
+"BACKUP_KEY_PLACEHOLDER" = "Clé de sauvegarde";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Mes macarons";
@@ -566,7 +566,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Fermer la bannière";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Vous ne recevrez plus ni messages, ni mises à jour de ce groupe.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Ce groupe ne pourra plus vous envoyer de messages, ni vous tenir informé des dernières actualités.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Bloquer";
@@ -1067,16 +1067,16 @@
 "CARD_DONATION_CARD_NUMBER_LABEL" = "Numéro de la carte";
 
 /* Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is invalid for reasons we cannot determine, this generic error message will be shown. Try to use a short string to make space in the UI. */
-"CARD_DONATION_CVV_GENERIC_ERROR" = "CVV invalide";
+"CARD_DONATION_CVV_GENERIC_ERROR" = "Cryptogramme visuel incorrect";
 
 /* Users can donate to Signal with a credit or debit card. This is the label for the card verification code (CVV) field on that screen. */
-"CARD_DONATION_CVV_LABEL" = "CVC";
+"CARD_DONATION_CVV_LABEL" = "Cryptogramme visuel";
 
 /* Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is too long, this error will be shown. Try to use a short string to make space in the UI. */
 "CARD_DONATION_CVV_TOO_LONG_ERROR" = "Code trop long";
 
 /* Users can donate to Signal with a credit or debit card. If their expiration date is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
-"CARD_DONATION_EXPIRATION_DATE_GENERIC_ERROR" = "Date d’expiration invalide";
+"CARD_DONATION_EXPIRATION_DATE_GENERIC_ERROR" = "Date d'exp. incorrecte";
 
 /* Users can donate to Signal with a credit or debit card. This is the label for the expiration date field on that screen. Try to use a short string to make space in the UI. (For example, the English text uses \"Exp. Date\" instead of \"Expiration Date\"). */
 "CARD_DONATION_EXPIRATION_DATE_LABEL" = "Date d’expiration";
@@ -1109,7 +1109,7 @@
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Le numéro de téléphone saisi ne correspond pas à celui de votre compte.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Nouveau numéro de téléphone invalide. Veuillez saisir un numéro de téléphone valide pour changer votre numéro.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Nouveau numéro de téléphone incorrect. Pour changer de numéro, veuillez saisir un numéro de téléphone valide.";
 
 /* Error indicating that the user's old phone number is not valid. */
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Ancien numéro de téléphone incorrect. Pour changer de numéro, veuillez saisir un numéro de téléphone valide.";
@@ -1979,7 +1979,7 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Réenregistrer ce numéro de téléphone";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Cet appareil n’est plus enregistré. Vous avez probablement inscrit votre numéro de téléphone sur Signal depuis un autre appareil.";
+"DEREGISTRATION_WARNING" = "Cet appareil n'est plus enregistré. Vous avez probablement inscrit votre numéro de téléphone sur Signal depuis un autre appareil.";
 
 /* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
 "DEREGISTRATION_WARNING_ACTION_TITLE" = "Réenregistrer l'appareil";
@@ -2141,7 +2141,7 @@
 "DISAPPEARING_MESSAGES_MINUTES" = "minutes";
 
 /* The unit for a number of seconds */
-"DISAPPEARING_MESSAGES_SECONDS" = "seconde";
+"DISAPPEARING_MESSAGES_SECONDS" = "secondes";
 
 /* subheading in privacy settings */
 "DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Si vous activez cette option et démarrez de nouvelles conversations, les nouveaux messages que vous enverrez et recevrez dans ces conversations disparaîtront une fois lus.";
@@ -2168,7 +2168,7 @@
 "DO_YOU_WANT_TO_USE_PROXY" = "Voulez-vous utiliser cette adresse de proxy ?";
 
 /* Section title for the 'domain fronting country' view. */
-"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lieu pour le contournement de la censure";
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Zone géographique du contournement de la censure";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\". */
 "DONATE_BUTTON" = "Faire un don de %1$@";
@@ -2405,7 +2405,7 @@
 "DONATION_RECEIPT_DATE_PAID" = "Date du paiement";
 
 /* Title on the view where you can see a single receipt */
-"DONATION_RECEIPT_DETAILS" = "Détails";
+"DONATION_RECEIPT_DETAILS" = "Informations";
 
 /* Text on the button that exports the receipt */
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Partager le reçu";
@@ -2417,10 +2417,10 @@
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Don pour un ami";
 
 /* Title for one-time donation receipts */
-"DONATION_RECEIPT_ONE_TIME" = "Une fois";
+"DONATION_RECEIPT_ONE_TIME" = "Don ponctuel";
 
 /* Title for recurring donation receipts */
-"DONATION_RECEIPT_RECURRING" = "Mensuel";
+"DONATION_RECEIPT_RECURRING" = "Don mensuel";
 
 /* Title on donation receipts */
 "DONATION_RECEIPT_TITLE" = "Reçu de don";
@@ -2432,13 +2432,13 @@
 "DONATION_RECEIPTS" = "Reçus de don";
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
-"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Si vous avez réinstallé Signal, les reçus de dons précédents ne seront pas accessibles.";
+"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Si vous avez réinstallé Signal, les reçus de vos dons précédents ne seront pas disponibles.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user cancels the webview before authrizing the payment. */
 "DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "Paiement annulé. Veuillez réessayer.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the callback is in an unexpected format. */
-"DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Paiement invalide. Veuillez réessayer.";
+"DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Paiement non valide. Veuillez réessayer.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment. */
 "DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Paiement refusé. Veuillez réessayer.";
@@ -2486,19 +2486,19 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Impossible de confirmer le don";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Votre don ponctuel iDEAL n’a pas pu être traité. Essayez un autre mode de paiement ou contactez votre banque pour plus d’informations.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Impossible de traiter votre don ponctuel iDEAL. Essayez un autre mode de paiement ou contactez votre banque pour en savoir plus.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Votre don ponctuel de %1$@ n’a pas pu être confirmé. Consultez votre application bancaire pour autoriser votre don iDEAL.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Impossible de valider votre don ponctuel de %1$@. Veuillez vérifier votre application bancaire pour autoriser votre don iDEAL.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Votre don mensuel iDEAL n’a pas pu être traité. Essayez un autre mode de paiement ou contactez votre banque pour plus d’informations.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Impossible de traiter votre don ponctuel iDEAL. Essayez un autre mode de paiement ou contactez votre banque pour en savoir plus.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Votre don mensuel de %1$@ n’a pas pu être confirmé. Consultez votre application bancaire pour autoriser votre don iDEAL.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Impossible de valider votre don ponctuel de %1$@. Veuillez vérifier votre application bancaire pour autoriser votre don iDEAL.";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
-"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Votre don mensuel récurrent a pris fin. %1$@";
+"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Votre don mensuel a pris fin. %1$@";
 
 /* Title for a sheet explaining that the user's recurring subscription has ended because payment failed. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_TITLE" = "Don mensuel annulé";
@@ -2531,7 +2531,7 @@
 "DONATION_VIEW_DONOR_FAQ" = "FAQ des donateurs";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
-"DONATION_VIEW_LOAD_FAILED" = "Erreur réseau. Vérifiez votre connexion et réessayez.";
+"DONATION_VIEW_LOAD_FAILED" = "Erreur réseau. Veuillez vérifier votre connexion et réessayer.";
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "Macarons";
@@ -2570,19 +2570,19 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Modifier le groupe";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Il est impossible d’ajouter cette personne à ce groupe tant qu’elle n’aura pas mis Signal à niveau.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Cette personne utilise une ancienne version de Signal. Impossible de l'ajouter au groupe tant qu'elle n'a pas installé la dernière version.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "La photo n’est pas valide.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Photo non valide.";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "Mettre à jour";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Voulez-vous enregistrer les changements apportées à ce groupe ?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Enregistrer les modifications apportées au groupe ?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Changements non enregistrés";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Modifications non enregistrées";
 
 /* Label for Edit History modal */
 "EDIT_HISTORY_LABEL" = "Historique des modifications";
@@ -2639,10 +2639,10 @@
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Voyages et lieux";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Aucun de vos contacts n’utilise Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Aucun de vos contacts n'utilise Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Pourquoi ne pas inviter quelqu’un ?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Et si vous invitiez vos amis ?";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Occupé";
@@ -2654,16 +2654,16 @@
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Impossible de transférer le message.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Impossible de transférer le message car il n’est plus disponible.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Impossible de transférer ce message, car il n'est plus disponible.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Impossible de transférer les messages car ils ne sont plus disponibles.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Impossible de transférer ces messages, car ils ne sont plus disponibles.";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Impossible de transférer les messages";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "Impossible d’enregistrer la vidéo.";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "Impossible d'enregistrer la vidéo.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Impossible d'envoyer le message.";
@@ -2672,7 +2672,7 @@
 "ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Impossible d’ouvrir l’appli de messagerie électronique";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Impossible de créer la demande d’assistance";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Impossible de générer la demande d'assistance";
 
 /* Generic error indicating that log upload failed */
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Échec de l’importation des journaux.";
@@ -2687,19 +2687,19 @@
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Échec de la requête réseau";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "La demande réseau est arrivée au bout de son délai.";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Expiration du délai de la requête réseau.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Réponse invalide du service";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "La réponse reçue du service n'est pas valide.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Cet appareil n’est plus inscrit avec votre numéro de téléphone. Veuillez réinstaller Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Cet appareil n'est plus inscrit sur Signal avec votre numéro de téléphone. Veuillez réinstaller Signal pour l'utiliser.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Erreur serveur. Veuillez réessayer plus tard.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Erreur du serveur. Veuillez réessayer plus tard.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Le serveur exige que l’utilisateur soit vérifié avant d’envoyer le message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Le serveur demande une vérification de l'utilisateur avant l'envoi du message.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Une erreur inconnue s'est produite.";
@@ -2711,28 +2711,28 @@
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Impossible d’importer la pièce jointe.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Un message de %1$@ n’a pas pu être remis";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Impossible de remettre un message envoyé par %1$@";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Un message n’a pas pu être remis";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Impossible de remettre un message";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Réception d’un message en double.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Réception d'un message en double.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "La clé du destinataire n'est pas valide.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Le message reçu était désynchronisé";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Message reçu non synchronisé.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Réception d’un message incompatible avec cette version.";
+"ERROR_MESSAGE_INVALID_VERSION" = "Réception d'un message incompatible avec cette version.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NO_SESSION" = "Aucune session pour ce contact.";
+"ERROR_MESSAGE_NO_SESSION" = "Aucune session disponible pour ce contact.";
 
 /* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Le numéro de sécurité a changé.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Changement de numéro de sécurité.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Le numéro de sécurité associé à %1$@ a changé.";
@@ -2744,7 +2744,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Une erreur inconnue s'est produite.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Le numéro de sécurité a changé.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Changement de numéro de sécurité.";
 
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "Erreur réseau";
@@ -2789,7 +2789,7 @@
 "FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Impossible d’envoyer le message car %1$@ doit mettre à jour Signal et rouvrir l’appli.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Trop d’échecs avec ce contact. Veuillez réessayer plus tard.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Les tentatives d'envoi à ce contact ont généré un trop grand nombre d'échecs. Veuillez réessayer plus tard.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Le numéro de sécurité associé à %1$@ a récemment changé. Vous pouvez vérifier le nouveau numéro avant de renvoyer ce message.";
@@ -2801,7 +2801,7 @@
 "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Impossible de récupérer le macaron";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Échec de confirmation du numéro de sécurité.";
+"FAILED_VERIFICATION_TITLE" = "Attention : Impossible de vérifier le numéro de sécurité.";
 
 /* Section header directing user to select a badge */
 "FEATURED_BADGE_SECTION_HEADER" = "Sélectionnez un macaron";
@@ -2834,7 +2834,7 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Réinitialiser la session.";
 
 /* Accessibility label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Achever la création du groupe";
+"FINISH_GROUP_CREATION_LABEL" = "Finaliser la création du groupe";
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
 "FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "L'icône \"Changer de caméra\" se trouve désormais ici. Touchez la vidéo pour l'essayer.";
@@ -3134,7 +3134,7 @@
 "GROUP_DESCRIPTION_MORE" = "plus";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Présenter le groupe en quelques mots…";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Présentez le groupe en quelques mots…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "La présentation du groupe sera accessible aux membres de ce groupe et aux invités.";
@@ -3260,7 +3260,7 @@
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Ce lien de groupe n’est pas valide. Vérifiez qu’il n’est pas tronqué et qu’il s’agit du bon lien.";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Lien invalide";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Lien non valide";
 
 /* Explanation of the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Un administrateur doit approuver les nouveaux membres qui rejoignent le groupe via le lien.";
@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Finaliser l'association";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transférez vos médias récents et vos messages texte vers votre appareil associé.";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Transférer tous les messages";
@@ -4060,32 +4060,35 @@
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Terminer l'association sur l'autre appareil";
 
+/* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
-"LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Continue without transferring";
+"LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Continuer sans transférer";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Association de l'appareil bien effectuée, mais impossible de transférer vos messages.";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your message couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Impossible de synchroniser les messages";
 
 /* On a progress modal */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP" = "Do not close the app";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP" = "Ne fermez pas Signal.";
 
 /* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ effectués";
 
 /* Title for a progress modal that would be indicating the sync progress while it's cancelling that sync */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "Cancelling…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "Annulation…";
 
 /* Title for a progress modal indicating the sync progress */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "Synchronisation des messages…";
 
 /* Title for a progress modal indicating the sync progress while it's preparing for upload */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "Preparing…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "Préparation…";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Associer un nouvel appareil";
@@ -4103,7 +4106,7 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "En savoir plus";
 
 /* Body for system notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_BODY" = "Vous avez associé un nouvel appareil à votre compte à %1$@. Touchez l'écran pour l'afficher.";
+"LINKED_DEVICE_NOTIFICATION_BODY" = "Un nouvel appareil a été associé à votre compte à %1$@. Touchez l'écran pour l'afficher.";
 
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "Vous avez associé un nouvel appareil";
@@ -4166,7 +4169,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Préparation du téléchargement…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "Selon la taille des messages, cela peut prendre quelques minutes.";
+"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Ne fermez pas Signal.";
@@ -4475,7 +4478,7 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Bloquer %1$@ ?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Vous quitterez ce groupe et ne recevrez plus ni messages ni mises à jour.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Vous allez quitter ce groupe. Il ne pourra plus vous envoyer de messages, ni vous tenir informé des dernières actualités.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Bloquer et quitter %1$@ ?";
@@ -4502,13 +4505,13 @@
 "MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Cette personne porte le même nom qu’un autre contact.";
 
 /* A header string informing the user about name collisions in a message request */
-"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Si la provenance de la demande est incertaine, examinez les contacts ci-dessous et agissez en conséquence.";
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Si vous avez un doute sur l'idendité de l'utilisateur qui vous a envoyé cette demande, examinez les contacts ci-dessous et prenez les mesures qui s'imposent.";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Examiner la demande";
 
 /* A button that updates a known contact's information to resolve a name collision */
-"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Mettre le contact à jour";
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Mettre à jour le contact";
 
 /* Action sheet message to confirm reporting a conversation as spam via a message request. */
 "MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal sera informé que cette personne envoie peut-être des spams. Nous n’avons cependant jamais accès au contenu des conversations.";
@@ -4583,25 +4586,25 @@
 "MESSAGE_STATUS_DELIVERED" = "Remis";
 
 /* message status while message is downloading. */
-"MESSAGE_STATUS_DOWNLOADING" = "Téléchargement";
+"MESSAGE_STATUS_DOWNLOADING" = "Téléchargement…";
 
 /* status meesage for edited messages */
 "MESSAGE_STATUS_EDITED" = "Modifié";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Échec d’envoi.";
+"MESSAGE_STATUS_FAILED" = "Échec de l'envoi.";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "En échec";
+"MESSAGE_STATUS_FAILED_SHORT" = "Échec";
 
 /* Label indicating that a message was only sent to some recipients. */
 "MESSAGE_STATUS_PARTIALLY_SENT" = "Envoi partiel. Toucher pour afficher plus d'infos.";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "L’envoi a été mis en pause";
+"MESSAGE_STATUS_PENDING" = "Envoi mis en pause";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "En pause";
+"MESSAGE_STATUS_PENDING_SHORT" = "Mis en pause";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Lu";
@@ -4649,7 +4652,7 @@
 "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "Vous avez bloqué %1$@ dans les réglages du téléphone";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
-"MISSED_CALL_FOCUS_MODE" = "Appel manqué en mode Focus";
+"MISSED_CALL_FOCUS_MODE" = "Appel manqué en mode \"Concentration\"";
 
 /* info message text in conversation view */
 "MISSED_VIDEO_CALL" = "Appel vidéo manqué";
@@ -4667,13 +4670,13 @@
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Vous pouvez accorder cette autorisation dans l’appli Réglages d’iOS.";
 
 /* Alert title indicating the user has denied location permissions */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Pour cette fonction, Signal exige l’accès à votre position.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Pour utiliser cette fonctionnalité, Signal doit accéder à votre position.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Vous pouvez accorder cette autorisation dans l’appli Réglages d’iOS.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Vous pouvez accorder cette autorisation dans l'app Réglages d'iOS.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Pour cette fonction, Signal exige l’accès à vos photos.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Pour utiliser cette fonctionnalité, Signal doit accéder à vos photos.";
 
 /* An error shown as the title of an alert when try to link a new device & the user is already at the limit. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Impossible d’associer d’autres appareils.";
@@ -4724,16 +4727,16 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Ignorer";
 
 /* String representing only the cellular interface */
-"NETWORK_INTERFACE_SET_CELLULAR" = "Cellulaire seulement";
+"NETWORK_INTERFACE_SET_CELLULAR" = "Réseau cellulaire seulement";
 
 /* String representing the 'never' condition of having no supported network interfaces */
 "NETWORK_INTERFACE_SET_NEVER" = "Jamais";
 
 /* String representing only the wifi interface */
-"NETWORK_INTERFACE_SET_WIFI" = "Wi-Fi seulement";
+"NETWORK_INTERFACE_SET_WIFI" = "Réseau Wi-Fi seulement";
 
 /* String representing both wifi and cellular interfaces */
-"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi et cellulaire";
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Réseaux Wi-Fi et cellulaire";
 
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
 "NEW_CALL_HINT" = "Sélectionnez un contact ou un groupe à appeler.";
@@ -4766,16 +4769,16 @@
 "NEW_GROUP_CREATE_BUTTON" = "Créer";
 
 /* Error indicating that a new group could not be created. */
-"NEW_GROUP_CREATION_FAILED" = "Le nouveau groupe n’a pas pu être créé.";
+"NEW_GROUP_CREATION_FAILED" = "Impossible de créer le groupe.";
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
-"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Le nouveau groupe n’a pas pu être créé. Vérifiez votre connexion à Internet et réessayez.";
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Impossible de créer le groupe. Vérifiez votre connexion Internet et réessayez.";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Veuillez saisir un nom de groupe.";
 
 /* Title for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "Il manque le nom du groupe";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "Le nom du groupe est obligatoire";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nouveau groupe";
@@ -4784,7 +4787,7 @@
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%1$@ à %2$@";
 
 /* The title for the 'name new group' view. */
-"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Nom du groupe";
+"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Nommer le groupe";
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Autres utilisateurs";
@@ -4796,10 +4799,10 @@
 "NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ à %2$@ · Story";
 
 /* Title for the 'new group story' view */
-"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Nouveau groupe";
+"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choisir un groupe";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Rechercher par numéro de téléphone";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Rechercher par no de téléphone";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Nommer la story";
@@ -4820,7 +4823,7 @@
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Titre de la story (champ obligatoire)";
 
 /* The title for the 'new private story' view. */
-"NEW_PRIVATE_STORY_VIEW_TITLE" = "Sélectionner les spectateurs";
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "Sélectionner des spectateurs";
 
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Spectateurs";
@@ -4829,7 +4832,7 @@
 "NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Nouvelle story";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible pour certaines personnes seulement";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Ne partager qu'avec certaines personnes";
 
 /* Title for create custom story row on the 'new story sheet' */
 "NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Nouvelle story personnalisée";
@@ -4868,7 +4871,7 @@
 "NICKNAME_EDITOR_TITLE" = "Pseudo";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Trouver des contacts par numéro de téléphone";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Rechercher des contacts par numéro de téléphone";
 
 /* Label for a button that lets users search for contacts by username */
 "NO_CONTACTS_SEARCH_BY_USERNAME" = "Rechercher des contacts par leur nom d’utilisateur";
@@ -4886,7 +4889,7 @@
 "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Invitation par message";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Vous avez peut-être reçu des messages alors que votre %1$@ redémarrait.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Vous avez peut-être reçu des messages pendant le redémarrage de votre %1$@.";
 
 /* Body for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Pour recevoir des notifications de nouveaux messages :";
@@ -4910,7 +4913,7 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Activer";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Ne manquez jamais un message de vos contacts ni de vos groupes.";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Ne manquez pas les messages de vos contacts et de vos groupes.";
 
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Activer les notifications ?";
@@ -4922,7 +4925,7 @@
 "NOTIFICATIONS_ERROR_TITLE" = "Impossible d'afficher les notifications";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Les actions possibles sont \"Marquer comme lu\", \"Répondre\" et \"Rappeler\".";
+"NOTIFICATIONS_FOOTER_WARNING" = "Actions possibles : \"Marquer comme lu\", \"Répondre\" et \"Rappeler\".";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Ni nom, ni contenu";
@@ -4955,7 +4958,7 @@
 "ONBOARDING_2FA_ENTER_NUMERIC" = "Saisir un code PIN numérique";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Besoin d’aide ?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Besoin d'aide ?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Code PIN incorrect.";
@@ -4973,7 +4976,7 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Ne pas saisir de code PIN ?";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Inscrire l’iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Inscrire l'iPad";
 
 /* button indicating that the user will link their phone */
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Associer l’iPhone";
@@ -4991,7 +4994,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Associer cet iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Inscrire cet iPad désactivera Signal sur tout autre appareil actuellement inscrit avec ce même numéro de téléphone.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "L'inscription de cet iPad désactivera Signal sur tout autre appareil actuellement inscrit avec ce même numéro de téléphone.";
 
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Il n’est pas recommandé d’associer votre iPhone : des fonctionnalités essentielles s’en trouveront limitées.";
@@ -5015,10 +5018,10 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "Accorder les autorisations";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choisissez qui peut vous trouver sur Signal avec votre numéro de téléphone %1$@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choisissez qui peut vous trouver sur Signal grâce à votre numéro de téléphone %1$@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Qui peut vous trouver avec votre numéro ?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Qui peut vous trouver grâce à votre numéro ?";
 
 /* Placeholder string for phone number field during registration */
 "ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Votre numéro de téléphone";
@@ -5027,7 +5030,7 @@
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Veuillez patienter quelques minutes avant de réessayer. (%1$@)";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Le numéro de téléphone est invalide. Pour vous inscrire, veuillez saisir un numéro de téléphone valide.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Le numéro de téléphone est incorrect. Pour vous inscrire, veuillez saisir un numéro de téléphone valide.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Vous avez dépassé le nombre de tentatives autorisées. Pour accéder à votre compte Signal, vous devez créer un nouveau code PIN. Afin de protéger vos données personnelles et votre sécurité, votre compte sera restauré sans informations de profil, ni paramètres enregistrés.";
@@ -5051,7 +5054,7 @@
 "ONBOARDING_SPLASH_TITLE" = "La confidentialité dans votre poche.\nPour que chaque message reflète qui vous êtes.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
-"ONBOARDING_VERIFICATION_BACK_LINK" = "Mauvais numéro ?";
+"ONBOARDING_VERIFICATION_BACK_LINK" = "Ce n'est pas le bon numéro ?";
 
 /* Label for button to perform verification with a phone call. */
 "ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Appelez-moi";
@@ -5156,25 +5159,25 @@
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Frais d'agrégation des pièces";
 
 /* Status indicator for incoming payments which failed. */
-"PAYMENTS_FAILURE_INCOMING_FAILED" = "En échec";
+"PAYMENTS_FAILURE_INCOMING_FAILED" = "Échec";
 
 /* Status indicator for incoming payments which failed to verify. */
-"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "Invalide";
+"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "Non valide";
 
 /* Status indicator for invalid payments which could not be processed. */
-"PAYMENTS_FAILURE_INVALID" = "Invalide";
+"PAYMENTS_FAILURE_INVALID" = "Non valide";
 
 /* Status indicator for outgoing payments which failed. */
-"PAYMENTS_FAILURE_OUTGOING_FAILED" = "En échec";
+"PAYMENTS_FAILURE_OUTGOING_FAILED" = "Échec";
 
 /* Status indicator for outgoing payments which failed due to insufficient funds. */
-"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Insuffisance de fonds";
+"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Fonds insuffisants";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Le reçu n’a pas pu être envoyé au destinataire";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Impossible d'envoyer le reçu au destinataire";
 
 /* Status indicator for outgoing payments which failed to verify. */
-"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Invalide";
+"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Non valide";
 
 /* Payments in-chat message shown if a payment fails to send, bottom half. */
 "PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Touchez pour plus de détails";
@@ -5261,22 +5264,22 @@
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
 
 /* Indicates that a payment failed due to a connectivity failure. */
-"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Le service n’a pas pu être joint";
+"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Impossible de joindre le service";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Vous ne disposez pas de suffisamment de MOB pour finaliser ce paiement.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Solde en MOB insuffisant pour réaliser ce paiement.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Vous ne disposez pas de suffisamment de MOB pour finaliser ce paiement. Votre solde actuel est de %1$@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Solde en MOB insuffisant pour réaliser ce paiement. Montant actuel de votre solde : %1$@.";
 
 /* Indicates that a payment failed due to being invalid. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "La transaction est invalide";
+"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Transaction non valide";
 
 /* Indicates that a payment failed due to an outdated client. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Pour utiliser les paiements, installez la dernière version de Signal.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Le paiement n’est pas encore confirmé.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Paiement non encore confirmé.";
 
 /* Indicates that a payment failed because the payments lock attempt was cancelled. */
 "PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Verrouillage des paiements : authentification annulée.";
@@ -5285,7 +5288,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Verrouillage des paiements : échec de l’authentification.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Le paiement n’a pas pu être finalisé. Veuillez vérifier votre connexion et réessayer.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Impossible de finaliser le paiement. Veuillez vérifier votre connexion et réessayer.";
 
 /* Label for the 'payment estimated fee' indicator. */
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Frais de réseau";
@@ -5294,13 +5297,13 @@
 "PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Estimé : %1$@";
 
 /* Label for the 'invalid amount' button. */
-"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "Montant invalide";
+"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "Montant incorrect";
 
 /* Format for the 'message character count indicator' for the 'new payment or payment request' view. Embeds {{ %1$@ the number of characters in the message, %2$@ the maximum number of characters in the message }}. */
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ sur %2$@";
 
 /* Placeholder for the new payment or payment request message. */
-"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Note";
+"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Message";
 
 /* Label for the 'new payment' button. */
 "PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Payer";
@@ -5432,7 +5435,7 @@
 "PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "Paiement envoyé";
 
 /* Label for unknown payments. */
-"PAYMENTS_UNKNOWN_PAYMENT" = "Paiement invalide";
+"PAYMENTS_UNKNOWN_PAYMENT" = "Paiement non valide";
 
 /* The alert message if user tries to exit a task without saving changes. */
 "PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Voulez-vous supprimer ces modifications ?";
@@ -6056,7 +6059,7 @@
 "RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ n'utilise pas Signal. Vérifiez qu'il s'agit du bon numéro de téléphone et réessayez.";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Le numéro de téléphone est invalide";
+"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Numéro de téléphone incorrect";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
 "RECIPIENT_PICKER_INVITE_ACTION" = "Message";
@@ -6239,7 +6242,7 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Veuillez saisir un numéro de téléphone valide pour vous inscrire.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Le numéro de téléphone est invalide";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Numéro de téléphone incorrect";
 
 /* Message for confirmation alert during phone number registration. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Un code de confirmation sera envoyé à ce numéro. Votre numéro de téléphone est-il correct ci-dessus ?";
@@ -6578,7 +6581,7 @@
 "SEPA_DONATION_IBAN_INVALID_CHARACTERS_ERROR" = "L'IBAN ne peut contenir que des caractères alphanumériques.";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) does not pass validation, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_INVALID_CHECK_ERROR" = "IBAN invalide";
+"SEPA_DONATION_IBAN_INVALID_CHECK_ERROR" = "IBAN incorrect";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) has an unsupported country code, this error will be shown. Try to use a short string to make space in the UI. */
 "SEPA_DONATION_IBAN_INVALID_COUNTRY_ERROR" = "Code pays de l'IBAN non pris en charge";
@@ -7232,7 +7235,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "Cette phrase de récupération n'est pas valide.";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Phrase invalide";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Phrase incorrecte";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Coller depuis le presse-papiers";
@@ -7271,7 +7274,7 @@
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scanner le code QR pour le destinataire du transfert.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Adresse invalide";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Adresse non valide";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "Scanner le code QR";

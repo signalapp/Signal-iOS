@@ -488,7 +488,7 @@
 "BACK_BUTTON" = "Назад";
 
 /* Text used as placeholder in backup key text view. */
-"BACKUP_KEY_PLACEHOLDER" = "Backup Key";
+"BACKUP_KEY_PLACEHOLDER" = "Ключ для рэзервовага капіравання";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Мае значкі";
@@ -518,10 +518,10 @@
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Даведацца больш.";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Штомесячнае ахвяраванне адменена";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Штомесячнае ахвяраванне скасавана";
 
 /* String explaining to the user on a badge expiry sheet that their subscription badge has expired because the renewal payment failed. Embeds {{ a specific, already-localized string describing the payment failure }}. Will have a 'learn more' link appended, when it is rendered. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Ваша ахвяраванне, што адбывалася штомесячна, было адменена. %1$@\n\nВаш значок больш не будзе бачны ў вашым профілі.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Ваша ахвяраванне, што адбывалася штомесячна, было скасавана. %1$@\n\nВаш значок больш не будзе бачны ў вашым профілі.";
 
 /* Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
 "BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Мы атрымалі ваш банкаўскі перавод. Вы можаце размясціць гэты значок у сваім профілі, каб прадэманстраваць вашу падтрымку.";
@@ -2435,7 +2435,7 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Калі вы нанова ўсталявалі Signal, квітанцыі ад папярэдніх ахвяраванняў будуць недаступныя.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user cancels the webview before authrizing the payment. */
-"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "Плацеж адменены. Паўтарыце спробу.";
+"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "Плацеж скасаваны. Паўтарыце спробу.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the callback is in an unexpected format. */
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Несапраўдны адказ на плацеж. Паўтарыце спробу.";
@@ -2459,7 +2459,7 @@
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Зрабіць ахвяраванне";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Калі вы будзеце працягваць, гэта адменіць ваша апошняе ахвяраванне. С вас не будуць спісаны сродкі, але вы, магчыма, будзеце бачыць запыт на аплату ў сваёй банкаўскай праграме, пакуль не прымеце рашэнне. Вы ўпэўнены, што жадаеце зрабіць новае ахвяраванне?";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Калі вы будзеце працягваць, гэта скасуе ваша апошняе ахвяраванне. С вас не будуць спісаны сродкі, але вы, магчыма, будзеце бачыць запыт на аплату ў сваёй банкаўскай праграме, пакуль не прымеце рашэнне. Вы ўпэўнены, што жадаеце зрабіць новае ахвяраванне?";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Аднавіць падпіску";
@@ -2501,7 +2501,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Ваша ахвяраванне, што адбывалася штомесячна, скончылася. %1$@";
 
 /* Title for a sheet explaining that the user's recurring subscription has ended because payment failed. */
-"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_TITLE" = "Штомесячнае ахвяраванне адменена";
+"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_TITLE" = "Штомесячнае ахвяраванне скасавана";
 
 /* A label describing a donation payment that was made via bank transfer, which is still processing and has not completed. */
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING" = "Ахвяраванне чакае разгляду";
@@ -2513,7 +2513,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_PAYMENT_FAILED" = "Памылка падчас апрацоўкі ахвяравання";
 
 /* A label describing a recurring monthly donation that used to be active, but has now been canceled because it failed to renew. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_SUBSCRIPTION_LAPSED" = "Штомесячнае ахвяраванне адменена";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_SUBSCRIPTION_LAPSED" = "Штомесячнае ахвяраванне скасавана";
 
 /* A label describing a donation payment that has requires authorization. */
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "Чаканне аўтарызацыі";
@@ -3380,7 +3380,7 @@
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ ухваліў(-ла) ваш запыт на далучэнне да групы.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Вы адмянілі запыт на далучэнне да групы.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Вы скасавалі запыт на далучэнне да групы.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
 "GROUP_LOCAL_USER_REQUEST_REJECTED" = "Ваш запыт на далучэнне да гэтай групы быў адхілены.";
@@ -3485,7 +3485,7 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "Запыт на далучэнне да групы ад %1$@ быў ухвалены.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ адмяніў(-ла) запыт далучыцца да групы.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ скасаваў(-ла) запыт далучыцца да групы.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Вы адхілілі запыт на далучэнне да групы ад %1$@.";
@@ -3902,7 +3902,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Стыкеры";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Каб запісаць, двойчы націснуць і ўтрымліваць. Адпусціць, каб адправіць, або пацягнуць улева, каб адмяніць. Каб зафіксаваць запіс, двойчы націснуць і пацягнуць уверх.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Каб запісаць, двойчы націснуць і ўтрымліваць. Адпусціць, каб адправіць, або пацягнуць улева, каб скасаваць. Каб зафіксаваць запіс, двойчы націснуць і пацягнуць уверх.";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Галасавое паведамленне";
@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Скончыць звязванне";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Перанясіце тэкставыя паведамленні і апошнія медыяфайлы на сваю звязаную прыладу";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Перанесці гісторыю паведамленняў";
@@ -4060,32 +4060,35 @@
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Завяршыце звязванне на іншай прыладзе";
 
+/* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
-"LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Continue without transferring";
+"LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Працягнуць без пераносу";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Ваша прылада была паспяхова звязана, але вашы паведамленні немагчыма перанесці.";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your message couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Сінхранізацыя паведамленняў не атрымалася";
 
 /* On a progress modal */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP" = "Do not close the app";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP" = "Не закрывайце праграму";
 
 /* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ выканана";
 
 /* Title for a progress modal that would be indicating the sync progress while it's cancelling that sync */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "Cancelling…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "Скасаванне…";
 
 /* Title for a progress modal indicating the sync progress */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "Сінхранізуем паведамленні…";
 
 /* Title for a progress modal indicating the sync progress while it's preparing for upload */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "Preparing…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "Падрыхтоўка…";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Звязаць новую прыладу";
@@ -4166,7 +4169,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Iдзе падрыхтоўка да пампавання…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "Гэта можа заняць некалькі хвілін у залежнасці ад памеру вашай гісторыі паведамленняў";
+"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Не зачыняйце Signal.";
@@ -4571,10 +4574,10 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Разблакаваць";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Адмяніць запыт";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Скасаваць запыт";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Адмяніць ваш запыт на далучэнне да гэтай групы?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Скасаваць ваш запыт на далучэнне да гэтай групы?";
 
 /* Indicator that you have requested to join this group. */
 "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Ваш запыт на далучэнне быў адпраўлены адміністратару групы. Вы атрымаеце апавяшчэнне, калі ён прыме рашэнне.";
@@ -5279,7 +5282,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Плацеж пакуль не пацверджаны";
 
 /* Indicates that a payment failed because the payments lock attempt was cancelled. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Аўтэнтыфікацыя блакіроўкі плацяжоў адменена.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Аўтэнтыфікацыя блакіроўкі плацяжоў скасавана.";
 
 /* Indicates that a payment failed because the payments lock failed to authenticate. */
 "PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Аўтэнтыфікацыя блакіроўкі плацяжоў адменена.";
@@ -8030,7 +8033,7 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Працягваецца апрацоўка";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Адмяніць падпіску";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Скасаваць падпіску";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Пацвердзіць";
@@ -8039,7 +8042,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Вашы сродкі не будуць спісаны. Ваш значок будзе выдалены з вашага профілю напрыканцы разліковага перыяду.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Пацвердзіць адмену?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Пацвердзіць скасаванне?";
 
 /* Action sheet message for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Не атрымалася дадаць ваш значок у ваш уліковы запіс. Калі ласка, звярніцеся да службы падтрымкі.";
@@ -8066,7 +8069,7 @@
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Ваша ахвяраванне яшчэ апрацоўваецца. Гэта можа заняць некалькі хвілін у залежнасці ад вашага падключэння.";
 
 /* Toast indicating that the subscription has been cancelled */
-"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Ваша падпіска была адменена";
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Ваша падпіска была скасавана";
 
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Не зараз";
@@ -8219,7 +8222,7 @@
 "TRANSFER_RELAUNCH_NOTIFICATION" = "Адкрыйце Signal, каб распачаць абмен паведамленнямі";
 
 /* Label for the cancel button in an alert or action sheet. */
-"TXT_CANCEL_TITLE" = "Адмена";
+"TXT_CANCEL_TITLE" = "Скасаваць";
 
 /* Label for the delete button in an alert or action sheet. */
 "TXT_DELETE_TITLE" = "Выдаліць";
@@ -8522,7 +8525,7 @@
 "VOICE_CALL_LABEL" = "Галасавы званок";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Прагартаць, каб адмяніць";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Прагартаць, каб скасаваць";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Галасавое паведамленне";

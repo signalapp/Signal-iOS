@@ -488,7 +488,7 @@
 "BACK_BUTTON" = "પાછળ";
 
 /* Text used as placeholder in backup key text view. */
-"BACKUP_KEY_PLACEHOLDER" = "Backup Key";
+"BACKUP_KEY_PLACEHOLDER" = "બેકઅપ કી";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "મારા બૅજ";
@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "લિંક કરવાનું પૂર્ણ કરો";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "તમારા ટેક્સ્ટ મેસેજ અને તાજેતરના મીડિયાને તમારા લિંક કરેલા ડિવાઇસ પર ટ્રાન્સફર કરો";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "મેસેજની હિસ્ટ્રી ટ્રાન્સફર કરો";
@@ -4060,32 +4060,35 @@
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "તમારા અન્ય ડિવાઇસ પર લિંક કરવાનું પૂર્ણ કરો";
 
+/* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
-"LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Continue without transferring";
+"LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "ટ્રાન્સફર કર્યા વિના ચાલુ રાખો";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "તમારું ડિવાઇસ સફળતાપૂર્વક લિંક કરવામાં આવ્યું હતું, પરંતુ તમારા મેસેજ ટ્રાન્સફર કરી શકાયા નથી.";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your message couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "મેસેજ સિંક નિષ્ફળ થયું";
 
 /* On a progress modal */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP" = "Do not close the app";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP" = "ઍપ બંધ કરશો નહીં";
 
 /* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ પૂર્ણ";
 
 /* Title for a progress modal that would be indicating the sync progress while it's cancelling that sync */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "Cancelling…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "રદ કરી રહ્યાં છીએ…";
 
 /* Title for a progress modal indicating the sync progress */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "મેસેજ સિંક થઈ રહ્યાં છે…";
 
 /* Title for a progress modal indicating the sync progress while it's preparing for upload */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "Preparing…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "તૈયારી કરી રહ્યા છીએ…";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "નવું ડિવાઇસ લિંક કરો";
@@ -4166,7 +4169,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "ડાઉનલોડ કરવાની તૈયારી કરી ચાલુ છે…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "તમારી મેસેજ હિસ્ટ્રીની સાઇઝના આધારે આમાં થોડો સમય લાગી શકે છે";
+"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Signal બંધ કરશો નહીં.";

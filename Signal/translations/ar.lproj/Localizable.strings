@@ -488,7 +488,7 @@
 "BACK_BUTTON" = "الرجوع";
 
 /* Text used as placeholder in backup key text view. */
-"BACKUP_KEY_PLACEHOLDER" = "Backup Key";
+"BACKUP_KEY_PLACEHOLDER" = "مفتاح النسخة الاحتياطية";
 
 /* Section header for badge view section in the badge configuration page */
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "شاراتي";
@@ -2279,7 +2279,7 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "التبرُّّع مُعلَّق";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "تبرُّعك لمرّة واحدة مُعلَّق. ستتمكَّن من عرض شارتك %1$@ على حسابك الشخصي فور استلام تبرُّعك.⏎⏎عادة ما تستغرق التحويلات المصرفية يوم عمل واحد للمعالجة.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "تبرُّعك لمرّة واحدة مُعلَّق. ستتمكَّن من عرض شارتك %1$@ على ملفك الشخصي فور استلام تبرُّعك.\n\nعادةً ما تستغرق التحويلات المصرفية يوم عمل واحد للمعالجة.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
 "DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "تبرُّعك الشهري مُعلَّق. ستتمكّن من عرض شارتك %1$@ على حسابك الشخصي فور استلام تبرُّعك.⏎⏎عادةً ما تستغرق التحويلات المصرفية يوم عمل واحد للمعالجة.";
@@ -3749,13 +3749,13 @@
 "IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "اختر مصرفك";
 
 /* Fallback title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "أكّد تبرّعك";
+"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "أكِّد تبرُّعك";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "لإعداد تبرّعك المتكرر، انقر على مواصلة لتأكيد خصم €0,01 مع بنكك. سَيتم استرداد هذه القيمة تلقائيًا وسيسمح هذا بخصم تبرّعك بقيمة %1$@/الشهر من حسابك.";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "لإعداد تبرُّعك المُتكرِّر، انقر على \"متابعة\" لتأكيد خصم €0,01 مع مصرفك. سَيتمُّ استرداد هذه القيمة تلقائيًا وسيسمَح هذا بخصم تبرُّعك بقيمة %1$@/شهريًا من حسابك.";
 
 /* Title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "تأكيد التبرّع عبر %1$@";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "أكِّد تبرُّعك عبر %1$@";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "ارسم في أي مكان للتمويه";
@@ -3776,13 +3776,13 @@
 "IN_CALL_CONNECTING" = "جارٍ الاتصال…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "أجيب عنها من جهاز آخر";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "أُجِيبَ عنها من جهازٍ آخر";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "تم التفويت لأن مُكالمة أُخرى جارية في جهاز آخر في الوقت ذاته";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "فائتة لأن مُكالمة أُخرى جارية في جهازٍ آخر";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "رُفضت من جهاز آخر";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "رُفِضَت من جهازٍ آخر";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "جارٍ إعادة الاِتصال...";
@@ -3791,7 +3791,7 @@
 "IN_CALL_RINGING" = "يرن…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "مكالمة صوتية";
+"IN_CALL_RINGING_AUDIO" = "مكالمة صوتية...";
 
 /* Call setup status label */
 "IN_CALL_RINGING_VIDEO" = "مكالمة فيديو…";
@@ -3803,13 +3803,13 @@
 "IN_CALL_TERMINATED" = "انتهت المكالمة";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "لا تُذكّرني";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "لا تُذكِّرني";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, temporarily dismissing the megaphone. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "عُلم";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "تم";
 
 /* Title for an in-app megaphone about a user's inactive linked device. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "جهاز غير مرتبط غير نشط";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "جهاز مُرتبِط غير نشِط";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "الدردشات المكتومة المؤرشفة سَتبقى كذلك عند وصول رسالة جديدة.";
@@ -3827,61 +3827,61 @@
 "INCOMING_VOICE_CALL" = "مكالمة صوتية واردة";
 
 /* An info message inserted into the chat when you accept a message request, in a 1:1 or group chat. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "لقد قبِلت طلب المراسلة";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "قبِلتَ طلب المراسلة.";
 
 /* Header for an action sheet providing options in response to an accepted 1:1 message request. Embeds {{ the name of your chat partner }}. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "لقد قبلت طلب مراسلة من %1$@. إذا حدث هذا عن طريق الخطأ، يمكنك اختيار إجراء أسفله.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "قبلتَ طلب مراسلة من %1$@. إذا حدثَ هذا عن طريق الخطأ، يمكنك اختيار إجراء ممّا يلي.";
 
 /* Header for an action sheet providing options in response to an accepted group message request. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "لقد قبلت طلب مراسلة من هذه المجموعة. إذا حدث هذا عن طريق الخطأ، يمكنك اختيار إجراء أسفله.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "قبلتَ طلب مراسلة من هذه المجموعة. إذا حدث هذا عن طريق الخطأ، يمكنك اختيار إجراء ممّا يلي.";
 
 /* Title for a button shown alongside an info message indicating you accepted a message request. */
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "الخيارات";
 
 /* An info message inserted into a group chat when you block the group. */
-"INFO_MESSAGE_BLOCKED_GROUP" = "لقد قمت بحظر هذه المجموعة.";
+"INFO_MESSAGE_BLOCKED_GROUP" = "قُمتَ بحظر هذه المجموعة.";
 
 /* An info message inserted into a 1:1 chat when you block another user. */
-"INFO_MESSAGE_BLOCKED_OTHER_USER" = "لقد حظرتَ هذا الشخص.";
+"INFO_MESSAGE_BLOCKED_OTHER_USER" = "حظرتَ هذا الشخص.";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
-"INFO_MESSAGE_CONTACT_REINSTATED" = "لقد أضيف هذا الشخص إلى لائحة جهات اتصال سيجنال الخاصة بك من جديد.";
+"INFO_MESSAGE_CONTACT_REINSTATED" = "أُضيفَ هذا الشخص من جديد إلى لائحة جهات اتصال سيجنال الخاصة بك.";
 
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
-"INFO_MESSAGE_CONTACT_REMOVED" = "لقد أزلتَ هذا الشخص من لائحة جهات اتصال سيجنال الخاصة بك، وسيَرجع إلى اللائحة إذا راسلته.";
+"INFO_MESSAGE_CONTACT_REMOVED" = "أزلتَ هذا الشخص من لائحة جهات اتصال سيجنال الخاصة بك، وسيَرجع إلى اللائحة إذا راسلته.";
 
 /* When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}. */
-"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "لقد بدأت دردشة مع %1$@.";
+"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "بدأتَ الدردشة مع %1$@.";
 
 /* Shown when a user activates payments from a chat */
-"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "لقد فعّلت عمليات الدفع";
+"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "فعَّلتَ عمليات الدفع.";
 
 /* Shown when a user activates payments from a chat. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "يُمكن لـ %1$@ قبول عمليات الدفع الآن";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "يُمكن لـ %1$@ قبول عمليات الدفع الآن.";
 
 /* Shown when a user receives a payment activation request. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "يريدك %1$@ أن تُفعّل عمليات الدفع. أرسل عمليات الدفع فقط للأشخاص الذين تثق بهم.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "يريدك %1$@ أن تُفعِّل عمليات الدفع. أرسِل عمليات الدفع فقط للأشخاص الذين تثق بهم.";
 
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "أرسلت لـ %1$@ طلبًا لتفعيل عمليات الدفع";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "أرسلتَ لـ %1$@ طلبًا لتفعيل عمليات الدفع.";
 
 /* Shown when a user reports a conversation as spam. */
-"INFO_MESSAGE_REPORTED_SPAM" = "تم الإبلاغ عنها كرسالة غير مرغوب فيها";
+"INFO_MESSAGE_REPORTED_SPAM" = "تمَّ الإبلاغ عنها كرسالة غير مرغوب فيها";
 
 /* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "تم إشعار سيجنال بأن هذا الشخص قد يكون أرسل رسائل غير مرغوب فيها. لا يُمكن لسيجنال رؤية محتوى أي دردشات.";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "تمَّ إبلاغ سيجنال بأن هذا الشخص قد يكون أرسل رسائل غير مرغوب فيها. لا يُمكِن لسيجنال رؤية محتوى أي دردشات.";
 
 /* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "تم الإبلاغ عن رسائل غير مرغوب فيها";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "تمَّ الإبلاغ عنها كرسالة غير مرغوب فيها";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "من أجل أمانك، لا تُنقل محفوظات دردشاتك إلى الأجهزة المرتبطة الجديدة.";
+"INFO_MESSAGE_SYNCED_THREAD" = "من أجل أمانك، لم يتم نقل سجل الدردشة الخاص بك إلى الأجهزة المرتبطة الجديدة.";
 
 /* An info message inserted into a group chat when you unblock the group. */
-"INFO_MESSAGE_UNBLOCKED_GROUP" = "لقد رفعتَ الحظر عن هذه المجموعة.";
+"INFO_MESSAGE_UNBLOCKED_GROUP" = "رفعتَ الحظر عن هذه المجموعة.";
 
 /* An info message inserted into a 1:1 chat when you unblock another user. */
-"INFO_MESSAGE_UNBLOCKED_OTHER_USER" = "لقد رفعت الحظر عن هذا الشخص.";
+"INFO_MESSAGE_UNBLOCKED_OTHER_USER" = "رفعتَ الحظر عن هذا الشخص.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ غيَّرَ رقم هاتفِه.";
@@ -3995,16 +3995,16 @@
 "LEAVE_GROUP_FAILED" = "حدث خطأ أثناء مُغادرة المجموعة.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"المجموعات من الطراز القديم\" هي مجموعات لا تدعم ميزات مثل @mentions والمُشرفين. تم تحديث مُعظم المجموعات من الطراز القديم سواءً تلقائيًا أو يدويًا لـ \"مجموعات جديدة\". نظرًا لفترة طويلة من عدم النشاط، لم يعُد من المُمكن ترقية هذه المجموعة.\n\nلمتابعة هذه المحادثة، عليك إنشاء مجموعة جديدة.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "\"المجموعات ذات النمط السابق\" هي مجموعات لا تدعم ميزات مثل الإشارة بتاغ @mentions والمُشرِفين. تمَّ تحديث مُعظم المجموعات ذات النمط السابق سواءً تلقائيًا أو يدويًا لـ \"مجموعات جديدة\". نظرًا لفترة طويلة من عدم النشاط، لم يعُد من المُمكن ترقية هذه المجموعة.\n\nلمتابعة هذه المحادثة، عليك إنشاء مجموعة جديدة.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "مجموعة من الطراز القديم";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "المجموعات ذات النمط السابق";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "هذه مجموعة من الطراز القديم، ولم تعد مُدعّمة. لمتابعة هذه المحادثة، أنشأ مجموعة جديدة. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "هذه مجموعة من النمط السابق، ولم تعد مدعومة. لمتابعة هذه المحادثة، أنشِئ مجموعة جديدة. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "تحوي المجموعات الجديدة على ميزات مثل تضمين الاسم @ والمشرفين، أيضاً ستدعم المزيد من الميزات مستقبلاً.\n\nتم الاحتفاظ بكافة سجلات الرسائل والوسائط من قبل الترقية.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "تحوي المجموعات الجديدة على ميزات مثل تضمين الإشارة بتاغ @mentions ومُشرِفي المجموعات، وستدعم أيضًا المزيد من الميزات مستقبلًا.\n\nجميع سجلات الرسائل والوسائط تمَّ الاحتفاظ بها من قبل التحديث.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "ما هي المجموعات الجديدة؟";
@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "إنهاء الارتباط";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "انقل رسائلك النصية ووسائطك الحديثة إلى جهازك المُرتبِط.";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "نقل سجلّ الرسائل";
@@ -4043,10 +4043,10 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "استخدِم هذا الجهاز لِمسح كود الـ QR المعروض على الجهاز الذي تريد ربطه.";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "مَسح كود الـ QR";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "امسح ضوئيًا كود الـ QR";
 
 /* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "انقر على \"متابعة\" وأدخِل قفل هاتفك للتأكيد. لا تُدخِل رقم التعريف الشخصي (PIN) لسيجنال الخاص بك.";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "انقر على \"متابعة\" وأدخِل قفل هاتفك للتأكيد. لا تُدخِل رقم PIN لسيجنال الخاص بك.";
 
 /* Title for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
 "LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "قبل الربط، أكِّد هويتك";
@@ -4060,71 +4060,74 @@
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "استكمِل إنهاء الربط على جهازك الآخر.";
 
+/* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
-"LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Continue without transferring";
+"LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "المواصلة دون النقل";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages. */
-"LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "تمَّ ربط جهازك بنجاح، لكن تعذّر نقل رسائلك.";
+"LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "تمَّ ربط جهازك بنجاح، لكن تعذَّر نقل رسائلك.";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your message couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "فشلت مزامنة الرسالة";
 
 /* On a progress modal */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP" = "Do not close the app";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP" = "لا تُغلِق التطبيق";
 
 /* On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "اكتملَ %1$@";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ اكتملَ";
 
 /* Title for a progress modal that would be indicating the sync progress while it's cancelling that sync */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "Cancelling…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "جارٍ الإلغاء…";
 
 /* Title for a progress modal indicating the sync progress */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "جارٍ مزامنة الرسائل…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "جارٍ مزامنة الرسائل...";
 
 /* Title for a progress modal indicating the sync progress while it's preparing for upload */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "Preparing…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING" = "جارٍ التحضير…";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "يُرجى ربط جهاز جديد";
+"LINK_NEW_DEVICE_TITLE" = "قُم بربط ربط جهاز جديد";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "مُعاينة الرابط";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "لم تعد إدارة جهات اتصال الهاتف متاحة على iPad. لإضافة جهات اتصال سيجنال إلى جهات اتصال هاتفك، افتح تطبيق سيجنال على هاتفك.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "لم تعد إدارة جهات اتصال الهاتف متاحة على جهاز الآيباد. لإضافة جهات اتصال سيجنال إلى جهات اتصال هاتفك، افتح تطبيق سيجنال على هاتفك.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "لم تعد إدارة جهات اتصال الهاتف مدعومة على iPad. سَيستمر هذا الجهاز في مزامنة أي تغييرات طرأت على قائمة جهات اتصالك من سيجنال على هاتفك.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "لم تعد إدارة جهات اتصال الهاتف مدعومة على جهاز الآيباد. سَيستمر هذا الجهاز في مزامنة أي تغييرات طرأت على قائمة جهات اتصالك من سيجنال على هاتفك.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "معرفة المزيد";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "اعرف المزيد";
 
 /* Body for system notification when a new device is linked. Embeds {{ time the device was linked }} */
 "LINKED_DEVICE_NOTIFICATION_BODY" = "تمَّ ربط جهاز جديد بِحسابك على %1$@. انقر للمشاهدة.";
 
 /* Title for system notification when a new device is linked. */
-"LINKED_DEVICE_NOTIFICATION_TITLE" = "قُمتَ بربط جهاز جديد";
+"LINKED_DEVICE_NOTIFICATION_TITLE" = "قُمتَ بربط جهازٍ جديد";
 
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
-"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "قُم زيارة %1$@ لتثبيت تطبيق iPad أو %2$@ على جهازك لتثبيت نسخة التطبيق الخاصة بالحاسوب.";
+"LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "قُم بزيارة %1$@ لتثبيت تطبيق iPad أو %2$@ على جهازك لتثبيت نسخة التطبيق الخاصة بالحاسوب.";
 
 /* Bullet point about message sync on the linked devices education sheet */
 "LINKED_DEVICES_EDUCATION_POINT_MESSAGES" = "تتمُّ مُزامنة رسائل تطبيق سيجنال مع تطبيق سيجنال على هاتفك المحمول بعد ربطه.";
 
 /* Bullet point about privacy on the linked devices education sheet */
-"LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "تتّسم جميع المراسلات في الأجهزة المُرتبِطة بالخصوصية.";
+"LINKED_DEVICES_EDUCATION_POINT_PRIVACY" = "تتَّسِم جميع المراسلات في الأجهزة المُرتبِطة بالخصوصية.";
 
 /* Title for the linked device education sheet */
-"LINKED_DEVICES_EDUCATION_TITLE" = "تطبيق سيجنال على الحاسوب أو جهاز الآيباد";
+"LINKED_DEVICES_EDUCATION_TITLE" = "تطبيق سيجنال على الحاسوب المكتبي أو جهاز الآيباد";
 
 /* Text that appears where the linked device list would be indicating that there are no linked devices. */
-"LINKED_DEVICES_EMPTY_STATE" = "لا توجد أجهزة مرتبطة";
+"LINKED_DEVICES_EMPTY_STATE" = "لا توجد أجهزة مُرتبِطة";
 
 /* Description for header of the linked devices list */
-"LINKED_DEVICES_HEADER_DESCRIPTION" = "استخدام سيجنال على الحاسوب المكتبي أو جهاز الآيباد. ستتمُّ مُزامنة رسائلك مع أجهزتك المرتبطة.";
+"LINKED_DEVICES_HEADER_DESCRIPTION" = "استخدِم سيجنال على الحاسوب المكتبي أو جهاز الآيباد. ستتمُّ مُزامنة رسائلك مع أجهزتك المُرتبِطة.";
 
 /* Description for header of the linked devices list when Link and Sync is disabled */
 "LINKED_DEVICES_HEADER_DESCRIPTION_LINK_AND_SYNC_DISABLED" = "استخدِم سيجنال على الحاسوب المكتبي أو جهاز الآيباد.";
@@ -4133,16 +4136,16 @@
 "LINKED_DEVICES_LIST_FOOTER" = "معلومات الرسائل والدردشات محمية من خلال التشفير من طرف لِطرف على جميع الأجهزة.";
 
 /* Title above the list of currently-linked devices */
-"LINKED_DEVICES_LIST_TITLE" = "اﻷجهزة المرتبطة";
+"LINKED_DEVICES_LIST_TITLE" = "اﻷجهزة المُرتبِطة";
 
 /* Button title for renaming a linked device */
 "LINKED_DEVICES_RENAME_BUTTON" = "إعادة التسمية";
 
 /* Message on a sheet indicating the device rename attempt received an error. */
-"LINKED_DEVICES_RENAME_FAILURE_MESSAGE" = "تعذَّر تغيير اسم الجهاز. يُرجى المحاولة مرّة أخرى لاحقًا.";
+"LINKED_DEVICES_RENAME_FAILURE_MESSAGE" = "تعذَّر تغيير اسم الجهاز. حاوِل مرّة أخرى لاحقًا.";
 
 /* Message on a toast indicating the device was renamed. */
-"LINKED_DEVICES_RENAME_SUCCESS_MESSAGE" = "تمَّ تحديث اسم الجهاز.";
+"LINKED_DEVICES_RENAME_SUCCESS_MESSAGE" = "تمَّ تحديث اسم الجهاز";
 
 /* Title for the screen for renaming a linked device */
 "LINKED_DEVICES_RENAME_TITLE" = "تعديل اسم الجهاز";
@@ -4160,13 +4163,13 @@
 "LINKING_SYNCING_FOOTER" = "معلومات الرسائل والدردشات محمية من خلال التشفير من طرف لِطرف، بما في ذلك عملية المزامنة.";
 
 /* Title shown when loading messages during linking process */
-"LINKING_SYNCING_MESSAGES_TITLE" = "جاري مزامنة الرسائل";
+"LINKING_SYNCING_MESSAGES_TITLE" = "جارٍ مزامنة الرسائل";
 
 /* Progress label when the message loading has not yet started during the device linking process */
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "جارٍ الإعداد للتنزيل…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "قد يستغرق الأمر بضع دقائق حسب حجم سِجل رسائلك";
+"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "لا تغلق التطبيق.";
@@ -4190,16 +4193,16 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "تشغيل الوصول إلى الشبكة المحلية";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "البحث بالاسم أو العنوان";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "البحث بحسب الاسم أو العنوان";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "حدِّد موقعاً";
+"LOCATION_PICKER_TITLE" = "حدِّد الموقع";
 
 /* Title for the 'logging' help section. */
 "LOGGING_SECTION" = "التسجيل";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "سِجِلَّاتُ التَّصحِيح يُمكِنُ أنَّ تُسَاعِدَ سيجنال عَلَى إصلاحِ المُشكِلات وَالاِنهِيارَات.";
+"LOGGING_SECTION_FOOTER" = "سجلات التصحيح يمكن أن تساعد سيجنال على إصلاح المشكلات والأخطاء.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "الرسالة";
@@ -4211,16 +4214,16 @@
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "جميع الوسائط";
 
 /* Title for the button that discards all edits in media editor. */
-"MEDIA_EDITOR_CLEAR_ALL" = "محو الكل";
+"MEDIA_EDITOR_CLEAR_ALL" = "إزالة الكل";
 
 /* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
-"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "التخلي عن التغييرات";
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "تجاهل التغييرات";
 
 /* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
 "MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "سَتفقد أي تغييرات أحدثتها لهذه الصورة";
 
 /* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
-"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "التخلي عن التغييرات؟";
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "هل ترغبُ بتجاهل التغييرات؟";
 
 /* Title for the button that resets photo to its initial state. */
 "MEDIA_EDITOR_RESET" = "إعادة التعيين";
@@ -4232,7 +4235,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "إضافة رسالة";
 
 /* Shown in place of message input text in media editor when 'View Once' is on. */
-"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "وسائط للمُشاهدة مرة واحدة";
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "وسائط للمُشاهدة مرّة واحدة";
 
 /* VoiceOver description for a generic audio file in All Media */
 "MEDIA_GALLERY_A11Y_AUDIO_FILE" = "ملف صوتي";
@@ -4244,10 +4247,10 @@
 "MEDIA_GALLERY_A11Y_VOICE_MESSAGE" = "رسالة صوتية";
 
 /* Button to reset media filter. Displayed when filter results in no media visible. */
-"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "مَحوُ الفلترة";
+"MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "إزالة الفلتر";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
-"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "سيقوم هذا بحذف الملفات المُختارة بشكل نهائي؟ سيتم حذف أي نص رسالة مقترنة بهذه العناصر أيضًا.";
+"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "سيؤدي هذا إلى حذف الملفات المُحدَّدة بشكلٍ نهائي. سيتمُّ حذف أي نص رسالة مقترنة بهذه العناصر أيضًا.";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
@@ -4265,10 +4268,10 @@
 "MEDIA_GALLERY_NO_FILES_TITLE" = "لا تُوجد ملفات";
 
 /* Displayed in All Media screen when there's no media - first line. */
-"MEDIA_GALLERY_NO_FILTER_RESULTS" = "لا توجد وسائط";
+"MEDIA_GALLERY_NO_FILTER_RESULTS" = "لا يوجد ملف وسائط";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "ستظهر الصور والفيديوهات والصور المتحركة التي تُرسلها وتستقبلها هنا";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "ستظهر الصور والفيديوهات والصور المتحركة التي تُرسلها وتستقبلها هنا.";
 
 /* Displayed in All Media screen when there's no media - first line. */
 "MEDIA_GALLERY_NO_MEDIA_TITLE" = "لا توجد وسائط";
@@ -4277,16 +4280,16 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "هذا الشهر";
 
 /* Text explaining that the user will forward all media from a message. */
-"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "ستتم إعادة توجيه جميع الوسائط في هذه الرسالة.";
+"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "ستتمُّ إعادة توجيه جميع الوسائط في هذه الرسالة.";
 
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "حذف";
 
 /* button title to snooze a megaphone */
-"MEGAPHONE_REMIND_LATER" = "ذكِّرني لاحقاً";
+"MEGAPHONE_REMIND_LATER" = "ذكِّرني لاحقًا";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "سوف نُذكِّرُك لاحقاً.";
+"MEGAPHONE_WILL_REMIND_LATER" = "سوف نُذكِّرُك لاحقًا.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "نسخ نصّ الرسالة";
@@ -4295,19 +4298,19 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "حذف للجميع";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "ستُحذَف هذه الرسالة لأياً كان في هذه الدردشة إن كانوا يستخدمون إصدار حديث مِن سيجنال. سيكون بمقدرتهم رؤية أنك قد حذفت رسالة.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "ستُحذَف هذه الرسالة لأي شخص في هذه الدردشة إن كان يستخدم إصدار حديث مِن سيجنال. سيكون بمقدوره رؤية أنك قد حذفت رسالة.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "من هم الأشخاص الذين تريد حذف هذه الرسالة لديهم؟";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "حذف بالنسبة لي";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "حذف من عندي";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "حذف هذه الرسالة";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "حدف الرسائل المُحددة";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "حدف الرسائل المُحدَّدة";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "المزيد من المعلومات";
@@ -4319,67 +4322,67 @@
 "MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "رسالة إلكترونية جديدة";
 
 /* Error show when user tries to send email without email being configured. */
-"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "علبة البريد غير مُهيَّئة.";
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "البريد الإلكتروني غير مُهيَّئ.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "إعادة توجيه هذه الرسالة";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "إعادة توجيه الرسائل المحددة";
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "إعادة توجيه الرسائل المُحدَّدة";
 
 /* A label for a button that will open an address in Apple Maps. \"Maps\" is a proper noun referring to the Apple Maps app, and should be translated as such. */
 "MESSAGE_ACTION_LINK_OPEN_ADDRESS_APPLE_MAPS" = "الفتح في الخريطة";
 
 /* A label for a button that will open an address in Google Maps. \"Google Maps\" is a proper noun referring to the Google Maps app, and should be translated as such. */
-"MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS" = "افتح في Google Maps";
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS" = "فتح في Google Maps";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "فتح الدعوة للمجموعة";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "فتح الوصلة";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "فتح الرابط";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "فتح وكيل سيجنال";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "فتح بروكسي سيجنال";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "عرض حزمة الملصقات";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "عرض مجموعة الملصقات";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_PAYMENT_DETAILS" = "تفاصيل عمليات الدفع";
+"MESSAGE_ACTION_PAYMENT_DETAILS" = "تفاصيل عملية الدفع";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "اتصال";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "صوت فيس تايم";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "مكالمة صوتية عبر FaceTime";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "فيديو فيس تايم";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "مكالمة فيديو عبر FaceTime";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "إرسال رسالة نصية";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "الرَّدّ على هذه الرِّسالة";
+"MESSAGE_ACTION_REPLY" = "الرَّد على هذه الرسالة";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_SELECT_MESSAGE" = "تحديد مُتعدد";
+"MESSAGE_ACTION_SELECT_MESSAGE" = "اختيار مُتعدِّد";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "شارك الوسائط";
+"MESSAGE_ACTION_SHARE_MEDIA" = "شارِك الوسائط";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SPEAK_MESSAGE" = "نطق الرسالة";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "التوقف عن نطق الرسالة";
+"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "التوقُّف عن نطق الرسالة";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "الدعوة للمجموعة";
 
 /* Title for message actions for a sticker pack. */
-"MESSAGE_ACTION_TITLE_STICKER_PACK" = "حزمة المُلصقات";
+"MESSAGE_ACTION_TITLE_STICKER_PACK" = "مجموعة المُلصَقات";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "رسالة";
@@ -4394,7 +4397,7 @@
 "MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "عرض سِجل التعديلات";
 
 /* Title for the 'sent from' section on the 'message details' view. */
-"MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "أُرسِلَت مِن قِبَل";
+"MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "أُرسِلَت من قَبْل";
 
 /* Label for file size of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "حجم الملف";
@@ -4412,34 +4415,34 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "فشل";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "الإرسال متوقف مؤقتا";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "الإرسال متوقِّف مؤقَّتًا";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "قُرِأت مِن قِبَل";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "قُرِأَت من قبل";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "يَجري الإرسال إلى";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "جارٍ الإرسال إلى";
 
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "أُرسِلَت إلى";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "تعذّر التسليم";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "تعذَّر التسليم";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "يَجري الرَّفع";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "جارٍ التحميل";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "اطلع عليها";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "شاهَدها";
 
 /* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
-"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "أبدا";
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "أبدًا";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "تمَّ الاستلام";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "أُرسِلت";
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "تمَّ الإرسال";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "اسم الملف";
@@ -4457,7 +4460,7 @@
 "MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_DELETE" = "حذف الدردشة";
 
 /* Sheet option for reporting a chat as spam. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
-"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "الإبلاغ عن رسائل غير مرغوب فيها";
+"MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_SPAM" = "الإبلاغ عن الرسائل غير المرغوب فيها";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "حظر";
@@ -4466,19 +4469,19 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "حظر وحذف";
 
 /* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "التبليغ عن الإزعاج ثم الحظر";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "الإبلاغ عن الرسائل غير المرغوب فيها وحظرها";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "لن يتمكن الأشخاص المحظورون من الاتصال بك أو إرسال رسالة إليك.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "لن يتمكَّن الأشخاص المحظورون من الاتصال بك أو إرسال رسالة إليك.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "حظر %1$@؟";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "هل ترغبُ بحظر %1$@؟";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "سوف تُغادر هذه المجموعة ولن تصلك بعد الآن رسالة أو مستجدات منها.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "حظر ومُغادرة %1$@؟";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "هل ترغب بحظر ومُغادرة %1$@؟";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "حذف";
@@ -4487,7 +4490,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "ستُحذَف هذه الدردشة من جميع أجهزتك.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "حذف الدردشة؟";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "هل ترغبُ بحذف الدردشة؟";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "الحذف والمُغادرة";
@@ -4496,13 +4499,13 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "ستُغادر هذه المجموعة، ثم ستُحذَف من جميع أجهزتك.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "حذف ومُغادرة المجموعة؟";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "هل ترغبُ بحذف ومُغادرة المجموعة؟";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "هذا الشخص له نفس الاسم الذي لدى جهة اتصال أخرى";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "هذا الشخص له نفس الاسم الذي لدى جهة اتصال أخرى.";
 
 /* A header string informing the user about name collisions in a message request */
-"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "إذا كنت غير مُتأكد من هوية صاحب الطلب، راجِع جهات الاتصال أدناه ثم اتخذ الإجراء.";
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "إذا كُنتَ غير مُتأكِّد من هوية صاحب الطلب، راجِع جهات الاتصال أدناه ثم اتَّخِذ الإجراء.";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "مُراجعة الطلب";
@@ -4511,58 +4514,58 @@
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "تحديث جهة الاتصال";
 
 /* Action sheet message to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "سَيتم إشعار سيجنال أن هذا الشخص قد يكون أرسل رسائل غير مرغوب فيها. لا يُمكن لسيجنال رؤية محتوى أي دردشات.";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "سَيتمُّ إشعار سيجنال أن هذا الشخص قد يكون أرسل رسائل غير مرغوب فيها. لا يُمكن لسيجنال رؤية محتوى أي دردشات.";
 
 /* Action sheet title to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "الإبلاغ عن رسائل غير مرغوب فيها؟";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "هل ترغبُ بالإبلاغ عن رسائل غير مرغوب فيها؟";
 
 /* Action sheet action to confirm reporting a conversation as spam via a message request. */
 "MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "الإبلاغ عن رسائل غير مرغوب فيها";
 
 /* String indicating that spam has been reported. */
-"MESSAGE_REQUEST_SPAM_REPORTED" = "تم الإبلاغ عنها كرسالة غير مرغوب فيها.";
+"MESSAGE_REQUEST_SPAM_REPORTED" = "تمَّ الإبلاغ عنها كرسالة غير مرغوب فيها.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "تم الإبلاغ عنه كبريد مزعج وتم حظره.";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "تمَّ الإبلاغ عنها كرسالة غير مرغوب فيها وتمَّ حظرها.";
 
 /* A button used to accept a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "قُبول";
+"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "قبول";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "حظر";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "السماح لـ%1$@ بمُراسلتك ومُشاركة اسمك وصورتك معه؟ لن تستقبل أي رسائل حتى تقوم برفع الحظر عنه.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "هل ترغبُ بالسماح لـ %1$@ بمُراسلتك ومُشاركة اسمك وصورتك معه؟ لن تستقبل أي رسائل حتى تقوم برفع الحظر عنه.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "ارفع الحظر عن هذه المجموعة وشارك اسمك وصورتك مع أعضاءها؟ لن تستقبل أي رسائل من المجموعة حتى تقوم برفع الحظر عنها.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "هل ترغبُ برفع الحظر عن هذه المجموعة ومشاركة اسمك وصورتك مع أعضاءها؟ لن تستقبل أي رسائل من المجموعة حتى تقوم برفع الحظر عنها.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "رفع حظر هذه المجموعة؟ لن يعلموا أنك قد قرأت رسائلهم حتى تقوم برفع الحظر عنهم.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "هل ترغبُ برفع الحظر هذه المجموعة؟ لن يعلموا أنك قد قرأتَ رسائلهم حتى تقوم برفع الحظر عنهم.";
 
 /* A button used to continue a conversation and share your profile. */
-"MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "الاستمرار";
+"MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "متابعة";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "حذف";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "مُواصلة هذه الدردشة مع %1$@ ومُشاركة اسمك وصورتك معه؟";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "هل ترغبُ بمتابعة هذه الدردشة مع %1$@ ومُشاركة اسمك وصورتك معه؟";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "مُواصلة دردشتك مع هذه المجموعة ومُشاركة اسمك وصورتك مع أعضاءها؟";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "هل ترغبُ بمتابعة دردشتك مع هذه المجموعة ومُشاركة اسمك وصورتك مع أعضاءها؟";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "السماح لـ %1$@ بمُراسلتك ومُشاركة اسمك وصورتك معه؟ لن يعلم أنك قد قرأت رسائله حتى تقوم بالقبول.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "هل ترغبُ بالسماح لـ %1$@ بمُراسلتك ومُشاركة اسمك وصورتك معه؟ لن يعلم أنك قد قرأتَ رسائله حتى تقوم بالقبول.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "الإنضمام لهذه المجموعة ومُشاركة اسمك وصورتك مع أعضاءها؟ لن يعلموا أنك قد قرأت رسائلهم حتى تقوم بالقبول.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "هل ترغبُ بالانضمام لهذه المجموعة ومُشاركة اسمك وصورتك مع أعضاءها؟ لن يعلموا أنك قد قرأتَ رسائلهم حتى تقوم بالقبول.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "الإنضمام لهذه المجموعة؟ لن يعلموا انك قد قرأت رسائلهم حتى تقوم بالقبول.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "هل ترغبُ بالانضمام لهذه المجموعة؟ لن يعلموا أنك قد قرأتَ رسائلهم حتى تقوم بالقبول.";
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "هل تسمح لـ %1$@ بمراسلتك ومشاركة اسمك وصورتك معهم؟ لقد حذفت هذا الشخص في الماضي.";
+"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "هل تسمح لـ %1$@ بمراسلتك ومشاركة اسمك وصورتك معه؟ حذفتَ هذا الشخص في الماضي.";
 
 /* incoming message request button text which reports a conversation as spam */
 "MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "الإبلاغ…";
@@ -4574,19 +4577,19 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "إلغاء الطلب";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "إلغاء طلبك في الإنضمام لهذه المجموعة؟";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "هل ترغبُ بإلغاء طلبك في الانضمام لهذه المجموعة؟";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "لقد تمّ إرسال طلبك للإنضمام إلى مُشرف المجموعة. سيتم إخطارك عند اتخاذه للإجراء.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "تمَّ إرسال طلبك للانضمام إلى مُشرِف المجموعة. سيتمُّ إخطارك عند اتخاذه للإجراء.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "استُلِمَت";
 
 /* message status while message is downloading. */
-"MESSAGE_STATUS_DOWNLOADING" = "يَجري التَّنزيل";
+"MESSAGE_STATUS_DOWNLOADING" = "جارٍ التنزيل";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "تم التعديل";
+"MESSAGE_STATUS_EDITED" = "تمَّ التعديل";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "فشل الإرسال.";
@@ -4595,19 +4598,19 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "فشل";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "تمّ الإرسال جزئياً، انقر للحصول على التفاصيل";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "تمَّ الإرسال جزئيًا. انقر للمزيد من التفاصيل.";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "الإرسال متوقف مؤقتا";
+"MESSAGE_STATUS_PENDING" = "الإرسال متوقِّف مؤقَّتًا";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "تَوَقُّفٌ مُؤقَّت";
+"MESSAGE_STATUS_PENDING_SHORT" = "توقُّف مُؤقَّت";
 
 /* status message for read messages */
-"MESSAGE_STATUS_READ" = "تمت القراءة";
+"MESSAGE_STATUS_READ" = "تمَّت قراءتها";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "تعذّر التسليم";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "تعذَّر التسليم";
 
 /* Label indicating that a message failed to send. */
 "MESSAGE_STATUS_SEND_FAILED" = "فشل الإرسال";
@@ -4616,34 +4619,34 @@
 "MESSAGE_STATUS_SENDING" = "جارٍ الإرسال…";
 
 /* status message for sent messages */
-"MESSAGE_STATUS_SENT" = "أرسِلَت";
+"MESSAGE_STATUS_SENT" = "تمَّ إرسالها";
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "جارٍ التحميل…";
 
 /* status message for viewed messages */
-"MESSAGE_STATUS_VIEWED" = "لقد تمَّ عرضه";
+"MESSAGE_STATUS_VIEWED" = "تمَّت مشاهدتها";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "إنَّ %1$@ لم يعُد مُعلَّم كمُتحقَّق مِنه. انقر للحُصول على الخيارات.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "لم يعُد %1$@ مُشارًا إليه كمُتحقَّق مِنه. انقر للمزيد من الخيارات.";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "إنَّ %1$@ لم يعُد مُعلَّم كمُتحقَّق منه. انقر للحُصول على الخيارات.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "لم يعُد %1$@ مُشارًا إليه كمُتحقَّق منه. انقر للمزيد من الخيارات.";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "أكثر مِن عُضو مِن هذه المجموعة لم يعُد مُعلَّم كمُتحقَّق منه. انقر للحصول على الخيارات.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "أكثر مِن عُضو مِن هذه المجموعة لم يعُد مُشارًا إليه كمُتحقَّق منه. انقر للمزيد من الخيارات.";
 
 /* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "رَسائل جديدة";
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "رسائل جديدة";
 
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
 "MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "مكالمة فائتة من جهة اتصال محظورة في إعدادات الهاتف";
 
 /* Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "احظر جهة الاتصال على سيجنال أيضًا";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "احظر أيضًا جهة الاتصال على سيجنال";
 
 /* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "لقد فاتتك مُكالمته لأنك حظرته في إعدادات هاتفك. انتقل إلى إعدادات > الهاتف وانقر على جهات الاتصال المحظورة لإدارتها.";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "فاتتك مُكالمته لأنك حظرته في إعدادات هاتفك. انتقل إلى إعدادات > الهاتف وانقر على جهات الاتصال المحظورة لإدارتها.";
 
 /* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
 "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ محظور في إعدادات الهاتف";
@@ -4658,43 +4661,43 @@
 "MISSED_VOICE_CALL" = "مكالمة صوتية فائتة";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "يُمكنك إتاحة الوصول إلى الكاميرا من خلال تطبيق إعدادات iOS للقيام بمكالمة فيديو في سيجنال.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "يُمكنك إتاحة الوصول إلى الكاميرا من خلال إعدادات التطبيق على iOS للقيام بمكالمة فيديو في سيجنال.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "يحتاج سيجنال الوصول إلى الكاميرا الخاصة بك.";
 
 /* Alert body indicating the user has denied location permissions */
-"MISSING_LOCATION_PERMISSION_MESSAGE" = "يُمكنك إتاحة هذا الإذن في تطبيق إعدادات iOS.";
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "يُمكنك إتاحة هذا الإذن من خلال إعدادات التطبيق على iOS.";
 
 /* Alert title indicating the user has denied location permissions */
 "MISSING_LOCATION_PERMISSION_TITLE" = "يتطلب سيجنال الوصول إلى موقعك لهذه الميزة.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "يُمكنك إتاحة هذا الإذن في تطبيق إعدادات iOS.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "يُمكنك إتاحة هذا الإذن من خلال إعدادات التطبيق على iOS.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "يتطلب سيجنال الوصول إلى الصوة الخاصة بك لهذه الميزة.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "يتطلَّب سيجنال الوصول إلى الصور الخاصة بك لتفعيل هذه الميزة.";
 
 /* An error shown as the title of an alert when try to link a new device & the user is already at the limit. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "لا يمكنك ربط المزيد من الأجهزة.";
 
 /* A recovery suggestion shown as the body of an alert when try to link a new device & the user is already at the limit. */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "بلغت الحد الأقصى لِما يمكنك ربطه من أجهزة بحسابك. فضلًا أزل جهازًا وحاول مجددًا.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "بلغتَ الحد الأقصى لِما يمكنك ربطه من أجهزة بحسابك. أزِل جهازًا وحاوِل مُجدَّدًا.";
 
 /* Text for a toast confirming that the mic has been muted for a call. */
-"MUTE_CONFIRMATION_TOAST_LABEL" = "الميكروفون غير مفعل";
+"MUTE_CONFIRMATION_TOAST_LABEL" = "الميكروفون غير مُفعَّل";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "مكتوم";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "سَيظهر تحديث قِصتك هنا.";
+"MY_STORIES_NO_STORIES" = "ستظهر التحديثات لقصتك هنا.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "الجميع ما عدا…";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "الكل باستثناء…";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "جميع جهات اتصال سيجنال";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "كل جهات اتصال سيجنال";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "مشاركة فقط مع…";
@@ -4718,22 +4721,22 @@
 "MY_STORY_TAP_TO_ADD" = "انقر للإضافة";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "غيّر مؤخرًا %1$@ اسم حسابه الشخصي من %2$@ إلى %3$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "غيَّر %1$@ مؤخَّرًا اسم حسابه الشخصي من %2$@ إلى %3$@.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "تخطي";
 
 /* String representing only the cellular interface */
-"NETWORK_INTERFACE_SET_CELLULAR" = "الخلوية فقط";
+"NETWORK_INTERFACE_SET_CELLULAR" = "شبكة الجوال فقط";
 
 /* String representing the 'never' condition of having no supported network interfaces */
-"NETWORK_INTERFACE_SET_NEVER" = "أبداً";
+"NETWORK_INTERFACE_SET_NEVER" = "أبدًا";
 
 /* String representing only the wifi interface */
-"NETWORK_INTERFACE_SET_WIFI" = "الـWi-Fi فقط";
+"NETWORK_INTERFACE_SET_WIFI" = "شبكة الواي فاي فقط";
 
 /* String representing both wifi and cellular interfaces */
-"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "الـWi-Fi والخلوية";
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "شبكة الواي فاي والجوال";
 
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
 "NEW_CALL_HINT" = "اختر جهة اتصال أو مجموعة لبدء مُكالمة جديدة مَعها.";
@@ -4754,10 +4757,10 @@
 "NEW_CALL_VOICE_CALL_ACTION_TITLE" = "مكالمة صوتية";
 
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "العثور برقم الهاتف";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "إيجاد بحسب رقم الهاتف";
 
 /* A label for the cell that lets you add a new member by their username */
-"NEW_CONVERSATION_FIND_BY_USERNAME" = "البحث باسم المُستخدم";
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "إيجاد بحسب اسم المُستخدم";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "مجموعة جديدة";
@@ -4766,16 +4769,16 @@
 "NEW_GROUP_CREATE_BUTTON" = "إنشاء";
 
 /* Error indicating that a new group could not be created. */
-"NEW_GROUP_CREATION_FAILED" = "يتعذّر إنشاء مجموعة جديدة.";
+"NEW_GROUP_CREATION_FAILED" = "يتعذَّر إنشاء مجموعة جديدة.";
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
-"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "يتعذّر إنشاء مجموعة جديدة. تحقق من اتصالك بالانترنت ثم حاول مرة أخرى.";
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "يتعذَّر إنشاء مجموعة جديدة. تحقَّق من اتصالك بالانترنت ثم حاوِل مرّة أخرى.";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "مطلوب اسم للمجموعة.";
 
 /* Title for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "ينقصك اسم المجموعة";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "بحاجة لإضافة اسم المجموعة";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "مجموعة جديدة";
@@ -4784,7 +4787,7 @@
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%1$@ إلى %2$@";
 
 /* The title for the 'name new group' view. */
-"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "تسمية المجموعة";
+"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "أضِف اسمًا للمجموعة";
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "مستخدمون آخرون";
@@ -4802,16 +4805,16 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "العثور برقم الهاتف";
 
 /* Title for the 'new private story' confirmation view */
-"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "اسم القصة";
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "أضِف اسمًا للقصة";
 
 /* Button to create a new private story */
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "إنشاء";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "مطلوب اسم القصة.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "مطلوب إضافة اسم القصة.";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "ينقُصك اسم القصة";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "بحاجة لإضافة اسم القصة";
 
 /* Section footer for the name text field on the 'new private story' creation view */
 "NEW_PRIVATE_STORY_NAME_FOOTER" = "أنت فقط من يرى اسم هذه القصة.";
@@ -4820,7 +4823,7 @@
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "اسم القصة (مطلوب)";
 
 /* The title for the 'new private story' view. */
-"NEW_PRIVATE_STORY_VIEW_TITLE" = "تحديد المشاهدين";
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "حدِّد المشاهدين";
 
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "المشاهدون";
@@ -4829,19 +4832,19 @@
 "NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "جديد";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "ظاهرة فقط لأفراد معينين";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "ظاهرة فقط لأشخاص مُعيَّنين";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "قصة مخصصة جديدة";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "قصة مُخصَّصة جديدة";
 
 /* Subtitle for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "المشاركة مع مجموعة موجودة";
+"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "مشاركة مع مجموعة موجودة";
 
 /* Title for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "قصة مجموعة جديدة";
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "قصة جديدة للمجموعة";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "يُرجى اختيار صنف القصة";
+"NEW_STORY_SHEET_TITLE" = "اختر نوع القصة";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
 "NICKNAME_BUTTON_TITLE" = "اسم مستعار";
@@ -4868,7 +4871,7 @@
 "NICKNAME_EDITOR_TITLE" = "اسم مستعار";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "اعثر على جهات الاتصال برقم الهاتف";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "اعثر على جهات الاتصال بحسب رقم الهاتف";
 
 /* Label for a button that lets users search for contacts by username */
 "NO_CONTACTS_SEARCH_BY_USERNAME" = "البحث على جهات الاتصال باسم المستخدم";
@@ -4877,16 +4880,16 @@
 "NO_GROUPS_IN_COMMON" = "لا توجد مجموعات مُشتركة";
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
-"NO_OTHER_GROUPS_IN_COMMON" = "لا وجود لمجموعات أخرى مشتركة.";
+"NO_OTHER_GROUPS_IN_COMMON" = "لا توجد مجموعات مُشتركة أخرى.";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "الملاحظات الشخصية";
 
 /* Body for a notification representing a message request. */
-"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "طلب تراسُل";
+"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "طلب مراسلة";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "قد تكون قد استلمت رسائل اثناء إعادة تشغيل %1$@ الخاص بك.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "قد تكون استلمتَ رسائل اثناء إعادة تشغيل %1$@ الخاص بك.";
 
 /* Body for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "لتلقي إشعارات بالرسائل الجديدة:";
@@ -4895,10 +4898,10 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "انقر على \"الانتقال إلى الإعدادات\" في الأسفل";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "تفعيل \"السماح بالإشعارات\".";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "تفعيل \"السماح بالإشعارات\"";
 
 /* Second step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "انقر على الإشعارات";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "انقر على \"الإشعارات\"";
 
 /* Title for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "تفعيل الإشعارات";
@@ -4907,13 +4910,13 @@
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "ليس الآن";
 
 /* Action text for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "شغِّل";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "تفعيل";
 
 /* Body for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "عدم تفويت أي رسالة من جهات الاتصال والمجموعات الخاصة بك.";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "تفعيل الإشعارات؟";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "هل ترغبُ بتفعيل الإشعارات؟";
 
 /* Shown as the body of an alert when notifications can't be shown due to an error. */
 "NOTIFICATIONS_ERROR_MESSAGE" = "أعد تشغيل %1$@ الخاص بك إذا كانت لا تصِلك إشعارات سيجنال.";
@@ -4922,7 +4925,7 @@
 "NOTIFICATIONS_ERROR_TITLE" = "تعذر إظهار الإشعارات";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "تتضمن الإجراءات \"مقروءة\"، \"رد\"، و \"إعادة الاتصال.\"";
+"NOTIFICATIONS_FOOTER_WARNING" = "تتضمن الإجراءات \"تحديد كمقروء\"، \"رد\"، و \"إعادة الاتصال.\"";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "لا اسم ولا محتوى";
@@ -4931,10 +4934,10 @@
 "NOTIFICATIONS_SECTION_INAPP" = "التشغيل أثناء فتح التطبيق";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "إضافة صوت مُخصصة…";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "إضافة صوت مُخصَّص…";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "الاسم، المحتوى، والإجراءات";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "الاسم، والمحتوى، والإجراءات";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "الاسم فقط";
@@ -4946,55 +4949,55 @@
 "OK" = "حسنًا";
 
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_CREATE_NEW_PIN" = "إنشاء PIN جديد";
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "إنشاء رقم تعريف شخصي جديد";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "أدخِل PIN أبجدي رَقمي";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "أدخِل رقم PIN مُكوَّن من أرقام وحروف";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "أدخِل PIN رَقمي";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "أدخِل رقم PIN رَقمي";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "هَل تُريدُ مُساعَدَة؟";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "هَل تحتاج لمساعدة؟";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "PIN غير صحيح";
+"ONBOARDING_2FA_INVALID_PIN" = "رقم الـ PIN غير صحيح";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
-"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "رقم تعريفي شخصي غير صحيح. تتبقى مُحاولة واحدة.";
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "رقم PIN غير صحيح. تبقَّى مُحاولة واحدة.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "التَّجاهُل وإنشاء PIN جَديد";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "تجاهُل وإنشاء PIN جديد";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "إذا كنتَ لا تستطيع تذكُر PIN الخاص بك، يُمكنك إنشاء واحد جديد. يُمكنك التسجيل واستخدام حسابك لكن سوف تفقد بعض الإعدادات المحفوظة، مثل معلومات حسابك الشخصي.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "إذا كُنتَ لا تستطيع تذكُّر رقم PIN الخاص بك، يُمكنك إنشاء واحد جديد. يُمكنك التسجيل واستخدام حسابك، لكن سوف تفقد بعض الإعدادات المحفوظة، مثل معلومات حسابك الشخصي.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "تجاهُل إدخال PIN؟";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "هل ترغبُ بتخطّي إدخال رقم PIN؟";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "تسجيل iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "تسجيل الآيباد";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "ربط iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "ربط الآي فون";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "بالنقر على \"تسجيل iPad\" سوف ينشيء لك حساباً جديداً في سيجنال أو ينقل حساباً حالياً إلى هذا الـiPad. هذا سوف يلغي سيجنال في أي جهاز آخر مُسجل حالياً بنفس رقم الهاتف.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "سيتيح لك النقر على \"تسجيل الآي باد\" إنشاء حسابٍ جديدٍ في سيجنال أو نقل حسابٍ حاليٍ إلى هذا الآي باد. هذا سوف يلغي سيجنال في أي جهاز آخر مُسجَّل حاليًا بنفس رقم الهاتف.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "بالنقر على \"ربط iPhone\" سوف يتيح لك ربط الـiPhone الخاص بك مع حساب حالي. لا يُنصح عمومًا بربط الـiPhone الخاص بك وسيحدُّ هذا من بعض الوظائفن، مثل إجراء الاتصالات.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "سيتيح لك النقر على \"ربط الآي فون\" ربط الآي فون الخاص بك مع حساب حالي. لا يُنصَح عمومًا بربط الآي فون الخاص بك، وسيحدُّ هذا من بعض الوظائف، مثل إجراء المكالمات.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "تسجيل هذا الـiPad";
+"ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "تسجيل هذا الآي باد";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "ربط هذا الـiPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "ربط هذا الآي فون";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "تسجيل هذا الـiPad سوف يلغي سيجنال في أي جهاز آخر مُسجل حالياً بنفس رقم الهاتف.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "تسجيل هذا الآي باد سوف يُعطِّل سيجنال في أي جهاز آخر مُسجَّل حاليًا بنفس رقم الهاتف.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "لا يُوصى بربط الـiPhone الخاص بك، إذ سيحدّ من بعض الوظف الأساسية.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "لا يُوصَى بربط الآي فون الخاص بك، إذ سيحدُّ من بعض الوظف الأساسية.";
 
 /* Description of the 'Contacts' permission in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "اعثر على أشخاص تعرفهم. جهات اتصالك مشفرة وغير مرئية لخدمة سيجنال.";
@@ -5012,31 +5015,31 @@
 "ONBOARDING_PERMISSIONS_PREAMBLE" = "يرغبُ سيجنال بطلب الصلاحيات التالية.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "تَمكينُ الصّلاحيّات";
+"ONBOARDING_PERMISSIONS_TITLE" = "منح الصلاحية للأذونات";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "اختر من يُمكنه العثور عليكَ في سيجنال بواسطة رقم الهاتف الخاص بك %1$@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "اختر من يُمكنه إيجادك على سيجنال بواسطة رقم الهاتف الخاص بك %1$@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "مَن يُمكنه العثور عليك بواسطة الرقم الخاص بك؟";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "مَن يُمكنه إيجادك من خلال الرقم الخاص بك؟";
 
 /* Placeholder string for phone number field during registration */
 "ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "رقم هاتفك";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
-"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "يُرجى الانتِظار بضع دقائق قبل المُحاولة مرة أُخرى. (%1$@)";
+"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "يُرجى الانتِظار بضع دقائق قبل المُحاولة مرّة أُخرى. (%1$@)";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "رقم غير صالِح. للتَّسجيل يُرجى إدخال رقم هاتف صالِح.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "رقم الهاتف غير صالِح. للتسجيل يُرجى إدخال رقم هاتف صالِح.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين الـPIN، لكن يُمكنك الوصول إلى حساب سيجنال الخاص بِكَ عبر إنشاء PIN جديد. للحفاظ على خصوصيتك وأمانك سوف يُستعاد حسابك من غير أي معلومات حساب شخصي أو إعدادات محفوظة مُسبقًا.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "استنفدتَ تخمينات رقم PIN المسموحة لك، ولكن مازال بإمكانك الوصول إلى حسابك على سيجنال من خلال إنشاء رقم PIN جديد. للحفاظ على خصوصيتك وأمانك، ستتمُّ استعادة حسابك بدون أي معلومات حساب أو إعدادات محفوظة.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "تعرّف على المزيد حول الـPIN";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "اعرف المزيد عن أرقام PINs";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN غير صحيح";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "رقم PIN غير صحيح";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين رقم التعريف الشخصي، لكن يُمكنك الوصول إلى حساب سيجنال الخاص بِكَ عبر التحقق من رقم هاتفك. للحفاظ على خصوصيتك وأمانك سَيُستعاد حسابك من غير أي معلومات حساب شخصي أو إعدادات محفوظة مُسبقًا.";
@@ -5045,22 +5048,22 @@
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "استعادة أو نقل الحساب";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "الشُروط وَسياسة الخُصُوصِية";
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "الشروط وسياسة الخصوصية";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "احمل خُصُوصِيتكَ مَعَك.\nبِنَفسِكَ في كُلِّ رِسَالة.";
+"ONBOARDING_SPLASH_TITLE" = "حافِظ على خصوصيتك أينما كُنت.\nكُن على طبيعتك في كل رسالة.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
-"ONBOARDING_VERIFICATION_BACK_LINK" = "رقم غير صحيح؟";
+"ONBOARDING_VERIFICATION_BACK_LINK" = "هل هو رقم غير صحيح؟";
 
 /* Label for button to perform verification with a phone call. */
 "ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "اتصل بي";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "اتَّصل بي بَعد %1$@";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "اتصل بي بعد %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "جارٍ التَّحَقُّقُ مِنَ الرَّمز…";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "جارٍ التحقُّق من الكود…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
 "ONBOARDING_VERIFICATION_HELP_BULLET_1" = "يُرجى التأكد من أن هاتفك يلتقط الإشارة الخلوية لِتلقي الرسائل القصيرة أو المكالمات";
@@ -5075,16 +5078,16 @@
 "ONBOARDING_VERIFICATION_HELP_LINK" = "هل تواجه مشكلة في التسجيل؟";
 
 /* Label for button to resend SMS verification code. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "أعِد إرسال الرمز";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "إعادة إرسال الكود";
 
 /* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "إعادة إرسال الرَّمز خِلال %1$@";
+"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "إعادة إرسال الكود خلال %1$@";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "أدخِل الرمز الَّذي أرسلناهُ إلى %1$@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "أدخِل الكود الذي أرسلناهُ إلى %1$@";
 
 /* Title label for the onboarding verification page */
-"ONBOARDING_VERIFICATION_TITLE_LABEL" = "التحقُّق مِنَ الرَّمز";
+"ONBOARDING_VERIFICATION_TITLE_LABEL" = "كود التحقُّق";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "الإعدادات";
@@ -5105,19 +5108,19 @@
 "OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "سَيتوقف سيجنال عن دعم إصدار iOS على جهازك قريبًا. لمُواصلة استخدام سيجنال، يُرجى تغيير جهازك إلى جهاز أحدث قبل %1$@.";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "عطل %1$@ الرسائل المختفية.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "عطَّلَ %1$@ ميزة إخفاء الرسائل.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "ضَبَطَ %1$@ وقت إختفاء الرسائل على %2$@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "ضَبَطَ %1$@ وقت اختفاء الرسائل على %2$@.";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "إنَّ سيجنال يواجِهُ صُعوبات تَقنية. نحنُ نعملُ بجد لاستعادة الخِدمة في أسرع وقت ممكن.";
+"OUTAGE_WARNING" = "سيجنال يواجِهُ صُعوبات تَقنية. نعملُ بجد لاستعادة الخِدمة في أسرع وقتٍ ممكن.";
 
 /* Label for action link when the user has an outdated payment client */
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "حدِّث الآن";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "حدِّث تطبيق سيجنال للاستمرار في استخدام عمليات الدفع. قد لا يكون رصيدك مُحدثًا.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "حدِّث تطبيق سيجنال للاستمرار في استخدام عمليات الدفع. قد لا يكون رصيدك مُحدَّثًا.";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "مكالمة فيديو لم يتم الرد عليها";
@@ -5171,7 +5174,7 @@
 "PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "مبالغ غير كافية";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "لقد تعذر إرسال الوصل إلى المستلم";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "تعذَّر إرسال الإيصال إلى المُستلِم";
 
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "غير صالحة";
@@ -5249,7 +5252,7 @@
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "إضافة مُلاحظة";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "الرصيد المتوفر: %1$@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "الرصيد المتوفِّر: %1$@";
 
 /* Label for the 'confirm payment' button. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "تأكيد الدفع";
@@ -5261,7 +5264,7 @@
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
 
 /* Indicates that a payment failed due to a connectivity failure. */
-"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "تعذر الاتصال بالخدمة";
+"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "تعذَّر الاتصال بالخدمة";
 
 /* Indicates that a payment failed due to insufficient funds. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "ليس لديك ما يكفي من عملة MOB لإتمام هذا الدفع.";
@@ -5273,10 +5276,10 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "مُعاملة غير صالحة";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "حدِّث تطبيق سيجنال لاستخدام المدفوعات.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "قُم بتحديث تطبيق سيجنال لاستخدام المدفوعات.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "لم يُتحقَّق بعد من الدفع";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "لم يتم التحقُّق بعد من عملية الدفع";
 
 /* Indicates that a payment failed because the payments lock attempt was cancelled. */
 "PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "تمّ إلغاء المُصادَقة على قفل عمليات الدفع.";
@@ -5285,7 +5288,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "تعذّرت المُصادَقة على قفل عمليات الدفع.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "تعذر إتمام الدفع لأن رصيدك غير متاح. يُرجى التحقق من اتصالك بالانترنت ثم المحاولة مرة أخرى.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "تعذَّر إتمام الدفع لأن رصيدك غير متاح. يُرجى التحقُّق من اتصالك بالانترنت ثم حاوِل مُجدَّدًا.";
 
 /* Label for the 'payment estimated fee' indicator. */
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "رسوم الشبكة";
@@ -5300,16 +5303,16 @@
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ من %2$@";
 
 /* Placeholder for the new payment or payment request message. */
-"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "مُلاحظة";
+"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "ملاحظة";
 
 /* Label for the 'new payment' button. */
-"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "دَفع";
+"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "الدفع";
 
 /* Label for the 'total payment amount' indicator. */
 "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "المبلغ الإجمالي";
 
 /* Indicator that a new payment is being processed in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_PROCESSING" = "جاري العمل";
+"PAYMENTS_NEW_PAYMENT_PROCESSING" = "قيد المعالجة";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
 "PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "إلى %1$@";
@@ -5318,10 +5321,10 @@
 "PAYMENTS_NOTIFICATION_BANNER_1" = "هناك إشعار دفع جديد";
 
 /* Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}. */
-"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "لقد أرسَل لك %1$@ مبلغا قدره %2$@";
+"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "أرسَل لك %1$@ مبلغًا قدره %2$@";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "هناك %1$@ إشعار دفع جديد";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "هناك %1$@ إشعار (إشعارات) دفع جديد";
 
 /* Payment status context with contact name, failed. Embeds {{ Name of receiving contact }} */
 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "عملية دفع إلى %1$@";
@@ -5336,40 +5339,40 @@
 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "أرسلت %1$@";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "تمَّ الدفع";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "مدفوعة";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "غير مُتحقَّق منه";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "غير مُتحقَّق منها";
 
 /* Status indicator for incoming payments which have been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "مُتحقَّق منه";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "مُتحقَّق منها";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "تمَّ الدفع";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "مدفوعة";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "جارٍ الإرسال…";
 
 /* Status indicator for outgoing payments which have been sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "تمّ الارسال";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "مُرسَلة";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "يجري التجهيز";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "جارٍ الإعداد";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "غير مُتحقَّق منه";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "غير مُتحقَّق منها";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "مُتحقَّق منه";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "مُتحقَّق منها";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "فشل مجهول";
+"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "فشلت لسبب مجهول";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "تم";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "مُكتمِلة";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "غير مُتحقَّق منه";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "غير مُتحقَّق منها";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "مُتحقَّق منه";
