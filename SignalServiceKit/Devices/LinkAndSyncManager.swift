@@ -22,7 +22,7 @@ extension BackupKey {
 
 /// For Link'n'Sync errors thrown on the primary device.
 public enum PrimaryLinkNSyncError: Error {
-    case cancelled
+    case cancelled(linkedDeviceId: Int64?)
     case timedOutWaitingForLinkedDevice
     case errorWaitingForLinkedDevice
     case errorGeneratingBackup
@@ -209,7 +209,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             try Task.checkCancellation()
         } catch {
             Logger.info("Cancelled!")
-            throw .cancelled
+            throw .cancelled(linkedDeviceId: nil)
         }
 
         // Proportion progress percentages up front.
@@ -254,12 +254,13 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             try Task.checkCancellation()
         } catch {
             await handleCancellation()
-            throw .cancelled
+            throw .cancelled(linkedDeviceId: waitForLinkResponse.id)
         }
 
         let backupMetadata: Upload.EncryptedBackupUploadMetadata
         do {
             backupMetadata = try await generateBackup(
+                waitForDeviceToLinkResponse: waitForLinkResponse,
                 ephemeralBackupKey: ephemeralBackupKey,
                 localIdentifiers: localIdentifiers,
                 progress: exportingBackupProgress
@@ -419,7 +420,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             Logger.info("Device linked!")
         } catch {
             if error is CancellationError {
-                throw .cancelled
+                throw .cancelled(linkedDeviceId: nil)
             }
             throw .errorWaitingForLinkedDevice
         }
@@ -447,6 +448,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     }
 
     private func generateBackup(
+        waitForDeviceToLinkResponse: Requests.WaitForDeviceToLinkResponse,
         ephemeralBackupKey: BackupKey,
         localIdentifiers: LocalIdentifiers,
         progress: OWSProgressSink
@@ -467,7 +469,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             return metadata
         } catch let error {
             if error is CancellationError {
-                throw .cancelled
+                throw .cancelled(linkedDeviceId: waitForDeviceToLinkResponse.id)
             }
             owsFailDebug("Unable to generate link'n'sync backup: \(error)")
             throw .errorGeneratingBackup
@@ -489,7 +491,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             )
         } catch {
             if error is CancellationError {
-                throw .cancelled
+                throw .cancelled(linkedDeviceId: waitForDeviceToLinkResponse.id)
             } else {
                 throw .errorUploadingBackup(PrimaryLinkNSyncErrorRetryHandler(
                     waitForDeviceToLinkResponse: waitForDeviceToLinkResponse,
@@ -557,7 +559,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             }
         } catch let error {
             if error is CancellationError {
-                throw .cancelled
+                throw .cancelled(linkedDeviceId: waitForDeviceToLinkResponse.id)
             } else {
                 throw .errorMarkingBackupUploaded(PrimaryLinkNSyncErrorRetryHandler(
                     waitForDeviceToLinkResponse: waitForDeviceToLinkResponse,

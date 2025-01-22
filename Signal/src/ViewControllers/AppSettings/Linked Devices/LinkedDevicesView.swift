@@ -49,6 +49,7 @@ class LinkedDevicesViewModel: ObservableObject {
             shouldShowFinishLinkingSheet = newDeviceExpectation != nil
         }
     }
+    private var deviceIdToIgnore: Int64?
     fileprivate var shouldShowFinishLinkingSheet = false
 
     private let databaseChangeObserver: DatabaseChangeObserver
@@ -128,6 +129,16 @@ class LinkedDevicesViewModel: ObservableObject {
                         tx: transaction.asV2Read
                     )
                 )
+            }
+        }
+
+        if let deviceIdToIgnore {
+            displayableDevices.removeAll { device in
+                let shouldRemove = device.id == deviceIdToIgnore
+                if shouldRemove {
+                    Logger.debug("Ignoring device \(device.id)")
+                }
+                return shouldRemove
             }
         }
 
@@ -267,6 +278,8 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
         _ linkNSyncData: LinkNSyncData?,
         from linkDeviceViewController: LinkDeviceViewController
     ) {
+        self.deviceIdToIgnore = nil
+
         guard let linkNSyncData else {
             linkDeviceViewController.popToLinkedDeviceList { [weak self] in
                 self?.expectMoreDevices()
@@ -303,8 +316,9 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
                         return
                     }
                     switch error {
-                    case .cancelled:
+                    case let .cancelled(linkedDeviceId):
                         // Don't show anything
+                        self.deviceIdToIgnore = linkedDeviceId
                         return
                     case
                             .timedOutWaitingForLinkedDevice,
