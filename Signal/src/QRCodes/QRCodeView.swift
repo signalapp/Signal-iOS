@@ -5,6 +5,7 @@
 
 import SignalUI
 import SignalServiceKit
+import SwiftUI
 
 class QRCodeView: UIView {
     private let qrCodeTintColor: QRCodeColor
@@ -113,6 +114,64 @@ class QRCodeView: UIView {
             setMode(.qrCodeImage(qrCodeImage))
         } else {
             setMode(.errorImage)
+        }
+    }
+}
+
+// MARK: -
+
+struct QRCodeViewRepresentable: UIViewRepresentable {
+    class Model: ObservableObject {
+        @Published var qrCodeURL: URL?
+
+        init(qrCodeURL: URL?) {
+            self.qrCodeURL = qrCodeURL
+        }
+    }
+
+    @ObservedObject
+    private var model: Model
+
+    private let qrCodeTintColor: QRCodeColor
+    private let contentInset: CGFloat
+    private let cornerRadius: CGFloat
+    private let borderWidth: CGFloat
+
+    init(
+        model: Model,
+        qrCodeTintColor: QRCodeColor = .blue,
+        contentInset: CGFloat = 20,
+        cornerRadius: CGFloat = 12,
+        borderWidth: CGFloat = 2
+    ) {
+        self.model = model
+        self.qrCodeTintColor = qrCodeTintColor
+        self.contentInset = contentInset
+        self.cornerRadius = cornerRadius
+        self.borderWidth = borderWidth
+    }
+
+    // MARK: -
+
+    typealias UIViewType = QRCodeView
+
+    func makeUIView(context: Context) -> QRCodeView {
+        let qrCodeView = QRCodeView(
+            qrCodeTintColor: qrCodeTintColor,
+            contentInset: contentInset,
+            cornerRadius: cornerRadius,
+            borderWidth: borderWidth
+        )
+
+        updateUIView(qrCodeView, context: context)
+        return qrCodeView
+    }
+
+    func updateUIView(_ qrCodeView: QRCodeView, context: Context) {
+        if let url = model.qrCodeURL {
+            qrCodeView.setQRCode(url: url)
+        } else {
+            qrCodeView.setLoading()
         }
     }
 }

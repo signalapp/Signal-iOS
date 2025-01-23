@@ -21,7 +21,7 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
         view.addSubview(primaryView)
         primaryView.autoPinEdgesToSuperviewEdges()
 
-        view.backgroundColor = Theme.backgroundColor
+        view.backgroundColor = .Signal.background
 
         let titleLabel = self.createTitleLabel(text: OWSLocalizedString(
             "DEVICE_TRANSFER_QRCODE_TITLE",

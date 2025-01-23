@@ -14,6 +14,14 @@ public extension UIEdgeInsets {
 
 public extension CGSize {
 
+    var isLandscape: Bool {
+        aspectRatio >= 1
+    }
+
+    var isPortrait: Bool {
+        !isLandscape
+    }
+
     func roundedForScreenScale() -> CGSize {
         let screenScale = UIScreen.main.scale
         guard screenScale > 1 else { return self }

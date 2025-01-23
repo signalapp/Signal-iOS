@@ -122,24 +122,12 @@ private struct QRCode: View {
             Color(.ows_white)
                 .frame(width: 216, height: 216)
                 .cornerRadius(12)
-            QRCodeViewRepresentable(url: url)
-                .frame(width: 212, height: 212)
+            QRCodeViewRepresentable(
+                model: QRCodeViewRepresentable.Model(qrCodeURL: url),
+                contentInset: 4
+            )
+            .frame(width: 212, height: 212)
         }
-    }
-}
-
-private struct QRCodeViewRepresentable: UIViewRepresentable {
-    var url: URL
-
-    func makeUIView(context: Context) -> QRCodeView {
-        let view = QRCodeView(contentInset: 4)
-
-        view.setQRCode(url: url)
-        return view
-    }
-
-    func updateUIView(_ qrCodeView: QRCodeView, context: Context) {
-        // The url will never change, so there's no need to implement this.
     }
 }
 
