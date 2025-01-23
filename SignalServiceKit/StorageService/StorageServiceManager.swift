@@ -265,7 +265,11 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         // Run the operation & check again when it's done.
         managerState.isRunningOperation = true
 
+        let backgroundTask = OWSBackgroundTask(label: #function)
         Task {
+            defer {
+                backgroundTask.end()
+            }
             let result = await Result { try await nextOperation() }
             self.finishOperation(cleanupBlock: {
                 cleanupBlock?(&$0, {
