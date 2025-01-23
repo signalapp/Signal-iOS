@@ -790,14 +790,18 @@ public class MessageSender {
 
             let endorsements: GroupSendEndorsements?
             do {
-                endorsements = try fetchEndorsements(forThread: thread, tx: tx.asV2Read)
-                if
-                    recoveryState.canRefreshExpiringGroupSendEndorsements,
-                    let secretParams = try? ((thread as? TSGroupThread)?.groupModel as? TSGroupModelV2)?.secretParams(),
-                    endorsements == nil || endorsements!.expiration.timeIntervalSinceNow < 2 * kHourInterval
-                {
-                    Logger.warn("Refetching GSEs for \(thread.uniqueId) that are missing or about to expire.")
-                    return .fetchGroupSendEndorsementsAndTryAgain(secretParams)
+                if let secretParams = try? ((thread as? TSGroupThread)?.groupModel as? TSGroupModelV2)?.secretParams() {
+                    let threadId = thread.sqliteRowId!
+                    endorsements = try fetchEndorsements(forThreadId: threadId, secretParams: secretParams, tx: tx.asV2Read)
+                    if
+                        recoveryState.canRefreshExpiringGroupSendEndorsements,
+                        endorsements == nil || endorsements!.expiration.timeIntervalSinceNow < 2 * kHourInterval
+                    {
+                        Logger.warn("Refetching GSEs for \(thread.uniqueId) that are missing or about to expire.")
+                        return .fetchGroupSendEndorsementsAndTryAgain(secretParams)
+                    }
+                } else {
+                    endorsements = nil
                 }
             } catch {
                 owsFailDebug("Continuing without GSEs that couldn't be fetched: \(error)")
@@ -964,24 +968,15 @@ public class MessageSender {
         return result
     }
 
-    private func fetchEndorsements(forThread thread: TSThread, tx: any DBReadTransaction) throws -> GroupSendEndorsements? {
-        guard
-            let groupThread = thread as? TSGroupThread,
-            let groupModel = groupThread.groupModel as? TSGroupModelV2
-        else {
-            return nil
-        }
-        let groupThreadId = groupThread.sqliteRowId!
-        let secretParams = try groupModel.secretParams()
-
-        let combinedRecord = try groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: groupThreadId, tx: tx)
+    private func fetchEndorsements(forThreadId threadId: Int64, secretParams: GroupSecretParams, tx: any DBReadTransaction) throws -> GroupSendEndorsements? {
+        let combinedRecord = try groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: threadId, tx: tx)
         guard let combinedRecord else {
             return nil
         }
         let combinedEndorsement = try GroupSendEndorsement(contents: [UInt8](combinedRecord.endorsement))
 
         var individualEndorsements = [ServiceId: GroupSendEndorsement]()
-        for record in try groupSendEndorsementStore.fetchIndividualEndorsements(groupThreadId: groupThreadId, tx: tx) {
+        for record in try groupSendEndorsementStore.fetchIndividualEndorsements(groupThreadId: threadId, tx: tx) {
             let endorsement = try GroupSendEndorsement(contents: [UInt8](record.endorsement))
             let recipient = DependenciesBridge.shared.recipientDatabaseTable.fetchRecipient(rowId: record.recipientId, tx: tx)
             guard let recipient else {
