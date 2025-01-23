@@ -5,6 +5,7 @@
 
 import Photos
 import SignalServiceKit
+import UIKit
 import SignalUI
 
 protocol ImagePickerGridControllerDelegate: AnyObject {
@@ -91,11 +92,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         cancelButton.tintColor = Theme.darkThemePrimaryColor
         navigationItem.leftBarButtonItem = cancelButton
         
-        let privacyButton: UIBarButtonItem = .button(icon: .settingsPrivacy, style: .done) { [weak self] in
+        let privacyButton: UIBarButtonItem = .button(icon: .settingsPrivacy, style: .plain) { [weak self] in
             guard let self else { return }
             
         }
-        //privacyButton.menu =
+        privacyButton.menu = UIMenu(children: [createSelectMoreActionForPrivacyButton(), createSettingsActionForPrivacyButton()])
+        //privacyButton.showsMenuAsPrimaryAction
         privacyButton.tintColor = Theme.darkThemePrimaryColor
         navigationItem.rightBarButtonItem = privacyButton
 
@@ -116,34 +118,26 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
                 comment: "Button in a context menu from the 'privacy' button in attachment panel that allows to select more photos/videos to give Signal access to"),
             image: UIImage(named: "album-tilt-light")
         ) { _ in
-            
+            guard let frontmostVC = CurrentAppContext().frontmostViewController() else { return }
+            PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: frontmostVC)
         }
         return selectMoreAction
     }
     
-//    let selectMoreAction = UIAction(
-//        title: OWSLocalizedString(
-//            "ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE",
-//            comment: "Button in a context menu from the 'manage' button in attachment panel that allows to select more photos/videos to give Signal access to"
-//        ),
-//        image: UIImage(named: "album-tilt-light")
-//    ) { _ in
-//        guard let frontmostVC = CurrentAppContext().frontmostViewController() else { return }
-//        PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: frontmostVC)
-//    }
-//    let settingsAction = UIAction(
-//        title: OWSLocalizedString(
-//            "ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS",
-//            comment: "Button in a context menu from the 'manage' button in attachment panel that opens the iOS system settings for Signal to update access permissions"
-//        ),
-//        image: UIImage(named: "settings-light")
-//    ) { _ in
-//        let openSettingsURL = URL(string: UIApplication.openSettingsURLString)!
-//        UIApplication.shared.open(openSettingsURL)
-//    }
-//    button.menu = UIMenu(children: [selectMoreAction, settingsAction])
-//    button.showsMenuAsPrimaryAction = true
-
+    private func createSettingsActionForPrivacyButton() -> UIAction {
+        let settingsAction = UIAction(
+            title: OWSLocalizedString(
+                "ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS",
+                comment: "Button in a context menu from the 'privacy' button in attachment panel that opens the iOS system settings for Signal to update access permissions"),
+            image: UIImage(named: "settings-light")
+        ) { _ in
+            if let openSettingsURL = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(openSettingsURL)
+            }
+        }
+        return settingsAction
+    }
+    
     private var selectionPanGesture: UIPanGestureRecognizer?
     private enum BatchSelectionGestureMode {
         case select, deselect
