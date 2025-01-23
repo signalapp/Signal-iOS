@@ -556,8 +556,8 @@ public class GroupManager: NSObject {
     public static func removeFromGroupOrRevokeInviteV2(
         groupModel: TSGroupModelV2,
         serviceIds: [ServiceId]
-    ) async throws -> TSGroupThread {
-        return try await updateGroupV2(groupModel: groupModel, description: "Remove from group or revoke invite") { groupChangeSet in
+    ) async throws {
+        _ = try await updateGroupV2(groupModel: groupModel, description: "Remove from group or revoke invite") { groupChangeSet in
             for serviceId in serviceIds {
                 owsAssertDebug(!groupModel.groupMembership.isRequestingMember(serviceId))
 
@@ -571,8 +571,8 @@ public class GroupManager: NSObject {
         }
     }
 
-    public static func revokeInvalidInvites(groupModel: TSGroupModelV2) async throws -> TSGroupThread {
-        return try await updateGroupV2(groupModel: groupModel, description: "Revoke invalid invites") { groupChangeSet in
+    public static func revokeInvalidInvites(groupModel: TSGroupModelV2) async throws {
+        _ = try await updateGroupV2(groupModel: groupModel, description: "Revoke invalid invites") { groupChangeSet in
             groupChangeSet.revokeInvalidInvites()
         }
     }
@@ -667,9 +667,9 @@ public class GroupManager: NSObject {
         groupModel: TSGroupModelV2,
         aci: Aci,
         shouldAccept: Bool
-    ) async throws -> TSGroupThread {
+    ) async throws {
         let description = (shouldAccept ? "Accept group member request" : "Deny group member request")
-        return try await updateGroupV2(groupModel: groupModel, description: description) { groupChangeSet in
+        _ = try await updateGroupV2(groupModel: groupModel, description: description) { groupChangeSet in
             if shouldAccept {
                 groupChangeSet.addMember(aci, role: .`normal`)
             } else {

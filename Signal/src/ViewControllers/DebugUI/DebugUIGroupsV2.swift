@@ -56,7 +56,7 @@ class DebugUIGroupsV2: DebugUIPage {
 
         Task {
             do {
-                _ = try await GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModel, serviceIds: serviceIdsToKick)
+                try await GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModel, serviceIds: serviceIdsToKick)
                 Logger.info("Success.")
             } catch {
                 owsFailDebug("Error: \(error)")

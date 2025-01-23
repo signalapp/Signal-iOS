@@ -153,7 +153,7 @@ extension GroupViewHelper {
             actionTitle: actionTitle,
             updateDescription: "Remove user from group",
             updateBlock: { (oldGroupModel, serviceId: ServiceId) in
-                _ = try await GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: oldGroupModel, serviceIds: [serviceId])
+                try await GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: oldGroupModel, serviceIds: [serviceId])
             }
         )
     }

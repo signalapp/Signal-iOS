@@ -888,7 +888,7 @@ extension ConversationViewController: CVComponentDelegate {
                     updateBlock: {
                         // If the user in question has canceled their request,
                         // this call will still block them.
-                        return try await GroupManager.acceptOrDenyMemberRequestsV2(
+                        try await GroupManager.acceptOrDenyMemberRequestsV2(
                             groupModel: groupModel,
                             aci: requesterAci,
                             shouldAccept: false

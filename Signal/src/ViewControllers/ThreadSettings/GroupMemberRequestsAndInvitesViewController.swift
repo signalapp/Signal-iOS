@@ -356,13 +356,10 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         }
     }
 
-    fileprivate func reloadContent(groupThread: TSGroupThread?) {
+    fileprivate func reloadContent() {
         groupMemberRequestsAndInvitesViewControllerDelegate?.requestsAndInvitesViewDidUpdate()
 
         guard let newModel = { () -> TSGroupModel? in
-            if let groupThread = groupThread {
-                return groupThread.groupModel
-            }
             return SSKEnvironment.shared.databaseStorageRef.read { (transaction) -> TSGroupModel? in
                 guard let groupThread = TSGroupThread.fetch(groupId: self.groupModel.groupId,
                                                             transaction: transaction) else {
@@ -471,10 +468,10 @@ private extension GroupMemberRequestsAndInvitesViewController {
             fromViewController: self,
             updateDescription: self.logTag,
             updateBlock: {
-                return try await GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModelV2, serviceIds: serviceIds)
+                try await GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModelV2, serviceIds: serviceIds)
             },
-            completion: { [weak self] groupThread in
-                self?.reloadContent(groupThread: groupThread)
+            completion: { [weak self] _ in
+                self?.reloadContent()
             }
         )
     }
@@ -489,10 +486,10 @@ private extension GroupMemberRequestsAndInvitesViewController {
             fromViewController: self,
             updateDescription: self.logTag,
             updateBlock: {
-                return try await GroupManager.revokeInvalidInvites(groupModel: groupModelV2)
+                try await GroupManager.revokeInvalidInvites(groupModel: groupModelV2)
             },
-            completion: { [weak self] groupThread in
-                self?.reloadContent(groupThread: groupThread)
+            completion: { [weak self] _ in
+                self?.reloadContent()
             }
         )
     }
@@ -548,16 +545,16 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
             fromViewController: self,
             updateDescription: self.logTag,
             updateBlock: {
-                return try await GroupManager.acceptOrDenyMemberRequestsV2(groupModel: groupModelV2, aci: aci, shouldAccept: shouldAccept)
+                try await GroupManager.acceptOrDenyMemberRequestsV2(groupModel: groupModelV2, aci: aci, shouldAccept: shouldAccept)
             },
-            completion: { [weak self] groupThread in
+            completion: { [weak self] _ in
                 guard let self = self else { return }
                 if shouldAccept {
                     self.presentRequestApprovedToast(address: address)
                 } else {
                     self.presentRequestDeniedToast(address: address)
                 }
-                self.reloadContent(groupThread: groupThread)
+                self.reloadContent()
             }
         )
     }
