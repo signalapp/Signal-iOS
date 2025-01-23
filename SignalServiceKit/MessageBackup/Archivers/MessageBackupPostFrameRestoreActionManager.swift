@@ -134,6 +134,7 @@ public class MessageBackupPostFrameRestoreActionManager {
                         serviceId: chatItemContext.recipientContext.localIdentifiers.aci,
                         currentTimestamp: avatarFetchTimestamp,
                         lastVisibleInteractionRowIdInContactThread: getLastVisibleInteractionRowId(),
+                        localIdentifiers: chatItemContext.recipientContext.localIdentifiers,
                         tx: chatItemContext.tx
                     )
                 case .contact(let contactAddress):
@@ -144,6 +145,7 @@ public class MessageBackupPostFrameRestoreActionManager {
                         serviceId: serviceId,
                         currentTimestamp: avatarFetchTimestamp,
                         lastVisibleInteractionRowIdInContactThread: getLastVisibleInteractionRowId(),
+                        localIdentifiers: chatItemContext.recipientContext.localIdentifiers,
                         tx: chatItemContext.tx
                     )
                 case .group(let groupId):
@@ -154,6 +156,7 @@ public class MessageBackupPostFrameRestoreActionManager {
                         groupThread,
                         currentTimestamp: avatarFetchTimestamp,
                         lastVisibleInteractionRowIdInGroupThread: getLastVisibleInteractionRowId(),
+                        localIdentifiers: chatItemContext.recipientContext.localIdentifiers,
                         tx: chatItemContext.tx
                     )
                 }

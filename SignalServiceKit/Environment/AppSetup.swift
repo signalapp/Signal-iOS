@@ -1032,6 +1032,7 @@ public class AppSetup {
             db: db,
             groupsV2: groupsV2,
             profileFetcher: profileFetcher,
+            profileManager: profileManager,
             reachabilityManager: reachabilityManager,
             threadStore: threadStore,
             tsAccountManager: tsAccountManager

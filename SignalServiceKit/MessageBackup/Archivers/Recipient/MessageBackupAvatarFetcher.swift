@@ -23,6 +23,7 @@ public class MessageBackupAvatarFetcher {
         db: any DB,
         groupsV2: GroupsV2,
         profileFetcher: ProfileFetcher,
+        profileManager: ProfileManager,
         reachabilityManager: SSKReachabilityManager,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager
@@ -42,6 +43,7 @@ public class MessageBackupAvatarFetcher {
                 db: db,
                 groupsV2: groupsV2,
                 profileFetcher: profileFetcher,
+                profileManager: profileManager,
                 reachabilityManager: reachabilityManager,
                 store: store,
                 threadStore: threadStore,
@@ -60,6 +62,7 @@ public class MessageBackupAvatarFetcher {
         _ thread: TSGroupThread,
         currentTimestamp: UInt64,
         lastVisibleInteractionRowIdInGroupThread: Int64?,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) throws {
         guard let avatarUrl = (thread.groupModel as? TSGroupModelV2)?.avatarUrlPath else {
@@ -69,7 +72,8 @@ public class MessageBackupAvatarFetcher {
             groupThread: thread,
             avatarUrl: avatarUrl,
             currentTimestamp: currentTimestamp,
-            lastVisibleInteractionRowIdInGroupThread: lastVisibleInteractionRowIdInGroupThread
+            lastVisibleInteractionRowIdInGroupThread: lastVisibleInteractionRowIdInGroupThread,
+            localIdentifiers: localIdentifiers
         )
         try record?.insert(tx.databaseConnection)
     }
@@ -78,12 +82,14 @@ public class MessageBackupAvatarFetcher {
         serviceId: ServiceId,
         currentTimestamp: UInt64,
         lastVisibleInteractionRowIdInContactThread: Int64?,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) throws {
         var record = Record.forUserProfile(
             serviceId: serviceId,
             currentTimestamp: currentTimestamp,
-            lastVisibleInteractionRowIdInContactThread: lastVisibleInteractionRowIdInContactThread
+            lastVisibleInteractionRowIdInContactThread: lastVisibleInteractionRowIdInContactThread,
+            localIdentifiers: localIdentifiers
         )
         try record.insert(tx.databaseConnection)
     }
@@ -138,6 +144,7 @@ public class MessageBackupAvatarFetcher {
         let db: any DB
         let groupsV2: GroupsV2
         let profileFetcher: ProfileFetcher
+        let profileManager: ProfileManager
         let reachabilityManager: SSKReachabilityManager
         let store: TaskStore
         let threadStore: ThreadStore
@@ -148,6 +155,7 @@ public class MessageBackupAvatarFetcher {
             db: any DB,
             groupsV2: GroupsV2,
             profileFetcher: ProfileFetcher,
+            profileManager: ProfileManager,
             reachabilityManager: SSKReachabilityManager,
             store: TaskStore,
             threadStore: ThreadStore,
@@ -157,6 +165,7 @@ public class MessageBackupAvatarFetcher {
             self.db = db
             self.groupsV2 = groupsV2
             self.profileFetcher = profileFetcher
+            self.profileManager = profileManager
             self.reachabilityManager = reachabilityManager
             self.store = store
             self.threadStore = threadStore
@@ -167,7 +176,10 @@ public class MessageBackupAvatarFetcher {
             record: Record,
             loader: TaskQueueLoader<TaskRunner>
         ) async -> TaskRecordResult {
-            guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+            guard
+                tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered,
+                let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
+            else {
                 try? await loader.stop()
                 return .cancelled
             }
@@ -189,11 +201,20 @@ public class MessageBackupAvatarFetcher {
                 }
 
                 do {
-                    _ = try await profileFetcher.fetchProfileImpl(
-                        for: serviceId,
-                        options: .opportunistic,
-                        authedAccount: .implicit()
-                    )
+                    if localIdentifiers.contains(serviceId: serviceId) {
+                        _ = try await profileManager.fetchLocalUsersProfile(
+                            authedAccount: .implicit()
+                        ).awaitable()
+                        try await profileManager.downloadAndDecryptLocalUserAvatarIfNeeded(
+                            authedAccount: .implicit()
+                        )
+                    } else {
+                        _ = try await profileFetcher.fetchProfileImpl(
+                            for: serviceId,
+                            options: .opportunistic,
+                            authedAccount: .implicit()
+                        )
+                    }
                     return .success
                 } catch {
                     // If we failed and think we aren't reachable,
@@ -321,7 +342,8 @@ public class MessageBackupAvatarFetcher {
             groupAvatarUrl: String?,
             serviceId: ServiceId?,
             currentTimestamp: UInt64,
-            lastVisibleInteractionRowIdInThread: Int64?
+            lastVisibleInteractionRowIdInThread: Int64?,
+            localIdentifiers: LocalIdentifiers
         ) {
             self._id = nil
             self.groupThreadRowId = groupThreadRowId
@@ -333,7 +355,11 @@ public class MessageBackupAvatarFetcher {
             // but use a trick for ordering. Since we pop off the queue in
             // nextRetryTimestamp ordering ascending, we initialize the timestamp
             // to a _smaller_ value if the related thread has a more recent message.
-            if
+            if let serviceId, localIdentifiers.contains(serviceId: serviceId) {
+                // The local user _always_ goes first. Give a retry timestamp
+                // of 0 to make it so.
+                nextRetryTimestamp = 0
+            } else if
                 let lastVisibleInteractionRowIdInThread = lastVisibleInteractionRowIdInThread
                     .map({ UInt64(exactly: $0 ) }) ?? nil
             {
@@ -353,7 +379,8 @@ public class MessageBackupAvatarFetcher {
             groupThread: TSGroupThread,
             avatarUrl: String,
             currentTimestamp: UInt64,
-            lastVisibleInteractionRowIdInGroupThread: Int64?
+            lastVisibleInteractionRowIdInGroupThread: Int64?,
+            localIdentifiers: LocalIdentifiers
         ) -> Self? {
             guard let rowId = groupThread.sqliteRowId else { return nil }
             return .init(
@@ -361,21 +388,24 @@ public class MessageBackupAvatarFetcher {
                 groupAvatarUrl: avatarUrl,
                 serviceId: nil,
                 currentTimestamp: currentTimestamp,
-                lastVisibleInteractionRowIdInThread: lastVisibleInteractionRowIdInGroupThread
+                lastVisibleInteractionRowIdInThread: lastVisibleInteractionRowIdInGroupThread,
+                localIdentifiers: localIdentifiers
             )
         }
 
         static func forUserProfile(
             serviceId: ServiceId,
             currentTimestamp: UInt64,
-            lastVisibleInteractionRowIdInContactThread: Int64?
+            lastVisibleInteractionRowIdInContactThread: Int64?,
+            localIdentifiers: LocalIdentifiers
         ) -> Self {
             return .init(
                 groupThreadRowId: nil,
                 groupAvatarUrl: nil,
                 serviceId: serviceId,
                 currentTimestamp: currentTimestamp,
-                lastVisibleInteractionRowIdInThread: lastVisibleInteractionRowIdInContactThread
+                lastVisibleInteractionRowIdInThread: lastVisibleInteractionRowIdInContactThread,
+                localIdentifiers: localIdentifiers
             )
         }
 
