@@ -242,13 +242,10 @@ public extension GroupsV2Impl {
 
         // This will try to update the group using incremental "changes" but
         // failover to using a "snapshot".
-        let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
         do {
-            try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupThread(
-                groupId: groupContextInfo.groupId,
-                spamReportingMetadata: .learnedByLocallyInitatedRefresh,
-                groupSecretParams: groupContextInfo.groupSecretParams,
-                groupUpdateMode: groupUpdateMode
+            try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(
+                secretParams: groupContextInfo.groupSecretParams,
+                options: [.throttle]
             )
             await markAsComplete()
             return true

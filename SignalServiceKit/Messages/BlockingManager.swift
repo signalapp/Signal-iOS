@@ -288,7 +288,7 @@ public class BlockingManager {
 
             // Refresh unblocked group.
             transaction.addSyncCompletion {
-                SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(groupThread)
+                SSKEnvironment.shared.groupV2UpdatesRef.refreshGroupUpThroughCurrentRevision(groupThread: groupThread, throttle: false)
             }
         }
 

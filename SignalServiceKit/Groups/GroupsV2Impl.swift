@@ -220,10 +220,7 @@ public class GroupsV2Impl: GroupsV2 {
                 // committed to the service, we should refresh our local state
                 // for the group and try again to apply our changes.
 
-                try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
-                    groupId: groupId,
-                    groupSecretParams: groupV2Params.groupSecretParams
-                )
+                try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(secretParams: groupV2Params.groupSecretParams)
 
                 (messageBehavior, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
                     groupId: groupId,
@@ -634,76 +631,111 @@ public class GroupsV2Impl: GroupsV2 {
 
     // MARK: - Fetch Group Change Actions
 
-    public func fetchGroupChangeActions(
-        groupSecretParams: GroupSecretParams,
-        includeCurrentRevision: Bool
-    ) async throws -> GroupV2ChangePage {
-        let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
+    /// Fetches some group changes (and a snapshot, if needed).
+    public func fetchSomeGroupChangeActions(
+        secretParams: GroupSecretParams,
+        source: GroupChangeActionFetchSource
+    ) async throws -> ([GroupV2Change], shouldFetchMore: Bool) {
+        let groupV2Params = try GroupV2Params(groupSecretParams: secretParams)
         let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize().asData
-        return try await fetchGroupChangeActions(
-            groupId: groupId,
-            groupV2Params: groupV2Params,
-            includeCurrentRevision: includeCurrentRevision
+
+        let groupModel = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            TSGroupThread.fetch(groupId: groupId, transaction: transaction)?.groupModel as? TSGroupModelV2
+        }
+
+        // If we're fetching because we're processing messages, we can stop as soon
+        // as we have a new enough revision. (This can happen due to race
+        // conditions receiving messages & refreshing groups, though it generally
+        // won't happen because the message processing code only calls this if it
+        // believes the revision is too old.)
+        if
+            let groupModel,
+            case .groupMessage(let upThroughRevision) = source,
+            groupModel.revision >= upThroughRevision
+        {
+            // This is fine even if we're a requesting member b/c revision must
+            // increment for anything meaningful to happen.
+            return ([], shouldFetchMore: false)
+        }
+
+        let upThroughRevision: UInt32?
+        switch source {
+        case .groupMessage(let revision):
+            upThroughRevision = revision
+        case .other:
+            upThroughRevision = nil
+        }
+
+        // We can process a change action to move from revision N to revision N + 1
+        // UNLESS we have a placeholder group. In that case, we don't actually have
+        // revision N -- we have an incomplete copy of revision N that must be made
+        // whole before we can apply a delta to it.
+
+        // If we're currently a full member, fetch the next batch.
+        if let groupModel, groupModel.groupMembership.isLocalUserFullMember {
+            // We're being told about a group we are aware of and are already a member
+            // of. In this case, we can figure out which revision we want to start with
+            // from local data.
+            let startingAtRevision: UInt32
+            let includeFirstState: Bool
+            switch source {
+            case .groupMessage:
+                startingAtRevision = groupModel.revision + 1
+                includeFirstState = false
+            case .other:
+                startingAtRevision = groupModel.revision
+                includeFirstState = true
+            }
+            do {
+                return try await _fetchSomeGroupChangeActions(
+                    secretParams: secretParams,
+                    startingAtRevision: startingAtRevision,
+                    upThroughRevision: upThroughRevision,
+                    includeFirstState: includeFirstState
+                )
+            } catch GroupsV2Error.localUserNotInGroup {
+                // If we can't fetch starting at the next version, we might have been
+                // removed and re-added, so we should figure out if we're back in the group
+                // at a later revision.
+            }
+        }
+
+        // Otherwise, we want to figure out where we got permission to start
+        // fetching changes, update to that via a snapshot, and then apply
+        // everything that follows.
+        let startingAtRevision = try await getRevisionLocalUserWasAddedToGroup(secretParams: secretParams)
+
+        return try await _fetchSomeGroupChangeActions(
+            secretParams: secretParams,
+            startingAtRevision: startingAtRevision,
+            upThroughRevision: upThroughRevision,
+            includeFirstState: true
         )
     }
 
-    private func fetchGroupChangeActions(
-        groupId: Data,
-        groupV2Params: GroupV2Params,
-        includeCurrentRevision: Bool
-    ) async throws -> GroupV2ChangePage {
-        let groupThread = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            TSGroupThread.fetch(groupId: groupId, transaction: transaction)
-        }
+    private func _fetchSomeGroupChangeActions(
+        secretParams: GroupSecretParams,
+        startingAtRevision: UInt32,
+        upThroughRevision: UInt32?,
+        includeFirstState: Bool
+    ) async throws -> ([GroupV2Change], shouldFetchMore: Bool) {
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier().serialize().asData
 
-        let fromRevision: UInt32
-        let requireSnapshotForFirstChange: Bool
+        let limit: UInt32? = upThroughRevision.map({ (startingAtRevision <= $0) ? ($0 - startingAtRevision + 1) : 1 })
 
-        if
-            let groupThread = groupThread,
-            let groupModel = groupThread.groupModel as? TSGroupModelV2,
-            groupModel.groupMembership.isLocalUserFullOrInvitedMember
-        {
-            // We're being told about a group we are aware of and are
-            // already a member of. In this case, we can figure out which
-            // revision we want to start with from local data.
-
-            if includeCurrentRevision {
-                fromRevision = groupModel.revision
-                requireSnapshotForFirstChange = true
-            } else {
-                fromRevision = groupModel.revision + 1
-                requireSnapshotForFirstChange = false
-            }
-        } else {
-            // We're being told about a thread we either have never heard
-            // of, or don't yet know we're a member of. In this case, we
-            // need to ask the service which revision we joined at, and
-            // request revisions from there. We should also get the
-            // snapshot, since there may be revisions we were not in the
-            // group to witness, and we want to make sure that state is
-            // reflected.
-
-            fromRevision = try await getRevisionLocalUserWasAddedToGroup(groupId: groupId, groupV2Params: groupV2Params)
-            requireSnapshotForFirstChange = true
-        }
-
-        let fetchGroupChangesRequestBuilder: RequestBuilder = { authCredential in
-            return try StorageService.buildFetchGroupChangeActionsRequest(
-                groupV2Params: groupV2Params,
-                fromRevision: fromRevision,
-                requireSnapshotForFirstChange: requireSnapshotForFirstChange,
-                authCredential: authCredential
-            )
-        }
-
-        // At this stage, we know we are requesting for a revision at which
-        // we are a member. Therefore, 403s should be treated as failure.
         let response = try await performServiceRequest(
-            requestBuilder: fetchGroupChangesRequestBuilder,
+            requestBuilder: { authCredential in
+                return try StorageService.buildFetchGroupChangeActionsRequest(
+                    secretParams: secretParams,
+                    fromRevision: startingAtRevision,
+                    limit: limit,
+                    includeFirstState: includeFirstState,
+                    authCredential: authCredential
+                )
+            },
             groupId: groupId,
             behavior400: .fail,
-            behavior403: .fail,
+            behavior403: .ignore, // actually means "throw error"
             behavior404: .fail
         )
         guard let groupChangesProtoData = response.responseBodyData else {
@@ -712,7 +744,7 @@ public class GroupsV2Impl: GroupsV2 {
         let earlyEnd: UInt32?
         if response.responseStatusCode == 206 {
             let groupRangeHeader = response.responseHeaders["content-range"]
-            earlyEnd = GroupV2ChangePage.parseEarlyEnd(fromGroupRangeHeader: groupRangeHeader)
+            earlyEnd = try Self.parseEarlyEnd(fromGroupRangeHeader: groupRangeHeader)
         } else {
             earlyEnd = nil
         }
@@ -722,7 +754,7 @@ public class GroupsV2Impl: GroupsV2 {
         let downloadedAvatars = try await fetchAllAvatarData(
             groupProtos: parsedChanges.compactMap(\.groupProto),
             changeActionsProtos: parsedChanges.compactMap(\.changeActionsProto),
-            groupV2Params: groupV2Params
+            groupV2Params: try GroupV2Params(groupSecretParams: secretParams)
         )
         let changes = try parsedChanges.map { parsedChange in
             return GroupV2Change(
@@ -731,31 +763,53 @@ public class GroupsV2Impl: GroupsV2 {
                         groupProto: $0,
                         fetchedAlongsideChangeActionsProto: parsedChange.changeActionsProto,
                         downloadedAvatars: downloadedAvatars,
-                        groupV2Params: groupV2Params
+                        groupV2Params: try GroupV2Params(groupSecretParams: secretParams)
                     )
                 },
                 changeActionsProto: parsedChange.changeActionsProto,
                 downloadedAvatars: downloadedAvatars
             )
         }
-        return GroupV2ChangePage(changes: changes, earlyEnd: earlyEnd)
+
+        return (
+            changes,
+            shouldFetchMore: earlyEnd != nil && (upThroughRevision == nil || upThroughRevision! > earlyEnd!)
+        )
     }
 
-    private func getRevisionLocalUserWasAddedToGroup(
-        groupId: Data,
-        groupV2Params: GroupV2Params
-    ) async throws -> UInt32 {
+    private static func parseEarlyEnd(fromGroupRangeHeader header: String?) throws -> UInt32 {
+        guard let header = header else {
+            throw OWSAssertionError("Missing Content-Range for group update request with 206 response")
+        }
+
+        let pattern = try! NSRegularExpression(pattern: #"^versions (\d+)-(\d+)/(\d+)$"#)
+        guard let match = pattern.firstMatch(in: header, range: header.entireRange) else {
+            throw OWSAssertionError("Couldn't parse Content-Range header: \(header)")
+        }
+
+        guard let earlyEndRange = Range(match.range(at: 1), in: header) else {
+            throw OWSAssertionError("Could not translate NSRange to Range<String.Index>")
+        }
+
+        guard let earlyEndValue = UInt32(header[earlyEndRange]) else {
+            throw OWSAssertionError("Invalid early-end in Content-Range for group update request: \(header)")
+        }
+
+        return earlyEndValue
+    }
+
+    private func getRevisionLocalUserWasAddedToGroup(secretParams: GroupSecretParams) async throws -> UInt32 {
+        let groupId = try secretParams.getPublicParams().getGroupIdentifier().serialize().asData
         let getJoinedAtRevisionRequestBuilder: RequestBuilder = { authCredential in
             try StorageService.buildGetJoinedAtRevisionRequest(
-                groupV2Params: groupV2Params,
+                secretParams: secretParams,
                 authCredential: authCredential
             )
         }
 
-        // We might get a 403 if we are not a member of the group, e.g. if
-        // we are joining via invite link. Passing .ignore means we won't
-        // retry, and will allow the "not a member" error to be thrown and
-        // propagated upwards.
+        // We might get a 403 if we are not a member of the group, e.g. if we are
+        // joining via invite link. Passing .ignore means we won't retry and will
+        // allow the "not a member" error to be thrown and propagated upwards.
         let response = try await performServiceRequest(
             requestBuilder: getJoinedAtRevisionRequestBuilder,
             groupId: groupId,
@@ -1039,13 +1093,10 @@ public class GroupsV2Impl: GroupsV2 {
                         owsFailDebug("GroupId must be set to remove from group")
                         break
                     }
-                    // If we receive 403 when trying to fetch group state,
-                    // we have left the group, been removed from the group
-                    // or had our invite revoked and we should make sure
-                    // group state in the database reflects that.
-                    await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-                        GroupManager.handleNotInGroup(groupId: groupId, transaction: transaction)
-                    }
+                    // If we receive 403 when trying to fetch group state, we have left the
+                    // group, been removed from the group, or had our invite revoked, and we
+                    // should make sure group state in the database reflects that.
+                    await GroupManager.handleNotInGroup(groupId: groupId)
 
                 case .fetchGroupUpdates:
                     guard let groupId = groupId else {
@@ -1158,28 +1209,7 @@ public class GroupsV2Impl: GroupsV2 {
             owsFailDebug("Missing group thread.")
             return
         }
-        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
-            owsFailDebug("Invalid group model.")
-            return
-        }
-        let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
-        let groupSecretParamsData = groupModelV2.secretParamsData
-        Task {
-            do {
-                try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupThread(
-                    groupId: groupId,
-                    spamReportingMetadata: .learnedByLocallyInitatedRefresh,
-                    groupSecretParams: try GroupSecretParams(contents: [UInt8](groupSecretParamsData)),
-                    groupUpdateMode: groupUpdateMode
-                )
-            } catch {
-                if case GroupsV2Error.localUserNotInGroup = error {
-                    Logger.warn("Error: \(error)")
-                } else {
-                    owsFailDebugUnlessNetworkFailure(error)
-                }
-            }
-        }
+        SSKEnvironment.shared.groupV2UpdatesRef.refreshGroupUpThroughCurrentRevision(groupThread: groupThread, throttle: true)
     }
 
     // MARK: - ProfileKeyCredentials
@@ -1489,10 +1519,7 @@ public class GroupsV2Impl: GroupsV2 {
         // First try to fetch latest group state from service.
         // This will fail for users trying to join via group link
         // who are not yet in the group.
-        try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
-            groupId: groupId,
-            groupSecretParams: groupV2Params.groupSecretParams
-        )
+        try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(secretParams: groupV2Params.groupSecretParams)
 
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             throw OWSAssertionError("Missing localAci.")
@@ -1572,10 +1599,9 @@ public class GroupsV2Impl: GroupsV2 {
             //
             // Download and update database with the group state.
             do {
-                try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
-                    groupId: groupId,
-                    groupSecretParams: groupV2Params.groupSecretParams,
-                    groupModelOptions: .didJustAddSelfViaGroupLink
+                try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(
+                    secretParams: groupV2Params.groupSecretParams,
+                    options: [.didJustAddSelfViaGroupLink]
                 )
             } catch {
                 throw GroupsV2Error.requestingMemberCantLoadGroupState
@@ -1952,37 +1978,6 @@ public class GroupsV2Impl: GroupsV2 {
         return actionsBuilder.buildInfallibly()
     }
 
-    public func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(
-        groupModel: TSGroupModelV2,
-        removeLocalUserBlock: @escaping (SDSAnyWriteTransaction) -> Void
-    ) async throws {
-        guard groupModel.isJoinRequestPlaceholder else {
-            owsFailDebug("Invalid group model.")
-            return
-        }
-
-        do {
-            let groupV2Params = try groupModel.groupV2Params()
-            _ = try await fetchGroupInviteLinkPreview(
-                inviteLinkPassword: groupModel.inviteLinkPassword,
-                groupSecretParams: groupV2Params.groupSecretParams,
-                allowCached: false
-            )
-        } catch {
-            switch error {
-            case GroupsV2Error.localUserIsNotARequestingMember, GroupsV2Error.localUserBlockedFromJoining:
-                // Expected if our request has been cancelled or we're banned. In this
-                // scenario, we should remove ourselves from the local group (in which
-                // we will be stored as a requesting member).
-                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-                    removeLocalUserBlock(transaction)
-                }
-            default:
-                owsFailDebug("Error: \(error)")
-            }
-        }
-    }
-
     private func updatePlaceholderGroupModelUsingInviteLinkPreview(
         groupSecretParams: GroupSecretParams,
         isLocalUserRequestingMember: Bool
@@ -2091,32 +2086,5 @@ private extension GroupsProtoGroupChangeActions {
         let isPromotingAci = !promotePendingMembers.isEmpty
 
         return isAddingMembers || isPromotingPni || isPromotingAci
-    }
-}
-
-extension GroupV2ChangePage {
-    fileprivate static func parseEarlyEnd(fromGroupRangeHeader header: String?) -> UInt32? {
-        guard let header = header else {
-            Logger.warn("Missing Content-Range for group update request with 206 response")
-            return nil
-        }
-
-        let pattern = try! NSRegularExpression(pattern: #"^versions (\d+)-(\d+)/(\d+)$"#)
-        guard let match = pattern.firstMatch(in: header, range: header.entireRange) else {
-            Logger.warn("Unparsable Content-Range for group update request: \(header)")
-            return nil
-        }
-
-        guard let earlyEndRange = Range(match.range(at: 1), in: header) else {
-            owsFailDebug("Could not translate NSRange to Range<String.Index>")
-            return nil
-        }
-
-        guard let earlyEndValue = UInt32(header[earlyEndRange]) else {
-            Logger.warn("Invalid early-end in Content-Range for group update request: \(header)")
-            return nil
-        }
-
-        return earlyEndValue
     }
 }

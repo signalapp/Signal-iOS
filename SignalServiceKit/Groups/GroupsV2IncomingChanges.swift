@@ -60,7 +60,7 @@ public class GroupsV2IncomingChanges {
         localIdentifiers: LocalIdentifiers,
         changeActionsProto: GroupsProtoGroupChangeActions,
         downloadedAvatars: GroupV2DownloadedAvatars,
-        groupModelOptions: TSGroupModelOptions
+        options: TSGroupModelOptions
     ) throws -> ChangedGroupModel {
         guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
@@ -629,7 +629,7 @@ public class GroupsV2IncomingChanges {
 
         builder.didJustAddSelfViaGroupLink = didJustAddSelfViaGroupLink
 
-        builder.apply(options: groupModelOptions)
+        builder.apply(options: options)
 
         let newGroupModel = try builder.buildAsV2()
 

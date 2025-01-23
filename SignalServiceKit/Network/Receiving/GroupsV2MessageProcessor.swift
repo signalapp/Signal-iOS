@@ -712,10 +712,10 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
             owsFailDebug("Invalid groupId.")
             return .failureShouldDiscard
         }
-        let thread = SSKEnvironment.shared.databaseStorageRef.read { tx in
+        let groupThread = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return TSGroupThread.fetch(groupId: groupId, transaction: tx)
         }
-        guard let groupThread = thread else {
+        guard let groupThread else {
             // We might be learning of a group for the first time
             // in which case we should fetch current group state from the
             // service.
@@ -746,6 +746,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
             return .failureShouldFailoverToService
         }
 
+        let changeActionsProto: GroupsProtoGroupChangeActions
         do {
             let changeProto = try GroupsProtoGroupChange(serializedData: changeProtoData)
             guard changeProto.changeEpoch <= GroupManager.changeProtoEpoch else {
@@ -754,37 +755,28 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
 
             // We need to verify the signatures because these protos came from
             // another client, not the service.
-            let changeActionsProto = try GroupsV2Protos.parseGroupChangeProto(changeProto, verificationOperation: .verifySignature(groupId: groupId))
+            changeActionsProto = try GroupsV2Protos.parseGroupChangeProto(changeProto, verificationOperation: .verifySignature(groupId: groupId))
+        } catch {
+            Logger.warn("Couldn't verify change actions: \(error)")
+            return .failureShouldFailoverToService
+        }
 
-            guard changeActionsProto.revision == contextRevision else {
-                throw OWSAssertionError("Embedded change proto revision doesn't match context revision.")
-            }
+        guard changeActionsProto.revision == contextRevision else {
+            owsFailDebug("Embedded change proto revision doesn't match context revision.")
+            return .failureShouldFailoverToService
+        }
 
+        do {
             let spamReportingMetadata: GroupUpdateSpamReportingMetadata = {
                 guard let serverGuid = jobInfo.envelope?.serverGuid else { return .unreportable }
                 return .reportable(serverGuid: serverGuid)
             }()
-            let updatedGroupThread = try await SSKEnvironment.shared.groupsV2Ref.updateGroupWithChangeActions(
+            _ = try await SSKEnvironment.shared.groupsV2Ref.updateGroupWithChangeActions(
                 groupId: oldGroupModel.groupId,
                 spamReportingMetadata: spamReportingMetadata,
                 changeActionsProto: changeActionsProto,
                 groupSecretParams: try oldGroupModel.secretParams()
             )
-
-            guard let updatedGroupModel = updatedGroupThread.groupModel as? TSGroupModelV2 else {
-                owsFailDebug("Invalid group model.")
-                return .failureShouldFailoverToService
-            }
-            guard updatedGroupModel.revision >= contextRevision else {
-                owsFailDebug("Invalid revision.")
-                return .failureShouldFailoverToService
-            }
-            guard updatedGroupModel.revision == contextRevision else {
-                // We expect the embedded changes to update us to the target
-                // revision.  If we update past that, assert but proceed in production.
-                owsFailDebug("Unexpected revision.")
-                return .successShouldProcess
-            }
         } catch {
             if self.isRetryableError(error) {
                 Logger.warn("Error: \(error)")
@@ -819,13 +811,11 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
             guard let serverGuid = jobInfo.envelope?.serverGuid else { return .unreportable }
             return .reportable(serverGuid: serverGuid)
         }()
-        let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: groupContext.revision)
         do {
-            try await SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupThread(
-                groupId: groupContextInfo.groupId,
+            try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(
+                secretParams: groupContextInfo.groupSecretParams,
                 spamReportingMetadata: spamReportingMetadata,
-                groupSecretParams: groupContextInfo.groupSecretParams,
-                groupUpdateMode: groupUpdateMode
+                source: .groupMessage(revision: groupContext.revision)
             )
             return .successShouldProcess
         } catch {

@@ -708,22 +708,58 @@ public class GroupManager: NSObject {
 
     // MARK: - Removed from Group or Invite Revoked
 
-    public static func handleNotInGroup(groupId: Data, transaction: SDSAnyWriteTransaction) {
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
-            owsFailDebug("Missing localIdentifiers.")
-            return
-        }
-        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-            // Local user may have just deleted the thread via the UI.
-            // Or we maybe be trying to restore a group from storage service
-            // that we are no longer a member of.
-            Logger.warn("Missing group in database.")
-            return
+    public static func handleNotInGroup(groupId: Data) async {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
+        do {
+            let groupThread = databaseStorage.read { tx in TSGroupThread.fetch(groupId: groupId, transaction: tx) }
+            guard let groupThread else {
+                // We may be be trying to restore a group from storage service
+                // that we are no longer a member of.
+                Logger.warn("Missing group in database.")
+                return
+            }
+
+            let groupModel = groupThread.groupModel
+
+            // If this is a join request placeholder, we don't expect to have access to
+            // the group, so we have to check *again* using the inviteLinkPassword
+            // before continuing.
+            if let groupModelV2 = groupModel as? TSGroupModelV2, groupModelV2.isJoinRequestPlaceholder {
+                do {
+                    let groupV2Params = try groupModelV2.groupV2Params()
+                    _ = try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkPreview(
+                        inviteLinkPassword: groupModelV2.inviteLinkPassword,
+                        groupSecretParams: groupV2Params.groupSecretParams,
+                        allowCached: false
+                    )
+                    // We still have access to the group, so do nothing.
+                    return
+                } catch GroupsV2Error.localUserIsNotARequestingMember, GroupsV2Error.localUserBlockedFromJoining {
+                    // Expected if our request has been cancelled or we're banned. In this
+                    // scenario, we should remove ourselves from the local group (in which
+                    // we will be stored as a requesting member).
+                } catch {
+                    // We don't know what went wrong; do nothing.
+                    owsFailDebug("Error: \(error)")
+                    return
+                }
+            }
         }
 
-        let groupModel = groupThread.groupModel
+        await databaseStorage.awaitableWrite { tx in
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+                owsFailDebug("Missing localIdentifiers.")
+                return
+            }
+            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx) else {
+                owsFailDebug("Couldn't fetch thread that's guaranteed to exist.")
+                return
+            }
 
-        let removeLocalUserBlock: (SDSAnyWriteTransaction) -> Void = { transaction in
+            let groupModel = groupThread.groupModel
+
             // Remove local user from group.
             // We do _not_ bump the revision number since this (unlike all other
             // changes to group state) is inferred from a 403. This is fine; if
@@ -741,7 +777,8 @@ public class GroupManager: NSObject {
                 //
                 // newDisappearingMessageToken is nil because we don't want to change DM
                 // state.
-                _ = try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+                try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+                    groupThread: groupThread,
                     newGroupModel: newGroupModel,
                     newDisappearingMessageToken: nil,
                     newlyLearnedPniToAciAssociations: [:],
@@ -749,26 +786,11 @@ public class GroupManager: NSObject {
                     infoMessagePolicy: .always,
                     localIdentifiers: localIdentifiers,
                     spamReportingMetadata: .createdByLocalAction,
-                    transaction: transaction
+                    transaction: tx
                 )
             } catch {
                 owsFailDebug("Error: \(error)")
             }
-        }
-
-        if
-            let groupModelV2 = groupModel as? TSGroupModelV2,
-            groupModelV2.isJoinRequestPlaceholder
-        {
-            Logger.warn("Ignoring 403 for placeholder group.")
-            Task {
-                try? await SSKEnvironment.shared.groupsV2Ref.tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(
-                    groupModel: groupModelV2,
-                    removeLocalUserBlock: removeLocalUserBlock
-                )
-            }
-        } else {
-            removeLocalUserBlock(transaction)
         }
     }
 
@@ -929,9 +951,9 @@ public class GroupManager: NSObject {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: SDSAnyWriteTransaction
     ) throws -> TSGroupThread {
-        let threadId = TSGroupThread.threadId(forGroupId: newGroupModel.groupId, transaction: transaction)
-        if TSGroupThread.anyExists(uniqueId: threadId, transaction: transaction) {
-            return try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+        if let groupThread = TSGroupThread.fetch(groupId: newGroupModel.groupId, transaction: transaction) {
+            try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+                groupThread: groupThread,
                 newGroupModel: newGroupModel,
                 newDisappearingMessageToken: newDisappearingMessageToken,
                 newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
@@ -941,6 +963,7 @@ public class GroupManager: NSObject {
                 spamReportingMetadata: spamReportingMetadata,
                 transaction: transaction
             )
+            return groupThread
         } else {
             /// We only want to attribute the author for this insertion if we've
             /// just been added to the group. Otherwise, we don't want to
@@ -977,6 +1000,7 @@ public class GroupManager: NSObject {
     /// Associations between PNIs and ACIs that were learned as a result of this
     /// group update.
     public static func updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
+        groupThread: TSGroupThread,
         newGroupModel: TSGroupModel,
         newDisappearingMessageToken: DisappearingMessageToken?,
         newlyLearnedPniToAciAssociations: [Pni: Aci],
@@ -985,18 +1009,7 @@ public class GroupManager: NSObject {
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         transaction: SDSAnyWriteTransaction
-    ) throws -> TSGroupThread {
-        // Step 1: First reload latest thread state. This ensures:
-        //
-        // * The thread (still) exists in the database.
-        // * The update is working off latest database state.
-        //
-        // We always have the groupThread at the call sites of this method, but this
-        // future-proofs us against bugs.
-        guard let groupThread = TSGroupThread.fetch(groupId: newGroupModel.groupId, transaction: transaction) else {
-            throw OWSAssertionError("Missing groupThread.")
-        }
-
+    ) throws {
         guard
             let newGroupModel = newGroupModel as? TSGroupModelV2,
             let oldGroupModel = groupThread.groupModel as? TSGroupModelV2
@@ -1087,50 +1100,48 @@ public class GroupManager: NSObject {
         }
 
         // Step 4: Update group in database, if necessary.
-        let hasUserFacingUpdate: Bool = {
-            guard newGroupModel.revision > oldGroupModel.revision else {
-                /// Local group state must never revert to an earlier revision.
-                ///
-                /// Races exist in the GV2 code, so if we find ourselves with a
-                /// redundant update we'll simply drop it.
-                ///
-                /// Note that (excepting bugs elsewhere in the GV2 code) no
-                /// matter which codepath learned about a particular revision,
-                /// the group models each codepath constructs for that revision
-                /// should be equivalent.
-                Logger.warn("Skipping redundant update for V2 group.")
-                return false
-            }
-
-            autoWhitelistGroupIfNecessary(
-                oldGroupModel: oldGroupModel,
-                newGroupModel: newGroupModel,
-                groupUpdateSource: groupUpdateSource,
-                localIdentifiers: localIdentifiers,
-                tx: transaction
-            )
-
-            let hasUserFacingGroupModelChange = newGroupModel.hasUserFacingChangeCompared(
-                to: oldGroupModel
-            )
-            let hasDMUpdate = updateDMResult.newConfiguration != updateDMResult.oldConfiguration
-
-            let hasUserFacingUpdate = hasUserFacingGroupModelChange || hasDMUpdate
-            groupThread.update(
-                with: newGroupModel,
-                shouldUpdateChatListUi: hasUserFacingUpdate,
-                transaction: transaction
-            )
-
-            return hasUserFacingUpdate
-        }()
-
-        guard hasUserFacingUpdate else {
-            return groupThread
+        guard newGroupModel.revision > oldGroupModel.revision else {
+            /// Local group state must never revert to an earlier revision.
+            ///
+            /// Races exist in the GV2 code, so if we find ourselves with a
+            /// redundant update we'll simply drop it.
+            ///
+            /// Note that (excepting bugs elsewhere in the GV2 code) no
+            /// matter which codepath learned about a particular revision,
+            /// the group models each codepath constructs for that revision
+            /// should be equivalent.
+            Logger.warn("Skipping redundant update for V2 group.")
+            return
         }
 
+        autoWhitelistGroupIfNecessary(
+            oldGroupModel: oldGroupModel,
+            newGroupModel: newGroupModel,
+            groupUpdateSource: groupUpdateSource,
+            localIdentifiers: localIdentifiers,
+            tx: transaction
+        )
+
+        let hasUserFacingUpdate: Bool = (
+            newGroupModel.hasUserFacingChangeCompared(to: oldGroupModel)
+            || updateDMResult.newConfiguration != updateDMResult.oldConfiguration
+        )
+
+        groupThread.update(
+            with: newGroupModel,
+            shouldUpdateChatListUi: hasUserFacingUpdate,
+            transaction: transaction
+        )
+
+        let shouldInsertInfoMessages: Bool
         switch infoMessagePolicy {
         case .always, .updatesOnly:
+            shouldInsertInfoMessages = true
+        case .never, .insertsOnly:
+            shouldInsertInfoMessages = false
+        }
+
+        if hasUserFacingUpdate, shouldInsertInfoMessages {
             insertGroupUpdateInfoMessage(
                 groupThread: groupThread,
                 oldGroupModel: oldGroupModel,
@@ -1143,11 +1154,7 @@ public class GroupManager: NSObject {
                 spamReportingMetadata: spamReportingMetadata,
                 transaction: transaction
             )
-        default:
-            break
         }
-
-        return groupThread
     }
 
     private static func mutualGroupThreads(

@@ -17,7 +17,7 @@ public extension ConversationViewController {
         }
         // Try to update the v2 group to latest from the service.
         // This will help keep us in sync if we've missed any group updates, etc.
-        SSKEnvironment.shared.groupV2UpdatesRef.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(groupThread)
+        SSKEnvironment.shared.groupV2UpdatesRef.refreshGroupUpThroughCurrentRevision(groupThread: groupThread, throttle: true)
     }
 
     func showUnblockConversationUI(completion: BlockListUIUtils.Completion?) {

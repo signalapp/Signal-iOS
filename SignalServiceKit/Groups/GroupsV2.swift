@@ -152,11 +152,6 @@ public protocol GroupsV2 {
 
     func cancelRequestToJoin(groupModel: TSGroupModelV2) async throws -> TSGroupThread
 
-    func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(
-        groupModel: TSGroupModelV2,
-        removeLocalUserBlock: @escaping (SDSAnyWriteTransaction) -> Void
-    ) async throws
-
     func fetchGroupExternalCredentials(secretParams: GroupSecretParams) async throws -> GroupsProtoGroupExternalCredential
 
     func groupRecordPendingStorageServiceRestore(
@@ -170,15 +165,10 @@ public protocol GroupsV2 {
         transaction: SDSAnyWriteTransaction
     )
 
-    func fetchGroupChangeActions(
-        groupSecretParams: GroupSecretParams,
-        includeCurrentRevision: Bool
-    ) async throws -> GroupV2ChangePage
-}
-
-public struct GroupV2ChangePage {
-    let changes: [GroupV2Change]
-    let earlyEnd: UInt32?
+    func fetchSomeGroupChangeActions(
+        secretParams: GroupSecretParams,
+        source: GroupChangeActionFetchSource
+    ) async throws -> ([GroupV2Change], shouldFetchMore: Bool)
 }
 
 // MARK: -
@@ -191,6 +181,22 @@ enum GroupUpdateMessageBehavior {
     case sendUpdateToOtherGroupMembers
     /// Do not send any group update messages.
     case sendNothing
+}
+
+// MARK: -
+
+public enum GroupChangeActionFetchSource {
+    /// We're fetching group change actions while processing an incoming
+    /// message. We need to update to `revision` immediately and then stop
+    /// applying updates. (We expect future updates will be applied by messages
+    /// we've received but haven't yet processed.)
+    case groupMessage(revision: UInt32)
+
+    /// We're fetching group change actions for some other reason (e.g., we just
+    /// opened the group). We want to ensure we have the latest state, but we
+    /// don't want to update until we've had a chance to finish processing any
+    /// messages that might update the group.
+    case other
 }
 
 // MARK: -
@@ -255,88 +261,12 @@ public protocol GroupsV2OutgoingChanges: AnyObject {
 
 // MARK: -
 
-public enum GroupUpdateMode {
-    // * Group update should halt at a specific revision.
-    // * Group update _should not_ block on message processing.
-    // * Group update _should not_ be throttled.
-    //
-    // upToRevision is inclusive.
-    case upToSpecificRevisionImmediately(upToRevision: UInt32)
-    // * Group update should continue until current revision.
-    // * Group update _should_ block on message processing.
-    // * Group update _should_ be throttled.
-    case upToCurrentRevisionAfterMessageProcessWithThrottling
-    // * Group update should continue until current revision.
-    // * Group update _should_ block on message processing.
-    // * Group update _should not_ be throttled.
-    case upToCurrentRevisionAfterMessageProcessWithoutThrottling
-    // * Group update should continue until current revision.
-    // * Group update _should not_ block on message processing.
-    // * Group update _should not_ be throttled.
-    case upToCurrentRevisionImmediately
-
-    public var shouldBlockOnMessageProcessing: Bool {
-        switch self {
-        case .upToCurrentRevisionAfterMessageProcessWithThrottling,
-             .upToCurrentRevisionAfterMessageProcessWithoutThrottling:
-            return true
-        default:
-            return false
-        }
-    }
-
-    public var shouldThrottle: Bool {
-        switch self {
-        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
-            return true
-        default:
-            return false
-        }
-    }
-
-    public var upToRevision: UInt32? {
-        switch self {
-        case .upToSpecificRevisionImmediately(let upToRevision):
-            return upToRevision
-        default:
-            return nil
-        }
-    }
-
-    public var shouldUpdateToCurrentRevision: Bool {
-        switch self {
-        case .upToSpecificRevisionImmediately:
-            return false
-        default:
-            return true
-        }
-    }
-}
-
-// MARK: -
-
 public protocol GroupV2Updates {
-
-    func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread)
-
-    func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(_ groupThread: TSGroupThread)
-
-    func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
-        groupId: Data,
-        groupSecretParams: GroupSecretParams
-    ) async throws
-
-    func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
-        groupId: Data,
-        groupSecretParams: GroupSecretParams,
-        groupModelOptions: TSGroupModelOptions
-    ) async throws
-
-    func tryToRefreshV2GroupThread(
-        groupId: Data,
+    func refreshGroupImpl(
+        secretParams: GroupSecretParams,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-        groupSecretParams: GroupSecretParams,
-        groupUpdateMode: GroupUpdateMode
+        source: GroupChangeActionFetchSource,
+        options: TSGroupModelOptions
     ) async throws
 
     func updateGroupWithChangeActions(
@@ -346,6 +276,45 @@ public protocol GroupV2Updates {
         downloadedAvatars: GroupV2DownloadedAvatars,
         transaction: SDSAnyWriteTransaction
     ) throws -> TSGroupThread
+}
+
+extension GroupV2Updates {
+    public func refreshGroup(
+        secretParams: GroupSecretParams,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata = .learnedByLocallyInitatedRefresh,
+        source: GroupChangeActionFetchSource = .other,
+        options: TSGroupModelOptions = []
+    ) async throws {
+        return try await refreshGroupImpl(
+            secretParams: secretParams,
+            spamReportingMetadata: spamReportingMetadata,
+            source: source,
+            options: options
+        )
+    }
+
+    public func refreshGroupUpThroughCurrentRevision(groupThread: TSGroupThread, throttle: Bool) {
+        refreshGroupUpThroughCurrentRevision(groupThread: groupThread, options: throttle ? [.throttle] : [])
+    }
+
+    private func refreshGroupUpThroughCurrentRevision(groupThread: TSGroupThread, options: TSGroupModelOptions) {
+        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            return
+        }
+        let groupSecretParamsData = groupModel.secretParamsData
+        Task {
+            do {
+                try await self.refreshGroupImpl(
+                    secretParams: try GroupSecretParams(contents: [UInt8](groupSecretParamsData)),
+                    spamReportingMetadata: .learnedByLocallyInitatedRefresh,
+                    source: .other,
+                    options: options
+                )
+            } catch {
+                Logger.warn("Group refresh failed: \(error).")
+            }
+        }
+    }
 }
 
 // MARK: -
@@ -709,18 +678,11 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func tryToUpdatePlaceholderGroupModelUsingInviteLinkPreview(
-        groupModel _: TSGroupModelV2,
-        removeLocalUserBlock _: (SDSAnyWriteTransaction) -> Void
-    ) {
-        owsFail("Not implemented.")
-    }
-
     public func fetchGroupExternalCredentials(secretParams: GroupSecretParams) async throws -> GroupsProtoGroupExternalCredential {
         owsFail("Not implemented")
     }
 
-    public func fetchGroupChangeActions(groupSecretParams: GroupSecretParams, includeCurrentRevision: Bool) async throws -> GroupV2ChangePage {
+    public func fetchSomeGroupChangeActions(secretParams: GroupSecretParams, source: GroupChangeActionFetchSource) async throws -> ([GroupV2Change], shouldFetchMore: Bool) {
         owsFail("not implemented")
     }
 }
@@ -728,34 +690,11 @@ public class MockGroupsV2: GroupsV2 {
 // MARK: -
 
 public class MockGroupV2Updates: GroupV2Updates {
-    public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread) {
-        owsFail("Not implemented.")
-    }
-
-    public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(_ groupThread: TSGroupThread) {
-        owsFail("Not implemented.")
-    }
-
-    public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
-        groupId: Data,
-        groupSecretParams: GroupSecretParams
-    ) async throws {
-        owsFail("Not implemented.")
-    }
-
-    public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
-        groupId: Data,
-        groupSecretParams: GroupSecretParams,
-        groupModelOptions: TSGroupModelOptions
-    ) async throws {
-        owsFail("Not implemented.")
-    }
-
-    public func tryToRefreshV2GroupThread(
-        groupId: Data,
+    public func refreshGroupImpl(
+        secretParams: GroupSecretParams,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-        groupSecretParams: GroupSecretParams,
-        groupUpdateMode: GroupUpdateMode
+        source: GroupChangeActionFetchSource,
+        options: TSGroupModelOptions
     ) async throws {
         owsFail("Not implemented.")
     }
