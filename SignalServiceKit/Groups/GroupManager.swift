@@ -1100,7 +1100,7 @@ public class GroupManager: NSObject {
         }
 
         // Step 4: Update group in database, if necessary.
-        guard newGroupModel.revision > oldGroupModel.revision else {
+        guard newGroupModel.revision >= oldGroupModel.revision else {
             /// Local group state must never revert to an earlier revision.
             ///
             /// Races exist in the GV2 code, so if we find ourselves with a
