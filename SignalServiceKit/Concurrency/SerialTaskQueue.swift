@@ -24,7 +24,7 @@ public final class SerialTaskQueue {
     }
 
     /// Returns when the closure's Task has been enqueued, but the task may not
-    /// necessarily have begin (let alone finished) execution.
+    /// necessarily have begun (let alone finished) execution.
     @discardableResult
     public func enqueue<T>(operation: @escaping @Sendable () async throws -> T) -> Task<T, Error> {
         return queue.update {
@@ -54,7 +54,9 @@ public final class SerialTaskQueue {
     /// Note that it is up to each task to respect its cancellation and yield;
     /// cancelling does not guarantee they will cease execution.
     public func cancelAll() {
-        for task in queue.get() {
+        // If we cancel these without `reversed()`, the second task may start after
+        // the first one is canceled but before the second one has been canceled.
+        for task in queue.get().reversed() {
             task.cancel()
         }
     }
