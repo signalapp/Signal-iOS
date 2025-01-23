@@ -160,6 +160,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     BOOL didAvatarChange = ![NSObject isNullableObject:newGroupModel.avatarHash equalTo:self.groupModel.avatarHash];
     BOOL didNameChange = ![newGroupModel.groupNameOrDefault isEqualToString:self.groupModel.groupNameOrDefault];
 
+    NSArray<SignalServiceAddress *> *oldGroupMembers = self.groupModel.groupMembers;
+
     [self
         anyUpdateGroupThreadWithTransaction:transaction
                                       block:^(TSGroupThread *thread) {
@@ -178,6 +180,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
                                           thread.groupModel = [newGroupModel copy];
                                       }];
     [self updateGroupMemberRecordsWithTransaction:transaction];
+    [self clearGroupSendEndorsementsIfNeededWithOldGroupMembers:oldGroupMembers tx:transaction];
 
     // We only need to re-index the group if the group name changed.
     [SSKEnvironment.shared.databaseStorageRef touchThread:self

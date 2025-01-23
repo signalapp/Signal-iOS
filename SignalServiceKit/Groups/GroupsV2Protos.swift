@@ -264,6 +264,9 @@ public class GroupsV2Protos {
         guard let groupProto = groupResponseProto.group else {
             throw OWSAssertionError("Missing group state in response.")
         }
+        let groupSendEndorsementsResponse = try groupResponseProto.groupSendEndorsementsResponse.map {
+            return try GroupSendEndorsementsResponse(contents: [UInt8]($0))
+        }
         return GroupV2SnapshotResponse(
             groupSnapshot: try parse(
                 groupProto: groupProto,
@@ -271,7 +274,7 @@ public class GroupsV2Protos {
                 downloadedAvatars: downloadedAvatars,
                 groupV2Params: groupV2Params
             ),
-            groupSendEndorsements: groupResponseProto.groupSendEndorsementsResponse
+            groupSendEndorsementsResponse: groupSendEndorsementsResponse
         )
     }
 

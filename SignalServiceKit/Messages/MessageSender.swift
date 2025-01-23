@@ -33,7 +33,11 @@ public class MessageSender {
 
     private var preKeyManager: PreKeyManager { DependenciesBridge.shared.preKeyManager }
 
-    public init() {
+    private let groupSendEndorsementStore: (any GroupSendEndorsementStore)?
+
+    init(groupSendEndorsementStore: (any GroupSendEndorsementStore)?) {
+        self.groupSendEndorsementStore = groupSendEndorsementStore
+
         SwiftSingletons.register(self)
     }
 
@@ -140,6 +144,7 @@ public class MessageSender {
             // Don't use UD for story preKey fetches, we don't have a valid UD auth key
             // TODO: (PreKey Cleanup)
             accessKey: isStoryMessage ? nil : sealedSenderParameters?.accessKey,
+            endorsement: isStoryMessage ? nil : sealedSenderParameters?.endorsement,
             authedAccount: .implicit(),
             options: [.waitForWebSocketToOpen]
         )
@@ -650,6 +655,9 @@ public class MessageSender {
         /// Look up missing phone numbers & then try sending again.
         case lookUpPhoneNumbersAndTryAgain([E164])
 
+        /// Fetch a new set of GSEs & then try sending again.
+        case fetchGroupSendEndorsementsAndTryAgain(GroupSecretParams)
+
         /// Perform the `sendPreparedMessage` step.
         case sendPreparedMessage(PreparedState)
 
@@ -660,6 +668,7 @@ public class MessageSender {
             let sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?
             let senderCertificate: SenderCertificate
             let udAccess: [ServiceId: OWSUDAccess]
+            let endorsements: GroupSendEndorsements?
             let localIdentifiers: LocalIdentifiers
         }
     }
@@ -672,6 +681,7 @@ public class MessageSender {
     /// use the standard retry logic if they happen repeatedly.
     private struct OuterRecoveryState {
         var canLookUpPhoneNumbers = true
+        var canRefreshExpiringGroupSendEndorsements = true
 
         // Sender key sends will fail if a single recipient has an invalid access
         // token, but the server can't identify the recipient for us. To recover,
@@ -778,6 +788,23 @@ public class MessageSender {
                 tx: tx
             )
 
+            let endorsements: GroupSendEndorsements?
+            do {
+                endorsements = try fetchEndorsements(forThread: thread, tx: tx.asV2Read)
+                if
+                    self.groupSendEndorsementStore != nil,
+                    recoveryState.canRefreshExpiringGroupSendEndorsements,
+                    let secretParams = try? ((thread as? TSGroupThread)?.groupModel as? TSGroupModelV2)?.secretParams(),
+                    endorsements == nil || endorsements!.expiration.timeIntervalSinceNow < 2 * kHourInterval
+                {
+                    Logger.warn("Refetching GSEs for \(thread.uniqueId) that are missing or about to expire.")
+                    return .fetchGroupSendEndorsementsAndTryAgain(secretParams)
+                }
+            } catch {
+                owsFailDebug("Continuing without GSEs that couldn't be fetched: \(error)")
+                endorsements = nil
+            }
+
             let senderKeyRecipients: [ServiceId]
             let sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?
             if recoveryState.canUseMultiRecipientSealedSender, thread.usesSenderKey {
@@ -786,6 +813,7 @@ public class MessageSender {
                     in: thread,
                     message: message,
                     serializedMessage: serializedMessage,
+                    endorsements: endorsements,
                     udAccessMap: udAccessMap,
                     senderCertificate: senderCertificate,
                     localIdentifiers: localIdentifiers,
@@ -803,6 +831,7 @@ public class MessageSender {
                 sendViaSenderKey: sendViaSenderKey,
                 senderCertificate: senderCertificate,
                 udAccess: udAccessMap,
+                endorsements: endorsements,
                 localIdentifiers: localIdentifiers
             ))
         }
@@ -815,6 +844,15 @@ public class MessageSender {
         case .lookUpPhoneNumbersAndTryAgain(let phoneNumbers):
             try await lookUpPhoneNumbers(phoneNumbers)
             retryRecoveryState = recoveryState.mutated({ $0.canLookUpPhoneNumbers = false })
+        case .fetchGroupSendEndorsementsAndTryAgain(let secretParams):
+            do {
+                try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(secretParams: secretParams)
+            } catch {
+                let groupId = try secretParams.getPublicParams().getGroupIdentifier()
+                Logger.warn("Couldn't refresh \(groupId.logString) to fetch GSEs: \(error)")
+                // continue anyways... we'll fall back to a fanout when retrying
+            }
+            retryRecoveryState = recoveryState.mutated({ $0.canRefreshExpiringGroupSendEndorsements = false })
         case .sendPreparedMessage(let state):
             let perRecipientErrors = await sendPreparedMessage(
                 message: message,
@@ -824,6 +862,7 @@ public class MessageSender {
                 viaSenderKey: state.sendViaSenderKey,
                 senderCertificate: state.senderCertificate,
                 udAccess: state.udAccess,
+                endorsements: state.endorsements,
                 localIdentifiers: state.localIdentifiers
             )
             let recipientErrors = MessageSenderRecipientErrors(recipientErrors: perRecipientErrors)
@@ -860,6 +899,7 @@ public class MessageSender {
         viaSenderKey sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?,
         senderCertificate: SenderCertificate,
         udAccess sendingAccessMap: [ServiceId: OWSUDAccess],
+        endorsements: GroupSendEndorsements?,
         localIdentifiers: LocalIdentifiers
     ) async -> [(ServiceId, any Error)] {
         // Both types are Arrays because Sender Key Tasks may return N errors when
@@ -886,7 +926,8 @@ public class MessageSender {
                 let sealedSenderParameters = SealedSenderParameters(
                     message: message,
                     senderCertificate: senderCertificate,
-                    accessKey: sendingAccessMap[serviceId]
+                    accessKey: sendingAccessMap[serviceId],
+                    endorsement: endorsements?.tokenBuilder(forServiceId: serviceId)
                 )
                 taskGroup.addTask {
                     do {
@@ -922,6 +963,45 @@ public class MessageSender {
             )
         }
         return result
+    }
+
+    private func fetchEndorsements(forThread thread: TSThread, tx: any DBReadTransaction) throws -> GroupSendEndorsements? {
+        guard let groupSendEndorsementStore else {
+            return nil
+        }
+        guard
+            let groupThread = thread as? TSGroupThread,
+            let groupModel = groupThread.groupModel as? TSGroupModelV2
+        else {
+            return nil
+        }
+        let groupThreadId = groupThread.sqliteRowId!
+        let secretParams = try groupModel.secretParams()
+
+        let combinedRecord = try groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: groupThreadId, tx: tx)
+        guard let combinedRecord else {
+            return nil
+        }
+        let combinedEndorsement = try GroupSendEndorsement(contents: [UInt8](combinedRecord.endorsement))
+
+        var individualEndorsements = [ServiceId: GroupSendEndorsement]()
+        for record in try groupSendEndorsementStore.fetchIndividualEndorsements(groupThreadId: groupThreadId, tx: tx) {
+            let endorsement = try GroupSendEndorsement(contents: [UInt8](record.endorsement))
+            let recipient = DependenciesBridge.shared.recipientDatabaseTable.fetchRecipient(rowId: record.recipientId, tx: tx)
+            guard let recipient else {
+                throw OWSAssertionError("Missing Recipient that must exist.")
+            }
+            guard let serviceId = recipient.aci ?? recipient.pni else {
+                throw OWSAssertionError("Missing ServiceId that must exist.")
+            }
+            individualEndorsements[serviceId] = endorsement
+        }
+        return GroupSendEndorsements(
+            secretParams: secretParams,
+            expiration: combinedRecord.expiration,
+            combined: combinedEndorsement,
+            individual: individualEndorsements
+        )
     }
 
     private func handleSendFailure(
@@ -1420,6 +1500,7 @@ public class MessageSender {
             label: "Message Send",
             serviceId: messageSend.serviceId,
             accessKey: sealedSenderParameters?.accessKey,
+            endorsement: sealedSenderParameters?.endorsement,
             authedAccount: .implicit(),
             options: [.waitForWebSocketToOpen]
         )

@@ -77,6 +77,7 @@ public extension StorageService {
         fromRevision: UInt32,
         limit: UInt32?,
         includeFirstState: Bool,
+        gseExpiration: UInt64?,
         authCredential: AuthCredentialWithPni
     ) throws -> GroupsV2Request {
         var queryItems = [URLQueryItem]()
@@ -87,16 +88,26 @@ public extension StorageService {
         }
 
         var urlComponents = URLComponents()
-        urlComponents.path = "v1/groups/logs/\(fromRevision)"
+        if gseExpiration != nil {
+            urlComponents.path = "v2/groups/logs/\(fromRevision)"
+        } else {
+            urlComponents.path = "v1/groups/logs/\(fromRevision)"
+        }
         urlComponents.queryItems = queryItems
 
-        return try buildGroupV2Request(
+        let request = try buildGroupV2Request(
             protoData: nil,
             urlString: urlComponents.url!.relativePath,
             method: .get,
             secretParams: secretParams,
             authCredential: authCredential
         )
+
+        if let gseExpiration {
+            request.addHeader("Cached-Send-Endorsements", value: "\(gseExpiration)")
+        }
+
+        return request
     }
 
     static func buildGetJoinedAtRevisionRequest(

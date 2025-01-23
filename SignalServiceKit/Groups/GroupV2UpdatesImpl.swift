@@ -16,7 +16,7 @@ public class GroupV2UpdatesImpl {
 
     private let operationQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
-    public init(appReadiness: AppReadiness) {
+    init(appReadiness: AppReadiness) {
         SwiftSingletons.register(self)
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
@@ -136,6 +136,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
+        groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         downloadedAvatars: GroupV2DownloadedAvatars,
         transaction: SDSAnyWriteTransaction
     ) throws -> TSGroupThread {
@@ -178,6 +179,17 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
             localIdentifiers: localIdentifiers,
             tx: transaction
         )
+
+        if let groupSendEndorsementsResponse {
+            SSKEnvironment.shared.groupsV2Ref.handleGroupSendEndorsementsResponse(
+                groupSendEndorsementsResponse,
+                groupThreadId: groupThread.sqliteRowId!,
+                secretParams: try changedGroupModel.newGroupModel.secretParams(),
+                membership: groupThread.groupMembership,
+                localAci: localIdentifiers.aci,
+                tx: transaction.asV2Write
+            )
+        }
 
         return groupThread
     }
@@ -372,7 +384,7 @@ private extension GroupV2UpdatesImpl {
     ) async throws {
         while true {
             let groupsV2 = SSKEnvironment.shared.groupsV2Ref
-            let (groupChanges, shouldFetchMore) = try await groupsV2.fetchSomeGroupChangeActions(
+            let response = try await groupsV2.fetchSomeGroupChangeActions(
                 secretParams: secretParams,
                 source: source
             )
@@ -380,11 +392,12 @@ private extension GroupV2UpdatesImpl {
             try await self.tryToApplyGroupChangesFromService(
                 secretParams: secretParams,
                 spamReportingMetadata: spamReportingMetadata,
-                groupChanges: groupChanges,
+                groupChanges: response.groupChanges,
+                groupSendEndorsementsResponse: response.groupSendEndorsementsResponse,
                 options: options
             )
 
-            if !shouldFetchMore {
+            if !response.shouldFetchMore {
                 break
             }
         }
@@ -394,6 +407,7 @@ private extension GroupV2UpdatesImpl {
         secretParams: GroupSecretParams,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupChanges: [GroupV2Change],
+        groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         options: TSGroupModelOptions
     ) async throws {
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
@@ -421,10 +435,6 @@ private extension GroupV2UpdatesImpl {
                     localIdentifiers: localIdentifiers,
                     transaction: transaction
                 )
-            }
-
-            if groupChanges.isEmpty {
-                return
             }
 
             var profileKeysByAci = [Aci: Data]()
@@ -499,6 +509,17 @@ private extension GroupV2UpdatesImpl {
                 SSKEnvironment.shared.groupsV2Ref.updateLocalProfileKeyInGroup(
                     groupId: groupId.serialize().asData,
                     transaction: transaction
+                )
+            }
+
+            if let groupSendEndorsementsResponse {
+                SSKEnvironment.shared.groupsV2Ref.handleGroupSendEndorsementsResponse(
+                    groupSendEndorsementsResponse,
+                    groupThreadId: groupThread.sqliteRowId!,
+                    secretParams: secretParams,
+                    membership: groupThread.groupMembership,
+                    localAci: localIdentifiers.aci,
+                    tx: transaction.asV2Write
                 )
             }
         }
@@ -722,7 +743,7 @@ private extension GroupV2UpdatesImpl {
             // groupUpdateSource is unknown because we don't know the
             // author(s) of changes reflected in the snapshot.
             let groupUpdateSource: GroupUpdateSource = .unknown
-            _ = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
+            let groupThread = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 newGroupModel: newGroupModel,
                 newDisappearingMessageToken: newDisappearingMessageToken,
                 newlyLearnedPniToAciAssociations: [:], // Not available from snapshots
@@ -743,6 +764,17 @@ private extension GroupV2UpdatesImpl {
             // local user, schedule an update to fix that.
             if let localProfileKey, let profileKey = groupV2Snapshot.profileKeys[localAci], profileKey != localProfileKey.keyData {
                 SSKEnvironment.shared.groupsV2Ref.updateLocalProfileKeyInGroup(groupId: newGroupModel.groupId, transaction: transaction)
+            }
+
+            if let groupSendEndorsementsResponse = snapshotResponse.groupSendEndorsementsResponse {
+                SSKEnvironment.shared.groupsV2Ref.handleGroupSendEndorsementsResponse(
+                    groupSendEndorsementsResponse,
+                    groupThreadId: groupThread.sqliteRowId!,
+                    secretParams: secretParams,
+                    membership: groupV2Snapshot.groupMembership,
+                    localAci: localAci,
+                    tx: transaction.asV2Write
+                )
             }
         }
     }

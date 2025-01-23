@@ -8,7 +8,7 @@ import LibSignalClient
 
 public struct GroupV2SnapshotResponse {
     let groupSnapshot: GroupV2Snapshot
-    let groupSendEndorsements: Data?
+    let groupSendEndorsementsResponse: GroupSendEndorsementsResponse?
 }
 
 public struct GroupV2Snapshot {

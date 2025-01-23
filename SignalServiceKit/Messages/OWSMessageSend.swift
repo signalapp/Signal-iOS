@@ -11,18 +11,21 @@ final class SealedSenderParameters {
     let message: TSOutgoingMessage
     let senderCertificate: SenderCertificate
     let accessKey: OWSUDAccess?
+    let endorsement: GroupSendFullTokenBuilder?
 
     init?(
         message: TSOutgoingMessage,
         senderCertificate: SenderCertificate,
-        accessKey: OWSUDAccess?
+        accessKey: OWSUDAccess?,
+        endorsement: GroupSendFullTokenBuilder?
     ) {
         self.message = message
         self.senderCertificate = senderCertificate
-        guard accessKey != nil else {
+        guard accessKey != nil || endorsement != nil else {
             return nil
         }
         self.accessKey = accessKey
+        self.endorsement = endorsement
     }
 
     /// Indicates desired behavior on the case of decryption error.

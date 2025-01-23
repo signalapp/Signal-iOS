@@ -18,6 +18,17 @@ extension TSGroupThread {
     public static func fetch(forGroupId groupId: GroupIdentifier, tx: SDSAnyReadTransaction) -> TSGroupThread? {
         return fetch(groupId: groupId.serialize().asData, transaction: tx)
     }
+
+    @objc
+    func clearGroupSendEndorsementsIfNeeded(oldGroupMembers: [SignalServiceAddress], tx: SDSAnyWriteTransaction) {
+        let oldGroupMembers = Set(oldGroupMembers.compactMap(\.serviceId))
+        let newGroupMembers = Set(self.groupModel.groupMembers.compactMap(\.serviceId))
+        if oldGroupMembers != newGroupMembers {
+            let groupSendEndorsementStore = DependenciesBridge.shared.groupSendEndorsementStore
+            Logger.info("Clearing GSEs in \(self.uniqueId) due to membership change.")
+            groupSendEndorsementStore?.deleteEndorsements(groupThreadId: self.sqliteRowId!, tx: tx.asV2Write)
+        }
+    }
 }
 
 // MARK: -

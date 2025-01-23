@@ -63,6 +63,7 @@ final class RequestMaker {
     private let serviceId: ServiceId
     private let address: SignalServiceAddress
     private let accessKey: OWSUDAccess?
+    private let endorsement: GroupSendFullTokenBuilder?
     private let authedAccount: AuthedAccount
     private let options: Options
 
@@ -70,6 +71,7 @@ final class RequestMaker {
         label: String,
         serviceId: ServiceId,
         accessKey: OWSUDAccess?,
+        endorsement: GroupSendFullTokenBuilder?,
         authedAccount: AuthedAccount,
         options: Options
     ) {
@@ -77,16 +79,19 @@ final class RequestMaker {
         self.serviceId = serviceId
         self.address = SignalServiceAddress(serviceId)
         self.accessKey = accessKey
+        self.endorsement = endorsement
         self.authedAccount = authedAccount
         self.options = options
     }
 
     private enum SealedSenderAuth {
         case accessKey(OWSUDAccess)
+        case endorsement(GroupSendFullToken)
 
         func toRequestAuth() -> TSRequest.SealedSenderAuth {
             switch self {
             case .accessKey(let udAccess): .accessKey(udAccess.udAccessKey)
+            case .endorsement(let endorsement): .endorsement(endorsement)
             }
         }
     }
@@ -98,6 +103,7 @@ final class RequestMaker {
     private func forEachAuthMechanism<T>(block: (SealedSenderAuth?) async throws -> T) async throws -> T {
         var authMechanisms: [() -> SealedSenderAuth?] = [
             accessKey.map({ accessKey in { .accessKey(accessKey) } }),
+            endorsement.map({ endorsement in { .endorsement(endorsement.build()) } }),
         ].compacted()
         if authMechanisms.isEmpty || self.options.contains(.allowIdentifiedFallback) {
             authMechanisms.append({ nil })

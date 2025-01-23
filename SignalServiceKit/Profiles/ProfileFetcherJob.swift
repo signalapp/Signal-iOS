@@ -148,10 +148,19 @@ public class ProfileFetcherJob {
             }
         }
 
+        let endorsement: GroupSendFullTokenBuilder?
+        if profileKey == nil {
+            // TODO: GSE: Fetch unversioned profiles using GSEs.
+            endorsement = nil
+        } else {
+            endorsement = nil
+        }
+
         let requestMaker = RequestMaker(
             label: "Profile Fetch",
             serviceId: serviceId,
             accessKey: udAccess,
+            endorsement: endorsement,
             authedAccount: self.authedAccount,
             options: [.allowIdentifiedFallback, .isProfileFetch]
         )
@@ -163,6 +172,8 @@ public class ProfileFetcherJob {
                 switch sealedSenderAuth {
                 case .accessKey(let _udAccessKey):
                     udAccessKey = _udAccessKey
+                case .endorsement:
+                    owsFail("Can't have endorsement if we have a profile key.")
                 case .none:
                     udAccessKey = nil
                 }

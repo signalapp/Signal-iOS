@@ -565,6 +565,7 @@
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */; };
 		501AD1C42AF17A16001B796A /* ECKeyPairTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */; };
+		501BD6012D39B89B00FBEADB /* GroupIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501BD6002D39B89B00FBEADB /* GroupIdentifier.swift */; };
 		501E4DAB2D133F4400D883C7 /* CompletionSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501E4DAA2D133F4400D883C7 /* CompletionSerializer.swift */; };
 		501E4DAE2D13439E00D883C7 /* CompletionSerializerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501E4DAC2D13439E00D883C7 /* CompletionSerializerTest.swift */; };
 		501E78622CFE3E2700FD56C4 /* PhoneNumberCountry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501E78612CFE3E2700FD56C4 /* PhoneNumberCountry.swift */; };
@@ -691,6 +692,8 @@
 		50C0203C2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C0203B2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift */; };
 		50C0203E2CA4A7A500BDC4EF /* Retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C0203D2CA4A7A500BDC4EF /* Retry.swift */; };
 		50C38CAD2A8EB2610030A731 /* TimeGatedBatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */; };
+		50C4AEFC2CE6766B005609F6 /* GroupSendEndorsements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C4AEFB2CE6766B005609F6 /* GroupSendEndorsements.swift */; };
+		50C4AEFE2CE6767C005609F6 /* GroupSendFullTokenBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C4AEFD2CE6767C005609F6 /* GroupSendFullTokenBuilder.swift */; };
 		50C831762BAA3A8000BEBF25 /* CallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */; };
 		50C97C252C3C7F7000A9F384 /* CallEventConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C97C242C3C7F7000A9F384 /* CallEventConversation.swift */; };
 		50C98A412B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */; };
@@ -712,6 +715,8 @@
 		50EF8DD32A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DD22A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift */; };
 		50EF8DD52A1FE55D00A00935 /* SignalAccountMergeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DD42A1FE55D00A00935 /* SignalAccountMergeObserver.swift */; };
 		50F039C42C6D239500162B99 /* BlockedRecipientStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F039C32C6D239500162B99 /* BlockedRecipientStore.swift */; };
+		50F54C2D2CE3FF7C005765EA /* GroupSendEndorsementStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F54C2C2CE3FF7C005765EA /* GroupSendEndorsementStore.swift */; };
+		50F54C2F2CE3FF9E005765EA /* GroupSendEndorsementRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F54C2E2CE3FF9E005765EA /* GroupSendEndorsementRecord.swift */; };
 		50F75E312AD9F18F0032530F /* RecipientDatabaseTableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F75E302AD9F18F0032530F /* RecipientDatabaseTableTest.swift */; };
 		50F77AA02AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F77A9F2AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift */; };
 		50F86FC42AFEFEC20045F58B /* TimeGatedBatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F86FC32AFEFEC20045F58B /* TimeGatedBatch.swift */; };
@@ -4341,6 +4346,7 @@
 		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
 		5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthedDevice.swift; sourceTree = "<group>"; };
 		501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPairTest.swift; sourceTree = "<group>"; };
+		501BD6002D39B89B00FBEADB /* GroupIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupIdentifier.swift; sourceTree = "<group>"; };
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
 		501E4DAA2D133F4400D883C7 /* CompletionSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionSerializer.swift; sourceTree = "<group>"; };
 		501E4DAC2D13439E00D883C7 /* CompletionSerializerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CompletionSerializerTest.swift; path = SignalServiceKit/tests/Storage/Database/CompletionSerializerTest.swift; sourceTree = SOURCE_ROOT; };
@@ -4471,6 +4477,8 @@
 		50C0203B2CA4A61E00BDC4EF /* ConcurrentTaskQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentTaskQueue.swift; sourceTree = "<group>"; };
 		50C0203D2CA4A7A500BDC4EF /* Retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Retry.swift; sourceTree = "<group>"; };
 		50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeGatedBatchTest.swift; sourceTree = "<group>"; };
+		50C4AEFB2CE6766B005609F6 /* GroupSendEndorsements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSendEndorsements.swift; sourceTree = "<group>"; };
+		50C4AEFD2CE6767C005609F6 /* GroupSendFullTokenBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSendFullTokenBuilder.swift; sourceTree = "<group>"; };
 		50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessageHandler.swift; sourceTree = "<group>"; };
 		50C97C242C3C7F7000A9F384 /* CallEventConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallEventConversation.swift; sourceTree = "<group>"; };
 		50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberVisibilityFetcher.swift; sourceTree = "<group>"; };
@@ -4495,6 +4503,8 @@
 		50EF8DD22A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDisappearingMessagesConfigurationTest.swift; sourceTree = "<group>"; };
 		50EF8DD42A1FE55D00A00935 /* SignalAccountMergeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAccountMergeObserver.swift; sourceTree = "<group>"; };
 		50F039C32C6D239500162B99 /* BlockedRecipientStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedRecipientStore.swift; sourceTree = "<group>"; };
+		50F54C2C2CE3FF7C005765EA /* GroupSendEndorsementStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSendEndorsementStore.swift; sourceTree = "<group>"; };
+		50F54C2E2CE3FF9E005765EA /* GroupSendEndorsementRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupSendEndorsementRecord.swift; sourceTree = "<group>"; };
 		50F75E302AD9F18F0032530F /* RecipientDatabaseTableTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientDatabaseTableTest.swift; sourceTree = "<group>"; };
 		50F77A9F2AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileWhitelistMerger.swift; sourceTree = "<group>"; };
 		50F86FC32AFEFEC20045F58B /* TimeGatedBatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeGatedBatch.swift; sourceTree = "<group>"; };
@@ -14015,10 +14025,15 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CBA5289453B200548EEE /* GroupAccess.swift */,
+				501BD6002D39B89B00FBEADB /* GroupIdentifier.swift */,
 				D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */,
 				F9A042C7289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift */,
 				F9C5CBA9289453B200548EEE /* GroupManager.swift */,
 				F9C5CBA4289453B200548EEE /* GroupMembership.swift */,
+				50F54C2E2CE3FF9E005765EA /* GroupSendEndorsementRecord.swift */,
+				50C4AEFB2CE6766B005609F6 /* GroupSendEndorsements.swift */,
+				50F54C2C2CE3FF7C005765EA /* GroupSendEndorsementStore.swift */,
+				50C4AEFD2CE6767C005609F6 /* GroupSendFullTokenBuilder.swift */,
 				F9C5CBAA289453B200548EEE /* GroupsV2.swift */,
 				347191F823F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift */,
 				341CBFC32405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift */,
@@ -17195,6 +17210,7 @@
 				725465622BA0348600EABFD2 /* GroupCallPeekClient.swift in Sources */,
 				D979CC5B2AD61699006AAC49 /* GroupCallRecordManager.swift in Sources */,
 				D91F0B4E2B193A5C0086DB30 /* GroupCallRecordRingUpdateDelegate.swift in Sources */,
+				501BD6012D39B89B00FBEADB /* GroupIdentifier.swift in Sources */,
 				D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */,
 				F9A042C8289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift in Sources */,
 				F9C5CE77289453B400548EEE /* GroupManager.swift in Sources */,
@@ -17203,6 +17219,10 @@
 				506695EC29C5305900B6D8D0 /* GroupMemberStore.swift in Sources */,
 				506695EF29C533A400B6D8D0 /* GroupMemberUpdater.swift in Sources */,
 				F9C5CC90289453B300548EEE /* Groups.pb.swift in Sources */,
+				50F54C2F2CE3FF9E005765EA /* GroupSendEndorsementRecord.swift in Sources */,
+				50C4AEFC2CE6766B005609F6 /* GroupSendEndorsements.swift in Sources */,
+				50F54C2D2CE3FF7C005765EA /* GroupSendEndorsementStore.swift in Sources */,
+				50C4AEFE2CE6767C005609F6 /* GroupSendFullTokenBuilder.swift in Sources */,
 				F9C5CC98289453B300548EEE /* GroupsProto.swift in Sources */,
 				F9C5CE78289453B400548EEE /* GroupsV2.swift in Sources */,
 				725465202BA016A200EABFD2 /* GroupsV2AvatarDownloadOperation.swift in Sources */,

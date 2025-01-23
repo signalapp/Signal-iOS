@@ -183,7 +183,17 @@ public class AppSetup {
         )
         let earlyMessageManager = EarlyMessageManager(appReadiness: appReadiness)
         let messageProcessor = MessageProcessor(appReadiness: appReadiness)
-        let messageSender = testDependencies.messageSender ?? MessageSender()
+
+        let groupSendEndorsementStore: (any GroupSendEndorsementStore)?
+        #if DEBUG
+        groupSendEndorsementStore = MockGroupSendEndorsementStore()
+        #else
+        groupSendEndorsementStore = nil
+        #endif
+
+        let messageSender = testDependencies.messageSender ?? MessageSender(
+            groupSendEndorsementStore: groupSendEndorsementStore
+        )
         let messageSenderJobQueue = MessageSenderJobQueue(appReadiness: appReadiness)
         let modelReadCaches = testDependencies.modelReadCaches ?? ModelReadCaches(
             factory: ModelReadCacheFactory(appReadiness: appReadiness)
@@ -266,7 +276,8 @@ public class AppSetup {
         let groupsV2 = testDependencies.groupsV2 ?? GroupsV2Impl(
             appReadiness: appReadiness,
             authCredentialStore: authCredentialStore,
-            authCredentialManager: authCredentialManager
+            authCredentialManager: authCredentialManager,
+            groupSendEndorsementStore: groupSendEndorsementStore
         )
 
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
@@ -1272,6 +1283,7 @@ public class AppSetup {
             groupCallRecordManager: groupCallRecordManager,
             groupMemberStore: groupMemberStore,
             groupMemberUpdater: groupMemberUpdater,
+            groupSendEndorsementStore: groupSendEndorsementStore,
             groupUpdateInfoMessageInserter: groupUpdateInfoMessageInserter,
             identityManager: identityManager,
             inactiveLinkedDeviceFinder: inactiveLinkedDeviceFinder,

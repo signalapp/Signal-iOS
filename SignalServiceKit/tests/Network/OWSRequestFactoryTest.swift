@@ -74,11 +74,11 @@ class OWSRequestFactoryTest: XCTestCase {
 
         let request = OWSRequestFactory.submitMultiRecipientMessageRequest(
             ciphertext: ciphertext,
-            accessKey: udAccessKey,
             timestamp: 1234,
             isOnline: true,
             isUrgent: false,
-            isStory: false
+            isStory: false,
+            auth: .accessKey(udAccessKey)
         )
 
         let url = try XCTUnwrap(request.url, "request.url")

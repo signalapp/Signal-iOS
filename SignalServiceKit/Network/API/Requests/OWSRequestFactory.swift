@@ -142,7 +142,14 @@ public enum OWSRequestFactory {
         return request
     }
 
-    static func submitMultiRecipientMessageRequest(ciphertext: Data, accessKey: SMKUDAccessKey, timestamp: UInt64, isOnline: Bool, isUrgent: Bool, isStory: Bool) -> TSRequest {
+    static func submitMultiRecipientMessageRequest(
+        ciphertext: Data,
+        timestamp: UInt64,
+        isOnline: Bool,
+        isUrgent: Bool,
+        isStory: Bool,
+        auth: TSRequest.SealedSenderAuth
+    ) -> TSRequest {
         owsAssertDebug(timestamp > 0)
 
         // We build the URL by hand instead of passing the query parameters into the query parameters
@@ -157,7 +164,7 @@ public enum OWSRequestFactory {
 
         let request = TSRequest(url: components.url!, method: "PUT", parameters: nil)
         request.setValue("application/vnd.signal-messenger.mrm", forHTTPHeaderField: "Content-Type")
-        request.setAuth(sealedSender: .accessKey(accessKey))
+        request.setAuth(sealedSender: auth)
         request.httpBody = ciphertext
         return request
     }

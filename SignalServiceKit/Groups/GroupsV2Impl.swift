@@ -13,14 +13,17 @@ public class GroupsV2Impl: GroupsV2 {
 
     private let authCredentialStore: AuthCredentialStore
     private let authCredentialManager: any AuthCredentialManager
+    private let groupSendEndorsementStore: (any GroupSendEndorsementStore)?
 
     init(
         appReadiness: AppReadiness,
         authCredentialStore: AuthCredentialStore,
-        authCredentialManager: any AuthCredentialManager
+        authCredentialManager: any AuthCredentialManager,
+        groupSendEndorsementStore: (any GroupSendEndorsementStore)?
     ) {
         self.authCredentialStore = authCredentialStore
         self.authCredentialManager = authCredentialManager
+        self.groupSendEndorsementStore = groupSendEndorsementStore
         self.profileKeyUpdater = GroupsV2ProfileKeyUpdater(appReadiness: appReadiness)
 
         SwiftSingletons.register(self)
@@ -343,10 +346,15 @@ public class GroupsV2Impl: GroupsV2 {
         // applying the change set locally.
         let downloadedAvatars = GroupV2DownloadedAvatars.from(changes: changes)
 
+        let groupSendEndorsementsResponse = try changeResponse.groupSendEndorsementsResponse.map {
+            return try GroupSendEndorsementsResponse(contents: [UInt8]($0))
+        }
+
         let groupThread = try await updateGroupWithChangeActions(
             groupId: groupId,
             spamReportingMetadata: .learnedByLocallyInitatedRefresh,
             changeActionsProto: changeActionsProto,
+            groupSendEndorsementsResponse: groupSendEndorsementsResponse,
             justUploadedAvatars: downloadedAvatars,
             groupV2Params: groupV2Params
         )
@@ -482,6 +490,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: groupId,
             spamReportingMetadata: spamReportingMetadata,
             changeActionsProto: changeActionsProto,
+            groupSendEndorsementsResponse: nil,
             justUploadedAvatars: nil,
             groupV2Params: groupV2Params
         )
@@ -491,6 +500,7 @@ public class GroupsV2Impl: GroupsV2 {
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
+        groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         justUploadedAvatars: GroupV2DownloadedAvatars?,
         groupV2Params: GroupV2Params
     ) async throws -> TSGroupThread {
@@ -498,6 +508,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupId: groupId,
             spamReportingMetadata: spamReportingMetadata,
             changeActionsProto: changeActionsProto,
+            groupSendEndorsementsResponse: groupSendEndorsementsResponse,
             justUploadedAvatars: justUploadedAvatars,
             groupV2Params: groupV2Params
         )
@@ -507,6 +518,7 @@ public class GroupsV2Impl: GroupsV2 {
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
+        groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         justUploadedAvatars: GroupV2DownloadedAvatars?,
         groupV2Params: GroupV2Params
     ) async throws -> TSGroupThread {
@@ -520,6 +532,7 @@ public class GroupsV2Impl: GroupsV2 {
                 groupId: groupId,
                 spamReportingMetadata: spamReportingMetadata,
                 changeActionsProto: changeActionsProto,
+                groupSendEndorsementsResponse: groupSendEndorsementsResponse,
                 downloadedAvatars: downloadedAvatars,
                 transaction: tx
             )
@@ -635,12 +648,24 @@ public class GroupsV2Impl: GroupsV2 {
     public func fetchSomeGroupChangeActions(
         secretParams: GroupSecretParams,
         source: GroupChangeActionFetchSource
-    ) async throws -> ([GroupV2Change], shouldFetchMore: Bool) {
+    ) async throws -> GroupChangesResponse {
         let groupV2Params = try GroupV2Params(groupSecretParams: secretParams)
         let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize().asData
 
-        let groupModel = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            TSGroupThread.fetch(groupId: groupId, transaction: transaction)?.groupModel as? TSGroupModelV2
+        let groupModel: TSGroupModelV2?
+        let gseExpiration: UInt64?
+
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        (groupModel, gseExpiration) = databaseStorage.read { tx in
+            let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx)
+            let groupThreadId = groupThread?.sqliteRowId!
+            return (
+                groupThread?.groupModel as? TSGroupModelV2,
+                groupSendEndorsementStore.map({ groupSendEndorsementStore in
+                    let endorsementRecord = groupThreadId.flatMap({ try? groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: $0, tx: tx.asV2Read) })
+                    return endorsementRecord?.expirationTimestamp ?? 0
+                })
+            )
         }
 
         // If we're fetching because we're processing messages, we can stop as soon
@@ -655,7 +680,7 @@ public class GroupsV2Impl: GroupsV2 {
         {
             // This is fine even if we're a requesting member b/c revision must
             // increment for anything meaningful to happen.
-            return ([], shouldFetchMore: false)
+            return GroupChangesResponse(groupChanges: [], shouldFetchMore: false)
         }
 
         let upThroughRevision: UInt32?
@@ -691,7 +716,8 @@ public class GroupsV2Impl: GroupsV2 {
                     secretParams: secretParams,
                     startingAtRevision: startingAtRevision,
                     upThroughRevision: upThroughRevision,
-                    includeFirstState: includeFirstState
+                    includeFirstState: includeFirstState,
+                    gseExpiration: gseExpiration
                 )
             } catch GroupsV2Error.localUserNotInGroup {
                 // If we can't fetch starting at the next version, we might have been
@@ -709,7 +735,8 @@ public class GroupsV2Impl: GroupsV2 {
             secretParams: secretParams,
             startingAtRevision: startingAtRevision,
             upThroughRevision: upThroughRevision,
-            includeFirstState: true
+            includeFirstState: true,
+            gseExpiration: gseExpiration
         )
     }
 
@@ -717,8 +744,9 @@ public class GroupsV2Impl: GroupsV2 {
         secretParams: GroupSecretParams,
         startingAtRevision: UInt32,
         upThroughRevision: UInt32?,
-        includeFirstState: Bool
-    ) async throws -> ([GroupV2Change], shouldFetchMore: Bool) {
+        includeFirstState: Bool,
+        gseExpiration: UInt64?
+    ) async throws -> GroupChangesResponse {
         let groupId = try secretParams.getPublicParams().getGroupIdentifier().serialize().asData
 
         let limit: UInt32? = upThroughRevision.map({ (startingAtRevision <= $0) ? ($0 - startingAtRevision + 1) : 1 })
@@ -730,6 +758,7 @@ public class GroupsV2Impl: GroupsV2 {
                     fromRevision: startingAtRevision,
                     limit: limit,
                     includeFirstState: includeFirstState,
+                    gseExpiration: gseExpiration,
                     authCredential: authCredential
                 )
             },
@@ -771,8 +800,13 @@ public class GroupsV2Impl: GroupsV2 {
             )
         }
 
-        return (
-            changes,
+        let groupSendEndorsementsResponse = try groupChangesProto.groupSendEndorsementsResponse.map {
+            return try GroupSendEndorsementsResponse(contents: [UInt8]($0))
+        }
+
+        return GroupChangesResponse(
+            groupChanges: changes,
+            groupSendEndorsementsResponse: groupSendEndorsementsResponse,
             shouldFetchMore: earlyEnd != nil && (upThroughRevision == nil || upThroughRevision! > earlyEnd!)
         )
     }
@@ -1210,6 +1244,46 @@ public class GroupsV2Impl: GroupsV2 {
             return
         }
         SSKEnvironment.shared.groupV2UpdatesRef.refreshGroupUpThroughCurrentRevision(groupThread: groupThread, throttle: true)
+    }
+
+    // MARK: - GSEs
+
+    public func handleGroupSendEndorsementsResponse(
+        _ groupSendEndorsementsResponse: GroupSendEndorsementsResponse,
+        groupThreadId: Int64,
+        secretParams: GroupSecretParams,
+        membership: GroupMembership,
+        localAci: Aci,
+        tx: any DBWriteTransaction
+    ) {
+        do {
+            let fullMembers = membership.fullMembers.compactMap(\.serviceId)
+            let receivedEndorsements = try groupSendEndorsementsResponse.receive(
+                groupMembers: fullMembers,
+                localUser: localAci,
+                groupParams: secretParams,
+                serverParams: GroupsV2Protos.serverPublicParams()
+            )
+            let combinedEndorsement = receivedEndorsements.combinedEndorsement
+            var individualEndorsements = [(ServiceId, GroupSendEndorsement)]()
+            for (serviceId, individualEndorsement) in zip(fullMembers, receivedEndorsements.endorsements) {
+                individualEndorsements.append((serviceId, individualEndorsement))
+            }
+            let groupId = try secretParams.getPublicParams().getGroupIdentifier()
+            Logger.info("Received GSEs that expire at \(groupSendEndorsementsResponse.expiration) for \(groupId.logString)")
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+            groupSendEndorsementStore?.saveEndorsements(
+                groupThreadId: groupThreadId,
+                expiration: groupSendEndorsementsResponse.expiration,
+                combinedEndorsement: combinedEndorsement,
+                individualEndorsements: individualEndorsements.map { serviceId, endorsement in
+                    return (recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx).id!, endorsement)
+                },
+                tx: tx
+            )
+        } catch {
+            owsFailDebug("Couldn't receive GSEs: \(error)")
+        }
     }
 
     // MARK: - ProfileKeyCredentials

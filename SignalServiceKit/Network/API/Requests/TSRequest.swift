@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 // TODO: Rework to _not_ extend NSMutableURLRequest.
 @objcMembers
@@ -98,6 +99,7 @@ public class TSRequest: NSMutableURLRequest {
 
     enum SealedSenderAuth {
         case accessKey(SMKUDAccessKey)
+        case endorsement(GroupSendFullToken)
     }
 
     func setAuth(sealedSender: SealedSenderAuth) {
@@ -106,6 +108,8 @@ public class TSRequest: NSMutableURLRequest {
         switch sealedSender {
         case .accessKey(let accessKey):
             setValue(accessKey.keyData.base64EncodedString(), forHTTPHeaderField: "Unidentified-Access-Key")
+        case .endorsement(let fullToken):
+            setValue(fullToken.serialize().asData.base64EncodedString(), forHTTPHeaderField: "Group-Send-Token")
         }
     }
 
@@ -126,12 +130,17 @@ public class TSRequest: NSMutableURLRequest {
     }
 
     public override var description: String {
-        let prefix = "\(self.isUDRequest ? "UD" : "ID") \(self.httpMethod)"
+        var result = "\(self.isUDRequest ? "UD" : "ID") \(self.httpMethod)"
         switch redactionStrategy {
         case .none:
-            return "\(prefix) \(self.url?.relativeString ?? "")"
+            result += " \(self.url?.relativeString ?? "")"
         case .redactURLForSuccessResponses(let replacementString):
-            return "\(prefix) \(replacementString)"
+            result += " \(replacementString)"
         }
+        if let headerFields = self.allHTTPHeaderFields, !headerFields.isEmpty {
+            let formattedHeaderFields = headerFields.keys.sorted().joined(separator: "; ")
+            result += " [\(formattedHeaderFields)]"
+        }
+        return result
     }
 }

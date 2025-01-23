@@ -235,6 +235,16 @@ public class GroupManager: NSObject {
                 userProfileWriter: .localUser,
                 transaction: tx
             )
+            if let groupSendEndorsementsResponse = snapshotResponse.groupSendEndorsementsResponse {
+                SSKEnvironment.shared.groupsV2Ref.handleGroupSendEndorsementsResponse(
+                    groupSendEndorsementsResponse,
+                    groupThreadId: thread.sqliteRowId!,
+                    secretParams: snapshotResponse.groupSnapshot.groupSecretParams,
+                    membership: snapshotResponse.groupSnapshot.groupMembership,
+                    localAci: localIdentifiers.aci,
+                    tx: tx.asV2Write
+                )
+            }
             return thread
         }
 

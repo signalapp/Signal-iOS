@@ -61,6 +61,7 @@ extension MessageSender {
         in thread: TSThread,
         message: TSOutgoingMessage,
         serializedMessage: SerializedMessage,
+        endorsements: GroupSendEndorsements?,
         udAccessMap: [ServiceId: OWSUDAccess],
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
@@ -71,24 +72,34 @@ extension MessageSender {
     ) {
         SSKEnvironment.shared.senderKeyStoreRef.expireSendingKeyIfNecessary(for: thread, maxSenderKeyAge: RemoteConfig.current.maxSenderKeyAge, tx: tx)
 
-        let threadRecipients = thread.recipientAddresses(with: tx).compactMap { $0.serviceId }
+        let threadRecipients = thread.recipientAddresses(with: tx).compactMap(\.serviceId)
+
+        // If we're going to use the endorsements, we MUST have an individual
+        // endorsement for every member of the group. We might not need them, but
+        // we MAY need any of them, so we must ensure they all exist before
+        // starting. They SHOULD always exist, and it's a bug if they don't.
+        guard endorsements == nil || threadRecipients.allSatisfy({ endorsements!.individual[$0] != nil }) else {
+            return ([], nil)
+        }
+
         let senderKeyRecipients = recipients.filter { serviceId in
             // Sender key requires that you're currently a full member of the group.
             guard threadRecipients.contains(serviceId) else {
                 return false
             }
 
-            // You also must support Sealed Sender.
-            switch udAccessMap[serviceId]?.udAccessMode {
-            case .disabled, .unknown, nil:
+            if localIdentifiers.contains(serviceId: serviceId) {
                 return false
-            case .enabled, .unrestricted:
-                break
             }
 
-            if localIdentifiers.contains(serviceId: serviceId) {
-                owsFailBeta("Callers must not provide UD access for the local ACI.")
-                return false
+            // If we aren't using GSEs, require an Access Key.
+            if endorsements == nil {
+                switch udAccessMap[serviceId]?.udAccessMode {
+                case .disabled, .unknown, nil:
+                    return false
+                case .enabled, .unrestricted:
+                    break
+                }
             }
 
             // TODO: Remove this & handle SignalError.invalidRegistrationId.
@@ -121,6 +132,7 @@ extension MessageSender {
                 for: senderKeyRecipients,
                 in: thread,
                 originalMessage: message,
+                endorsements: endorsements,
                 udAccessMap: udAccessMap,
                 senderCertificate: senderCertificate,
                 localIdentifiers: localIdentifiers,
@@ -148,6 +160,22 @@ extension MessageSender {
                     in: thread,
                     message: message,
                     serializedMessage: serializedMessage,
+                    endorsementBuilder: {
+                        guard let endorsements else {
+                            return nil
+                        }
+                        var combined = endorsements.combined
+                        for serviceId in Set(threadRecipients).subtracting(readyRecipients) {
+                            // We checked earlier that every element of `threadRecipients` has an
+                            // individual endorsement, so we can safely force-unwrap here.
+                            combined = combined.byRemoving(endorsements.individual[serviceId]!)
+                        }
+                        return GroupSendFullTokenBuilder(
+                            secretParams: endorsements.secretParams,
+                            expiration: endorsements.expiration,
+                            endorsement: combined
+                        )
+                    },
                     udAccessMap: udAccessMap,
                     senderCertificate: senderCertificate,
                     localIdentifiers: localIdentifiers
@@ -162,6 +190,7 @@ extension MessageSender {
         in thread: TSThread,
         message: TSOutgoingMessage,
         serializedMessage: SerializedMessage,
+        endorsementBuilder: () -> GroupSendFullTokenBuilder?,
         udAccessMap: [ServiceId: OWSUDAccess],
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers
@@ -173,6 +202,7 @@ extension MessageSender {
                 plaintext: serializedMessage.plaintextData,
                 thread: thread,
                 serviceIds: readyRecipients,
+                endorsementBuilder: endorsementBuilder,
                 udAccessMap: udAccessMap,
                 senderCertificate: senderCertificate
             )
@@ -243,6 +273,7 @@ extension MessageSender {
         for recipients: [ServiceId],
         in thread: TSThread,
         originalMessage: TSOutgoingMessage,
+        endorsements: GroupSendEndorsements?,
         udAccessMap: [ServiceId: OWSUDAccess],
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
@@ -307,7 +338,8 @@ extension MessageSender {
             let sealedSenderParameters = SealedSenderParameters(
                 message: skdmMessage,
                 senderCertificate: senderCertificate,
-                accessKey: udAccessMap[serviceId]
+                accessKey: udAccessMap[serviceId],
+                endorsement: endorsements?.tokenBuilder(forServiceId: serviceId)
             )
 
             result.senderKeyDistributionMessageSends.append((messageSend, sealedSenderParameters))
@@ -401,6 +433,7 @@ extension MessageSender {
         plaintext: Data,
         thread: TSThread,
         serviceIds: [ServiceId],
+        endorsementBuilder: () -> GroupSendFullTokenBuilder?,
         udAccessMap: [ServiceId: OWSUDAccess],
         senderCertificate: SenderCertificate
     ) async throws -> SenderKeySendResult {
@@ -423,6 +456,7 @@ extension MessageSender {
             )
             return (recipients, ciphertext)
         }
+        let endorsement = endorsementBuilder()?.build()
         let result = try await Retry.performRepeatedly(
             block: {
                 return try await self._sendSenderKeyRequest(
@@ -433,6 +467,7 @@ extension MessageSender {
                     isStory: message.isStorySend,
                     thread: thread,
                     recipients: recipients,
+                    endorsement: endorsement,
                     udAccessMap: udAccessMap
                 )
             },
@@ -456,6 +491,7 @@ extension MessageSender {
         isStory: Bool,
         thread: TSThread,
         recipients: [Recipient],
+        endorsement: GroupSendFullToken?,
         udAccessMap: [ServiceId: OWSUDAccess]
     ) async throws -> SenderKeySendResult {
         do {
@@ -467,6 +503,7 @@ extension MessageSender {
                 isStory: isStory,
                 thread: thread,
                 recipients: recipients,
+                endorsement: endorsement,
                 udAccessMap: udAccessMap
             )
 
@@ -591,29 +628,36 @@ extension MessageSender {
         isStory: Bool,
         thread: TSThread,
         recipients: [Recipient],
+        endorsement: GroupSendFullToken?,
         udAccessMap: [ServiceId: OWSUDAccess]
     ) async throws -> HTTPResponse {
 
-        // Sender key messages use an access key composed of every recipient's individual access key.
-        let allAccessKeys = recipients.compactMap {
-            udAccessMap[$0.serviceId]?.udAccessKey
+        let auth: TSRequest.SealedSenderAuth
+        if let endorsement {
+            auth = .endorsement(endorsement)
+        } else {
+            // Sender key messages use an access key composed of every recipient's individual access key.
+            let allAccessKeys = recipients.compactMap {
+                udAccessMap[$0.serviceId]?.udAccessKey
+            }
+            guard recipients.count == allAccessKeys.count else {
+                throw OWSAssertionError("Incomplete access key set")
+            }
+            guard let firstKey = allAccessKeys.first else {
+                throw OWSAssertionError("Must provide at least one address")
+            }
+            let remainingKeys = allAccessKeys.dropFirst()
+            let compositeKey = remainingKeys.reduce(firstKey, ^)
+            auth = .accessKey(compositeKey)
         }
-        guard recipients.count == allAccessKeys.count else {
-            throw OWSAssertionError("Incomplete access key set")
-        }
-        guard let firstKey = allAccessKeys.first else {
-            throw OWSAssertionError("Must provide at least one address")
-        }
-        let remainingKeys = allAccessKeys.dropFirst()
-        let compositeKey = remainingKeys.reduce(firstKey, ^)
 
         let request = OWSRequestFactory.submitMultiRecipientMessageRequest(
             ciphertext: ciphertext,
-            accessKey: compositeKey,
             timestamp: timestamp,
             isOnline: isOnline,
             isUrgent: isUrgent,
-            isStory: isStory
+            isStory: isStory,
+            auth: auth
         )
 
         return try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)

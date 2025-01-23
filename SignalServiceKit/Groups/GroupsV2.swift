@@ -168,7 +168,16 @@ public protocol GroupsV2 {
     func fetchSomeGroupChangeActions(
         secretParams: GroupSecretParams,
         source: GroupChangeActionFetchSource
-    ) async throws -> ([GroupV2Change], shouldFetchMore: Bool)
+    ) async throws -> GroupChangesResponse
+
+    func handleGroupSendEndorsementsResponse(
+        _ groupSendEndorsementsResponse: GroupSendEndorsementsResponse,
+        groupThreadId: Int64,
+        secretParams: GroupSecretParams,
+        membership: GroupMembership,
+        localAci: Aci,
+        tx: any DBWriteTransaction
+    )
 }
 
 // MARK: -
@@ -273,6 +282,7 @@ public protocol GroupV2Updates {
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
+        groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         downloadedAvatars: GroupV2DownloadedAvatars,
         transaction: SDSAnyWriteTransaction
     ) throws -> TSGroupThread
@@ -318,6 +328,12 @@ extension GroupV2Updates {
 }
 
 // MARK: -
+
+public struct GroupChangesResponse {
+    var groupChanges: [GroupV2Change]
+    var groupSendEndorsementsResponse: GroupSendEndorsementsResponse?
+    var shouldFetchMore: Bool
+}
 
 public struct GroupV2Change {
     public var snapshot: GroupV2Snapshot?
@@ -682,8 +698,19 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented")
     }
 
-    public func fetchSomeGroupChangeActions(secretParams: GroupSecretParams, source: GroupChangeActionFetchSource) async throws -> ([GroupV2Change], shouldFetchMore: Bool) {
+    public func fetchSomeGroupChangeActions(secretParams: GroupSecretParams, source: GroupChangeActionFetchSource) async throws -> GroupChangesResponse {
         owsFail("not implemented")
+    }
+
+    public func handleGroupSendEndorsementsResponse(
+        _ groupSendEndorsementsResponse: GroupSendEndorsementsResponse,
+        groupThreadId: Int64,
+        secretParams: GroupSecretParams,
+        membership: GroupMembership,
+        localAci: Aci,
+        tx: any DBWriteTransaction
+    ) {
+        owsFail("Not implemented.")
     }
 }
 
@@ -703,6 +730,7 @@ public class MockGroupV2Updates: GroupV2Updates {
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
+        groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         downloadedAvatars: GroupV2DownloadedAvatars,
         transaction: SDSAnyWriteTransaction
     ) throws -> TSGroupThread {

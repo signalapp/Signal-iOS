@@ -12,6 +12,10 @@ class FakeMessageSender: MessageSender {
     public var sentMessages = [TSOutgoingMessage]()
     public var sendMessageWasCalledBlock: ((TSOutgoingMessage) -> Void)?
 
+    init() {
+        super.init(groupSendEndorsementStore: nil)
+    }
+
     override func sendMessage(_ preparedMessage: PreparedOutgoingMessage) async throws {
         try await preparedMessage.send { message in
             sendMessageWasCalledBlock?(message)

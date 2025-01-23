@@ -84,6 +84,7 @@ public class DependenciesBridge {
     public let groupCallRecordManager: GroupCallRecordManager
     public let groupMemberStore: GroupMemberStore
     public let groupMemberUpdater: GroupMemberUpdater
+    let groupSendEndorsementStore: (any GroupSendEndorsementStore)?
     public let groupUpdateInfoMessageInserter: GroupUpdateInfoMessageInserter
     public let identityManager: OWSIdentityManager
     public let inactiveLinkedDeviceFinder: InactiveLinkedDeviceFinder
@@ -200,6 +201,7 @@ public class DependenciesBridge {
         groupCallRecordManager: GroupCallRecordManager,
         groupMemberStore: GroupMemberStore,
         groupMemberUpdater: GroupMemberUpdater,
+        groupSendEndorsementStore: (any GroupSendEndorsementStore)?,
         groupUpdateInfoMessageInserter: GroupUpdateInfoMessageInserter,
         identityManager: OWSIdentityManager,
         inactiveLinkedDeviceFinder: InactiveLinkedDeviceFinder,
@@ -315,6 +317,7 @@ public class DependenciesBridge {
         self.groupCallRecordManager = groupCallRecordManager
         self.groupMemberStore = groupMemberStore
         self.groupMemberUpdater = groupMemberUpdater
+        self.groupSendEndorsementStore = groupSendEndorsementStore
         self.groupUpdateInfoMessageInserter = groupUpdateInfoMessageInserter
         self.identityManager = identityManager
         self.inactiveLinkedDeviceFinder = inactiveLinkedDeviceFinder
