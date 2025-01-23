@@ -137,6 +137,8 @@ public class AppSetup {
         let recipientIdFinder = RecipientIdFinder(recipientDatabaseTable: recipientDatabaseTable, recipientFetcher: recipientFetcher)
 
         let dateProvider = testDependencies.dateProvider ?? Date.provider
+        let dateProviderMonotonic = MonotonicDate.provider
+
         let schedulers = DispatchQueueSchedulers()
 
         let appExpiry = AppExpiryImpl(
@@ -1116,6 +1118,7 @@ public class AppSetup {
             contactRecipientArchiver: messageBackupContactRecipientArchiver,
             databaseChangeObserver: databaseStorage.databaseChangeObserver,
             dateProvider: dateProvider,
+            dateProviderMonotonic: dateProviderMonotonic,
             db: db,
             dbFileSizeProvider: dbFileSizeProvider,
             disappearingMessagesJob: disappearingMessagesJob,

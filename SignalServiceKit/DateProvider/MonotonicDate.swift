@@ -5,6 +5,16 @@
 
 import Foundation
 
+public typealias DateProviderMonotonic = () -> MonotonicDate
+
+extension MonotonicDate {
+    public static var provider: DateProviderMonotonic {
+        { MonotonicDate() }
+    }
+}
+
+// MARK: -
+
 /// A Date-esque type that's not impacted by changes to the user's clock.
 ///
 /// This type is and almost exclusively used for measuring durations.
@@ -50,5 +60,15 @@ public struct MonotonicDate: Comparable {
 
     public static func - (lhs: MonotonicDate, rhs: MonotonicDate) -> UInt64 {
         return lhs.rawValue - rhs.rawValue
+    }
+
+    // MARK: -
+
+    /// Milliseconds elapsed since the given date.
+    ///
+    /// - Important
+    /// The given date must not be after this date!
+    public func millisSince(_ other: MonotonicDate) -> UInt64 {
+        return (self - other) / NSEC_PER_MSEC
     }
 }

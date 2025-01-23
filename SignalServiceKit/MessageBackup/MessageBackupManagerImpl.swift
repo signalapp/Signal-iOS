@@ -45,6 +45,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let contactRecipientArchiver: MessageBackupContactRecipientArchiver
     private let databaseChangeObserver: DatabaseChangeObserver
     private let dateProvider: DateProvider
+    private let dateProviderMonotonic: DateProviderMonotonic
     private let db: any DB
     private let dbFileSizeProvider: DBFileSizeProvider
     private let disappearingMessagesJob: OWSDisappearingMessagesJob
@@ -80,6 +81,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         contactRecipientArchiver: MessageBackupContactRecipientArchiver,
         databaseChangeObserver: DatabaseChangeObserver,
         dateProvider: @escaping DateProvider,
+        dateProviderMonotonic: @escaping DateProviderMonotonic,
         db: any DB,
         dbFileSizeProvider: DBFileSizeProvider,
         disappearingMessagesJob: OWSDisappearingMessagesJob,
@@ -112,6 +114,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.contactRecipientArchiver = contactRecipientArchiver
         self.databaseChangeObserver = databaseChangeObserver
         self.dateProvider = dateProvider
+        self.dateProviderMonotonic = dateProviderMonotonic
         self.db = db
         self.dbFileSizeProvider = dbFileSizeProvider
         self.disappearingMessagesJob = disappearingMessagesJob
@@ -338,9 +341,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         tx: DBWriteTransaction
     ) throws {
         let bencher = MessageBackup.Bencher(
-            dateProvider: dateProvider,
+            dateProviderMonotonic: dateProviderMonotonic,
             dbFileSizeProvider: dbFileSizeProvider
         )
+
+        let startTimestamp = dateProvider().ows_millisecondsSince1970
         let backupVersion = Constants.supportedBackupVersion
         let purposeString: String = switch backupPurpose {
         case .deviceTransfer: "LinkNSync"
@@ -352,13 +357,13 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             self.processErrors(errors: errors, tx: tx)
         }
 
-        Logger.info("Exporting for \(purposeString) with version \(backupVersion), timestamp \(bencher.startTimestamp)")
+        Logger.info("Exporting for \(purposeString) with version \(backupVersion), timestamp \(startTimestamp)")
 
         try autoreleasepool {
             try writeHeader(
                 stream: stream,
                 backupVersion: backupVersion,
-                backupTimeMs: bencher.startTimestamp,
+                backupTimeMs: startTimestamp,
                 currentAppVersion: currentAppVersion,
                 firstAppVersion: firstAppVersion,
                 tx: tx
@@ -745,7 +750,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         tx: DBWriteTransaction
     ) throws -> BackupProto_BackupInfo {
         let bencher = MessageBackup.Bencher(
-            dateProvider: dateProvider,
+            dateProviderMonotonic: dateProviderMonotonic,
             dbFileSizeProvider: dbFileSizeProvider
         )
 

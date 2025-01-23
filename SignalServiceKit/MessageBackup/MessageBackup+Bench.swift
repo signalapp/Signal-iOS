@@ -10,26 +10,27 @@ extension MessageBackup {
     /// this measures time spent reading/writing to our DB and doing CPU processing.
     class Bencher {
 
-        private let dateProvider: DateProvider
+        private let dateProvider: DateProviderMonotonic
+        private let dbFileSizeBencher: DBFileSizeBencher?
 
-        let startTimestamp: UInt64
+        private let startDate: MonotonicDate
+
         private var totalFramesProcessed: UInt64 = 0
         private var metrics = [FrameType: Metrics]()
         private var postFrameMetrics = [PostFrameRestoreAction: Metrics]()
-        private let dbFileSizeBencher: DBFileSizeBencher?
 
         init(
-            dateProvider: @escaping DateProvider,
+            dateProviderMonotonic: @escaping DateProviderMonotonic,
             dbFileSizeProvider: DBFileSizeProvider
         ) {
-            self.dateProvider = dateProvider
+            self.dateProvider = dateProviderMonotonic
             self.dbFileSizeBencher = if FeatureFlags.verboseBackupBenchLogging {
-                DBFileSizeBencher(dateProvider: dateProvider, dbFileSizeProvider: dbFileSizeProvider)
+                DBFileSizeBencher(dateProvider: dateProviderMonotonic, dbFileSizeProvider: dbFileSizeProvider)
             } else {
                 nil
             }
 
-            self.startTimestamp = dateProvider().ows_millisecondsSince1970
+            startDate = dateProviderMonotonic()
         }
 
         /// Measures the clock time spent in the provided block.
@@ -41,16 +42,19 @@ extension MessageBackup {
                 dbFileSizeBencher?.logDBFileSizeIfNecessary(totalFramesProcessed: totalFramesProcessed)
             }
 
-            let startMs = dateProvider().ows_millisecondsSince1970
-            let frameBencher = FrameBencher(bencher: self, beforeEnumerationStartMs: nil, startMs: startMs)
+            let frameBencher = FrameBencher(
+                bencher: self,
+                beforeEnumerationStartDate: nil,
+                startDate: dateProvider()
+            )
             return try block(frameBencher)
         }
 
         /// Measures the clock time spent in the provided block.
         func benchPostFrameAction(_ action: PostFrameRestoreAction, _ block: () throws -> Void) rethrows -> Void {
-            let startMs = dateProvider().ows_millisecondsSince1970
+            let startDate = dateProvider()
             try block()
-            let durationMs = dateProvider().ows_millisecondsSince1970 - startMs
+            let durationMs = dateProvider().millisSince(startDate)
             var metrics = postFrameMetrics[action] ?? Metrics()
             metrics.frameCount += 1
             metrics.totalDurationMs += durationMs
@@ -65,16 +69,15 @@ extension MessageBackup {
             _ input: Input,
             block: @escaping (T, FrameBencher) throws -> Output
         ) rethrows {
-            var beforeEnumerationStartMs = dateProvider().ows_millisecondsSince1970
+            var beforeEnumerationStartDate = dateProvider()
             try enumerationFunc(input) { t in
-                let enumerationStartMs = self.dateProvider().ows_millisecondsSince1970
                 let frameBencher = FrameBencher(
                     bencher: self,
-                    beforeEnumerationStartMs: beforeEnumerationStartMs,
-                    startMs: enumerationStartMs
+                    beforeEnumerationStartDate: beforeEnumerationStartDate,
+                    startDate: self.dateProvider()
                 )
                 let output = try block(t, frameBencher)
-                beforeEnumerationStartMs = self.dateProvider().ows_millisecondsSince1970
+                beforeEnumerationStartDate = self.dateProvider()
                 return output
             }
         }
@@ -86,29 +89,28 @@ extension MessageBackup {
             _ input: Input,
             block: @escaping (T, FrameBencher) -> Output
         ) rethrows {
-            var beforeEnumerationStartMs = dateProvider().ows_millisecondsSince1970
+            var beforeEnumerationStartDate = dateProvider()
             try enumerationFunc(input) { t in
-                let enumerationStartMs = self.dateProvider().ows_millisecondsSince1970
                 let frameBencher = FrameBencher(
                     bencher: self,
-                    beforeEnumerationStartMs: beforeEnumerationStartMs,
-                    startMs: enumerationStartMs
+                    beforeEnumerationStartDate: beforeEnumerationStartDate,
+                    startDate: self.dateProvider()
                 )
                 let output = block(t, frameBencher)
-                beforeEnumerationStartMs = self.dateProvider().ows_millisecondsSince1970
+                beforeEnumerationStartDate = self.dateProvider()
                 return output
             }
         }
 
         class DBFileSizeBencher {
-            private let dateProvider: DateProvider
+            private let dateProvider: DateProviderMonotonic
             private let dbFileSizeProvider: DBFileSizeProvider
 
             /// The last time we logged the sizes of database files.
-            private var lastDBFileSizeLogDate: Date?
+            private var lastDBFileSizeLogDate: MonotonicDate?
 
             init(
-                dateProvider: @escaping DateProvider,
+                dateProvider: @escaping DateProviderMonotonic,
                 dbFileSizeProvider: DBFileSizeProvider
             ) {
                 self.dateProvider = dateProvider
@@ -118,7 +120,7 @@ extension MessageBackup {
             func logDBFileSizeIfNecessary(totalFramesProcessed: UInt64) {
                 if
                     let lastDBFileSizeLogDate,
-                    dateProvider().timeIntervalSince(lastDBFileSizeLogDate) < 15 * kSecondInterval
+                    dateProvider().millisSince(lastDBFileSizeLogDate) < 15 * MSEC_PER_SEC
                 {
                     // Bail if we logged recently.
                     return
@@ -136,15 +138,15 @@ extension MessageBackup {
         class FrameBencher {
             // A bit confusing but if present, this measures the time spent by the
             // enumeration itself (reading the db, deserializing records)
-            // versus startMs below is the time spent in the enumeration block.
-            private let beforeEnumerationStartMs: UInt64?
-            private let startMs: UInt64
+            // versus startDate below is the time spent in the enumeration block.
+            private let beforeEnumerationStartDate: MonotonicDate?
+            private let startDate: MonotonicDate
             private let bencher: Bencher
 
-            fileprivate init(bencher: Bencher, beforeEnumerationStartMs: UInt64?, startMs: UInt64) {
+            fileprivate init(bencher: Bencher, beforeEnumerationStartDate: MonotonicDate?, startDate: MonotonicDate) {
                 self.bencher = bencher
-                self.beforeEnumerationStartMs = beforeEnumerationStartMs
-                self.startMs = startMs
+                self.beforeEnumerationStartDate = beforeEnumerationStartDate
+                self.startDate = startDate
             }
 
             func didProcessFrame(_ frame: BackupProto_Frame) {
@@ -152,7 +154,7 @@ extension MessageBackup {
                     return
                 }
 
-                let durationMs = bencher.dateProvider().ows_millisecondsSince1970 - startMs
+                let durationMs = bencher.dateProvider().millisSince(startDate)
                 bencher.totalFramesProcessed += 1
 
                 var metrics = bencher.metrics[frameType] ?? Metrics()
@@ -172,8 +174,8 @@ extension MessageBackup {
                     metrics.allFrameDurationsMs.append(durationMs)
                 }
 
-                if let beforeEnumerationStartMs {
-                    metrics.totalEnumerationDurationMs += startMs - beforeEnumerationStartMs
+                if let beforeEnumerationStartDate {
+                    metrics.totalEnumerationDurationMs += startDate.millisSince(beforeEnumerationStartDate)
                 }
 
                 bencher.metrics[frameType] = metrics
@@ -182,7 +184,7 @@ extension MessageBackup {
 
         func logResults() {
             let totalFrameCount = metrics.reduce(0, { $0 + $1.value.frameCount })
-            Logger.info("Processed \(loggableCountString(totalFrameCount)) frames in \(dateProvider().ows_millisecondsSince1970 - self.startTimestamp)ms")
+            Logger.info("Processed \(loggableCountString(totalFrameCount)) frames in \(dateProvider().millisSince(startDate))ms")
 
             func logMetrics(_ metrics: Metrics, typeString: String) {
                 guard metrics.frameCount > 0 else { return }
