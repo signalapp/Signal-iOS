@@ -827,6 +827,11 @@ public class MessageSender {
                 sendViaSenderKey = nil
             }
 
+            if thread is TSGroupThread, sendViaSenderKey == nil, serviceIds.count >= 2 {
+                let notificationPresenter = SSKEnvironment.shared.notificationPresenterRef
+                notificationPresenter.notifyTestPopulation(ofErrorMessage: "Couldn't send using GSEs.")
+            }
+
             return .sendPreparedMessage(SendMessageNextAction.PreparedState(
                 serializedMessage: serializedMessage,
                 thread: thread,
