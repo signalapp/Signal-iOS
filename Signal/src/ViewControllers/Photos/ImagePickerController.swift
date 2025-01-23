@@ -92,12 +92,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         cancelButton.tintColor = Theme.darkThemePrimaryColor
         navigationItem.leftBarButtonItem = cancelButton
         
-        let privacyButton: UIBarButtonItem = .button(icon: .settingsPrivacy, style: .plain) { [weak self] in
-            guard let self else { return }
-            
-        }
-        privacyButton.menu = UIMenu(children: [createSelectMoreActionForPrivacyButton(), createSettingsActionForPrivacyButton()])
-        //privacyButton.showsMenuAsPrimaryAction
+        let privacyButton: UIBarButtonItem = .button(icon: .settingsPrivacy, children: [createSelectMoreActionForPrivacyButton(), createSettingsActionForPrivacyButton()])
         privacyButton.tintColor = Theme.darkThemePrimaryColor
         navigationItem.rightBarButtonItem = privacyButton
 

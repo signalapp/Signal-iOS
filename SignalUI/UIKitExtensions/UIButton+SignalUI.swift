@@ -227,6 +227,14 @@ public extension UIBarButtonItem {
     ) -> UIBarButtonItem {
         ClosureBarButtonItem(image: Theme.iconImage(icon), style: style, action: action)
     }
+    
+    /// Creates a bar button with the given icon that opens the provided context menu children
+    static func button(
+        icon: ThemeIcon,
+        children: [UIMenuElement]
+    ) -> UIBarButtonItem {
+        return UIBarButtonItem(image: Theme.iconImage(icon), menu: UIMenu(children: children))
+    }
 
     // Keep this static function public instead of exposing ClosureBarButtonItem
     // because ClosureBarButtonItem will only function properly if using its
