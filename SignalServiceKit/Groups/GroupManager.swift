@@ -511,7 +511,7 @@ public class GroupManager: NSObject {
         replacementAdminAci: Aci? = nil,
         waitForMessageProcessing: Bool = false,
         tx: SDSAnyWriteTransaction
-    ) -> Promise<TSGroupThread> {
+    ) -> Promise<Void> {
         return SSKEnvironment.shared.localUserLeaveGroupJobQueueRef.addJob(
             groupThread: groupThread,
             replacementAdminAci: replacementAdminAci,
@@ -520,25 +520,23 @@ public class GroupManager: NSObject {
         )
     }
 
-    @objc
-    public static func leaveGroupOrDeclineInviteAsyncWithoutUI(groupThread: TSGroupThread,
-                                                               transaction: SDSAnyWriteTransaction,
-                                                               success: (() -> Void)?) {
-
+    public static func leaveGroupOrDeclineInviteAsyncWithoutUI(groupThread: TSGroupThread, tx: SDSAnyWriteTransaction) {
         guard groupThread.isLocalUserMemberOfAnyKind else {
             owsFailDebug("unexpectedly trying to leave group for which we're not a member.")
             return
         }
 
-        transaction.addAsyncCompletionOffMain {
-            firstly {
-                SSKEnvironment.shared.databaseStorageRef.write(.promise) { transaction in
-                    self.localLeaveGroupOrDeclineInvite(groupThread: groupThread, tx: transaction).asVoid()
+        tx.addSyncCompletion {
+            Task {
+                let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+                let leavePromise = await databaseStorage.awaitableWrite { tx in
+                    return self.localLeaveGroupOrDeclineInvite(groupThread: groupThread, tx: tx)
                 }
-            }.done { _ in
-                success?()
-            }.catch { error in
-                owsFailDebug("Leave group failed: \(error)")
+                do {
+                    try await leavePromise.awaitable()
+                } catch {
+                    owsFailDebug("Couldn't leave group: \(error)")
+                }
             }
         }
     }

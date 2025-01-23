@@ -236,8 +236,7 @@ public class BlockingManager {
             {
                 GroupManager.leaveGroupOrDeclineInviteAsyncWithoutUI(
                     groupThread: groupThread,
-                    transaction: transaction,
-                    success: nil
+                    tx: transaction
                 )
             }
 

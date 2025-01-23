@@ -31,9 +31,9 @@ public extension GroupManager {
                         replacementAdminAci: replacementAdminAci,
                         waitForMessageProcessing: true,
                         tx: transaction
-                    ).asVoid()
+                    )
                 }
-            }.done(on: DispatchQueue.main) { _ in
+            }.done(on: DispatchQueue.main) {
                 modalView.dismiss {
                     success?()
                 }
