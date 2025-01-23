@@ -90,8 +90,16 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
         cancelButton.tintColor = Theme.darkThemePrimaryColor
         navigationItem.leftBarButtonItem = cancelButton
+        
+        let privacyButton: UIBarButtonItem = .button(icon: .settingsPrivacy, style: .done) { [weak self] in
+            guard let self else { return }
+            
+        }
+        //privacyButton.menu =
+        privacyButton.tintColor = Theme.darkThemePrimaryColor
+        navigationItem.rightBarButtonItem = privacyButton
 
-        view.addSubview(doneButton)
+        view.addSubview(doneButton) //Why do we have a done button despite us having a cancel button in the navigation view?
         doneButton.autoPinBottomToSuperviewMargin(withInset: UIDevice.current.hasIPhoneXNotch ? 8 : 16)
         doneButton.autoPinTrailingToSuperviewMargin()
 
@@ -100,6 +108,41 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         self.selectionPanGesture = selectionPanGesture
         collectionView.addGestureRecognizer(selectionPanGesture)
     }
+    
+    private func createSelectMoreActionForPrivacyButton() -> UIAction {
+        let selectMoreAction = UIAction(
+            title: OWSLocalizedString(
+                "ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE",
+                comment: "Button in a context menu from the 'privacy' button in attachment panel that allows to select more photos/videos to give Signal access to"),
+            image: UIImage(named: "album-tilt-light")
+        ) { _ in
+            
+        }
+        return selectMoreAction
+    }
+    
+//    let selectMoreAction = UIAction(
+//        title: OWSLocalizedString(
+//            "ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE",
+//            comment: "Button in a context menu from the 'manage' button in attachment panel that allows to select more photos/videos to give Signal access to"
+//        ),
+//        image: UIImage(named: "album-tilt-light")
+//    ) { _ in
+//        guard let frontmostVC = CurrentAppContext().frontmostViewController() else { return }
+//        PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: frontmostVC)
+//    }
+//    let settingsAction = UIAction(
+//        title: OWSLocalizedString(
+//            "ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS",
+//            comment: "Button in a context menu from the 'manage' button in attachment panel that opens the iOS system settings for Signal to update access permissions"
+//        ),
+//        image: UIImage(named: "settings-light")
+//    ) { _ in
+//        let openSettingsURL = URL(string: UIApplication.openSettingsURLString)!
+//        UIApplication.shared.open(openSettingsURL)
+//    }
+//    button.menu = UIMenu(children: [selectMoreAction, settingsAction])
+//    button.showsMenuAsPrimaryAction = true
 
     private var selectionPanGesture: UIPanGestureRecognizer?
     private enum BatchSelectionGestureMode {
