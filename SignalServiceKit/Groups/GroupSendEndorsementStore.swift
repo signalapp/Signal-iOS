@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import GRDB
 import LibSignalClient
 
 protocol GroupSendEndorsementStore {
@@ -38,32 +39,46 @@ extension GroupSendEndorsementStore {
     }
 }
 
-#if DEBUG
-
-class MockGroupSendEndorsementStore: GroupSendEndorsementStore {
-    private let combinedRecords = AtomicValue<[CombinedGroupSendEndorsementRecord]>([], lock: .init())
-    private let individualRecords = AtomicValue<[IndividualGroupSendEndorsementRecord]>([], lock: .init())
-
+class GroupSendEndorsementStoreImpl: GroupSendEndorsementStore {
     func fetchCombinedEndorsement(groupThreadId: Int64, tx: any DBReadTransaction) throws -> CombinedGroupSendEndorsementRecord? {
-        return combinedRecords.update { $0.first(where: { $0.threadId == groupThreadId }) }
+        do {
+            return try CombinedGroupSendEndorsementRecord.fetchOne(tx.databaseConnection, key: groupThreadId)
+        } catch {
+            throw error.grdbErrorForLogging
+        }
     }
 
     func fetchIndividualEndorsements(groupThreadId: Int64, tx: any DBReadTransaction) throws -> [IndividualGroupSendEndorsementRecord] {
-        return individualRecords.update { $0.filter({ $0.threadId == groupThreadId }) }
+        do {
+            return try IndividualGroupSendEndorsementRecord
+                .filter(Column(IndividualGroupSendEndorsementRecord.CodingKeys.threadId) == groupThreadId)
+                .fetchAll(tx.databaseConnection)
+        } catch {
+            throw error.grdbErrorForLogging
+        }
     }
 
     func deleteEndorsements(groupThreadId: Int64, tx: any DBWriteTransaction) {
-        combinedRecords.update { $0.removeAll(where: { $0.threadId == groupThreadId }) }
-        individualRecords.update { $0.removeAll(where: { $0.threadId == groupThreadId }) }
+        do {
+            try CombinedGroupSendEndorsementRecord.deleteOne(tx.databaseConnection, key: groupThreadId)
+        } catch {
+            owsFail("Couldn't delete records: \(error.grdbErrorForLogging)")
+        }
     }
 
     func insertCombinedEndorsement(_ endorsementRecord: CombinedGroupSendEndorsementRecord, tx: any DBWriteTransaction) {
-        combinedRecords.update { $0.append(endorsementRecord) }
+        do {
+            try endorsementRecord.insert(tx.databaseConnection)
+        } catch {
+            owsFail("Couldn't insert record: \(error.grdbErrorForLogging)")
+        }
     }
 
     func insertIndividualEndorsement(_ endorsementRecord: IndividualGroupSendEndorsementRecord, tx: any DBWriteTransaction) {
-        individualRecords.update { $0.append(endorsementRecord) }
+        do {
+            try endorsementRecord.insert(tx.databaseConnection)
+        } catch {
+            owsFail("Couldn't insert record: \(error.grdbErrorForLogging)")
+        }
     }
 }
-
-#endif

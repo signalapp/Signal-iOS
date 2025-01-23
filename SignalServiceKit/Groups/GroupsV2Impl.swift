@@ -13,13 +13,13 @@ public class GroupsV2Impl: GroupsV2 {
 
     private let authCredentialStore: AuthCredentialStore
     private let authCredentialManager: any AuthCredentialManager
-    private let groupSendEndorsementStore: (any GroupSendEndorsementStore)?
+    private let groupSendEndorsementStore: any GroupSendEndorsementStore
 
     init(
         appReadiness: AppReadiness,
         authCredentialStore: AuthCredentialStore,
         authCredentialManager: any AuthCredentialManager,
-        groupSendEndorsementStore: (any GroupSendEndorsementStore)?
+        groupSendEndorsementStore: any GroupSendEndorsementStore
     ) {
         self.authCredentialStore = authCredentialStore
         self.authCredentialManager = authCredentialManager
@@ -659,12 +659,10 @@ public class GroupsV2Impl: GroupsV2 {
         (groupModel, gseExpiration) = databaseStorage.read { tx in
             let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx)
             let groupThreadId = groupThread?.sqliteRowId!
+            let endorsementRecord = groupThreadId.flatMap({ try? groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: $0, tx: tx.asV2Read) })
             return (
                 groupThread?.groupModel as? TSGroupModelV2,
-                groupSendEndorsementStore.map({ groupSendEndorsementStore in
-                    let endorsementRecord = groupThreadId.flatMap({ try? groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: $0, tx: tx.asV2Read) })
-                    return endorsementRecord?.expirationTimestamp ?? 0
-                })
+                endorsementRecord?.expirationTimestamp ?? 0
             )
         }
 
@@ -1272,7 +1270,7 @@ public class GroupsV2Impl: GroupsV2 {
             let groupId = try secretParams.getPublicParams().getGroupIdentifier()
             Logger.info("Received GSEs that expire at \(groupSendEndorsementsResponse.expiration) for \(groupId.logString)")
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-            groupSendEndorsementStore?.saveEndorsements(
+            groupSendEndorsementStore.saveEndorsements(
                 groupThreadId: groupThreadId,
                 expiration: groupSendEndorsementsResponse.expiration,
                 combinedEndorsement: combinedEndorsement,

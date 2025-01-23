@@ -2269,3 +2269,46 @@ CREATE
             "groupId" BLOB PRIMARY KEY NOT NULL
         ) WITHOUT ROWID
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "CombinedGroupSendEndorsement" (
+            "threadId" INTEGER PRIMARY KEY REFERENCES "model_TSThread"("id"
+        )
+            ON DELETE
+                CASCADE
+                    ON UPDATE
+                        CASCADE
+                        ,"endorsement" BLOB NOT NULL
+                        ,"expiration" INTEGER NOT NULL
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "IndividualGroupSendEndorsement" (
+            "threadId" INTEGER NOT NULL REFERENCES "CombinedGroupSendEndorsement"("threadId"
+        )
+            ON DELETE
+                CASCADE
+                    ON UPDATE
+                        CASCADE
+                        ,"recipientId" INTEGER NOT NULL REFERENCES "model_SignalRecipient"("id"
+)
+    ON DELETE
+        CASCADE
+            ON UPDATE
+                CASCADE
+                ,"endorsement" BLOB NOT NULL
+                ,PRIMARY KEY (
+                    "threadId"
+                    ,"recipientId"
+                )
+)
+;
+
+CREATE
+    INDEX "IndividualGroupSendEndorsement_recipientId"
+        ON "IndividualGroupSendEndorsement"("recipientId"
+)
+;

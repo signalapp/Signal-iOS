@@ -320,6 +320,7 @@ public class GRDBSchemaMigrator: NSObject {
         case recreateTSAttachment
         case recreateTSAttachmentMigration
         case addBlockedGroup
+        case addGroupSendEndorsement
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -3893,6 +3894,29 @@ public class GRDBSchemaMigrator: NSObject {
                 try tx.database.execute(sql: "INSERT INTO BlockedGroup VALUES (?)", arguments: [groupId])
             }
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.addGroupSendEndorsement) { tx in
+            try tx.database.create(table: "CombinedGroupSendEndorsement") { table in
+                table.column("threadId", .integer).primaryKey()
+                    .references("model_TSThread", column: "id", onDelete: .cascade, onUpdate: .cascade)
+                table.column("endorsement", .blob).notNull()
+                table.column("expiration", .integer).notNull()
+            }
+            try tx.database.create(table: "IndividualGroupSendEndorsement") { table in
+                table.primaryKey(["threadId", "recipientId"])
+                table.column("threadId", .integer).notNull()
+                    .references("CombinedGroupSendEndorsement", column: "threadId", onDelete: .cascade, onUpdate: .cascade)
+                table.column("recipientId", .integer).notNull()
+                    .references("model_SignalRecipient", column: "id", onDelete: .cascade, onUpdate: .cascade)
+                table.column("endorsement", .blob).notNull()
+            }
+            try tx.database.create(
+                index: "IndividualGroupSendEndorsement_recipientId",
+                on: "IndividualGroupSendEndorsement",
+                columns: ["recipientId"]
+            )
             return .success(())
         }
 

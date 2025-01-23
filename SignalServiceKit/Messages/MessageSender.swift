@@ -33,9 +33,9 @@ public class MessageSender {
 
     private var preKeyManager: PreKeyManager { DependenciesBridge.shared.preKeyManager }
 
-    private let groupSendEndorsementStore: (any GroupSendEndorsementStore)?
+    private let groupSendEndorsementStore: any GroupSendEndorsementStore
 
-    init(groupSendEndorsementStore: (any GroupSendEndorsementStore)?) {
+    init(groupSendEndorsementStore: any GroupSendEndorsementStore) {
         self.groupSendEndorsementStore = groupSendEndorsementStore
 
         SwiftSingletons.register(self)
@@ -792,7 +792,6 @@ public class MessageSender {
             do {
                 endorsements = try fetchEndorsements(forThread: thread, tx: tx.asV2Read)
                 if
-                    self.groupSendEndorsementStore != nil,
                     recoveryState.canRefreshExpiringGroupSendEndorsements,
                     let secretParams = try? ((thread as? TSGroupThread)?.groupModel as? TSGroupModelV2)?.secretParams(),
                     endorsements == nil || endorsements!.expiration.timeIntervalSinceNow < 2 * kHourInterval
@@ -966,9 +965,6 @@ public class MessageSender {
     }
 
     private func fetchEndorsements(forThread thread: TSThread, tx: any DBReadTransaction) throws -> GroupSendEndorsements? {
-        guard let groupSendEndorsementStore else {
-            return nil
-        }
         guard
             let groupThread = thread as? TSGroupThread,
             let groupModel = groupThread.groupModel as? TSGroupModelV2

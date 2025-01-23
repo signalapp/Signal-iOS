@@ -471,6 +471,9 @@ public extension DatabaseRecovery {
             CancelledGroupRing.databaseTableName,
             CdsPreviousE164.databaseTableName,
             SpamReportingTokenRecord.databaseTableName,
+            // Can be easily re-created.
+            CombinedGroupSendEndorsementRecord.databaseTableName,
+            IndividualGroupSendEndorsementRecord.databaseTableName,
         ]
 
         /// Log the tables we're explicitly skipping.

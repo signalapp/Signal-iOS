@@ -13,7 +13,7 @@ class FakeMessageSender: MessageSender {
     public var sendMessageWasCalledBlock: ((TSOutgoingMessage) -> Void)?
 
     init() {
-        super.init(groupSendEndorsementStore: nil)
+        super.init(groupSendEndorsementStore: GroupSendEndorsementStoreImpl())
     }
 
     override func sendMessage(_ preparedMessage: PreparedOutgoingMessage) async throws {

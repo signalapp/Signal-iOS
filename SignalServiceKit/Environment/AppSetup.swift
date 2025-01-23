@@ -184,12 +184,7 @@ public class AppSetup {
         let earlyMessageManager = EarlyMessageManager(appReadiness: appReadiness)
         let messageProcessor = MessageProcessor(appReadiness: appReadiness)
 
-        let groupSendEndorsementStore: (any GroupSendEndorsementStore)?
-        #if DEBUG
-        groupSendEndorsementStore = MockGroupSendEndorsementStore()
-        #else
-        groupSendEndorsementStore = nil
-        #endif
+        let groupSendEndorsementStore = GroupSendEndorsementStoreImpl()
 
         let messageSender = testDependencies.messageSender ?? MessageSender(
             groupSendEndorsementStore: groupSendEndorsementStore
