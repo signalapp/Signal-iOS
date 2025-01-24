@@ -5,6 +5,7 @@
 
 import Photos
 import SignalServiceKit
+import UIKit
 import SignalUI
 
 protocol ImagePickerGridControllerDelegate: AnyObject {
@@ -90,6 +91,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
         cancelButton.tintColor = Theme.darkThemePrimaryColor
         navigationItem.leftBarButtonItem = cancelButton
+        
+        let privacyButton: UIBarButtonItem = .button(icon: .settingsPrivacy, children: [createSelectMoreActionForPrivacyButton(), createSettingsActionForPrivacyButton()])
+        privacyButton.tintColor = Theme.darkThemePrimaryColor
+        navigationItem.rightBarButtonItem = privacyButton
+        updatePrivacyButtonVisibility()
 
         view.addSubview(doneButton)
         doneButton.autoPinBottomToSuperviewMargin(withInset: UIDevice.current.hasIPhoneXNotch ? 8 : 16)
@@ -100,7 +106,48 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         self.selectionPanGesture = selectionPanGesture
         collectionView.addGestureRecognizer(selectionPanGesture)
     }
+    
 
+    
+    private func createSelectMoreActionForPrivacyButton() -> UIAction {
+        let selectMoreAction = UIAction(
+            title: OWSLocalizedString(
+                "ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE",
+                comment: "Button in a context menu from the 'privacy' button in attachment panel that allows to select more photos/videos to give Signal access to"),
+            image: UIImage(named: "album-tilt-light")
+        ) { _ in
+            guard let frontmostVC = CurrentAppContext().frontmostViewController() else { return }
+            PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: frontmostVC)
+        }
+        return selectMoreAction
+    }
+    
+    private func createSettingsActionForPrivacyButton() -> UIAction {
+        let settingsAction = UIAction(
+            title: OWSLocalizedString(
+                "ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS",
+                comment: "Button in a context menu from the 'privacy' button in attachment panel that opens the iOS system settings for Signal to update access permissions"),
+            image: UIImage(named: "settings-light")
+        ) { _ in
+            if let openSettingsURL = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(openSettingsURL)
+            }
+        }
+        return settingsAction
+    }
+    
+    private func updatePrivacyButtonVisibility() {
+        if isPhotoPermissionLimited {
+            navigationItem.rightBarButtonItem?.isEnabled = true
+        } else {
+            navigationItem.rightBarButtonItem?.isEnabled = false
+        }
+    }
+    
+    private var isPhotoPermissionLimited: Bool {
+        return PHPhotoLibrary.authorizationStatus(for: .readWrite) == .limited
+    }
+    
     private var selectionPanGesture: UIPanGestureRecognizer?
     private enum BatchSelectionGestureMode {
         case select, deselect
@@ -315,6 +362,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         collectionView.reloadData()
         collectionView.layoutIfNeeded()
     }
+    
+
 
     // MARK: - Actions
 
@@ -381,6 +430,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
         photoAlbumContents = photoAlbum.contents()
         reloadData()
+        updatePrivacyButtonVisibility()
     }
 
     // MARK: - PhotoCollectionPicker Presentation
