@@ -95,8 +95,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let privacyButton: UIBarButtonItem = .button(icon: .settingsPrivacy, children: [createSelectMoreActionForPrivacyButton(), createSettingsActionForPrivacyButton()])
         privacyButton.tintColor = Theme.darkThemePrimaryColor
         navigationItem.rightBarButtonItem = privacyButton
+        updatePrivacyButtonVisibility()
 
-        view.addSubview(doneButton) //Why do we have a done button despite us having a cancel button in the navigation view?
+        view.addSubview(doneButton)
         doneButton.autoPinBottomToSuperviewMargin(withInset: UIDevice.current.hasIPhoneXNotch ? 8 : 16)
         doneButton.autoPinTrailingToSuperviewMargin()
 
@@ -105,6 +106,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         self.selectionPanGesture = selectionPanGesture
         collectionView.addGestureRecognizer(selectionPanGesture)
     }
+    
+
     
     private func createSelectMoreActionForPrivacyButton() -> UIAction {
         let selectMoreAction = UIAction(
@@ -131,6 +134,18 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             }
         }
         return settingsAction
+    }
+    
+    private func updatePrivacyButtonVisibility() {
+        if isPhotoPermissionLimited {
+            navigationItem.rightBarButtonItem?.isEnabled = true
+        } else {
+            navigationItem.rightBarButtonItem?.isEnabled = false
+        }
+    }
+    
+    private var isPhotoPermissionLimited: Bool {
+        return PHPhotoLibrary.authorizationStatus(for: .readWrite) == .limited
     }
     
     private var selectionPanGesture: UIPanGestureRecognizer?
@@ -347,6 +362,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         collectionView.reloadData()
         collectionView.layoutIfNeeded()
     }
+    
+
 
     // MARK: - Actions
 
@@ -413,6 +430,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
         photoAlbumContents = photoAlbum.contents()
         reloadData()
+        updatePrivacyButtonVisibility()
     }
 
     // MARK: - PhotoCollectionPicker Presentation
