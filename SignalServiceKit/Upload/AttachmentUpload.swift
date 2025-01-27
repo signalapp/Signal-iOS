@@ -94,6 +94,7 @@ public struct AttachmentUpload {
     private static func performResumableUpload<Metadata: UploadMetadata>(
         attempt: Upload.Attempt<Metadata>,
         count: UInt = 0,
+        priorUploadProgress: Upload.ResumeProgress? = nil,
         progress: OWSProgressSource?
     ) async throws {
         guard count < Upload.Constants.uploadMaxRetries else {
@@ -105,7 +106,12 @@ public struct AttachmentUpload {
 
         // Only check remote upload progress if we think progress was made locally
         if attempt.isResumedUpload || count > 0 {
-            let uploadProgress = try await getResumableUploadProgress(attempt: attempt)
+            let uploadProgress: Upload.ResumeProgress
+            if let priorUploadProgress {
+                uploadProgress = priorUploadProgress
+            } else {
+                uploadProgress = try await getResumableUploadProgress(attempt: attempt)
+            }
             switch uploadProgress {
             case .complete:
                 attempt.logger.info("Complete upload reported by endpoint.")
@@ -153,18 +159,36 @@ public struct AttachmentUpload {
                 attempt.logger.warn("Encountered error during upload. ")
             }
 
-            let didUploadMakeProgress = internalProgress.completedUnitCount > bytesAlreadyUploaded
-            if didUploadMakeProgress {
-                attempt.logger.warn("Upload made progress: \(bytesAlreadyUploaded) -> \(internalProgress.completedUnitCount)")
-            }
             var failureMode: Upload.FailureMode = .noMoreRetries
+            var latestUploadProgress: Upload.ResumeProgress?
+            var latestUploadProgressBytes: UInt32 = UInt32(truncatingIfNeeded: internalProgress.completedUnitCount)
             if case Upload.Error.uploadFailure(let retryMode) = error {
                 // if a failure mode was passed back
                 failureMode = retryMode
             } else {
                 // if this isn't an understood error, map into a failure mode
+                // fetch the progress to determine if we've made progress.
                 let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count)
-                failureMode = .resume(.afterDelay(backoff))
+                latestUploadProgress = try? await getResumableUploadProgress(attempt: attempt)
+                switch latestUploadProgress {
+                case .complete:
+                    latestUploadProgressBytes = totalDataLength
+                    failureMode = .resume(.immediately)
+                case .restart:
+                    latestUploadProgressBytes = 0
+                    failureMode = .restart(.afterDelay(backoff))
+                case .none:
+                    failureMode = .resume(.afterDelay(backoff))
+                case .uploaded(let remoteBytesCount):
+                    attempt.logger.info("Endpoint reported \(remoteBytesCount)/\(attempt.encryptedDataLength) uploaded.")
+                    latestUploadProgressBytes = UInt32(truncatingIfNeeded: remoteBytesCount)
+                    failureMode = .resume(.afterDelay(backoff))
+                }
+            }
+
+            let didUploadMakeProgress = latestUploadProgressBytes > bytesAlreadyUploaded
+            if didUploadMakeProgress {
+                attempt.logger.warn("Upload made progress: \(bytesAlreadyUploaded) -> \(latestUploadProgressBytes)")
             }
 
             switch failureMode {
@@ -182,14 +206,19 @@ public struct AttachmentUpload {
             case .restart:
                 // Restart is handled at a higher level since the whole
                 // upload form needs to be rebuilt.
-                throw error
+                throw Upload.Error.uploadFailure(recovery: failureMode)
             }
 
             attempt.logger.info("Resuming upload.")
             // Reset the attempt count to 1 as long as progress was made. Make it 1, since 0
             // will behave like a fresh upload and skip fetching the remote upload progress.
             let nextAttemptCount = didUploadMakeProgress ? 1 : count + 1
-            try await performResumableUpload(attempt: attempt, count: nextAttemptCount, progress: progress)
+            try await performResumableUpload(
+                attempt: attempt,
+                count: nextAttemptCount,
+                priorUploadProgress: latestUploadProgress,
+                progress: progress
+            )
         }
     }
 
