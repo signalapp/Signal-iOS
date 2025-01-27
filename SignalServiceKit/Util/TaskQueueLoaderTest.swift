@@ -311,36 +311,41 @@ public class TaskQueueLoaderTest: XCTestCase {
         let now = Date()
 
         var firstRecord = MockTaskRecord(id: 0)
-        firstRecord.nextRetryTimestamp = now.addingTimeInterval(0.1).ows_millisecondsSince1970
+        firstRecord.nextRetryTimestamp = now.addingTimeInterval(1).ows_millisecondsSince1970
         let records = [firstRecord] + (1..<10).map(MockTaskRecord.init(id:))
         let runner = MockRunner(store: MockStore(records: records))
 
+        let completedTaskCount = AtomicValue<Int>(0, lock: .init())
+
         var sleepContinuation: CheckedContinuation<Void, Never>?
+        let sleepTask = Task {
+            await withCheckedContinuation { continuation in
+                sleepContinuation = continuation
+            }
+        }
+        while sleepContinuation == nil {
+            await Task.yield()
+        }
 
         let loader = TaskQueueLoader(
             maxConcurrentTasks: 4,
-            dateProvider: { Date() },
+            dateProvider: { now },
             db: InMemoryDB(),
             runner: runner,
             sleep: { nanoseconds in
-                XCTAssertEqual(nanoseconds, 100 * NSEC_PER_MSEC)
-                XCTAssertNil(sleepContinuation)
-                await withCheckedContinuation { continuation in
-                    sleepContinuation = continuation
-                }
+                XCTAssertEqual(nanoseconds, NSEC_PER_SEC)
+                await sleepTask.value
             }
         )
 
-        var completedTaskCount = 0
         runner.taskRunner = { id in
             if id == 0 {
-                XCTAssertEqual(completedTaskCount, 9)
+                XCTAssertEqual(completedTaskCount.get(), 9)
             } else {
                 // The others should all finish before then because
                 // they should just run and finish instantly.
-                XCTAssert(Date().timeIntervalSince(now) < 0.1)
-                completedTaskCount += 1
-                if completedTaskCount == 9 {
+                let count = completedTaskCount.map { $0 + 1 }
+                if count == 9 {
                     sleepContinuation?.resume()
                 }
             }

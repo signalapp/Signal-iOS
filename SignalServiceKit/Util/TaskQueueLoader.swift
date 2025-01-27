@@ -151,6 +151,7 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner> {
     private let db: any DB
     private let runner: Runner
     private var store: Store { runner.store }
+    private let sleep: (_ nanoseconds: UInt64) async throws -> Void
 
     /// WARNING: the runner (and therefore any of its strong references) is strongly
     /// captured by this class and will be retained for its lifetime.
@@ -159,12 +160,13 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner> {
         dateProvider: @escaping DateProvider,
         db: any DB,
         runner: Runner,
-        sleep: (_ nanoseconds: UInt64) async throws -> Void
+        sleep: @escaping (_ nanoseconds: UInt64) async throws -> Void
     ) {
         self.maxConcurrentTasks = maxConcurrentTasks
         self.dateProvider = dateProvider
         self.db = db
         self.runner = runner
+        self.sleep = sleep
     }
 
     /// WARNING: the runner (and therefore any of its strong references) is strongly
@@ -272,7 +274,7 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner> {
                         let nextRetryTimestamp = record.nextRetryTimestamp,
                         nowMs < nextRetryTimestamp
                     {
-                        try await Task.sleep(nanoseconds: NSEC_PER_MSEC * (nextRetryTimestamp - nowMs))
+                        try await self.sleep(NSEC_PER_MSEC * (nextRetryTimestamp - nowMs))
                     }
                     let taskResult = await runner.runTask(record: record, loader: self)
                     switch taskResult {
