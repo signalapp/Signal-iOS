@@ -91,7 +91,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         _ = addProgressIfNecessary()
     }
 
-    private func configureForUndownloadedMedia(_ pointer: AttachmentTransitPointer) {
+    private func configureForUndownloadedMedia(_ pointer: AttachmentPointer) {
         tryToConfigureForBlurHash(pointer: pointer)
 
         _ = addProgressIfNecessary()
@@ -113,12 +113,12 @@ public class CVMediaView: ManualLayoutViewWithLayer {
             // attachments; CVComponentBodyMedia will add a download
             // button if any media in the gallery is pending.
             return false
-        case .downloading(let attachmentPointer, let transitTierDownloadState):
+        case .downloading(let attachmentPointer, let downloadState):
             backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
 
             direction = .download(
                 attachmentPointer: attachmentPointer,
-                transitTierDownloadState: transitTierDownloadState
+                downloadState: downloadState
             )
         case .unknown:
             owsFailDebug("Unknown progress type.")
@@ -170,7 +170,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         applyReusableMediaView(reusableMediaView)
     }
 
-    private func tryToConfigureForBlurHash(pointer: AttachmentTransitPointer) {
+    private func tryToConfigureForBlurHash(pointer: AttachmentPointer) {
         guard let blurHash = pointer.attachment.blurHash?.nilIfEmpty else { return }
         // NOTE: in the blurhash case, we use the blurHash itself as the
         // cachekey to avoid conflicts with the actual attachment contents.

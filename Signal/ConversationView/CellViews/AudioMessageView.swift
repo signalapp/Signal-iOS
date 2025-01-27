@@ -143,11 +143,11 @@ class AudioMessageView: ManualStackView {
             presentation.playedDotContainer.addSubviewToCenterOnSuperview(playedDotAnimation, size: CGSize(square: 16))
 
             leftView = playPauseContainer
-        case .attachmentPointer(let attachmentPointer, let transitTierDownloadState):
+        case .attachmentPointer(let attachmentPointer, let downloadState):
             leftView = CVAttachmentProgressView(
                 direction: .download(
                     attachmentPointer: attachmentPointer.attachmentPointer,
-                    transitTierDownloadState: transitTierDownloadState
+                    downloadState: downloadState
                 ),
                 diameter: Constants.animationSize,
                 isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,

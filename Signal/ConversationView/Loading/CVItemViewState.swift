@@ -492,13 +492,13 @@ struct CVItemModelBuilder: CVItemBuilding {
                     metadata: nil,
                     receivedAtDate: nextMessage.receivedAtDate
                 )
-            } else if let pointer = attachment.asReferencedTransitPointer {
+            } else if let pointer = attachment.asReferencedAnyPointer {
                 itemViewState.nextAudioAttachment = AudioAttachment(
                     attachmentPointer: pointer,
                     owningMessage: nextMessage,
                     metadata: nil,
                     receivedAtDate: nextMessage.receivedAtDate,
-                    transitTierDownloadState: pointer.attachmentPointer.downloadState(tx: transaction.asV2Read)
+                    downloadState: pointer.attachmentPointer.downloadState(tx: transaction.asV2Read)
                 )
             } else {
                 owsFailDebug("Invalid attachment!")

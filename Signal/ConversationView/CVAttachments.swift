@@ -15,8 +15,8 @@ public class AudioAttachment {
             audioDurationSeconds: TimeInterval
         )
         case attachmentPointer(
-            attachmentPointer: ReferencedAttachmentTransitPointer,
-            transitTierDownloadState: AttachmentDownloadState
+            attachmentPointer: ReferencedAttachmentPointer,
+            downloadState: AttachmentDownloadState
         )
 
         public static func == (lhs: AudioAttachment.State, rhs: AudioAttachment.State) -> Bool {
@@ -88,18 +88,18 @@ public class AudioAttachment {
     }
 
     public init(
-        attachmentPointer: ReferencedAttachmentTransitPointer,
+        attachmentPointer: ReferencedAttachmentPointer,
         owningMessage: TSMessage?,
         metadata: MediaMetadata?,
         receivedAtDate: Date,
-        transitTierDownloadState: AttachmentDownloadState
+        downloadState: AttachmentDownloadState
     ) {
         state = .attachmentPointer(
             attachmentPointer: attachmentPointer,
-            transitTierDownloadState: transitTierDownloadState
+            downloadState: downloadState
         )
 
-        switch transitTierDownloadState {
+        switch downloadState {
         case .failed, .none:
             isDownloading = false
         case .enqueuedOrDownloading:
@@ -149,7 +149,7 @@ extension AudioAttachment {
         }
     }
 
-    public var attachmentPointer: ReferencedAttachmentTransitPointer? {
+    public var attachmentPointer: ReferencedAttachmentPointer? {
         switch state {
         case .attachmentStream:
             return nil

@@ -258,6 +258,14 @@ public class Attachment {
         return AttachmentTransitPointer(attachment: self)
     }
 
+    public func asBackupTierPointer() -> AttachmentBackupPointer? {
+        return AttachmentBackupPointer(attachment: self)
+    }
+
+    public func asAnyPointer() -> AttachmentPointer? {
+        return AttachmentPointer(attachment: self)
+    }
+
     public func asBackupThumbnail() -> AttachmentBackupThumbnail? {
         return AttachmentBackupThumbnail(attachment: self)
     }

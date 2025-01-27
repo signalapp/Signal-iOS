@@ -208,6 +208,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
                 let encryptedDigestMatch = targetAttachmentCandidates.first(where: {
                     let attachmentDigest =
                         $0.attachment.asStream()?.encryptedFileSha256Digest
+                        ?? $0.attachment.asBackupTierPointer()?.info.digestSHA256Ciphertext
                         ?? $0.attachment.asTransitTierPointer()?.info.digestSHA256Ciphertext
                     return attachmentDigest == encryptedDigest
                 })

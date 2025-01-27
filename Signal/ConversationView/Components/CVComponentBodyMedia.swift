@@ -213,12 +213,12 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                         case .backupThumbnail:
                             // TODO[Backups]: Check for media tier download state
                             return nil
-                        case .pointer(let attachment, let transitTierDownloadState):
+                        case .pointer(let attachment, let downloadState):
                             if item.threadHasPendingMessageRequest {
                                 // Doesn't count.
                                 return nil
                             }
-                            switch transitTierDownloadState {
+                            switch downloadState {
                             case .none:
                                 return attachment
                             case .enqueuedOrDownloading, .failed:
@@ -227,7 +227,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                         }
                     }
                 let totalSize = pendingManualDownloadAttachments.map {
-                    $0.attachment.asTransitTierPointer()?.info.unencryptedByteCount ?? 0
+                    $0.attachment.asAnyPointer()?.unencryptedByteCount ?? 0
                 }.reduce(0, +)
 
                 if totalSize > 0 {
@@ -371,8 +371,8 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
 
         switch mediaView.attachment {
-        case .pointer(let pointer, let transitTierDownloadState):
-            switch transitTierDownloadState {
+        case .pointer(let pointer, let downloadState):
+            switch downloadState {
             case .failed, .none:
                 componentDelegate.didTapFailedOrPendingDownloads(message)
                 return true

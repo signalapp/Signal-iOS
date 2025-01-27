@@ -17,7 +17,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     private var attachmentStream: ReferencedAttachmentStream? {
         sticker.attachmentStream
     }
-    private var attachmentPointer: ReferencedAttachmentTransitPointer? {
+    private var attachmentPointer: ReferencedAttachmentPointer? {
         sticker.attachmentPointer
     }
     private var stickerInfo: StickerInfo? {
@@ -94,14 +94,14 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         case .downloading(let attachmentPointer):
             configureForRendering(
                 attachmentPointer: attachmentPointer,
-                transitTierDownloadState: .enqueuedOrDownloading,
+                downloadState: .enqueuedOrDownloading,
                 stackView: stackView,
                 cellMeasurement: cellMeasurement
             )
-        case .failedOrPending(let attachmentPointer, let transitTierDownloadState):
+        case .failedOrPending(let attachmentPointer, let downloadState):
             configureForRendering(
                 attachmentPointer: attachmentPointer,
-                transitTierDownloadState: transitTierDownloadState,
+                downloadState: downloadState,
                 stackView: stackView,
                 cellMeasurement: cellMeasurement
             )
@@ -109,8 +109,8 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     }
 
     private func configureForRendering(
-        attachmentPointer: ReferencedAttachmentTransitPointer,
-        transitTierDownloadState: AttachmentDownloadState,
+        attachmentPointer: ReferencedAttachmentPointer,
+        downloadState: AttachmentDownloadState,
         stackView: ManualStackView,
         cellMeasurement: CVCellMeasurement
     ) {
@@ -127,7 +127,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         let progressView = CVAttachmentProgressView(
             direction: .download(
                 attachmentPointer: attachmentPointer.attachmentPointer,
-                transitTierDownloadState: transitTierDownloadState
+                downloadState: downloadState
             ),
             isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
             mediaCache: mediaCache

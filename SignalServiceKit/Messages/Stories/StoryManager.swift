@@ -240,7 +240,7 @@ public class StoryManager: NSObject {
     /// * We have not already exceeded the limit for how many unviewed stories we should download for this context
     private class func startAutomaticDownloadIfNecessary(for message: StoryMessage, transaction: SDSAnyWriteTransaction) {
 
-        let attachmentPointerToDownload: AttachmentTransitPointer?
+        let attachmentPointerToDownload: AttachmentPointer?
         switch message.attachment {
         case .media:
             let attachment = message.id.map { rowId in
@@ -254,7 +254,7 @@ public class StoryManager: NSObject {
                 // Already downloaded!
                 return
             } else {
-                attachmentPointerToDownload = attachment?.asTransitTierPointer()
+                attachmentPointerToDownload = attachment?.asAnyPointer()
             }
         case .text:
             // We always auto-download non-file story attachments, this will generally only be link preview thumbnails.
@@ -285,7 +285,7 @@ public class StoryManager: NSObject {
                 if attachment.attachment.asStream() != nil {
                     unviewedDownloadedStoriesForContext += 1
                 } else if
-                    let pointer = attachment.attachment.asTransitTierPointer(),
+                    let pointer = attachment.attachment.asAnyPointer(),
                     pointer.downloadState(tx: transaction.asV2Read) == .enqueuedOrDownloading
                 {
                     unviewedDownloadedStoriesForContext += 1

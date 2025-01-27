@@ -30,6 +30,20 @@ public class ReferencedAttachment {
         return .init(reference: reference, attachmentPointer: attachmentPointer)
     }
 
+    public var asReferencedBackupPointer: ReferencedAttachmentBackupPointer? {
+        guard let attachmentPointer = AttachmentBackupPointer(attachment: attachment) else {
+            return nil
+        }
+        return .init(reference: reference, attachmentPointer: attachmentPointer)
+    }
+
+    public var asReferencedAnyPointer: ReferencedAttachmentPointer? {
+        guard let attachmentPointer = AttachmentPointer(attachment: attachment) else {
+            return nil
+        }
+        return .init(reference: reference, attachmentPointer: attachmentPointer)
+    }
+
     public var asReferencedBackupThumbnail: ReferencedAttachmentBackupThumbnail? {
         guard let attachmentBackupThumbnail = AttachmentBackupThumbnail(attachment: attachment) else {
             return nil
@@ -51,6 +65,24 @@ public class ReferencedAttachmentTransitPointer: ReferencedAttachment {
     public let attachmentPointer: AttachmentTransitPointer
 
     public init(reference: AttachmentReference, attachmentPointer: AttachmentTransitPointer) {
+        self.attachmentPointer = attachmentPointer
+        super.init(reference: reference, attachment: attachmentPointer.attachment)
+    }
+}
+
+public class ReferencedAttachmentBackupPointer: ReferencedAttachment {
+    public let attachmentPointer: AttachmentBackupPointer
+
+    public init(reference: AttachmentReference, attachmentPointer: AttachmentBackupPointer) {
+        self.attachmentPointer = attachmentPointer
+        super.init(reference: reference, attachment: attachmentPointer.attachment)
+    }
+}
+
+public class ReferencedAttachmentPointer: ReferencedAttachment {
+    public let attachmentPointer: AttachmentPointer
+
+    public init(reference: AttachmentReference, attachmentPointer: AttachmentPointer) {
         self.attachmentPointer = attachmentPointer
         super.init(reference: reference, attachment: attachmentPointer.attachment)
     }

@@ -9,7 +9,7 @@ public import SignalUI
 enum ViewOnceState: Equatable {
     case unknown
     case incomingExpired
-    case incomingDownloading(attachmentPointer: AttachmentTransitPointer, renderingFlag: AttachmentReference.RenderingFlag)
+    case incomingDownloading(attachmentPointer: AttachmentPointer, renderingFlag: AttachmentReference.RenderingFlag)
     case incomingFailed
     case incomingPending
     case incomingAvailable(attachmentStream: AttachmentStream, renderingFlag: AttachmentReference.RenderingFlag)
@@ -127,7 +127,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
             let progressView = CVAttachmentProgressView(
                 direction: .download(
                     attachmentPointer: attachmentPointer,
-                    transitTierDownloadState: .enqueuedOrDownloading
+                    downloadState: .enqueuedOrDownloading
                 ),
                 diameter: iconSize,
                 isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,

@@ -583,8 +583,8 @@ public struct CVMediaAlbumItem: Equatable {
         switch attachment {
         case .stream:
             return false
-        case .pointer(_, let transitTierDownloadState):
-            return transitTierDownloadState == .failed
+        case .pointer(_, let downloadState):
+            return downloadState == .failed
         case .backupThumbnail:
             // TODO[Backups]: Check state of media tier download
             return false

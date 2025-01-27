@@ -12,7 +12,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
     public enum Direction {
         case upload(attachmentStream: AttachmentStream)
-        case download(attachmentPointer: AttachmentTransitPointer, transitTierDownloadState: AttachmentDownloadState)
+        case download(attachmentPointer: AttachmentPointer, downloadState: AttachmentDownloadState)
 
         var attachmentId: Attachment.IDType {
             switch self {
@@ -270,8 +270,8 @@ public class CVAttachmentProgressView: ManualLayoutView {
                 object: nil
             )
 
-        case .download(_, let transitTierDownloadState):
-            switch transitTierDownloadState {
+        case .download(_, let downloadState):
+            switch downloadState {
             case .failed:
                 stateView.state = .downloadFailed
             case .none:
@@ -391,8 +391,8 @@ public class CVAttachmentProgressView: ManualLayoutView {
     public enum ProgressType {
         case none
         case uploading(attachmentStream: AttachmentStream)
-        case pendingDownload(attachmentPointer: AttachmentTransitPointer)
-        case downloading(attachmentPointer: AttachmentTransitPointer, transitTierDownloadState: AttachmentDownloadState)
+        case pendingDownload(attachmentPointer: AttachmentPointer)
+        case downloading(attachmentPointer: AttachmentPointer, downloadState: AttachmentDownloadState)
         case unknown
     }
 
@@ -424,14 +424,14 @@ public class CVAttachmentProgressView: ManualLayoutView {
                 owsFailDebug("Unexpected interaction: \(type(of: interaction))")
                 return .unknown
             }
-        case .pointer(let attachmentPointer, let transitTierDownloadState):
-            switch transitTierDownloadState {
+        case .pointer(let attachmentPointer, let downloadState):
+            switch downloadState {
             case .none:
                 return .pendingDownload(attachmentPointer: attachmentPointer.attachmentPointer)
             case .failed, .enqueuedOrDownloading:
                 return .downloading(
                     attachmentPointer: attachmentPointer.attachmentPointer,
-                    transitTierDownloadState: transitTierDownloadState
+                    downloadState: downloadState
                 )
             }
         }

@@ -278,7 +278,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     transaction: transaction
                 )
                 return build(displayableText: displayableText)
-            } else if oversizeTextAttachment.asTransitTierPointer() != nil {
+            } else if oversizeTextAttachment.asAnyPointer() != nil {
                 return .oversizeTextDownloading
             } else {
                 throw OWSAssertionError("Invalid oversizeTextAttachment.")

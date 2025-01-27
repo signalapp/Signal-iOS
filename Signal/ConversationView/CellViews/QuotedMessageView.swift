@@ -592,7 +592,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                         wrapper.addSubviewToCenterOnSuperviewWithDesiredSize(contentImageView)
                     }
                     return wrapper
-                } else if attachment.attachment.asStream() == nil, attachment.attachment.asTransitTierPointer() != nil {
+                } else if attachment.attachment.asStream() == nil, attachment.attachment.asAnyPointer() != nil {
                     let wrapper = ManualLayoutViewWithLayer(name: "thumbnailDownloadFailedWrapper")
                     wrapper.backgroundColor = configurator.highlightColor
 

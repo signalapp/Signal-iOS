@@ -54,7 +54,7 @@ class StoryThumbnailView: UIView {
                 let imageView = buildThumbnailImageView(stream: stream)
                 addSubview(imageView)
                 imageView.autoPinEdgesToSuperviewEdges()
-            } else if let pointer = attachment.attachment.asTransitTierPointer() {
+            } else if let pointer = attachment.attachment.asAnyPointer() {
                 let pointerView = UIView()
 
                 if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer) {
@@ -113,7 +113,7 @@ class StoryThumbnailView: UIView {
         }
     }
 
-    private func buildBlurHashImageViewIfAvailable(pointer: AttachmentTransitPointer) -> UIView? {
+    private func buildBlurHashImageViewIfAvailable(pointer: AttachmentPointer) -> UIView? {
         guard let blurHash = pointer.attachment.blurHash, let blurHashImage = BlurHash.image(for: blurHash) else {
             return nil
         }

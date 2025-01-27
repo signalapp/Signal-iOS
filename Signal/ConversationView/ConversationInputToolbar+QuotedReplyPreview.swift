@@ -461,7 +461,7 @@ private class QuotedMessageSnippetView: UIView {
             }
 
             quotedAttachmentView = contentImageView
-        } else if attachment.asTransitTierPointer() != nil {
+        } else if attachment.asAnyPointer() != nil {
             let contentImageView = buildImageView(image: UIImage(imageLiteralResourceName: "refresh"))
             contentImageView.contentMode = .scaleAspectFit
             contentImageView.tintColor = .white

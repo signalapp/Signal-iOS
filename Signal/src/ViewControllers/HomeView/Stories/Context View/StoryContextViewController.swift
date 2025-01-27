@@ -353,12 +353,12 @@ class StoryContextViewController: OWSViewController {
             owsFailDebug("Missing attachment for StoryMessage with timestamp \(message.timestamp)")
             return nil
         }
-        if attachment.attachment.asStream() == nil, let attachmentPointer = attachment.attachment.asTransitTierPointer() {
-            let transitTierDownloadState = attachmentPointer.downloadState(tx: transaction.asV2Read)
+        if attachment.attachment.asStream() == nil, let attachmentPointer = attachment.attachment.asAnyPointer() {
+            let downloadState = attachmentPointer.downloadState(tx: transaction.asV2Read)
             let pointer = StoryItem.Attachment.Pointer(
                 reference: attachment.reference,
                 attachment: attachmentPointer,
-                transitTierDownloadState: transitTierDownloadState
+                downloadState: downloadState
             )
             return StoryItem(
                 message: message,

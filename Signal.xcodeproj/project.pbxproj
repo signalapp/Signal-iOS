@@ -1113,6 +1113,8 @@
 		66C2B1562A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */; };
 		66C343D62C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C343D52C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift */; };
 		66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */; };
+		66C38A3A2D4055DC004B6B15 /* AttachmentBackupPointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C38A392D4055D7004B6B15 /* AttachmentBackupPointer.swift */; };
+		66C38A3C2D405A23004B6B15 /* AttachmentPointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C38A3B2D405A19004B6B15 /* AttachmentPointer.swift */; };
 		66C59CED2D28AB060007B874 /* SVRKeyDeriverMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C59CEC2D28AB010007B874 /* SVRKeyDeriverMock.swift */; };
 		66C7952D2C9B78E900C13937 /* BackupAttachmentUploadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */; };
 		66C795302C9B83A200C13937 /* BackupAttachmentUploadStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C7952E2C9B837500C13937 /* BackupAttachmentUploadStoreTests.swift */; };
@@ -4910,6 +4912,8 @@
 		66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailedStorySendDisplayController.swift; sourceTree = "<group>"; };
 		66C343D52C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DraftQuotedReplyModel+ForSending.swift"; sourceTree = "<group>"; };
 		66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferProgressViewController.swift; sourceTree = "<group>"; };
+		66C38A392D4055D7004B6B15 /* AttachmentBackupPointer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentBackupPointer.swift; sourceTree = "<group>"; };
+		66C38A3B2D405A19004B6B15 /* AttachmentPointer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentPointer.swift; sourceTree = "<group>"; };
 		66C59CEC2D28AB010007B874 /* SVRKeyDeriverMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRKeyDeriverMock.swift; sourceTree = "<group>"; };
 		66C7952C2C9B78E200C13937 /* BackupAttachmentUploadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadStore.swift; sourceTree = "<group>"; };
 		66C7952E2C9B837500C13937 /* BackupAttachmentUploadStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentUploadStoreTests.swift; sourceTree = "<group>"; };
@@ -9766,7 +9770,9 @@
 				66B78E042BE5AACB0022580E /* ViewOnce */,
 				66D7B91C2B97C5330005C98B /* Attachment+ContentType.swift */,
 				66E1AD752B8FD0B700C56B7B /* Attachment.swift */,
+				66C38A392D4055D7004B6B15 /* AttachmentBackupPointer.swift */,
 				C1FE1F602C80CDC30031860B /* AttachmentBackupThumbnail.swift */,
+				66C38A3B2D405A19004B6B15 /* AttachmentPointer.swift */,
 				66D7B9062B928BD50005C98B /* AttachmentStream.swift */,
 				66D7B92A2B97E5990005C98B /* AttachmentTransitPointer.swift */,
 			);
@@ -16933,6 +16939,7 @@
 				6640132C2BFFB8F500F10FC4 /* Attachment+ConstructionParams.swift in Sources */,
 				66D7B91D2B97C5330005C98B /* Attachment+ContentType.swift in Sources */,
 				66E1AD762B8FD0B700C56B7B /* Attachment.swift in Sources */,
+				66C38A3A2D4055DC004B6B15 /* AttachmentBackupPointer.swift in Sources */,
 				C1FE1F612C80CDC30031860B /* AttachmentBackupThumbnail.swift in Sources */,
 				661BFE002C07C5F30065435B /* AttachmentContentValidator.swift in Sources */,
 				661BFE022C07C6670065435B /* AttachmentContentValidatorImpl.swift in Sources */,
@@ -16949,6 +16956,7 @@
 				66D7B8FF2B9287F00005C98B /* AttachmentManager.swift in Sources */,
 				66D7B9012B92889E0005C98B /* AttachmentManagerImpl.swift in Sources */,
 				66D7B9032B928AE10005C98B /* AttachmentManagerMock.swift in Sources */,
+				66C38A3C2D405A23004B6B15 /* AttachmentPointer.swift in Sources */,
 				66144B3D2BFD22FA00E2C9CD /* AttachmentRecord.swift in Sources */,
 				6640132E2BFFDC2700F10FC4 /* AttachmentReference+ConstructionParams.swift in Sources */,
 				66E1AD832B8FDE2D00C56B7B /* AttachmentReference+Owner.swift in Sources */,

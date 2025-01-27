@@ -65,13 +65,13 @@ public extension TSMessage {
         return self.body?.nilIfEmpty
     }
 
-    func failedAttachments(transaction: SDSAnyReadTransaction) -> [AttachmentTransitPointer] {
+    func failedAttachments(transaction: SDSAnyReadTransaction) -> [AttachmentPointer] {
         let attachments: [Attachment] = allAttachments(transaction: transaction)
         let states: [AttachmentDownloadState] = [.failed]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states), tx: transaction)
     }
 
-    func failedOrPendingAttachments(transaction: SDSAnyReadTransaction) -> [AttachmentTransitPointer] {
+    func failedOrPendingAttachments(transaction: SDSAnyReadTransaction) -> [AttachmentPointer] {
         let attachments: [Attachment] = allAttachments(transaction: transaction)
         let states: [AttachmentDownloadState] = [.failed, .none]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states), tx: transaction)
@@ -81,11 +81,11 @@ public extension TSMessage {
         attachments: [Attachment],
         withStateIn states: Set<AttachmentDownloadState>,
         tx: SDSAnyReadTransaction
-    ) -> [AttachmentTransitPointer] {
-        return attachments.compactMap { attachment -> AttachmentTransitPointer? in
+    ) -> [AttachmentPointer] {
+        return attachments.compactMap { attachment -> AttachmentPointer? in
             guard
                 attachment.asStream() == nil,
-                let attachmentPointer = attachment.asTransitTierPointer()
+                let attachmentPointer = attachment.asAnyPointer()
             else {
                 return nil
             }

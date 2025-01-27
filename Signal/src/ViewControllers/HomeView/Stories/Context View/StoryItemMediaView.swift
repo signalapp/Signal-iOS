@@ -882,7 +882,7 @@ class StoryItemMediaView: UIView {
 
             let view = buildDownloadStateView(
                 for: pointer.attachment,
-                transitTierDownloadState: pointer.transitTierDownloadState
+                downloadState: pointer.downloadState
             )
             container.addSubview(view)
             view.autoPinEdgesToSuperviewEdges()
@@ -965,7 +965,7 @@ class StoryItemMediaView: UIView {
         return imageView
     }
 
-    private func buildBlurHashImageViewIfAvailable(pointer: AttachmentTransitPointer) -> UIView? {
+    private func buildBlurHashImageViewIfAvailable(pointer: AttachmentPointer) -> UIView? {
         guard
             let blurHash = pointer.attachment.blurHash,
             let blurHashImage = BlurHash.image(for: blurHash)
@@ -996,13 +996,13 @@ class StoryItemMediaView: UIView {
 
     private static let mediaCache = CVMediaCache()
     private func buildDownloadStateView(
-        for pointer: AttachmentTransitPointer,
-        transitTierDownloadState: AttachmentDownloadState
+        for pointer: AttachmentPointer,
+        downloadState: AttachmentDownloadState
     ) -> UIView {
         let progressView = CVAttachmentProgressView(
             direction: .download(
                 attachmentPointer: pointer,
-                transitTierDownloadState: transitTierDownloadState
+                downloadState: downloadState
             ),
             diameter: 56,
             isDarkThemeEnabled: true,
@@ -1030,15 +1030,15 @@ class StoryItem: NSObject {
     enum Attachment: Equatable {
         struct Pointer: Equatable {
             let reference: AttachmentReference
-            let attachment: AttachmentTransitPointer
-            let transitTierDownloadState: AttachmentDownloadState
+            let attachment: AttachmentPointer
+            let downloadState: AttachmentDownloadState
             var caption: String? { reference.storyMediaCaption?.text }
             var captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>] { reference.storyMediaCaption?.collapsedStyles ?? [] }
 
             static func == (lhs: StoryItem.Attachment.Pointer, rhs: StoryItem.Attachment.Pointer) -> Bool {
                 return lhs.attachment.id == rhs.attachment.id
                     && lhs.reference.hasSameOwner(as: rhs.reference)
-                    && lhs.transitTierDownloadState == rhs.transitTierDownloadState
+                    && lhs.downloadState == rhs.downloadState
             }
         }
 

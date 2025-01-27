@@ -15,7 +15,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     private let genericAttachment: CVComponentState.GenericAttachment
     private var attachment: ReferencedAttachment { genericAttachment.attachment.attachment }
     private var attachmentStream: AttachmentStream? { genericAttachment.attachmentStream }
-    private var attachmentPointer: AttachmentTransitPointer? { genericAttachment.attachmentPointer }
+    private var attachmentPointer: AttachmentPointer? { genericAttachment.attachmentPointer }
 
     init(itemModel: CVItemModel, genericAttachment: CVComponentState.GenericAttachment) {
         self.genericAttachment = genericAttachment
@@ -160,7 +160,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         if let attachmentPointer = genericAttachment.attachmentPointer {
             var textComponents = [String]()
 
-            if let byteCount = attachmentPointer.info.unencryptedByteCount, byteCount > 0 {
+            if let byteCount = attachmentPointer.unencryptedByteCount, byteCount > 0 {
                 textComponents.append(OWSFormat.localizedFileSizeString(from: Int64(byteCount)))
             }
 
@@ -223,12 +223,12 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         case .pendingDownload(let attachmentPointer):
             direction = .download(
                 attachmentPointer: attachmentPointer,
-                transitTierDownloadState: .none
+                downloadState: .none
             )
-        case .downloading(let attachmentPointer, let transitTierDownloadState):
+        case .downloading(let attachmentPointer, let downloadState):
             direction = .download(
                 attachmentPointer: attachmentPointer,
-                transitTierDownloadState: transitTierDownloadState
+                downloadState: downloadState
             )
         case .unknown:
             owsFailDebug("Unknown progress type.")
@@ -345,8 +345,8 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             case .default:
                 showShareUI(from: componentView.rootView)
             }
-        case .pointer(_, let transitTierDownloadState):
-            switch transitTierDownloadState {
+        case .pointer(_, let downloadState):
+            switch downloadState {
             case .failed, .none:
                 guard let message = renderItem.interaction as? TSMessage else {
                     owsFailDebug("Invalid interaction.")

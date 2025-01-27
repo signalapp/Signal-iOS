@@ -9,7 +9,7 @@ import SignalUI
 
 public enum CVAttachment: Equatable {
     case stream(ReferencedAttachmentStream)
-    case pointer(ReferencedAttachmentTransitPointer, transitTierDownloadState: AttachmentDownloadState)
+    case pointer(ReferencedAttachmentPointer, downloadState: AttachmentDownloadState)
     case backupThumbnail(ReferencedAttachmentBackupThumbnail)
 
     public var attachment: ReferencedAttachment {
@@ -32,7 +32,7 @@ public enum CVAttachment: Equatable {
         }
     }
 
-    public var attachmentPointer: AttachmentTransitPointer? {
+    public var attachmentPointer: AttachmentPointer? {
         switch self {
         case .stream, .backupThumbnail:
             return nil
@@ -53,8 +53,8 @@ public enum CVAttachment: Equatable {
     public static func from(_ attachment: ReferencedAttachment, tx: SDSAnyReadTransaction) -> CVAttachment? {
         if let stream = attachment.asReferencedStream {
             return .stream(stream)
-        } else if let pointer = attachment.asReferencedTransitPointer {
-            return .pointer(pointer, transitTierDownloadState: pointer.attachmentPointer.downloadState(tx: tx.asV2Read))
+        } else if let pointer = attachment.asReferencedAnyPointer {
+            return .pointer(pointer, downloadState: pointer.attachmentPointer.downloadState(tx: tx.asV2Read))
         } else if let thumbnail = attachment.asReferencedBackupThumbnail {
             return .backupThumbnail(thumbnail)
         } else {
@@ -158,7 +158,7 @@ public class CVComponentState: Equatable {
             attachment.attachmentStream
         }
 
-        var attachmentPointer: AttachmentTransitPointer? {
+        var attachmentPointer: AttachmentPointer? {
             attachment.attachmentPointer
         }
 
@@ -221,10 +221,10 @@ public class CVComponentState: Equatable {
             stickerMetadata: any StickerMetadata,
             attachmentStream: ReferencedAttachmentStream
         )
-        case downloading(attachmentPointer: ReferencedAttachmentTransitPointer)
+        case downloading(attachmentPointer: ReferencedAttachmentPointer)
         case failedOrPending(
-            attachmentPointer: ReferencedAttachmentTransitPointer,
-            transitTierDownloadState: AttachmentDownloadState
+            attachmentPointer: ReferencedAttachmentPointer,
+            downloadState: AttachmentDownloadState
         )
 
         public var stickerMetadata: (any StickerMetadata)? {
@@ -245,7 +245,7 @@ public class CVComponentState: Equatable {
                 return nil
             }
         }
-        public var attachmentPointer: ReferencedAttachmentTransitPointer? {
+        public var attachmentPointer: ReferencedAttachmentPointer? {
             switch self {
             case .available:
                 return nil
@@ -404,7 +404,7 @@ public class CVComponentState: Equatable {
     let bottomButtons: BottomButtons?
 
     struct FailedOrPendingDownloads: Equatable {
-        let attachmentPointers: [AttachmentTransitPointer]
+        let attachmentPointers: [AttachmentPointer]
 
         static func == (lhs: CVComponentState.FailedOrPendingDownloads, rhs: CVComponentState.FailedOrPendingDownloads) -> Bool {
             return lhs.attachmentPointers.map(\.id) == rhs.attachmentPointers.map(\.id)
@@ -1050,7 +1050,7 @@ fileprivate extension CVComponentState.Builder {
                 for attachment in bodyAttachments {
                     guard
                         attachment.attachment.asStream() == nil,
-                        let pointer = attachment.attachment.asTransitTierPointer()
+                        let pointer = attachment.attachment.asAnyPointer()
                     else {
                         continue
                     }
@@ -1173,7 +1173,7 @@ fileprivate extension CVComponentState.Builder {
                         renderingFlag: renderingFlag
                     ))
                 }
-            } else if let attachmentPointer = mediaAttachment.attachment.asTransitTierPointer() {
+            } else if let attachmentPointer = mediaAttachment.attachment.asAnyPointer() {
                 switch attachmentPointer.downloadState(tx: transaction.asV2Read) {
                 case .enqueuedOrDownloading:
                     return buildViewOnce(viewOnceState: .incomingDownloading(
@@ -1282,7 +1282,7 @@ fileprivate extension CVComponentState.Builder {
                 attachmentStream: attachmentStream
             )
             return build()
-        } else if let attachmentPointer = attachment.asReferencedTransitPointer {
+        } else if let attachmentPointer = attachment.asReferencedAnyPointer {
             let downloadState = attachmentPointer.attachmentPointer.downloadState(tx: transaction.asV2Read)
             switch downloadState {
             case .enqueuedOrDownloading:
@@ -1290,7 +1290,7 @@ fileprivate extension CVComponentState.Builder {
             case .failed, .none:
                 self.sticker = .failedOrPending(
                     attachmentPointer: attachmentPointer,
-                    transitTierDownloadState: downloadState
+                    downloadState: downloadState
                 )
             }
             return build()
@@ -1499,13 +1499,13 @@ fileprivate extension CVComponentState.Builder {
             )
         {
             self.audioAttachment = audioAttachment
-        } else if let attachmentPointer = attachment.asReferencedTransitPointer {
+        } else if let attachmentPointer = attachment.asReferencedAnyPointer {
             self.audioAttachment = AudioAttachment(
                 attachmentPointer: attachmentPointer,
                 owningMessage: interaction as? TSMessage,
                 metadata: nil,
                 receivedAtDate: interaction.receivedAtDate,
-                transitTierDownloadState: attachmentPointer.attachmentPointer.downloadState(tx: transaction.asV2Read)
+                downloadState: attachmentPointer.attachmentPointer.downloadState(tx: transaction.asV2Read)
             )
         } else {
             buildGenericAttachment()
