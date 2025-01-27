@@ -215,10 +215,37 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     ) {
         var didEnqueueAnyDownloads = false
         referencedAttachments.forEach { referencedAttachment in
+            let sourceToUse: QueuedAttachmentDownloadRecord.SourceType = {
+                let transitTierInfo = referencedAttachment.attachment.transitTierInfo
+                let mediaTierInfo = referencedAttachment.attachment.mediaTierInfo
+                guard
+                    let transitTierInfo,
+                    let mediaTierInfo
+                else {
+                    // If we don't have both there's nothing to decide
+                    return mediaTierInfo == nil ? .transitTier : .mediaTierFullsize
+                }
+                if
+                    mediaTierInfo.lastDownloadAttemptTimestamp == nil
+                {
+                    // If we've never tried media tier, always try that first.
+                    return .mediaTierFullsize
+                } else
+                    if transitTierInfo.lastDownloadAttemptTimestamp == nil
+                {
+                    // If we tried media tier and failed, try transit tier
+                    // next time.
+                    return .transitTier
+                } else {
+                    // If both have failed fall back to media tier.
+                    return .mediaTierFullsize
+                }
+            }()
+
             let downloadability = downloadabilityChecker.downloadability(
                 of: referencedAttachment.reference,
                 priority: priority,
-                source: .transitTier,
+                source: sourceToUse,
                 mimeType: referencedAttachment.attachment.mimeType,
                 tx: tx
             )
@@ -227,7 +254,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 didEnqueueAnyDownloads = true
                 try? attachmentDownloadStore.enqueueDownloadOfAttachment(
                     withId: referencedAttachment.reference.attachmentRowId,
-                    source: .transitTier,
+                    source: sourceToUse,
                     priority: priority,
                     tx: tx
                 )
