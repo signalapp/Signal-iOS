@@ -136,6 +136,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private let appContext: AppContext
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentUploadManager: AttachmentUploadManager
+    private let dateProvider: DateProvider
     private let db: any DB
     private let kvStore: KeyValueStore
     private let messageBackupManager: MessageBackupManager
@@ -147,6 +148,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         appContext: AppContext,
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadManager: AttachmentUploadManager,
+        dateProvider: @escaping DateProvider,
         db: any DB,
         messageBackupManager: MessageBackupManager,
         messagePipelineSupervisor: MessagePipelineSupervisor,
@@ -156,6 +158,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         self.appContext = appContext
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentUploadManager = attachmentUploadManager
+        self.dateProvider = dateProvider
         self.db = db
         self.kvStore = KeyValueStore(collection: "LinkAndSyncManagerImpl")
         self.messageBackupManager = messageBackupManager
@@ -410,18 +413,37 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private func _waitForDeviceToLink(
         tokenId: DeviceProvisioningTokenId
     ) async throws(PrimaryLinkNSyncError) -> Requests.WaitForDeviceToLinkResponse {
-        let response: HTTPResponse
-        do {
-            Logger.info("Waiting for device to link")
-            response = try await networkManager.asyncRequest(
-                Requests.waitForDeviceToLink(tokenId: tokenId),
-                canUseWebSocket: false
-            )
-            Logger.info("Device linked!")
-        } catch {
-            if error is CancellationError {
-                throw .cancelled(linkedDeviceId: nil)
+        Logger.info("Waiting for device to link")
+        let startDate = dateProvider()
+        var numNetworkErrors = 0
+        var response: HTTPResponse?
+        while dateProvider().timeIntervalSince(startDate) < Constants.waitForDeviceLinkTotalTimeout {
+            do {
+                response = try await networkManager.asyncRequest(
+                    Requests.waitForDeviceToLink(tokenId: tokenId),
+                    canUseWebSocket: false
+                )
+                if response?.responseStatusCode == Requests.WaitForDeviceToLinkResponseCodes.timeout.rawValue {
+                    // retry
+                    continue
+                }
+                Logger.info("Device linked!")
+                break
+            } catch {
+                if error is CancellationError {
+                    throw .cancelled(linkedDeviceId: nil)
+                }
+                if error .isNetworkFailureOrTimeout {
+                    numNetworkErrors += 1
+                    if numNetworkErrors <= 3 {
+                        // retry
+                        continue
+                    }
+                }
+                throw .errorWaitingForLinkedDevice
             }
+        }
+        guard let response else {
             throw .errorWaitingForLinkedDevice
         }
 
@@ -619,16 +641,35 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private func _waitForPrimaryToUploadBackup(
         auth: ChatServiceAuth
     ) async throws(SecondaryLinkNSyncError) -> Requests.ExportAndUploadBackupResult {
-        let response: HTTPResponse
-        do {
-            response = try await networkManager.asyncRequest(
-                Requests.waitForLinkNSyncBackupUpload(auth: auth),
-                canUseWebSocket: false
-            )
-        } catch {
-            if error is CancellationError {
-                throw SecondaryLinkNSyncError.cancelled
+        let startDate = dateProvider()
+        var numNetworkErrors = 0
+        var response: HTTPResponse?
+        while dateProvider().timeIntervalSince(startDate) < Constants.waitForBackupUploadTotalTimeout {
+            do {
+                response = try await networkManager.asyncRequest(
+                    Requests.waitForLinkNSyncBackupUpload(auth: auth),
+                    canUseWebSocket: false
+                )
+                if response?.responseStatusCode == Requests.WaitForLinkNSyncBackupUploadResponseCodes.timeout.rawValue {
+                    continue
+                }
+                break
+            } catch {
+                if error is CancellationError {
+                    throw SecondaryLinkNSyncError.cancelled
+                }
+
+                if error .isNetworkFailureOrTimeout {
+                    numNetworkErrors += 1
+                    if numNetworkErrors <= 3 {
+                        // retry
+                        continue
+                    }
+                }
+                throw SecondaryLinkNSyncError.networkError
             }
+        }
+        guard let response else {
             throw SecondaryLinkNSyncError.networkError
         }
 
@@ -724,8 +765,9 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
 
         static let enabledOnPrimaryKey = "enabledOnPrimaryKey"
 
-        static let waitForDeviceLinkTimeoutSeconds: UInt32 = FeatureFlags.linkAndSyncTimeoutSeconds
-        static let waitForBackupUploadTimeoutSeconds: UInt32 = FeatureFlags.linkAndSyncTimeoutSeconds
+        static let longPollRequestTimeoutSeconds: UInt32 = 10
+        static let waitForDeviceLinkTotalTimeout: TimeInterval = FeatureFlags.linkAndSyncTotalPrimaryTimeout
+        static let waitForBackupUploadTotalTimeout: TimeInterval = FeatureFlags.linkAndSyncTotalSecondaryTimeout
     }
 
     // MARK: -
@@ -757,7 +799,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             var urlComponents = URLComponents(string: "v1/devices/wait_for_linked_device/\(tokenId.id)")!
             urlComponents.queryItems = [URLQueryItem(
                 name: "timeout",
-                value: "\(LinkAndSyncManagerImpl.Constants.waitForDeviceLinkTimeoutSeconds)"
+                value: "\(LinkAndSyncManagerImpl.Constants.longPollRequestTimeoutSeconds)"
             )]
             let request = TSRequest(
                 url: urlComponents.url!,
@@ -767,7 +809,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             request.shouldHaveAuthorizationHeaders = true
             request.applyRedactionStrategy(.redactURLForSuccessResponses())
             // The timeout is server side; apply wiggle room for our local clock.
-            request.timeoutInterval = 30 + TimeInterval(Constants.waitForDeviceLinkTimeoutSeconds)
+            request.timeoutInterval = 10 + TimeInterval(Constants.longPollRequestTimeoutSeconds)
             return request
         }
 
@@ -834,7 +876,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             var urlComponents = URLComponents(string: "v1/devices/transfer_archive")!
             urlComponents.queryItems = [URLQueryItem(
                 name: "timeout",
-                value: "\(Constants.waitForBackupUploadTimeoutSeconds)"
+                value: "\(Constants.longPollRequestTimeoutSeconds)"
             )]
             let request = TSRequest(
                 url: urlComponents.url!,
@@ -845,7 +887,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             request.setAuth(auth)
             request.applyRedactionStrategy(.redactURLForSuccessResponses())
             // The timeout is server side; apply wiggle room for our local clock.
-            request.timeoutInterval = 30 + TimeInterval(Constants.waitForBackupUploadTimeoutSeconds)
+            request.timeoutInterval = 10 + TimeInterval(Constants.longPollRequestTimeoutSeconds)
             return request
         }
     }

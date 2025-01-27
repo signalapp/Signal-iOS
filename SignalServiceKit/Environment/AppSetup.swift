@@ -1225,6 +1225,7 @@ public class AppSetup {
             appContext: appContext,
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
+            dateProvider: dateProvider,
             db: db,
             messageBackupManager: messageBackupManager,
             messagePipelineSupervisor: messagePipelineSupervisor,
