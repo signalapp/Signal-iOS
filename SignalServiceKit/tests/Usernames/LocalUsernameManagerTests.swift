@@ -752,7 +752,7 @@ private extension Usernames.RemoteMutationResult<Void> {
 
 private extension OWSHTTPError {
     static var mockNetworkFailure: OWSHTTPError {
-        return .networkFailure
+        return .networkFailure(.genericFailure)
     }
 }
 

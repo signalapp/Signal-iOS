@@ -74,6 +74,8 @@ public enum Upload {
 
     public enum Error: Swift.Error, IsRetryableProvider, LocalizedError {
         case invalidUploadURL
+        case networkError
+        case networkTimeout
         case uploadFailure(recovery: FailureMode)
         case unsupportedEndpoint
         case unexpectedResponseStatusCode(Int)
@@ -81,7 +83,7 @@ public enum Upload {
 
         public var isRetryableProvider: Bool {
             switch self {
-            case .invalidUploadURL, .uploadFailure, .unsupportedEndpoint, .unexpectedResponseStatusCode, .unknown:
+            case .invalidUploadURL, .uploadFailure, .unsupportedEndpoint, .unexpectedResponseStatusCode, .networkTimeout, .networkError, .unknown:
                 return false
             }
         }

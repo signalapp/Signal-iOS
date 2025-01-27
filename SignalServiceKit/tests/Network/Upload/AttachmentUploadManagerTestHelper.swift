@@ -196,7 +196,7 @@ class AttachmentUploadManagerMockHelper {
             var statusCode = 200
             switch type {
             case .networkError:
-                throw OWSHTTPError.networkFailure
+                throw OWSHTTPError.networkFailure(.genericFailure)
             case .failure:
                 statusCode = 500
                 fallthrough // Use the same response code as success

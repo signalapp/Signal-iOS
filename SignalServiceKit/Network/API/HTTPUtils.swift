@@ -158,7 +158,7 @@ class HTTPUtils {
 
         switch responseStatus {
         case 0:
-            return .networkFailure
+            return .networkFailure(.invalidResponseStatus)
         case 429:
             let description = OWSLocalizedString("REGISTER_RATE_LIMITING_ERROR", comment: "")
             let recoverySuggestion = OWSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "")

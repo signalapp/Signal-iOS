@@ -44,9 +44,45 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
     case invalidRequest
     case wrappedFailure(any Error)
     // Request failed without a response from the service.
-    case networkFailure
+    case networkFailure(NetworkErrorType)
     // Request failed with a response from the service.
     case serviceResponse(serviceResponse: HTTPErrorServiceResponse)
+
+    public enum NetworkErrorType: Error, CustomDebugStringConvertible, IsRetryableProvider {
+        case invalidResponseStatus
+        case unknownNetworkFailure
+        case genericTimeout
+        case genericFailure
+        case wrappedFailure(any Error)
+
+        public var isTimeout: Bool {
+            switch self {
+            case .invalidResponseStatus, .unknownNetworkFailure, .genericFailure:
+                return false
+            case .genericTimeout:
+                return true
+            case .wrappedFailure(let wrappedError):
+                return wrappedError.isNetworkFailureOrTimeout
+            }
+        }
+
+        public var isRetryableProvider: Bool { true }
+
+        public var debugDescription: String {
+            switch self {
+            case .invalidResponseStatus: return "Invalid response status"
+            case .unknownNetworkFailure: return "Unknown network failure"
+            case .genericTimeout: return "Generic timeout"
+            case .genericFailure: return "Generic failure"
+            case .wrappedFailure(let wrappedError):
+                if wrappedError.isNetworkFailureOrTimeout {
+                    return "Timeout [Error: \(wrappedError.localizedDescription)]"
+                } else {
+                    return "Error: \(wrappedError.localizedDescription)"
+                }
+            }
+        }
+    }
 
     // The first 5 parameters are required (even if nil).
     // The custom parameters are optional.

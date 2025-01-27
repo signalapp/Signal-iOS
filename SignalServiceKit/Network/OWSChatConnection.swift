@@ -712,7 +712,7 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
 
         guard let currentWebSocket, currentWebSocket.state == .open else {
             Logger.warn("[\(requestId)]: Missing currentWebSocket.")
-            failure(.networkFailure)
+            failure(.networkFailure(.genericFailure))
             return
         }
 
@@ -1127,7 +1127,7 @@ private class RequestInfo {
 
     // Returns true if the message timed out.
     func timeoutIfNecessary() -> Bool {
-        return didFail(error: .networkFailure)
+        return didFail(error: .networkFailure(.genericTimeout))
     }
 
     func didFailInvalidRequest() {
@@ -1135,7 +1135,7 @@ private class RequestInfo {
     }
 
     func didFailDueToNetwork() {
-        didFail(error: .networkFailure)
+        didFail(error: .networkFailure(.genericFailure))
     }
 
     @discardableResult

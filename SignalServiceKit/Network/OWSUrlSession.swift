@@ -303,7 +303,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
     private func handleError(_ error: any Error, originalRequest: URLRequest?, requestConfig: RequestConfig) -> OWSHTTPError {
         if error.isNetworkFailureOrTimeout {
-            return .networkFailure
+            return .networkFailure(.wrappedFailure(error))
         }
 
 #if TESTABLE_BUILD
@@ -345,7 +345,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
                     )
                 } else {
                     owsFailDebug("Missing status code.")
-                    throw OWSHTTPError.networkFailure
+                    throw OWSHTTPError.networkFailure(.invalidResponseStatus)
                 }
             }
         }

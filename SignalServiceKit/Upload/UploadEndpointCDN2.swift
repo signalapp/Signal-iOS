@@ -149,7 +149,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
         startPoint: Int,
         attempt: Upload.Attempt<Metadata>,
         progress: OWSProgressSource?
-    ) async throws {
+    ) async throws(Upload.Error) {
         let totalDataLength = attempt.encryptedDataLength
         var headers = [String: String]()
         let fileUrl: URL
@@ -160,10 +160,18 @@ struct UploadEndpointCDN2: UploadEndpoint {
             fileUrl = attempt.fileUrl
         } else {
             // Resuming, slice attachment data in memory.
-            let (dataSliceFileUrl, dataSliceLength) = try fileSystem.createTempFileSlice(
-                url: attempt.fileUrl,
-                start: startPoint
-            )
+            let dataSliceFileUrl: URL
+            let dataSliceLength: Int
+            do {
+                (dataSliceFileUrl, dataSliceLength) = try fileSystem.createTempFileSlice(
+                    url: attempt.fileUrl,
+                    start: startPoint
+                )
+            } catch {
+                attempt.logger.warn("Failed to create temp file slice.")
+                throw Upload.Error.unknown
+            }
+
             fileUrl = dataSliceFileUrl
             fileToCleanup = dataSliceFileUrl
 
@@ -208,12 +216,21 @@ struct UploadEndpointCDN2: UploadEndpoint {
                 return .afterDelay(delay)
             }()
 
-            switch error.httpStatusCode {
-            case .some(500...599):
+            switch error {
+            case let error as OWSHTTPError where (500...599).contains(error.responseStatusCode):
                 // On 5XX errors, clients should try to resume the upload
                 attempt.logger.warn("Temporary upload failure, retry.")
                 // Check for any progress here
                 throw Upload.Error.uploadFailure(recovery: .resume(retryMode))
+            case OWSHTTPError.networkFailure(let wrappedError):
+                let debugMessage = DebugFlags.internalLogging ? " Error: \(wrappedError.debugDescription)" : ""
+                if wrappedError.isTimeout {
+                    attempt.logger.warn("Network timeout during upload.\(debugMessage)")
+                    throw Upload.Error.networkTimeout
+                } else {
+                    attempt.logger.warn("Network failure during upload.\(debugMessage)")
+                    throw Upload.Error.networkError
+                }
             default:
                 attempt.logger.warn("Unknown upload failure.")
                 throw Upload.Error.unknown

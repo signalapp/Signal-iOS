@@ -32,7 +32,7 @@ protocol UploadEndpoint {
         startPoint: Int,
         attempt: Upload.Attempt<Metadata>,
         progress: OWSProgressSource?
-    ) async throws
+    ) async throws(Upload.Error)
 }
 
 extension Upload {

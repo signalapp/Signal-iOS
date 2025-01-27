@@ -79,7 +79,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
         startPoint: Int,
         attempt: Upload.Attempt<Metadata>,
         progress: OWSProgressSource?
-    ) async throws {
+    ) async throws(Upload.Error) {
         let urlSession = signalService.urlSessionForCdn(cdnNumber: uploadForm.cdnNumber, maxResponseSize: nil)
         let totalDataLength = attempt.encryptedDataLength
 
@@ -109,10 +109,17 @@ struct UploadEndpointCDN3: UploadEndpoint {
         } else {
             // Resuming, slice attachment data in memory.
             // TODO[CDN3]: Avoid slicing file and instead use a input stream
-            let (dataSliceFileUrl, dataSliceLength) = try fileSystem.createTempFileSlice(
-                url: attempt.fileUrl,
-                start: startPoint
-            )
+            let dataSliceFileUrl: URL
+            let dataSliceLength: Int
+            do {
+                (dataSliceFileUrl, dataSliceLength) = try fileSystem.createTempFileSlice(
+                    url: attempt.fileUrl,
+                    start: startPoint
+                )
+            } catch {
+                attempt.logger.warn("Failed to create temp file slice.")
+                throw Upload.Error.unknown
+            }
 
             uploadURL = attempt.uploadLocation.absoluteString + "/" + uploadForm.cdnKey
 
@@ -149,14 +156,8 @@ struct UploadEndpointCDN3: UploadEndpoint {
                 throw Upload.Error.unexpectedResponseStatusCode(response.responseStatusCode)
             }
         } catch let error as Upload.Error {
-            switch error {
-            case .unexpectedResponseStatusCode(let statusCode):
-                attempt.logger.warn("Unexpected response status code: \(statusCode)")
-                throw Upload.Error.unknown
-            case .invalidUploadURL, .unknown, .unsupportedEndpoint, .uploadFailure:
-                attempt.logger.warn("Unexpected upload error")
-                throw error
-            }
+            // rethrow the error to be handled by the caller
+            throw error
         } catch let error as OWSHTTPError {
             let retryMode: Upload.FailureMode.RetryMode = {
                 guard
@@ -176,28 +177,30 @@ struct UploadEndpointCDN3: UploadEndpoint {
                 debugInfo = ""
             }
 
-            switch error.httpStatusCode {
-            case .some(415):
+            switch error {
+            case let error where error.httpStatusCode == 415:
                 // 415 is a checksum error, log the error and retry
                 attempt.logger.warn("Upload checksum validation failed, retry.\(debugInfo)")
                 throw Upload.Error.uploadFailure(recovery: .restart(retryMode))
-            case .some(400...499):
+            case let error where (400...499).contains(error.responseStatusCode):
                 // On 4XX errors, clients should restart the upload
                 attempt.logger.warn("Unexpected upload failure, restart.\(debugInfo)")
                 throw Upload.Error.uploadFailure(recovery: .restart(retryMode))
-            case .some(500...599):
+            case let error where (500...599).contains(error.responseStatusCode):
                 // On 5XX errors, clients should try to resume the upload
                 attempt.logger.warn("Temporary upload failure, retry.\(debugInfo)")
                 throw Upload.Error.uploadFailure(recovery: .resume(retryMode))
-            case .some(let httpStatusCode):
-                attempt.logger.warn("Unknown upload failure. (HTTP status code: \(httpStatusCode)) \(debugInfo)")
-                throw Upload.Error.unknown
-            default:
-                if DebugFlags.internalLogging {
-                    attempt.logger.warn("Unknown network failure during upload. \(debugInfo) Error: \(error)")
+            case .networkFailure(let wrappedError):
+                let debugMessage = DebugFlags.internalLogging ? " Error: \(wrappedError.debugDescription)" : ""
+                if wrappedError.isTimeout {
+                    attempt.logger.warn("Network timeout during upload.\(debugMessage)")
+                    throw Upload.Error.networkTimeout
                 } else {
-                    attempt.logger.warn("Unknown network failure during upload. \(debugInfo)")
+                    attempt.logger.warn("Network failure during upload.\(debugMessage)")
+                    throw Upload.Error.networkError
                 }
+            default:
+                attempt.logger.warn("Unknown upload failure. (HTTP status code: \(error.responseStatusCode)) \(debugInfo)")
                 throw Upload.Error.unknown
             }
         } catch _ as CancellationError {

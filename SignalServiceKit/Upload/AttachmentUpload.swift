@@ -162,13 +162,14 @@ public struct AttachmentUpload {
             var failureMode: Upload.FailureMode = .noMoreRetries
             var latestUploadProgress: Upload.ResumeProgress?
             var latestUploadProgressBytes: UInt32 = UInt32(truncatingIfNeeded: internalProgress.completedUnitCount)
-            if case Upload.Error.uploadFailure(let retryMode) = error {
+            let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count)
+            switch error {
+            case .uploadFailure(let retryMode):
                 // if a failure mode was passed back
                 failureMode = retryMode
-            } else {
+            case .networkTimeout:
                 // if this isn't an understood error, map into a failure mode
                 // fetch the progress to determine if we've made progress.
-                let backoff = OWSOperation.retryIntervalForExponentialBackoff(failureCount: count)
                 latestUploadProgress = try? await getResumableUploadProgress(attempt: attempt)
                 switch latestUploadProgress {
                 case .complete:
@@ -184,6 +185,11 @@ public struct AttachmentUpload {
                     latestUploadProgressBytes = UInt32(truncatingIfNeeded: remoteBytesCount)
                     failureMode = .resume(.afterDelay(backoff))
                 }
+            case .networkError:
+                failureMode = .resume(.afterDelay(backoff))
+            case .invalidUploadURL, .unsupportedEndpoint, .unexpectedResponseStatusCode, .unknown:
+                // These errors are unrecoverable, so restart the upload in hopes of correcting the issue.
+                failureMode = .restart(.afterDelay(backoff))
             }
 
             let didUploadMakeProgress = latestUploadProgressBytes > bytesAlreadyUploaded
