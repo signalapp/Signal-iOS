@@ -83,7 +83,7 @@
 "ACTION_VOICE_CALL" = "Виклик у Signal";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Додати учасників";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Додавання учасників";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Поділитися профілем з групою?";
@@ -101,7 +101,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Додати користувача %1$@ в «%2$@»?";
 
 /* The title on the 'add to group' confirmation action sheet. */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Додати нового учасника";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Додавання нового учасника";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
 "ADD_TO_GROUP_ALREADY_A_MEMBER" = "Уже в цій групі";
@@ -1514,7 +1514,7 @@
 "CONVERSATION_SETTINGS" = "Налаштування чату";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Додати учасників";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Додати";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Додати до наявного контакту";
@@ -2576,7 +2576,7 @@
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Фото не підходить.";
 
 /* The title for the 'update group' button. */
-"EDIT_GROUP_UPDATE_BUTTON" = "Оновити";
+"EDIT_GROUP_UPDATE_BUTTON" = "Додати";
 
 /* The alert message if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Зберегти зміни інформації про цю групу?";
@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Завершіть зв'язування";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Буде перенесено всі текстові повідомлення і медіафайли за минулі 45 днів";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Перенести історію повідомлень";
@@ -4061,7 +4061,7 @@
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Завершіть зв'язування на іншому пристрої";
 
 /* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Завантаження: %1$@ з %2$@ (%3$@)…";
 
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
 "LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Продовжити без перенесення";
@@ -4070,7 +4070,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Новий пристрій зв'язано, але нам не вдалося перенести ваші повідомлення.";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Ваші повідомлення не вдалося перенести на зв'язаний пристрій. Ви можете ще раз спробувати зв'язати пристрій і перенести дані або продовжити без перенесення історії повідомлень.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Повідомлення не синхронізовано";
@@ -4169,7 +4169,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Підготовка до завантаження…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
+"LINKING_SYNCING_TIMING_INFO" = "Синхронізація може тривати кілька хвилин";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Не закривайте Signal.";
@@ -4199,7 +4199,7 @@
 "LOCATION_PICKER_TITLE" = "Обрати місце";
 
 /* Title for the 'logging' help section. */
-"LOGGING_SECTION" = "Реєстрація помилок";
+"LOGGING_SECTION" = "Збір помилок";
 
 /* Footer for the 'logging' help section. */
 "LOGGING_SECTION_FOOTER" = "Журнали налагодження можуть допомогти фахівцям Signal усунути помилки та збої.";

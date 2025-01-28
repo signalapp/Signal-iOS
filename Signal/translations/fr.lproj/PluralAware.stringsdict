@@ -296,9 +296,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Cette couleur est utilisée dans 1%1$dconversation. Voulez-vous enregistrer les changements pour toutes les conversations ?</string>
+			<string>Cette couleur est appliquée à %1$d conversation. Voulez-vous l&apos;appliquer à toutes les conversations ?</string>
 			<key>other</key>
-			<string>Cette couleur est utilisée dans %1$d conversations. Voulez-vous enregistrer les changements pour toutes les conversations ?</string>
+			<string>Cette couleur est appliquée à %1$d conversations. Voulez-vous l&apos;appliquer à toutes les conversations ?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -419,9 +419,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$dm</string>
+			<string>%1$d min</string>
 			<key>other</key>
-			<string>%1$dm</string>
+			<string>%1$d min</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -547,9 +547,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>appelle %2$@, %3$@ et %1$d autre contact…</string>
+			<string>Signal sonne chez %2$@, %3$@ et %1$d autre…</string>
 			<key>other</key>
-			<string>appelle %2$@, %3$@ et %1$d autres contacts…</string>
+			<string>Signal sonne chez %2$@, %3$@ et %1$d autres…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_OTHERS_HERE</key>
@@ -947,9 +947,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vous ne pouvez pas partager plus d&apos;1 élément.</string>
+			<string>Vous ne pouvez partager qu&apos;un seul élément.</string>
 			<key>other</key>
-			<string>Vous ne pouvez pas partager plus de %1$d éléments.</string>
+			<string>Vous ne pouvez pas partager plus de %1$d éléments.</string>
 		</dict>
 	</dict>
 	<key>INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_BODY_%d</key>

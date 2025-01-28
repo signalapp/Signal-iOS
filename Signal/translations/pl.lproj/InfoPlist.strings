@@ -5,5 +5,5 @@ NSFaceIDUsageDescription = "Blokada ekranu Signal wykorzystuje funkcję Face ID.
 NSLocationWhenInUseUsageDescription = "Aby udostępnić, gdzie obecnie się znajdujesz, Signal potrzebuje dostępu do Twojej lokalizacji.";
 NSMicrophoneUsageDescription = "Aby wykonywać i odbierać połączenia oraz nagrywać wiadomości głosowe, Signal potrzebuje dostępu do mikrofonu.";
 NSPhotoLibraryAddUsageDescription = "Signal będzie zapisywać zdjęcia w Twojej bibliotece.";
-NSPhotoLibraryUsageDescription = "Signal pozwoli Ci wybrać, które zdjęcia z biblioteki chcesz wysłać.";
+NSPhotoLibraryUsageDescription = "Możesz wybrać, które zdjęcia z biblioteki chcesz wysłać.";
 NSLocalNetworkUsageDescription = "Gdy Signal korzysta z sieci lokalnej, możesz przenieść swoje konto bezpośrednio na nowy telefon. Ta sieć nie zostanie użyta, jeśli samodzielnie nie rozpoczniesz przenoszenia konta na nowe urządzenie.";

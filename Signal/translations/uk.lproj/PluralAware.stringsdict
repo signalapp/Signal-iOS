@@ -108,13 +108,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Додати нового учасника</string>
+			<string>Додавання нового учасника</string>
 			<key>few</key>
-			<string>Додати нових учасників</string>
+			<string>Додавання нових учасників</string>
 			<key>many</key>
-			<string>Додати нових учасників</string>
+			<string>Додавання нових учасників</string>
 			<key>other</key>
-			<string>Додати нових учасників</string>
+			<string>Додавання нових учасників</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>

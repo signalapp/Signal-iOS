@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "إنهاء الارتباط";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "انقل رسائلك النصية وآخر 45 يومًا من الوسائط.";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "نقل سجلّ الرسائل";
@@ -4061,7 +4061,7 @@
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "استكمِل إنهاء الربط على جهازك الآخر.";
 
 /* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "جارٍ تنزيل %1$@ من أصل %2$@ (%3$@)…";
 
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
 "LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "المواصلة دون النقل";
@@ -4070,7 +4070,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "تمَّ ربط جهازك بنجاح، لكن تعذَّر نقل رسائلك.";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "تعذَّر نقل رسائلك إلى جهازك المُرتبِط. يُمكنك محاولة الربط والنقل مُجدَّدًا، أو المواصلة دون نقل سِجل رسائلك.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "فشلت مزامنة الرسالة";
@@ -4169,7 +4169,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "جارٍ الإعداد للتنزيل…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
+"LINKING_SYNCING_TIMING_INFO" = "قد يستغرق هذا بعض دقائق.";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "لا تغلق التطبيق.";
@@ -4751,7 +4751,7 @@
 "NEW_CALL_TITLE" = "مكالمة جديدة";
 
 /* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "الاتصال بالفيديو";
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "مكالمة فيديو";
 
 /* Title for a long-press context menu action to start a voice call, triggered from a recipient in the New Call contact picker */
 "NEW_CALL_VOICE_CALL_ACTION_TITLE" = "مكالمة صوتية";
@@ -4802,7 +4802,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "اختيار مجموعة";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "العثور برقم الهاتف";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "إيجاد بحسب رقم الهاتف";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "أضِف اسمًا للقصة";
@@ -4874,7 +4874,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "اعثر على جهات الاتصال بحسب رقم الهاتف";
 
 /* Label for a button that lets users search for contacts by username */
-"NO_CONTACTS_SEARCH_BY_USERNAME" = "البحث على جهات الاتصال باسم المستخدم";
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "البحث عن جهات الاتصال بحسب اسم المُستخدِم";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "لا توجد مجموعات مُشتركة";
@@ -5042,7 +5042,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "رقم PIN غير صحيح";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "لقد نَفذَت جميع مُحاولات تخمين رقم التعريف الشخصي، لكن يُمكنك الوصول إلى حساب سيجنال الخاص بِكَ عبر التحقق من رقم هاتفك. للحفاظ على خصوصيتك وأمانك سَيُستعاد حسابك من غير أي معلومات حساب شخصي أو إعدادات محفوظة مُسبقًا.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "نَفَدت جميع مُحاولات تخمين رقم التعريف الشخصي (PIN)، لكن مازال بإمكانك الوصول إلى حساب سيجنال الخاص بِكَ عبر التحقُّق من رقم هاتفك. للحفاظ على خصوصيتك وأمانك، سَيُستعاد حسابك من غير أي معلومات حساب شخصي أو إعدادات محفوظة مُسبقًا.";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "استعادة أو نقل الحساب";
@@ -5066,13 +5066,13 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "جارٍ التحقُّق من الكود…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "يُرجى التأكد من أن هاتفك يلتقط الإشارة الخلوية لِتلقي الرسائل القصيرة أو المكالمات";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "تأكَّد من أن هاتفك يلتقط الإشارة الخلوية لِتلقي الرسائل القصيرة أو المكالمات.";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "يُرجى التأكد من أنه يُمكنك تلقي مكالمة هاتفية في هذا الرقم";
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "قُم بتأكيد أنه يُمكنك تلقّي مكالمة هاتفية على هذا الرقم";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "تحقّق من إدخال رقم هاتفك بشكل صحيح.";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "تحقَّق من إدخال رقم هاتفك بشكلٍ صحيح.";
 
 /* Label for a button to get help entering a verification code when registering. */
 "ONBOARDING_VERIFICATION_HELP_LINK" = "هل تواجه مشكلة في التسجيل؟";
@@ -5189,46 +5189,46 @@
 "PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "غير متوفر";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "تعذّر الوصول إلى المُصادقة.";
+"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "تعذَّر الوصول إلى المُصادقة.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
 "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "فشلت المُصادَقة.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "عدد كبير من مُحاولات المُصادقة فاشل. يُرجى إعادة المُحاولة في وقت لاحق.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "عدد كبير من مُحاولات المُصادقة الفاشلة. حاوِل في وقتٍ لاحق.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "يَجب عليك تمكين رمز المرور في إعدادات الـ iOS الخاصة بك لاستخدام قفل عمليات الدفع.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "يَجب عليك تمكين رمز المرور في إعدادات iOS على جهازك لتكون قادرًا على استخدام قفل عمليات الدفع.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "يَجب عليك تمكين رمز المرور في إعدادات الـ iOS الخاصة بك لاستخدام قفل عمليات الدفع.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "يَجب عليك تمكين رمز المرور في إعدادات iOS على جهازك لتكون قادرًا على استخدام قفل عمليات الدفع.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "يَجب عليك تمكين رمز المرور في إعدادات الـ iOS الخاصة بك لاستخدام قفل عمليات الدفع.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "يَجب عليك تمكين رمز المرور في إعدادات iOS على جهازك لتكون قادرًا على استخدام قفل عمليات الدفع.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "أَضف طبقة أمان إضافية واِشترط رمز المرور أو التعرّف على الوجه لإرسال المبالغ";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "أَضِف طبقة أمان إضافية واِشترِط رمز المرور أو بصمة الإصبع (Touch ID) لإرسال المبالغ.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "أَضف طبقة أمان إضافية واِشترط تقنية التعرّف على الوجه لإرسال المبالغ.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "أَضِف طبقة أمان إضافية واِشترِط تقنية التعرُّف على الوجه (Face ID) لإرسال المبالغ.";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "أَضِف طبقة أمان إضافية واشترِط استخدام Optic ID لإرسال المبالغ.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "أَضف طبقة أمان إضافية واِشترط رمز المرور لإرسال المبالغ.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "أَضِف طبقة أمان إضافية واِشترط رمز المرور لإرسال المبالغ.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "أَضف طبقة أمان إضافية واِشترط بصمة الأصبع لإرسال المبالغ.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "أَضف طبقة أمان إضافية واِشترط بصمة الأصبع (Touch ID) لإرسال المبالغ.";
 
 /* First time payments suggest payments lock title */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "هل تريد تفعيل قفل عملية الدفع للعمليات المُستقبلية؟";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "اِشترط رمز المرور الخاص بك أو بصمة الأصبع للإرسال";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "اِشترط رمز المرور الخاص بك أو بصمة الأصبع (Touch ID) للإرسال";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "اِشترط تقنية التعرّف على الوجه للإرسال";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "اِشترط تقنية التعرُّف على الوجه (Face ID) للإرسال";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "يشترط استخدام Optic ID للإرسال.";
@@ -5237,7 +5237,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "اِشترط رمز المرور الخاص بهاتفك للإرسال";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "اِشترط بصمة الأصبع للإرسال";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "اِشترط بصمة الأصبع (Touch ID) للإرسال";
 
 /* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
 "PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "فشلت المُصادَقة. تأكّد من تمكين المصادقة البيومترية على جهازك وتعيين رمز مرور.";
@@ -5375,28 +5375,28 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "غير مُتحقَّق منها";
 
 /* Status indicator for incoming payments which have been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "مُتحقَّق منه";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "مُتحقَّق منها";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "تم";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "مُكتمِلة";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "جارٍ الإرسال…";
 
 /* Status indicator for outgoing payments which have been sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "تمّ الارسال";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "مُرسَلة";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "يجري التجهيز";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "جارٍ التجهيز";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "غير مُتحقَّق منه";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "غير مُتحقَّق منها";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "مُتحقَّق منه";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "مُتحقَّق منها";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "فشل مجهول";
+"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "فشلت لسبب مجهول";
 
 /* Payments Preview Text shown in quoted replies, for payments. Embeds {{ Amount sent (number), Currency (e.g. 'MOB') }} */
 "PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "عملية دفع: %1$@ %2$@";
@@ -5405,10 +5405,10 @@
 "PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "عملية دفع مجهولة";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "على هذا المستخدم أن يوافق على طلب التراسل معك لأجل التمكن من إرسال المبلغ إليه.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "على هذا المُستخدِم أن يوافق على طلب التراسُل معك للتمكُّن من إرسال المبلغ إليه.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "على هذا المستخدم أن يوافق على طلب التراسل معك لأجل التمكن من إرسال المبلغ إليه. يٌرجى إرسال رسالة إليه لإنشاء طلب التراسل.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "على هذا المُستخدِم أن يوافق على طلب التراسُل معك للتمكُّن من إرسال المبلغ إليه. يُرجى إرسال رسالة إليه لإنشاء طلب التراسُل.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "تعذَّر إرسال المدفوعات";
@@ -5426,7 +5426,7 @@
 "PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 عملية دفع";
 
 /* Label for 'transfer out' payments. */
-"PAYMENTS_TRANSFER_OUT_PAYMENT" = "إرسال";
+"PAYMENTS_TRANSFER_OUT_PAYMENT" = "ما تمَّ إرساله";
 
 /* Indicator for unidentified incoming payments. */
 "PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "المبلغ المُستلَم";
@@ -5435,40 +5435,40 @@
 "PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "المبلغ المُرسَل";
 
 /* Label for unknown payments. */
-"PAYMENTS_UNKNOWN_PAYMENT" = "مبلغ غير صالح";
+"PAYMENTS_UNKNOWN_PAYMENT" = "المبلغ غير صالح";
 
 /* The alert message if user tries to exit a task without saving changes. */
 "PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "هل تريد تجاهل هذه التغييرات؟";
 
 /* The alert title if user tries to exit a task without saving changes. */
-"PENDING_CHANGES_ACTION_SHEET_TITLE" = "التَغيُّرات غَير مَحفُوظَة";
+"PENDING_CHANGES_ACTION_SHEET_TITLE" = "التغييرات غير محفوظة";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "إضافة إلى المجموعة";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "إضافة \"%1$@\" إلى المجموعة؟";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "هل ترغبُ بإضافة \"%1$@\" إلى المجموعة؟";
 
 /* Title of 'deny member request to join group' button. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "رفض الطلب";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "رفض طلب انضمام المُستخدم \"%1$@\"؟ لن يتمكن المُستخدم من إرسال طلب الانضمام للمجموعة بواسطة رابط المجموعة مرة أخرى.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "هل ترغبُ برفض طلب انضمام \"%1$@\"؟ لن يتمكن المُستخدِم من إرسال طلب الانضمام للمجموعة بواسطة رابط المجموعة مرّة أخرى.";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "لا توجد طلبات أعضاء مُعلّقة.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "لا توجد طلبات أعضاء مُعلَّقة.";
 
 /* Label indicating that a group has no pending members. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "لا توجد دعوات للعرض.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "لا توجد دعوات لتعرضها.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "لَقَد تمَّت إضافة \"%1$@\".";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "تمَّت إضافة \"%1$@\".";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "عرض الطلبات";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "لَقَد تمَّ رفض \"%1$@\".";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "تمَّ رفض \"%1$@\".";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "إلغاء الدعوة";
@@ -5477,7 +5477,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "هل تُريد إلغاء دعوة المجموعة إلى \"%1$@\"؟";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "لا يتم إظهار تفاصيل الأشخاص المدعوين مِن قِبَل أعضاء المجموعة الآخرين. إذا اختار المدعوون الانضمام ،حينها سيتم مُشاركة معلوماتهم مع المجموعة. لن يستطيعوا رؤية أي رِسالة في المجموعة حتى ينضموا.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "لا يتم إظهار تفاصيل الأشخاص المدعوين مِن قِبَل أعضاء المجموعة الآخرين. إذا اختار المدعوون الانضمام، حينها ستتمُّ مُشاركة معلوماتهم مع المجموعة. لن يستطيعوا رؤية أي رِسالة في المجموعة حتى ينضموا.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "يُحاول الأشخاص في هذه القائمة الانضمام إلى \"%1$@\" عبر رابط المجموعة.";
@@ -5486,25 +5486,25 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "دعوات غير صالحة";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "الذين دعاهم الآخرون";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "المدعوون من قبل الآخرين";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "الذين دعوتهم";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "المدعوون من قبلك";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "خطأ في مُعاملة الرسالة الواردة";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "وسائط-العرض-لِمرة-واحدة";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "ملف وسائط للعرض لمرّة واحدة";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "وسائط";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "صورة للعرض لِمرة واحدة";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "صورة للعرض لمرّة واحدة";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "فيديو للعرض لِمرة واحدة";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "فيديو للعرض لمرّة واحدة";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "إظهار الصورة";
@@ -7151,10 +7151,10 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "تخطّى تمكين رمز المرور؟";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Touch ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "تخطّى تمكين بصمة الأصبع؟";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "هل ترغبُ بتخطّي تمكين بصمة الأصبع (Touch ID)؟";
 
 /* Enable Button title in Payments Lock Prompt view for Face ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "استخدام تقنية التعرّف على الوجه";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "استخدِم تقنية التعرُّف على الوجه (Face ID)";
 
 /* Enable Button title in Payments Lock Prompt view for Optic ID. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "استخدام Optic ID";
@@ -7163,10 +7163,10 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "استخدام رمز المرور";
 
 /* Enable Button title in Payments Lock Prompt view for Touch ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "استخدام بصمة الأصبع";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "استخدام بصمة الأصبع (Touch ID)";
 
 /* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "ساعد في منع أي شخص يستخدم هاتفكَ من الوصول إلى أموالك عن طريق تفعيل تقنية التعرف على الوجه. يُمكنك تعطيل هذا الخيار في الإعدادات.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "ساعد في منع أي شخص يستخدم هاتفكَ من الوصول إلى أموالك عن طريق تفعيل تقنية التعرُّف على الوجه (Face ID). يُمكنك تعطيل هذا الخيار في الإعدادات.";
 
 /* Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "ساعِد في منع أي شخص يستخدم هاتفكَ من الوصول إلى أموالك عن طريق تفعيل Optic ID. يُمكنك تعطيل هذا الخيار في \"الإعدادات\".";
@@ -7175,7 +7175,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "ساعد في منع أي شخص يستخدم هاتفكَ من الوصول إلى أموالك عن طريق تفعيل رمز المرور. يُمكنك تعطيل هذا الخيار في الإعدادات.";
 
 /* Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "ساعد في منع أي شخص يستخدم هاتفكَ من الوصول إلى أموالك عن طريق تفعيل بصمة الأصبع. يُمكنك تعطيل هذا الخيار في الإعدادات.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "ساعد في منع أي شخص يستخدم هاتفكَ من الوصول إلى أموالك عن طريق تفعيل بصمة الإصبع (Touch ID). يُمكنك تعطيل هذا الخيار في الإعدادات.";
 
 /* Button for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "‫تحديث سيجنال‬";
@@ -7280,10 +7280,10 @@
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "مَسح رَمز الاِستِجابَة السَّريعَة";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "اِشترط رمز المرور الخاص بك أو بصمة الأصبع لإرسال المبالغ.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "اِشترط رمز المرور الخاص بك أو بصمة الإصبع (Touch ID) لإرسال المبالغ.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "اِشترط تقنية التعرّف على الوجه لتحويل المبالغ.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "اِشترط تقنية التعرُّف على الوجه (Face ID) لتحويل المبالغ.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for opticid biometry */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "يشترط استخدام Optic ID لتحويل المبالغ.";
@@ -7292,7 +7292,7 @@
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "اِشترط رمز المرور الخاص بك لإرسال المبالغ.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for touchid biometry */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "اِشترط بصمة الأصبع لإرسال المبالغ.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "اِشترط بصمة الإصبع (Touch ID) لإرسال المبالغ.";
 
 /* Title for the payments section in the app’s privacy settings tableview */
 "SETTINGS_PAYMENTS_SECURITY_TITLE" = "عمليات الدفع";
@@ -7490,10 +7490,10 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "المكالمات";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL" = "اِستخدامُ Face ID, Touch ID أو رَمز سِر جِهاز iOS الخاصّ بك لفَكّ قُفل سيجنال.";
+"SETTINGS_SECURITY_DETAIL" = "استخدِم بصمة الإصبع (Finger ID) أو تقنية التعرُّف على الوجه (Face ID) أو رمز المرور لجِهاز iOS الخاصّ بك لفَكّ قُفل سيجنال.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_FACEID" = "اِستِخدامُ Face ID لِفَكّ فُقل سيجنال.";
+"SETTINGS_SECURITY_DETAIL_FACEID" = "استخدِم تقنية التعرُّف على الوجه (Face ID) لفك قفل سيجنال.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_OPTICID" = "اِستِخدم Optic ID لفتح قفل سيجنال.";
@@ -7502,7 +7502,7 @@
 "SETTINGS_SECURITY_DETAIL_PASSCODE" = "اِستِخدامُ رَمز السِّرّ الخاصّ بالجِهاز لفَكّ قُفل سيجنال.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_TOUCHID" = "اِستِخدامُ Touch ID لِفَكّ فقل سيجنال.";
+"SETTINGS_SECURITY_DETAIL_TOUCHID" = "استخدِم بصمة الإصبع (Touch ID) لِفَكّ فقل سيجنال.";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "حماية التطبيق";

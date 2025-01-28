@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "پایان پیوند دهی";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "همه پیام‌های متنی و رسانه ۴۵ روز گذشته خود را انتقال دهید";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "انتقال تاریخچه پیام";
@@ -4061,7 +4061,7 @@
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "اتصال را در دستگاه دیگر خود به پایان برسانید";
 
 /* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "در حال دانلود ‎%1$@ ‏از ‎%2$@ ‏(%3$@)…";
 
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
 "LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "ادامه بدون انتقال";
@@ -4070,7 +4070,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "دستگاهتان با موفقیت متصل شد، اما پیام‌هایتان منتقل نشد.";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "پیام‌های شما به دستگاه متصل‌شده‌تان منتقل نشد. می‌توانید دوباره اتصال و انتقال را امتحان کنید، یا بدون انتقال تاریخچه پیام‌های خود ادامه دهید.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "همگام‌سازی پیام انجام نشد";
@@ -4169,7 +4169,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "در حال آماده‌سازی برای دانلود…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
+"LINKING_SYNCING_TIMING_INFO" = "ممکن است چند دقیقه زمان ببرد";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "سیگنال را نبندید.";
@@ -4640,7 +4640,7 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "پیام های جدید";
 
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
-"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "تماس از دست رفته از مخاطب مسدودشده در تنظیمات تلفن";
+"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "تماس از‌دست‌رفته از مخاطب مسدودشده در تنظیمات تلفن";
 
 /* Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
 "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "مخاطب در سیگنال هم مسدود شود";
