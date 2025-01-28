@@ -931,12 +931,16 @@ public class MessageSender {
                     serviceId: serviceId,
                     localIdentifiers: localIdentifiers
                 )
-                let sealedSenderParameters = SealedSenderParameters(
+                var sealedSenderParameters = SealedSenderParameters(
                     message: message,
                     senderCertificate: senderCertificate,
                     accessKey: sendingAccessMap[serviceId],
                     endorsement: endorsements?.tokenBuilder(forServiceId: serviceId)
                 )
+                if localIdentifiers.contains(serviceId: serviceId) {
+                    owsAssertDebug(sealedSenderParameters == nil, "Can't use Sealed Sender for ourselves.")
+                    sealedSenderParameters = nil
+                }
                 taskGroup.addTask {
                     do {
                         try await self.performMessageSend(messageSend, sealedSenderParameters: sealedSenderParameters)

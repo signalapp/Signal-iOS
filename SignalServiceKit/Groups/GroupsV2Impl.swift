@@ -1265,6 +1265,10 @@ public class GroupsV2Impl: GroupsV2 {
             let combinedEndorsement = receivedEndorsements.combinedEndorsement
             var individualEndorsements = [(ServiceId, GroupSendEndorsement)]()
             for (serviceId, individualEndorsement) in zip(fullMembers, receivedEndorsements.endorsements) {
+                if serviceId == localAci {
+                    // Don't save our own endorsement. We should never use it.
+                    continue
+                }
                 individualEndorsements.append((serviceId, individualEndorsement))
             }
             let groupId = try secretParams.getPublicParams().getGroupIdentifier()
