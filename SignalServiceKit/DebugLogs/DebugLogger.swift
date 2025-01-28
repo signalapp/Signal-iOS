@@ -152,7 +152,7 @@ public final class DebugLogger {
 
         let fileLogger = DDFileLogger(logFileManager: logFileManager)
         fileLogger.rollingFrequency = kDayInterval
-        fileLogger.maximumFileSize = 3 * 1024 * 1024
+        fileLogger.maximumFileSize = 12_000_000
         fileLogger.logFormatter = ScrubbingLogFormatter()
 
         self.fileLogger = fileLogger
