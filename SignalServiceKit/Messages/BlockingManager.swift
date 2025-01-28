@@ -148,14 +148,21 @@ public class BlockingManager {
         }
         StoryManager.removeAddressFromAllPrivateStoryThreads(address, tx: tx)
 
-        // Insert an info message that we blocked this user.
-        let threadStore = DependenciesBridge.shared.threadStore
-        let interactionStore = DependenciesBridge.shared.interactionStore
-        if let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx.asV2Read) {
-            interactionStore.insertInteraction(
-                TSInfoMessage(thread: contactThread, messageType: .blockedOtherUser),
-                tx: tx.asV2Write
-            )
+        switch blockMode {
+        case .restoreFromBackup:
+            // If we're restoring from a Backup, avoid the side effect of
+            // inserting a message. One either existed in the backup or not.
+            break
+        case .remote, .localShouldLeaveGroups, .localShouldNotLeaveGroups:
+            // Insert an info message that we blocked this user.
+            let threadStore = DependenciesBridge.shared.threadStore
+            let interactionStore = DependenciesBridge.shared.interactionStore
+            if let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx.asV2Read) {
+                interactionStore.insertInteraction(
+                    TSInfoMessage(thread: contactThread, messageType: .blockedOtherUser),
+                    tx: tx.asV2Write
+                )
+            }
         }
 
         didUpdate(wasLocallyInitiated: blockMode.locallyInitiated, tx: tx)
@@ -240,11 +247,18 @@ public class BlockingManager {
                 )
             }
 
-            // Insert an info message that we blocked this group.
-            DependenciesBridge.shared.interactionStore.insertInteraction(
-                TSInfoMessage(thread: groupThread, messageType: .blockedGroup),
-                tx: transaction.asV2Write
-            )
+            switch blockMode {
+            case .restoreFromBackup:
+                // If we're restoring from a Backup, avoid the side effect of
+                // inserting a message. One either existed in the backup or not.
+                break
+            case .remote, .localShouldLeaveGroups, .localShouldNotLeaveGroups:
+                // Insert an info message that we blocked this group.
+                DependenciesBridge.shared.interactionStore.insertInteraction(
+                    TSInfoMessage(thread: groupThread, messageType: .blockedGroup),
+                    tx: transaction.asV2Write
+                )
+            }
         }
 
         didUpdate(wasLocallyInitiated: blockMode.locallyInitiated, tx: transaction)

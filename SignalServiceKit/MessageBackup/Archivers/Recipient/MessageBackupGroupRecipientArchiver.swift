@@ -126,8 +126,9 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
         var group = BackupProto_Group()
         group.masterKey = groupMasterKey
-        group.whitelisted = profileManager.isThread(
-            inProfileWhitelist: groupThread, tx: context.tx
+        group.whitelisted = profileManager.isGroupId(
+            inProfileWhitelist: groupId.value,
+            tx: context.tx
         )
         group.blocked = blockedGroupIds.contains(groupId.value)
         do {

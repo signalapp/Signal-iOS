@@ -89,7 +89,7 @@ public protocol _MessageBackup_ProfileManagerShim {
 
     func allWhitelistedAddresses(tx: DBReadTransaction) -> [SignalServiceAddress]
 
-    func isThread(inProfileWhitelist thread: TSThread, tx: DBReadTransaction) -> Bool
+    func isGroupId(inProfileWhitelist groupId: Data, tx: DBReadTransaction) -> Bool
 
     func addToWhitelist(_ address: SignalServiceAddress, tx: DBWriteTransaction)
 
@@ -137,8 +137,8 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         profileManager.allWhitelistedAddresses(tx: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func isThread(inProfileWhitelist thread: TSThread, tx: DBReadTransaction) -> Bool {
-        profileManager.isThread(inProfileWhitelist: thread, transaction: SDSDB.shimOnlyBridge(tx))
+    public func isGroupId(inProfileWhitelist groupId: Data, tx: DBReadTransaction) -> Bool {
+        profileManager.isGroupId(inProfileWhitelist: groupId, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func addToWhitelist(_ address: SignalServiceAddress, tx: DBWriteTransaction) {
