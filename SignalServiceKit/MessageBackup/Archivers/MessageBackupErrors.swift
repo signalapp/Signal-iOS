@@ -264,13 +264,19 @@ extension MessageBackup {
                 // We don't want to re-log every instance of this we see.
                 // Collapse them by the raw error itself.
                 return "\(rawError)"
-            case .referencedRecipientIdMissing, .referencedThreadIdMissing, .referencedCustomChatColorMissing:
+            case
+                    .referencedRecipientIdMissing,
+                    .referencedThreadIdMissing,
+                    .referencedCustomChatColorMissing,
+                    .contactThreadMissingAddress:
                 // Collapse these by the id they refer to, which is in the "type".
                 return idLogString
+            case .incomingMessageFromSelf:
+                // Collapse these all together.
+                return id.typeLogString
             case
                     .fileIOError,
                     .groupMasterKeyError,
-                    .contactThreadMissingAddress,
                     .messageFromOtherRecipientInContactThread,
                     .themedCustomChatColor,
                     .unknownWallpaper,
@@ -282,7 +288,6 @@ extension MessageBackup {
                     .distributionListInvalidTimestamp,
                     .invalidDistributionListMemberAddress,
                     .invalidIncomingMessageAuthor,
-                    .incomingMessageFromSelf,
                     .invalidOutgoingMessageRecipient,
                     .invalidQuoteAuthor,
                     .quoteTypeNormalMissingTextAndAttachments,
@@ -356,7 +361,6 @@ extension MessageBackup {
                     .invalidOutgoingMessageRecipient,
                     .invalidQuoteAuthor,
                     .linkPreviewMissingUrl,
-                    .stickerMessageMissingStickerAttachment,
                     .storyReplyAuthorMissingAci,
                     .storyReplyEmptyContents,
                     .storyReplyInGroupThread,
@@ -420,6 +424,10 @@ extension MessageBackup {
             case .incomingMessageFromSelf:
                 // We've seen real world databases with messages from self; we
                 // fudge these into outgoing messages on export and issue a warning.
+                return .warning
+            case .stickerMessageMissingStickerAttachment:
+                // We lose a lot of stickers, apparently, in real world testing.
+                // Usually not the end of the world.
                 return .warning
             }
         }
