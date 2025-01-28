@@ -81,6 +81,7 @@ public class PaymentsReconciliation {
     private static let lastKnownBlockCountKey = "lastKnownBlockCountKey"
     private static let lastKnownReceivedTXOCountKey = "lastKnownReceivedTXOCountKey"
     private static let lastKnownSpentTXOCountKey = "lastKnownSpentTXOCountKey"
+    private static let hasReconciledPreviously = "hasReconciledPreviously"
 
     private static func shouldReconcileByDateWithSneakyTransaction() -> Bool {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
@@ -147,6 +148,9 @@ public class PaymentsReconciliation {
         Self.schedulingStore.setInt(receivedItemsCount,
                                     key: Self.lastKnownReceivedTXOCountKey,
                                     transaction: transaction.asV2Write)
+        Self.schedulingStore.setBool(true,
+                                     key: Self.hasReconciledPreviously,
+                                     transaction: transaction.asV2Write)
     }
 
     public func scheduleReconciliationNow(transaction: SDSAnyWriteTransaction) {
@@ -265,6 +269,17 @@ public class PaymentsReconciliation {
                                    transaction: SDSAnyReadTransaction) throws {
 
         Logger.info("")
+
+        let hasReconciledOnce = Self.schedulingStore.getBool(
+            Self.hasReconciledPreviously,
+            defaultValue: false,
+            transaction: transaction.asV2Read
+        )
+        let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? true
+
+        // If payments have reconciled once, or if this is a primary device, default to marking
+        // newly discovered unidentified payments as unread.
+        let markUnaccountedForItemsAsUnread = hasReconciledOnce || isPrimaryDevice
 
         // Fill in/reconcile incoming transactions.
 
@@ -415,7 +430,8 @@ public class PaymentsReconciliation {
                     timestamp: createdTimestamp,
                     blockActivity: blockActivity,
                     unaccountedForSpentItems: unaccountedForSpentItems,
-                    unaccountedForReceivedItems: unaccountedForReceivedItems
+                    unaccountedForReceivedItems: unaccountedForReceivedItems,
+                    markUnaccountedForItemsAsUnread: markUnaccountedForItemsAsUnread
                 )
                 try insert(model: paymentModel)
                 databaseState.add(paymentModel: paymentModel)
@@ -452,7 +468,8 @@ public class PaymentsReconciliation {
         timestamp: UInt64,
         blockActivity: BlockActivity,
         unaccountedForSpentItems: [MCTransactionHistoryItem],
-        unaccountedForReceivedItems: [MCTransactionHistoryItem]
+        unaccountedForReceivedItems: [MCTransactionHistoryItem],
+        markUnaccountedForItemsAsUnread: Bool
     ) -> TSPaymentModel {
         let spentPicoMob = unaccountedForSpentItems.map { $0.amountPicoMob }.reduce(0, +)
         let receivedPicoMob = unaccountedForReceivedItems.map { $0.amountPicoMob }.reduce(0, +)
@@ -498,7 +515,7 @@ public class PaymentsReconciliation {
                               createdDate: createdDate,
                               senderOrRecipientAci: nil,
                               memoMessage: nil,
-                              isUnread: true,
+                              isUnread: markUnaccountedForItemsAsUnread,
                               interactionUniqueId: nil,
                               mobileCoin: mobileCoin)
     }
