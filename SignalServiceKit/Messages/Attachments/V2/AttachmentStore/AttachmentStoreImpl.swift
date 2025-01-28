@@ -239,6 +239,26 @@ public class AttachmentStoreImpl: AttachmentStore {
             }
     }
 
+    public func allAttachmentIdsForSticker(
+        _ stickerInfo: StickerInfo,
+        tx: DBReadTransaction
+    ) throws -> [Attachment.IDType] {
+        let attachmentIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.attachmentRowId)
+        let packIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.stickerPackId)
+        let stickerIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.stickerId)
+        return try Attachment.IDType.fetchAll(
+            tx.databaseConnection,
+            sql: """
+                SELECT \(attachmentIdColumn.name)
+                FROM \(MessageAttachmentReferenceRecord.databaseTableName)
+                WHERE
+                    \(packIdColumn.name) = ?
+                    AND \(stickerIdColumn.name) = ?;
+                """,
+            arguments: [stickerInfo.packId, stickerInfo.stickerId]
+        )
+    }
+
     // MARK: Writes
 
     public func duplicateExistingMessageOwner(

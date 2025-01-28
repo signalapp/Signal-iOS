@@ -714,6 +714,26 @@ public class StickerManager: NSObject {
 
             installedSticker.anyInsert(transaction: transaction)
 
+            do {
+                // For every attachment referencing this sticker, we can now enqueue a "download"
+                // that's really just a local file clone, from the newly installed sticker.
+                let attachmentIds = try DependenciesBridge.shared.attachmentStore.allAttachmentIdsForSticker(
+                    stickerInfo,
+                    tx: transaction.asV2Read
+                )
+                try attachmentIds.forEach { attachmentId in
+                    try DependenciesBridge.shared.attachmentDownloadStore.enqueueDownloadOfAttachment(
+                        withId: attachmentId,
+                        // source is irrelevant with localClone priority
+                        source: .transitTier,
+                        priority: .localClone,
+                        tx: transaction.asV2Write
+                    )
+                }
+            } catch {
+                owsFailDebug("Failed to enqueue attachments \(error.grdbErrorForLogging)")
+            }
+
             self.addStickerToEmojiMap(installedSticker, tx: transaction)
             return true
         }

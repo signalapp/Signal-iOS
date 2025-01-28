@@ -540,6 +540,88 @@ class AttachmentStoreTests: XCTestCase {
         readPackReferences.forEach { packRef in
             XCTAssertEqual(packRef.messageRowId, stickerPackIds[packRef.stickerPackId])
         }
+    }
+
+    func testallAttachmentIdsForSticker() throws {
+        // Sticker info to count of attachments with that info.
+        var stickerInfos = [StickerInfo: Int]()
+
+        try db.write { tx in
+            let thread = insertThread(tx: tx)
+            let threadRowId = thread.sqliteRowId!
+
+            // Add some non sticker attachments.
+            for _ in 0..<10 {
+                let messageRowId = insertInteraction(thread: thread, tx: tx)
+
+                try attachmentStore.insert(
+                    .mockStream(),
+                    reference: .mock(
+                        owner: .message(.bodyAttachment(.init(
+                            messageRowId: messageRowId,
+                            receivedAtTimestamp: .random(in: 0..<9999999),
+                            threadRowId: threadRowId,
+                            contentType: .image,
+                            isPastEditRevision: false,
+                            caption: nil,
+                            renderingFlag: .default,
+                            orderInOwner: 0,
+                            idInOwner: nil,
+                            isViewOnce: false
+                        )))),
+                    tx: tx
+                )
+            }
+
+            // Add some sticker attachments
+            for _ in 0..<10 {
+                let packId = UUID().data
+                // Each sticker pack gets multiple stickers, but we should
+                // dedupe down to the pack IDs.
+                let numStickersInPack = Int.random(in: 1...10)
+                for _ in 0..<numStickersInPack {
+                    let stickerId = UInt32.random(in: 0..<UInt32.max)
+
+                    let attachmentCount = Int.random(in: 1...10)
+                    stickerInfos[StickerInfo(
+                        packId: packId,
+                        packKey: Data(repeating: 8, count: Int(StickerManager.packKeyLength)),
+                        stickerId: stickerId
+                    )] = attachmentCount
+                    for _ in 0..<attachmentCount {
+
+                        let messageRowId = insertInteraction(thread: thread, tx: tx)
+
+                        try attachmentStore.insert(
+                            .mockStream(),
+                            reference: .mock(
+                                owner: .message(.sticker(.init(
+                                    messageRowId: messageRowId,
+                                    receivedAtTimestamp: .random(in: 0..<9999999),
+                                    threadRowId: threadRowId,
+                                    contentType: .image,
+                                    isPastEditRevision: false,
+                                    stickerPackId: packId,
+                                    stickerId: stickerId
+                                )))),
+                            tx: tx
+                        )
+                    }
+
+                }
+            }
+        }
+
+        try db.read { tx in
+            for (stickerInfo, expectedCount) in stickerInfos {
+                XCTAssertEqual(
+                    expectedCount,
+                    try attachmentStore
+                        .allAttachmentIdsForSticker(stickerInfo, tx: tx)
+                        .count
+                )
+            }
+        }
 
     }
 

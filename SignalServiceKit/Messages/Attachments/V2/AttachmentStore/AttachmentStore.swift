@@ -80,6 +80,12 @@ public protocol AttachmentStore {
         tx: DBReadTransaction
     ) throws -> [AttachmentReference.Owner.MessageSource.StickerMetadata]
 
+    /// Return all attachment ids that reference the provided sticker.
+    func allAttachmentIdsForSticker(
+        _ stickerInfo: StickerInfo,
+        tx: DBReadTransaction
+    ) throws -> [Attachment.IDType]
+
     // MARK: - Writes
 
     /// Create a new ownership reference, copying properties of an existing reference.
