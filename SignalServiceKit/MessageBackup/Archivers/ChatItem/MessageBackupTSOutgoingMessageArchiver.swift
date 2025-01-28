@@ -553,9 +553,6 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
                 case .emoji(let emoji):
                     outgoingMessageBuilder.storyReactionEmoji = emoji
                 }
-                if let storySentTimestamp = storyReply.storySentTimestamp {
-                    outgoingMessageBuilder.storyTimestamp = NSNumber(value: storySentTimestamp)
-                }
                 // We can't reply to our own stories; if a 1:1 story reply is outgoing
                 // that means the author of the story being replied to was the peer.
                 switch chatThread.threadType {

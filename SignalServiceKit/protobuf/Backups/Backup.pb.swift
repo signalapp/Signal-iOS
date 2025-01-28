@@ -32,6 +32,8 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 
 public enum BackupProto_GroupV2AccessLevel: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
+
+  /// Interpret as "Unsatisfiable"
   case unknown // = 0
   case any // = 1
   case member // = 2
@@ -118,6 +120,7 @@ public struct BackupProto_Frame: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// If unset, importers should skip this frame without throwing an error.
   public var item: BackupProto_Frame.OneOf_Item? = nil
 
   public var account: BackupProto_AccountData {
@@ -186,6 +189,7 @@ public struct BackupProto_Frame: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+  /// If unset, importers should skip this frame without throwing an error.
   public enum OneOf_Item: Equatable, Sendable {
     case account(BackupProto_AccountData)
     case recipient(BackupProto_Recipient)
@@ -263,6 +267,8 @@ public struct BackupProto_AccountData: @unchecked Sendable {
 
   public enum PhoneNumberSharingMode: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Interpret as "Nobody"
     case unknown // = 0
     case everybody // = 1
     case nobody // = 2
@@ -316,6 +322,8 @@ public struct BackupProto_AccountData: @unchecked Sendable {
 
     public enum Color: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
+
+      /// Interpret as "Blue"
       case unknown // = 0
       case blue // = 1
       case white // = 2
@@ -518,6 +526,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
 
     public var subscriberID: Data = Data()
 
+    /// If unset, importers should ignore the subscriber data without throwing an error.
     public var iapSubscriptionID: BackupProto_AccountData.IAPSubscriberData.OneOf_IapSubscriptionID? = nil
 
     /// Identifies an Android Play Store IAP subscription.
@@ -540,6 +549,7 @@ public struct BackupProto_AccountData: @unchecked Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+    /// If unset, importers should ignore the subscriber data without throwing an error.
     public enum OneOf_IapSubscriptionID: Equatable, Sendable {
       /// Identifies an Android Play Store IAP subscription.
       case purchaseToken(String)
@@ -568,6 +578,7 @@ public struct BackupProto_Recipient: Sendable {
   /// generated id for reference only within this file
   public var id: UInt64 = 0
 
+  /// If unset, importers should skip this frame without throwing an error.
   public var destination: BackupProto_Recipient.OneOf_Destination? = nil
 
   public var contact: BackupProto_Contact {
@@ -620,6 +631,7 @@ public struct BackupProto_Recipient: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+  /// If unset, importers should skip this frame without throwing an error.
   public enum OneOf_Destination: Equatable, Sendable {
     case contact(BackupProto_Contact)
     case group(BackupProto_Group)
@@ -686,6 +698,7 @@ public struct BackupProto_Contact: @unchecked Sendable {
     set {_uniqueStorage()._visibility = newValue}
   }
 
+  /// If unset, consider the user to be registered
   public var registration: OneOf_Registration? {
     get {return _storage._registration}
     set {_uniqueStorage()._registration = newValue}
@@ -775,6 +788,7 @@ public struct BackupProto_Contact: @unchecked Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+  /// If unset, consider the user to be registered
   public enum OneOf_Registration: Equatable, Sendable {
     case registered(BackupProto_Contact.Registered)
     case notRegistered(BackupProto_Contact.NotRegistered)
@@ -783,8 +797,12 @@ public struct BackupProto_Contact: @unchecked Sendable {
 
   public enum IdentityState: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// A valid value -- indicates unset by the user
     case `default` // = 0
     case verified // = 1
+
+    /// Was once verified and is now unverified
     case unverified // = 2
     case UNRECOGNIZED(Int)
 
@@ -821,6 +839,8 @@ public struct BackupProto_Contact: @unchecked Sendable {
 
   public enum Visibility: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// A valid value -- the contact is not hidden
     case visible // = 0
     case hidden // = 1
     case hiddenMessageRequest // = 2
@@ -932,10 +952,17 @@ public struct BackupProto_Group: @unchecked Sendable {
   /// Clears the value of `snapshot`. Subsequent reads from it will return its default value.
   public mutating func clearSnapshot() {_uniqueStorage()._snapshot = nil}
 
+  public var blocked: Bool {
+    get {return _storage._blocked}
+    set {_uniqueStorage()._blocked = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum StorySendMode: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// A valid value -- indicates unset by the user
     case `default` // = 0
     case disabled // = 1
     case enabled // = 2
@@ -1049,6 +1076,7 @@ public struct BackupProto_Group: @unchecked Sendable {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// If unset, consider the field it represents to not be present
     public var content: BackupProto_Group.GroupAttributeBlob.OneOf_Content? = nil
 
     public var title: String {
@@ -1085,6 +1113,7 @@ public struct BackupProto_Group: @unchecked Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+    /// If unset, consider the field it represents to not be present
     public enum OneOf_Content: Equatable, @unchecked Sendable {
       case title(String)
       case avatar(Data)
@@ -1111,6 +1140,8 @@ public struct BackupProto_Group: @unchecked Sendable {
 
     public enum Role: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
+
+      /// Intepret as "Default"
       case unknown // = 0
       case `default` // = 1
       case administrator // = 2
@@ -1218,6 +1249,8 @@ public struct BackupProto_Group: @unchecked Sendable {
 
     public enum AccessRequired: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
+
+      /// Intepret as "Unsatisfiable"
       case unknown // = 0
       case any // = 1
       case member // = 2
@@ -1390,6 +1423,8 @@ public struct BackupProto_CallLink: @unchecked Sendable {
 
   public enum Restrictions: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Interpret as "Admin Approval"
     case unknown // = 0
     case none // = 1
     case adminApproval // = 2
@@ -1449,6 +1484,8 @@ public struct BackupProto_AdHocCall: Sendable {
 
   public enum State: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Interpret as "Generic"
     case unknownState // = 0
     case generic // = 1
     case UNRECOGNIZED(Int)
@@ -1493,6 +1530,7 @@ public struct BackupProto_DistributionListItem: @unchecked Sendable {
   /// by an all-0 UUID (00000000-0000-0000-0000-000000000000).
   public var distributionID: Data = Data()
 
+  /// If unset, importers should skip the item entirely without showing an error.
   public var item: BackupProto_DistributionListItem.OneOf_Item? = nil
 
   public var deletionTimestamp: UInt64 {
@@ -1513,6 +1551,7 @@ public struct BackupProto_DistributionListItem: @unchecked Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+  /// If unset, importers should skip the item entirely without showing an error.
   public enum OneOf_Item: Equatable, Sendable {
     case deletionTimestamp(UInt64)
     case distributionList(BackupProto_DistributionList)
@@ -1540,6 +1579,8 @@ public struct BackupProto_DistributionList: Sendable {
 
   public enum PrivacyMode: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Interpret as "Only with"
     case unknown // = 0
     case onlyWith // = 1
     case allExcept // = 2
@@ -1636,6 +1677,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     set {_uniqueStorage()._sms = newValue}
   }
 
+  /// If unset, importers should skip this item without throwing an error.
   public var directionalDetails: OneOf_DirectionalDetails? {
     get {return _storage._directionalDetails}
     set {_uniqueStorage()._directionalDetails = newValue}
@@ -1665,6 +1707,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     set {_uniqueStorage()._directionalDetails = .directionless(newValue)}
   }
 
+  /// If unset, importers should skip this item without throwing an error.
   public var item: OneOf_Item? {
     get {return _storage._item}
     set {_uniqueStorage()._item = newValue}
@@ -1745,6 +1788,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+  /// If unset, importers should skip this item without throwing an error.
   public enum OneOf_DirectionalDetails: Equatable, Sendable {
     case incoming(BackupProto_ChatItem.IncomingMessageDetails)
     case outgoing(BackupProto_ChatItem.OutgoingMessageDetails)
@@ -1752,6 +1796,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
 
   }
 
+  /// If unset, importers should skip this item without throwing an error.
   public enum OneOf_Item: Equatable, Sendable {
     case standardMessage(BackupProto_StandardMessage)
     case contactMessage(BackupProto_ContactMessage)
@@ -1830,6 +1875,7 @@ public struct BackupProto_SendStatus: Sendable {
   /// the time the status was last updated -- if from a receipt, it should be the sentTime of the receipt
   public var timestamp: UInt64 = 0
 
+  /// If unset, importers should consider the status to be "pending"
   public var deliveryStatus: BackupProto_SendStatus.OneOf_DeliveryStatus? = nil
 
   public var pending: BackupProto_SendStatus.Pending {
@@ -1890,6 +1936,7 @@ public struct BackupProto_SendStatus: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+  /// If unset, importers should consider the status to be "pending"
   public enum OneOf_DeliveryStatus: Equatable, Sendable {
     case pending(BackupProto_SendStatus.Pending)
     case sent(BackupProto_SendStatus.Sent)
@@ -2121,6 +2168,7 @@ public struct BackupProto_DirectStoryReplyMessage: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// If unset, importers should ignore the message without throwing an error.
   public var reply: BackupProto_DirectStoryReplyMessage.OneOf_Reply? = nil
 
   public var textReply: BackupProto_DirectStoryReplyMessage.TextReply {
@@ -2141,17 +2189,9 @@ public struct BackupProto_DirectStoryReplyMessage: Sendable {
 
   public var reactions: [BackupProto_Reaction] = []
 
-  public var storySentTimestamp: UInt64 {
-    get {return _storySentTimestamp ?? 0}
-    set {_storySentTimestamp = newValue}
-  }
-  /// Returns true if `storySentTimestamp` has been explicitly set.
-  public var hasStorySentTimestamp: Bool {return self._storySentTimestamp != nil}
-  /// Clears the value of `storySentTimestamp`. Subsequent reads from it will return its default value.
-  public mutating func clearStorySentTimestamp() {self._storySentTimestamp = nil}
-
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+  /// If unset, importers should ignore the message without throwing an error.
   public enum OneOf_Reply: Equatable, Sendable {
     case textReply(BackupProto_DirectStoryReplyMessage.TextReply)
     case emoji(String)
@@ -2189,8 +2229,6 @@ public struct BackupProto_DirectStoryReplyMessage: Sendable {
   }
 
   public init() {}
-
-  fileprivate var _storySentTimestamp: UInt64? = nil
 }
 
 public struct BackupProto_PaymentNotification: Sendable {
@@ -2243,6 +2281,7 @@ public struct BackupProto_PaymentNotification: Sendable {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// If unset, importers should treat the transaction as successful with no metadata.
     public var payment: BackupProto_PaymentNotification.TransactionDetails.OneOf_Payment? = nil
 
     public var transaction: BackupProto_PaymentNotification.TransactionDetails.Transaction {
@@ -2263,6 +2302,7 @@ public struct BackupProto_PaymentNotification: Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+    /// If unset, importers should treat the transaction as successful with no metadata.
     public enum OneOf_Payment: Equatable, Sendable {
       case transaction(BackupProto_PaymentNotification.TransactionDetails.Transaction)
       case failedTransaction(BackupProto_PaymentNotification.TransactionDetails.FailedTransaction)
@@ -2298,6 +2338,8 @@ public struct BackupProto_PaymentNotification: Sendable {
 
       public enum FailureReason: SwiftProtobuf.Enum, Swift.CaseIterable {
         public typealias RawValue = Int
+
+        /// A valid value -- reason unknown
         case generic // = 0
         case network // = 1
         case insufficientFunds // = 2
@@ -2407,6 +2449,8 @@ public struct BackupProto_PaymentNotification: Sendable {
 
       public enum Status: SwiftProtobuf.Enum, Swift.CaseIterable {
         public typealias RawValue = Int
+
+        /// A valid value -- state unconfirmed
         case initial // = 0
         case submitted // = 1
         case successful // = 2
@@ -2477,6 +2521,8 @@ public struct BackupProto_GiftBadge: @unchecked Sendable {
 
   public enum State: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// A valid state
     case unopened // = 0
     case opened // = 1
     case redeemed // = 2
@@ -2626,6 +2672,8 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
 
     public enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
+
+      /// Interpret as "Home"
       case unknown // = 0
       case home // = 1
       case mobile // = 2
@@ -2688,6 +2736,8 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
 
     public enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
+
+      /// Intepret as "Home"
       case unknown // = 0
       case home // = 1
       case mobile // = 2
@@ -2762,6 +2812,8 @@ public struct BackupProto_ContactAttachment: @unchecked Sendable {
 
     public enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
       public typealias RawValue = Int
+
+      /// Interpret as "Home"
       case unknown // = 0
       case home // = 1
       case work // = 2
@@ -2990,6 +3042,8 @@ public struct BackupProto_MessageAttachment: @unchecked Sendable {
   /// (non-zero starting values are not supported in proto3.)
   public enum Flag: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// A valid value -- no flag applied
     case none // = 0
     case voiceMessage // = 1
     case borderless // = 2
@@ -3040,6 +3094,7 @@ public struct BackupProto_FilePointer: @unchecked Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// If unset, importers should consider it to be an InvalidAttachmentLocator without throwing an error.
   public var locator: BackupProto_FilePointer.OneOf_Locator? = nil
 
   public var backupLocator: BackupProto_FilePointer.BackupLocator {
@@ -3140,6 +3195,7 @@ public struct BackupProto_FilePointer: @unchecked Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+  /// If unset, importers should consider it to be an InvalidAttachmentLocator without throwing an error.
   public enum OneOf_Locator: Equatable, Sendable {
     case backupLocator(BackupProto_FilePointer.BackupLocator)
     case attachmentLocator(BackupProto_FilePointer.AttachmentLocator)
@@ -3297,6 +3353,8 @@ public struct BackupProto_Quote: Sendable {
 
   public enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Interpret as "Normal"
     case unknown // = 0
     case normal // = 1
     case giftBadge // = 2
@@ -3389,24 +3447,13 @@ public struct BackupProto_BodyRange: @unchecked Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var start: UInt32 {
-    get {return _start ?? 0}
-    set {_start = newValue}
-  }
-  /// Returns true if `start` has been explicitly set.
-  public var hasStart: Bool {return self._start != nil}
-  /// Clears the value of `start`. Subsequent reads from it will return its default value.
-  public mutating func clearStart() {self._start = nil}
+  /// 'start' and 'length' are measured in UTF-16 code units.
+  /// They may refer to offsets in a longText attachment.
+  public var start: UInt32 = 0
 
-  public var length: UInt32 {
-    get {return _length ?? 0}
-    set {_length = newValue}
-  }
-  /// Returns true if `length` has been explicitly set.
-  public var hasLength: Bool {return self._length != nil}
-  /// Clears the value of `length`. Subsequent reads from it will return its default value.
-  public mutating func clearLength() {self._length = nil}
+  public var length: UInt32 = 0
 
+  /// If unset, importers should ignore the body range without throwing an error.
   public var associatedValue: BackupProto_BodyRange.OneOf_AssociatedValue? = nil
 
   public var mentionAci: Data {
@@ -3427,6 +3474,7 @@ public struct BackupProto_BodyRange: @unchecked Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+  /// If unset, importers should ignore the body range without throwing an error.
   public enum OneOf_AssociatedValue: Equatable, @unchecked Sendable {
     case mentionAci(Data)
     case style(BackupProto_BodyRange.Style)
@@ -3435,6 +3483,8 @@ public struct BackupProto_BodyRange: @unchecked Sendable {
 
   public enum Style: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Importers should ignore the body range without throwing an error.
     case none // = 0
     case bold // = 1
     case italic // = 2
@@ -3484,9 +3534,6 @@ public struct BackupProto_BodyRange: @unchecked Sendable {
   }
 
   public init() {}
-
-  fileprivate var _start: UInt32? = nil
-  fileprivate var _length: UInt32? = nil
 }
 
 public struct BackupProto_Reaction: Sendable {
@@ -3514,6 +3561,7 @@ public struct BackupProto_ChatUpdateMessage: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// If unset, importers should ignore the update message without throwing an error.
   public var update: BackupProto_ChatUpdateMessage.OneOf_Update? = nil
 
   public var simpleUpdate: BackupProto_SimpleChatUpdate {
@@ -3590,6 +3638,7 @@ public struct BackupProto_ChatUpdateMessage: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+  /// If unset, importers should ignore the update message without throwing an error.
   public enum OneOf_Update: Equatable, Sendable {
     case simpleUpdate(BackupProto_SimpleChatUpdate)
     case groupChange(BackupProto_GroupChangeChatUpdate)
@@ -3634,6 +3683,8 @@ public struct BackupProto_IndividualCall: Sendable {
 
   public enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Interpret as "Audio call"
     case unknownType // = 0
     case audioCall // = 1
     case videoCall // = 2
@@ -3672,6 +3723,8 @@ public struct BackupProto_IndividualCall: Sendable {
 
   public enum Direction: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Interpret as "Incoming"
     case unknownDirection // = 0
     case incoming // = 1
     case outgoing // = 2
@@ -3710,6 +3763,8 @@ public struct BackupProto_IndividualCall: Sendable {
 
   public enum State: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Interpret as "Accepted"
     case unknownState // = 0
     case accepted // = 1
     case notAccepted // = 2
@@ -3817,6 +3872,8 @@ public struct BackupProto_GroupCall: Sendable {
 
   public enum State: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Interpret as "Generic"
     case unknownState // = 0
 
     /// A group call was started without ringing.
@@ -3913,6 +3970,8 @@ public struct BackupProto_SimpleChatUpdate: Sendable {
 
   public enum TypeEnum: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Importers should skip the update without throwing an error.
     case unknown // = 0
     case joinedSignal // = 1
     case identityUpdate // = 2
@@ -4044,6 +4103,7 @@ public struct BackupProto_LearnedProfileChatUpdate: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// If unset, importers should consider the previous name to be an empty string.
   public var previousName: BackupProto_LearnedProfileChatUpdate.OneOf_PreviousName? = nil
 
   public var e164: UInt64 {
@@ -4064,6 +4124,7 @@ public struct BackupProto_LearnedProfileChatUpdate: Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+  /// If unset, importers should consider the previous name to be an empty string.
   public enum OneOf_PreviousName: Equatable, Sendable {
     case e164(UInt64)
     case username(String)
@@ -4113,6 +4174,7 @@ public struct BackupProto_GroupChangeChatUpdate: Sendable {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// If unset, importers should consider it to be a GenericGroupUpdate with unset updaterAci
     public var update: BackupProto_GroupChangeChatUpdate.Update.OneOf_Update? = nil
 
     public var genericGroupUpdate: BackupProto_GenericGroupUpdate {
@@ -4389,6 +4451,7 @@ public struct BackupProto_GroupChangeChatUpdate: Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+    /// If unset, importers should consider it to be a GenericGroupUpdate with unset updaterAci
     public enum OneOf_Update: Equatable, Sendable {
       case genericGroupUpdate(BackupProto_GenericGroupUpdate)
       case groupCreationUpdate(BackupProto_GroupCreationUpdate)
@@ -5214,6 +5277,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// If unset, importers should consider there to be no wallpaper.
   public var wallpaper: OneOf_Wallpaper? {
     get {return _storage._wallpaper}
     set {_uniqueStorage()._wallpaper = newValue}
@@ -5237,6 +5301,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
     set {_uniqueStorage()._wallpaper = .wallpaperPhoto(newValue)}
   }
 
+  /// If unset, importers should consider it to be AutomaticBubbleColor
   public var bubbleColor: OneOf_BubbleColor? {
     get {return _storage._bubbleColor}
     set {_uniqueStorage()._bubbleColor = newValue}
@@ -5276,6 +5341,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+  /// If unset, importers should consider there to be no wallpaper.
   public enum OneOf_Wallpaper: Equatable, Sendable {
     case wallpaperPreset(BackupProto_ChatStyle.WallpaperPreset)
     /// This `FilePointer` is expected not to contain a `fileName`, `width`,
@@ -5284,6 +5350,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
 
   }
 
+  /// If unset, importers should consider it to be AutomaticBubbleColor
   public enum OneOf_BubbleColor: Equatable, Sendable {
     /// Bubble setting is automatically determined based on the wallpaper setting,
     /// or `SOLID_ULTRAMARINE` for `noWallpaper`
@@ -5296,6 +5363,8 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
 
   public enum WallpaperPreset: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Interpret as the wallpaper being unset
     case unknownWallpaperPreset // = 0
     case solidBlush // = 1
     case solidCopper // = 2
@@ -5410,6 +5479,8 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
 
   public enum BubbleColorPreset: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Interpret as the user's default chat bubble color
     case unknownBubbleColorPreset // = 0
     case solidUltramarine // = 1
     case solidCrimson // = 2
@@ -5552,6 +5623,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
 
     public var id: UInt64 = 0
 
+    /// If unset, use the default chat color
     public var color: BackupProto_ChatStyle.CustomChatColor.OneOf_Color? = nil
 
     /// 0xAARRGGBB
@@ -5573,6 +5645,7 @@ public struct BackupProto_ChatStyle: @unchecked Sendable {
 
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
+    /// If unset, use the default chat color
     public enum OneOf_Color: Equatable, Sendable {
       /// 0xAARRGGBB
       case solid(UInt32)
@@ -5640,6 +5713,8 @@ public struct BackupProto_NotificationProfile: Sendable {
 
   public enum DayOfWeek: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Interpret as "Monday"
     case unknown // = 0
     case monday // = 1
     case tuesday // = 2
@@ -5731,6 +5806,8 @@ public struct BackupProto_ChatFolder: Sendable {
   /// Represents the default "All chats" folder record vs all other custom folders
   public enum FolderType: SwiftProtobuf.Enum, Swift.CaseIterable {
     public typealias RawValue = Int
+
+    /// Interpret as "Custom"
     case unknown // = 0
     case all // = 1
     case custom // = 2
@@ -6989,6 +7066,7 @@ extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     3: .same(proto: "hideStory"),
     4: .same(proto: "storySendMode"),
     5: .same(proto: "snapshot"),
+    6: .same(proto: "blocked"),
   ]
 
   fileprivate class _StorageClass {
@@ -6997,6 +7075,7 @@ extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     var _hideStory: Bool = false
     var _storySendMode: BackupProto_Group.StorySendMode = .default
     var _snapshot: BackupProto_Group.GroupSnapshot? = nil
+    var _blocked: Bool = false
 
     #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
@@ -7016,6 +7095,7 @@ extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       _hideStory = source._hideStory
       _storySendMode = source._storySendMode
       _snapshot = source._snapshot
+      _blocked = source._blocked
     }
   }
 
@@ -7039,6 +7119,7 @@ extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
         case 3: try { try decoder.decodeSingularBoolField(value: &_storage._hideStory) }()
         case 4: try { try decoder.decodeSingularEnumField(value: &_storage._storySendMode) }()
         case 5: try { try decoder.decodeSingularMessageField(value: &_storage._snapshot) }()
+        case 6: try { try decoder.decodeSingularBoolField(value: &_storage._blocked) }()
         default: break
         }
       }
@@ -7066,6 +7147,9 @@ extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       try { if let v = _storage._snapshot {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
       } }()
+      if _storage._blocked != false {
+        try visitor.visitSingularBoolField(value: _storage._blocked, fieldNumber: 6)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7080,6 +7164,7 @@ extension BackupProto_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
         if _storage._hideStory != rhs_storage._hideStory {return false}
         if _storage._storySendMode != rhs_storage._storySendMode {return false}
         if _storage._snapshot != rhs_storage._snapshot {return false}
+        if _storage._blocked != rhs_storage._blocked {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -8935,7 +9020,6 @@ extension BackupProto_DirectStoryReplyMessage: SwiftProtobuf.Message, SwiftProto
     1: .same(proto: "textReply"),
     2: .same(proto: "emoji"),
     3: .same(proto: "reactions"),
-    4: .same(proto: "storySentTimestamp"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8966,7 +9050,6 @@ extension BackupProto_DirectStoryReplyMessage: SwiftProtobuf.Message, SwiftProto
         }
       }()
       case 3: try { try decoder.decodeRepeatedMessageField(value: &self.reactions) }()
-      case 4: try { try decoder.decodeSingularUInt64Field(value: &self._storySentTimestamp) }()
       default: break
       }
     }
@@ -8991,16 +9074,12 @@ extension BackupProto_DirectStoryReplyMessage: SwiftProtobuf.Message, SwiftProto
     if !self.reactions.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.reactions, fieldNumber: 3)
     }
-    try { if let v = self._storySentTimestamp {
-      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 4)
-    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: BackupProto_DirectStoryReplyMessage, rhs: BackupProto_DirectStoryReplyMessage) -> Bool {
     if lhs.reply != rhs.reply {return false}
     if lhs.reactions != rhs.reactions {return false}
-    if lhs._storySentTimestamp != rhs._storySentTimestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -10647,8 +10726,8 @@ extension BackupProto_BodyRange: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self._start) }()
-      case 2: try { try decoder.decodeSingularUInt32Field(value: &self._length) }()
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.start) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.length) }()
       case 3: try {
         var v: Data?
         try decoder.decodeSingularBytesField(value: &v)
@@ -10675,12 +10754,12 @@ extension BackupProto_BodyRange: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._start {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 1)
-    } }()
-    try { if let v = self._length {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
-    } }()
+    if self.start != 0 {
+      try visitor.visitSingularUInt32Field(value: self.start, fieldNumber: 1)
+    }
+    if self.length != 0 {
+      try visitor.visitSingularUInt32Field(value: self.length, fieldNumber: 2)
+    }
     switch self.associatedValue {
     case .mentionAci?: try {
       guard case .mentionAci(let v)? = self.associatedValue else { preconditionFailure() }
@@ -10696,8 +10775,8 @@ extension BackupProto_BodyRange: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
   }
 
   public static func ==(lhs: BackupProto_BodyRange, rhs: BackupProto_BodyRange) -> Bool {
-    if lhs._start != rhs._start {return false}
-    if lhs._length != rhs._length {return false}
+    if lhs.start != rhs.start {return false}
+    if lhs.length != rhs.length {return false}
     if lhs.associatedValue != rhs.associatedValue {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

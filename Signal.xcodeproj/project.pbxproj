@@ -2499,6 +2499,38 @@
 		D962346D2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */; };
 		D96234702C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */; };
 		D96269D92C58407400152314 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D96269D82C58407400152314 /* README.md */; };
+		D9683D792D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D6B2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.binproto */; };
+		D9683D7A2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_11.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D742D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_11.txtproto */; };
+		D9683D7B2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D702D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.txtproto */; };
+		D9683D7C2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_06.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D6A2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_06.txtproto */; };
+		D9683D7D2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_08.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D6D2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_08.binproto */; };
+		D9683D7E2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_03.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D632D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_03.binproto */; };
+		D9683D7F2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_01.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D5F2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_01.binproto */; };
+		D9683D802D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_01.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D602D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_01.txtproto */; };
+		D9683D812D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_02.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D622D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_02.txtproto */; };
+		D9683D822D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_06.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D692D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_06.binproto */; };
+		D9683D832D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_08.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D6E2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_08.txtproto */; };
+		D9683D842D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_02.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D612D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_02.binproto */; };
+		D9683D852D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_05.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D682D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_05.txtproto */; };
+		D9683D862D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_10.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D722D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_10.txtproto */; };
+		D9683D872D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_00.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D5E2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_00.txtproto */; };
+		D9683D882D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_12.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D752D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_12.binproto */; };
+		D9683D892D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_13.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D772D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_13.binproto */; };
+		D9683D8A2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_10.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D712D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_10.binproto */; };
+		D9683D8B2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_13.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D782D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_13.txtproto */; };
+		D9683D8C2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_03.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D642D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_03.txtproto */; };
+		D9683D8D2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_12.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D762D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_12.txtproto */; };
+		D9683D8E2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_04.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D662D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_04.txtproto */; };
+		D9683D8F2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_00.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D5D2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_00.binproto */; };
+		D9683D902D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_11.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D732D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_11.binproto */; };
+		D9683D912D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_05.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D672D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_05.binproto */; };
+		D9683D922D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D6F2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.binproto */; };
+		D9683D932D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_04.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D652D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_04.binproto */; };
+		D9683D942D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D6C2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.txtproto */; };
+		D9683D992D485BF000F423F4 /* chat_item_standard_message_with_quote_15.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D952D485BF000F423F4 /* chat_item_standard_message_with_quote_15.binproto */; };
+		D9683D9A2D485BF000F423F4 /* chat_item_standard_message_with_quote_15.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D962D485BF000F423F4 /* chat_item_standard_message_with_quote_15.txtproto */; };
+		D9683D9B2D485BF000F423F4 /* chat_item_standard_message_with_quote_16.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D982D485BF000F423F4 /* chat_item_standard_message_with_quote_16.txtproto */; };
+		D9683D9C2D485BF000F423F4 /* chat_item_standard_message_with_quote_16.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9683D972D485BF000F423F4 /* chat_item_standard_message_with_quote_16.binproto */; };
 		D968B4982C9E1AD1006B14E1 /* SmsLockIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D968B4972C9E1AC3006B14E1 /* SmsLockIconView.swift */; };
 		D968F71E2C34884B00AB318B /* MessageBackupReleaseNotesRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D968F71D2C34884B00AB318B /* MessageBackupReleaseNotesRecipientArchiver.swift */; };
 		D96A94A72954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */; };
@@ -6304,6 +6336,38 @@
 		D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeMostRecentAddressableMessageCursorTest.swift; sourceTree = "<group>"; };
 		D96269D82C58407400152314 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMessagingJobQueues.swift; sourceTree = "<group>"; };
+		D9683D5D2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_00.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_00.binproto; sourceTree = "<group>"; };
+		D9683D5E2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_00.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_00.txtproto; sourceTree = "<group>"; };
+		D9683D5F2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_01.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_01.binproto; sourceTree = "<group>"; };
+		D9683D602D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_01.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_01.txtproto; sourceTree = "<group>"; };
+		D9683D612D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_02.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_02.binproto; sourceTree = "<group>"; };
+		D9683D622D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_02.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_02.txtproto; sourceTree = "<group>"; };
+		D9683D632D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_03.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_03.binproto; sourceTree = "<group>"; };
+		D9683D642D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_03.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_03.txtproto; sourceTree = "<group>"; };
+		D9683D652D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_04.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_04.binproto; sourceTree = "<group>"; };
+		D9683D662D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_04.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_04.txtproto; sourceTree = "<group>"; };
+		D9683D672D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_05.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_05.binproto; sourceTree = "<group>"; };
+		D9683D682D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_05.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_05.txtproto; sourceTree = "<group>"; };
+		D9683D692D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_06.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_06.binproto; sourceTree = "<group>"; };
+		D9683D6A2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_06.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_06.txtproto; sourceTree = "<group>"; };
+		D9683D6B2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_07.binproto; sourceTree = "<group>"; };
+		D9683D6C2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_07.txtproto; sourceTree = "<group>"; };
+		D9683D6D2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_08.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_08.binproto; sourceTree = "<group>"; };
+		D9683D6E2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_08.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_08.txtproto; sourceTree = "<group>"; };
+		D9683D6F2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_09.binproto; sourceTree = "<group>"; };
+		D9683D702D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_09.txtproto; sourceTree = "<group>"; };
+		D9683D712D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_10.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_10.binproto; sourceTree = "<group>"; };
+		D9683D722D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_10.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_10.txtproto; sourceTree = "<group>"; };
+		D9683D732D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_11.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_11.binproto; sourceTree = "<group>"; };
+		D9683D742D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_11.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_11.txtproto; sourceTree = "<group>"; };
+		D9683D752D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_12.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_12.binproto; sourceTree = "<group>"; };
+		D9683D762D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_12.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_12.txtproto; sourceTree = "<group>"; };
+		D9683D772D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_13.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_direct_story_reply_with_edits_13.binproto; sourceTree = "<group>"; };
+		D9683D782D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_13.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_direct_story_reply_with_edits_13.txtproto; sourceTree = "<group>"; };
+		D9683D952D485BF000F423F4 /* chat_item_standard_message_with_quote_15.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_standard_message_with_quote_15.binproto; sourceTree = "<group>"; };
+		D9683D962D485BF000F423F4 /* chat_item_standard_message_with_quote_15.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_standard_message_with_quote_15.txtproto; sourceTree = "<group>"; };
+		D9683D972D485BF000F423F4 /* chat_item_standard_message_with_quote_16.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = chat_item_standard_message_with_quote_16.binproto; sourceTree = "<group>"; };
+		D9683D982D485BF000F423F4 /* chat_item_standard_message_with_quote_16.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = chat_item_standard_message_with_quote_16.txtproto; sourceTree = "<group>"; };
 		D968B4972C9E1AC3006B14E1 /* SmsLockIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmsLockIconView.swift; sourceTree = "<group>"; };
 		D968F71D2C34884B00AB318B /* MessageBackupReleaseNotesRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupReleaseNotesRecipientArchiver.swift; sourceTree = "<group>"; };
 		D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+MonthlyPaypalDonation.swift"; sourceTree = "<group>"; };
@@ -11247,6 +11311,34 @@
 				664AC0FC2D39AD0800561B1C /* chat_item_direct_story_reply_13.txtproto */,
 				664AC0FD2D39AD0800561B1C /* chat_item_direct_story_reply_14.binproto */,
 				664AC0FE2D39AD0800561B1C /* chat_item_direct_story_reply_14.txtproto */,
+				D9683D5D2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_00.binproto */,
+				D9683D5E2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_00.txtproto */,
+				D9683D5F2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_01.binproto */,
+				D9683D602D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_01.txtproto */,
+				D9683D612D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_02.binproto */,
+				D9683D622D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_02.txtproto */,
+				D9683D632D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_03.binproto */,
+				D9683D642D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_03.txtproto */,
+				D9683D652D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_04.binproto */,
+				D9683D662D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_04.txtproto */,
+				D9683D672D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_05.binproto */,
+				D9683D682D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_05.txtproto */,
+				D9683D692D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_06.binproto */,
+				D9683D6A2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_06.txtproto */,
+				D9683D6B2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.binproto */,
+				D9683D6C2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.txtproto */,
+				D9683D6D2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_08.binproto */,
+				D9683D6E2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_08.txtproto */,
+				D9683D6F2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.binproto */,
+				D9683D702D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.txtproto */,
+				D9683D712D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_10.binproto */,
+				D9683D722D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_10.txtproto */,
+				D9683D732D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_11.binproto */,
+				D9683D742D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_11.txtproto */,
+				D9683D752D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_12.binproto */,
+				D9683D762D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_12.txtproto */,
+				D9683D772D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_13.binproto */,
+				D9683D782D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_13.txtproto */,
 				D90AA1032CC9616A00021CB0 /* chat_item_expiration_timer_update_00.binproto */,
 				D90AA1042CC9616A00021CB0 /* chat_item_expiration_timer_update_00.txtproto */,
 				D90AA1052CC9616A00021CB0 /* chat_item_expiration_timer_update_01.binproto */,
@@ -11749,6 +11841,10 @@
 				D90AA2A22CC9616A00021CB0 /* chat_item_standard_message_with_quote_13.txtproto */,
 				D90AA2A32CC9616A00021CB0 /* chat_item_standard_message_with_quote_14.binproto */,
 				D90AA2A42CC9616A00021CB0 /* chat_item_standard_message_with_quote_14.txtproto */,
+				D9683D952D485BF000F423F4 /* chat_item_standard_message_with_quote_15.binproto */,
+				D9683D962D485BF000F423F4 /* chat_item_standard_message_with_quote_15.txtproto */,
+				D9683D972D485BF000F423F4 /* chat_item_standard_message_with_quote_16.binproto */,
+				D9683D982D485BF000F423F4 /* chat_item_standard_message_with_quote_16.txtproto */,
 				D90AA2A52CC9616A00021CB0 /* chat_item_sticker_message_00.binproto */,
 				D90AA2A62CC9616A00021CB0 /* chat_item_sticker_message_00.txtproto */,
 				D90AA2A72CC9616A00021CB0 /* chat_item_sticker_message_01.binproto */,
@@ -14882,6 +14978,34 @@
 				664AC1022D39AD0800561B1C /* chat_item_direct_story_reply_13.txtproto in Resources */,
 				664AC1132D39AD0800561B1C /* chat_item_direct_story_reply_14.binproto in Resources */,
 				664AC1172D39AD0800561B1C /* chat_item_direct_story_reply_14.txtproto in Resources */,
+				D9683D8F2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_00.binproto in Resources */,
+				D9683D872D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_00.txtproto in Resources */,
+				D9683D7F2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_01.binproto in Resources */,
+				D9683D802D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_01.txtproto in Resources */,
+				D9683D842D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_02.binproto in Resources */,
+				D9683D812D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_02.txtproto in Resources */,
+				D9683D7E2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_03.binproto in Resources */,
+				D9683D8C2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_03.txtproto in Resources */,
+				D9683D932D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_04.binproto in Resources */,
+				D9683D8E2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_04.txtproto in Resources */,
+				D9683D912D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_05.binproto in Resources */,
+				D9683D852D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_05.txtproto in Resources */,
+				D9683D822D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_06.binproto in Resources */,
+				D9683D7C2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_06.txtproto in Resources */,
+				D9683D792D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.binproto in Resources */,
+				D9683D942D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_07.txtproto in Resources */,
+				D9683D7D2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_08.binproto in Resources */,
+				D9683D832D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_08.txtproto in Resources */,
+				D9683D922D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.binproto in Resources */,
+				D9683D7B2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_09.txtproto in Resources */,
+				D9683D8A2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_10.binproto in Resources */,
+				D9683D862D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_10.txtproto in Resources */,
+				D9683D902D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_11.binproto in Resources */,
+				D9683D7A2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_11.txtproto in Resources */,
+				D9683D882D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_12.binproto in Resources */,
+				D9683D8D2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_12.txtproto in Resources */,
+				D9683D892D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_13.binproto in Resources */,
+				D9683D8B2D485BD300F423F4 /* chat_item_direct_story_reply_with_edits_13.txtproto in Resources */,
 				D90AA36F2CC9616B00021CB0 /* chat_item_expiration_timer_update_00.binproto in Resources */,
 				D90AA4122CC9616B00021CB0 /* chat_item_expiration_timer_update_00.txtproto in Resources */,
 				D90AA6172CC9616B00021CB0 /* chat_item_expiration_timer_update_01.binproto in Resources */,
@@ -15384,6 +15508,10 @@
 				D90AA4E32CC9616B00021CB0 /* chat_item_standard_message_with_quote_13.txtproto in Resources */,
 				D90AA4172CC9616B00021CB0 /* chat_item_standard_message_with_quote_14.binproto in Resources */,
 				D90AA5AD2CC9616B00021CB0 /* chat_item_standard_message_with_quote_14.txtproto in Resources */,
+				D9683D992D485BF000F423F4 /* chat_item_standard_message_with_quote_15.binproto in Resources */,
+				D9683D9A2D485BF000F423F4 /* chat_item_standard_message_with_quote_15.txtproto in Resources */,
+				D9683D9C2D485BF000F423F4 /* chat_item_standard_message_with_quote_16.binproto in Resources */,
+				D9683D9B2D485BF000F423F4 /* chat_item_standard_message_with_quote_16.txtproto in Resources */,
 				D90AA4C52CC9616B00021CB0 /* chat_item_sticker_message_00.binproto in Resources */,
 				D90AA4972CC9616B00021CB0 /* chat_item_sticker_message_00.txtproto in Resources */,
 				D90AA3C82CC9616B00021CB0 /* chat_item_sticker_message_01.binproto in Resources */,

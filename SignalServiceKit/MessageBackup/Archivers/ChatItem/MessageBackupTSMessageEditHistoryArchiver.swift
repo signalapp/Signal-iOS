@@ -163,10 +163,6 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
     ) -> MessageBackup.ArchiveInteractionResult<Void> {
         var partialErrors = [ArchiveFrameError]()
 
-        guard case .standardMessage = latestRevisionDetails.chatItemType else {
-            return .success(())
-        }
-
         /// The edit history, from oldest revision to newest. This ordering
         /// matches the expected ordering for `revisions` on a `ChatItem`, but
         /// is reverse of what we get from `editMessageStore`.

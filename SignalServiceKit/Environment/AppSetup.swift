@@ -1148,6 +1148,7 @@ public class AppSetup {
             ),
             groupRecipientArchiver: MessageBackupGroupRecipientArchiver(
                 avatarFetcher: messageBackupAvatarFetcher,
+                blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
                 disappearingMessageConfigStore: disappearingMessagesConfigurationStore,
                 groupsV2: groupsV2,
                 profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),

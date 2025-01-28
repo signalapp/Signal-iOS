@@ -465,6 +465,8 @@ extension MessageBackup {
             /// Error iterating over all ad hoc calls for backup purposes.
             case adHocCallIteratorError(RawError)
 
+            case blockedGroupFetchError(RawError)
+
             /// These should never happen; it means some invariant in the backup code
             /// we could not enforce with the type system was broken. Nothing was wrong with
             /// the proto or local database; its the iOS backup code that has a bug somewhere.

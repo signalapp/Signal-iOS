@@ -88,7 +88,6 @@ extension MessageBackup {
             }
 
             let replyType: ReplyType
-            let storySentTimestamp: UInt64?
             fileprivate let reactions: [BackupProto_Reaction]
         }
 
@@ -953,19 +952,6 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             proto.reply = .textReply(textReply)
         }
 
-        if let storyTimestamp = message.storyTimestamp?.uint64Value {
-            switch
-                MessageBackup.Timestamps
-                    .validateTimestamp(storyTimestamp)
-                    .bubbleUp(ChatItemType.self, partialErrors: &partialErrors)
-            {
-            case .continue:
-                proto.storySentTimestamp = storyTimestamp
-            case .bubbleUpError(let error):
-                return error
-            }
-        }
-
         let reactions: [BackupProto_Reaction]
         let reactionsResult = reactionArchiver.archiveReactions(
             message,
@@ -1476,9 +1462,6 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         var bodyMentions = [NSRange: Aci]()
         var bodyStyles = [NSRangedValue<MessageBodyRanges.SingleStyle>]()
         for bodyRange in bodyRangeProtos {
-            guard bodyRange.hasStart, bodyRange.hasLength else {
-                continue
-            }
             let bodyRangeStart = bodyRange.start
             let bodyRangeLength = bodyRange.length
 
@@ -1910,16 +1893,8 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             )])
         }
 
-        let storySentTimestamp: UInt64?
-        if storyReply.hasStorySentTimestamp, storyReply.storySentTimestamp > 0 {
-            storySentTimestamp = storyReply.storySentTimestamp
-        } else {
-            storySentTimestamp = nil
-        }
-
         return .success(.storyReply(.init(
             replyType: replyType,
-            storySentTimestamp: storySentTimestamp,
             reactions: storyReply.reactions
         )))
     }

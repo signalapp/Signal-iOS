@@ -24,6 +24,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<RecipientId>
 
     private let avatarFetcher: MessageBackupAvatarFetcher
+    private let blockingManager: MessageBackup.Shims.BlockingManager
     private let disappearingMessageConfigStore: DisappearingMessagesConfigurationStore
     private let groupsV2: GroupsV2
     private let profileManager: MessageBackup.Shims.ProfileManager
@@ -34,6 +35,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
     public init(
         avatarFetcher: MessageBackupAvatarFetcher,
+        blockingManager: MessageBackup.Shims.BlockingManager,
         disappearingMessageConfigStore: DisappearingMessagesConfigurationStore,
         groupsV2: GroupsV2,
         profileManager: MessageBackup.Shims.ProfileManager,
@@ -41,6 +43,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         threadStore: MessageBackupThreadStore
     ) {
         self.avatarFetcher = avatarFetcher
+        self.blockingManager = blockingManager
         self.disappearingMessageConfigStore = disappearingMessageConfigStore
         self.groupsV2 = groupsV2
         self.profileManager = profileManager
@@ -54,6 +57,13 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
 
+        let blockedGroupIds: Set<Data>
+        do {
+            blockedGroupIds = Set(try blockingManager.blockedGroupIds(tx: context.tx))
+        } catch {
+            return .completeFailure(.fatalArchiveError(.blockedGroupFetchError(error)))
+        }
+
         do {
             try context.bencher.wrapEnumeration(
                 threadStore.enumerateGroupThreads(context:block:),
@@ -63,6 +73,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
                 autoreleasepool {
                     self.archiveGroupThread(
                         groupThread,
+                        blockedGroupIds: blockedGroupIds,
                         stream: stream,
                         frameBencher: frameBencher,
                         context: context,
@@ -88,6 +99,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
     private func archiveGroupThread(
         _ groupThread: TSGroupThread,
+        blockedGroupIds: Set<Data>,
         stream: MessageBackupProtoOutputStream,
         frameBencher: MessageBackup.Bencher.FrameBencher,
         context: MessageBackup.RecipientArchivingContext,
@@ -117,6 +129,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         group.whitelisted = profileManager.isThread(
             inProfileWhitelist: groupThread, tx: context.tx
         )
+        group.blocked = blockedGroupIds.contains(groupId.value)
         do {
             group.hideStory = try storyStore.getOrCreateStoryContextAssociatedData(
                 for: groupThread,
@@ -373,6 +386,10 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
         if groupProto.whitelisted {
             profileManager.addToWhitelist(groupThread, tx: context.tx)
+        }
+
+        if groupProto.blocked {
+            blockingManager.addBlockedGroupId(groupContextInfo.groupId, tx: context.tx)
         }
 
         var partialErrors = [MessageBackup.RestoreFrameError<RecipientId>]()
