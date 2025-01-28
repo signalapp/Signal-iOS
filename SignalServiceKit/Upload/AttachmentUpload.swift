@@ -100,6 +100,7 @@ public struct AttachmentUpload {
         guard count < Upload.Constants.uploadMaxRetries else {
             throw Upload.Error.uploadFailure(recovery: .noMoreRetries)
         }
+        let startTime = CACurrentMediaTime()
 
         let totalDataLength = attempt.encryptedDataLength
         let bytesAlreadyUploaded: Int
@@ -145,13 +146,28 @@ public struct AttachmentUpload {
             internalProgress.incrementCompletedUnitCount(by: UInt64(bytesAlreadyUploaded) - internalProgress.completedUnitCount)
         }
 
+        func downloadTimeLogString(_ bytesUploaded: UInt64) -> String {
+            let totalTime = CACurrentMediaTime() - startTime
+            guard totalTime > 0 else { return "" }
+
+            let bytesDownloaded = bytesUploaded - UInt64(bytesAlreadyUploaded)
+            let rate = Double(bytesDownloaded / 1024) / totalTime
+            let timeMessage = String(format: "%lld bytes in %.2fs", bytesDownloaded, totalTime)
+
+            if bytesDownloaded > 0 {
+                return timeMessage + String(format: " (%.2f KiB/s)", rate)
+            } else {
+                return timeMessage
+            }
+        }
+
         do {
             try await attempt.endpoint.performUpload(
                 startPoint: bytesAlreadyUploaded,
                 attempt: attempt,
                 progress: progress
             )
-            attempt.logger.info("Attachment uploaded successfully. (\(internalProgress.completedUnitCount) bytes)")
+            attempt.logger.warn("Attachment uploaded successfully. \(bytesAlreadyUploaded) -> \(internalProgress.completedUnitCount) (\(downloadTimeLogString(internalProgress.completedUnitCount))")
         } catch {
             if let statusCode = error.httpStatusCode {
                 attempt.logger.warn("Encountered error during upload. (code=\(statusCode)")
@@ -194,7 +210,7 @@ public struct AttachmentUpload {
 
             let didUploadMakeProgress = latestUploadProgressBytes > bytesAlreadyUploaded
             if didUploadMakeProgress {
-                attempt.logger.warn("Upload made progress: \(bytesAlreadyUploaded) -> \(latestUploadProgressBytes)")
+                attempt.logger.warn("Upload made progress: \(bytesAlreadyUploaded) -> \(latestUploadProgressBytes)\(downloadTimeLogString(UInt64(latestUploadProgressBytes)))")
             }
 
             switch failureMode {
@@ -206,7 +222,7 @@ public struct AttachmentUpload {
                 case .immediately:
                     attempt.logger.warn("Retry upload immediately.")
                 case .afterDelay(let delay):
-                    attempt.logger.warn("Retry upload after \(delay) seconds.")
+                    attempt.logger.warn(String(format: "Retry upload after %.3f seconds.", delay))
                     try await Upload.sleep(for: delay)
                 }
             case .restart:
