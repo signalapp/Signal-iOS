@@ -511,7 +511,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         var didArchiveText = false
         var didArchiveAttachments = false
 
-        if let body = quotedMessage.body {
+        if let body = quotedMessage.body?.nilIfEmpty {
             let textResult = archiveText(
                 MessageBody(text: body, ranges: quotedMessage.bodyRanges ?? .empty),
                 interactionUniqueId: interactionUniqueId
