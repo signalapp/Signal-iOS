@@ -651,7 +651,7 @@ class ProvisioningController: NSObject {
         case .errorRestoringBackup:
             errorPromptMode = .contactSupport
             errorMessage = nil
-        case .timedOutWaitingForBackup, .errorDownloadingBackup, .networkError:
+        case .errorDownloadingBackup, .networkError:
             errorPromptMode = .networkErrorRetry
             errorMessage = OWSLocalizedString(
                 "SECONDARY_LINKING_SYNCING_NETWORK_ERROR_MESSAGE",

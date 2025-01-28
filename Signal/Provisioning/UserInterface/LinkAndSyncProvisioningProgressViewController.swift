@@ -23,6 +23,9 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
     @Published var progressSourceLabel: String?
 #endif
 
+    private var waitForBackupTimeoutTimer: Timer?
+    private var didTimeoutWaitForBackup = false
+
     var progress: Float {
         didTapCancel ? 0 : taskProgress
     }
@@ -40,10 +43,17 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
             ?? progressSourceLabel
 #endif
 
-        let canBeCancelled = progress
-            .sourceProgresses[SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue]?
-            .isFinished
-            ?? false
+        let canBeCancelled: Bool
+        if didTimeoutWaitForBackup {
+            // If enough time has passed, allow cancelling
+            // regardless of state.
+            canBeCancelled = true
+        } else {
+            canBeCancelled = progress
+                .sourceProgresses[SecondaryLinkNSyncProgressPhase.waitingForBackup.rawValue]?
+                .isFinished
+                ?? false
+        }
 
         guard !didTapCancel else { return }
 
@@ -78,6 +88,19 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
         }
 
         self.canBeCancelled = canBeCancelled
+
+        if canBeCancelled {
+            waitForBackupTimeoutTimer?.invalidate()
+            waitForBackupTimeoutTimer = nil
+        } else if !(waitForBackupTimeoutTimer?.isValid ?? false) {
+            waitForBackupTimeoutTimer = Timer.scheduledTimer(
+                withTimeInterval: 60,
+                repeats: false
+            ) { [weak self] _ in
+                self?.didTimeoutWaitForBackup = true
+                self?.canBeCancelled = true
+            }
+        }
     }
 
     func cancel(task: Task<Void, Error>) {

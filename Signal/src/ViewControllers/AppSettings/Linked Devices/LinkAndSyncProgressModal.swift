@@ -30,6 +30,9 @@ class LinkAndSyncProgressViewModel: ObservableObject {
         didTapCancel ? 0 : taskProgress
     }
 
+    private var waitForLinkingTimeoutTimer: Timer?
+    private var didTimeoutWaitForLinking = false
+
     fileprivate func updateProgress(progress: Float, canBeCancelled: Bool) {
         withAnimation(.smooth) {
             self.taskProgress = progress
@@ -41,10 +44,17 @@ class LinkAndSyncProgressViewModel: ObservableObject {
         // This seems to help with the Lottie bug mentioned below
         objectWillChange.send()
 
-        let canBeCancelled = progress
-            .sourceProgresses[PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue]?
-            .isFinished
-            ?? false
+        let canBeCancelled: Bool
+        if didTimeoutWaitForLinking {
+            // If enough time has passed, allow cancelling
+            // regardless of state.
+            canBeCancelled = true
+        } else {
+            canBeCancelled = progress
+                .sourceProgresses[PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue]?
+                .isFinished
+                ?? false
+        }
 
         self.isIndeterminate = progress
             .sourceProgresses[PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue]?
@@ -55,6 +65,19 @@ class LinkAndSyncProgressViewModel: ObservableObject {
             progress: progress.percentComplete,
             canBeCancelled: canBeCancelled
         )
+
+        if canBeCancelled {
+            waitForLinkingTimeoutTimer?.invalidate()
+            waitForLinkingTimeoutTimer = nil
+        } else if !(waitForLinkingTimeoutTimer?.isValid ?? false) {
+            waitForLinkingTimeoutTimer = Timer.scheduledTimer(
+                withTimeInterval: 60,
+                repeats: false
+            ) { [weak self] _ in
+                self?.didTimeoutWaitForLinking = true
+                self?.canBeCancelled = true
+            }
+        }
 
 #if DEBUG
         progressSourceLabel = progress.sourceProgresses

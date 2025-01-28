@@ -321,7 +321,6 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
                         self.deviceIdToIgnore = linkedDeviceId
                         return
                     case
-                            .timedOutWaitingForLinkedDevice,
                             .errorWaitingForLinkedDevice,
                             .errorUploadingBackup,
                             .errorMarkingBackupUploaded,
@@ -412,7 +411,7 @@ class LinkedDevicesHostingController: HostingContainer<LinkedDevicesView> {
                 switch error {
                 case .errorMarkingBackupUploaded(let retryHandler), .errorUploadingBackup(let retryHandler):
                     self.showLinkAndSyncRetryableFailureAlert(errorRetryHandler: retryHandler)
-                case .errorWaitingForLinkedDevice, .timedOutWaitingForLinkedDevice:
+                case .errorWaitingForLinkedDevice:
                     self.showLinkAndSyncUnretryableFailureAlert(contactSupportEmailFilter: nil)
                 case .errorGeneratingBackup:
                     self.showLinkAndSyncUnretryableFailureAlert(contactSupportEmailFilter: .backupExportFailed)

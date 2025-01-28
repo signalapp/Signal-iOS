@@ -23,7 +23,6 @@ extension BackupKey {
 /// For Link'n'Sync errors thrown on the primary device.
 public enum PrimaryLinkNSyncError: Error {
     case cancelled(linkedDeviceId: Int64?)
-    case timedOutWaitingForLinkedDevice
     case errorWaitingForLinkedDevice
     case errorGeneratingBackup
     // Only these two types are "retryable" in that we let the
@@ -69,7 +68,6 @@ public enum PrimaryLinkNSyncProgressPhase: String {
 
 /// Link'n'Sync errors thrown on the secondary device.
 public enum SecondaryLinkNSyncError: Error, Equatable {
-    case timedOutWaitingForBackup
     case primaryFailedBackupExport(continueWithoutSyncing: Bool)
     case errorWaitingForBackup
     case errorDownloadingBackup
@@ -245,9 +243,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             // linked device know we've cancelled.
             try? await self.reportLinkNSyncBackupResultToServer(
                 waitForDeviceToLinkResponse: waitForLinkResponse,
-                // TODO: this should use a new error type that automatically
-                // delinks on the linked device (instead of "requesting" a
-                // relink, which gives the user the option in UI)
                 result: .error(.relinkRequested),
                 progress: markUploadedProgress
             )
@@ -414,26 +409,42 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         tokenId: DeviceProvisioningTokenId
     ) async throws(PrimaryLinkNSyncError) -> Requests.WaitForDeviceToLinkResponse {
         Logger.info("Waiting for device to link")
-        let startDate = dateProvider()
         var numNetworkErrors = 0
-        var response: HTTPResponse?
-        while dateProvider().timeIntervalSince(startDate) < Constants.waitForDeviceLinkTotalTimeout {
+        whileLoop: while true {
             do {
-                response = try await networkManager.asyncRequest(
+                let response = try await networkManager.asyncRequest(
                     Requests.waitForDeviceToLink(tokenId: tokenId),
                     canUseWebSocket: false
                 )
-                if response?.responseStatusCode == Requests.WaitForDeviceToLinkResponseCodes.timeout.rawValue {
+                switch Requests.WaitForDeviceToLinkResponseCodes(rawValue: response.responseStatusCode) {
+                case .success:
+                    Logger.info("Device linked!")
+                    guard
+                        let data = response.responseBodyData,
+                        let response = try? JSONDecoder().decode(
+                            Requests.WaitForDeviceToLinkResponse.self,
+                            from: data
+                        )
+                    else {
+                        throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
+                    }
+                    return response
+                case .timeout:
+                    try Task.checkCancellation()
                     // retry
-                    continue
+                    continue whileLoop
+                case .invalidParameters, .rateLimited:
+                    throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
+                case nil:
+                    owsFailDebug("Unexpected response")
+                    throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
                 }
-                Logger.info("Device linked!")
-                break
+            } catch let error as PrimaryLinkNSyncError {
+                throw error
+            } catch let error as CancellationError {
+                throw .cancelled(linkedDeviceId: nil)
             } catch {
-                if error is CancellationError {
-                    throw .cancelled(linkedDeviceId: nil)
-                }
-                if error .isNetworkFailureOrTimeout {
+                if error.isNetworkFailureOrTimeout {
                     numNetworkErrors += 1
                     if numNetworkErrors <= 3 {
                         // retry
@@ -442,30 +453,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 }
                 throw .errorWaitingForLinkedDevice
             }
-        }
-        guard let response else {
-            throw .errorWaitingForLinkedDevice
-        }
-
-        switch Requests.WaitForDeviceToLinkResponseCodes(rawValue: response.responseStatusCode) {
-        case .success:
-            guard
-                let data = response.responseBodyData,
-                let response = try? JSONDecoder().decode(
-                    Requests.WaitForDeviceToLinkResponse.self,
-                    from: data
-                )
-            else {
-                throw .errorWaitingForLinkedDevice
-            }
-            return response
-        case .timeout:
-            throw .timedOutWaitingForLinkedDevice
-        case .invalidParameters, .rateLimited:
-            throw .errorWaitingForLinkedDevice
-        case nil:
-            owsFailDebug("Unexpected response")
-            throw .errorWaitingForLinkedDevice
         }
     }
 
@@ -641,67 +628,59 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     private func _waitForPrimaryToUploadBackup(
         auth: ChatServiceAuth
     ) async throws(SecondaryLinkNSyncError) -> Requests.ExportAndUploadBackupResult {
-        let startDate = dateProvider()
         var numNetworkErrors = 0
-        var response: HTTPResponse?
-        while dateProvider().timeIntervalSince(startDate) < Constants.waitForBackupUploadTotalTimeout {
+        whileLoop: while true {
             do {
-                response = try await networkManager.asyncRequest(
+                let response = try await networkManager.asyncRequest(
                     Requests.waitForLinkNSyncBackupUpload(auth: auth),
                     canUseWebSocket: false
                 )
-                if response?.responseStatusCode == Requests.WaitForLinkNSyncBackupUploadResponseCodes.timeout.rawValue {
-                    continue
+                switch Requests.WaitForLinkNSyncBackupUploadResponseCodes(rawValue: response.responseStatusCode) {
+                case .success:
+                    guard
+                        let data = response.responseBodyData,
+                        let rawResponse = try? JSONDecoder().decode(
+                            Requests.WaitForLinkNSyncBackupUploadRawResponse.self,
+                            from: data
+                        )
+                    else {
+                        throw SecondaryLinkNSyncError.errorWaitingForBackup
+                    }
+                    if
+                        let cdnNumber = rawResponse.cdn,
+                        let cdnKey = rawResponse.key
+                    {
+                        return .success(cdnNumber: cdnNumber, cdnKey: cdnKey)
+                    } else if let error = rawResponse.error {
+                        return .error(error)
+                    } else {
+                        owsFailDebug("Unexpected server response!")
+                        return .error(.continueWithoutUpload)
+                    }
+                case .timeout:
+                    try Task.checkCancellation()
+                    // retry
+                    continue whileLoop
+                case .invalidParameters, .rateLimited:
+                    throw SecondaryLinkNSyncError.errorWaitingForBackup
+                case nil:
+                    owsFailDebug("Unexpected response")
+                    throw SecondaryLinkNSyncError.errorWaitingForBackup
                 }
-                break
+            } catch let error as SecondaryLinkNSyncError {
+                throw error
+            } catch let error as CancellationError {
+                throw SecondaryLinkNSyncError.cancelled
             } catch {
-                if error is CancellationError {
-                    throw SecondaryLinkNSyncError.cancelled
-                }
-
                 if error .isNetworkFailureOrTimeout {
                     numNetworkErrors += 1
                     if numNetworkErrors <= 3 {
                         // retry
-                        continue
+                        continue whileLoop
                     }
                 }
                 throw SecondaryLinkNSyncError.networkError
             }
-        }
-        guard let response else {
-            throw SecondaryLinkNSyncError.networkError
-        }
-
-        switch Requests.WaitForLinkNSyncBackupUploadResponseCodes(rawValue: response.responseStatusCode) {
-        case .success:
-            guard
-                let data = response.responseBodyData,
-                let rawResponse = try? JSONDecoder().decode(
-                    Requests.WaitForLinkNSyncBackupUploadRawResponse.self,
-                    from: data
-                )
-            else {
-                throw SecondaryLinkNSyncError.errorWaitingForBackup
-            }
-            if
-                let cdnNumber = rawResponse.cdn,
-                let cdnKey = rawResponse.key
-            {
-                return .success(cdnNumber: cdnNumber, cdnKey: cdnKey)
-            } else if let error = rawResponse.error {
-                return .error(error)
-            } else {
-                owsFailDebug("Unexpected server response!")
-                return .error(.continueWithoutUpload)
-            }
-        case .timeout:
-            throw SecondaryLinkNSyncError.timedOutWaitingForBackup
-        case .invalidParameters, .rateLimited:
-            throw SecondaryLinkNSyncError.errorWaitingForBackup
-        case nil:
-            owsFailDebug("Unexpected response")
-            throw SecondaryLinkNSyncError.errorWaitingForBackup
         }
     }
 
@@ -766,8 +745,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         static let enabledOnPrimaryKey = "enabledOnPrimaryKey"
 
         static let longPollRequestTimeoutSeconds: UInt32 = 10
-        static let waitForDeviceLinkTotalTimeout: TimeInterval = FeatureFlags.linkAndSyncTotalPrimaryTimeout
-        static let waitForBackupUploadTotalTimeout: TimeInterval = FeatureFlags.linkAndSyncTotalSecondaryTimeout
     }
 
     // MARK: -
