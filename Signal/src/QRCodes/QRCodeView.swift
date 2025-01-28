@@ -132,6 +132,7 @@ struct QRCodeViewRepresentable: UIViewRepresentable {
     @ObservedObject
     private var model: Model
 
+    private let qrCodeStylingMode: QRCodeGenerator.StylingMode
     private let qrCodeTintColor: QRCodeColor
     private let contentInset: CGFloat
     private let cornerRadius: CGFloat
@@ -139,12 +140,14 @@ struct QRCodeViewRepresentable: UIViewRepresentable {
 
     init(
         model: Model,
+        qrCodeStylingMode: QRCodeGenerator.StylingMode = .brandedWithLogo,
         qrCodeTintColor: QRCodeColor = .blue,
         contentInset: CGFloat = 20,
         cornerRadius: CGFloat = 12,
         borderWidth: CGFloat = 2
     ) {
         self.model = model
+        self.qrCodeStylingMode = qrCodeStylingMode
         self.qrCodeTintColor = qrCodeTintColor
         self.contentInset = contentInset
         self.cornerRadius = cornerRadius
@@ -169,7 +172,10 @@ struct QRCodeViewRepresentable: UIViewRepresentable {
 
     func updateUIView(_ qrCodeView: QRCodeView, context: Context) {
         if let url = model.qrCodeURL {
-            qrCodeView.setQRCode(url: url)
+            qrCodeView.setQRCode(
+                url: url,
+                stylingMode: qrCodeStylingMode
+            )
         } else {
             qrCodeView.setLoading()
         }

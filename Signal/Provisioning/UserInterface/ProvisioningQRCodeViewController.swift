@@ -20,7 +20,7 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = Theme.backgroundColor
+        view.backgroundColor = .Signal.background
 
         view.addSubview(primaryView)
         primaryView.autoPinEdgesToSuperviewEdges()
@@ -182,7 +182,7 @@ private struct ProvisioningQRCodeView: View {
                         switch model.urlDisplayMode {
                         case .loading, .loaded:
                             QRCodeViewRepresentable(model: model.qrCodeViewModel)
-                                .padding(qrCodeGeometry.size.height * 0.10)
+                                .padding(qrCodeGeometry.size.height * 0.1)
                         case .refreshButton:
                             Button(action: onRefreshButtonPressed) {
                                 HStack {

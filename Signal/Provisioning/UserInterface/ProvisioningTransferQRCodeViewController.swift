@@ -6,106 +6,35 @@
 import MultipeerConnectivity
 import SignalServiceKit
 import SignalUI
+import SwiftUI
 
 class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
+    private let provisioningTransferQRCodeViewModel: ProvisioningTransferQRCodeView.Model
 
-    private var qrCodeWrapperView: UIView!
-    private var qrCodeWrapperViewSizeConstraint: NSLayoutConstraint!
-    private var qrCodeView: QRCodeView!
+    override init(provisioningController: ProvisioningController) {
+        provisioningTransferQRCodeViewModel = ProvisioningTransferQRCodeView.Model(url: nil)
 
-    // MARK: -
+        super.init(provisioningController: provisioningController)
+    }
 
-    override func loadView() {
-        view = UIView()
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = .Signal.background
 
         view.addSubview(primaryView)
         primaryView.autoPinEdgesToSuperviewEdges()
 
-        view.backgroundColor = .Signal.background
-
-        let titleLabel = self.createTitleLabel(text: OWSLocalizedString(
-            "DEVICE_TRANSFER_QRCODE_TITLE",
-            comment: "The title for the device transfer qr code view"
+        let qrCodeHostingViewContainer = HostingContainer(wrappedView: ProvisioningTransferQRCodeView(
+            model: provisioningTransferQRCodeViewModel,
+            onGetHelpTapped: { [weak self] in self?.didTapHelp() },
+            onCancelTapped: { [weak self] in self?.didTapCancel() }
         ))
 
-        let explanationLabel = self.createExplanationLabel(explanationText: OWSLocalizedString(
-            "DEVICE_TRANSFER_QRCODE_EXPLANATION",
-            comment: "The explanation for the device transfer qr code view"
-        ))
-        explanationLabel.font = .dynamicTypeBody
-        explanationLabel.numberOfLines = 0
-
-        qrCodeWrapperView = UIView()
-        qrCodeWrapperView.backgroundColor = .ows_gray02
-        qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 48)
-        qrCodeWrapperView.layer.cornerRadius = 24
-
-        qrCodeView = QRCodeView()
-
-        let explanationLabel2 = self.createExplanationLabel(
-            explanationText: OWSLocalizedString("DEVICE_TRANSFER_QRCODE_EXPLANATION2",
-            comment: "The second explanation for the device transfer qr code view")
-        )
-        explanationLabel2.font = .dynamicTypeBody
-        explanationLabel2.numberOfLines = 0
-
-        let helpButton = self.linkButton(
-            title: OWSLocalizedString(
-                "DEVICE_TRANSFER_QRCODE_NOT_SEEING",
-                comment: "A prompt to provide further explanation if the user is not seeing the transfer on both devices."
-            ),
-            selector: #selector(didTapHelp)
-        )
-        helpButton.button.titleLabel?.textAlignment = .center
-        helpButton.button.titleLabel?.numberOfLines = 0
-        helpButton.button.titleLabel?.lineBreakMode = .byWordWrapping
-
-        let cancelButton = self.linkButton(
-            title: CommonStrings.cancelButton,
-            selector: #selector(didTapCancel)
-        )
-
-        // MARK: Layout
-
-        qrCodeWrapperView.addSubview(qrCodeView)
-        qrCodeView.autoPinEdgesToSuperviewMargins()
-
-        let qrCodeTopSpacer = UIView()
-        let qrCodeBottomSpacer = UIView()
-
-        let contentStack = UIStackView(arrangedSubviews: [
-            titleLabel,
-            explanationLabel,
-            qrCodeTopSpacer,
-            qrCodeWrapperView,
-            UIView.spacer(withHeight: 18),
-            explanationLabel2,
-            qrCodeBottomSpacer,
-            helpButton,
-            cancelButton
-        ])
-
-        contentStack.axis = .vertical
-        contentStack.alignment = .center
-        contentStack.spacing = 12
-
-        primaryView.addSubview(contentStack)
-        contentStack.autoPinEdgesToSuperviewMargins()
-
-        qrCodeTopSpacer.autoMatch(.height, to: .height, of: qrCodeBottomSpacer, withMultiplier: 0.33)
-
-        qrCodeWrapperView.autoPinToSquareAspectRatio()
-        qrCodeWrapperViewSizeConstraint = qrCodeWrapperView.autoSetDimension(.height, toSize: 0)
-    }
-
-    private func updateLayoutForViewSize(_ size: CGSize) {
-        if size.height > size.width {
-            qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 24)
-            qrCodeWrapperViewSizeConstraint.constant = 352
-        } else {
-            qrCodeWrapperView.layoutMargins = UIEdgeInsets(margin: 12)
-            qrCodeWrapperViewSizeConstraint.constant = 220
-        }
+        addChild(qrCodeHostingViewContainer)
+        primaryView.addSubview(qrCodeHostingViewContainer.view)
+        qrCodeHostingViewContainer.view.autoPinEdgesToSuperviewMargins()
+        qrCodeHostingViewContainer.didMove(toParent: self)
     }
 
     // MARK: -
@@ -121,22 +50,11 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
                     mode: .linked // TODO: .primary
                 )
 
-                qrCodeView.setQRCode(
-                    url: url,
-                    stylingMode: .brandedWithoutLogo
-                )
+                provisioningTransferQRCodeViewModel.qrCodeViewModel.qrCodeURL = url
             } catch {
                 owsFailDebug("error \(error)")
             }
         }
-    }
-
-    override func viewIsAppearing(_ animated: Bool) {
-        super.viewIsAppearing(animated)
-
-        /// Wait until this method to update the layout, because this is the
-        /// first point at which we will be laid out and know our size.
-        updateLayoutForViewSize(view.bounds.size)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -146,17 +64,10 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
         AppEnvironment.shared.deviceTransferServiceRef.stopAcceptingTransfersFromOldDevices()
     }
 
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-
-        updateLayoutForViewSize(size)
-    }
-
     // MARK: - Events
 
     weak var permissionActionSheetController: ActionSheetController?
 
-    @objc
     private func didTapHelp() {
         let turnOnView = TurnOnPermissionView(
             title: OWSLocalizedString(
@@ -206,12 +117,10 @@ class ProvisioningTransferQRCodeViewController: ProvisioningBaseViewController {
         presentActionSheet(actionSheetController)
     }
 
-    @objc
     private func didTapCancel() {
-        Logger.info("")
-
         guard let navigationController = navigationController else {
-            return owsFailDebug("unexpectedly missing nav controller")
+            owsFailDebug("Unexpectedly missing nav controller!")
+            return
         }
 
         provisioningController.pushTransferChoiceView(onto: navigationController)
@@ -252,4 +161,112 @@ extension ProvisioningTransferQRCodeViewController: DeviceTransferServiceObserve
     func deviceTransferServiceDidRequestAppRelaunch() {
         owsFail("Relaunch not supported for provisioning; only on the receiving device during transfer")
     }
+}
+
+// MARK: -
+
+private struct ProvisioningTransferQRCodeView: View {
+    class Model: ObservableObject {
+        let qrCodeViewModel: QRCodeViewRepresentable.Model
+
+        init(url: URL?) {
+            qrCodeViewModel = QRCodeViewRepresentable.Model(qrCodeURL: url)
+        }
+    }
+
+    @ObservedObject
+    private var model: Model
+
+    private let onGetHelpTapped: () -> Void
+    private let onCancelTapped: () -> Void
+
+    init(
+        model: Model,
+        onGetHelpTapped: @escaping () -> Void,
+        onCancelTapped: @escaping () -> Void
+    ) {
+        self.model = model
+        self.onGetHelpTapped = onGetHelpTapped
+        self.onCancelTapped = onCancelTapped
+    }
+
+    var body: some View {
+        GeometryReader { overallGeometry in
+            VStack(spacing: 12) {
+                Text(OWSLocalizedString(
+                    "DEVICE_TRANSFER_QRCODE_TITLE",
+                    comment: "The title for the device transfer qr code view"
+                ))
+                .font(.title)
+                .fontWeight(.semibold)
+                .foregroundStyle(Color.Signal.label)
+
+                Text(OWSLocalizedString(
+                    "DEVICE_TRANSFER_QRCODE_EXPLANATION",
+                    comment: "The explanation for the device transfer qr code view"
+                ))
+                .font(.body)
+                .foregroundStyle(Color.Signal.secondaryLabel)
+
+                Spacer()
+                    .frame(height: overallGeometry.size.height * 0.05)
+
+                GeometryReader { qrCodeGeometry in
+                    ZStack {
+                        Color(UIColor.ows_gray02)
+                            .cornerRadius(24)
+
+                        QRCodeViewRepresentable(
+                            model: model.qrCodeViewModel,
+                            qrCodeStylingMode: .brandedWithoutLogo
+                        )
+                        .padding(qrCodeGeometry.size.height * 0.1)
+                    }
+                }
+                .aspectRatio(1, contentMode: .fit)
+
+                Spacer()
+                    .frame(height: overallGeometry.size.height * (overallGeometry.size.isLandscape ? 0.05 : 0.1))
+
+                Button(OWSLocalizedString(
+                    "DEVICE_TRANSFER_QRCODE_NOT_SEEING",
+                    comment: "A prompt to provide further explanation if the user is not seeing the transfer on both devices."
+                )) {
+                    onGetHelpTapped()
+                }
+                .font(.subheadline)
+                .foregroundStyle(Color.Signal.accent)
+
+                Button(CommonStrings.cancelButton) {
+                    onCancelTapped()
+                }
+                .font(.subheadline)
+                .foregroundStyle(Color.Signal.accent)
+            }
+            .multilineTextAlignment(.center)
+        }
+    }
+}
+
+// MARK: -
+
+private struct PreviewView: View {
+    let url: URL?
+
+    var body: some View {
+        ProvisioningTransferQRCodeView(
+            model: ProvisioningTransferQRCodeView.Model(url: url),
+            onGetHelpTapped: {},
+            onCancelTapped: {}
+        )
+        .padding(112)
+    }
+}
+
+#Preview("Loaded") {
+    PreviewView(url: URL(string: "https://signal.org")!)
+}
+
+#Preview("Loading") {
+    PreviewView(url: nil)
 }
