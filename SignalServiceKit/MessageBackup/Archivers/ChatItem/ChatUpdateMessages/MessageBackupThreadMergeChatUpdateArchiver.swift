@@ -106,10 +106,9 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
         )
 
         guard let directionalDetails = chatItem.directionalDetails else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.chatItemMissingDirectionalDetails),
-                chatItem.id
-            )])
+            return .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                enumType: BackupProto_ChatItem.OneOf_DirectionalDetails.self
+            ))
         }
 
         do {

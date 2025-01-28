@@ -200,7 +200,9 @@ final class MessageBackupGroupCallArchiver {
             let callStatus: CallRecord.CallStatus.GroupCallStatus
             switch groupCall.state {
             case .unknownState, .UNRECOGNIZED:
-                return .messageFailure([.restoreFrameError(.invalidProtoData(.groupCallUnrecognizedState), chatItem.id)])
+                // Fallback to generic
+                callDirection = .incoming
+                callStatus = .generic
             case .generic:
                 callDirection = .incoming
                 callStatus = .generic

@@ -310,6 +310,9 @@ extension MessageBackup {
 
     enum RestoreInteractionResult<Component> {
         case success(Component)
+        /// There was an unrecognized enum (or oneOf) for which we skip restoring this frame
+        /// but we should proceed restoring other frames.
+        case unrecognizedEnum(UnrecognizedEnumError)
         /// Some portion of the interaction failed to restore, but we can still restore the rest of it.
         /// e.g. a reaction failed to parse, so we just drop that reaction.
         case partialRestore(Component, [RestoreFrameError<ChatItemId>])
@@ -386,9 +389,14 @@ extension MessageBackup.ArchiveInteractionResult {
 
 extension MessageBackup.RestoreInteractionResult {
 
-    /// Returns nil for ``RestoreInteractionResult.messageFailure``, otherwise
-    /// returns the restored component. Regardless, accumulates any errors so that the caller
-    /// can return the passed in ``partialErrors`` array in the final result.
+    enum BubbleUp<ComponentType, ErrorComponentType> {
+        case `continue`(ComponentType)
+        case bubbleUpError(MessageBackup.RestoreInteractionResult<ErrorComponentType>)
+    }
+
+    /// Make it easier to "bubble up" an error case of ``RestoreInteractionResult`` thrown deeper in the call stack.
+    /// Basically, collapses all the cases that should just be bubbled up to the caller (error cases) into an easily returnable case,
+    /// ditto for the success or partial success cases, and handles updating partialErrors along the way.
     ///
     /// Concretely, turns this:
     ///
@@ -398,28 +406,38 @@ extension MessageBackup.RestoreInteractionResult {
     /// case .partialRestore(let value, let errors):
     ///   myVar = value
     ///   partialErrors.append(contentsOf: errors)
-    /// case messageFailure(let errors)
-    ///   partialErrors.append(contentsOf: errors)
-    ///   return .messageFailure(partialErrors)
+    /// case someFailureCase(let someErrorOrErrors)
+    ///   let coalescedErrorOrErrors = partialErrors.coalesceSomehow(with: someErrorOrErrors)
+    ///   // Just bubble up the error after coalescing
+    ///   return .someFailureCase(coalescedErrorOrErrors)
+    /// // ...
+    /// // The same for every other error case that should be bubbled up
+    /// // ...
     /// }
     ///
     /// Into this:
     ///
-    /// guard let myVar = someResult.unwrap(&partialErrors) else {
-    ///   return .messageFailure(partialErrors)
+    /// switch someResult.bubbleUp(&partialErrors) {
+    /// case .success(let value):
+    ///   myVar = value
+    /// case .bubbleUpError(let error):
+    ///   return error
     /// }
-    func unwrap(
+    func bubbleUp<ErrorComponentType>(
+        _ errorComponentType: ErrorComponentType.Type = Component.self,
         partialErrors: inout [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]
-    ) -> Component? {
+    ) -> BubbleUp<Component, ErrorComponentType> {
         switch self {
         case .success(let component):
-            return component
+            return .continue(component)
+        case .unrecognizedEnum(let error):
+            return .bubbleUpError(.unrecognizedEnum(error))
         case .partialRestore(let component, let errors):
             partialErrors.append(contentsOf: errors)
-            return component
+            return .continue(component)
         case .messageFailure(let errors):
             partialErrors.append(contentsOf: errors)
-            return nil
+            return .bubbleUpError(.messageFailure(partialErrors))
         }
     }
 }
@@ -434,6 +452,8 @@ extension MessageBackup.RestoreInteractionResult where Component == Void {
         switch (self, other) {
         case (.success, .success):
             return .success(())
+        case (.unrecognizedEnum(let error), _), (_, .unrecognizedEnum(let error)):
+            return .unrecognizedEnum(error)
         case let (.messageFailure(lhs), .messageFailure(rhs)):
             return .messageFailure(lhs + rhs)
         case let (.partialRestore(_, lhs), .partialRestore(_, rhs)):
@@ -450,27 +470,6 @@ extension MessageBackup.RestoreInteractionResult where Component == Void {
             let (.partialRestore(_, errors), .success),
             let (.success, .partialRestore(_, errors)):
             return .partialRestore((), errors)
-        }
-    }
-}
-
-extension MessageBackup.RestoreInteractionResult where Component == Void {
-
-    /// Returns false for ``RestoreInteractionResult.messageFailure``, otherwise
-    /// returns true. Regardless, accumulates any errors so that the caller
-    /// can return the passed in ``partialErrors`` array in the final result.
-    func unwrap(
-        partialErrors: inout [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]
-    ) -> Bool {
-        switch self {
-        case .success:
-            return true
-        case .partialRestore(_, let errors):
-            partialErrors.append(contentsOf: errors)
-            return true
-        case .messageFailure(let errors):
-            partialErrors.append(contentsOf: errors)
-            return false
         }
     }
 }

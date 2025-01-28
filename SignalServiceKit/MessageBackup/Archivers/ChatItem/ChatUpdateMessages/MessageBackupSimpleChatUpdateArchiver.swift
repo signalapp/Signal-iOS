@@ -336,7 +336,9 @@ final class MessageBackupSimpleChatUpdateArchiver {
 
         switch simpleChatUpdate.type {
         case .unknown, .UNRECOGNIZED:
-            return invalidProtoData(.unrecognizedSimpleChatUpdate)
+            return .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                enumType: BackupProto_SimpleChatUpdate.TypeEnum.self
+            ))
         case .joinedSignal:
             simpleChatUpdateInteraction = .simpleInfoMessage(.userJoinedSignal)
         case .identityUpdate:
@@ -527,10 +529,9 @@ final class MessageBackupSimpleChatUpdateArchiver {
         }
 
         guard let directionalDetails = chatItem.directionalDetails else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.chatItemMissingDirectionalDetails),
-                chatItem.id
-            )])
+            return .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                enumType: BackupProto_ChatItem.OneOf_DirectionalDetails.self
+            ))
         }
 
         switch simpleChatUpdateInteraction {

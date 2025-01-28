@@ -279,16 +279,21 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         var partialErrors = [RestoreFrameError]()
 
-        guard
-            let latestRevisionMessage = builder.restoreMessage(
+        let latestRevisionMessage: MessageType
+        switch builder
+            .restoreMessage(
                 topLevelChatItem,
                 isPastRevision: false,
                 hasPastRevisions: topLevelChatItem.revisions.count > 0,
                 chatThread: chatThread,
                 context: context
-            ).unwrap(partialErrors: &partialErrors)
-        else {
-            return .messageFailure(partialErrors)
+            )
+            .bubbleUp(Void.self, partialErrors: &partialErrors)
+        {
+        case .continue(let component):
+            latestRevisionMessage = component
+        case .bubbleUpError(let error):
+            return error
         }
 
         var earlierRevisionMessages = [MessageType]()
@@ -297,30 +302,39 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
         /// how we want to insert them. Older revisions should be inserted
         /// before newer ones.
         for revisionChatItem in topLevelChatItem.revisions {
-            guard
-                let earlierRevisionMessage = builder.restoreMessage(
+            let earlierRevisionMessage: MessageType
+            switch builder
+                 .restoreMessage(
                     revisionChatItem,
                     isPastRevision: true,
                     hasPastRevisions: false, // Past revisions can't have their own past revisions!
                     chatThread: chatThread,
                     context: context
-                ).unwrap(partialErrors: &partialErrors)
-            else {
+                )
+                 .bubbleUp(Void.self, partialErrors: &partialErrors)
+            {
+            case .continue(let component):
+                earlierRevisionMessage = component
+            case .bubbleUpError(let error):
                 /// This means we won't attempt to restore any later revisions,
                 /// but we can't be confident they would have restored
                 /// successfully anyway.
-                return .messageFailure(partialErrors)
+                return error
             }
 
             earlierRevisionMessages.append(earlierRevisionMessage)
         }
 
         for earlierRevisionMessage in earlierRevisionMessages {
-            guard
-                let wasRead = earlierRevisionMessage.wasRead()
-                    .unwrap(partialErrors: &partialErrors)
-            else {
-                return .messageFailure(partialErrors)
+            let wasRead: Bool
+            switch earlierRevisionMessage
+                .wasRead()
+                .bubbleUp(Void.self, partialErrors: &partialErrors)
+            {
+            case .continue(let component):
+                wasRead = component
+            case .bubbleUpError(let error):
+                return error
             }
 
             let editRecord = EditRecord(

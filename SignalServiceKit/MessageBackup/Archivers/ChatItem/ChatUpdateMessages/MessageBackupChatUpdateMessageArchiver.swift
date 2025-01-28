@@ -220,10 +220,9 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
 
         switch chatUpdateMessage.update {
         case nil:
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.emptyChatUpdateMessage),
-                chatItem.id
-            )])
+            return .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                enumType: BackupProto_ChatUpdateMessage.OneOf_Update.self
+            ))
         case .groupChange(let groupChangeChatUpdateProto):
             return groupUpdateMessageArchiver.restoreGroupUpdate(
                 groupChangeChatUpdateProto,

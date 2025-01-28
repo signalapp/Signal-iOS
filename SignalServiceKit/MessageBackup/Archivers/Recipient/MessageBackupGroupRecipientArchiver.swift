@@ -272,9 +272,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             guard let aci = try? Aci.parseFrom(serviceIdBinary: fullMember.userID) else {
                 return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.Member.self)))
             }
-            guard let role = TSGroupMemberRole(backupProtoRole: fullMember.role) else {
-                return restoreFrameError(.invalidProtoData(.unrecognizedGV2MemberRole(protoClass: BackupProto_Group.Member.self)))
-            }
+            let role = TSGroupMemberRole(backupProtoRole: fullMember.role)
 
             groupMembershipBuilder.addFullMember(aci, role: role)
             fullGroupMemberAcis.insert(aci)
@@ -287,9 +285,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             guard let serviceId = try? ServiceId.parseFrom(serviceIdBinary: memberDetails.userID) else {
                 return restoreFrameError(.invalidProtoData(.invalidServiceId(protoClass: BackupProto_Group.MemberPendingProfileKey.self)))
             }
-            guard let role = TSGroupMemberRole(backupProtoRole: memberDetails.role) else {
-                return restoreFrameError(.invalidProtoData(.unrecognizedGV2MemberRole(protoClass: BackupProto_Group.MemberPendingProfileKey.self)))
-            }
+            let role = TSGroupMemberRole(backupProtoRole: memberDetails.role)
             guard let addedByAci = try? Aci.parseFrom(serviceIdBinary: invitedMember.addedByUserID) else {
                 return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.MemberPendingProfileKey.self)))
             }
@@ -502,9 +498,11 @@ private extension BackupProto_Group.Member {
 // MARK: -
 
 private extension TSGroupMemberRole {
-    init?(backupProtoRole: BackupProto_Group.Member.Role) {
+    init(backupProtoRole: BackupProto_Group.Member.Role) {
         switch backupProtoRole {
-        case .unknown, .UNRECOGNIZED: return nil
+        case .unknown, .UNRECOGNIZED:
+            // Fallback to normal (default)
+            self = .normal
         case .default: self = .normal
         case .administrator: self = .administrator
         }

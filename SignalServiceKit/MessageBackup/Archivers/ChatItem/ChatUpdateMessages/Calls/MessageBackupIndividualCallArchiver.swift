@@ -163,41 +163,40 @@ final class MessageBackupIndividualCallArchiver {
             )])
         }
 
-        let callInteractionType: RPRecentCallType
         let callRecordDirection: CallRecord.CallDirection
-        let callRecordStatus: CallRecord.CallStatus.IndividualCallStatus
-        switch (individualCall.direction, individualCall.state) {
-        case (.unknownDirection, _), (.UNRECOGNIZED, _):
-            return .messageFailure([.restoreFrameError(.invalidProtoData(.individualCallUnrecognizedDirection), chatItem.id)])
-        case (_, .unknownState), (_, .UNRECOGNIZED):
-            return .messageFailure([.restoreFrameError(.invalidProtoData(.individualCallUnrecognizedState), chatItem.id)])
-        case (.incoming, .accepted):
-            callInteractionType = .incoming
+        switch individualCall.direction {
+        case .unknownDirection, .UNRECOGNIZED:
+            // Fallback to incoming
             callRecordDirection = .incoming
+        case .incoming:
+            callRecordDirection = .incoming
+        case .outgoing:
+            callRecordDirection = .outgoing
+        }
+
+        let callInteractionType: RPRecentCallType
+        let callRecordStatus: CallRecord.CallStatus.IndividualCallStatus
+        switch (callRecordDirection, individualCall.state) {
+        case (.incoming, .accepted), (.incoming, .unknownState), (.incoming, .UNRECOGNIZED):
+            callInteractionType = .incoming
             callRecordStatus = .accepted
         case (.incoming, .notAccepted):
             callInteractionType = .incomingDeclined
-            callRecordDirection = .incoming
             callRecordStatus = .notAccepted
         case (.incoming, .missed):
             callInteractionType = .incomingMissed
-            callRecordDirection = .incoming
             callRecordStatus = .incomingMissed
         case (.incoming, .missedNotificationProfile):
             callInteractionType = .incomingMissedBecauseOfDoNotDisturb
-            callRecordDirection = .incoming
             callRecordStatus = .incomingMissed
-        case (.outgoing, .accepted):
+        case (.outgoing, .accepted), (.outgoing, .unknownState), (.outgoing, .UNRECOGNIZED):
             callInteractionType = .outgoing
-            callRecordDirection = .outgoing
             callRecordStatus = .accepted
         case (.outgoing, .notAccepted):
             callInteractionType = .outgoingIncomplete
-            callRecordDirection = .outgoing
             callRecordStatus = .notAccepted
         case (.outgoing, .missed), (.outgoing, .missedNotificationProfile):
             callInteractionType = .outgoingMissed
-            callRecordDirection = .outgoing
             callRecordStatus = .notAccepted
         }
 
@@ -211,7 +210,9 @@ final class MessageBackupIndividualCallArchiver {
             callInteractionOfferType = .video
             callRecordType = .videoCall
         case .unknownType, .UNRECOGNIZED:
-            return .messageFailure([.restoreFrameError(.invalidProtoData(.individualCallUnrecognizedType), chatItem.id)])
+            // Fallback to audio
+            callInteractionOfferType = .audio
+            callRecordType = .audioCall
         }
 
         let callerAci: Aci?

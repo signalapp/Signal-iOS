@@ -216,10 +216,9 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         let storiesDisabled = storyManager.areStoriesEnabled(tx: context.tx).negated
         let hasSeenGroupStoryEducationSheet = systemStoryManager.hasSeenGroupStoryEducationSheet(tx: context.tx)
         let hasCompletedUsernameOnboarding = usernameEducationManager.shouldShowUsernameEducation(tx: context.tx).negated
-        let phoneNumberSharingMode: BackupProto_AccountData.PhoneNumberSharingMode = switch udManager.phoneNumberSharingMode(tx: context.tx) {
+        let phoneNumberSharingMode: BackupProto_AccountData.PhoneNumberSharingMode = switch udManager.phoneNumberSharingMode(tx: context.tx).orDefault {
         case .everybody: .everybody
         case .nobody: .nobody
-        case .none: .unknown
         }
 
         // Populate the proto with the settings
@@ -377,6 +376,8 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             switch customChatColorsResult {
             case .success:
                 break
+            case .unrecognizedEnum:
+                return customChatColorsResult
             case .partialRestore(let errors):
                 partialErrors.append(contentsOf: errors)
             case .failure(let errors):
@@ -399,6 +400,8 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             switch defaultChatStyleResult {
             case .success:
                 break
+            case .unrecognizedEnum:
+                return defaultChatStyleResult
             case .partialRestore(let errors):
                 partialErrors.append(contentsOf: errors)
             case .failure(let errors):

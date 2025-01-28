@@ -67,15 +67,19 @@ class MessageBackupTSIncomingMessageArchiver {
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         var partialErrors = [RestoreFrameError]()
 
-        guard
-            editHistoryArchiver.restoreMessageAndEditHistory(
+        switch editHistoryArchiver
+            .restoreMessageAndEditHistory(
                 topLevelChatItem,
                 chatThread: chatThread,
                 context: context,
                 builder: self
-            ).unwrap(partialErrors: &partialErrors)
-        else {
-            return .messageFailure(partialErrors)
+            )
+            .bubbleUp(Void.self, partialErrors: &partialErrors)
+        {
+        case .continue:
+            break
+        case .bubbleUpError(let error):
+            return error
         }
 
         if partialErrors.isEmpty {
@@ -222,21 +226,24 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
         context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<EditHistoryMessageType> {
         guard let chatItemItem = chatItem.item else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.chatItemMissingItem),
-                chatItem.id
-            )])
+            return .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                enumType: BackupProto_ChatItem.OneOf_Item.self
+            ))
         }
 
         let incomingDetails: BackupProto_ChatItem.IncomingMessageDetails
         switch chatItem.directionalDetails {
         case .incoming(let _incomingDetails):
             incomingDetails = _incomingDetails
-        case nil, .outgoing, .directionless:
+        case .outgoing, .directionless:
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.revisionOfIncomingMessageMissingIncomingDetails),
                 chatItem.id
             )])
+        case nil:
+            return .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                enumType: BackupProto_ChatItem.OneOf_DirectionalDetails.self
+            ))
         }
 
         let authorAci: Aci?
@@ -303,15 +310,20 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
 
         var partialErrors = [RestoreFrameError]()
 
-        guard
-            let contents = contentsArchiver.restoreContents(
+        let contents: MessageBackup.RestoredMessageContents
+        switch contentsArchiver
+            .restoreContents(
                 chatItemItem,
                 chatItemId: chatItem.id,
                 chatThread: chatThread,
                 context: context
-            ).unwrap(partialErrors: &partialErrors)
-        else {
-            return .messageFailure(partialErrors)
+            )
+            .bubbleUp(EditHistoryMessageType.self, partialErrors: &partialErrors)
+        {
+        case .continue(let component):
+            contents = component
+        case .bubbleUpError(let error):
+            return error
         }
 
         let message: TSIncomingMessage = {
@@ -408,16 +420,20 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
             return .messageFailure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
         }
 
-        guard
-            contentsArchiver.restoreDownstreamObjects(
+        switch contentsArchiver
+            .restoreDownstreamObjects(
                 message: message,
                 thread: chatThread,
                 chatItemId: chatItem.id,
                 restoredContents: contents,
                 context: context
-            ).unwrap(partialErrors: &partialErrors)
-        else {
-            return .messageFailure(partialErrors)
+            )
+            .bubbleUp(TSIncomingMessage.self, partialErrors: &partialErrors)
+        {
+        case .continue:
+            break
+        case .bubbleUpError(let error):
+            return error
         }
 
         if partialErrors.isEmpty {

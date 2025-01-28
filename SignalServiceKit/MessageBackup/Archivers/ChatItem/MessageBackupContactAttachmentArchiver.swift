@@ -251,35 +251,53 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
 
         let contact = OWSContact(name: contactName)
 
-        contact.phoneNumbers = contactProto.number.compactMap { phoneNumberProto in
-            return self
+        for phoneNumberProto in contactProto.number {
+            switch self
                 .restoreContactPhoneNumber(
                     proto: phoneNumberProto,
                     chatItemId: chatItemId
                 )
-                .unwrap(partialErrors: &partialErrors)
-                // Double unwrap; we will just drops nulls.
-                ?? nil
+                .bubbleUp(OWSContact.self, partialErrors: &partialErrors)
+            {
+            case .continue(let phoneNumber):
+                if let phoneNumber {
+                    contact.phoneNumbers.append(phoneNumber)
+                }
+            case .bubbleUpError(let error):
+                return error
+            }
         }
-        contact.emails = contactProto.email.compactMap { emailProto in
-            return self
+        for emailProto in contactProto.email {
+            switch self
                 .restoreContactEmail(
                     proto: emailProto,
                     chatItemId: chatItemId
                 )
-                .unwrap(partialErrors: &partialErrors)
-                // Double unwrap; we will just drops nulls.
-                ?? nil
+                .bubbleUp(OWSContact.self, partialErrors: &partialErrors)
+            {
+            case .continue(let email):
+                if let email {
+                    contact.emails.append(email)
+                }
+            case .bubbleUpError(let error):
+                return error
+            }
         }
-        contact.addresses = contactProto.address.compactMap { addressProto in
-            return self
+        for addressProto in contactProto.address {
+            switch self
                 .restoreContactAddress(
                     proto: addressProto,
                     chatItemId: chatItemId
                 )
-                .unwrap(partialErrors: &partialErrors)
-                // Double unwrap; we will just drops nulls.
-                ?? nil
+                .bubbleUp(OWSContact.self, partialErrors: &partialErrors)
+            {
+            case .continue(let address):
+                if let address {
+                    contact.addresses.append(address)
+                }
+            case .bubbleUpError(let error):
+                return error
+            }
         }
 
         // Note: the contact attachment's avatar is restored later (if any is set).
@@ -313,10 +331,7 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
         case .custom:
             type = .custom
         case .unknown, .UNRECOGNIZED(_):
-            return .partialRestore(nil, [.restoreFrameError(
-                .invalidProtoData(.contactAttachmentPhoneNumberUnknownType),
-                chatItemId
-            )])
+            type = .home
         }
 
         return .success(OWSContactPhoneNumber(
@@ -348,10 +363,7 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
         case .custom:
             type = .custom
         case .unknown, .UNRECOGNIZED(_):
-            return .partialRestore(nil, [.restoreFrameError(
-                .invalidProtoData(.contactAttachmentEmailUnknownType),
-                chatItemId
-            )])
+            type = .home
         }
 
         return .success(OWSContactEmail(
@@ -374,10 +386,7 @@ internal class MessageBackupContactAttachmentArchiver: MessageBackupProtoArchive
         case .custom:
             type = .custom
         case .unknown, .UNRECOGNIZED(_):
-            return .partialRestore(nil, [.restoreFrameError(
-                .invalidProtoData(.contactAttachmentAddressUnknownType),
-                chatItemId
-            )])
+            type = .home
         }
 
         let address = OWSContactAddress(

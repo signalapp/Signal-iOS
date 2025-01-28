@@ -27,10 +27,11 @@ final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 localUserAci: localUserAci,
                 chatItemId: chatItemId
             )
-            if let persistableItems = result.unwrap(partialErrors: &partialErrors) {
-                persistableUpdates.append(contentsOf: persistableItems)
-            } else {
-                return .messageFailure(partialErrors)
+            switch result.bubbleUp([PersistableGroupUpdateItem].self, partialErrors: &partialErrors) {
+            case .continue(let component):
+                persistableUpdates.append(contentsOf: component)
+            case .bubbleUpError(let error):
+                return error
             }
         }
         return .success(persistableUpdates)
@@ -98,7 +99,8 @@ final class MessageBackupGroupUpdateProtoToSwiftConverter {
 
         switch groupUpdate.update {
         case nil:
-            return .messageFailure([.restoreFrameError(.invalidProtoData(.unrecognizedGroupUpdate), chatItemId)])
+            // Fallback to a generic update.
+            return .success([.genericUpdateByUnknownUser])
         case .genericGroupUpdate(let proto):
             switch unwrapOptionalAci(proto, \.updaterAci) {
             case .unknown:

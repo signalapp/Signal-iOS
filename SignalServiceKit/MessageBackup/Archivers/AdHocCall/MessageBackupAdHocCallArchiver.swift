@@ -170,17 +170,7 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
         switch adHocCall.state {
         case .generic:
             state = .generic
-        case .unknownState:
-            partialErrors.append(
-                .restoreFrameError(.invalidProtoData(.adHocCallUnknownState),
-                callId
-            ))
-            state = .generic
-        case .UNRECOGNIZED:
-            partialErrors.append(
-                .restoreFrameError(.invalidProtoData(.adHocCallUnrecognizedState),
-                callId
-            ))
+        case .unknownState, .UNRECOGNIZED:
             state = .generic
         }
 

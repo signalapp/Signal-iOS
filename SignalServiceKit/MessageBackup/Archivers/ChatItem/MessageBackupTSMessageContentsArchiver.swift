@@ -1236,6 +1236,12 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 return nil
             }
         }()
+        guard let senderOrRecipientAci else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.paymentNotificationInGroup),
+                chatItemId
+            )])
+        }
 
         let direction: ArchivedPayment.Direction
         switch message {
@@ -1249,19 +1255,12 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 chatItemId
             )])
         }
-        guard
-            let senderOrRecipientAci,
-            let archivedPayment = ArchivedPayment.fromBackup(
-                transaction,
-                senderOrRecipientAci: senderOrRecipientAci,
-                direction: direction,
-                interactionUniqueId: message.uniqueId
-            ) else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.unrecognizedPaymentTransaction),
-                chatItemId
-            )])
-        }
+        let archivedPayment = ArchivedPayment.fromBackup(
+            transaction,
+            senderOrRecipientAci: senderOrRecipientAci,
+            direction: direction,
+            interactionUniqueId: message.uniqueId
+        )
         do {
             try archivedPaymentStore.insert(archivedPayment, tx: context.tx)
         } catch {
@@ -1331,17 +1330,24 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         let quotedMessage: TSQuotedMessage?
         let quotedMessageThumbnail: BackupProto_MessageAttachment?
         if standardMessage.hasQuote {
-            guard
-                let quoteResult = restoreQuote(
+            switch self
+                .restoreQuote(
                     standardMessage.quote,
                     chatItemId: chatItemId,
                     thread: chatThread,
                     context: context
-                ).unwrap(partialErrors: &partialErrors)
-            else {
-                return .messageFailure(partialErrors)
+                )
+                .bubbleUp(
+                    MessageBackup.RestoredMessageContents.self,
+                    partialErrors: &partialErrors
+                )
+            {
+            case .continue(let component):
+                quotedMessage = component.0
+                quotedMessageThumbnail = component.1
+            case .bubbleUpError(let error):
+                return error
             }
-            (quotedMessage, quotedMessageThumbnail) = quoteResult
         } else {
             quotedMessage = nil
             quotedMessageThumbnail = nil
@@ -1350,21 +1356,28 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         let linkPreview: OWSLinkPreview?
         let linkPreviewAttachment: BackupProto_FilePointer?
         if let linkPreviewProto = standardMessage.linkPreview.first {
-            guard
-                let linkPreviewResult = restoreLinkPreview(
+            switch self
+                .restoreLinkPreview(
                     linkPreviewProto,
                     standardMessage: standardMessage,
                     chatItemId: chatItemId,
                     context: context
-                ).unwrap(partialErrors: &partialErrors)
-            else {
-                return .messageFailure(partialErrors)
-            }
-            if let linkPreviewResult {
-                (linkPreview, linkPreviewAttachment) = linkPreviewResult
-            } else {
-                linkPreview = nil
-                linkPreviewAttachment = nil
+                )
+                .bubbleUp(
+                    MessageBackup.RestoredMessageContents.self,
+                    partialErrors: &partialErrors
+                )
+            {
+            case .continue(let component):
+                if let component {
+                    linkPreview = component.0
+                    linkPreviewAttachment = component.1
+                } else {
+                    linkPreview = nil
+                    linkPreviewAttachment = nil
+                }
+            case .bubbleUpError(let error):
+                return error
             }
         } else {
             linkPreview = nil
@@ -1437,6 +1450,8 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 )),
                 partialErrors + messageBodyErrors
             )
+        case .unrecognizedEnum(let error):
+            return .unrecognizedEnum(error)
         case .messageFailure(let messageBodyErrors):
             return .messageFailure(partialErrors + messageBodyErrors)
         }
@@ -1483,10 +1498,6 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 let swiftStyle: MessageBodyRanges.SingleStyle
                 switch protoBodyRangeStyle {
                 case .none, .UNRECOGNIZED:
-                    partialErrors.append(.restoreFrameError(
-                        .invalidProtoData(.unrecognizedBodyRangeStyle),
-                        chatItemId
-                    ))
                     continue
                 case .bold:
                     swiftStyle = .bold
@@ -1573,17 +1584,22 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
 
         let quoteBody: MessageBody?
         if quote.hasText {
-            guard
-                let bodyResult = restoreMessageBody(
+            switch self
+                .restoreMessageBody(
                     text: quote.text.body,
                     bodyRangeProtos: quote.text.bodyRanges,
                     chatItemId: chatItemId
-                ).unwrap(partialErrors: &partialErrors)
-            else {
-                return .messageFailure(partialErrors)
+                )
+                .bubbleUp(
+                    (TSQuotedMessage, BackupProto_MessageAttachment?).self,
+                    partialErrors: &partialErrors
+                )
+            {
+            case .continue(let component):
+                quoteBody = component
+            case .bubbleUpError(let error):
+                return error
             }
-
-            quoteBody = bodyResult
         } else {
             quoteBody = nil
         }
@@ -1724,8 +1740,17 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             contactAttachment,
             chatItemId: chatItemId
         )
-        guard let contact = contactResult.unwrap(partialErrors: &partialErrors) else {
-            return .messageFailure(partialErrors)
+        let contact: OWSContact
+        switch contactResult
+            .bubbleUp(
+                MessageBackup.RestoredMessageContents.self,
+                partialErrors: &partialErrors
+            )
+        {
+        case .continue(let component):
+            contact = component
+        case .bubbleUpError(let error):
+            return error
         }
 
         let avatar: BackupProto_FilePointer?
@@ -1781,7 +1806,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
     ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
         let giftBadge: OWSGiftBadge
         switch giftBadgeProto.state {
-        case .unopened:
+        case .unopened, .UNRECOGNIZED:
             giftBadge = .restoreFromBackup(
                 receiptCredentialPresentation: giftBadgeProto.receiptCredentialPresentation,
                 redemptionState: .pending
@@ -1805,11 +1830,6 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 receiptCredentialPresentation: nil,
                 redemptionState: .pending
             )
-        case .UNRECOGNIZED(_):
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.unrecognizedGiftBadgeState),
-                chatItemId
-            )])
         }
 
         return .success(.giftBadge(MessageBackup.RestoredMessageContents.GiftBadge(
@@ -1860,13 +1880,21 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 nil
             }
 
-            guard
-                let messageBody = restoreMessageBody(
+            let messageBody: MessageBody?
+            switch self
+                .restoreMessageBody(
                     textReply.text,
                     chatItemId: chatItemId
-                ).unwrap(partialErrors: &partialErrors)
-            else {
-                return .messageFailure(partialErrors)
+                )
+                .bubbleUp(
+                    MessageBackup.RestoredMessageContents.self,
+                    partialErrors: &partialErrors
+                )
+            {
+            case .continue(let component):
+                messageBody = component
+            case .bubbleUpError(let error):
+                return error
             }
 
             if let messageBody {
@@ -1890,10 +1918,9 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         case .emoji(let string):
             replyType = .emoji(string)
         case .none:
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.directStoryReplyMessageUnknownType),
-                chatItemId
-            )])
+            return .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                enumType: BackupProto_DirectStoryReplyMessage.OneOf_Reply.self
+            ))
         }
 
         return .success(.storyReply(.init(
@@ -1911,8 +1938,8 @@ private extension ArchivedPayment {
         senderOrRecipientAci: Aci,
         direction: Direction,
         interactionUniqueId: String?
-    ) -> ArchivedPayment? {
-        var archivedPayment: ArchivedPayment?
+    ) -> ArchivedPayment {
+        var archivedPayment: ArchivedPayment
         switch backup.status {
         case .failure(let reason):
             archivedPayment = ArchivedPayment(

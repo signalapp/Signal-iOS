@@ -274,7 +274,9 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
                 context: context
             )
         case nil:
-            result = restoreFrameError(.invalidProtoData(.distributionListItemMissingItem))
+            result = .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                enumType: BackupProto_DistributionListItem.OneOf_Item.self
+            ))
         }
 
         context[recipient.recipientId] = .distributionList(distributionId)
@@ -334,10 +336,9 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
                 partialErrors: &partialErrors
             )
         case .unknown, .UNRECOGNIZED:
-            return .failure([.restoreFrameError(
-                .invalidProtoData(.invalidDistributionListPrivacyMode),
-                recipientId
-            )])
+            // Fallback to an empty explicit list.
+            viewMode = .explicit
+            addresses = []
         }
 
         // MyStory is created during warmCaches(), so it should be present at this point.

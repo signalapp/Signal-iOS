@@ -537,10 +537,9 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         let unregisteredTimestamp: UInt64?
         switch contactProto.registration {
         case nil:
-            return .failure([.restoreFrameError(
-                .invalidProtoData(.contactWithoutRegistrationInfo),
-                recipient.recipientId
-            )])
+            // We treat unknown values as registered.
+            isRegistered = true
+            unregisteredTimestamp = nil
         case .notRegistered(let notRegisteredProto):
             isRegistered = false
             unregisteredTimestamp = notRegisteredProto.unregisteredTimestamp
@@ -661,10 +660,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             case .unverified:
                 verificationState = .noLongerVerified
             case .UNRECOGNIZED:
-                return .failure([.restoreFrameError(
-                    .invalidProtoData(.unknownContactIdentityState),
-                    recipientProto.recipientId
-                )])
+                verificationState = .default
             }
 
             // Write directly to the OWSRecipientIdentity table, bypassing

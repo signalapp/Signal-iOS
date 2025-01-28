@@ -357,7 +357,9 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         let restoreInteractionResult: MessageBackup.RestoreInteractionResult<Void>
         switch chatItem.directionalDetails {
         case nil:
-            return restoreFrameError(.invalidProtoData(.chatItemMissingDirectionalDetails))
+            return .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                enumType: BackupProto_ChatItem.OneOf_DirectionalDetails.self
+            ))
         case .incoming:
             restoreInteractionResult = incomingMessageArchiver.restoreIncomingChatItem(
                 chatItem,
@@ -373,7 +375,9 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         case .directionless:
             switch chatItem.item {
             case nil:
-                return restoreFrameError(.invalidProtoData(.chatItemMissingItem))
+                return .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                    enumType: BackupProto_ChatItem.OneOf_Item.self
+                ))
             case
                     .standardMessage,
                     .contactMessage,
@@ -396,6 +400,8 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         switch restoreInteractionResult {
         case .success:
             return .success
+        case .unrecognizedEnum(let error):
+            return .unrecognizedEnum(error)
         case .partialRestore(_, let errors):
             return .partialRestore(errors)
         case .messageFailure(let errors):

@@ -119,10 +119,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
             let colorOrGradientSetting: ColorOrGradientSetting
             switch chatColorProto.color {
             case .none:
-                partialErrors.append(.restoreFrameError(
-                    .invalidProtoData(.unrecognizedCustomChatStyleColor),
-                    .forCustomChatColorError(chatColorId: customChatColorId)
-                ))
+                // Fallback to default (skip this chat color)
                 continue
             case .solid(let colorARGBHex):
                 colorOrGradientSetting = .solidColor(
@@ -222,9 +219,10 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
         if let wallpaper = wallpaperStore.fetchWallpaper(for: thread?.tsThread.uniqueId, tx: context.tx) {
             var protoWallpaper: BackupProto_ChatStyle.OneOf_Wallpaper?
 
-            if let preset = wallpaper.asBackupProto() {
+            switch wallpaper.asBackupProto() {
+            case .wallpaperPreset(let preset):
                 protoWallpaper = .wallpaperPreset(preset)
-            } else if wallpaper == .photo {
+            case .photo:
                 switch self.archiveWallpaperAttachment(
                     thread: thread,
                     errorId: errorId,
@@ -238,11 +236,6 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                 case .failure(let error):
                     return .failure(error)
                 }
-            } else {
-                return .failure(.archiveFrameError(
-                    .unknownWallpaper,
-                    errorId
-                ))
             }
 
             if let protoWallpaper {
@@ -347,10 +340,8 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                 break
             case .bubbleColorPreset(let bubbleColorPreset):
                 guard let palette = bubbleColorPreset.asPaletteChatColor() else {
-                    return .failure([.restoreFrameError(
-                        .invalidProtoData(.unrecognizedChatStyleBubbleColorPreset),
-                        errorId
-                    )])
+                    // If we can't recognize the preset, use auto (skip)
+                    break
                 }
                 chatColorSettingStore.setChatColorSetting(
                     ChatColorSetting.builtIn(palette),
@@ -404,10 +395,9 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                 break
             case .wallpaperPreset(let wallpaperPreset):
                 guard let wallpaper = wallpaperPreset.asWallpaper() else {
-                    return .failure([.restoreFrameError(
-                        .invalidProtoData(.unrecognizedChatStyleWallpaperPreset),
-                        errorId
-                    )])
+                    // If we can't recognize the preset enum,
+                    // leave the wallpaper unset.
+                    break
                 }
                 wallpaperStore.setWallpaperType(
                     wallpaper,
@@ -429,6 +419,8 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                 switch attachmentResult {
                 case .success:
                     break
+                case .unrecognizedEnum:
+                    return attachmentResult
                 case .partialRestore(let errors):
                     partialErrors.append(contentsOf: errors)
                 case .failure(let errors):
@@ -564,33 +556,38 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
 
 fileprivate extension Wallpaper {
 
-    func asBackupProto() -> BackupProto_ChatStyle.WallpaperPreset? {
+    enum BackupRepresentation {
+        case wallpaperPreset(BackupProto_ChatStyle.WallpaperPreset)
+        case photo
+    }
+
+    func asBackupProto() -> BackupRepresentation {
         // These don't match names exactly because...well nobody knows why
         // the iOS enum names were defined this way. They're persisted to the
         // db now, so we just gotta keep the mapping.
         return switch self {
-        case .blush: .solidBlush
-        case .copper: .solidCopper
-        case .zorba: .solidDust
-        case .envy: .solidCeladon
-        case .sky: .solidPacific
-        case .wildBlueYonder: .solidFrost
-        case .lavender: .solidLilac
-        case .shocking: .solidPink
-        case .gray: .solidSilver
-        case .eden: .solidRainforest
-        case .violet: .solidNavy
-        case .eggplant: .solidEggplant
-        case .starshipGradient: .gradientSunset
-        case .woodsmokeGradient: .gradientNoir
-        case .coralGradient: .gradientHeatmap
-        case .ceruleanGradient: .gradientAqua
-        case .roseGradient: .gradientIridescent
-        case .aquamarineGradient: .gradientMonstera
-        case .tropicalGradient: .gradientBliss
-        case .blueGradient: .gradientSky
-        case .bisqueGradient: .gradientPeach
-        case .photo: nil
+        case .blush: .wallpaperPreset(.solidBlush)
+        case .copper: .wallpaperPreset(.solidCopper)
+        case .zorba: .wallpaperPreset(.solidDust)
+        case .envy: .wallpaperPreset(.solidCeladon)
+        case .sky: .wallpaperPreset(.solidPacific)
+        case .wildBlueYonder: .wallpaperPreset(.solidFrost)
+        case .lavender: .wallpaperPreset(.solidLilac)
+        case .shocking: .wallpaperPreset(.solidPink)
+        case .gray: .wallpaperPreset(.solidSilver)
+        case .eden: .wallpaperPreset(.solidRainforest)
+        case .violet: .wallpaperPreset(.solidNavy)
+        case .eggplant: .wallpaperPreset(.solidEggplant)
+        case .starshipGradient: .wallpaperPreset(.gradientSunset)
+        case .woodsmokeGradient: .wallpaperPreset(.gradientNoir)
+        case .coralGradient: .wallpaperPreset(.gradientHeatmap)
+        case .ceruleanGradient: .wallpaperPreset(.gradientAqua)
+        case .roseGradient: .wallpaperPreset(.gradientIridescent)
+        case .aquamarineGradient: .wallpaperPreset(.gradientMonstera)
+        case .tropicalGradient: .wallpaperPreset(.gradientBliss)
+        case .blueGradient: .wallpaperPreset(.gradientSky)
+        case .bisqueGradient: .wallpaperPreset(.gradientPeach)
+        case .photo: .photo
         }
     }
 }

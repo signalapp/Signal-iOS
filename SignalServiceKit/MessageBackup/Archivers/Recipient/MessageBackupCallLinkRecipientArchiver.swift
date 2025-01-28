@@ -149,19 +149,14 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
             adminKey = nil
         }
 
-        var partialErrors = [MessageBackup.RestoreFrameError<RecipientId>]()
-
         let restrictions: CallLinkRecord.Restrictions
         switch callLinkProto.restrictions {
         case .adminApproval:
             restrictions = .adminApproval
         case .none:
             restrictions = .none
-        case .unknown:
+        case .unknown, .UNRECOGNIZED:
             restrictions = .unknown
-        case .UNRECOGNIZED:
-            partialErrors.append(.restoreFrameError(.invalidProtoData(.callLinkRestrictionsUnrecognizedType), recipient.recipientId))
-            restrictions = .adminApproval
         }
 
         do {
@@ -181,11 +176,7 @@ public class MessageBackupCallLinkRecipientArchiver: MessageBackupProtoArchiver 
             return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipient.recipientId)])
         }
 
-        if partialErrors.isEmpty {
-            return .success
-        } else {
-            return .partialRestore(partialErrors)
-        }
+        return .success
     }
 }
 

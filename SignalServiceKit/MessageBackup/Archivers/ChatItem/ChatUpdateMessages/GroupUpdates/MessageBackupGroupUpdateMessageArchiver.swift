@@ -208,10 +208,12 @@ final class MessageBackupGroupUpdateMessageArchiver {
                 partialErrors: &partialErrors,
                 chatItemId: chatItem.id
             )
-        guard var persistableUpdates =
-                result.unwrap(partialErrors: &partialErrors)
-        else {
-            return .messageFailure(partialErrors)
+        var persistableUpdates: [PersistableGroupUpdateItem]
+        switch result.bubbleUp(Void.self, partialErrors: &partialErrors) {
+        case .continue(let component):
+            persistableUpdates = component
+        case .bubbleUpError(let error):
+            return error
         }
 
         guard persistableUpdates.isEmpty.negated else {
@@ -250,10 +252,9 @@ final class MessageBackupGroupUpdateMessageArchiver {
         )
 
         guard let directionalDetails = chatItem.directionalDetails else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.chatItemMissingDirectionalDetails),
-                chatItem.id
-            )])
+            return .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                enumType: BackupProto_ChatItem.OneOf_DirectionalDetails.self
+            ))
         }
 
         do {

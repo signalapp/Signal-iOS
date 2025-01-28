@@ -45,6 +45,9 @@ extension MessageBackup {
     /// Frames are always restored individually.
     public enum RestoreFrameResult<ProtoIdType: MessageBackupLoggableId> {
         case success
+        /// There was an unrecognized enum (or oneOf) for which we skip restoring this frame
+        /// but we should proceed restoring other frames.
+        case unrecognizedEnum(UnrecognizedEnumError)
         /// We managed to restore some part of the frame, meaning it is represented in our database.
         /// For example, we restored a message but dropped some invalid recipients.
         /// Generally restoration of other frames can proceed, but the caller can determine
@@ -54,6 +57,21 @@ extension MessageBackup {
         /// Generally restoration of other frames can proceed, but the caller can determine
         /// whether to stop or not based on the specific error(s).
         case failure([RestoreFrameError<ProtoIdType>])
+    }
+
+    public class UnrecognizedEnumError: MessageBackupLoggableError {
+
+        private let enumType: Any.Type
+
+        init(enumType: Any.Type) {
+            self.enumType = enumType
+        }
+
+        var typeLogString: String { String(describing: enumType) }
+        var idLogString: String { "Unrecognized Enum" }
+        var callsiteLogString: String { "" }
+        var collapseKey: String? { typeLogString }
+        var logLevel: MessageBackup.LogLevel { .warning }
     }
 }
 

@@ -88,16 +88,12 @@ final class MessageBackupLearnedProfileChatUpdateArchiver {
             )])
         }
 
-        guard let previousName = learnedProfileUpdateProto.previousName else {
-            return invalidProtoData(.learnedProfileUpdateMissingPreviousName)
-        }
-
         guard case .contact(let contactThread) = chatThread.threadType else {
             return invalidProtoData(.learnedProfileUpdateNotFromContact)
         }
 
         let displayNameBefore: TSInfoMessage.DisplayNameBeforeLearningProfileName
-        switch previousName {
+        switch learnedProfileUpdateProto.previousName {
         case .e164(let uintValue):
             guard let e164 = E164(uintValue) else {
                 return invalidProtoData(.invalidE164(protoClass: BackupProto_LearnedProfileChatUpdate.self))
@@ -106,6 +102,9 @@ final class MessageBackupLearnedProfileChatUpdateArchiver {
             displayNameBefore = .phoneNumber(e164.stringValue)
         case .username(let username):
             displayNameBefore = .username(username)
+        case nil:
+            // This isn't great, but we just use an empty username.
+            displayNameBefore = .username("")
         }
 
         let learnedProfileKeyInfoMessage: TSInfoMessage = .makeForLearnedProfileName(
@@ -115,10 +114,9 @@ final class MessageBackupLearnedProfileChatUpdateArchiver {
         )
 
         guard let directionalDetails = chatItem.directionalDetails else {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.chatItemMissingDirectionalDetails),
-                chatItem.id
-            )])
+            return .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                enumType: BackupProto_ChatItem.OneOf_DirectionalDetails.self
+            ))
         }
 
         do {

@@ -502,6 +502,8 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         switch chatStyleResult {
         case .success:
             break
+        case .unrecognizedEnum:
+            return chatStyleResult
         case .partialRestore(let errors):
             partialErrors.append(contentsOf: errors)
         case .failure(let errors):

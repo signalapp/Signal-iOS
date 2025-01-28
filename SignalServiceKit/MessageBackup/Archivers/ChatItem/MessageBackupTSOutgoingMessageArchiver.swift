@@ -67,15 +67,19 @@ class MessageBackupTSOutgoingMessageArchiver {
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         var partialErrors = [RestoreFrameError]()
 
-        guard
-            editHistoryArchiver.restoreMessageAndEditHistory(
+        switch editHistoryArchiver
+            .restoreMessageAndEditHistory(
                 topLevelChatItem,
                 chatThread: chatThread,
                 context: context,
                 builder: self
-            ).unwrap(partialErrors: &partialErrors)
-        else {
-            return .messageFailure(partialErrors)
+            )
+            .bubbleUp(Void.self, partialErrors: &partialErrors)
+        {
+        case .continue:
+            break
+        case .bubbleUpError(let error):
+            return error
         }
 
         if partialErrors.isEmpty {
@@ -317,35 +321,45 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
         context: MessageBackup.ChatItemRestoringContext
     ) -> MessageBackup.RestoreInteractionResult<EditHistoryMessageType> {
         guard let chatItemType = chatItem.item else {
-            // Unrecognized item type!
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.chatItemMissingItem),
-                chatItem.id
-            )])
+            return .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                enumType: BackupProto_ChatItem.OneOf_Item.self
+            ))
         }
 
         let outgoingDetails: BackupProto_ChatItem.OutgoingMessageDetails
         switch chatItem.directionalDetails {
         case .outgoing(let _outgoingDetails):
             outgoingDetails = _outgoingDetails
-        case nil, .incoming, .directionless:
+        case .incoming, .directionless:
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.revisionOfOutgoingMessageMissingOutgoingDetails),
                 chatItem.id
             )])
+        case nil:
+            return .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                enumType: BackupProto_ChatItem.OneOf_DirectionalDetails.self
+            ))
         }
 
         var partialErrors = [RestoreFrameError]()
 
-        guard
-            let contents = contentsArchiver.restoreContents(
+        let contents: MessageBackup.RestoredMessageContents
+        switch contentsArchiver
+            .restoreContents(
                 chatItemType,
                 chatItemId: chatItem.id,
                 chatThread: chatThread,
                 context: context
-            ).unwrap(partialErrors: &partialErrors)
-        else {
-            return .messageFailure(partialErrors)
+            )
+            .bubbleUp(
+                EditHistoryMessageType.self,
+                partialErrors: &partialErrors
+            )
+        {
+        case .continue(let component):
+            contents = component
+        case .bubbleUpError(let error):
+            return error
         }
 
         let editState: TSEditState = {
@@ -359,29 +373,44 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             }
         }()
 
-        guard
-            let outgoingMessage = restoreAndInsertOutgoingMessage(
+        let outgoingMessage: TSOutgoingMessage
+        switch self
+            .restoreAndInsertOutgoingMessage(
                 chatItem: chatItem,
                 contents: contents,
                 outgoingDetails: outgoingDetails,
                 editState: editState,
                 context: context,
                 chatThread: chatThread
-            ).unwrap(partialErrors: &partialErrors)
-        else {
-            return .messageFailure(partialErrors)
+            )
+            .bubbleUp(
+                EditHistoryMessageType.self,
+                partialErrors: &partialErrors
+            )
+        {
+        case .continue(let component):
+            outgoingMessage = component
+        case .bubbleUpError(let error):
+            return error
         }
 
-        guard
-            contentsArchiver.restoreDownstreamObjects(
+        switch contentsArchiver
+            .restoreDownstreamObjects(
                 message: outgoingMessage,
                 thread: chatThread,
                 chatItemId: chatItem.id,
                 restoredContents: contents,
                 context: context
-            ).unwrap(partialErrors: &partialErrors)
-        else {
-            return .messageFailure(partialErrors)
+            )
+            .bubbleUp(
+                EditHistoryMessageType.self,
+                partialErrors: &partialErrors
+            )
+        {
+        case .continue:
+            break
+        case .bubbleUpError(let error):
+            return error
         }
 
         if partialErrors.isEmpty {
@@ -578,8 +607,12 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
             ))
         }()
 
-        guard let outgoingMessage: TSOutgoingMessage = outgoingMessageResult.unwrap(partialErrors: &partialErrors) else {
-            return .messageFailure(partialErrors)
+        let outgoingMessage: TSOutgoingMessage
+        switch outgoingMessageResult.bubbleUp(TSOutgoingMessage.self, partialErrors: &partialErrors) {
+        case .continue(let component):
+            outgoingMessage = component
+        case .bubbleUpError(let error):
+            return error
         }
 
         do {
@@ -614,18 +647,13 @@ extension MessageBackupTSOutgoingMessageArchiver: MessageBackupTSMessageEditHist
         partialErrors: inout [RestoreFrameError],
         chatItemId: MessageBackup.ChatItemId
     ) -> TSOutgoingMessageRecipientState? {
-        guard let deliveryStatus = sendStatus.deliveryStatus else {
-            partialErrors.append(.restoreFrameError(
-                .invalidProtoData(.unrecognizedMessageSendStatus),
-                chatItemId
-            ))
-            return nil
-        }
-
         let recipientStatus: OWSOutgoingMessageRecipientStatus
         var wasSentByUD: Bool = false
         var errorCode: Int?
-        switch deliveryStatus {
+        switch sendStatus.deliveryStatus {
+        case nil:
+            // Fallback to pending
+            recipientStatus = .pending
         case .pending(_):
             recipientStatus = .pending
         case .sent(let sent):

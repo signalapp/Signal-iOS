@@ -192,7 +192,9 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
         )
 
         guard let directionalDetails = chatItem.directionalDetails else {
-            return invalidProtoData(.chatItemMissingDirectionalDetails)
+            return .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                enumType: BackupProto_ChatItem.OneOf_DirectionalDetails.self
+            ))
         }
 
         do {

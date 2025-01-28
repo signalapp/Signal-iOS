@@ -874,10 +874,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         let recipientResult: MessageBackup.RestoreFrameResult<MessageBackup.RecipientId>
                         switch recipient.destination {
                         case nil:
-                            recipientResult = .failure([.restoreFrameError(
-                                .invalidProtoData(.recipientMissingDestination),
-                                recipient.recipientId
-                            )])
+                            recipientResult = .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                                enumType: BackupProto_Recipient.OneOf_Destination.self
+                            ))
                         case .self_p(let selfRecipientProto):
                             recipientResult = localRecipientArchiver.restoreSelfRecipient(
                                 selfRecipientProto,
@@ -919,6 +918,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         switch recipientResult {
                         case .success:
                             return
+                        case .unrecognizedEnum(let error):
+                            frameErrors.append(LoggableErrorAndProto(error: error, wasFatal: false, protoFrame: recipient))
+                            return
                         case .partialRestore(let errors):
                             frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: recipient) })
                         case .failure(let errors):
@@ -933,6 +935,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         switch chatResult {
                         case .success:
                             return
+                        case .unrecognizedEnum(let error):
+                            frameErrors.append(LoggableErrorAndProto(error: error, wasFatal: false, protoFrame: chat))
+                            return
                         case .partialRestore(let errors):
                             frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: chat) })
                         case .failure(let errors):
@@ -946,6 +951,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         )
                         switch chatItemResult {
                         case .success:
+                            return
+                        case .unrecognizedEnum(let error):
+                            frameErrors.append(LoggableErrorAndProto(error: error, wasFatal: false, protoFrame: chatItem))
                             return
                         case .partialRestore(let errors):
                             frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: chatItem) })
@@ -962,6 +970,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         switch accountDataResult {
                         case .success:
                             return
+                        case .unrecognizedEnum(let error):
+                            frameErrors.append(LoggableErrorAndProto(error: error, wasFatal: false, protoFrame: backupProtoAccountData))
+                            return
                         case .partialRestore(let errors):
                             frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoAccountData) })
                         case .failure(let errors):
@@ -976,6 +987,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         switch stickerPackResult {
                         case .success:
                             return
+                        case .unrecognizedEnum(let error):
+                            frameErrors.append(LoggableErrorAndProto(error: error, wasFatal: false, protoFrame: backupProtoStickerPack))
+                            return
                         case .partialRestore(let errors):
                             frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoStickerPack) })
                         case .failure(let errors):
@@ -989,6 +1003,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         )
                         switch adHocCallResult {
                         case .success:
+                            return
+                        case .unrecognizedEnum(let error):
+                            frameErrors.append(LoggableErrorAndProto(error: error, wasFatal: false, protoFrame: backupProtoAdHocCall))
                             return
                         case .partialRestore(let errors):
                             frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoAdHocCall) })
@@ -1006,11 +1023,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         break
                     case nil:
                         if hasMoreFrames {
-                            owsFailDebug("Frame missing item!")
                             frameErrors.append(LoggableErrorAndProto(
-                                error: MessageBackup.RestoreFrameError.restoreFrameError(
-                                    .invalidProtoData(.frameMissingItem),
-                                    MessageBackup.EmptyFrameId.shared
+                                error: MessageBackup.UnrecognizedEnumError(
+                                    enumType: BackupProto_Frame.OneOf_Item.self
                                 ),
                                 wasFatal: false
                             ))

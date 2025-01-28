@@ -67,9 +67,6 @@ extension MessageBackup {
             /// Custom chat colors should never have light/dark theme. The UI
             /// disallows it and the proto cannot represent it.
             case themedCustomChatColor
-            /// An unknown type of wallpaper was found that we couldn't translate to proto,
-            /// causing the wallpaper to be skipped.
-            case unknownWallpaper
 
             /// An incoming message has an invalid or missing author address information,
             /// causing the message to be skipped.
@@ -218,9 +215,6 @@ extension MessageBackup {
             /// Associated value provides the number of attachments.
             case unviewedViewOnceMessageTooManyAttachments(Int)
 
-            /// Restrictions for a call link are unknown.
-            case callLinkRestrictionsUnknown
-
             /// An ad hoc call's ``CallRecord/conversationId`` is not a
             /// call link, which is illegal.
             case adHocCallDoesNotHaveCallLinkAsConversationId
@@ -291,7 +285,6 @@ extension MessageBackup {
                     .fileIOError,
                     .groupMasterKeyError,
                     .themedCustomChatColor,
-                    .unknownWallpaper,
                     .unableToFetchRecipientIdentity,
                     .distributionListMissingDistributionId,
                     .distributionListHasDefaultViewMode,
@@ -342,7 +335,6 @@ extension MessageBackup {
                     .unableToReadStoryContextAssociatedData,
                     .unviewedViewOnceMessageMissingAttachment,
                     .unviewedViewOnceMessageTooManyAttachments,
-                    .callLinkRestrictionsUnknown,
                     .adHocCallDoesNotHaveCallLinkAsConversationId,
                     .invalidAdHocCallTimestamp,
                     .unexpectedRevisionsOnMessage:
@@ -362,7 +354,6 @@ extension MessageBackup {
                     .fileIOError,
                     .groupMasterKeyError,
                     .themedCustomChatColor,
-                    .unknownWallpaper,
                     .distributionListMissingDistributionId,
                     .distributionListHasDefaultViewMode,
                     .customDistributionListBlocklistViewMode,
@@ -408,7 +399,6 @@ extension MessageBackup {
                     .unableToReadStoryContextAssociatedData,
                     .unviewedViewOnceMessageMissingAttachment,
                     .unviewedViewOnceMessageTooManyAttachments,
-                    .callLinkRestrictionsUnknown,
                     .adHocCallDoesNotHaveCallLinkAsConversationId,
                     .invalidAdHocCallTimestamp,
                     .unexpectedRevisionsOnMessage:
@@ -570,35 +560,16 @@ extension MessageBackup {
                 /// An invalid member (group, distribution list, etc) was specified as a distribution list member.  Includes the offending proto
                 case invalidDistributionListMember(protoClass: Any.Type)
 
-                /// A ``BackupProto/Recipient`` with a missing destination.
-                case recipientMissingDestination
-
-                /// A ``BackupProto_Contact`` with unknown identityState.
-                case unknownContactIdentityState
-
                 /// A ``BackupProto/Contact`` with no aci, pni, or e164.
                 case contactWithoutIdentifiers
                 /// A ``BackupProto/Contact`` for the local user. This shouldn't exist.
                 case otherContactWithLocalIdentifiers
-                /// A ``BackupProto/Contact`` missing info as to whether or not
-                /// it is registered.
-                case contactWithoutRegistrationInfo
 
-                /// A ``BackupProto_ChatStyle/BubbleColorPreset`` had an unrecognized case.
-                case unrecognizedChatStyleBubbleColorPreset
                 /// Some custom chat color identifier being referenced was not present earlier in the backup file.
                 case customChatColorNotFound(CustomChatColorId)
-                /// A ``BackupProto_ChatStyle/CustomChatColor`` had an unrecognized color oneof.
-                case unrecognizedCustomChatStyleColor
                 /// A ``BackupProto_ChatStyle/Gradient`` had less than two colors.
                 case chatStyleGradientSingleOrNoColors
-                /// A ``BackupProto_ChatStyle/WallpaperPreset`` had an unrecognized case.
-                case unrecognizedChatStyleWallpaperPreset
 
-                /// A ``BackupProto/ChatItem`` was missing directional details.
-                case chatItemMissingDirectionalDetails
-                /// A ``BackupProto/ChatItem`` was missing its actual item.
-                case chatItemMissingItem
                 /// A directionless chat item was not an update message.
                 case directionlessChatItemNotUpdateMessage
                 /// A ``BackupProto/ChatItem`` has a missing or invalid dateSent.
@@ -610,8 +581,6 @@ extension MessageBackup {
                 /// Outgoing message's `BackupProto_SendStatus` can only be for `BackupProto_Contacts`.
                 /// One in the backup was to a group, self recipient, or something else.
                 case outgoingNonContactMessageRecipient
-                /// A `BackupProto_SendStatus` had an unregonized `BackupProto_SendStatusStatus`.
-                case unrecognizedMessageSendStatus
 
                 /// `BackupProto_Reaction` must come from either an Aci or an E164.
                 /// One in the backup did not.
@@ -624,8 +593,6 @@ extension MessageBackup {
                 case directStoryReplyMessageEmpty
                 /// A ``BackupProto_DirectStoryReplyMessage`` had an empty text body, but a long-text attachment was present.
                 case directStoryReplyMessageEmptyWithLongText
-                /// A ``BackupProto_DirectStoryReplyMessage/OneOf_Reply`` has an unknown case.
-                case directStoryReplyMessageUnknownType
                 /// A ``BackupProto_DirectStoryReplyMessage`` author didn't have an aci.
                 case directStoryReplyFromNonAci
                 /// A ``BackupProto_DirectStoryReplyMessage`` was in a group thread.
@@ -634,9 +601,6 @@ extension MessageBackup {
                 /// A ``BackupProto_StandardMessage/longText`` was present despite an empty
                 /// message body (the body text must always be a prefix of the long text)
                 case longTextStandardMessageMissingBody
-
-                /// A `BackupProto_BodyRange` with a missing or unrecognized style.
-                case unrecognizedBodyRangeStyle
 
                 /// A quoted message had no body, attachment, gift badge, or other
                 /// content in its representation of the original being quoted.
@@ -652,25 +616,16 @@ extension MessageBackup {
                 case contactMessageMissingContactAttachment
                 /// A ``BackupProto_ContactAttachment/Phone/value`` was missing or empty.
                 case contactAttachmentPhoneNumberMissingValue
-                /// A ``BackupProto_ContactAttachment/Phone/type`` was unknown.
-                case contactAttachmentPhoneNumberUnknownType
                 /// A ``BackupProto_ContactAttachment/Email/value`` was missing or empty.
                 case contactAttachmentEmailMissingValue
-                /// A ``BackupProto_ContactAttachment/Email/type`` was unknown.
-                case contactAttachmentEmailUnknownType
                 /// A ``BackupProto_ContactAttachment/PostalAddress`` with all empty fields;
                 /// at least some field has to be nonempty to be a valid address.
                 case contactAttachmentEmptyAddress
-                /// A ``BackupProto_ContactAttachment/PostalAddress/type`` was unknown.
-                case contactAttachmentAddressUnknownType
 
                 /// A `BackupProto_Group's` gv2 master key could not be parsed by libsignal.
                 case invalidGV2MasterKey
                 /// A `BackupProto_Group` was missing its group snapshot.
                 case missingGV2GroupSnapshot
-                /// A ``BackupProtoGroup/BackupProtoFullGroupMember/role`` was
-                /// unrecognized. Includes the class of the offending proto.
-                case unrecognizedGV2MemberRole(protoClass: Any.Type)
                 /// A ``BackupProtoGroup/BackupProtoMemberPendingProfileKey`` was
                 /// missing its member details.
                 case invitedGV2MemberMissingMemberDetails
@@ -684,11 +639,6 @@ extension MessageBackup {
                 /// A `BackupProto_GroupSequenceOfRequestsAndCancelsUpdate` where
                 /// the requester is the local user, which isn't allowed.
                 case sequenceOfRequestsAndCancelsWithLocalAci
-                /// An unrecognized `BackupProto_GroupChangeChatUpdate`.
-                case unrecognizedGroupUpdate
-
-                /// A frame was entirely missing its enclosed item.
-                case frameMissingItem
 
                 /// A profile key for the local user that could not be parsed into a valid aes256 key
                 case invalidLocalProfileKey
@@ -698,28 +648,16 @@ extension MessageBackup {
                 /// A `BackupProto_IndividualCall` chat item update was associated
                 /// with a thread that was not a contact thread.
                 case individualCallNotInContactThread
-                /// A `BackupProto_IndividualCall` had an unrecognized type.
-                case individualCallUnrecognizedType
-                /// A `BackupProto_IndividualCall` had an unrecognized direction.
-                case individualCallUnrecognizedDirection
-                /// A `BackupProto_IndividualCall` had an unrecognized state.
-                case individualCallUnrecognizedState
 
                 /// A `BackupProto_GroupCall` chat item update was associated with
                 /// a thread that was not a group thread.
                 case groupCallNotInGroupThread
-                /// A `BackupProto_GroupCall` had an unrecognized state.
-                case groupCallUnrecognizedState
                 /// A `BackupProto_GroupCall` referenced a recipient that was not
                 /// a contact or otherwise did not contain an ACI.
                 case groupCallRecipientIdNotAnAci(RecipientId)
 
-                /// `BackupProto_DistributionListItem` was missing its item
-                case distributionListItemMissingItem
                 /// `BackupProto_DistributionList.distributionId` was not a valid UUID
                 case invalidDistributionListId
-                /// `BackupProto_DistributionList.privacyMode` was missing, or contained an unknown privacy mode
-                case invalidDistributionListPrivacyMode
                 /// A custom (non-MyStory) distribution list had ``BackupProto_DistributionList/PrivacyMode/all``
                 /// or ``BackupProto_DistributionList/PrivacyMode/allExcept``, which are only allowed
                 /// for My Story.
@@ -734,10 +672,6 @@ extension MessageBackup {
                 /// other than a ``BackupProto_AdHocCall``; this isn't allowed.
                 case callLinkUsedAsChatRecipient
 
-                /// A ``BackupProto/ChatUpdateMessage/update`` was empty.
-                case emptyChatUpdateMessage
-                /// A ``BackupProto/SimpleChatUpdate/type`` was unrecognized.
-                case unrecognizedSimpleChatUpdate
                 /// A "verification state change" simple chat update was
                 /// associated with a non-contact recipient.
                 case verificationStateChangeNotFromContact
@@ -760,9 +694,9 @@ extension MessageBackup {
                 /// associated with a non-contact recipient.
                 case unsupportedProtocolVersionNotFromContact
 
-                /// An ArchivedPayment was unable to be crated from the
-                /// restored payment information.
-                case unrecognizedPaymentTransaction
+                /// An ``BackupProto_PaymentNotification`` was sent
+                /// in a group chat (not a 1:1 chat).
+                case paymentNotificationInGroup
 
                 /// An "expiration timer update" was in a non-contact thread.
                 /// - Note
@@ -786,8 +720,6 @@ extension MessageBackup {
                 /// A "session switchover update" was not authored by a contact.
                 case sessionSwitchoverUpdateNotFromContact
 
-                /// A "learned profile update" was missing its previous name.
-                case learnedProfileUpdateMissingPreviousName
                 /// A "learned profile update" was not authored by a contact.
                 case learnedProfileUpdateNotFromContact
 
@@ -814,18 +746,9 @@ extension MessageBackup {
                 /// A ``BackupProto_MessageAttachment/clientUuid`` contained an invalid UUID.
                 case invalidAttachmentClientUUID
 
-                /// A ``BackupProto_GiftBadge/state`` was unrecognized.
-                case unrecognizedGiftBadgeState
-
                 /// A ``BackupProto_CallLink/rootKey`` was invalid.
                 case callLinkInvalidRootKey
-                /// A ``BackupProto_CallLink/restrictions`` was unrecognized.
-                case callLinkRestrictionsUnrecognizedType
 
-                /// A ``BackupProto_AdHocCall/state`` was unknown.
-                case adHocCallUnknownState
-                /// A ``BackupProto_AdHocCall/state`` was unrecognized.
-                case adHocCallUnrecognizedState
                 /// The recipient on an ad hoc call was not a call link. No other
                 /// recipient types are valid for an ad hoc call.
                 case recipientOfAdHocCallWasNotCallLink
@@ -919,75 +842,50 @@ extension MessageBackup {
                         .invalidProfileKey,
                         .invalidContactIdentityKey,
                         .invalidDistributionListMember,
-                        .recipientMissingDestination,
-                        .unknownContactIdentityState,
                         .contactWithoutIdentifiers,
                         .otherContactWithLocalIdentifiers,
-                        .contactWithoutRegistrationInfo,
-                        .chatItemMissingDirectionalDetails,
-                        .chatItemMissingItem,
                         .chatItemInvalidDateSent,
-                        .unrecognizedChatStyleBubbleColorPreset,
-                        .unrecognizedCustomChatStyleColor,
                         .chatStyleGradientSingleOrNoColors,
-                        .unrecognizedChatStyleWallpaperPreset,
                         .directionlessChatItemNotUpdateMessage,
                         .incomingMessageNotFromAciOrE164,
                         .outgoingNonContactMessageRecipient,
-                        .unrecognizedMessageSendStatus,
                         .reactionNotFromAciOrE164,
                         .emptyStandardMessage,
                         .directStoryReplyMessageEmpty,
                         .directStoryReplyMessageEmptyWithLongText,
-                        .directStoryReplyMessageUnknownType,
                         .directStoryReplyFromNonAci,
                         .directStoryReplyInGroupThread,
                         .longTextStandardMessageMissingBody,
-                        .unrecognizedBodyRangeStyle,
                         .quotedMessageEmptyContent,
                         .linkPreviewEmptyUrl,
                         .linkPreviewUrlNotInBody,
                         .contactMessageMissingContactAttachment,
                         .contactAttachmentPhoneNumberMissingValue,
-                        .contactAttachmentPhoneNumberUnknownType,
                         .contactAttachmentEmailMissingValue,
-                        .contactAttachmentEmailUnknownType,
                         .contactAttachmentEmptyAddress,
-                        .contactAttachmentAddressUnknownType,
                         .invalidGV2MasterKey,
                         .missingGV2GroupSnapshot,
-                        .unrecognizedGV2MemberRole,
                         .invitedGV2MemberMissingMemberDetails,
                         .failedToBuildGV2GroupModel,
                         .groupUpdateMessageInNonGroupChat,
                         .emptyGroupUpdates,
                         .sequenceOfRequestsAndCancelsWithLocalAci,
-                        .unrecognizedGroupUpdate,
-                        .frameMissingItem,
                         .invalidLocalProfileKey,
                         .invalidLocalUsernameLink,
                         .individualCallNotInContactThread,
-                        .individualCallUnrecognizedType,
-                        .individualCallUnrecognizedDirection,
-                        .individualCallUnrecognizedState,
                         .groupCallNotInGroupThread,
-                        .groupCallUnrecognizedState,
                         .groupCallRecipientIdNotAnAci,
-                        .distributionListItemMissingItem,
                         .invalidDistributionListId,
-                        .invalidDistributionListPrivacyMode,
                         .customDistributionListPrivacyModeAllOrAllExcept,
                         .invalidDistributionListDeletionTimestamp,
                         .distributionListUsedAsChatRecipient,
-                        .emptyChatUpdateMessage,
-                        .unrecognizedSimpleChatUpdate,
                         .verificationStateChangeNotFromContact,
                         .phoneNumberChangeNotFromContact,
                         .endSessionNotFromContact,
                         .decryptionErrorNotFromContact,
                         .paymentsActivationRequestNotFromAci,
                         .paymentsActivatedNotFromAci,
-                        .unrecognizedPaymentTransaction,
+                        .paymentNotificationInGroup,
                         .unsupportedProtocolVersionNotFromContact,
                         .expirationTimerUpdateNotInContactThread,
                         .expirationTimerOverflowedLocalType,
@@ -995,7 +893,6 @@ extension MessageBackup {
                         .profileChangeUpdateNotFromContact,
                         .threadMergeUpdateNotFromContact,
                         .sessionSwitchoverUpdateNotFromContact,
-                        .learnedProfileUpdateMissingPreviousName,
                         .learnedProfileUpdateNotFromContact,
                         .revisionOfIncomingMessageMissingIncomingDetails,
                         .revisionOfOutgoingMessageMissingOutgoingDetails,
@@ -1004,12 +901,8 @@ extension MessageBackup {
                         .filePointerMissingEncryptionKey,
                         .filePointerMissingDigest,
                         .invalidAttachmentClientUUID,
-                        .unrecognizedGiftBadgeState,
                         .callLinkInvalidRootKey,
-                        .callLinkRestrictionsUnrecognizedType,
                         .callLinkUsedAsChatRecipient,
-                        .adHocCallUnknownState,
-                        .adHocCallUnrecognizedState,
                         .recipientOfAdHocCallWasNotCallLink:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
@@ -1054,74 +947,49 @@ extension MessageBackup {
                         .invalidProfileKey,
                         .invalidContactIdentityKey,
                         .invalidDistributionListMember,
-                        .recipientMissingDestination,
-                        .unknownContactIdentityState,
                         .contactWithoutIdentifiers,
                         .otherContactWithLocalIdentifiers,
-                        .contactWithoutRegistrationInfo,
-                        .chatItemMissingDirectionalDetails,
-                        .chatItemMissingItem,
                         .chatItemInvalidDateSent,
-                        .unrecognizedChatStyleBubbleColorPreset,
-                        .unrecognizedCustomChatStyleColor,
                         .chatStyleGradientSingleOrNoColors,
                         .customChatColorNotFound,
-                        .unrecognizedChatStyleWallpaperPreset,
                         .directionlessChatItemNotUpdateMessage,
                         .incomingMessageNotFromAciOrE164,
                         .outgoingNonContactMessageRecipient,
-                        .unrecognizedMessageSendStatus,
                         .reactionNotFromAciOrE164,
                         .emptyStandardMessage,
                         .directStoryReplyMessageEmpty,
                         .directStoryReplyMessageEmptyWithLongText,
-                        .directStoryReplyMessageUnknownType,
                         .directStoryReplyFromNonAci,
                         .directStoryReplyInGroupThread,
                         .longTextStandardMessageMissingBody,
-                        .unrecognizedBodyRangeStyle,
                         .linkPreviewEmptyUrl,
                         .contactMessageMissingContactAttachment,
                         .contactAttachmentPhoneNumberMissingValue,
-                        .contactAttachmentPhoneNumberUnknownType,
                         .contactAttachmentEmailMissingValue,
-                        .contactAttachmentEmailUnknownType,
                         .contactAttachmentEmptyAddress,
-                        .contactAttachmentAddressUnknownType,
                         .invalidGV2MasterKey,
                         .missingGV2GroupSnapshot,
-                        .unrecognizedGV2MemberRole,
                         .invitedGV2MemberMissingMemberDetails,
                         .failedToBuildGV2GroupModel,
                         .groupUpdateMessageInNonGroupChat,
                         .emptyGroupUpdates,
                         .sequenceOfRequestsAndCancelsWithLocalAci,
-                        .unrecognizedGroupUpdate,
-                        .frameMissingItem,
                         .invalidLocalProfileKey,
                         .invalidLocalUsernameLink,
                         .individualCallNotInContactThread,
-                        .individualCallUnrecognizedType,
-                        .individualCallUnrecognizedDirection,
-                        .individualCallUnrecognizedState,
                         .groupCallNotInGroupThread,
-                        .groupCallUnrecognizedState,
                         .groupCallRecipientIdNotAnAci,
-                        .distributionListItemMissingItem,
                         .invalidDistributionListId,
-                        .invalidDistributionListPrivacyMode,
                         .customDistributionListPrivacyModeAllOrAllExcept,
                         .invalidDistributionListDeletionTimestamp,
                         .distributionListUsedAsChatRecipient,
-                        .emptyChatUpdateMessage,
-                        .unrecognizedSimpleChatUpdate,
                         .verificationStateChangeNotFromContact,
                         .phoneNumberChangeNotFromContact,
                         .endSessionNotFromContact,
                         .decryptionErrorNotFromContact,
                         .paymentsActivationRequestNotFromAci,
                         .paymentsActivatedNotFromAci,
-                        .unrecognizedPaymentTransaction,
+                        .paymentNotificationInGroup,
                         .unsupportedProtocolVersionNotFromContact,
                         .expirationTimerUpdateNotInContactThread,
                         .expirationTimerOverflowedLocalType,
@@ -1129,7 +997,6 @@ extension MessageBackup {
                         .profileChangeUpdateNotFromContact,
                         .threadMergeUpdateNotFromContact,
                         .sessionSwitchoverUpdateNotFromContact,
-                        .learnedProfileUpdateMissingPreviousName,
                         .learnedProfileUpdateNotFromContact,
                         .revisionOfIncomingMessageMissingIncomingDetails,
                         .revisionOfOutgoingMessageMissingOutgoingDetails,
@@ -1138,12 +1005,8 @@ extension MessageBackup {
                         .filePointerMissingEncryptionKey,
                         .filePointerMissingDigest,
                         .invalidAttachmentClientUUID,
-                        .unrecognizedGiftBadgeState,
                         .callLinkInvalidRootKey,
-                        .callLinkRestrictionsUnrecognizedType,
                         .callLinkUsedAsChatRecipient,
-                        .adHocCallUnknownState,
-                        .adHocCallUnrecognizedState,
                         .recipientOfAdHocCallWasNotCallLink:
                     return .error
                 case .quotedMessageEmptyContent:
