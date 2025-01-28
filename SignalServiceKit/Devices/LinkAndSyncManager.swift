@@ -198,9 +198,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         await MainActor.run {
             appContext.ensureSleepBlocking(true, blockingObjectsDescription: Constants.sleepBlockingDescription)
         }
-        let suspendHandler = messagePipelineSupervisor.suspendMessageProcessing(for: .linkNsync)
         defer {
-            suspendHandler.invalidate()
             Task { @MainActor in
                 appContext.ensureSleepBlocking(false, blockingObjectsDescription: Constants.sleepBlockingDescription)
             }
@@ -247,6 +245,16 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 progress: markUploadedProgress
             )
         }
+
+        do {
+            try Task.checkCancellation()
+        } catch {
+            await handleCancellation()
+            throw .cancelled(linkedDeviceId: waitForLinkResponse.id)
+        }
+
+        let suspendHandler = messagePipelineSupervisor.suspendMessageProcessing(for: .linkNsync)
+        defer { suspendHandler.invalidate() }
 
         do {
             try Task.checkCancellation()
