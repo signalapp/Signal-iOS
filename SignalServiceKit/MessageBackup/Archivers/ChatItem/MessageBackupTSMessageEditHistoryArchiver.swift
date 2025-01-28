@@ -161,6 +161,39 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
         context: MessageBackup.ChatArchivingContext,
         builder: Builder
     ) -> MessageBackup.ArchiveInteractionResult<Void> {
+        let unexpectedRevisionsMessageType: ArchiveFrameError.ErrorType.UnexpectedRevisionsMessageType?
+        switch latestRevisionDetails.chatItemType {
+        case .remoteDeletedMessage:
+            // Remote-deleted messages with edit history delete the contents of
+            // their prior revisions, but leave the revisions around as
+            // placeholders. We don't want to archive those, nor do we need to
+            // produce an error, so we bail early.
+            return .success(())
+        case .standardMessage, .directStoryReplyMessage:
+            // These message types are the only ones expected/allowed to have
+            // edit history we want to archive. If we unexpectedly find it on
+            // another message type, we'll drop it and record an error.
+            unexpectedRevisionsMessageType = nil
+        case .contactMessage:
+            unexpectedRevisionsMessageType = .contactMessgae
+        case .stickerMessage:
+            unexpectedRevisionsMessageType = .stickerMessage
+        case .updateMessage:
+            unexpectedRevisionsMessageType = .updateMessage
+        case .paymentNotification:
+            unexpectedRevisionsMessageType = .paymentNotification
+        case .giftBadge:
+            unexpectedRevisionsMessageType = .giftBadge
+        case .viewOnceMessage:
+            unexpectedRevisionsMessageType = .viewOnceMessage
+        }
+        if let unexpectedRevisionsMessageType {
+            return .partialFailure((), [.archiveFrameError(
+                .unexpectedRevisionsOnMessage(unexpectedRevisionsMessageType),
+                latestRevisionMessage.uniqueInteractionId
+            )])
+        }
+
         var partialErrors = [ArchiveFrameError]()
 
         /// The edit history, from oldest revision to newest. This ordering

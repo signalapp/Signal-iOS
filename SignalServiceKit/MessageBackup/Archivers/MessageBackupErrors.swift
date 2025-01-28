@@ -14,6 +14,16 @@ extension MessageBackup {
     /// Error while archiving a single frame.
     public struct ArchiveFrameError<AppIdType: MessageBackupLoggableId>: MessageBackupLoggableError {
         public enum ErrorType {
+            /// Message types for which edit history is unexpected.
+            public enum UnexpectedRevisionsMessageType {
+                case contactMessgae
+                case stickerMessage
+                case updateMessage
+                case paymentNotification
+                case giftBadge
+                case viewOnceMessage
+            }
+
             /// An error occurred serializing the proto.
             /// - Note
             /// Logging the raw error is safe, as it'll just contain proto field
@@ -216,6 +226,9 @@ extension MessageBackup {
             case adHocCallDoesNotHaveCallLinkAsConversationId
             /// An ad hoc call has an invalid start timestamp.
             case invalidAdHocCallTimestamp
+
+            /// A message unexpectedly had edit history.
+            case unexpectedRevisionsOnMessage(UnexpectedRevisionsMessageType)
         }
 
         private let type: ErrorType
@@ -331,7 +344,8 @@ extension MessageBackup {
                     .unviewedViewOnceMessageTooManyAttachments,
                     .callLinkRestrictionsUnknown,
                     .adHocCallDoesNotHaveCallLinkAsConversationId,
-                    .invalidAdHocCallTimestamp:
+                    .invalidAdHocCallTimestamp,
+                    .unexpectedRevisionsOnMessage:
                 // Log any others as we see them.
                 return nil
             }
@@ -396,7 +410,8 @@ extension MessageBackup {
                     .unviewedViewOnceMessageTooManyAttachments,
                     .callLinkRestrictionsUnknown,
                     .adHocCallDoesNotHaveCallLinkAsConversationId,
-                    .invalidAdHocCallTimestamp:
+                    .invalidAdHocCallTimestamp,
+                    .unexpectedRevisionsOnMessage:
                 return .error
             case .contactThreadMissingAddress:
                 // We've seen real-world databases with TSContactThreads that
