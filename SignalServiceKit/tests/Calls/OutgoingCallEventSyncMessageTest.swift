@@ -69,7 +69,7 @@ final class OutgoingCallEventSyncMessageSerializationTest: SSKBaseTest {
 
         let syncMessage: OutgoingCallEventSyncMessage = write { tx in
             return OutgoingCallEventSyncMessage(
-                thread: ContactThreadFactory().create(transaction: tx),
+                localThread: ContactThreadFactory().create(transaction: tx),
                 event: OutgoingCallEvent(
                     timestamp: 98765,
                     conversationId: Aci.randomForTesting().serviceIdBinary.asData,

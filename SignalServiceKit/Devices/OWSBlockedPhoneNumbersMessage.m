@@ -23,13 +23,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithThread:(TSThread *)thread
-                  phoneNumbers:(NSArray<NSString *> *)phoneNumbers
-                    aciStrings:(NSArray<NSString *> *)aciStrings
-                      groupIds:(NSArray<NSData *> *)groupIds
-                   transaction:(SDSAnyReadTransaction *)transaction
+- (instancetype)initWithLocalThread:(TSContactThread *)localThread
+                       phoneNumbers:(NSArray<NSString *> *)phoneNumbers
+                         aciStrings:(NSArray<NSString *> *)aciStrings
+                           groupIds:(NSArray<NSData *> *)groupIds
+                        transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initWithThread:thread transaction:transaction];
+    self = [super initWithLocalThread:localThread transaction:transaction];
     if (!self) {
         return self;
     }

@@ -22,7 +22,7 @@ public class OutgoingCallLinkUpdateMessage: OWSOutgoingSyncMessage {
     ) {
         self.rootKey = rootKey.bytes
         self.adminPasskey = adminPasskey
-        super.init(thread: localThread, transaction: tx)
+        super.init(localThread: localThread, transaction: tx)
     }
 
     public required init?(coder: NSCoder) {

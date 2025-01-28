@@ -11,11 +11,11 @@ public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
 
     public init(
         uploadedAttachment: Upload.Result<Upload.LocalUploadMetadata>,
-        thread: TSThread,
+        localThread: TSContactThread,
         tx: SDSAnyReadTransaction
     ) {
         self.uploadedAttachment = uploadedAttachment
-        super.init(thread: thread, transaction: tx)
+        super.init(localThread: localThread, transaction: tx)
     }
 
     required init?(coder: NSCoder) {

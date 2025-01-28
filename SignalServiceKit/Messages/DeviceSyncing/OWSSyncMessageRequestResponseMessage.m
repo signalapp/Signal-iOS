@@ -10,6 +10,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSSyncMessageRequestResponseMessage ()
 
+// v0: The sending thread is also the acted-upon thread.
+// v1: (skipped to avoid ambiguity)
+// v2: The acted-upon thread is stored in groupId/threadAci.
+@property (nonatomic, readonly) NSUInteger version;
+
+@property (nonatomic, readonly, nullable) NSData *groupId;
+@property (nonatomic, readonly, nullable) NSString *threadAci;
 @property (nonatomic, readonly) OWSSyncMessageRequestResponseType responseType;
 
 @end
@@ -23,11 +30,23 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithThread:(TSThread *)thread
-                  responseType:(OWSSyncMessageRequestResponseType)responseType
-                   transaction:(SDSAnyReadTransaction *)transaction
+- (instancetype)initWithLocalThread:(TSContactThread *)localThread
+               messageRequestThread:(TSThread *)thread
+                       responseType:(OWSSyncMessageRequestResponseType)responseType
+                        transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initWithThread:thread transaction:transaction];
+    self = [super initWithLocalThread:localThread transaction:transaction];
+
+    _version = 2;
+
+    if ([thread isKindOfClass:[TSGroupThread class]]) {
+        _groupId = [[(TSGroupThread *)thread groupId] copy];
+    } else if ([thread isKindOfClass:[TSContactThread class]]) {
+        _threadAci = [[[(TSContactThread *)thread contactAddress] aciString] copy];
+        OWSAssertDebug(_threadAci != nil); /* Must have an ACI when responding to a message request. */
+    } else {
+        OWSFailDebug(@"Can't respond to thread type.");
+    }
 
     _responseType = responseType;
 
@@ -58,20 +77,29 @@ NS_ASSUME_NONNULL_BEGIN
         [SSKProtoSyncMessageMessageRequestResponse builder];
     messageRequestResponseBuilder.type = self.protoResponseType;
 
-    TSThread *_Nullable thread = [self threadWithTx:transaction];
-    if (!thread) {
-        OWSFailDebug(@"Missing thread for message request response");
-        return nil;
-    }
+    if (self.groupId != nil) {
+        messageRequestResponseBuilder.groupID = self.groupId;
+    } else if (self.threadAci != nil) {
+        messageRequestResponseBuilder.threadAci = self.threadAci;
+    } else if (self.version < 2) {
+        // Fallback behavior. Messages of this version are no longer created.
+        // Eventually, all enqueued messages of this type should be resolved
+        // (either because they have been sent or because they ran out of retries).
+        TSThread *_Nullable thread = [self threadWithTx:transaction];
+        if (!thread) {
+            OWSFailDebug(@"Missing thread for message request response");
+            return nil;
+        }
 
-    if (thread.isGroupThread) {
-        OWSAssertDebug([thread isKindOfClass:[TSGroupThread class]]);
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        messageRequestResponseBuilder.groupID = groupThread.groupModel.groupId;
-    } else {
-        OWSAssertDebug([thread isKindOfClass:[TSContactThread class]]);
-        TSContactThread *contactThread = (TSContactThread *)thread;
-        messageRequestResponseBuilder.threadAci = contactThread.contactAddress.aciString;
+        if (thread.isGroupThread) {
+            OWSAssertDebug([thread isKindOfClass:[TSGroupThread class]]);
+            TSGroupThread *groupThread = (TSGroupThread *)thread;
+            messageRequestResponseBuilder.groupID = groupThread.groupModel.groupId;
+        } else {
+            OWSAssertDebug([thread isKindOfClass:[TSContactThread class]]);
+            TSContactThread *contactThread = (TSContactThread *)thread;
+            messageRequestResponseBuilder.threadAci = contactThread.contactAddress.aciString;
+        }
     }
 
     SSKProtoSyncMessageBuilder *builder = [SSKProtoSyncMessage builder];

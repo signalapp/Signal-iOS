@@ -18,19 +18,19 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
     @objc
     private var isRecipientUpdate: NSNumber!
 
-    public init(localThread: TSThread, timestamp: UInt64, recipientStates: [ServiceId: StoryRecipientState], transaction: SDSAnyReadTransaction) {
+    public init(localThread: TSContactThread, timestamp: UInt64, recipientStates: [ServiceId: StoryRecipientState], transaction: SDSAnyReadTransaction) {
         // We need to store the encoded data rather than just the uniqueId
         // of the story message as the story message will have been deleted
         // by the time we're sending this transcript.
         self.storyEncodedRecipientStates = Self.encodeRecipientStates(recipientStates)
         self.isRecipientUpdate = NSNumber(value: true)
-        super.init(timestamp: timestamp, thread: localThread, transaction: transaction)
+        super.init(timestamp: timestamp, localThread: localThread, transaction: transaction)
     }
 
-    public init(localThread: TSThread, storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) {
+    public init(localThread: TSContactThread, storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) {
         self.storyMessageUniqueId = storyMessage.uniqueId
         self.isRecipientUpdate = NSNumber(value: false)
-        super.init(timestamp: storyMessage.timestamp, thread: localThread, transaction: transaction)
+        super.init(timestamp: storyMessage.timestamp, localThread: localThread, transaction: transaction)
     }
 
     private static func encodeRecipientStates(_ recipientStates: [ServiceId: StoryRecipientState]) -> Data? {

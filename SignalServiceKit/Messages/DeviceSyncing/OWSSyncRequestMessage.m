@@ -24,11 +24,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncRequestMessage
 
-- (instancetype)initWithThread:(TSThread *)thread
-                   requestType:(int32_t)requestType
-                   transaction:(SDSAnyReadTransaction *)transaction
+- (instancetype)initWithLocalThread:(TSContactThread *)localThread
+                        requestType:(int32_t)requestType
+                        transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initWithThread:thread transaction:transaction];
+    self = [super initWithLocalThread:localThread transaction:transaction];
 
     _requestType = requestType;
 

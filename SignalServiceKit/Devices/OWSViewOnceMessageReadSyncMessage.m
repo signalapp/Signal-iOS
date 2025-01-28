@@ -14,15 +14,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSViewOnceMessageReadSyncMessage
 
-- (instancetype)initWithThread:(TSThread *)thread
-                 senderAddress:(SignalServiceAddress *)senderAddress
-                       message:(TSMessage *)message
-                 readTimestamp:(uint64_t)readTimestamp
-                   transaction:(SDSAnyReadTransaction *)transaction
+- (instancetype)initWithLocalThread:(TSContactThread *)localThread
+                      senderAddress:(SignalServiceAddress *)senderAddress
+                            message:(TSMessage *)message
+                      readTimestamp:(uint64_t)readTimestamp
+                        transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(senderAddress.isValid && message.timestamp > 0);
 
-    self = [super initWithThread:thread transaction:transaction];
+    self = [super initWithLocalThread:localThread transaction:transaction];
     if (!self) {
         return self;
     }

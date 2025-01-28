@@ -12,16 +12,17 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+- (instancetype)initWithLocalThread:(TSContactThread *)localThread
+                        transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
+                      localThread:(TSContactThread *)localThread
                       transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
 
-- (instancetype)initWithThread:(TSThread *)thread
-                  phoneNumbers:(NSArray<NSString *> *)phoneNumbers
-                    aciStrings:(NSArray<NSString *> *)aciStrings
-                      groupIds:(NSArray<NSData *> *)groupIds
-                   transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithLocalThread:(TSContactThread *)localThread
+                       phoneNumbers:(NSArray<NSString *> *)phoneNumbers
+                         aciStrings:(NSArray<NSString *> *)aciStrings
+                           groupIds:(NSArray<NSData *> *)groupIds
+                        transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 @end

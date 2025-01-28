@@ -14,11 +14,11 @@ public class OutgoingDeviceNameChangeSyncMessage: OWSOutgoingSyncMessage {
 
     init(
         deviceId: UInt32,
-        thread: TSThread,
+        localThread: TSContactThread,
         tx: SDSAnyReadTransaction
     ) {
         self.deviceId = NSNumber(value: deviceId)
-        super.init(thread: thread, transaction: tx)
+        super.init(localThread: localThread, transaction: tx)
     }
 
     required public init?(coder: NSCoder) {

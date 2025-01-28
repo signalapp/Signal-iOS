@@ -619,7 +619,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     private func buildVerificationStateSyncMessage(
         for key: String,
-        localThread: TSThread,
+        localThread: TSContactThread,
         tx: DBReadTransaction
     ) -> OWSVerificationStateSyncMessage? {
         let value: Any? = queuedVerificationStateSyncMessagesKeyValueStore.getObject(
@@ -680,7 +680,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         }
 
         return OWSVerificationStateSyncMessage(
-            thread: localThread,
+            localThread: localThread,
             verificationState: recipientIdentity.verificationState,
             identityKey: identityKey.serialize().asData,
             verificationForRecipientAddress: recipient.address,

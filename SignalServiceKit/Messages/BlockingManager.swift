@@ -441,7 +441,7 @@ public class BlockingManager {
             let blockedGroupIds = try blockedGroupStore.blockedGroupIds(tx: tx.asV2Read)
 
             let message = OWSBlockedPhoneNumbersMessage(
-                thread: localThread,
+                localThread: localThread,
                 phoneNumbers: blockedRecipients.compactMap { $0.phoneNumber?.stringValue },
                 aciStrings: blockedRecipients.compactMap { $0.aci?.serviceIdString },
                 groupIds: Array(blockedGroupIds),

@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyReadTransaction;
 @class SSKProtoSyncMessage;
 @class SSKProtoSyncMessageBuilder;
+@class TSContactThread;
 
 /**
  * Abstract base class used for the family of sync messages which take care
@@ -69,10 +70,10 @@ NS_ASSUME_NONNULL_BEGIN
                 storedMessageState:(TSOutgoingMessageState)storedMessageState
               wasNotCreatedLocally:(BOOL)wasNotCreatedLocally NS_UNAVAILABLE;
 
-- (instancetype)initWithThread:(TSThread *)thread
-                   transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithLocalThread:(TSContactThread *)localThread
+                        transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
+                      localThread:(TSContactThread *)localThread
                       transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

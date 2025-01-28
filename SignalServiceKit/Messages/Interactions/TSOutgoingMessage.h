@@ -12,6 +12,7 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 
 @class OWSOutgoingSyncMessage;
 @class SignalServiceAddress;
+@class TSContactThread;
 @class TSOutgoingMessageRecipientState;
 
 typedef NS_ENUM(NSUInteger, OWSOutgoingMessageRecipientStatus);
@@ -230,7 +231,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
  */
 - (BOOL)shouldSyncTranscript;
 
-- (nullable OWSOutgoingSyncMessage *)buildTranscriptSyncMessageWithLocalThread:(TSThread *)localThread
+- (nullable OWSOutgoingSyncMessage *)buildTranscriptSyncMessageWithLocalThread:(TSContactThread *)localThread
                                                                    transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(buildTranscriptSyncMessage(localThread:transaction:));
 

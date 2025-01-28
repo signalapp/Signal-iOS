@@ -470,7 +470,7 @@ final class _DeleteForMeOutgoingSyncMessageManagerImpl_SyncMessageSender_Wrapper
 
         guard let syncMessage = DeleteForMeOutgoingSyncMessage(
             contents: contents,
-            thread: localThread,
+            localThread: localThread,
             tx: sdsTx
         ) else { return }
 

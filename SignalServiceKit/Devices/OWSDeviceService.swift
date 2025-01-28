@@ -196,7 +196,7 @@ private struct DeviceNameChangeSyncMessageSender {
 
         let outgoingSyncMessage = OutgoingDeviceNameChangeSyncMessage(
             deviceId: deviceId,
-            thread: localThread,
+            localThread: localThread,
             tx: sdsTx
         )
 

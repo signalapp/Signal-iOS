@@ -313,7 +313,7 @@ class _CallRecordMissedCallManagerImpl_SyncMessageSender_Wrapper: _CallRecordMis
                 conversationId: conversationId,
                 timestamp: timestamp
             ),
-            thread: localThread,
+            localThread: localThread,
             tx: sdsTx
         )
 

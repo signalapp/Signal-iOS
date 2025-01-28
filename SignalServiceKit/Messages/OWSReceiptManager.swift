@@ -292,7 +292,7 @@ extension OWSReceiptManager {
             let readReceiptsToSend = readReceiptsForLinkedDevices.compactMap { $0.asLinkedDeviceReadReceipt }
             if !readReceiptsToSend.isEmpty {
                 let message = OWSReadReceiptsForLinkedDevicesMessage(
-                    thread: thread,
+                    localThread: thread,
                     readReceipts: readReceiptsToSend,
                     transaction: transaction
                 )
@@ -306,7 +306,7 @@ extension OWSReceiptManager {
             let viewedReceiptsToSend = viewedReceiptsForLinkedDevices.compactMap { $0.asLinkedDeviceViewedReceipt }
             if !viewedReceiptsToSend.isEmpty {
                 let message = OWSViewedReceiptsForLinkedDevicesMessage(
-                    thread: thread,
+                    localThread: thread,
                     viewedReceipts: viewedReceiptsToSend,
                     transaction: transaction
                 )
@@ -680,8 +680,12 @@ extension OWSReceiptManager {
                     }
 
                     if !receiptsForMessage.isEmpty {
+                        guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
+                            owsFailDebug("Couldn't create localThread.")
+                            return
+                        }
                         let message = OWSReadReceiptsForLinkedDevicesMessage(
-                            thread: thread,
+                            localThread: localThread,
                             readReceipts: receiptsForMessage,
                             transaction: transaction
                         )

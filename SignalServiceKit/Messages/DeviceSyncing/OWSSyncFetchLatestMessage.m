@@ -17,11 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncFetchLatestMessage
 
-- (instancetype)initWithThread:(TSThread *)thread
-                     fetchType:(OWSSyncFetchType)fetchType
-                   transaction:(SDSAnyReadTransaction *)transaction
+- (instancetype)initWithLocalThread:(TSContactThread *)localThread
+                          fetchType:(OWSSyncFetchType)fetchType
+                        transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initWithThread:thread transaction:transaction];
+    self = [super initWithLocalThread:localThread transaction:transaction];
 
     _fetchType = fetchType;
 

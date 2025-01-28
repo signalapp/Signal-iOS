@@ -16,9 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+- (instancetype)initWithLocalThread:(TSContactThread *)localThread transaction:(SDSAnyReadTransaction *)transaction
 {
-    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
+    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:localThread];
     self = [super initOutgoingMessageWithBuilder:messageBuilder
                             additionalRecipients:@[]
                               explicitRecipients:@[]
@@ -33,10 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
+                      localThread:(TSContactThread *)localThread
                       transaction:(SDSAnyReadTransaction *)transaction
 {
-    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
+    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:localThread];
     messageBuilder.timestamp = timestamp;
     self = [super initOutgoingMessageWithBuilder:messageBuilder
                             additionalRecipients:@[]

@@ -129,7 +129,7 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
         }
 
         let outgoingCallEventMessage = OutgoingCallEventSyncMessage(
-            thread: localThread,
+            localThread: localThread,
             event: outgoingCallEvent,
             tx: tx
         )

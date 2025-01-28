@@ -78,7 +78,7 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
 
     init?(
         contents: Contents,
-        thread: TSThread,
+        localThread: TSContactThread,
         tx: SDSAnyReadTransaction
     ) {
         do {
@@ -88,7 +88,7 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
             return nil
         }
 
-        super.init(thread: thread, transaction: tx)
+        super.init(localThread: localThread, transaction: tx)
     }
 
     required init?(coder: NSCoder) {

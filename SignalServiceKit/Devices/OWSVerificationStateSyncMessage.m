@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSVerificationStateSyncMessage
 
-- (instancetype)initWithThread:(TSThread *)thread
+- (instancetype)initWithLocalThread:(TSContactThread *)localThread
                   verificationState:(OWSVerificationState)verificationState
                         identityKey:(NSData *)identityKey
     verificationForRecipientAddress:(SignalServiceAddress *)address
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
     // will figure that out on it's own.
     OWSAssertDebug(verificationState != OWSVerificationStateNoLongerVerified);
 
-    self = [super initWithThread:thread transaction:transaction];
+    self = [super initWithLocalThread:localThread transaction:transaction];
     if (!self) {
         return self;
     }

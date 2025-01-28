@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingSentMessageTranscript
 
-- (instancetype)initWithLocalThread:(TSThread *)localThread
+- (instancetype)initWithLocalThread:(TSContactThread *)localThread
                       messageThread:(TSThread *)messageThread
                     outgoingMessage:(TSOutgoingMessage *)message
                   isRecipientUpdate:(BOOL)isRecipientUpdate
@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(messageThread != nil);
 
     // The sync message's timestamp must match the original outgoing message's timestamp.
-    self = [super initWithTimestamp:message.timestamp thread:localThread transaction:transaction];
+    self = [super initWithTimestamp:message.timestamp localThread:localThread transaction:transaction];
 
     if (!self) {
         return self;

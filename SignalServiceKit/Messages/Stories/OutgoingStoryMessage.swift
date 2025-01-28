@@ -85,7 +85,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     public override func shouldSyncTranscript() -> Bool { !skipSyncTranscript.boolValue }
 
     public override func buildTranscriptSyncMessage(
-        localThread: TSThread,
+        localThread: TSContactThread,
         transaction: SDSAnyWriteTransaction
     ) -> OWSOutgoingSyncMessage? {
         guard let storyMessage = StoryMessage.anyFetch(uniqueId: storyMessageId, transaction: transaction) else {

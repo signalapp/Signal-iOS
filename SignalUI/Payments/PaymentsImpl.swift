@@ -1103,7 +1103,7 @@ public extension PaymentsImpl {
             isDefragmentation: isDefragmentation
         )
         let message = OutgoingPaymentSyncMessage(
-            thread: thread,
+            localThread: thread,
             mobileCoin: mobileCoin,
             transaction: transaction
         )

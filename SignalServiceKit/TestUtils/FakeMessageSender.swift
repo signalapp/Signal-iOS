@@ -26,7 +26,7 @@ class FakeMessageSender: MessageSender {
 
     override func sendTransientContactSyncAttachment(
         dataSource: DataSource,
-        thread: TSThread
+        localThread: TSContactThread
     ) async throws {
         if let stubbedFailingError = stubbedFailingErrors.removeFirst() { throw stubbedFailingError }
     }

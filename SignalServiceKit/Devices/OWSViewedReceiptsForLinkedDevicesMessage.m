@@ -17,11 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSViewedReceiptsForLinkedDevicesMessage
 
-- (instancetype)initWithThread:(TSThread *)thread
-                viewedReceipts:(NSArray<OWSLinkedDeviceViewedReceipt *> *)viewedReceipts
-                   transaction:(SDSAnyReadTransaction *)transaction
+- (instancetype)initWithLocalThread:(TSContactThread *)localThread
+                     viewedReceipts:(NSArray<OWSLinkedDeviceViewedReceipt *> *)viewedReceipts
+                        transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initWithThread:thread transaction:transaction];
+    self = [super initWithLocalThread:localThread transaction:transaction];
     if (!self) {
         return self;
     }

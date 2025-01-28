@@ -19,14 +19,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncConfigurationMessage
 
-- (instancetype)initWithThread:(TSThread *)thread
+- (instancetype)initWithLocalThread:(TSContactThread *)localThread
                    readReceiptsEnabled:(BOOL)areReadReceiptsEnabled
     showUnidentifiedDeliveryIndicators:(BOOL)showUnidentifiedDeliveryIndicators
                   showTypingIndicators:(BOOL)showTypingIndicators
                       sendLinkPreviews:(BOOL)sendLinkPreviews
                            transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initWithThread:thread transaction:transaction];
+    self = [super initWithLocalThread:localThread transaction:transaction];
     if (!self) {
         return nil;
     }

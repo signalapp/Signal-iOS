@@ -117,12 +117,12 @@ public class OutgoingCallEventSyncMessage: OWSOutgoingSyncMessage {
     private(set) var callEvent: OutgoingCallEvent!
 
     init(
-        thread: TSThread,
+        localThread: TSContactThread,
         event: OutgoingCallEvent,
         tx: SDSAnyReadTransaction
     ) {
         self.callEvent = event
-        super.init(thread: thread, transaction: tx)
+        super.init(localThread: localThread, transaction: tx)
     }
 
     required public init?(coder: NSCoder) {

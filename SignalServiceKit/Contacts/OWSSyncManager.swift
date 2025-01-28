@@ -91,7 +91,7 @@ extension OWSSyncManager: SyncManagerProtocolObjc {
         let typingIndicators = SSKEnvironment.shared.typingIndicatorsRef.areTypingIndicatorsEnabled()
 
         let configurationSyncMessage = OWSSyncConfigurationMessage(
-            thread: thread,
+            localThread: thread,
             readReceiptsEnabled: readReceipts,
             showUnidentifiedDeliveryIndicators: sealedSenderIndicators,
             showTypingIndicators: typingIndicators,
@@ -203,7 +203,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         let masterKey = DependenciesBridge.shared.svr.masterKeyDataForKeysSyncMessage(tx: tx.asV2Read)
         let mrbk = DependenciesBridge.shared.mrbkStore.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
         let syncKeysMessage = OWSSyncKeysMessage(
-            thread: thread,
+            localThread: thread,
             storageServiceKey: storageServiceKey?.rawData,
             masterKey: masterKey,
             mediaRootBackupKey: mrbk,
@@ -348,7 +348,17 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return owsFailDebug("Unexpectedly tried to send sync message before registration.")
         }
 
-        let syncMessageRequestResponse = OWSSyncMessageRequestResponseMessage(thread: thread, responseType: responseType, transaction: transaction)
+        guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
+            owsFailDebug("Couldn't get localThread.")
+            return
+        }
+
+        let syncMessageRequestResponse = OWSSyncMessageRequestResponseMessage(
+            localThread: localThread,
+            messageRequestThread: thread,
+            responseType: responseType,
+            transaction: transaction
+        )
         let preparedMessage = PreparedOutgoingMessage.preprepared(
             transientMessageWithoutAttachments: syncMessageRequestResponse
         )
@@ -468,7 +478,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
         let dataSource = try DataSourcePath(fileUrl: result.syncFileUrl, shouldDeleteOnDeallocation: true)
 
-        try await SSKEnvironment.shared.messageSenderRef.sendTransientContactSyncAttachment(dataSource: dataSource, thread: thread)
+        try await SSKEnvironment.shared.messageSenderRef.sendTransientContactSyncAttachment(dataSource: dataSource, localThread: thread)
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             Self.keyValueStore.setData(messageHash, key: Constants.lastContactSyncKey, transaction: tx.asV2Write)
             self.clearFullSyncRequestId(ifMatches: result.fullSyncRequestId, tx: tx)
@@ -553,7 +563,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return
         }
 
-        let fetchLatestSyncMessage = OWSSyncFetchLatestMessage(thread: thread, fetchType: type, transaction: tx)
+        let fetchLatestSyncMessage = OWSSyncFetchLatestMessage(localThread: thread, fetchType: type, transaction: tx)
         let preparedMessage = PreparedOutgoingMessage.preprepared(
             transientMessageWithoutAttachments: fetchLatestSyncMessage
         )
@@ -654,7 +664,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return owsFailDebug("Missing thread")
         }
 
-        let syncRequestMessage = OWSSyncRequestMessage(thread: thread, requestType: requestType.rawValue, transaction: transaction)
+        let syncRequestMessage = OWSSyncRequestMessage(localThread: thread, requestType: requestType.rawValue, transaction: transaction)
         let preparedMessage = PreparedOutgoingMessage.preprepared(
             transientMessageWithoutAttachments: syncRequestMessage
         )

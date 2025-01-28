@@ -23,11 +23,11 @@ public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
 
     init(
         callLogEvent: CallLogEvent,
-        thread: TSThread,
+        localThread: TSContactThread,
         tx: SDSAnyReadTransaction
     ) {
         self.callLogEvent = callLogEvent
-        super.init(thread: thread, transaction: tx)
+        super.init(localThread: localThread, transaction: tx)
     }
 
     required public init?(coder: NSCoder) {

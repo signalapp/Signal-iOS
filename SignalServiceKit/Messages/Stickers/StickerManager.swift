@@ -1121,7 +1121,7 @@ public class StickerManager: NSObject {
             return
         }
         let message = OWSStickerPackSyncMessage(
-            thread: thread,
+            localThread: thread,
             packs: packs,
             operationType: operationType,
             transaction: transaction

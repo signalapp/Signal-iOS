@@ -137,7 +137,7 @@ public class ViewOnceMessages: NSObject {
         let readTimestamp: UInt64 = nowMs()
 
         let syncMessage = OWSViewOnceMessageReadSyncMessage(
-            thread: thread,
+            localThread: thread,
             senderAddress: senderAddress,
             message: message,
             readTimestamp: readTimestamp,

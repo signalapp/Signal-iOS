@@ -142,7 +142,7 @@ public class OutgoingEditMessage: TSOutgoingMessage {
     }
 
     public override func buildTranscriptSyncMessage(
-        localThread: TSThread,
+        localThread: TSContactThread,
         transaction: SDSAnyWriteTransaction
     ) -> OWSOutgoingSyncMessage? {
         guard let thread = thread(tx: transaction) else {

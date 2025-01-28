@@ -652,7 +652,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return YES;
 }
 
-- (nullable OWSOutgoingSyncMessage *)buildTranscriptSyncMessageWithLocalThread:(TSThread *)localThread
+- (nullable OWSOutgoingSyncMessage *)buildTranscriptSyncMessageWithLocalThread:(TSContactThread *)localThread
                                                                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(self.shouldSyncTranscript);

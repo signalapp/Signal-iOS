@@ -327,7 +327,7 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
                 conversationId: conversationId,
                 timestamp: beforeTimestamp
             ),
-            thread: localThread,
+            localThread: localThread,
             tx: tx
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(
