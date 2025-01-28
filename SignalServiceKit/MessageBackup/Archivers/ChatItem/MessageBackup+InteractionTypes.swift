@@ -274,6 +274,11 @@ extension MessageBackup {
         /// No legitimate message should have timestamps this size, so any message we see is the
         /// result of either intentional or unintentional fuzzing, and we just drop it.
         case timestampTooLarge
+
+        /// We previously had a bug that made it possible to reply to your
+        /// own stories; these replies would go into the Note To Self thread.
+        /// We just drop these on export as they're meant to be impossible.
+        case directStoryReplyInNoteToSelf
     }
 
     enum ArchiveInteractionResult<Component> {

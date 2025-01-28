@@ -884,8 +884,11 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 .storyReplyInGroupThread,
                 interactionUniqueId
             )])
-        case .contactThread:
-            break
+        case .contactThread(let contactAddress):
+            if contactAddress?.aci == context.recipientContext.localIdentifiers.aci {
+                // See comment on skippable update enum case.
+                return .skippableChatUpdate(.directStoryReplyInNoteToSelf)
+            }
         }
 
         guard !message.isGroupStoryReply else {
