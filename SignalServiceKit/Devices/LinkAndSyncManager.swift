@@ -420,6 +420,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         var numNetworkErrors = 0
         whileLoop: while true {
             do {
+                // TODO: this cannot use websocket until the websocket implementation
+                // supports cooperative cancellation; we need this to be cancellable.
                 let response = try await networkManager.asyncRequest(
                     Requests.waitForDeviceToLink(tokenId: tokenId),
                     canUseWebSocket: false
@@ -441,8 +443,14 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                     try Task.checkCancellation()
                     // retry
                     continue whileLoop
-                case .invalidParameters, .rateLimited:
+                case .invalidParameters:
                     throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
+                case .rateLimited:
+                    try await Task.sleep(
+                        nanoseconds: Requests.retryDelayNanoSeconds(response)
+                    )
+                    // retry
+                    continue whileLoop
                 case nil:
                     owsFailDebug("Unexpected response")
                     throw PrimaryLinkNSyncError.errorWaitingForLinkedDevice
@@ -639,6 +647,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         var numNetworkErrors = 0
         whileLoop: while true {
             do {
+                // TODO: this cannot use websocket until the websocket implementation
+                // supports cooperative cancellation; we need this to be cancellable.
                 let response = try await networkManager.asyncRequest(
                     Requests.waitForLinkNSyncBackupUpload(auth: auth),
                     canUseWebSocket: false
@@ -669,8 +679,14 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                     try Task.checkCancellation()
                     // retry
                     continue whileLoop
-                case .invalidParameters, .rateLimited:
+                case .invalidParameters:
                     throw SecondaryLinkNSyncError.errorWaitingForBackup
+                case .rateLimited:
+                    try await Task.sleep(
+                        nanoseconds: Requests.retryDelayNanoSeconds(response)
+                    )
+                    // retry
+                    continue whileLoop
                 case nil:
                     owsFailDebug("Unexpected response")
                     throw SecondaryLinkNSyncError.errorWaitingForBackup
@@ -752,7 +768,8 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
 
         static let enabledOnPrimaryKey = "enabledOnPrimaryKey"
 
-        static let longPollRequestTimeoutSeconds: UInt32 = 10
+        static let longPollRequestTimeoutSeconds: UInt32 = 60 * 5
+        static let defaultRetryTime: TimeInterval = 15
     }
 
     // MARK: -
@@ -874,6 +891,19 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             // The timeout is server side; apply wiggle room for our local clock.
             request.timeoutInterval = 10 + TimeInterval(Constants.longPollRequestTimeoutSeconds)
             return request
+        }
+
+        static func retryDelayNanoSeconds(_ response: HTTPResponse) -> UInt64 {
+            let retryAfter: TimeInterval
+            if
+                let retryAfterHeader = response.responseHeaders["retry-after"],
+                let retryAfterTime = TimeInterval(retryAfterHeader)
+            {
+                retryAfter = retryAfterTime
+            } else {
+                retryAfter = Constants.defaultRetryTime
+            }
+            return UInt64(retryAfter * 1000) * NSEC_PER_MSEC
         }
     }
 }
