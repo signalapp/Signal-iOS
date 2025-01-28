@@ -50,8 +50,8 @@ extension MessageBackup {
             /// thread to be skipped.
             case contactThreadMissingAddress
             /// There was a message in a contact thread with a recipient that was not self
-            /// or the contact in the thread. There is an allowed case of this involving change
-            /// number; to not be an error the author must not have an ACI.
+            /// or the contact in the thread. We can recover from this and know
+            /// historical bugs made it possible, but we log it nonetheless.
             case messageFromOtherRecipientInContactThread
 
             /// Custom chat colors should never have light/dark theme. The UI
@@ -271,13 +271,12 @@ extension MessageBackup {
                     .contactThreadMissingAddress:
                 // Collapse these by the id they refer to, which is in the "type".
                 return idLogString
-            case .incomingMessageFromSelf:
+            case .incomingMessageFromSelf, .messageFromOtherRecipientInContactThread:
                 // Collapse these all together.
                 return id.typeLogString
             case
                     .fileIOError,
                     .groupMasterKeyError,
-                    .messageFromOtherRecipientInContactThread,
                     .themedCustomChatColor,
                     .unknownWallpaper,
                     .unableToFetchRecipientIdentity,
@@ -348,7 +347,6 @@ extension MessageBackup {
                     .unableToFetchRecipientIdentity,
                     .fileIOError,
                     .groupMasterKeyError,
-                    .messageFromOtherRecipientInContactThread,
                     .themedCustomChatColor,
                     .unknownWallpaper,
                     .distributionListMissingDistributionId,
@@ -428,6 +426,12 @@ extension MessageBackup {
             case .stickerMessageMissingStickerAttachment:
                 // We lose a lot of stickers, apparently, in real world testing.
                 // Usually not the end of the world.
+                return .warning
+            case .messageFromOtherRecipientInContactThread:
+                // We've seen real world databases, particular with chats
+                // that predate the introduction of ACIs, that have
+                // mismatches due to missing or hallucinated ACIs on
+                // message rows not matching the TSContactThread row.
                 return .warning
             }
         }

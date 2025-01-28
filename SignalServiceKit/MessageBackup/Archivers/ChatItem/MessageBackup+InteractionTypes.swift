@@ -105,6 +105,7 @@ extension MessageBackup {
             context: MessageBackup.RecipientArchivingContext
         ) -> MessageBackup.ArchiveInteractionResult<Self> {
             var authorRecipientId: RecipientId
+            var author = author
             switch author {
             case .localUser:
                 authorRecipientId = context.localRecipientId
@@ -116,6 +117,9 @@ extension MessageBackup {
                     )])
                 }
                 authorRecipientId = recipientId
+                if authorRecipientId == context.localRecipientId {
+                    author = .localUser
+                }
             }
 
             var partialErrors = [MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>]()
@@ -138,22 +142,25 @@ extension MessageBackup {
                 // be the local user or that contact.
                 if let threadRecipientId, threadRecipientId != authorRecipientId {
                     // There's a mismatch; the author of the message
-                    // isn't in the 1:1 chat. This can happen if there
-                    // was a chat before the existence of ACIs where
-                    // the contact later changed number.
-                    if authorAddress.aci != nil {
-                        // This is an unexpected case, fail.
-                        // The only known scenario involves an aci-less
-                        // address and a change number.
-                        partialErrors.append(.archiveFrameError(
-                            .messageFromOtherRecipientInContactThread,
-                            interactionUniqueId
-                        ))
-                    } else {
-                        // The change number case; we recover from this by swizzling
-                        // the author on export to the chat-level author.
-                        authorRecipientId = threadRecipientId
-                    }
+                    // isn't in the 1:1 chat. This can happen if...
+                    // * some chat pre- introduction of ACIs where
+                    //   the contact later changed number. The author
+                    //   on the message would be e164-only with the old
+                    //   number, not matching the thread.
+                    // * some chat that existed pre- introduction of ACIs
+                    //   received a message after ACIs existed and
+                    //   _hallucinated_ an ACI that it then wrote into
+                    //   the message's authorUUID column.
+                    //
+                    // In any case, we recover from this by swizzling
+                    // the author on export to the chat-level author,
+                    // which is more trustworthy.
+                    authorRecipientId = threadRecipientId
+                    // Add a partial error so we log these.
+                    partialErrors.append(.archiveFrameError(
+                        .messageFromOtherRecipientInContactThread,
+                        interactionUniqueId
+                    ))
                 }
             }
 
