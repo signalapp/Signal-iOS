@@ -1,1 +1,4 @@
-• Anda kini dapat mentransfer riwayat chat dan media dari 45 hari terakhir ke Desktop atau iPad baru saat Anda menghubungkan Signal dari perangkat utama Anda. Proses transfernya dienkripsi secara menyeluruh dan bersifat opsional.  Anda bisa bebas untuk tetap menyimpan atau menghapus riwayat chat dan media.
+• Filter “File” di galeri media dapat membantu Anda menemukan PDF dan lampiran lainnya dengan cepat.
+• Kami mengganti pemilih reaksi emoji di tab Story agar dapat digunakan dengan tema gelap.
+• Peningkatan aksesibilitas VoiceOver.
+• Kami juga memperbarui desain kode QR di seluruh bagian aplikasi.

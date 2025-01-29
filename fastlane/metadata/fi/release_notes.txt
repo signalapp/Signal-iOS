@@ -1,1 +1,4 @@
-• Nyt voit halutessasi tuoda keskusteluhistoriasi ja viimeisten 45 päivän mediasisällön mukanasi uuteen yhdistettyyn laitteeseen. Siirtoprosessi on salattu päästä päähän ja täysin valinnainen.
+• Mediagallerian Tiedostot-suodatin voi auttaa löytämään PDF-tiedostot ja muut liitteet nopeasti.
+• Vaihdoimme Tarinat-välilehden emojireaktiovalitsimen toimimaan tumman teeman kanssa.
+• VoiceOverin saavutettavuuden parannuksia.
+• Päivitimme myös QR-koodien ulkoasun koko sovelluksessa.

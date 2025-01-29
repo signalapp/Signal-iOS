@@ -1,1 +1,4 @@
-• Wenn du jetzt dein Mobiltelefon mit einem neuen Desktop oder iPad koppelst, kannst du deinen gesamten Chat-Verlauf und die Medien der letzten 45 Tage mitnehmen. Der Übertragungsprozess ist Ende-zu Ende-verschlüsselt und natürlich optional. Jetzt kannst du also selbst entscheiden, ob du die Vergangenheit komplett hinter dir lassen willst.
+• Mit dem Filter „Dateien“ in der Mediengalerie kannst du PDFs und andere Anhänge schnell finden, wie z. B. die TXT-Datei, die wirklich eine Nachricht hätte werden können.
+• Wir haben das Auswahlmenü für Emoji-Reaktionen im Storys-Tab umgestellt, damit es mit dem dunklen Design funktioniert, aber die richtige Reaktion kann auch schon Licht ins Dunkle bringen.
+• Verbesserter Zugriff auf VoiceOver, darunter eine Kennzeichnung für die Anrufschaltfläche und eine neue Funktion, die anzeigt, wenn eine Nachricht eine zitierte Antwort beinhaltet.
+• Außerdem haben wir das Design der QR-Codes in der ganzen App aktualisiert. Die waren zwar schon immer ziemlich fotogen, aber jetzt sind sie bereit für einen Fotoshoot.

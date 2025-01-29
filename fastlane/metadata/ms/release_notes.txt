@@ -1,1 +1,4 @@
-• Kini anda boleh memilih untuk memindahkan sejarah sembang anda dan media 45 hari lalu ke peranti baru yang dipautkan. Proses pemindahan ini disulitkan hujung ke hujung dan sepenuhnya terpulang kepada anda.
+• Penapis "Fail" dalam galeri media boleh membantu anda mencari PDF dan lampiran lain.
+• Kami menukar pemilih reaksi emoji dalam tab Cerita supaya berfungsi dengan tema gelap.
+• Peningkatan kebolehcapaian VoiceOver.
+• Kami juga mengemas kini reka bentuk kod QR di seluruh aplikasi.

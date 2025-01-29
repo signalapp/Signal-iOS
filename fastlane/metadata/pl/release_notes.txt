@@ -1,1 +1,4 @@
-• Od teraz, gdy połączysz w aplikacji Signal swoje główne urządzenie z nowym komputerem lub iPadem, możesz przenieść również historię czatów oraz multimedia z ostatnich 45 dni. Proces transferu danych jest szyfrowany metodą end-to-end i całkowicie opcjonalny. Wymazać przeszłość czy zachować ciągłość historii? Tę decyzję zostawiamy Tobie.
+• Dzięki filtrowi plików w galerii multimediów szybko odnajdziesz PDF-y i inne załączniki – na przykład bilet do kina na ten film, na który właśnie się spóźniasz.
+• Popracowaliśmy nad selektorem emoji w zakładce Relacje, dzięki czemu teraz działa on równie dobrze w trybie ciemnym. To jak, rozjaśnisz mrok uśmiechniętą buźką?
+• Poprawiliśmy dostępność aplikacji za sprawą nowych opisów głosowych. Są wśród nich etykieta przycisku połączenia czy funkcjonalność, która informuje o wiadomości cytowanej w odpowiedzi.
+• Odświeżyliśmy również wygląd kodów QR w całej aplikacji. Od zawsze lubiły błysk fleszy, ale teraz to już prawdziwe gwiazdy na czerwonym dywanie.

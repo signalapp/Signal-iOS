@@ -1,1 +1,4 @@
-• Agora pode escolher transferir o seu histórico de mensagens e os seus últimos 45 dias de ficheiros multimédia para um novo dispositivo vinculado. Este processo de transferência está encriptado de ponta a ponta e é totalmente opcional.
+• O filtro de "Ficheiros" na galeria de ficheiros multimédia ajuda a encontrar rapidamente PDFs e outros anexos.
+• Mudámos o seletor de emojis de reação no separador Histórias para funcionar com o modo escuro.
+• Melhorias de acessibilidade de VoiceOver.
+• Também atualizámos o design de códigos QR em toda a app.

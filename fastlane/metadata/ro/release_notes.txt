@@ -1,1 +1,4 @@
-• Acum, când conectezi dispozitivul Signal principal la un nou desktop sau iPad, poți avea acces la istoricul conversațiilor și la fișierele media din ultimele 45 de zile. Procesul de transfer este criptat end-to-end și complet opțional. Când vine vorba de a alege dacă să lași sau nu trecutul în urmă, ești lăsat pe propriile tale dispozitive.
+• Filtrul „Fișiere” din galeria media te poate ajuta să găsești rapid PDF-uri și alte atașamente, cum ar fi SMS-ul care ar fi putut fi într-adevăr un mesaj text.
+• Am schimbat selectorul de reacții emoji din fila Povești, pentru a merge bine cu tema întunecată, dar reacția potrivită poate în continuare să ilumineze.
+• Îmbunătățiri ale accesibilității VoiceOver, inclusiv o etichetă pentru butonul de apel pentru apel și o nouă funcționalitate, pentru a indica când un mesaj include un răspuns citat.
+• Am actualizat, de asemenea, designul codurilor QR în întreaga aplicație. Întotdeauna au arătat bine în fața unei camere, dar sunt practic gata pentru o ședință foto acum.

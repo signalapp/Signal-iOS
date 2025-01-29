@@ -1,1 +1,4 @@
-• Lorsque vous associez votre principal appareil Signal à un nouvel ordinateur ou à un nouvel iPad, vous pouvez maintenant transférer toutes vos conversations, ainsi que vos médias des 45 derniers jours. Chiffré de bout en bout, ce processus de transfert est complètement facultatif : à vous de voir si vous préférez faire table rase du passé ou emmener vos souvenirs avec vous.
+• Un nouveau filtre fait son entrée dans la galerie multimédias :  avec le filtre "Fichiers", retrouvez rapidement vos PDF et autres pièces jointes, comme ce fichier TXT qui s'est transformé en roman.
+• Dans l'onglet "Stories", le sélecteur d'émojis fait peau neuve pour s'adapter au thème sombre. Parce qu'un émoji bien choisi peut illuminer une journée.
+• Des améliorations aussi du côté de l'accessibilité, avec de nouvelles descriptions vocales. Le bouton d'appel se dote quant à lui d'un libellé, et une nouvelle fonctionnalité informe l'utilisateur lorsqu'un message donné est cité dans une réponse.
+• Les codes QR changent de look dans toute l'application. Et il n'y a pas photo : s'ils étaient déjà très à l'aise devant la caméra, ils sont maintenant prêts pour le tapis rouge.

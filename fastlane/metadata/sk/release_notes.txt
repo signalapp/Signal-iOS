@@ -1,1 +1,4 @@
-• Teraz si môžete preniesť históriu četov a médiá z posledných 45 dní do nového prepojeného zariadenia. Prenos je voliteľný a jeho proces chránený end-to-end šifrovaním.
+• Filter „Súbory“ v galérii médií vám pomôže rýchlo nájsť súbory PDF a iné prílohy.
+• Výber reakcie pomocou emotikonov na karte Príbehy sme prepli tak, aby ladil s tmavou témou.
+• Lepšia dostupnosť funkcie VoiceOver.
+• Aktualizovali sme tiež vzhľad QR kódov v celej aplikácii.

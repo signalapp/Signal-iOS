@@ -1,1 +1,4 @@
-• Da ora quando colleghi il tuo dispositivo principale di Signal a un nuovo Desktop o iPad, puoi importare la cronologia delle tue chat e gli ultimi 45 giorni di media inviati/ricevuti. Il trasferimento è crittografato e del tutto opzionale. Insomma, scegli tu se lasciarti il passato alle spalle o meno!
+• Il filtro dei file nella raccolta dei tuoi media può aiutarti a trovare subito i PDF e altri allegati… si sa che spesso si fa prima a inviare un intero documento che spiegarlo a parole in chat.
+• Abbiamo aggiornato il selettore di emoji nella scheda Storie: da ora funziona con il tema scuro di Signal (così il passaggio al "lato oscuro" dell'app sarà finalmente completato).
+• Abbiamo migliorato la funzione di voice over per rendere l'app più accessibile, aggiungendo un testo per indicare il pulsante per le chiamate e inserendo una nuova funzionalità per segnalare quando un messaggio include una risposta citata.
+• Abbiamo anche aggiornato il design dei codice QR mostrati all'interno dell'app. Già erano belli, visto quanto tempo passavano di fronte alle fotocamere, ma ora sono su un altro livello!

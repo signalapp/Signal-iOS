@@ -1,1 +1,4 @@
-• Ahora, al vincular tu dispositivo Signal principal a un nuevo ordenador o iPad, podrás llevarte contigo tu historial de chats y tus últimos 45 días de archivos multimedia. El proceso de transferencia está cifrado de extremo a extremo y es completamente opcional. Así, la decisión de dejar tu pasado atrás solo dependerá de ti (¡y de tus dispositivos!).
+• El filtro "Archivos" de la galería multimedia puede ayudarte a encontrar rápidamente un PDF o algún otro archivo adjunto, como ese TXT que podría haberse enviado como un simple mensaje.
+• Hemos cambiado el selector de reacciones emoji en la pestaña Historias para que funcione con el tema oscuro (porque un buen emoji siempre nos da claridad sobre la reacción honesta de las personas).
+• Mejoras en la accesibilidad de VoiceOver: hemos añadido una etiqueta al botón de llamada y una nueva funcionalidad para indicar cuándo un mensaje contiene una respuesta citada.
+• También hemos actualizado el diseño de los códigos QR en toda la app. Siempre han sido bastante fotogénicos, pero ahora están más listos que nunca para un primer plano.

@@ -1,1 +1,4 @@
-• Nyní se můžete rozhodnout, zda chcete přenést historii chatů a médií za posledních 45 dní do nového propojeného zařízení. Přenos je koncově šifrovaný a zcela volitelný.
+• Filtr „Soubory“ v galerii médií vám pomůže rychle najít soubory PDF a další přílohy.
+• Na kartě Příběhy jsme přepnuli výběr emoji reakcí, aby fungoval s tmavým motivem.
+• Vylepšení přístupnosti VoiceOver.
+• Také jsme aktualizovali design QR kódů v celé aplikaci.

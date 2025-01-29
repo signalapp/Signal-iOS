@@ -1,1 +1,4 @@
-• Bundan böyle sohbet geçmişini ve son 45 günlük medyanı yeni bağlanmış bir cihaza aktarmayı tercih edebilirsin. Aktarım süreci uçtan uca şifrelidir ve tamamen isteğe bağlıdır. İster geçmişi arkanda bırak ister bugüne taşı; kararı kendin ver!
+• Medya galerisindeki "Dosyalar" filtresi, aslında bir metin olabilecek TXT gibi PDF'leri ve diğer ekleri hızla bulmana yardımcı olabilir.
+• Kısa Hikayeler sekmesindeki emoji tepki seçicisini koyu temayla çalışacak şekilde değiştirdik.
+• Arama zili düğmesi için bir etiket ve bir mesajın alıntılanmış bir yanıt içerdiğini gösteren yeni işlevsellik dahil olmak üzere VoiceOver erişilebilirlik iyileştirmeleri.
+• Ayrıca uygulama genelinde kare kodların tasarımını da güncelledik. Yani artık kare kodların eskisinden daha sevimli duracağından emin olabilirsin.

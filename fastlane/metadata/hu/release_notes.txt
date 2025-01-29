@@ -1,1 +1,4 @@
-• Mostantól dönthetsz úgy, hogy a csevegési előzményeidet és az elmúlt 45 nap médiatartalmát áthelyezed egy új kapcsolt eszközre. Az átviteli folyamat végponttól végpontig titkosított, és teljesen opcionális.
+• A médiagaléria „Fájlok” szűrője segítségével gyorsan megtalálhatod a PDF-fájlokat és egyéb mellékleteket.
+• A Történetek lap emoji reakcióválasztóját a sötét témára állítottuk.
+• Továbbfejlesztettük a VoiceOver kisegítő lehetőségeket.
+• Az alkalmazásban mindenütt frissítettük a QR-kódok kialakítását is.

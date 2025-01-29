@@ -1,1 +1,4 @@
-• A partir d'ara, quan enllacis un nou dispositiu, tindràs l'opció de transferir-hi l'historial del xat i els teus darrers 45 dies d'arxius multimèdia. El procés de transferència és xifrat d'extrem a extrem (i totalment opcional).
+• El filtre “Arxius” a la galeria et pot ajudar a trobar ràpidament arxius PDF i altres fitxers adjunts.
+• Hem canviat el seleccionador de reacció d'emoji a la pestanya Històries perquè funcioni amb el tema fosc.
+• Millores d'accessibilitat de VoiceOver.
+• També hem actualitzat el disseny dels codis QR a tota l'app.

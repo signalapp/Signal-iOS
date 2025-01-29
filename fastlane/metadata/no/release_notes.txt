@@ -1,1 +1,4 @@
-• Nå kan du overføre samtaleloggen din og mediefilene dine fra de siste 45 dagene til en annen tilkoblet enhet. Overføringen er ende-til-ende-kryptert og helt valgfri.
+• Nå finner du PDF-filer og andre vedlegg raskt med «Filer»-filteret i galleriet.
+• Vi har endret menyen for reaksjoner i Storyer-fanen, slik at den ser bedre ut i mørkt tema.
+• Nye forbedringer i VoiceOver-funksjonen.
+• Vi har også endret designet av QR-kodene i appen.
