@@ -163,3 +163,9 @@ public protocol ProfileManager: ProfileManagerProtocol {
     func allWhitelistedAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress]
     func allWhitelistedRegisteredAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress]
 }
+
+extension ProfileManager {
+    public func localProfileKey(tx: SDSAnyReadTransaction) -> ProfileKey? {
+        return localUserProfile(tx: tx)?.profileKey.map(ProfileKey.init(_:))
+    }
+}

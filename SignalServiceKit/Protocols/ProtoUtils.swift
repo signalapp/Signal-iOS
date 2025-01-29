@@ -13,13 +13,20 @@ internal class ProtoUtils: NSObject {
     @objc
     internal static func addLocalProfileKeyIfNecessary(_ thread: TSThread, dataMessageBuilder: SSKProtoDataMessageBuilder, transaction: SDSAnyReadTransaction) {
         if shouldMessageHaveLocalProfileKey(thread, transaction: transaction) {
-            addLocalProfileKey(toDataMessageBuilder: dataMessageBuilder, transaction: transaction)
+            dataMessageBuilder.setProfileKey(localProfileKey(tx: transaction).serialize().asData)
         }
     }
 
     @objc
-    internal static func addLocalProfileKey(toDataMessageBuilder dataMessageBuilder: SSKProtoDataMessageBuilder, transaction: SDSAnyReadTransaction) {
-        dataMessageBuilder.setProfileKey(localProfileKey(tx: transaction).serialize().asData)
+    internal static func addLocalProfileKeyIfNecessary(forThread thread: TSThread, profileKeySnapshot: Data?, dataMessageBuilder: SSKProtoDataMessageBuilder, transaction: SDSAnyReadTransaction) {
+        let profileKey = localProfileKey(tx: transaction)
+        let canAddLocalProfileKey: Bool = (
+            profileKeySnapshot?.ows_constantTimeIsEqual(to: profileKey.serialize().asData) == true
+            || shouldMessageHaveLocalProfileKey(thread, transaction: transaction)
+        )
+        if canAddLocalProfileKey {
+            dataMessageBuilder.setProfileKey(profileKey.serialize().asData)
+        }
     }
 
     @objc
@@ -31,9 +38,9 @@ internal class ProtoUtils: NSObject {
 
     static func localProfileKey(tx: SDSAnyReadTransaction) -> ProfileKey {
         let profileManager = SSKEnvironment.shared.profileManagerRef
-        // Force unwraps are from the original ObjC implementation. They are "safe"
+        // Force unwrap is from the original ObjC implementation. It is "safe"
         // because we generate missing profile keys in warmCaches.
-        return ProfileKey(profileManager.localUserProfile(tx: tx)!.profileKey!)
+        return profileManager.localProfileKey(tx: tx)!
     }
 
     private static func shouldMessageHaveLocalProfileKey(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {

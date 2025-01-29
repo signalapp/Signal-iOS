@@ -418,10 +418,12 @@ private extension RecipientHidingManagerImpl {
             let thread = TSContactThread.getWithContactAddress(
                 recipient.address,
                 transaction: SDSDB.shimOnlyBridge(tx)
-            )
+            ),
+            let profileKey = profileManager.localProfileKey(tx: SDSDB.shimOnlyBridge(tx))
         {
             let profileKeyMessage = OWSProfileKeyMessage(
                 thread: thread,
+                profileKey: profileKey.serialize().asData,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
             Logger.info("[Recipient hiding][side effects] Share profile key.")

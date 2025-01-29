@@ -61,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
               wasNotCreatedLocally:(BOOL)wasNotCreatedLocally NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread
+                    profileKey:(NSData *)profileKey
                    transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

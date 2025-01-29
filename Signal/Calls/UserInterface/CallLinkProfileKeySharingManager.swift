@@ -54,13 +54,15 @@ public class CallLinkProfileKeySharingManager {
 
         self.consideredAcis.formUnion(eligibleAcisNotSentProfileKeyYet)
         db.asyncWrite { tx in
+            let profileManager = SSKEnvironment.shared.profileManagerRef
+            let profileKey = profileManager.localProfileKey(tx: SDSDB.shimOnlyBridge(tx))!
             for aci in eligibleAcisNotSentProfileKeyYet {
-                self.sendProfileKey(aci: aci, tx: tx)
+                self.sendProfileKey(profileKey, toAci: aci, tx: tx)
             }
         }
     }
 
-    private func sendProfileKey(aci: Aci, tx: DBWriteTransaction) {
+    private func sendProfileKey(_ profileKey: ProfileKey, toAci aci: Aci, tx: DBWriteTransaction) {
         let address = SignalServiceAddress(aci)
         if
             let thread = TSContactThread.getWithContactAddress(
@@ -70,6 +72,7 @@ public class CallLinkProfileKeySharingManager {
         {
             let profileKeyMessage = OWSProfileKeyMessage(
                 thread: thread,
+                profileKey: profileKey.serialize().asData,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
             let preparedMessage = PreparedOutgoingMessage.preprepared(

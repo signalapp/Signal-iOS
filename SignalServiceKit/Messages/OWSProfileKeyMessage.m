@@ -8,16 +8,26 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSProfileKeyMessage ()
+@property (nonatomic, readonly, nullable) NSData *profileKey;
+@end
+
 @implementation OWSProfileKeyMessage
 
-- (instancetype)initWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+- (instancetype)initWithThread:(TSThread *)thread
+                    profileKey:(NSData *)profileKey
+                   transaction:(SDSAnyReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    return [super initOutgoingMessageWithBuilder:messageBuilder
+    self = [super initOutgoingMessageWithBuilder:messageBuilder
                             additionalRecipients:@[]
                               explicitRecipients:@[]
                                skippedRecipients:@[]
                                      transaction:transaction];
+    if (self) {
+        _profileKey = [profileKey copy];
+    }
+    return self;
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
@@ -45,13 +55,21 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
     [builder setTimestamp:self.timestamp];
-    [ProtoUtils addLocalProfileKeyToDataMessageBuilder:builder transaction:transaction];
+    [ProtoUtils addLocalProfileKeyIfNecessaryForThread:thread
+                                    profileKeySnapshot:self.profileKey
+                                    dataMessageBuilder:builder
+                                           transaction:transaction];
     [builder setFlags:SSKProtoDataMessageFlagsProfileKeyUpdate];
 
     NSError *error;
     SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
     if (error || !dataProto) {
         OWSFailDebug(@"could not build protobuf: %@", error);
+        return nil;
+    }
+    if (dataProto.profileKey == nil) {
+        // If we couldn't include the profile key, drop it.
+        OWSLogWarn(@"Dropping profile key message without a profile key.");
         return nil;
     }
     return dataProto;

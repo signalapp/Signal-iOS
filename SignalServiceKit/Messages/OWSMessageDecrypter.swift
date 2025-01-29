@@ -109,7 +109,17 @@ public class OWSMessageDecrypter {
             transaction: transaction
         )
 
-        let profileKeyMessage = OWSProfileKeyMessage(thread: contactThread, transaction: transaction)
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        guard let profileKey = profileManager.localProfileKey(tx: transaction) else {
+            Logger.warn("Skipping reactive profile key because we don't have a profile key.")
+            return
+        }
+
+        let profileKeyMessage = OWSProfileKeyMessage(
+            thread: contactThread,
+            profileKey: profileKey.serialize().asData,
+            transaction: transaction
+        )
         let preparedMessage = PreparedOutgoingMessage.preprepared(
             transientMessageWithoutAttachments: profileKeyMessage
         )
