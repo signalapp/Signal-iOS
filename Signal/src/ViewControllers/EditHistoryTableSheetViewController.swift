@@ -189,8 +189,8 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
     @objc
     func didTapCell(_ recognizer: UITapGestureRecognizer) {
         guard
-            let index = recognizer.view?.tag,
-            let item = renderItems[safe: index],
+            let view = recognizer.view as? CVCellView,
+            let item = view.renderItem,
             item.itemModel.componentState.displayableBodyText?.isTextTruncated == true
         else {
             return
