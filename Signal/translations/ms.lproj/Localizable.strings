@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Selesai Memautkan";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Pindahkan mesej teks anda dan media 45 hari yang lalu";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Pindahkan sejarah mesej";
@@ -4061,7 +4061,7 @@
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Selesaikan pemautan pada peranti anda yang lain";
 
 /* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Memuat turun %1$@ daripada %2$@ (%3$@)…";
 
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
 "LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Teruskan tanpa memindahkan";
@@ -4070,7 +4070,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Peranti anda berjaya dipautkan, tetapi mesej anda tidak dapat dipindahkan.";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Mesej anda tidak dapat dipindahkan ke peranti yang dipautkan. Anda boleh cuba memaut semula dan memindahkan sekali lagi, atau teruskan tanpa memindahkan sejarah mesej anda.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Penyegerakan mesej gagal";
@@ -4169,7 +4169,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Sedang bersedia untuk memuat turut…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
+"LINKING_SYNCING_TIMING_INFO" = "Ini mungkin mengambil masa beberapa minit";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Jangan tutup Signal.";

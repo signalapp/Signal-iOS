@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Concluir vinculação";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfira suas mensagens de texto e os arquivos de mídia dos últimos 45 dias";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Transferir histórico de mensagens";
@@ -4061,7 +4061,7 @@
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Termine de vincular em outro dispositivo";
 
 /* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Baixando %1$@ de %2$@ (%3$@)…";
 
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
 "LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Continuar sem transferir";
@@ -4070,7 +4070,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Seu dispositivo foi vinculado com sucesso, mas suas mensagens não puderam ser transferidas.";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Não foi possível transferir sua mensagem para o dispositivo vinculado. Tente vincular e transferir novamente ou continue sem transferir seu histórico de mensagens.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Falha na sincronização de mensagens";
@@ -4169,7 +4169,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Preparando para download…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
+"LINKING_SYNCING_TIMING_INFO" = "Isso pode levar alguns minutos";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Não feche o aplicativo.";

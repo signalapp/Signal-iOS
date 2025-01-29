@@ -1,5 +1,5 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Jangan Sekarang";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Jangan sekarang";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Tentang Signal";
@@ -71,40 +71,40 @@
 "ACTION_INVITE" = "Undang gabung ke Signal";
 
 /* Label for button that lets you send a message to a contact. */
-"ACTION_SEND_MESSAGE" = "Kirim Pesan";
+"ACTION_SEND_MESSAGE" = "Kirim pesan";
 
 /* A label for 'tap to download' buttons. */
 "ACTION_TAP_TO_DOWNLOAD" = "Ketuk untuk mengunduh";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "Panggilan Video";
+"ACTION_VIDEO_CALL" = "Panggilan video";
 
 /* Label for 'voice call' button in contact view. */
 "ACTION_VOICE_CALL" = "Panggilan Signal";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Tambahkan Anggota";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Tambahkan anggota";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Apakah Anda ingin membagikan profil Anda pada group ini?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Apakah Anda ingin membagikan profil Anda dengan grup ini?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "Apakah Anda ingin menambahkan penguna ini menjadi kontak Anda?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "Tambahkan ke Grup Lain";
+"ADD_TO_GROUP" = "Tambahkan ke grup lain";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
-"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Tambahkan ke Grup";
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Tambahkan ke grup";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
 "ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Tambah \"%1$@\" ke \"%2$@\"?";
 
 /* The title on the 'add to group' confirmation action sheet. */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Tambahkan Anggota Baru";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Tambahkan anggota baru";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Telah menjadi anggota";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Sudah menjadi anggota";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ sudah menjadi anggota dari %2$@";
@@ -113,10 +113,10 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ ditambahkan ke %2$@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Tambahkan ke Grup";
+"ADD_TO_GROUP_TITLE" = "Tambahkan ke grup";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Apakah Anda ingin membagikan profil Anda kepada pengguna ini?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Apakah Anda ingin membagikan profil Anda dengan pengguna ini?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Mengerti";
@@ -125,7 +125,7 @@
 "ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Pesan, stiker, tanggapan, bukti pesan terbaca, atau media tidak dapat Anda terima dari %1$@ dalam obrolan ini.";
 
 /* Title for delivery issue sheet */
-"ALERT_DELIVERY_ISSUE_TITLE" = "Masalah Pengiriman";
+"ALERT_DELIVERY_ISSUE_TITLE" = "Masalah pengiriman";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Sebuah pesan, stiker, tanggapan, bukti pesan terbaca, atau media tidak dapat Anda terima dari %1$@. Mereka mungkin mencoba mengirimkannya langsung kepada Anda, atau di dalam grup.";
@@ -137,7 +137,7 @@
 "ALERT_DONT_SAVE" = "Jangan disimpan";
 
 /* Generic error indicator. */
-"ALERT_ERROR_TITLE" = "Galat";
+"ALERT_ERROR_TITLE" = "Terjadi kesalahan.";
 
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "Simpan";
@@ -149,7 +149,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Anda tidak punya anggota yang sama dengan grup ini. Tinjau permintaan dengan seksama sebelum menerima untuk menghindari pesan tidak diinginkan.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Tentang Permintaan Pesan";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Tentang permintaan pesan";
 
 /* Menu option to remove content type restriction in All Media (Audio) view */
 "ALL_MEDIA_AUDIO_FILTER_ALL" = "Semua Audio";
@@ -203,10 +203,10 @@
 "APN_Message" = "Anda mungkin memiliki pesan baru";
 
 /* Default message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal tidak dapat dibuka. Mohon kirimkan catatan awakutu ke support@signal.org sehingga kami bisa memecahkan masalah ini.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal tidak dapat dibuka. Mohon kirimkan log debug ke support@signal.org agar kami bisa mengatasi masalah ini.";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "Buka Signal Sebagai Gantinya";
+"APP_LAUNCH_FAILURE_CONTINUE" = "Buka Signal";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Mohon kirimkan catatan awakutu ke support@signal.org sehingga kami bisa memecahkan masalah ini.";
@@ -215,43 +215,43 @@
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Tidak Dapat Membuka Signal";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Tidak Dapat Memuat Basis Data";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Tidak dapat memuat database";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Mohon perbarui ke versi Signal terakhir.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Mohon upgrade Signal ke versi terbaru.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Versi Basis Data Tidak Diketahui.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Versi database tidak diketahui";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal mengalami masalah saat mencoba membuka. Mohon kirimkan catatan awakutu ke support@signal.org untuk membantu menyelesaikan masalah ini.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Terjadi kesalahan saat membuka Signal. Mohon kirimkan log debug ke support@signal.org untuk mengatasi masalah ini.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Tidak Dapat Membuka Signal";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Tidak dapat membuka Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal tidak bisa dibuka karena ruang penyimpanan di perangkat Anda hampir habis. Untuk menggunakan Signal, kosongkan ruang dengan mengelola penyimpanan di Pengaturan.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal tidak bisa dibuka karena penyimpanan Anda hampir penuh. Buka pengaturan perangkat lalu kosongkan dan kelola penyimpanan Anda.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Ruang Penyimpanan Hampir Habis";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Penyimpanan hampir penuh";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Data yang ditransfer dari perangkat lama tidak dapat dipulihkan. Mohon kirimkan log debug ke support@signal.org sehingga kami dapat menyelesaikan masalah ini. Jika Anda menginstal ulang Signal, riwayat pesan mungkin hilang.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Tidak Dapat Menyelesaikan Transfer";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Tidak dapat menyelesaikan transfer";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Masukkan nama Anda";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Tidak Sekarang";
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Tidak sekarang";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versi %1$@ telah tersedia di App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Versi Terbaru Signal Telah Tersedia";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Signal versi terbaru sudah tersedia";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Pembaruan";
@@ -326,10 +326,10 @@
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Gagal mengekspor lampiran.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Gagal Menyimpan";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Gagal menyimpan";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tipe Berkas: %1$@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tipe file: %1$@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Ukuran: %1$@";
@@ -344,16 +344,16 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Lebih cepat, sedikit data";
 
 /* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Kualitas Media";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Kualitas media";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Lampiran";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Gagal Mengirim Lampiran";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Gagal mengirim lampiran";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Tidak dapat mengonversi gambar.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Tidak dapat mengubah gambar.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Video tidak dapat diproses.";
@@ -374,13 +374,13 @@
 "ATTACHMENT_ERROR_INVALID_DATA" = "Lampiran memuat konten yang tidak valid.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Lampiran memiliki format berkas yang tidak valid.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Lampiran memiliki format file yang tidak valid.";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Lampiran kosong.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Pilih Media untuk Dikirimkan";
+"ATTACHMENT_HINT" = "Pilih media untuk dikirim";
 
 /* Button in chat attachment panel that allows to select photos/videos Signal has access to. */
 "ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Kelola";
@@ -431,10 +431,10 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Gagal memilih dokumen.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Mohon buat arsip terkompresi dari berkas atau direktori ini dan coba kirimkan.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Mohon buat arsip terkompresi dari file atau direktori ini, lalu coba kirimkan.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Berkas tidak didukung.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "File tidak didukung.";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "Animasi";
@@ -443,7 +443,7 @@
 "ATTACHMENT_TYPE_AUDIO" = "Audio";
 
 /* Short text label for a file attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_FILE" = "Berkas";
+"ATTACHMENT_TYPE_FILE" = "File";
 
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
@@ -455,16 +455,16 @@
 "ATTACHMENT_TYPE_VIDEO" = "Video";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Pesan Suara";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Pesan suara";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Pesan Audio";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Pesan audio";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Pengeras Suara";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Speaker";
 
 /* Text prompting the user to choose a color when editing their avatar */
-"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Pilih sebuah Warna";
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Pilih warna";
 
 /* Segment indicating the user can edit the color of the avatar */
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "Warna";
@@ -515,7 +515,7 @@
 "BADGE_EXPIRED_DONATE_BUTTON" = "Donasi";
 
 /* Text for the 'learn more' link in a sheet explaining there's been an issue with your badge. */
-"BADGE_EXPIRED_LEARN_MORE_LINK" = "Pelajari lebih lanjut.";
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "Pelajari selengkapnya.";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Donasi bulanan dibatalkan";
@@ -533,7 +533,7 @@
 "BADGE_THANKS_BODY" = "Jika ingin, Anda bisa menampilkan lencana ini di profil untuk menunjukkan dukungan Anda.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Tampilkan di Profil";
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Tampilkan di profil";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_MAKE_FEATURED" = "Buat Lencana Unggulan";
@@ -542,7 +542,7 @@
 "BADGE_THANKS_TITLE" = "Terima kasih atas dukungan Anda!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "Jika punya lebih dari satu lencana, Anda dapat memilih salah satunya untuk ditampilkan pada profil Anda.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "Jika Anda punya beberapa badge, Anda dapat memilih salah satunya untuk ditampilkan di profil.";
 
 /* On the bank donation screen, show a link below the input form to show help about finding account info. */
 "BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "Temukan informasi rekening";
@@ -563,7 +563,7 @@
 "BANK_MANDATE_TITLE" = "Transfer Bank";
 
 /* Accessibility label for banner close button */
-"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Tutup spanduk";
+"BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Tutup banner";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Anda tidak akan lagi menerima pesan dan pembaruan dari grup ini.";
@@ -593,7 +593,7 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Buka blokir";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Anda akan dapat mengirim pesan dan membuat panggilan satu sama lain.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Anda akan dapat saling mengirim pesan dan membuat panggilan.";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Anggota grup yang masih ada dapat menambahkan Anda ke grup lagi.";
@@ -623,7 +623,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Anda tidak bisa memblokir diri sendiri.";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Galat";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Terjadi kesalahan";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Blokir %1$@ telah dibuka.";
@@ -635,7 +635,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Pengguna yang diblokir tidak akan bisa menelepon Anda atau mengirimi Anda pesan.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "Baru: Kaburkan wajah atau gambar di manapun untuk mengaburkan.";
+"BLUR_TOOLTIP" = "Baru: Kaburkan wajah atau gambar di mana pun untuk mengaburkan.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Masukkan Jumlah Kustom";
@@ -656,7 +656,7 @@
 "BUTTON_DUPLICATE" = "Duplikat";
 
 /* Label for the 'edit' button. */
-"BUTTON_EDIT" = "Sunting";
+"BUTTON_EDIT" = "Edit";
 
 /* Label for the 'mute' button. */
 "BUTTON_MUTE" = "Bisukan";
@@ -668,7 +668,7 @@
 "BUTTON_NO" = "Tidak";
 
 /* Label for the 'not now' button. */
-"BUTTON_NOT_NOW" = "Tidak Sekarang";
+"BUTTON_NOT_NOW" = "Tidak sekarang";
 
 /* Label for the 'okay' button. */
 "BUTTON_OKAY" = "Oke";
@@ -686,7 +686,7 @@
 "BUTTON_SHARE" = "Bagikan";
 
 /* Label for the 'submit' button. */
-"BUTTON_SUBMIT" = "Kirimkan";
+"BUTTON_SUBMIT" = "Kirim";
 
 /* Label for the 'unmute' button. */
 "BUTTON_UNMUTE" = "Bunyikan";
@@ -713,10 +713,10 @@
 "CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Panggilan suara tak terjawab pada %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Anda dapat mengaktifkan akses mikrofon pada Pengaturan iOS untuk membuat panggilan dan merekam pesan suara di Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Anda dapat memberikan Signal akses ke mikrofon melalui bagian pengaturan iOS untuk menelepon atau merekam pesan suara di Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "Diperlukan Akses Mikrofon";
+"CALL_AUDIO_PERMISSION_TITLE" = "Perlu akses ke mikrofon";
 
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_ANSWER" = "jawab";
@@ -824,7 +824,7 @@
 "CALL_RAISE_HAND_BUTTON_LABEL" = "Angkat Tangan";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "Kembali ke Panggilan";
+"CALL_RETURN_BUTTON" = "Kembali ke panggilan";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Tidak ada jawaban";
@@ -836,7 +836,7 @@
 "CALL_USER_ALERT_CALL_BUTTON" = "Panggil";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Apakah Anda ingin memanggil %1$@?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "Ingin memanggil %1$@?";
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Panggil?";
@@ -854,10 +854,10 @@
 "CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Panggilan video tidak terjawab pada %1$@";
 
 /* label for accepting incoming video calls as audio only */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Jawab tanpa video";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Angkat tanpa video";
 
 /* label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Jawab";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Angkat";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Audio";
@@ -878,7 +878,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Bisukan";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ akan mendapatkan permintaan pesan dari Anda. Anda dapat memanggil saat permintaan pesan Anda telah diterima.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ akan mendapatkan permintaan pesan dari Anda. Anda dapat memanggilnya saat permintaan Anda diterima.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Ganti arah kamera";
@@ -902,13 +902,13 @@
 "CALL_WAITING_TO_BE_LET_IN" = "Menunggu diizinkan masuk …";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Panggil Ulang";
+"CALLBACK_BUTTON_TITLE" = "Panggil ulang";
 
 /* Indicates to the user that their camera is currently off. */
-"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Kamera Anda mati";
+"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Kamera mati";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Penguna jaringan";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Penguna Signal";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_GROUP_NAME" = "Grup Signal";
@@ -992,7 +992,7 @@
 "CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Info";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "Ambil gambar dan kemudian kirimkan";
+"CAMERA_BUTTON_HINT" = "Ambil gambar lalu kirimkan";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Kamera";
@@ -1004,22 +1004,22 @@
 "CAMERA_VO_CAMERA_ALBUM_MODE" = "Mode album";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "Mati";
+"CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "Nonaktif";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "Nyala";
+"CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "Aktif";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_BACK_FACING" = "Hadap belakang";
+"CAMERA_VO_CAMERA_BACK_FACING" = "Menghadap belakang";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Pemilih Kamera";
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Pemilih kamera";
 
 /* VoiceOver hint for Switch Camera button in in-app camera. */
 "CAMERA_VO_CAMERA_CHOOSER_HINT" = "Beralih antarkamera";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_FRONT_FACING" = "Hadap depan";
+"CAMERA_VO_CAMERA_FRONT_FACING" = "Menghadap depan";
 
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "Tutup";
@@ -1034,22 +1034,22 @@
 "CAMERA_VO_FLASH_BUTTON" = "Flash";
 
 /* VoiceOver description of current flash setting. */
-"CAMERA_VO_FLASH_OFF" = "Mati";
+"CAMERA_VO_FLASH_OFF" = "Nonaktif";
 
 /* VoiceOver description of current flash setting. */
-"CAMERA_VO_FLASH_ON" = "Nyala";
+"CAMERA_VO_FLASH_ON" = "Aktif";
 
 /* VoiceOver label for button to choose existing photo/video in in-app camera */
 "CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Penampil foto dan video";
 
 /* VoiceOver label for the round capture button in in-app camera during video recording. */
-"CAMERA_VO_STOP_VIDEO_REC" = "Berhenti Merekam Video";
+"CAMERA_VO_STOP_VIDEO_REC" = "Berhenti merekam video";
 
 /* VoiceOver label for the round capture button in in-app camera. */
-"CAMERA_VO_TAKE_PICTURE" = "Ambil Gambar";
+"CAMERA_VO_TAKE_PICTURE" = "Ambil gambar";
 
 /* VoiceOver label for other possible action for round capture button in in-app camera. */
-"CAMERA_VO_TAKE_VIDEO" = "Ambil Video";
+"CAMERA_VO_TAKE_VIDEO" = "Ambil video";
 
 /* VoiceOver label for camera zoom control. */
 "CAMERA_VO_ZOOM" = "Perbesar";
@@ -1097,22 +1097,22 @@
 "CARD_DONATION_SUBHEADER_TEXT" = "Masukkan detail kartu Anda. Signal tidak mengumpulkan atau menyimpan informasi pribadi Anda.";
 
 /* Title for the 'censorship circumvention country' view. */
-"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Pilih Negeri";
+"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Pilih negara";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Sunting Foto";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Edit foto";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Nomor lama Anda tidak bisa sama dengan nomor yang lama. Mohon masukkan nomor telepon baru untuk mengganti nomor Anda.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Nomor baru Anda tidak boleh sama dengan nomor lama. Mohon masukkan nomor telepon baru untuk mengganti nomor.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Nomor telepon yang Anda masukkan tidak sama dengan akun Anda.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Nomor telepon baru salah. Mohon masukkan nomor telepon yang benar untuk mengganti nomor Anda.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Nomor telepon baru tidak valide. Mohon masukkan nomor telepon yang benar untuk mengganti nomor.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Nomor telepon lama salah. Mohon masukkan nomor telepon yang benar untuk mengganti nomor Anda.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Nomor telepon lama tidak valid. Mohon masukkan nomor telepon yang benar untuk mengganti nomor.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Berikut pratinjau dari warna obrolan.";
@@ -1142,10 +1142,10 @@
 "CHAT_COLOR_SETTINGS_TITLE" = "Warna Obrolan";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Sunting Warna";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Edit warna";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "Cocokan warna dengan gambar latar secara otomatis";
+"CHAT_COLORS_AUTO_TOOLTIP" = "Cocokkan warna dengan wallpaper secara otomatis";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
 "CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Hapus Filter Belum Dibaca";
@@ -1169,7 +1169,7 @@
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Warna Obrolan & Wallpaper";
 
 /* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "Bandingkan dengan papan klip";
+"COMPARE_SAFETY_NUMBER_ACTION" = "Bandingkan dengan clipboard";
 
 /* Accessibility hint describing what you can do with the compose button */
 "COMPOSE_BUTTON_HINT" = "Pilih atau cari pengguna Signal untuk mulai diajak ngobrol.";
@@ -1205,13 +1205,13 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Buka pengaturan";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Anda dapat mengaktifkan akses kontak pada pengaturan iOS untuk melihat siapa saja kontak Anda yang merupakan pengguna Signal.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Anda dapat memberikan Signal akses ke kontak melalui pengaturan iOS untuk melihat siapa saja orang yang menggunakan Signal di kontak Anda.";
 
 /* Configure reactions title text */
 "CONFIGURE_REACTIONS" = "Konfigurasikan Tanggapan";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "Ini akan memulai ulang aplikasi dengan menghapus pesan Anda. Aplikasi akan ditutup setelah proses ini selesai.";
+"CONFIRM_DELETE_DATA_TEXT" = "Tindakan ini akan mereset aplikasi dengan menghapus pesan Anda. Aplikasi akan ditutup setelah proses ini selesai.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "Anda yakin ingin menghapus semua data?";
@@ -1223,13 +1223,13 @@
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Anda yakin ingin menghapus semua data?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Anda tidak dapat lagi mengirim atau menerima pesan dari grup ini.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Anda tidak akan dapat mengirim atau menerima pesan dari grup ini.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Apakah Anda benar-benar ingin keluar?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Yakin ingin keluar?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Tautkan Perangkat Baru";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Hubungkan perangkat baru";
 
 /* Indicates that the user has blocked the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ diblokir";
@@ -1259,22 +1259,22 @@
 "CONTACT_CELL_IS_BLOCKED" = "Diblokir";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Belum Terverifikasi";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Belum terverifikasi";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Nomor tidak terdaftar";
 
 /* Label for a contact's email address. */
-"CONTACT_EMAIL" = "Surel";
+"CONTACT_EMAIL" = "Email";
 
 /* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "Nama Keluarga";
+"CONTACT_FIELD_FAMILY_NAME" = "Nama belakang";
 
 /* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Nama Depan";
+"CONTACT_FIELD_GIVEN_NAME" = "Nama depan";
 
 /* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "Nama Tengah";
+"CONTACT_FIELD_MIDDLE_NAME" = "Nama tengah";
 
 /* Label for the 'name prefix' field of a contact. */
 "CONTACT_FIELD_NAME_PREFIX" = "Awalan";
@@ -1307,16 +1307,16 @@
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Untuk melihat nama kontak dan fotonya dalam obrolan Anda:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Ketuk \"Pergi ke Pengaturan\" di bawah";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Ketuk \"Buka pengaturan\" di bawah";
 
 /* Second step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Nyalakan \"Kontak\"";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Aktifkan \"Kontak\"";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Nyalakan Kontak";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Aktifkan kontak";
 
 /* Snooze action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_NOT_NOW_ACTION" = "Jangan Sekarang";
+"CONTACT_PERMISSION_NOT_NOW_ACTION" = "Jangan sekarang";
 
 /* Action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Izinkan Akses";
@@ -1328,22 +1328,22 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Temukan kontak di Signal";
 
 /* Label for a contact's phone number. */
-"CONTACT_PHONE" = "Telpon";
+"CONTACT_PHONE" = "Telepon";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Email tidak tersedia";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Tidak ada email yang tersedia";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Nomor telepon tidak tersedia.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Tidak ada nomor telepon yang tersedia.";
 
 /* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "Pilih Kontak";
+"CONTACT_PICKER_TITLE" = "Pilih kontak";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Bagikan Kontak";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Bagikan kontak";
 
 /* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Sunting Nama";
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Edit nama";
 
 /* Error indicating that an invalid contact cannot be shared. */
 "CONTACT_SHARE_INVALID_CONTACT" = "Kontak tidak valid.";
@@ -1355,25 +1355,25 @@
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "Perbolehkan Akses Kontak";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "Hubungi Bantuan";
+"CONTACT_SUPPORT" = "Dapatkan bantuan";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donasi & Lencana";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donasi & Badge";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donasi & Lencana";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donasi & Badge";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Saya ingin meminta fitur baru";
 
 /* A brief localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Permintaan Fitur";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Permintaan fitur";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Saya memiliki umpan balik pada aplikasi";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Saya punya masukan untuk aplikasi";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Umpan Balik Aplikasi";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Masukan aplikasi";
 
 /* The localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER" = "Lainnya";
@@ -1391,43 +1391,43 @@
 "CONTACT_SUPPORT_FILTER_PROMPT" = "Bagaimana kami dapat membantu?";
 
 /* The localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION" = "Saya memiliki pertanyaan";
+"CONTACT_SUPPORT_FILTER_QUESTION" = "Saya punya pertanyaan";
 
 /* A brief localized representation of the 'question' support filter. */
 "CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Pertanyaan";
 
 /* The localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Sesuatu tidak bekerja";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING" = "Sepertinya terjadi kesalahan";
 
 /* A brief localized representation of the 'something not working' support filter. */
-"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Sesuatu Tidak Bekerja";
+"CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Sepertinya terjadi kesalahan";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal tidak dapat menyelesaikan permintaan support Anda.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal tidak dapat menyelesaikan permintaan dukungan Anda.";
 
 /* button text */
-"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Coba Lagi";
+"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Coba lagi";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Catatan debug Anda akan membantu kami menangani masalah dengan lebih cepat. Mengirimkan catatan debug bersifat opsional.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Kami dapat menangani masalah dengan lebih cepat jika Anda mengirimkan log debug (opsional).";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Kirimkan catatan debug?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Kirim log debug?";
 
 /* Placeholder telling user they must select a filter. */
-"CONTACT_SUPPORT_SELECT_A_FILTER" = "Pilih Alasan";
+"CONTACT_SUPPORT_SELECT_A_FILTER" = "Pilih alasan";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Kirimkan beserta Catatan Debug";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Kirimkan dengan log debug";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Kirim beserta Catatan Debug";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Kirim tanpa log debug";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Buka di Peta";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Buka di peta";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Kirim surel";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Kirim email";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Kontak tak bernama";
@@ -1460,7 +1460,7 @@
 "CONTEXT_MENU_SHARE_MEDIA" = "Bagikan";
 
 /* Context menu button title */
-"CONTEXT_MENU_SPEAK_MESSAGE" = "Baca";
+"CONTEXT_MENU_SPEAK_MESSAGE" = "Bacakan";
 
 /* Context menu button title */
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Berhenti";
@@ -1499,13 +1499,13 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "Obrolan Terbaru";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Orang-orang";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Orang";
 
 /* table section header for section containing stories */
 "CONVERSATION_PICKER_SECTION_STORIES" = "Cerita";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Pilih Penerima";
+"CONVERSATION_PICKER_TITLE" = "Pilih penerima";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Tidak ada yang cocok";
@@ -1514,10 +1514,10 @@
 "CONVERSATION_SETTINGS" = "Pengaturan Obrolan";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Tambahkan Anggota";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Tambahkan anggota";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Tambahkan Kontak Saat Ini";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Tambahkan ke kontak saat ini";
 
 /* button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Tambahkan ke Kontak Ponsel";
@@ -1526,10 +1526,10 @@
 "CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "Semua Media";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Pilih siapa yang dapat menyunting nama grup, foto, deskripsi, dan penghitung waktu penghilangan pesan.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Pilih siapa yang dapat mengedit nama grup, foto, deskripsi, dan timer penghilangan pesan.";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Dapatkan lencana pada profil Anda dengan mendukung Signal. Ketuk pada lencana untuk mempelajari lebih lanjut.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Dapatkan badge khusus pada profil Anda dengan mendukung Signal. Ketuk badge untuk informasi selengkapnya.";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Lencana";
@@ -1559,34 +1559,34 @@
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Panggilan suara keluar";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Sunting Informasi Grup";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Edit informasi grup";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Hanya Admin";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Hanya admin";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Semua Anggota";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Semua anggota";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Tambahkan Anggota";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Tambahkan anggota";
 
 /* Description for the 'edit membership access'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Pilih siapa yang dapat menyunting keanggotaan grup.";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Pilih siapa yang dapat mengedit keanggotaan grup.";
 
 /* Label for 'group link' action in conversation settings view. */
-"CONVERSATION_SETTINGS_GROUP_LINK" = "Tautan Grup";
+"CONVERSATION_SETTINGS_GROUP_LINK" = "Tautan grup";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Jadikan Admin";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Jadikan admin";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ akan mampu menyunting grup ini dan anggotanya.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ akan dapat mengedit grup ini dan anggotanya.";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Permintaan & Undangan";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Selalu Beritahu";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Selalu beri tahu";
 
 /* label for 'never' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Nonaktifkan Notifikasi Jika Dibisukan";
@@ -1595,7 +1595,7 @@
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Terima notifikasi saat Anda disebut dalam obrolan yang dibisukan?";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Menyebut";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "mention";
 
 /* Button to message the chat */
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "pesan";
@@ -1643,10 +1643,10 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Dibisukan hingga %1$@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Buat Kontak Baru";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Buat kontak baru";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "Tidak Ada Grup yang Sama";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "Tidak ada grup yang sama";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "Perizinan";
@@ -1670,16 +1670,16 @@
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "cari";
 
 /* Label for button that sets 'send messages permission' for a group to 'all members'. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Semua Anggota";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Semua anggota";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Pilih siapa yang dapat mengirimkan pesan dan memulai panggilan di grup ini.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Tentukan siapa yang dapat mengirimkan pesan dan memulai panggilan di grup ini.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Kirim Pesan";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Kirim pesan";
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Hanya Admin";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Hanya admin";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Buka Blokir Grup";
@@ -1694,13 +1694,13 @@
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Detail Kontak";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Detail kontak";
 
 /* Button to start a voice call */
 "CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "suara";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Tambah Kontak";
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Tambah kontak";
 
 /* Format for sender info for accessibility label for message. Embeds {{ the sender name }}. */
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%1$@ terkirim:";
@@ -1718,16 +1718,16 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Memuat Lebih Banyak Pesan…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Baca Lebih Lanjut";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Selengkapnya";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Disalin ke Papan Klip";
+"COPIED_TO_CLIPBOARD" = "Disalin ke clipboard";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Mengatur ulang sesi Anda akan mengizinkan Anda untuk menerima pesan di masa depan dari 1%1$@, tapi itu tidak akan memulihkan pesan yang sudah rusak.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Anda akan dapat menerima pesan baru dari %1$@ dengan mereset sesi, tetapi Anda tidak akan dapat mengembalikan pesan yang sudah rusak. ";
 
 /* No comment provided by engineer. */
-"COUNTRYCODE_SELECT_TITLE" = "Pilih Kode Negara";
+"COUNTRYCODE_SELECT_TITLE" = "Pilih kode negara";
 
 /* Label for button that enables you to make a new call link. */
 "CREATE_CALL_LINK_LABEL" = "Buat Tautan Panggilan";
@@ -1760,7 +1760,7 @@
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Pastikan detail kartu Anda sudah benar dan coba lagi.";
 
 /* Title for the 'crop/scale image' dialog. */
-"CROP_SCALE_IMAGE_VIEW_TITLE" = "Pindahkan dan Ubah Skala";
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Pindahkan dan ubah skala";
 
 /* Title for the 'currency picker' view in the app settings. */
 "CURRENCY_PICKER_VIEW_TITLE" = "Atur Mata Uang";
@@ -1769,7 +1769,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradasi";
 
 /* Title for the 'hue' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Warna";
+"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Warna dasar";
 
 /* Title for the 'Saturation' section in the chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "Saturasi";
@@ -1778,7 +1778,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Solid";
 
 /* Title for the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Warna Kustom";
+"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Warna kustom";
 
 /* Tooltip highlighting the custom chat color controls. */
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Geser untuk mengubah arah gradasi warna";
@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Selesai Menghubungkan";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer pesan teks dan media Anda dari 45 hari terakhir";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Transfer riwayat pesan";
@@ -4061,7 +4061,7 @@
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Selesaikan penautan di perangkat Anda yang lain";
 
 /* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Mengunduh %1$@ dari %2$@ (%3$@)…";
 
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
 "LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Lanjutkan tanpa mentransfer";
@@ -4070,7 +4070,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Perangkat Anda berhasil dihubungkan, tetapi pesan Anda tidak dapat ditransfer.";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Pesan Anda tidak bisa ditransfer ke perangkat terhubung. Anda bisa coba menghubungkan ulang dan mentransfer lagi, atau melanjutkan tanpa mentransfer riwayat pesan.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Sinkronisasi Pesan Gagal";
@@ -4169,7 +4169,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Bersiap mengunduh …";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
+"LINKING_SYNCING_TIMING_INFO" = "Mungkin perlu waktu beberapa menit";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Jangan menutup aplikasi.";

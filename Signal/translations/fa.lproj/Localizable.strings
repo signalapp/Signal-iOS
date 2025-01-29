@@ -236,7 +236,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "فضای حافظه کم است";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "داده‌هایی که از دستگاه قدیمی شما انتقال یافته است امکان بازگردانی ندارند. لطفاً یک گزارش عیب‌یابی به support@signal.org ارسال کنید تا ما بتوانیم این مشکل را رفع کنیم. اگر سیگنال را دوباره نصب کنید، ممکن است تاریخچهٔ پیام‌های شما از دست برود.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "داده‌هایی که از دستگاه قدیمی شما انتقال یافته است امکان بازیابی ندارند. لطفاً یک گزارش عیب‌یابی به support@signal.org ارسال کنید تا ما بتوانیم این مشکل را رفع کنیم. اگر سیگنال را دوباره نصب کنید، ممکن است تاریخچهٔ پیام‌های شما از دست برود.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "امکان تکمیل انتقال وجود نداشت";
@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "پایان پیوند دهی";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "همه پیام‌های متنی و رسانه ۴۵ روز گذشته خود را انتقال دهید";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "انتقال تاریخچه پیام";
@@ -4061,7 +4061,7 @@
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "اتصال را در دستگاه دیگر خود به پایان برسانید";
 
 /* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "در حال دانلود ‎%1$@ ‏از ‎%2$@ ‏(%3$@)…";
 
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
 "LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "ادامه بدون انتقال";
@@ -4070,7 +4070,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "دستگاهتان با موفقیت متصل شد، اما پیام‌هایتان منتقل نشد.";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "پیام‌های شما به دستگاه متصل‌شده‌تان منتقل نشد. می‌توانید دوباره اتصال و انتقال را امتحان کنید، یا بدون انتقال تاریخچه پیام‌های خود ادامه دهید.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "همگام‌سازی پیام انجام نشد";
@@ -4169,7 +4169,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "در حال آماده‌سازی برای دانلود…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
+"LINKING_SYNCING_TIMING_INFO" = "ممکن است چند دقیقه زمان ببرد";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "سیگنال را نبندید.";
@@ -4640,7 +4640,7 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "پیام های جدید";
 
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
-"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "تماس از دست رفته از مخاطب مسدودشده در تنظیمات تلفن";
+"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "تماس از‌دست‌رفته از مخاطب مسدودشده در تنظیمات تلفن";
 
 /* Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
 "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "مخاطب در سیگنال هم مسدود شود";
@@ -5636,7 +5636,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "اخطار";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "پین‌ها اطلاعات ذخیره شده نزد سیگنال را رمزگذاری شده نگاه می‌دارند تا فقط شما بتوانید به آن‌ها دسترسی داشته باشید. پروفایل شما، تنظیمات و مخاطبان هنگام نصب مجدد بازگردانی خواهند شد. برای باز کردن برنامه به پین احتیاج نخواهید داشت.";
+"PIN_CREATION_EXPLANATION" = "پین‌ها اطلاعات ذخیره شده نزد سیگنال را رمزگذاری شده نگاه می‌دارند تا فقط شما بتوانید به آن‌ها دسترسی داشته باشید. پروفایل شما، تنظیمات و مخاطبان هنگام نصب مجدد بازیابی خواهند شد. برای باز کردن برنامه به پین احتیاج نخواهید داشت.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "اطلاعات بیشتر درباره پین‌ها";
@@ -7073,7 +7073,7 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "ادامه بدون ذخیره‌سازی؟";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "اگر پین سیگنال خود را تأیید کنید موجودی شما هنگام نصب دوبارهٔ سیگنال به صورت خودکار بازگردانی خواهد شد. شما همچنین می‌توانید موجودی خود را با استفاده از یک عبارت بازیابی، که یک عبارت ۲۴-کلمه‌ای منحصر به شماست، بازگردانی کنید. آن را یادداشت و در یک مکان امن نگهداری کنید.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "اگر پین سیگنال خود را تأیید کنید موجودی شما هنگام نصب دوبارهٔ سیگنال به صورت خودکار بازیابی خواهد شد. شما همچنین می‌توانید موجودی خود را با استفاده از یک عبارت بازیابی، که یک عبارت ۲۴-کلمه‌ای منحصر به شماست، بازیابی کنید. آن را یادداشت و در یک مکان امن نگهداری کنید.";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "شما موجودی‌ای دارید! زمان ذخیره‌سازی عبارت بازیابی است—یک رمز 24 کلمه‌ای که می‌توانید برای بازیابی موجودی خود از آن استفاده کنید.";
@@ -7214,7 +7214,7 @@
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "موجودی باقی‌مانده";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "بازگردانی حساب کاربری پرداخت‌ها";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "بازیابی حساب کاربری پرداخت‌ها";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "از وارد کردن عبارت صحیح مطمئن شوید.";
@@ -7223,7 +7223,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "تأیید عبارت بازیابی";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "حساب کاربری پرداخت‌ها بازگردانی شد.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "حساب کاربری پرداخت‌ها بازیابی شد.";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "وارد کردن دستی";
@@ -7247,7 +7247,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "جایگذاری عبارت بازیابی";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "عبارت بازیابی شما یک عبارت 24-کلمه‌ای منحصر به شماست. از آن برای بازگردانی حساب پرداخت‌های خود استفاده کنید.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "عبارت بازیابی شما یک عبارت 24-کلمه‌ای منحصر به شماست. از آن برای بازیابی حساب پرداخت‌های خود استفاده کنید.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "وارد کردن عبارت بازیابی";
@@ -7424,7 +7424,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "یادآور های رمز";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "پین‌ها اطلاعات ذخیره شده در سیگنال را رمزگذاری شده نگه ‌می‌دارند تا فقط شما قادر به دسترسی به آن‌ها باشید. پین شما قابلیت بازیابی ندارد. پروفایل، تنظیمات، و مخاطبین شما هنگامی که شما سیگنال را دوباره نصب می‌کنید بازگردانی می‌شوند.";
+"SETTINGS_PINS_FOOTER" = "پین‌ها اطلاعات ذخیره شده در سیگنال را رمزگذاری شده نگه ‌می‌دارند تا فقط شما قادر به دسترسی به آن‌ها باشید. پین شما قابلیت بازیابی ندارد. پروفایل، تنظیمات، و مخاطبین شما هنگامی که شما سیگنال را دوباره نصب می‌کنید بازیابی می‌شوند.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "پین خود را تغییر دهید";

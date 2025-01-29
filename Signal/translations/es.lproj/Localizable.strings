@@ -515,7 +515,7 @@
 "BADGE_EXPIRED_DONATE_BUTTON" = "Donar";
 
 /* Text for the 'learn more' link in a sheet explaining there's been an issue with your badge. */
-"BADGE_EXPIRED_LEARN_MORE_LINK" = "Más información.";
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "Más información.";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Donación mensual cancelada";
@@ -554,7 +554,7 @@
 "BANK_MANDATE_AGREE" = "Aceptar";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a label for a button that shows more of the mandate if it is not all visible. */
-"BANK_MANDATE_READ_MORE" = "Más información";
+"BANK_MANDATE_READ_MORE" = "Más información";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a subtitle about the payment processor Stripe above that mandate. */
 "BANK_MANDATE_SUBTITLE" = "Stripe procesa las donaciones que se hacen a Signal. Signal no recoge ni almacena tu información personal.";
@@ -1091,7 +1091,7 @@
 "CARD_DONATION_READ_MORE_SHEET_TITLE" = "Tu información es privada";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information. */
-"CARD_DONATION_SUBHEADER_LEARN_MORE" = "Más información.";
+"CARD_DONATION_SUBHEADER_LEARN_MORE" = "Más información.";
 
 /* On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information. */
 "CARD_DONATION_SUBHEADER_TEXT" = "Introduce los datos de tu tarjeta. Signal no recoge ni almacena tu información personal.";
@@ -1169,7 +1169,7 @@
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Color y fondo de pantalla del chat";
 
 /* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "Comparar con portapapeles";
+"COMPARE_SAFETY_NUMBER_ACTION" = "Comparar con el portapapeles";
 
 /* Accessibility hint describing what you can do with the compose button */
 "COMPOSE_BUTTON_HINT" = "Selecciona o busca a una persona en Signal para comenzar a chatear.";
@@ -2450,10 +2450,10 @@
 "DONATION_SCREENS_HEADER_DESCRIPTION" = "Mensajería privada, financiada por ti. Sin anuncios, sin seguimiento, sin comprometer tu privacidad. Haz una donación ahora para apoyar a Signal.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
-"DONATION_SCREENS_HEADER_READ_MORE" = "Más información";
+"DONATION_SCREENS_HEADER_READ_MORE" = "Más información";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Privacidad sin fines de lucro";
+"DONATION_SCREENS_HEADER_TITLE" = "Privacidad sin ánimo de lucro";
 
 /* Button title confirming the user wants to begin a new donation. */
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Donar";
@@ -2705,7 +2705,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Se ha producido un error desconocido.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Esta persona no usa Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Este contacto no usa Signal.";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "No se ha podido subir el archivo.";
@@ -2981,10 +2981,10 @@
 "GROUP_CALL_IS_FULL" = "La llamada está completa";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Llamando a %1$@…";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Sonando en la app de %1$@…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Llamando a %1$@ y a %2$@…";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Sonando en la app de %1$@ y %2$@…";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Unirse a la llamada";
@@ -3101,16 +3101,16 @@
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Desconexión en la llamada. Comprueba tu conexión e inténtalo de nuevo.";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "Se notificará a %1$@";
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "Se enviará una notificación a %1$@";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "Se notificará a %1$@ y %2$@";
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "Se enviará una notificación a %1$@ y %2$@";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal llamará a %1$@";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal sonará en la app de %1$@";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal llamará a %1$@ y %2$@";
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal sonará en la app de %1$@ y %2$@";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "Estás en la llamada grupal";
@@ -3716,13 +3716,13 @@
 "HOME_VIEW_DRAFT_PREFIX" = "Borrador: ";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Algunas personas que conoces, como %1$@, ya usan Signal.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Algunos de tus contactos, como %1$@, ya usan Signal.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Algunas personas que conoces, como %1$@ y %2$@, ya usan Signal.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Algunos de tus contactos, como %1$@ y %2$@, ya usan Signal.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Algunas personas que conoces, como %1$@, %2$@ y %3$@, ya usan Signal.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Algunos de tus contactos, como %1$@, %2$@ y %3$@, ya usan Signal.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Comienza a chatear aquí.";
@@ -3788,7 +3788,7 @@
 "IN_CALL_RECONNECTING" = "Reconectando…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Llamando…";
+"IN_CALL_RINGING" = "Sonando…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "Llamada…";
@@ -3983,7 +3983,7 @@
 "KEY_COMMAND_UNARCHIVE" = "Desarchivar chat";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "Más información";
+"LEARN_MORE" = "Más información";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Abandonar";
@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Completar vinculación";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfiere todos tus mensajes de texto y tus archivos multimedia de los últimos 45 días";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Transferir historial de mensajes";
@@ -4061,7 +4061,7 @@
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Completa la vinculación en tu otro dispositivo";
 
 /* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Descargando %1$@ de %2$@… (%3$@)";
 
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
 "LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Continuar sin transferir";
@@ -4070,7 +4070,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "Tu dispositivo se ha vinculado correctamente, pero tus mensajes no se han podido transferir.";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Tus mensajes no se han podido transferir a tu dispositivo vinculado. Puedes intentar volver a vincular tu dispositivo y hacer la transferencia de nuevo, o continuar sin transferir tu historial de mensajes.";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "Error en la sincronización de mensajes";
@@ -4103,7 +4103,7 @@
 "LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "La gestión de contactos del teléfono ya no es compatible con iPad. Este dispositivo continuará sincronizando cualquier cambio que hagas en tu lista de contactos de Signal en tu teléfono.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Más información";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Más información";
 
 /* Body for system notification when a new device is linked. Embeds {{ time the device was linked }} */
 "LINKED_DEVICE_NOTIFICATION_BODY" = "Se ha vinculado un nuevo dispositivo a tu cuenta. Hora: %1$@. Toca para verlo.";
@@ -4169,7 +4169,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "Preparando la descarga…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
+"LINKING_SYNCING_TIMING_INFO" = "Este proceso puede llevar unos minutos";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "No cierres Signal.";
@@ -4646,7 +4646,7 @@
 "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Bloquear contacto también en Signal";
 
 /* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "Has perdido la llamada de esta persona porque está bloqueada en los Ajustes de tu teléfono. En tu dispositivo, ve a Ajustes > Teléfono y toca Contactos bloqueados para gestionar este ajuste.";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "Has perdido la llamada de este contacto porque está bloqueado en los Ajustes de tu teléfono. En tu dispositivo, ve a Ajustes > Teléfono y toca Contactos bloqueados para gestionar este ajuste.";
 
 /* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
 "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "Has bloqueado a %1$@ en los Ajustes del teléfono";
@@ -4739,7 +4739,7 @@
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi y red celular";
 
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
-"NEW_CALL_HINT" = "Selecciona una persona o grupo para empezar una nueva llamada.";
+"NEW_CALL_HINT" = "Selecciona un contacto o grupo para empezar una nueva llamada.";
 
 /* Accessibility label for the new call button on the Calls Tab */
 "NEW_CALL_LABEL" = "Nueva llamada";
@@ -5777,7 +5777,7 @@
 "PRIVACY_UNVERIFY_BUTTON" = "Retirar marca de verificación";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Este no es tu número de seguridad con %1$@. ¿Estás intentando verificar a la persona correcta?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Este no es tu número de seguridad con %1$@. ¿Estás intentando verificar al contacto correcto?";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "El número guardado en tu portapapeles no coincide con el número de seguridad del chat con esta persona.";
@@ -6602,7 +6602,7 @@
 "SEPA_DONATION_NAME_PLACEHOLDER" = "Como aparece en la cuenta bancaria";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal usa cifrado de extremo a extremo y es posible que en determinados casos deba reiniciarse la sesión de un chat. Este reinicio no afecta a la seguridad, pero puede ocurrir que no hayas recibido el último mensaje que esta persona te envió antes del reinicio. Si es así, pídele que vuelva a enviarte el mensaje.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal usa cifrado de extremo a extremo y es posible que en determinados casos deba reiniciarse la sesión de un chat. Este reinicio no afecta a la seguridad, pero puede ocurrir que no hayas recibido el último mensaje que este contacto te envió antes del reinicio. Si es así, pídele que vuelva a enviarte el mensaje.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Sesión de chat reiniciada";
@@ -6890,7 +6890,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Las notificaciones de llamadas y mensajes pueden mostrarse cuando el teléfono está bloqueado.";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Contenido de notificaciones";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Contenido de las notificaciones";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Alguien comienza a usar Signal";
@@ -7430,7 +7430,7 @@
 "SETTINGS_PINS_ITEM" = "Cambiar PIN";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Crear PIN";
+"SETTINGS_PINS_ITEM_CREATE" = "Crear un PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN de Signal";
@@ -7685,7 +7685,7 @@
 "STICKERS_UNINSTALL_BUTTON" = "Desinstalar";
 
 /* Text indication a story caption can be tapped to read more. */
-"STORIES_CAPTION_READ_MORE" = "Más información";
+"STORIES_CAPTION_READ_MORE" = "Más información";
 
 /* Context menu action to copy the selected story reply */
 "STORIES_COPY_REPLY_ACTION" = "Copiar";

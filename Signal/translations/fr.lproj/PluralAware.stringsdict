@@ -296,9 +296,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Cette couleur est utilisée dans 1%1$dconversation. Voulez-vous enregistrer les changements pour toutes les conversations ?</string>
+			<string>Cette couleur est appliquée à %1$d conversation. Voulez-vous l&apos;appliquer à toutes les conversations ?</string>
 			<key>other</key>
-			<string>Cette couleur est utilisée dans %1$d conversations. Voulez-vous enregistrer les changements pour toutes les conversations ?</string>
+			<string>Cette couleur est appliquée à %1$d conversations. Voulez-vous l&apos;appliquer à toutes les conversations ?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -419,9 +419,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$dm</string>
+			<string>%1$d min</string>
 			<key>other</key>
-			<string>%1$dm</string>
+			<string>%1$d min</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -547,9 +547,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>appelle %2$@, %3$@ et %1$d autre contact…</string>
+			<string>Signal sonne chez %2$@, %3$@ et %1$d autre…</string>
 			<key>other</key>
-			<string>appelle %2$@, %3$@ et %1$d autres contacts…</string>
+			<string>Signal sonne chez %2$@, %3$@ et %1$d autres…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_OTHERS_HERE</key>
@@ -915,9 +915,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Un membre n’a pas pu être ajouté au nouveau groupe et a été retiré du groupe.</string>
+			<string>Un membre n&apos;a pas pu être ajouté au nouveau groupe et a été retiré du groupe.</string>
 			<key>other</key>
-			<string>%1$d membres n’ont pas pu être ajoutés au nouveau groupe et ont été retirés du groupe.</string>
+			<string>%1$d membres n&apos;ont pas pu être ajoutés au nouveau groupe et ont été retirés du groupe.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -931,9 +931,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d membre n’a pas pu être ajouté au nouveau groupe et a été invité à le rejoindre.</string>
+			<string>%1$d membre n&apos;a pas pu être ajouté au nouveau groupe et a été invité à le rejoindre.</string>
 			<key>other</key>
-			<string>%1$d membres n’ont pas pu être ajoutés au nouveau groupe et ont été invités à le rejoindre.</string>
+			<string>%1$d membres n&apos;ont pas pu être ajoutés au nouveau groupe et ont été invités à le rejoindre.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -947,9 +947,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vous ne pouvez pas partager plus d&apos;1 élément.</string>
+			<string>Vous ne pouvez partager qu&apos;un seul élément.</string>
 			<key>other</key>
-			<string>Vous ne pouvez pas partager plus de %1$d éléments.</string>
+			<string>Vous ne pouvez pas partager plus de %1$d éléments.</string>
 		</dict>
 	</dict>
 	<key>INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_BODY_%d</key>
@@ -1395,9 +1395,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>L&apos;un des contenus n&apos;a pas pu être ajouté à la story choisie car le type de fichier sélectionné n&apos;est pas pris en charge.</string>
+			<string>Impossible d&apos;ajouter l&apos;un des contenus à la story, car ce type de fichier n&apos;est pas pris en charge.</string>
 			<key>other</key>
-			<string>Tous les contenus n’ont pas pu être ajoutés aux Stories choisies car certains types de fichiers sélectionnés ne sont pas pris en charge.</string>
+			<string>Impossible d&apos;ajouter certains contenus aux stories sélectionnées, car ces types de fichiers ne sont pas pris en charge.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

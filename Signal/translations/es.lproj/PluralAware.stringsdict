@@ -547,9 +547,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Llamando a %2$@, %3$@ y %1$d más…</string>
+			<string>Sonando en la app de %2$@, %3$@ y %1$d más…</string>
 			<key>other</key>
-			<string>Llamando a %2$@, %3$@ y %1$d más…</string>
+			<string>Sonando en la app de %2$@, %3$@ y %1$d más…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_OTHERS_HERE</key>
@@ -659,9 +659,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se notificará a %2$@, %3$@ y %1$d más</string>
+			<string>Se enviará una notificación a %2$@, %3$@ y %1$d más</string>
 			<key>other</key>
-			<string>Se notificará a %2$@, %3$@ y %1$d más</string>
+			<string>Se enviará una notificación a %2$@, %3$@ y %1$d más</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -675,9 +675,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal llamará a %2$@, %3$@ y %1$d más</string>
+			<string>Signal sonará en la app de %2$@, %3$@ y %1$d más</string>
 			<key>other</key>
-			<string>Signal llamará a %2$@, %3$@ y %1$d más</string>
+			<string>Signal sonará en la app de %2$@, %3$@ y %1$d más</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>

@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "সংযুক্তিকরণ সম্পন্ন";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "আপনার টেক্সট মেসেজ এবং আপনার শেষ 45 দিনের মিডিয়া ট্রান্সফার করুন";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "মেসেজের ইতিহাস ট্রান্সফার করুন";
@@ -4061,7 +4061,7 @@
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "আপনার অন্য ডিভাইসে লিংক করা শেষ করুন";
 
 /* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "%2$@ (%3$@)-এর মধ্যে %1$@ ডাউনলোড হচ্ছে…";
 
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
 "LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "ট্রান্সফার না করে চালিয়ে যান";
@@ -4070,7 +4070,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "আপনার ডিভাইস সফলভাবে লিঙ্ক করা হয়েছে, কিন্তু আপনার মেসেজ ট্রান্সফার করা যাচ্ছে না।";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "আপনার মেসেজগুলো আপনার লিংক করা ডিভাইসে ট্রান্সফার করা যায়নি। আপনি আবার লিংক করার এবং আবার ট্রান্সফার করার চেষ্টা করতে পারেন, অথবা আপনার মেসেজের ইতিহাস ট্রান্সফার না করেই চালিয়ে যেতে পারেন।";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "মেসেজ সিঙ্ক সফল হয়নি";
@@ -4169,7 +4169,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "ডাউনলোড করার জন্য প্রস্তুতি নিচ্ছে…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
+"LINKING_SYNCING_TIMING_INFO" = "এটি কয়েক মিনিট সময় নিতে পারে";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "সিগন্যাল বন্ধ করবেন না।";

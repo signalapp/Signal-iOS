@@ -4019,7 +4019,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "เชื่อมโยงเสร็จสิ้น";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfer your text messages and your last 45 days of media";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "ถ่ายโอนข้อความของคุณทั้งหมดและไฟล์สื่อจาก 45 วันที่ผ่านมา";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "ถ่ายโอนประวัติการส่งข้อความ";
@@ -4061,7 +4061,7 @@
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "ดำเนินการเชื่อมโยงให้เสร็จสิ้นบนอุปกรณ์อีกเครื่อง";
 
 /* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Downloading %1$@ of %2$@ (%3$@)…";
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "กำลังดาวน์โหลด %1$@ จาก %2$@ (%3$@)…";
 
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
 "LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "ดำเนินการต่อโดยไม่ถ่ายโอน";
@@ -4070,7 +4070,7 @@
 "LINK_NEW_DEVICE_SYNC_FAILED_MESSAGE" = "เชื่อมโยงอุปกรณ์เรียบร้อยแล้ว แต่ไม่สามารถถ่ายโอนข้อความของคุณได้";
 
 /* Message for a sheet indicating that a newly linked device failed to sync messages with a retryable error. */
-"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "Your messages couldn’t be transferred to your linked device. You can try re-linking and transferring again, or continue without transferring your message history.";
+"LINK_NEW_DEVICE_SYNC_FAILED_RETRYABLE_MESSAGE" = "ไม่สามารถถ่ายโอนข้อความของคุณไปยังอุปกรณ์ที่เชื่อมโยงอยู่ คุณสามารถลองเชื่อมโยงอุปกรณ์แล้วถ่ายโอนอีกครั้ง หรือดำเนินการต่อโดยไม่ถ่ายโอนประวัติการส่งข้อความ";
 
 /* Title for a sheet indicating that a newly linked device failed to sync messages. */
 "LINK_NEW_DEVICE_SYNC_FAILED_TITLE" = "ซิงค์ข้อความไม่สำเร็จ";
@@ -4169,7 +4169,7 @@
 "LINKING_SYNCING_PREPARING_TO_DOWNLOAD" = "กำลังเตรียมการดาวน์โหลด…";
 
 /* Label below the progress bar when loading messages during linking process */
-"LINKING_SYNCING_TIMING_INFO" = "This may take a few minutes";
+"LINKING_SYNCING_TIMING_INFO" = "ขั้นตอนนี้อาจใช้เวลาสักครู่";
 
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "อย่าปิดแอป";
