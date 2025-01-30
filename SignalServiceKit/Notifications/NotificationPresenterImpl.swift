@@ -214,6 +214,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
         return .some({ () -> NotificationSuppressionRule in
             switch CurrentAppContext().frontmostViewController() {
+            case let linkAndSyncProgressUI as LinkAndSyncProgressUI where linkAndSyncProgressUI.shouldSuppressNotifications:
+                return .all
             case let conversationSplit as ConversationSplit:
                 return conversationSplit.visibleThread.map {
                     return .messagesInThread(threadUniqueId: $0.uniqueId)

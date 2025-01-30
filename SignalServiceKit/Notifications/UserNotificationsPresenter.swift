@@ -445,6 +445,10 @@ public protocol StoryGroupReplier: UIViewController {
     var threadUniqueId: String? { get }
 }
 
+public protocol LinkAndSyncProgressUI {
+    var shouldSuppressNotifications: Bool { get }
+}
+
 extension Sound {
     func notificationSound(isQuiet: Bool) -> UNNotificationSound {
         guard let filename = filename(quiet: isQuiet) else {

@@ -110,5 +110,8 @@ enum NotificationSuppressionRule {
     case messagesInThread(threadUniqueId: String)
     case groupStoryReplies(threadUniqueId: String?, storyMessageTimestamp: UInt64)
     case failedStorySends
+    /// Suppress all notifications
+    case all
+    /// Don't suppress any notifications
     case none
 }

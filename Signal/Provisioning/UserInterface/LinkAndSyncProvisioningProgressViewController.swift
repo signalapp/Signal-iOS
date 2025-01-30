@@ -117,7 +117,10 @@ class LinkAndSyncSecondaryProgressViewModel: ObservableObject {
 
 // MARK: Hosting Controller
 
-class LinkAndSyncProvisioningProgressViewController: HostingController<LinkAndSyncProvisioningProgressView> {
+class LinkAndSyncProvisioningProgressViewController: HostingController<LinkAndSyncProvisioningProgressView>, LinkAndSyncProgressUI {
+
+    public var shouldSuppressNotifications: Bool { true }
+
     fileprivate var viewModel: LinkAndSyncSecondaryProgressViewModel
 
     var linkNSyncTask: Task<Void, Error>? {

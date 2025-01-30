@@ -104,7 +104,9 @@ class LinkAndSyncProgressViewModel: ObservableObject {
 
 // MARK: Hosting Controller
 
-class LinkAndSyncProgressModal: HostingController<LinkAndSyncProgressView> {
+class LinkAndSyncProgressModal: HostingController<LinkAndSyncProgressView>, LinkAndSyncProgressUI {
+
+    public var shouldSuppressNotifications: Bool { true }
 
     let viewModel = LinkAndSyncProgressViewModel()
 
