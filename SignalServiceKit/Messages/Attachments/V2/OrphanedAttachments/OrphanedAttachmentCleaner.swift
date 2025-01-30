@@ -235,14 +235,40 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
                 }
                 let rowIdColumn = Column(OrphanedAttachmentRecord.CodingKeys.sqliteId)
                 var query: QueryInterfaceRequest<OrphanedAttachmentRecord>?
-                for skippedRowId in skippedRowIds {
+
+                let skippedRowIdsForQuery: any Collection<OrphanedAttachmentRecord.IDType>
+                let skippedRowIdsForInMemoryFilter: any Collection<OrphanedAttachmentRecord.IDType>
+                if skippedRowIds.count > 50 {
+                    Logger.warn("Too many skipped row ids!")
+                    (
+                        skippedRowIdsForQuery,
+                        skippedRowIdsForInMemoryFilter
+                    ) = skippedRowIds.split(
+                        at: skippedRowIds.index(skippedRowIds.startIndex, offsetBy: 50)
+                    )
+                } else {
+                    skippedRowIdsForQuery = skippedRowIds
+                    skippedRowIdsForInMemoryFilter = []
+                }
+
+                for skippedRowId in skippedRowIdsForQuery {
                     if let querySoFar = query {
                         query = querySoFar.filter(rowIdColumn != skippedRowId)
                     } else {
                         query = OrphanedAttachmentRecord.filter(rowIdColumn != skippedRowId)
                     }
                 }
-                return try? query?.fetchOne(db)
+                if skippedRowIdsForInMemoryFilter.isEmpty {
+                    return try? query?.fetchOne(db)
+                } else {
+                    let cursor = try? query?.fetchCursor(db)
+                    while let next = try? cursor?.next() {
+                        if !skippedRowIdsForInMemoryFilter.contains(next.sqliteId!) {
+                            return next
+                        }
+                    }
+                    return nil
+                }
             }
         }
 

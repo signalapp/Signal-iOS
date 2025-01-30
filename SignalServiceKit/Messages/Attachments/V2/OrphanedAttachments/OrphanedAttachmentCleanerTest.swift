@@ -213,6 +213,65 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         }
     }
 
+    func testTooManySkippedRowIds() async throws {
+        // Set up 1001 records to skip; this would overwhelm
+        // GRDB/SQLite if we tried to filter each one in SQL.
+        var skippedIds: [Int64] = []
+        for _ in 0..<1001 {
+            let record = OrphanedAttachmentRecord(
+                localRelativeFilePath: UUID().uuidString,
+                localRelativeFilePathThumbnail: nil,
+                localRelativeFilePathAudioWaveform: nil,
+                localRelativeFilePathVideoStillFrame: nil
+            )
+            skippedIds.append(try orphanedAttachmentCleaner
+                .commitPendingAttachmentWithSneakyTransaction(record)
+            )
+        }
+
+        // Insert one record we actually want to delete
+        var record = OrphanedAttachmentRecord(
+            localRelativeFilePath: UUID().uuidString,
+            localRelativeFilePathThumbnail: UUID().uuidString,
+            localRelativeFilePathAudioWaveform: UUID().uuidString,
+            localRelativeFilePathVideoStillFrame: UUID().uuidString
+        )
+
+        try db.write { tx in
+            try record.insert(tx.db)
+            let count = try OrphanedAttachmentRecord.fetchCount(tx.databaseConnection)
+            XCTAssertEqual(count, skippedIds.count + 1)
+        }
+
+        // Should delete all existing rows as soon as we start observing.
+        orphanedAttachmentCleaner.beginObserving()
+
+        await mockTaskScheduler.tasks[0].await()
+
+        // Should have deleted the first record and none of the others.
+        try db.read { tx in
+            let count = try OrphanedAttachmentRecord.fetchCount(tx.databaseConnection)
+            XCTAssertEqual(count, skippedIds.count)
+        }
+
+        // Mark all the ids as not needing skipping anymore.
+        db.write { tx in
+            for id in skippedIds {
+                orphanedAttachmentCleaner.releasePendingAttachment(withId: id, tx: tx)
+            }
+        }
+
+        orphanedAttachmentCleaner.beginObserving()
+
+        await mockTaskScheduler.tasks[1].await()
+
+        // Everything should be deleted
+        try db.read { tx in
+            let count = try OrphanedAttachmentRecord.fetchCount(tx.databaseConnection)
+            XCTAssertEqual(count, 0)
+        }
+    }
+
     func testOrphanRecordFieldCoverage() async throws {
         var record = OrphanedAttachmentRecord(
             localRelativeFilePath: UUID().uuidString,
