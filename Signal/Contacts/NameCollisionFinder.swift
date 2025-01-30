@@ -320,7 +320,7 @@ private extension NameCollision {
 private extension Array where Element == NameCollision {
     func standardSort(readTx: SDSAnyReadTransaction) -> [NameCollision] {
         self.map { $0.standardSort(readTx: readTx) }.sorted { lhs, rhs in
-            return lhs.elements[0].comparableName < rhs.elements[1].comparableName
+            return lhs.elements[0].comparableName < rhs.elements[0].comparableName
         }
     }
 }
