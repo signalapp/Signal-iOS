@@ -76,29 +76,24 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreChatUpdateMessageResult {
-        func invalidProtoData(
-            _ error: RestoreFrameError.ErrorType.InvalidProtoDataError,
-            line: UInt = #line
-        ) -> RestoreChatUpdateMessageResult {
-            return .messageFailure([.restoreFrameError(
-                .invalidProtoData(error),
-                chatItem.id,
-                line: line
-            )])
-        }
-
         let oldName = profileChangeChatUpdateProto.previousName.filterForDisplay
         let newName = profileChangeChatUpdateProto.newName.filterForDisplay
 
         guard !oldName.isEmpty, !newName.isEmpty else {
-            return invalidProtoData(.profileChangeUpdateInvalidNames)
+            return .partialRestore((), [.restoreFrameError(
+                .invalidProtoData(.profileChangeUpdateInvalidNames),
+                chatItem.id
+            )])
         }
 
         guard
             let profileChangeAuthor = context.recipientContext[chatItem.authorRecipientId],
             case .contact(let profileChangeAuthorContactAddress) = profileChangeAuthor
         else {
-            return invalidProtoData(.profileChangeUpdateNotFromContact)
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.profileChangeUpdateNotFromContact),
+                chatItem.id
+            )])
         }
 
         let profileChangeInfoMessage: TSInfoMessage = .makeForProfileChange(
