@@ -131,9 +131,8 @@ public extension TSOutgoingMessage {
                 return
             }
 
-            recipientState.updateStatus(.sent)
+            recipientState.updateStatusIfPossible(.sent)
             recipientState.wasSentByUD = wasSentByUD
-            recipientState.errorCode = nil
         }
     }
 
@@ -148,7 +147,7 @@ public extension TSOutgoingMessage {
                 return
             }
 
-            recipientState.updateStatus(.skipped)
+            recipientState.updateStatusIfPossible(.skipped)
         }
     }
 
@@ -195,7 +194,7 @@ public extension TSOutgoingMessage {
                         continue
                     }
 
-                    recipientState.updateStatus(.sent)
+                    recipientState.updateStatusIfPossible(.sent)
                 }
             }
 
@@ -229,12 +228,14 @@ public extension TSOutgoingMessage {
                     // For retryable errors, we can just set the error code and leave the
                     // state set as Sending
                 } else if error is SpamChallengeRequiredError || error is SpamChallengeResolvedError {
-                    recipientState.updateStatus(.pending)
+                    recipientState.updateStatusIfPossible(.pending)
                 } else {
-                    recipientState.updateStatus(.failed)
+                    recipientState.updateStatusIfPossible(.failed)
                 }
 
-                recipientState.errorCode = (error as NSError).code
+                if recipientState.canHaveErrorCode {
+                    recipientState.errorCode = (error as NSError).code
+                }
             }
         }
     }
@@ -258,7 +259,7 @@ public extension TSOutgoingMessage {
 
             for recipientState in recipientAddressStates.values {
                 if recipientState.status == .sending {
-                    recipientState.updateStatus(.failed)
+                    recipientState.updateStatusIfPossible(.failed)
                 }
             }
         }
@@ -277,7 +278,7 @@ public extension TSOutgoingMessage {
 
             for recipientState in recipientAddressStates.values {
                 if recipientState.status == .failed {
-                    recipientState.updateStatus(.sending)
+                    recipientState.updateStatusIfPossible(.sending)
                 }
             }
         }
@@ -298,13 +299,13 @@ public extension TSOutgoingMessage {
             for recipientState in recipientAddressStates.values {
                 switch messageState {
                 case .sending:
-                    recipientState.updateStatus(.sending)
+                    recipientState.updateStatusIfPossible(.sending)
                 case .failed:
-                    recipientState.updateStatus(.failed)
+                    recipientState.updateStatusIfPossible(.failed)
                 case .sent:
-                    recipientState.updateStatus(.sent)
+                    recipientState.updateStatusIfPossible(.sent)
                 case .pending:
-                    recipientState.updateStatus(.pending)
+                    recipientState.updateStatusIfPossible(.pending)
                 case .sent_OBSOLETE, .delivered_OBSOLETE:
                     break
                 }
@@ -677,41 +678,10 @@ extension TSOutgoingMessage {
                 return
             }
 
-            /// We want to avoid "downgrading" the recipient status; for
-            /// example, if we receive a delivery receipt after a read receipt,
-            /// we want to preserve the `.read` status.
-            ///
-            /// We do, however, support overwriting the recipient status'
-            /// timestamp when receiving a receipt matching the existing
-            /// recipient status (e.g., receiving a `.read` receipt when the
-            /// recipient status is already `.read`).
-            let shouldUpdateRecipientStatus: Bool = {
-                switch (recipientState.status, receiptType) {
-                case (.failed, _), (.sending, _), (.sent, _), (.skipped, _), (.pending, _):
-                    return true
-                case
-                        (.delivered, .delivered),
-                        (.delivered, .read),
-                        (.delivered, .viewed),
-                        (.read, .read),
-                        (.read, .viewed),
-                        (.viewed, .viewed):
-                    return true
-                case
-                        (.read, .delivered),
-                        (.viewed, .delivered),
-                        (.viewed, .read):
-                    return false
-                }
-            }()
-
-            if shouldUpdateRecipientStatus {
-                recipientState.updateStatus(
-                    receiptType.asRecipientStatus,
-                    statusTimestamp: receiptTimestamp
-                )
-                recipientState.errorCode = nil
-            }
+            recipientState.updateStatusIfPossible(
+                receiptType.asRecipientStatus,
+                statusTimestamp: receiptTimestamp
+            )
         }
     }
 }

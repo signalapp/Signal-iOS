@@ -34,8 +34,20 @@ public class TSOutgoingMessageRecipientState: NSObject, NSCoding, NSCopying {
     public var wasSentByUD: Bool
 
     /// Represents an error that occurred during sending. Will only be present
-    /// if `status = .failed`, or `status = .sending` with a prior failure.
+    /// if `canHaveErrorCode` is true.
     public var errorCode: Int?
+
+    /// If true, this state supports errors. If false, it doesn't. The
+    /// `.sending` and `.pending` states may have transient failures that
+    /// haven't yet become terminal failures.
+    var canHaveErrorCode: Bool {
+        switch self.status {
+        case .sending, .pending, .failed:
+            return true
+        case .skipped, .sent, .delivered, .read, .viewed:
+            return false
+        }
+    }
 
     @objc
     public convenience init(status: OWSOutgoingMessageRecipientStatus) {
@@ -61,12 +73,19 @@ public class TSOutgoingMessageRecipientState: NSObject, NSCoding, NSCopying {
         super.init()
     }
 
-    func updateStatus(
+    func updateStatusIfPossible(
         _ newStatus: OWSOutgoingMessageRecipientStatus,
         statusTimestamp: UInt64 = Date().ows_millisecondsSince1970
     ) {
+        if newStatus.priorityValue < self.status.priorityValue {
+            Logger.warn("Ignoring status update to '\(newStatus)' that would move backwards from '\(self.status)'")
+            return
+        }
         self.status = newStatus
         self.statusTimestamp = statusTimestamp
+        if !self.canHaveErrorCode {
+            self.errorCode = nil
+        }
     }
 
     // MARK: - NSCoding
@@ -169,7 +188,7 @@ private extension NSCoder {
 // MARK: -
 
 @objc
-public enum OWSOutgoingMessageRecipientStatus: UInt {
+public enum OWSOutgoingMessageRecipientStatus: UInt, CustomDebugStringConvertible {
     /// The message could not be sent to this recipient.
     case failed = 0
     /// The message is being sent (enqueued, uploading) to this recipient.
@@ -192,6 +211,47 @@ public enum OWSOutgoingMessageRecipientStatus: UInt {
     /// The message was rejected by the server until some other condition is
     /// satisfied. For example, the message send may be pending a CAPTCHA.
     case pending = 4
+
+    /// A "priority" for a given status.
+    ///
+    /// We can never move from a higher priority to a lower priority.
+    ///
+    /// For example, once we've received a delivery receipt for a message, we
+    /// can never mark it as "sent". If we have a delivery receipt, that implies
+    /// that it was sent, and if we mark it as "sent", we'd lose information
+    /// indicating that it was delivered.
+    var priorityValue: Int {
+        switch self {
+        case .sending, .pending, .failed:
+            // We swap freely amongst these values as we send messages.
+            return 1
+        case .skipped:
+            // If we try to "skip" a message that was already "sent", it should remain
+            // "sent" because we *did* send it.
+            return 2
+        case .sent:
+            return 3
+        case .delivered:
+            return 4
+        case .read:
+            return 5
+        case .viewed:
+            return 6
+        }
+    }
+
+    public var debugDescription: String {
+        switch self {
+        case .failed: "failed"
+        case .sending: "sending"
+        case .skipped: "skipped"
+        case .sent: "sent"
+        case .delivered: "delivered"
+        case .read: "read"
+        case .viewed: "viewed"
+        case .pending: "pending"
+        }
+    }
 }
 
 /// This type is `Codable`-serialized by `StoryMessage`.
