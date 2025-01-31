@@ -364,7 +364,7 @@ public struct CVLongPressHandler {
 
         switch gestureLocation {
         case .`default`:
-            // TODO: Rename from "Text view item" to "default"?
+            // TODO: Rename from "Text view item" to "default"? - "TextViewItem" is more descriptive imho. Lets keep that.
             delegate.didLongPressTextViewItem(cell,
                                               itemViewModel: itemViewModel,
                                               shouldAllowReply: shouldAllowReply)

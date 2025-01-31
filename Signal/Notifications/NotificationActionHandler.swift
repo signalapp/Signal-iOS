@@ -149,7 +149,12 @@ public class NotificationActionHandler {
                         builder.expiresInSeconds = dmConfig.durationSeconds
                         builder.expireTimerVersion = NSNumber(value: dmConfig.timerVersion)
                     }
-
+                    
+                    if let incomingMessage = interaction as? TSIncomingMessage {
+                        let quotedMessage = TSQuotedMessage(timestamp: incomingMessage.serverTimestamp, authorAddress: incomingMessage.authorAddress, body: incomingMessage.body, bodyRanges: incomingMessage.bodyRanges, quotedAttachmentForSending: nil, isGiftBadge: incomingMessage.giftBadge != nil, isTargetMessageViewOnce: false)
+                        builder.quotedMessage = quotedMessage
+                    }
+                    
                     let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(TSOutgoingMessage(
                         outgoingMessageWith: builder,
                         additionalRecipients: [],
