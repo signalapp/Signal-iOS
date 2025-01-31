@@ -450,6 +450,9 @@ public extension OWSFileSystem {
         guard let result = resourceValues.volumeAvailableCapacityForImportantUsage else {
             throw OWSGenericError("Could not determine remaining disk space")
         }
+        guard result >= 0 else {
+            throw OWSGenericError("Got negative remaining disk space!")
+        }
         return UInt64(result)
     }
 }

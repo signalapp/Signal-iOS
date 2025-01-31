@@ -460,18 +460,27 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    private func checkSomeDiskSpaceAvailable() -> Bool {
-        let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent(UUID().uuidString)
-            .path
-        let succeededCreatingDir = OWSFileSystem.ensureDirectoryExists(tempDir)
+    private func checkEnoughDiskSpaceAvailable() -> Bool {
+        guard let freeSpaceInBytes = try? OWSFileSystem.freeSpaceInBytes(
+            forPath: SDSDatabaseStorage.grdbDatabaseFileUrl
+        ) else {
+            owsFailDebug("Failed to get free space: falling back to trying to create a temp dir.")
 
-        // Best effort at deleting temp dir, which shouldn't ever fail
-        if succeededCreatingDir && !OWSFileSystem.deleteFile(tempDir) {
-            owsFailDebug("Failed to delete temp dir used for checking disk space!")
+            let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
+                .appendingPathComponent(UUID().uuidString)
+                .path
+            let succeededCreatingDir = OWSFileSystem.ensureDirectoryExists(tempDir)
+
+            // Best effort at deleting temp dir, which shouldn't ever fail
+            if succeededCreatingDir && !OWSFileSystem.deleteFile(tempDir) {
+                owsFailDebug("Failed to delete temp dir used for checking disk space!")
+            }
+
+            return succeededCreatingDir
         }
 
-        return succeededCreatingDir
+        // Require 100MB free in order to launch.
+        return freeSpaceInBytes >= 100_000_000
     }
 
     private func setupNSEInteroperation() {
@@ -869,7 +878,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         incrementalTSAttachmentMigrationStore: IncrementalTSAttachmentMigrationStore,
         didDeviceTransferRestoreSucceed: Bool
     ) -> LaunchPreflightError? {
-        guard checkSomeDiskSpaceAvailable() else {
+        guard checkEnoughDiskSpaceAvailable() else {
             return .lowStorageSpaceAvailable
         }
 
