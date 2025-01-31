@@ -925,11 +925,13 @@ public class GroupsV2Impl: GroupsV2 {
                             groupV2Params: groupV2Params
                         )
                     } catch OWSURLSessionError.responseTooLarge {
+                        owsFailDebug("Had response-too-large fetching group avatar!")
                         avatarData = Data()
                     } catch where error.httpStatusCode == 404 {
                         // Fulfill with empty data if service returns 404 status code.
                         // We don't want the group to be left in an unrecoverable state
                         // if the avatar is missing from the CDN.
+                        owsFailDebug("Had 404 fetching group avatar!")
                         avatarData = Data()
                     }
                     if !avatarData.isEmpty {
