@@ -1314,15 +1314,32 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
                 )
             }
         } else if
-            let provisioningUrl = DeviceProvisioningURL(urlString: qrCodeString)
+            DeviceProvisioningURL(urlString: qrCodeString) != nil,
+            DependenciesBridge.shared.tsAccountManager
+                .registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice
         {
             qrCodeScanned = true
 
-            self.dismiss(animated: true) {
-                SignalApp.shared.showAppSettings(
-                    mode: .linkNewDevice(provisioningUrl: provisioningUrl)
+            let linkDeviceWarningActionSheet = ActionSheetController(
+                message: OWSLocalizedString(
+                    "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE",
+                    comment: "Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera."
                 )
+            )
+
+            let showLinkedDevicesAction = ActionSheetAction(title: CommonStrings.continueButton) { _ in
+                self.dismiss(animated: true) {
+                    SignalApp.shared.showAppSettings(mode: .linkedDevices)
+                }
             }
+
+            let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton) { _ in
+                self.qrCodeScanned = false
+            }
+
+            linkDeviceWarningActionSheet.addAction(showLinkedDevicesAction)
+            linkDeviceWarningActionSheet.addAction(cancelAction)
+            presentActionSheet(linkDeviceWarningActionSheet)
         }
     }
 

@@ -17,15 +17,12 @@ class LinkDeviceViewController: OWSViewController {
 
     weak var delegate: LinkDeviceViewControllerDelegate?
 
-    private let preknownProvisioningUrl: DeviceProvisioningURL?
-
     private var hasShownEducationSheet: Bool
     private weak var educationSheet: HeroSheetViewController?
 
     private lazy var qrCodeScanViewController = QRCodeScanViewController(appearance: .framed)
 
-    init(preknownProvisioningUrl: DeviceProvisioningURL?, skipEducationSheet: Bool) {
-        self.preknownProvisioningUrl = preknownProvisioningUrl
+    init(skipEducationSheet: Bool) {
         self.hasShownEducationSheet = skipEducationSheet
         super.init()
     }
@@ -49,18 +46,14 @@ class LinkDeviceViewController: OWSViewController {
             action: #selector(manuallyEnterLinkURL)
         )
 #endif
-        if preknownProvisioningUrl != nil {
-            // No need to set up the QR code scanner.
-            view.backgroundColor = .black
-        } else {
-            qrCodeScanViewController.delegate = self
 
-            addChild(qrCodeScanViewController)
-            view.addSubview(qrCodeScanViewController.view)
+        qrCodeScanViewController.delegate = self
 
-            qrCodeScanViewController.view.autoPinEdgesToSuperviewEdges()
-            qrCodeScanViewController.didMove(toParent: self)
-        }
+        addChild(qrCodeScanViewController)
+        view.addSubview(qrCodeScanViewController.view)
+
+        qrCodeScanViewController.view.autoPinEdgesToSuperviewEdges()
+        qrCodeScanViewController.didMove(toParent: self)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -70,9 +63,7 @@ class LinkDeviceViewController: OWSViewController {
             UIDevice.current.ows_setOrientation(.portrait)
         }
 
-        if let preknownProvisioningUrl {
-            confirmProvisioningWithUrl(preknownProvisioningUrl)
-        } else if !hasShownEducationSheet {
+        if !hasShownEducationSheet {
             let animationName = if traitCollection.userInterfaceStyle == .dark {
                 "linking-device-dark"
             } else {
@@ -356,8 +347,6 @@ extension LinkDeviceViewController: QRCodeScanOrPickDelegate {
         qrCodeData: Data?,
         qrCodeString: String?
     ) -> QRCodeScanOutcome {
-        owsPrecondition(preknownProvisioningUrl == nil)
-
         AssertIsOnMainThread()
 
         guard let qrCodeString else {
