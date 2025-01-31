@@ -831,6 +831,7 @@
 		6635B8A52BA25D9F005C80EA /* QuotedReplyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6635B8A42BA25D9F005C80EA /* QuotedReplyManager.swift */; };
 		6635B8A72BA25DDD005C80EA /* QuotedReplyManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6635B8A62BA25DDD005C80EA /* QuotedReplyManagerImpl.swift */; };
 		6635B8A92BA25E08005C80EA /* QuotedReplyManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6635B8A82BA25E08005C80EA /* QuotedReplyManagerMock.swift */; };
+		663883572D4C0360008EA898 /* InternalSQLClientViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663883562D4C034F008EA898 /* InternalSQLClientViewController.swift */; };
 		663A18A02BCD8F16005C1B41 /* MediaGalleryAttachmentFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663A189F2BCD8F16005C1B41 /* MediaGalleryAttachmentFinder.swift */; };
 		663B9CAE2C9DEECC0055DC7D /* TaskQueueLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663B9CAD2C9DEEC00055DC7D /* TaskQueueLoader.swift */; };
 		663B9CB12C9DF55D0055DC7D /* TaskQueueLoaderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663B9CAF2C9DF5410055DC7D /* TaskQueueLoaderTest.swift */; };
@@ -4656,6 +4657,7 @@
 		6635B8A42BA25D9F005C80EA /* QuotedReplyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyManager.swift; sourceTree = "<group>"; };
 		6635B8A62BA25DDD005C80EA /* QuotedReplyManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyManagerImpl.swift; sourceTree = "<group>"; };
 		6635B8A82BA25E08005C80EA /* QuotedReplyManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyManagerMock.swift; sourceTree = "<group>"; };
+		663883562D4C034F008EA898 /* InternalSQLClientViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalSQLClientViewController.swift; sourceTree = "<group>"; };
 		663A189F2BCD8F16005C1B41 /* MediaGalleryAttachmentFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryAttachmentFinder.swift; sourceTree = "<group>"; };
 		663B9CAD2C9DEEC00055DC7D /* TaskQueueLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskQueueLoader.swift; sourceTree = "<group>"; };
 		663B9CAF2C9DF5410055DC7D /* TaskQueueLoaderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskQueueLoaderTest.swift; sourceTree = "<group>"; };
@@ -10547,6 +10549,7 @@
 			children = (
 				344A761024B366F4009D69A5 /* FlagsViewController.swift */,
 				8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */,
+				663883562D4C034F008EA898 /* InternalSQLClientViewController.swift */,
 				344A761224B36C8C009D69A5 /* TestingViewController.swift */,
 			);
 			path = Internal;
@@ -16651,6 +16654,7 @@
 				D9E43C072CC194140001536E /* IndividualCallViewController.swift in Sources */,
 				88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */,
 				8862A55925F090C5005D65DB /* InternalSettingsViewController.swift in Sources */,
+				663883572D4C0360008EA898 /* InternalSQLClientViewController.swift in Sources */,
 				88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */,
 				32AC5CE7255B51E900829BD8 /* JoinGroupCallPill.swift in Sources */,
 				45C845AD291466C0005F6EA5 /* JournalingOrderedDictionary.swift in Sources */,

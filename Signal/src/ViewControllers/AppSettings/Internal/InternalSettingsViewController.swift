@@ -74,6 +74,13 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         ))
         debugSection.add(.actionItem(
+            withText: "Query Database",
+            actionBlock: { [weak self] in
+                let vc = InternalSQLClientViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        ))
+        debugSection.add(.actionItem(
             withText: "Run Database Integrity Checks",
             actionBlock: { [weak self] in
                 guard let self = self else {
