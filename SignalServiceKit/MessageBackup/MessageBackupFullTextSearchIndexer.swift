@@ -122,7 +122,7 @@ public class MessageBackupFullTextSearchIndexerImpl: MessageBackupFullTextSearch
 
         var hasMoreMessages = true
         while hasMoreMessages {
-            Logger.info("Starting next batch")
+            try await Task.sleep(nanoseconds: Constants.batchDelayMs * NSEC_PER_MSEC)
             hasMoreMessages = try await db.awaitableWrite { tx in
                 let startTimeMs = self.dateProvider().ows_millisecondsSince1970
 
@@ -211,6 +211,9 @@ public class MessageBackupFullTextSearchIndexerImpl: MessageBackupFullTextSearch
         /// Inclusive; this marks the highest unindexed row id.
         static let maxInteractionRowIdKey = "maxInteractionRowIdKey"
 
+        // Delay between batches
+        static let batchDelayMs: UInt64 = 30
+        // _Minimum_ time we spent per batch
         static let batchDurationMs: UInt64 = 90
     }
 }
