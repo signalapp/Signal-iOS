@@ -197,7 +197,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             return CVLabelConfig(
                 text: .attributedText(attributedString),
                 displayConfig: .forUnstyledText(font: font, textColor: textColor),
-                font: UIFont.dynamicTypeCaption1,
+                font: font,
                 textColor: textColor,
                 lineBreakMode: .byTruncatingMiddle
             )
