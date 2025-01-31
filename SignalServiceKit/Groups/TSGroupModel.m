@@ -182,21 +182,6 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
     return groupName.length > 0 ? groupName : TSGroupThread.defaultGroupName;
 }
 
-- (NSString *)debugDescription
-{
-    NSMutableString *result = [NSMutableString new];
-    [result appendString:@"["];
-    [result appendFormat:@"groupId: %@,\n", self.groupId.hexadecimalString];
-    [result appendFormat:@"groupModelSchemaVersion: %lu,\n", (unsigned long)self.groupModelSchemaVersion];
-    [result appendFormat:@"groupsVersion: %lu,\n", (unsigned long)self.groupsVersion];
-    [result appendFormat:@"groupName: %@,\n", self.groupName];
-    [result appendFormat:@"avatarHash: %@,\n", self.avatarHash];
-    [result appendFormat:@"groupMembers: %@,\n", [GroupMembership normalize:self.groupMembers]];
-    [result appendFormat:@"addedByAddress: %@,\n", self.addedByAddress];
-    [result appendString:@"]"];
-    return [result copy];
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

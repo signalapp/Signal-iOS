@@ -310,7 +310,7 @@ private extension NameCollision {
                 if lhs.latestUpdateTimestamp != nil || rhs.latestUpdateTimestamp != nil {
                     return (lhs.latestUpdateTimestamp ?? 0) > (rhs.latestUpdateTimestamp ?? 0)
                 } else {
-                    return lhs.address.sortKey < rhs.address.sortKey
+                    return (lhs.address.serviceId?.serviceIdString ?? lhs.address.phoneNumber ?? "") < (rhs.address.serviceId?.serviceIdString ?? rhs.address.phoneNumber ?? "")
                 }
             }
         )!

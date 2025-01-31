@@ -33,11 +33,15 @@ public class CVAvatarBuilder {
                                includingBadge: Bool,
                                localUserDisplayMode: LocalUserDisplayMode,
                                diameterPoints: UInt) -> ConversationAvatarDataSource? {
-        guard let serviceIdentifier = address.serviceIdentifier else {
+        let cacheKey: String
+        if let serviceId = address.serviceId {
+            cacheKey = serviceId.serviceIdString
+        } else if let phoneNumber = address.phoneNumber {
+            cacheKey = phoneNumber
+        } else {
             owsFailDebug("Invalid address.")
             return nil
         }
-        let cacheKey = serviceIdentifier
         if let dataSource = cache[cacheKey] {
             return dataSource
         }

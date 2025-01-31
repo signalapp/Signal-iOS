@@ -395,11 +395,6 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     // while also allowing addresses to live in hash tables.
     public override var hash: Int { return cachedAddress.hashValue }
 
-    @objc
-    public func compare(_ otherAddress: SignalServiceAddress) -> ComparisonResult {
-        return stringForDisplay.compare(otherAddress.stringForDisplay)
-    }
-
     // MARK: -
 
     @objc
@@ -423,46 +418,6 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     @objc
-    public var stringForDisplay: String {
-        let identifiers = cachedAddress.identifiers.get()
-
-        if let phoneNumber = identifiers.phoneNumber {
-            return phoneNumber
-        } else if let serviceId = identifiers.serviceId {
-            return serviceId.serviceIdUppercaseString
-        }
-
-        owsFailDebug("unexpectedly have no backing value")
-
-        return ""
-    }
-
-    @objc
-    public var serviceIdentifier: String? {
-        let identifiers = cachedAddress.identifiers.get()
-
-        if let serviceId = identifiers.serviceId {
-            return serviceId.serviceIdUppercaseString
-        }
-        if let phoneNumber = identifiers.phoneNumber {
-            return phoneNumber
-        }
-        if !CurrentAppContext().isRunningTests {
-            owsFailDebug("phoneNumber was unexpectedly nil")
-        }
-        return nil
-    }
-
-    @objc
-    public var sortKey: String {
-        guard let serviceIdentifier = serviceIdentifier else {
-            owsFailDebug("Invalid address.")
-            return "Invalid"
-        }
-        return serviceIdentifier
-    }
-
-    @objc
     override public var description: String {
         let identifiers = cachedAddress.identifiers.get()
         return Self.addressComponentsDescription(
@@ -479,15 +434,6 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             splits.append("phoneNumber: " + phoneNumber)
         }
         return "<" + splits.joined(separator: ", ") + ">"
-    }
-}
-
-// MARK: -
-
-public extension Array where Element == SignalServiceAddress {
-    func stableSort() -> [SignalServiceAddress] {
-        // Use an arbitrary sort but ensure the ordering is stable.
-        self.sorted { $0.sortKey < $1.sortKey }
     }
 }
 

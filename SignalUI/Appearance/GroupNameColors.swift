@@ -27,27 +27,18 @@ public struct GroupNameColors {
         guard let groupThread = thread as? TSGroupThread else {
             return .defaultColors
         }
-        let groupMembership = groupThread.groupMembership
         let values = Self.groupNameColorValues
         let isDarkThemeEnabled = Theme.isDarkThemeEnabled
-        var lastIndex: Int = 0
         var colorMap = [SignalServiceAddress: UIColor]()
-        let addresses = Array(groupMembership.fullMembers).stableSort()
+        let addresses = groupThread.groupMembership.fullMembers
+            .filter { !$0.isLocalAddress }
+            .sorted(by: {
+                ($0.serviceId?.serviceIdString ?? $0.phoneNumber ?? "") < ($1.serviceId?.serviceIdString ?? $0.phoneNumber ?? "")
+            })
         for (index, address) in addresses.enumerated() {
-            let valueIndex = index % values.count
-            guard let value = values[safe: valueIndex] else {
-                owsFailDebug("Invalid values.")
-                return .defaultColors
-            }
-            colorMap[address] = value.color(isDarkThemeEnabled: isDarkThemeEnabled)
-            lastIndex = index
+            colorMap[address] = values[index % values.count].color(isDarkThemeEnabled: isDarkThemeEnabled)
         }
-        let defaultValueIndex = (lastIndex + 1) % values.count
-        guard let defaultValue = values[safe: defaultValueIndex] else {
-            owsFailDebug("Invalid values.")
-            return .defaultColors
-        }
-        let defaultColor = defaultValue.color(isDarkThemeEnabled: isDarkThemeEnabled)
+        let defaultColor = values[addresses.endIndex % values.count].color(isDarkThemeEnabled: isDarkThemeEnabled)
         return GroupNameColors(colorMap: colorMap, defaultColor: defaultColor)
     }
 

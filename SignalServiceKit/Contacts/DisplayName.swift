@@ -205,7 +205,7 @@ public struct ComparableDisplayName {
         self.address = address
         self.displayName = displayName
         self.comparableValue = displayName.comparableValue(config: config)
-        self.comparableIdentifier = address.stringForDisplay
+        self.comparableIdentifier = address.phoneNumber ?? address.serviceId?.serviceIdString ?? ""
         self.config = config
     }
 

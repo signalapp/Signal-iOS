@@ -201,11 +201,14 @@ public extension AvatarTheme {
     }
 
     static func forAddress(_ address: SignalServiceAddress) -> AvatarTheme {
-        guard let seed = address.serviceIdentifier else {
-            owsFailDebug("Missing serviceIdentifier.")
-            return Self.default
+        if let serviceId = address.serviceId {
+            return forSeed(serviceId.serviceIdUppercaseString)
         }
-        return forSeed(seed)
+        if let phoneNumber = address.phoneNumber {
+            return forSeed(phoneNumber)
+        }
+        owsFailDebug("Empty address.")
+        return Self.default
     }
 
     static func forSeed(_ seed: String) -> AvatarTheme {

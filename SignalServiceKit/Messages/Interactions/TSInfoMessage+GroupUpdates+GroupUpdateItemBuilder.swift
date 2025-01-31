@@ -1438,7 +1438,9 @@ private struct DiffingGroupUpdateItemBuilder {
             guard !forLocalUserOnly else {
                 return localIdentifiers.localGroupMembersOnly(allUsersUnsorted)
             }
-            var allUsersSorted = Array(allUsersUnsorted).stableSort()
+            var allUsersSorted = allUsersUnsorted.sorted(by: {
+                ($0.serviceId?.serviceIdString ?? $0.phoneNumber ?? "") < ($1.serviceId?.serviceIdString ?? $1.phoneNumber ?? "")
+            })
 
             // If the local user has a membership update, sort it to the front.
             localIdentifiers.moveLocalAddressToFrontOfGroupMembers(&allUsersSorted)

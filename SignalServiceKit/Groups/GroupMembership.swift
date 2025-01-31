@@ -341,12 +341,6 @@ public class GroupMembership: MTLModel {
         return Builder().build()
     }
 
-    @objc
-    public static func normalize(_ addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
-        return Array(Set(addresses))
-            .sorted(by: { (l, r) in l.compare(r) == .orderedAscending })
-    }
-
     public var asBuilder: Builder {
         return Builder(
             memberStates: memberStates,
@@ -357,7 +351,7 @@ public class GroupMembership: MTLModel {
 
     public override var debugDescription: String {
         var result = "[\n"
-        for address in GroupMembership.normalize(Array(allMembersOfAnyKind)) {
+        for address in allMembersOfAnyKind.sorted(by: { ($0.serviceId?.serviceIdString ?? "") < ($1.serviceId?.serviceIdString ?? "") }) {
             guard let memberState = memberStates[address] else {
                 owsFailDebug("Missing memberState.")
                 continue
