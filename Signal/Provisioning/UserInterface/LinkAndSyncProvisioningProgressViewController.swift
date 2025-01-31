@@ -136,6 +136,31 @@ class LinkAndSyncProvisioningProgressViewController: HostingController<LinkAndSy
         super.init(wrappedView: LinkAndSyncProvisioningProgressView(viewModel: viewModel))
         self.modalPresentationStyle = .fullScreen
         self.modalTransitionStyle = .crossDissolve
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidBackground),
+            name: .OWSApplicationDidEnterBackground,
+            object: nil
+        )
+    }
+
+    @objc
+    func appDidBackground() {
+        guard let linkNSyncTask = viewModel.linkNSyncTask else {
+            return
+        }
+        Logger.error("Backgrounded app while link'n'syncing")
+        viewModel.cancel(task: linkNSyncTask)
+        Task {
+            _ = try? await linkNSyncTask.value
+            // Reset the whole app and force quit. If the user
+            // exits in the middle of syncing we'll probably
+            // crash anyway (dead10cc).
+            SignalApp.resetAppDataAndExit(
+                keyFetcher: SSKEnvironment.shared.databaseStorageRef.keyFetcher
+            )
+        }
     }
 }
 

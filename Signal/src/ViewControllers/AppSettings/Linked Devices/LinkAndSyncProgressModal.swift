@@ -120,6 +120,25 @@ class LinkAndSyncProgressModal: HostingController<LinkAndSyncProgressView>, Link
 
         self.modalPresentationStyle = .overFullScreen
         self.modalTransitionStyle = .crossDissolve
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidBackground),
+            name: .OWSApplicationDidEnterBackground,
+            object: nil
+        )
+    }
+
+    @objc
+    func appDidBackground() {
+        guard
+            viewModel.canBeCancelled,
+            viewModel.linkNSyncTask != nil
+        else {
+            return
+        }
+        Logger.error("Backgrounded app while link'n'syncing")
+        viewModel.cancel()
     }
 
     required init?(coder: NSCoder) {

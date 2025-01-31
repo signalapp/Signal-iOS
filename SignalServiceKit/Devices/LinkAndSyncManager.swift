@@ -205,7 +205,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         }
 
         do {
-            try Task.checkCancellation()
+            try checkCancelledOrAppBackgrounded()
         } catch {
             Logger.info("Cancelled!")
             throw .cancelled(linkedDeviceId: nil)
@@ -247,7 +247,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         }
 
         do {
-            try Task.checkCancellation()
+            try checkCancelledOrAppBackgrounded()
         } catch {
             await handleCancellation()
             throw .cancelled(linkedDeviceId: waitForLinkResponse.id)
@@ -257,7 +257,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         defer { suspendHandler.invalidate() }
 
         do {
-            try Task.checkCancellation()
+            try checkCancelledOrAppBackgrounded()
         } catch {
             await handleCancellation()
             throw .cancelled(linkedDeviceId: waitForLinkResponse.id)
@@ -341,7 +341,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         }
 
         do {
-            try Task.checkCancellation()
+            try checkCancelledOrAppBackgrounded()
         } catch {
             throw .cancelled
         }
@@ -380,12 +380,25 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
             }
         }
 
+        do {
+            try checkCancelledOrAppBackgrounded()
+        } catch {
+            throw .cancelled
+        }
+
         let downloadedFileUrl = try await downloadEphemeralBackup(
             cdnNumber: cdnNumber,
             cdnKey: cdnKey,
             ephemeralBackupKey: ephemeralBackupKey,
             progress: downloadBackupProgress
         )
+
+        do {
+            try checkCancelledOrAppBackgrounded()
+        } catch {
+            throw .cancelled
+        }
+
         try await restoreEphemeralBackup(
             fileUrl: downloadedFileUrl,
             localIdentifiers: localIdentifiers,
@@ -440,7 +453,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                     }
                     return response
                 case .timeout:
-                    try Task.checkCancellation()
+                    try checkCancelledOrAppBackgrounded()
                     // retry
                     continue whileLoop
                 case .invalidParameters:
@@ -457,7 +470,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 }
             } catch let error as PrimaryLinkNSyncError {
                 throw error
-            } catch let error as CancellationError {
+            } catch is CancellationError {
                 throw .cancelled(linkedDeviceId: nil)
             } catch {
                 if error.isNetworkFailureOrTimeout {
@@ -676,7 +689,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                         return .error(.continueWithoutUpload)
                     }
                 case .timeout:
-                    try Task.checkCancellation()
+                    try checkCancelledOrAppBackgrounded()
                     // retry
                     continue whileLoop
                 case .invalidParameters:
@@ -693,7 +706,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 }
             } catch let error as SecondaryLinkNSyncError {
                 throw error
-            } catch let error as CancellationError {
+            } catch is CancellationError {
                 throw SecondaryLinkNSyncError.cancelled
             } catch {
                 if error .isNetworkFailureOrTimeout {
@@ -772,7 +785,16 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         static let defaultRetryTime: TimeInterval = 15
     }
 
-    // MARK: -
+    // MARK: - Helpers
+
+    private func checkCancelledOrAppBackgrounded() throws {
+        guard appContext.isAppForegroundAndActive() else {
+            throw CancellationError()
+        }
+        try Task.checkCancellation()
+    }
+
+    // MARK: - Requests
 
     private enum Requests {
 
