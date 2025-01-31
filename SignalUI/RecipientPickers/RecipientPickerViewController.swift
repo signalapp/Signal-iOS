@@ -568,41 +568,7 @@ private extension RecipientPickerViewController {
 
         guard let delegate = delegate else { return }
 
-        let recipientPickerRecipientState = delegate.recipientPicker(self, getRecipientState: recipient)
-        guard recipientPickerRecipientState == .canBeSelected else {
-            showErrorAlert(recipientPickerRecipientState: recipientPickerRecipientState)
-            return
-        }
-
         delegate.recipientPicker(self, didSelectRecipient: recipient)
-    }
-
-    private func showErrorAlert(recipientPickerRecipientState: RecipientPickerRecipientState) {
-        let errorMessage: String
-        switch recipientPickerRecipientState {
-        case .duplicateGroupMember:
-            errorMessage = OWSLocalizedString(
-                "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP",
-                comment: "Error message indicating that a member can't be added to a group because they are already in the group."
-            )
-        case .userAlreadyInBlocklist:
-            errorMessage = OWSLocalizedString(
-                "BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST",
-                comment: "Error message indicating that a user can't be blocked because they are already blocked."
-            )
-        case .conversationAlreadyInBlocklist:
-            errorMessage = OWSLocalizedString(
-                "BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST",
-                comment: "Error message indicating that a conversation can't be blocked because they are already blocked."
-            )
-        case .canBeSelected, .unknownError:
-            owsFailDebug("Unexpected value.")
-            errorMessage = OWSLocalizedString(
-                "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED",
-                comment: "Error message indicating that a user can't be selected."
-            )
-        }
-        OWSActionSheets.showErrorAlert(message: errorMessage)
     }
 }
 
@@ -1082,12 +1048,10 @@ extension RecipientPickerViewController {
 
     private func addressCell(for address: SignalServiceAddress, recipient: PickedRecipient, tableView: UITableView) -> UITableViewCell? {
         guard let cell = tableView.dequeueReusableCell(ContactTableViewCell.self) else { return nil }
-        if let delegate, delegate.recipientPicker(self, getRecipientState: recipient) != .canBeSelected {
-            cell.selectionStyle = .none
-        }
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .noteToSelf)
             if let delegate {
+                cell.selectionStyle = delegate.recipientPicker(self, selectionStyleForRecipient: recipient, transaction: transaction)
                 if let accessoryView = delegate.recipientPicker(self, accessoryViewForRecipient: recipient, transaction: transaction) {
                     configuration.accessoryView = accessoryView
                 } else {
@@ -1112,10 +1076,8 @@ extension RecipientPickerViewController {
         let cell = GroupTableViewCell()
 
         if let delegate {
-            if delegate.recipientPicker(self, getRecipientState: recipient) != .canBeSelected {
-                cell.selectionStyle = .none
-            }
             SSKEnvironment.shared.databaseStorageRef.read { tx in
+                cell.selectionStyle = delegate.recipientPicker(self, selectionStyleForRecipient: recipient, transaction: tx)
                 cell.accessoryMessage = delegate.recipientPicker(self, accessoryMessageForRecipient: recipient, transaction: tx)
                 cell.customAccessoryView = delegate.recipientPicker(self, accessoryViewForRecipient: recipient, transaction: tx)?.accessoryView
             }

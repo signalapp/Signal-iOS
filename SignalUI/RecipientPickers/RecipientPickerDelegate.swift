@@ -5,19 +5,12 @@
 
 public import SignalServiceKit
 
-public enum RecipientPickerRecipientState: Int {
-    case canBeSelected
-    case duplicateGroupMember
-    case userAlreadyInBlocklist
-    case conversationAlreadyInBlocklist
-    case unknownError
-}
-
 public protocol RecipientPickerDelegate: RecipientContextMenuHelperDelegate {
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        getRecipientState recipient: PickedRecipient
-    ) -> RecipientPickerRecipientState
+        selectionStyleForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> UITableViewCell.SelectionStyle
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,

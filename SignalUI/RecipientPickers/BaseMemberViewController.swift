@@ -254,21 +254,17 @@ extension BaseMemberViewController: RecipientPickerDelegate {
 
     public func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        getRecipientState recipient: PickedRecipient
-    ) -> RecipientPickerRecipientState {
+        selectionStyleForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> UITableViewCell.SelectionStyle {
         guard let memberViewDelegate = memberViewDelegate else {
             owsFailDebug("Missing memberViewDelegate.")
-            return .unknownError
+            return .default
         }
-        return SSKEnvironment.shared.databaseStorageRef.read { transaction -> RecipientPickerRecipientState in
-            if memberViewDelegate.memberViewIsPreExistingMember(
-                recipient,
-                transaction: transaction
-            ) {
-                return .duplicateGroupMember
-            }
-            return .canBeSelected
+        guard memberViewDelegate.memberViewIsPreExistingMember(recipient, transaction: transaction) else {
+            return .default
         }
+        return .none
     }
 
     public func recipientPicker(
@@ -297,7 +293,11 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         }
 
         guard !isPreExistingMember else {
-            owsFailDebug("Can't re-add pre-existing member.")
+            let errorMessage = OWSLocalizedString(
+                "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP",
+                comment: "Error message indicating that a member can't be added to a group because they are already in the group."
+            )
+            OWSActionSheets.showErrorAlert(message: errorMessage)
             return
         }
         guard let navigationController = navigationController else {

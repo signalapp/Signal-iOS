@@ -54,33 +54,54 @@ extension AddToBlockListViewController: RecipientPickerDelegate, UsernameLinkSca
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        getRecipientState recipient: PickedRecipient
-    ) -> RecipientPickerRecipientState {
+        selectionStyleForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> UITableViewCell.SelectionStyle {
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
         switch recipient.identifier {
         case .address(let address):
-            let isAddressBlocked = SSKEnvironment.shared.databaseStorageRef.read { SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(address, transaction: $0) }
-            guard !isAddressBlocked else {
-                return .userAlreadyInBlocklist
+            if databaseStorage.read(block: { blockingManager.isAddressBlocked(address, transaction: $0) }) {
+                return .none
             }
-            return .canBeSelected
         case .group(let thread):
-            let isThreadBlocked = SSKEnvironment.shared.databaseStorageRef.read { SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: $0) }
-            guard !isThreadBlocked else {
-                return .conversationAlreadyInBlocklist
+            if databaseStorage.read(block: { blockingManager.isThreadBlocked(thread, transaction: $0) }) {
+                return .none
             }
-            return .canBeSelected
         }
+
+        return .default
     }
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         didSelectRecipient recipient: PickedRecipient
     ) {
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
         switch recipient.identifier {
         case .address(let address):
+            if databaseStorage.read(block: { blockingManager.isAddressBlocked(address, transaction: $0) }) {
+                let errorMessage = OWSLocalizedString(
+                    "BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST",
+                    comment: "Error message indicating that a user can't be blocked because they are already blocked."
+                )
+                OWSActionSheets.showErrorAlert(message: errorMessage)
+                return
+            }
             block(address: address)
-        case .group(let groupThread):
-            block(thread: groupThread)
+        case .group(let thread):
+            if databaseStorage.read(block: { blockingManager.isThreadBlocked(thread, transaction: $0) }) {
+                let errorMessage = OWSLocalizedString(
+                    "BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST",
+                    comment: "Error message indicating that a conversation can't be blocked because they are already blocked."
+                )
+                OWSActionSheets.showErrorAlert(message: errorMessage)
+                return
+            }
+            block(thread: thread)
         }
     }
 

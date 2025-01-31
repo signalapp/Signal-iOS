@@ -73,9 +73,10 @@ extension ComposeViewController: RecipientPickerDelegate, UsernameLinkScanDelega
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        getRecipientState recipient: PickedRecipient
-    ) -> RecipientPickerRecipientState {
-        return .canBeSelected
+        selectionStyleForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> UITableViewCell.SelectionStyle {
+        return .default
     }
 
     func recipientPicker(

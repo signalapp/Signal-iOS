@@ -66,10 +66,11 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate, Username
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        getRecipientState recipient: PickedRecipient
-    ) -> RecipientPickerRecipientState {
+        selectionStyleForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> UITableViewCell.SelectionStyle {
         // TODO: Nice-to-have: filter out recipients that do not support payments.
-        return .canBeSelected
+        return .default
     }
 
     func recipientPicker(

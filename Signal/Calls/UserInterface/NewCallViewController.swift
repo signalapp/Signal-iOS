@@ -130,11 +130,15 @@ extension NewCallViewController: RecipientContextMenuHelperDelegate {
 // MARK: - RecipientPickerDelegate
 
 extension NewCallViewController: RecipientPickerDelegate, UsernameLinkScanDelegate {
-    func recipientPicker(_ recipientPickerViewController: SignalUI.RecipientPickerViewController, getRecipientState recipient: SignalUI.PickedRecipient) -> SignalUI.RecipientPickerRecipientState {
-        .canBeSelected
+    func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        selectionStyleForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> UITableViewCell.SelectionStyle {
+        return .default
     }
 
-    func recipientPicker(_ recipientPickerViewController: SignalUI.RecipientPickerViewController, didSelectRecipient recipient: SignalUI.PickedRecipient) {
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController, didSelectRecipient recipient: PickedRecipient) {
         switch recipient.identifier {
         case let .address(address):
             let thread = TSContactThread.getOrCreateThread(contactAddress: address)
