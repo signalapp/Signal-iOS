@@ -13,7 +13,7 @@ private enum OpenableUrl {
     case stickerPack(StickerPackInfo)
     case groupInvite(URL)
     case signalProxy(URL)
-    case linkDevice(DeviceProvisioningURL)
+    case linkDevice
     case completeIDEALDonation(Stripe.IDEALCallbackType)
     case callLink(CallLink)
 }
@@ -71,8 +71,8 @@ class UrlOpener {
         if SignalProxy.isValidProxyLink(url) {
             return .signalProxy(url)
         }
-        if let deviceProvisioningUrl = parseSgnlLinkDeviceUrl(url) {
-            return .linkDevice(deviceProvisioningUrl)
+        if isSgnlLinkDeviceUrl(url) {
+            return .linkDevice
         }
         if let donationType = Stripe.parseStripeIDEALCallback(url) {
             return .completeIDEALDonation(donationType)
@@ -110,11 +110,9 @@ class UrlOpener {
         return StickerPackInfo.parse(packIdHex: packIdHex, packKeyHex: packKeyHex)
     }
 
-    private static func parseSgnlLinkDeviceUrl(_ url: URL) -> DeviceProvisioningURL? {
-        guard url.scheme == Constants.sgnlPrefix, url.host?.hasPrefix(DeviceProvisioningURL.Constants.linkDeviceHost) == true else {
-            return nil
-        }
-        return DeviceProvisioningURL(urlString: url.absoluteString)
+    /// Returns whether the given URL is an `sgnl://` link-new-device URL.
+    private static func isSgnlLinkDeviceUrl(_ url: URL) -> Bool {
+        return DeviceProvisioningURL(urlString: url.absoluteString) != nil
     }
 
     // MARK: - Opening URLs
@@ -171,13 +169,31 @@ class UrlOpener {
         case .signalProxy(let url):
             rootViewController.present(ProxyLinkSheetViewController(url: url)!, animated: true)
 
-        case .linkDevice(let provisioningUrl):
+        case .linkDevice:
             guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
                 owsFailDebug("Ignoring URL; not primary device.")
                 return
             }
 
-            SignalApp.shared.showAppSettings(mode: .linkNewDevice(provisioningUrl: provisioningUrl))
+            let linkDeviceWarningActionSheet = ActionSheetController(
+                message: OWSLocalizedString(
+                    "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE",
+                    comment: "Message for an action sheet telling users how to link a device, when trying to open an external device-linking URL."
+                )
+            )
+
+            let showLinkedDevicesAction = ActionSheetAction(
+                title: OWSLocalizedString(
+                    "LINKED_DEVICES_TITLE",
+                    comment: "Menu item and navbar title for the device manager"
+                )
+            ) { _ in
+                SignalApp.shared.showAppSettings(mode: .linkedDevices)
+            }
+
+            linkDeviceWarningActionSheet.addAction(showLinkedDevicesAction)
+            linkDeviceWarningActionSheet.addAction(.cancel)
+            rootViewController.presentActionSheet(linkDeviceWarningActionSheet)
 
         case .completeIDEALDonation(let donationType):
             DonationViewsUtil.attemptToContinueActiveIDEALDonation(

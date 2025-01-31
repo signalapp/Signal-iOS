@@ -1424,7 +1424,6 @@ extension ChatListViewController {
         case corruptedUsernameLinkResolution
         case donate(donateMode: DonateViewController.DonateMode)
         case linkedDevices
-        case linkNewDevice(provisioningUrl: DeviceProvisioningURL)
         case proxy
     }
 
@@ -1529,12 +1528,6 @@ extension ChatListViewController {
             viewControllers += [donate]
         case .linkedDevices:
             viewControllers += [ LinkedDevicesHostingController() ]
-        case .linkNewDevice(let provisioningUrl):
-            let linkDeviceViewController = LinkedDevicesHostingController(
-                presentationOnFirstAppear: .linkNewDevice(preknownProvisioningUrl: provisioningUrl)
-            )
-
-            viewControllers += [ linkDeviceViewController ]
         case .proxy:
             viewControllers += [ PrivacySettingsViewController(), AdvancedPrivacySettingsViewController(), ProxySettingsViewController() ]
         }

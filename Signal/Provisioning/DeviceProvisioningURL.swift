@@ -31,7 +31,12 @@ class DeviceProvisioningURL {
     }
 
     init?(urlString: String) {
-        guard let queryItems = URLComponents(string: urlString)?.queryItems else {
+        guard
+            let urlComponents = URLComponents(string: urlString),
+            urlComponents.scheme == UrlOpener.Constants.sgnlPrefix,
+            urlComponents.host == Constants.linkDeviceHost,
+            let queryItems = urlComponents.queryItems
+        else {
             return nil
         }
 
