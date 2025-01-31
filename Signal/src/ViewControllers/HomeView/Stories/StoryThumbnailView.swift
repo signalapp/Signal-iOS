@@ -54,18 +54,16 @@ class StoryThumbnailView: UIView {
                 let imageView = buildThumbnailImageView(stream: stream)
                 addSubview(imageView)
                 imageView.autoPinEdgesToSuperviewEdges()
-            } else if let pointer = attachment.attachment.asAnyPointer() {
+            } else {
                 let pointerView = UIView()
 
-                if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer) {
+                if let blurHashImageView = buildBlurHashImageViewIfAvailable(attachment: attachment.attachment) {
                     pointerView.addSubview(blurHashImageView)
                     blurHashImageView.autoPinEdgesToSuperviewEdges()
                 }
 
                 addSubview(pointerView)
                 pointerView.autoPinEdgesToSuperviewEdges()
-            } else {
-                owsFailDebug("Unexpected attachment type \(type(of: attachment))")
             }
         case .text(let attachment):
             let textThumbnailView = TextAttachmentView(
@@ -113,8 +111,8 @@ class StoryThumbnailView: UIView {
         }
     }
 
-    private func buildBlurHashImageViewIfAvailable(pointer: AttachmentPointer) -> UIView? {
-        guard let blurHash = pointer.attachment.blurHash, let blurHashImage = BlurHash.image(for: blurHash) else {
+    private func buildBlurHashImageViewIfAvailable(attachment: SignalServiceKit.Attachment) -> UIView? {
+        guard let blurHash = attachment.blurHash, let blurHashImage = BlurHash.image(for: blurHash) else {
             return nil
         }
         let imageView = UIImageView()

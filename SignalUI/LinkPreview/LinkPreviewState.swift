@@ -6,23 +6,31 @@
 public import SignalServiceKit
 import YYImage
 
-public enum LinkPreviewImageState {
+public enum LinkPreviewImageState: Equatable {
     case none
     case loading
     case loaded
     case invalid
+    case blurHash(String)
 }
 
 // MARK: -
 
 public struct LinkPreviewImageCacheKey: Hashable, Equatable {
     public let id: Attachment.IDType?
+    public let isBlurHash: Bool
     public let urlString: String?
     public let thumbnailQuality: AttachmentThumbnailQuality
 
-    public init(id: Attachment.IDType?, urlString: String?, thumbnailQuality: AttachmentThumbnailQuality) {
+    public init(
+        id: Attachment.IDType?,
+        urlString: String?,
+        isBlurHash: Bool = false,
+        thumbnailQuality: AttachmentThumbnailQuality
+    ) {
         self.id = id
         self.urlString = urlString
+        self.isBlurHash = isBlurHash
         self.thumbnailQuality = thumbnailQuality
     }
 }
@@ -50,7 +58,23 @@ public protocol LinkPreviewState: AnyObject {
 
 extension LinkPreviewState {
     var hasLoadedImage: Bool {
-        isLoaded && imageState == .loaded
+        switch imageState {
+        case .loaded:
+            return isLoaded
+        case .blurHash:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var shouldShowInvalidImageIcon: Bool {
+        switch imageState {
+        case .blurHash:
+            return true
+        default:
+            return false
+        }
     }
 }
 
@@ -216,13 +240,13 @@ public class LinkPreviewDraft: LinkPreviewState {
 public class LinkPreviewSent: LinkPreviewState {
 
     private let linkPreview: OWSLinkPreview
-    private let imageAttachment: Attachment?
+    private let imageAttachment: ReferencedAttachment?
 
     public let conversationStyle: ConversationStyle?
 
     public init(
         linkPreview: OWSLinkPreview,
-        imageAttachment: Attachment?,
+        imageAttachment: ReferencedAttachment?,
         conversationStyle: ConversationStyle?
     ) {
         self.linkPreview = linkPreview
@@ -254,8 +278,12 @@ public class LinkPreviewSent: LinkPreviewState {
         guard let imageAttachment = imageAttachment else {
             return .none
         }
-        guard let attachmentStream = imageAttachment.asStream() else {
-            return .loading
+        guard let attachmentStream = imageAttachment.attachment.asStream() else {
+            if let blurHash = imageAttachment.attachment.blurHash {
+                return .blurHash(blurHash)
+            } else {
+                return .none
+            }
         }
         switch attachmentStream.contentType {
         case .image, .animatedImage:
@@ -267,54 +295,81 @@ public class LinkPreviewSent: LinkPreviewState {
     }
 
     public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality, completion: @escaping (UIImage) -> Void) {
-        owsAssertDebug(imageState == .loaded)
-        guard let attachmentStream = imageAttachment?.asStream() else {
-            owsFailDebug("Could not load image.")
-            return
-        }
-        DispatchQueue.global().async {
-            switch attachmentStream.contentType {
-            case .animatedImage:
-                guard let image = try? attachmentStream.decryptedYYImage() else {
-                    owsFailDebug("Could not load image")
+        switch imageState {
+        case .none, .invalid, .loading:
+            owsFailDebug("Unexpected image state")
+        case .blurHash(let blurHash):
+            DispatchQueue.global().async {
+                guard let image = BlurHash.image(for: blurHash) else {
+                    owsFailDebug("Could not load blurHash")
                     return
                 }
                 completion(image)
-            case .image:
-                Task {
-                    guard let image = await attachmentStream.thumbnailImage(quality: thumbnailQuality) else {
-                        owsFailDebug("Could not load thumnail.")
+            }
+        case .loaded:
+            guard let attachmentStream = imageAttachment?.attachment.asStream() else {
+                owsFailDebug("Could not load image.")
+                return
+            }
+            DispatchQueue.global().async {
+                switch attachmentStream.contentType {
+                case .animatedImage:
+                    guard let image = try? attachmentStream.decryptedYYImage() else {
+                        owsFailDebug("Could not load image")
                         return
                     }
                     completion(image)
+                case .image:
+                    Task {
+                        guard let image = await attachmentStream.thumbnailImage(quality: thumbnailQuality) else {
+                            owsFailDebug("Could not load thumnail.")
+                            return
+                        }
+                        completion(image)
+                    }
+                default:
+                    owsFailDebug("Invalid image.")
+                    return
                 }
-            default:
-                owsFailDebug("Invalid image.")
-                return
             }
         }
     }
 
     public func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> LinkPreviewImageCacheKey? {
-        guard let attachmentStream = imageAttachment?.asStream() else {
-            return nil
+        guard let imageAttachment else { return nil }
+        guard let attachmentStream = imageAttachment.attachment.asStream() else {
+            return .init(
+                id: imageAttachment.attachment.id,
+                urlString: nil,
+                isBlurHash: true,
+                thumbnailQuality: thumbnailQuality
+            )
         }
         return .init(id: attachmentStream.id, urlString: nil, thumbnailQuality: thumbnailQuality)
     }
 
     public var imagePixelSize: CGSize {
-        owsAssertDebug(imageState == .loaded)
-        guard let attachmentStream = imageAttachment?.asStream() else {
-            return CGSize.zero
-        }
-
-        switch attachmentStream.contentType {
-        case .image(let pixelSize):
-            return pixelSize
-        case .animatedImage(let pixelSize):
-            return pixelSize
-        case .audio, .video, .file, .invalid:
+        switch imageState {
+        case .none, .invalid, .loading:
+            owsFailDebug("Unexpected image state")
             return .zero
+        case .blurHash(_):
+            return imageAttachment?.reference.sourceMediaSizePixels
+                // Fall back to default size to render the blurhash in.
+                ?? CGSize(width: 400, height: 236)
+        case .loaded:
+            guard let attachmentStream = imageAttachment?.attachment.asStream() else {
+                return CGSize.zero
+            }
+
+            switch attachmentStream.contentType {
+            case .image(let pixelSize):
+                return pixelSize
+            case .animatedImage(let pixelSize):
+                return pixelSize
+            case .audio, .video, .file, .invalid:
+                return .zero
+            }
         }
     }
 

@@ -592,6 +592,14 @@ extension ActionSheetAction {
         )
     }
 
+    public static var okay: ActionSheetAction {
+        ActionSheetAction(
+            title: CommonStrings.okayButton,
+            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "alert", name: "okay"),
+            style: .default
+        )
+    }
+
     public static var cancel: ActionSheetAction {
         ActionSheetAction(
             title: CommonStrings.cancelButton,

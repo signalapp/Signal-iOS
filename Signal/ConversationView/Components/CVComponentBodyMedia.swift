@@ -224,6 +224,8 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                             case .enqueuedOrDownloading, .failed:
                                 return nil
                             }
+                        case .undownloadable:
+                            return nil
                         }
                     }
                 let totalSize = pendingManualDownloadAttachments.map {
@@ -399,7 +401,11 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             )
             return true
         case .backupThumbnail:
-            // TODO[Backups]: If the media tier download hasn't been started, enqueue it
+            // Download the fullsize attachment
+            componentDelegate.didTapFailedOrPendingDownloads(message)
+            return true
+        case .undownloadable:
+            componentDelegate.didTapUndownloadableMedia()
             return true
         }
     }

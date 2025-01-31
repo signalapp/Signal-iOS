@@ -8,11 +8,6 @@ public import SignalUI
 
 public class CVMediaView: ManualLayoutViewWithLayer {
 
-    private enum MediaError {
-        case missing
-        case invalid
-    }
-
     // MARK: -
 
     private let mediaCache: CVMediaCache
@@ -63,10 +58,12 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         AssertIsOnMainThread()
 
         switch attachment {
+        case .undownloadable(let attachment):
+            return configureForError(attachment: attachment.attachment)
         case .backupThumbnail(let thumbnail):
             configureForBackupThumbnailMedia(thumbnail.attachmentBackupThumbnail)
         case .pointer(let pointer, _):
-            return configureForUndownloadedMedia(pointer.attachmentPointer)
+            return configureForUndownloadedMedia(pointer.attachment)
         case .stream(let attachmentStream):
             let attachmentStream = attachmentStream.attachmentStream
             switch attachmentStream.contentType {
@@ -80,7 +77,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
                 configureForVideo(attachmentStream: attachmentStream)
             case .audio, .file, .invalid:
                 owsFailDebug("Attachment has unexpected type.")
-                configure(forError: .invalid)
+                configureForError(attachment: attachmentStream.attachment)
             }
         }
     }
@@ -91,8 +88,8 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         _ = addProgressIfNecessary()
     }
 
-    private func configureForUndownloadedMedia(_ pointer: AttachmentPointer) {
-        tryToConfigureForBlurHash(pointer: pointer)
+    private func configureForUndownloadedMedia(_ attachment: Attachment) {
+        tryToConfigureForBlurHash(attachment: attachment)
 
         _ = addProgressIfNecessary()
     }
@@ -170,8 +167,8 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         applyReusableMediaView(reusableMediaView)
     }
 
-    private func tryToConfigureForBlurHash(pointer: AttachmentPointer) {
-        guard let blurHash = pointer.attachment.blurHash?.nilIfEmpty else { return }
+    private func tryToConfigureForBlurHash(attachment: Attachment) {
+        guard let blurHash = attachment.blurHash?.nilIfEmpty else { return }
         // NOTE: in the blurhash case, we use the blurHash itself as the
         // cachekey to avoid conflicts with the actual attachment contents.
         let cacheKey = CVMediaCache.CacheKey.blurHash(blurHash)
@@ -277,19 +274,18 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         return BlurHash.isValidBlurHash(attachment.attachment.attachment.blurHash)
     }
 
-    private func configure(forError error: MediaError) {
-        backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
+    private func configureForError(attachment: Attachment) {
+        if attachment.blurHash != nil {
+            tryToConfigureForBlurHash(attachment: attachment)
+        } else {
+            backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
+        }
         let icon: UIImage
-        switch error {
-        case .invalid:
-            guard let asset = UIImage(named: "photo-slash-36") else {
-                owsFailDebug("Missing image")
-                return
-            }
-            icon = asset
-        case .missing:
+        guard let asset = UIImage(named: "photo-slash-36") else {
+            owsFailDebug("Missing image")
             return
         }
+        icon = asset
         let iconView = CVImageView(image: icon)
         iconView.tintColor = Theme.primaryTextColor.withAlphaComponent(0.6)
         addSubviewToCenterOnSuperview(iconView, size: icon.size)

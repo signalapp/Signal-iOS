@@ -234,6 +234,43 @@ extension ConversationViewController: CVComponentDelegate {
         }
     }
 
+    public func didTapUndownloadableMedia() {
+        (conversationSplitViewController ?? self).presentToast(text: OWSLocalizedString(
+            "UNAVAILABLE_MEDIA_TAP_TOAST",
+            comment: "Toast shown when tapping older media that can no longer be downloaded"
+        ))
+    }
+
+    public func didTapUndownloadableGenericFile() {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "FILE_UNAVAILABLE_SHEET_TITLE",
+                comment: "Title for sheet shown when tapping a document/file that has expired and is unavailable for download"
+            ),
+            message: OWSLocalizedString(
+                "FILE_UNAVAILABLE_SHEET_MESSAGE",
+                comment: "Message for sheet shown when tapping a document/file that has expired and is unavailable for download"
+            )
+        )
+        actionSheet.addAction(.okay)
+        (conversationSplitViewController ?? self).present(actionSheet, animated: true)
+    }
+
+    public func didTapUndownloadableOversizeText() {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE",
+                comment: "Title for sheet shown when tapping oversized text that has expired and is unavailable for download"
+            ),
+            message: OWSLocalizedString(
+                "OVERSIZE_TEXT_UNAVAILABLE_SHEET_MESSAGE",
+                comment: "Message for sheet shown when tapping oversized text that has expired and is unavailable for download"
+            )
+        )
+        actionSheet.addAction(.okay)
+        (conversationSplitViewController ?? self).present(actionSheet, animated: true)
+    }
+
     public func didTapBrokenVideo() {
         let toastText = OWSLocalizedString("VIDEO_BROKEN",
                                            comment: "Toast alert text shown when tapping on a video that cannot be played.")

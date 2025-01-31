@@ -875,7 +875,7 @@ class StoryItemMediaView: UIView {
         case .pointer(let pointer):
             let container = UIView()
 
-            if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer.attachment) {
+            if let blurHashImageView = buildBlurHashImageViewIfAvailable(attachment: pointer.attachment.attachment) {
                 container.addSubview(blurHashImageView)
                 blurHashImageView.autoPinEdgesToSuperviewEdges()
             }
@@ -965,9 +965,9 @@ class StoryItemMediaView: UIView {
         return imageView
     }
 
-    private func buildBlurHashImageViewIfAvailable(pointer: AttachmentPointer) -> UIView? {
+    private func buildBlurHashImageViewIfAvailable(attachment: Attachment) -> UIView? {
         guard
-            let blurHash = pointer.attachment.blurHash,
+            let blurHash = attachment.blurHash,
             let blurHashImage = BlurHash.image(for: blurHash)
         else {
             return nil

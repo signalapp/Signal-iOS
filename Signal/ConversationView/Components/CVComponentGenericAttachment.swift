@@ -151,6 +151,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         genericAttachment: CVComponentState.GenericAttachment,
         textColor: UIColor
     ) -> CVLabelConfig {
+        let font = UIFont.dynamicTypeCaption1
 
         // We don't want to show the file size while the attachment is downloading.
         // To avoid layout jitter when the download completes, we reserve space in
@@ -165,7 +166,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             }
 
             switch genericAttachment.attachment {
-            case .stream, .pointer(_, .enqueuedOrDownloading), .backupThumbnail:
+            case .stream, .pointer(_, .enqueuedOrDownloading), .backupThumbnail, .undownloadable:
                 break
             case .pointer(_, .failed), .pointer(_, .none):
                 textComponents.append(OWSLocalizedString("ACTION_TAP_TO_DOWNLOAD", comment: "A label for 'tap to download' buttons."))
@@ -181,12 +182,30 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             // TODO[Backups]: Handle similar to attachment pointers above
             owsFailDebug("Not implemented yet")
         } else {
-            owsFailDebug("Invalid attachment")
+            let attributedString = NSAttributedString.composed(of: [
+                NSAttributedString.with(
+                    image: UIImage(named: "error-circle-20")!,
+                    font: font
+                ),
+                " ",
+                OWSLocalizedString(
+                    "FILE_UNAVAILABLE_FOOTER",
+                    comment: "Footer for message cell for documents/files when they are expired and unavailable for download"
+                )
+            ])
+
+            return CVLabelConfig(
+                text: .attributedText(attributedString),
+                displayConfig: .forUnstyledText(font: font, textColor: textColor),
+                font: UIFont.dynamicTypeCaption1,
+                textColor: textColor,
+                lineBreakMode: .byTruncatingMiddle
+            )
         }
 
         return CVLabelConfig.unstyledText(
             text,
-            font: UIFont.dynamicTypeCaption1,
+            font: font,
             textColor: textColor,
             lineBreakMode: .byTruncatingMiddle
         )
@@ -357,8 +376,13 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                 break
             }
         case .backupThumbnail:
-            // TODO[Backups]: Check media tier download state (mirror the pointer behavior)
-            break
+            guard let message = renderItem.interaction as? TSMessage else {
+                owsFailDebug("Invalid interaction.")
+                return true
+            }
+            componentDelegate.didTapFailedOrPendingDownloads(message)
+        case .undownloadable:
+            componentDelegate.didTapUndownloadableGenericFile()
         }
 
         return true

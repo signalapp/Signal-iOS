@@ -15,19 +15,20 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let isTextExpanded: Bool
         let searchText: String?
         let revealedSpoilerIds: Set<Int>
-        let hasTapForMore: Bool
         let shouldUseAttributedText: Bool
         let hasPendingMessageRequest: Bool
         fileprivate let items: [CVTextLabel.Item]
 
         public var canUseDedicatedCell: Bool {
-            if hasTapForMore || searchText != nil {
+            if searchText != nil {
                 return false
             }
             switch bodyText {
-            case .bodyText:
-                return true
+            case .bodyText(_, let hasTapForMore):
+                return !hasTapForMore
             case .oversizeTextDownloading:
+                return false
+            case .oversizeTextUndownloadable:
                 return false
             case .remotelyDeleted:
                 return false
@@ -54,9 +55,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
     private var revealedSpoilerIds: Set<Int> {
         bodyTextState.revealedSpoilerIds
-    }
-    private var hasTapForMore: Bool {
-        bodyTextState.hasTapForMore
     }
     private var hasPendingMessageRequest: Bool {
         bodyTextState.hasPendingMessageRequest
@@ -201,7 +199,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     static func buildState(interaction: TSInteraction,
                            bodyText: CVComponentState.BodyText,
                            viewStateSnapshot: CVViewStateSnapshot,
-                           hasTapForMore: Bool,
                            hasPendingMessageRequest: Bool) -> State {
         let textExpansion = viewStateSnapshot.textExpansion
         let searchText = viewStateSnapshot.searchText
@@ -251,20 +248,44 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                      isTextExpanded: isTextExpanded,
                      searchText: searchText,
                      revealedSpoilerIds: revealedSpoilerIds,
-                     hasTapForMore: hasTapForMore,
                      shouldUseAttributedText: shouldUseAttributedText,
                      hasPendingMessageRequest: hasPendingMessageRequest,
                      items: items)
     }
 
-    static func buildComponentState(message: TSMessage,
-                                    transaction: SDSAnyReadTransaction) throws -> CVComponentState.BodyText? {
+    static func buildComponentState(
+        message: TSMessage,
+        viewStateSnapshot: CVViewStateSnapshot,
+        transaction: SDSAnyReadTransaction
+    ) throws -> CVComponentState.BodyText? {
 
         func build(displayableText: DisplayableText) -> CVComponentState.BodyText? {
             guard !displayableText.fullTextValue.isEmpty else {
                 return nil
             }
-            return .bodyText(displayableText: displayableText)
+            let hasTapForMore: Bool = {
+                guard displayableText.isTextTruncated else {
+                    return false
+                }
+                let isTruncatedTextVisible = viewStateSnapshot.textExpansion.isTextExpanded(
+                    interactionId: message.uniqueId
+                )
+                return !isTruncatedTextVisible
+            }()
+            return .bodyText(displayableText: displayableText, hasTapForMore: hasTapForMore)
+        }
+
+        func bodyDisplayableText() -> DisplayableText? {
+            if let body = message.body, !body.isEmpty {
+                return CVComponentState.displayableBodyText(
+                    text: body,
+                    ranges: message.bodyRanges,
+                    interaction: message,
+                    transaction: transaction
+                )
+            } else {
+                return nil
+            }
         }
 
         // TODO: We might want to treat text that is completely stripped
@@ -281,13 +302,13 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             } else if oversizeTextAttachment.asAnyPointer() != nil {
                 return .oversizeTextDownloading
             } else {
-                throw OWSAssertionError("Invalid oversizeTextAttachment.")
+                if let displayableText = bodyDisplayableText() {
+                    return .oversizeTextUndownloadable(truncatedBody: displayableText)
+                } else {
+                    return nil
+                }
             }
-        } else if let body = message.body, !body.isEmpty {
-            let displayableText = CVComponentState.displayableBodyText(text: body,
-                                                                       ranges: message.bodyRanges,
-                                                                       interaction: message,
-                                                                       transaction: transaction)
+        } else if let displayableText = bodyDisplayableText() {
             return build(displayableText: displayableText)
         } else {
             // No body text.
@@ -420,7 +441,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     public func buildBodyTextLabelConfig() -> CVTextLabel.Config {
         switch bodyText {
-        case .bodyText(let displayableText):
+        case .bodyText(let displayableText, _), .oversizeTextUndownloadable(let displayableText):
             return bodyTextLabelConfig(textViewConfig: textConfig(displayableText: displayableText))
         case .oversizeTextDownloading:
             return bodyTextLabelConfig(labelConfig: labelConfigForOversizeTextDownloading)
@@ -614,10 +635,16 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             componentDelegate.didTapBodyTextItem(item)
             return true
         }
-        if hasTapForMore {
+        switch bodyText {
+        case .bodyText(_, let hasTapForMore) where hasTapForMore:
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
             componentDelegate.didTapTruncatedTextMessage(itemViewModel)
             return true
+        case .oversizeTextUndownloadable:
+            componentDelegate.didTapUndownloadableOversizeText()
+            return true
+        default:
+            break
         }
 
         return false
@@ -706,7 +733,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 extension CVComponentBodyText: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         switch bodyText {
-        case .bodyText(let displayableText):
+        case .bodyText(let displayableText, _), .oversizeTextUndownloadable(let displayableText):
             // NOTE: we use the full text.
             return displayableText.fullTextValue.accessibilityDescription
         case .oversizeTextDownloading:

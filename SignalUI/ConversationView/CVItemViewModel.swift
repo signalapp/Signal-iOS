@@ -9,7 +9,6 @@ public protocol CVItemViewModel: AnyObject {
     var interaction: TSInteraction { get }
     var contactShare: ContactShareViewModel? { get }
     var linkPreview: OWSLinkPreview? { get }
-    var linkPreviewAttachment: Attachment? { get }
     var stickerInfo: StickerInfo? { get }
     var stickerAttachment: AttachmentStream? { get }
     var stickerMetadata: (any StickerMetadata)? { get }

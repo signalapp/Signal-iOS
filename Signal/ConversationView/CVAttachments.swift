@@ -18,6 +18,9 @@ public class AudioAttachment {
             attachmentPointer: ReferencedAttachmentPointer,
             downloadState: AttachmentDownloadState
         )
+        /// The attachment has no stream and cannot be downloaded because there is no cdn info.
+        /// Typically happens if we restore from a free-tier backup with old media expired from transit tier.
+        case undownloadable(ReferencedAttachment)
 
         public static func == (lhs: AudioAttachment.State, rhs: AudioAttachment.State) -> Bool {
             switch (lhs, rhs) {
@@ -35,7 +38,16 @@ public class AudioAttachment {
                 return lhsPointer.attachment.id == rhsPointer.attachment.id
                     && lhsPointer.reference.hasSameOwner(as: rhsPointer.reference)
                     && lhsState == rhsState
-            case (.attachmentStream, _), (.attachmentPointer, _):
+            case let (
+                .undownloadable(lhsAttachment),
+                .undownloadable(rhsAttachment)
+            ):
+                return lhsAttachment.attachment.id == rhsAttachment.attachment.id
+                    && lhsAttachment.reference.hasSameOwner(as: rhsAttachment.reference)
+            case
+                (.attachmentStream, _),
+                (.attachmentPointer, _),
+                (.undownloadable, _):
                 return false
             }
         }
@@ -48,6 +60,8 @@ public class AudioAttachment {
             return attachmentStream.reference.sourceFilename
         case .attachmentPointer(let attachmentPointer, _):
             return attachmentPointer.reference.sourceFilename
+        case .undownloadable(let attachment):
+            return attachment.reference.sourceFilename
         }
     }
 
@@ -109,6 +123,18 @@ public class AudioAttachment {
         self.owningMessage = owningMessage
     }
 
+    public init(
+        undownloadableAttachment: ReferencedAttachment,
+        owningMessage: TSMessage?,
+        metadata: MediaMetadata?,
+        receivedAtDate: Date
+    ) {
+        state = .undownloadable(undownloadableAttachment)
+        self.isDownloading = false
+        self.receivedAtDate = receivedAtDate
+        self.owningMessage = owningMessage
+    }
+
     private static let cachedAttachmentDurations = AtomicDictionary<Int64, TimeInterval>([:], lock: .init())
     private static func cachedAudioDuration(forAttachment attachmentStream: AttachmentStream) -> TimeInterval {
         let attachmentId = attachmentStream.attachment.id
@@ -137,6 +163,8 @@ extension AudioAttachment {
             return attachmentStream.attachment
         case .attachmentPointer(let attachmentPointer, _):
             return attachmentPointer.attachment
+        case .undownloadable(let attachment):
+            return attachment.attachment
         }
     }
 
@@ -145,6 +173,8 @@ extension AudioAttachment {
         case .attachmentStream(let attachmentStream, _):
             return attachmentStream
         case .attachmentPointer:
+            return nil
+        case .undownloadable:
             return nil
         }
     }
@@ -155,6 +185,8 @@ extension AudioAttachment {
             return nil
         case .attachmentPointer(let attachmentPointer, _):
             return attachmentPointer
+        case .undownloadable:
+            return nil
         }
     }
 
@@ -163,6 +195,8 @@ extension AudioAttachment {
         case .attachmentStream(_, let audioDurationSeconds):
             return audioDurationSeconds
         case .attachmentPointer:
+            return 0
+        case .undownloadable:
             return 0
         }
     }
@@ -174,6 +208,8 @@ extension AudioAttachment {
                 return attachmentStream.reference.renderingFlag
             case .attachmentPointer(let attachmentPointer, _):
                 return attachmentPointer.reference.renderingFlag
+            case .undownloadable(let attachment):
+                return attachment.reference.renderingFlag
             }
         }() == .voiceMessage
     }

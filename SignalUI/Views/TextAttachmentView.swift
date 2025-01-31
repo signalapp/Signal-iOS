@@ -80,7 +80,7 @@ open class TextAttachmentView: UIView {
         textBackgroundColor: UIColor?,
         background: TextAttachment.Background,
         linkPreview: OWSLinkPreview?,
-        linkPreviewImageAttachment: Attachment?,
+        linkPreviewImageAttachment: ReferencedAttachment?,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
         interactionIdentifier: InteractionSnapshotIdentifier?,
         spoilerState: SpoilerRenderState?
@@ -102,7 +102,7 @@ open class TextAttachmentView: UIView {
 
     private func performSetup(
         linkPreview: OWSLinkPreview?,
-        linkPreviewImageAttachment: Attachment?,
+        linkPreviewImageAttachment: ReferencedAttachment?,
         linkPreviewDraft: OWSLinkPreviewDraft?
     ) {
         clipsToBounds = true

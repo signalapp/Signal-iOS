@@ -88,6 +88,12 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
 
     func didTapFailedOrPendingDownloads(_ message: TSMessage)
 
+    func didTapUndownloadableMedia()
+
+    func didTapUndownloadableGenericFile()
+
+    func didTapUndownloadableOversizeText()
+
     func didTapBrokenVideo()
 
     // MARK: - Messages

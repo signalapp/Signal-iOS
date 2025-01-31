@@ -557,7 +557,6 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         if state.hasLoadedImage {
             let linkPreviewImageView = linkPreviewView.linkPreviewImageView
             if let imageView = linkPreviewImageView.configureForDraft(state: state, hasAsymmetricalRounding: hasAsymmetricalRounding) {
-                imageView.contentMode = .scaleAspectFill
                 imageView.clipsToBounds = true
                 rootStackSubviews.append(imageView)
             } else {
@@ -829,7 +828,6 @@ private class LinkPreviewViewAdapterGroupLink: LinkPreviewViewAdapter {
         let linkPreviewImageView = linkPreviewView.linkPreviewImageView
         if state.hasLoadedImage {
             if let imageView = linkPreviewImageView.configure(state: state, rounding: .circular) {
-                imageView.contentMode = .scaleAspectFill
                 imageView.clipsToBounds = true
                 rootStackSubviews.append(imageView)
             } else {
@@ -950,7 +948,6 @@ private class LinkPreviewViewAdapterSentHero: LinkPreviewViewAdapter {
 
         let linkPreviewImageView = linkPreviewView.linkPreviewImageView
         if let imageView = linkPreviewImageView.configure(state: state) {
-            imageView.contentMode = .scaleAspectFill
             imageView.clipsToBounds = true
             rootStackSubviews.append(imageView)
         } else {
@@ -1078,7 +1075,6 @@ private class LinkPreviewViewAdapterSent: LinkPreviewViewAdapter {
         if state.hasLoadedImage {
             let linkPreviewImageView = linkPreviewView.linkPreviewImageView
             if let imageView = linkPreviewImageView.configure(state: state) {
-                imageView.contentMode = .scaleAspectFill
                 imageView.clipsToBounds = true
                 rootStackSubviews.append(imageView)
             } else {
@@ -1184,7 +1180,6 @@ private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter 
         if state.hasLoadedImage {
             let linkPreviewImageView = linkPreviewView.linkPreviewImageView
             if let imageView = linkPreviewImageView.configure(state: state) {
-                imageView.contentMode = .scaleAspectFill
                 imageView.clipsToBounds = true
                 titleStackSubviews.append(imageView)
             } else {
@@ -1292,7 +1287,7 @@ private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter 
 
 // MARK: -
 
-private class LinkPreviewImageView: CVImageView {
+private class LinkPreviewImageView: ManualLayoutViewWithLayer {
     fileprivate enum Rounding: UInt {
         case standard
         case asymmetrical
@@ -1316,6 +1311,9 @@ private class LinkPreviewImageView: CVImageView {
         }
     }
 
+    private let imageView = CVImageView()
+    private let iconView = CVImageView()
+
     // We only need to use a more complicated corner mask if we're
     // drawing asymmetric corners. This is an exceptional case to match
     // the input toolbar curve.
@@ -1325,7 +1323,10 @@ private class LinkPreviewImageView: CVImageView {
     private var configurationId: UInt = 0
 
     init() {
-        super.init(frame: .zero)
+        super.init(name: "LinkPreviewImageView")
+
+        addSubviewToFillSuperviewEdges(imageView)
+        addSubviewToCenterOnSuperview(iconView, size: .square(36))
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
@@ -1335,6 +1336,9 @@ private class LinkPreviewImageView: CVImageView {
 
     public override func reset() {
         super.reset()
+
+        imageView.reset()
+        iconView.reset()
 
         rounding = .standard
         isHero = false
@@ -1429,13 +1433,18 @@ private class LinkPreviewImageView: CVImageView {
 
     // MARK: -
 
-    func configureForDraft(state: LinkPreviewState, hasAsymmetricalRounding: Bool) -> UIImageView? {
+    func configureForDraft(state: LinkPreviewState, hasAsymmetricalRounding: Bool) -> UIView? {
         guard state.isLoaded else {
             owsFailDebug("State not loaded.")
             return nil
         }
         guard state.imageState == .loaded else {
             return nil
+        }
+        imageView.contentMode = .scaleAspectFill
+        if imageView.superview == nil {
+            addSubviewToFillSuperviewEdges(imageView)
+            addSubviewToCenterOnSuperview(iconView, size: .square(36))
         }
         self.rounding = hasAsymmetricalRounding ? .asymmetrical : .standard
         let configurationId = Self.configurationIdCounter.increment()
@@ -1444,7 +1453,7 @@ private class LinkPreviewImageView: CVImageView {
             DispatchMainThreadSafe {
                 guard let self = self else { return }
                 guard self.configurationId == configurationId else { return }
-                self.image = image
+                self.imageView.image = image
             }
         }
         return self
@@ -1454,13 +1463,26 @@ private class LinkPreviewImageView: CVImageView {
         maxSize: 2, shouldEvacuateInBackground: true
     )
 
-    func configure(state: LinkPreviewState, rounding: LinkPreviewImageView.Rounding? = nil) -> UIImageView? {
+    func configure(state: LinkPreviewState, rounding: LinkPreviewImageView.Rounding? = nil) -> UIView? {
         guard state.isLoaded else {
             owsFailDebug("State not loaded.")
             return nil
         }
-        guard state.imageState == .loaded else {
+        switch state.imageState {
+        case .loaded:
+            break
+        case .blurHash:
+            if let icon = UIImage(named: "photo-slash-36") {
+                iconView.tintColor = Theme.primaryTextColor.withAlphaComponent(0.6)
+                iconView.image = icon
+            }
+        default:
             return nil
+        }
+        imageView.contentMode = .scaleAspectFill
+        if imageView.superview == nil {
+            addSubviewToFillSuperviewEdges(imageView)
+            addSubviewToCenterOnSuperview(iconView, size: .square(36))
         }
         self.rounding = rounding ?? .standard
         let isHero = LinkPreviewView.sentIsHero(state: state)
@@ -1473,13 +1495,13 @@ private class LinkPreviewImageView: CVImageView {
             let cacheKey = state.imageCacheKey(thumbnailQuality: thumbnailQuality),
             let image = Self.mediaCache.get(key: cacheKey)
         {
-            self.image = image
+            self.imageView.image = image
         } else {
             state.imageAsync(thumbnailQuality: thumbnailQuality) { [weak self] image in
                 DispatchMainThreadSafe {
                     guard let self = self else { return }
                     guard self.configurationId == configurationId else { return }
-                    self.image = image
+                    self.imageView.image = image
                     if let cacheKey = state.imageCacheKey(thumbnailQuality: thumbnailQuality) {
                         Self.mediaCache.set(key: cacheKey, value: image)
                     }

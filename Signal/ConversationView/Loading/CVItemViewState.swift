@@ -227,30 +227,27 @@ struct CVItemModelBuilder: CVItemBuilding {
         let interaction = item.interaction
         let timestampText = DateUtil.formatTimestampShort(interaction.timestamp)
 
-        let hasTapForMore: Bool = {
-            guard let bodyText = item.componentState.bodyText,
-                  let displayableText = bodyText.displayableText else {
-                return false
-            }
-            guard displayableText.isTextTruncated else {
-                return false
-            }
-            let interactionId = item.interaction.uniqueId
-            let isTruncatedTextVisible = viewStateSnapshot.textExpansion.isTextExpanded(interactionId: interactionId)
-            return !isTruncatedTextVisible
-        }()
+        let tapForMoreState: CVComponentFooter.TapForMoreState
+        switch item.componentState.bodyText {
+        case .bodyText(_, let hasTapForMore):
+            tapForMoreState = hasTapForMore ? .tapForMore : .none
+        case .oversizeTextUndownloadable:
+            tapForMoreState = .undownloadableLongText
+        default:
+            tapForMoreState = .none
+        }
 
         if let paymentMessage = interaction as? OWSPaymentMessage {
             itemViewState.footerState = CVComponentFooter.buildPaymentState(
                 interaction: interaction,
                 paymentNotification: paymentMessage.paymentNotification,
-                hasTapForMore: hasTapForMore,
+                tapForMoreState: tapForMoreState,
                 transaction: transaction
             )
         } else {
             itemViewState.footerState = CVComponentFooter.buildState(
                 interaction: interaction,
-                hasTapForMore: hasTapForMore,
+                tapForMoreState: tapForMoreState,
                 transaction: transaction
             )
         }
@@ -269,7 +266,6 @@ struct CVItemModelBuilder: CVItemBuilding {
                 interaction: interaction,
                 bodyText: bodyText,
                 viewStateSnapshot: viewStateSnapshot,
-                hasTapForMore: hasTapForMore,
                 hasPendingMessageRequest: threadViewModel.hasPendingMessageRequest
             )
         }
@@ -326,7 +322,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                     outgoingMessage.messageState != .pending &&
                     outgoingMessage.editState == .none &&
                     !isDisappearingMessage &&
-                    !hasTapForMore
+                    !tapForMoreState.shouldShowFooter
                 )
             } else {
                 itemViewState.isLastInCluster = true
@@ -361,7 +357,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                 itemViewState.shouldHideFooter = (timestampText == nextTimestampText &&
                                                     !isDisappearingMessage &&
                                                     incomingMessage.editState == .none &&
-                                                    !hasTapForMore)
+                                                    !tapForMoreState.shouldShowFooter)
             } else {
                 itemViewState.isLastInCluster = true
             }
@@ -500,8 +496,6 @@ struct CVItemModelBuilder: CVItemBuilding {
                     receivedAtDate: nextMessage.receivedAtDate,
                     downloadState: pointer.attachmentPointer.downloadState(tx: transaction.asV2Read)
                 )
-            } else {
-                owsFailDebug("Invalid attachment!")
             }
         }
     }

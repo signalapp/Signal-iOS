@@ -355,6 +355,12 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
 
     func didTapFailedOrPendingDownloads(_ message: TSMessage) {}
 
+    func didTapUndownloadableMedia() {}
+
+    func didTapUndownloadableGenericFile() {}
+
+    func didTapUndownloadableOversizeText() {}
+
     func didTapBrokenVideo() {}
 
     func didTapBodyMedia(

@@ -11,6 +11,9 @@ public enum CVAttachment: Equatable {
     case stream(ReferencedAttachmentStream)
     case pointer(ReferencedAttachmentPointer, downloadState: AttachmentDownloadState)
     case backupThumbnail(ReferencedAttachmentBackupThumbnail)
+    /// The attachment has no stream and cannot be downloaded because there is no cdn info.
+    /// Typically happens if we restore from a free-tier backup with old media expired from transit tier.
+    case undownloadable(ReferencedAttachment)
 
     public var attachment: ReferencedAttachment {
         switch self {
@@ -20,6 +23,8 @@ public enum CVAttachment: Equatable {
             return pointer
         case .backupThumbnail(let thumbnail):
             return thumbnail
+        case .undownloadable(let attachment):
+            return attachment
         }
     }
 
@@ -28,6 +33,8 @@ public enum CVAttachment: Equatable {
         case .stream(let stream):
             return stream.attachmentStream
         case .pointer, .backupThumbnail:
+            return nil
+        case .undownloadable:
             return nil
         }
     }
@@ -38,6 +45,8 @@ public enum CVAttachment: Equatable {
             return nil
         case .pointer(let pointer, _):
             return pointer.attachmentPointer
+        case .undownloadable:
+            return nil
         }
     }
 
@@ -47,10 +56,12 @@ public enum CVAttachment: Equatable {
             return nil
         case .backupThumbnail(let thumbnail):
             return thumbnail.attachmentBackupThumbnail
+        case .undownloadable:
+            return nil
         }
     }
 
-    public static func from(_ attachment: ReferencedAttachment, tx: SDSAnyReadTransaction) -> CVAttachment? {
+    public static func from(_ attachment: ReferencedAttachment, tx: SDSAnyReadTransaction) -> CVAttachment {
         if let stream = attachment.asReferencedStream {
             return .stream(stream)
         } else if let pointer = attachment.asReferencedAnyPointer {
@@ -58,7 +69,7 @@ public enum CVAttachment: Equatable {
         } else if let thumbnail = attachment.asReferencedBackupThumbnail {
             return .backupThumbnail(thumbnail)
         } else {
-            return nil
+            return .undownloadable(attachment)
         }
     }
 
@@ -74,13 +85,22 @@ public enum CVAttachment: Equatable {
         case (.backupThumbnail(let lhsThumbnail), .backupThumbnail(let rhsThumbnail)):
             return lhsThumbnail.attachment.id == rhsThumbnail.attachment.id
                 && lhsThumbnail.reference.hasSameOwner(as: rhsThumbnail.reference)
+        case (.undownloadable(let lhsAttachment), .undownloadable(let rhsAttachment)):
+            return lhsAttachment.attachment.id == rhsAttachment.attachment.id
+                && lhsAttachment.reference.hasSameOwner(as: rhsAttachment.reference)
         case
             (.stream, .pointer),
             (.stream, .backupThumbnail),
+            (.stream, .undownloadable),
             (.pointer, .stream),
             (.pointer, .backupThumbnail),
+            (.pointer, .undownloadable),
             (.backupThumbnail, .pointer),
-            (.backupThumbnail, .stream):
+            (.backupThumbnail, .stream),
+            (.backupThumbnail, .undownloadable),
+            (.undownloadable, .stream),
+            (.undownloadable, .pointer),
+            (.undownloadable, .backupThumbnail):
             return false
         }
     }
@@ -101,26 +121,30 @@ public class CVComponentState: Equatable {
     let senderAvatar: SenderAvatar?
 
     enum BodyText: Equatable {
-        case bodyText(displayableText: DisplayableText)
+        case bodyText(displayableText: DisplayableText, hasTapForMore: Bool)
 
         // TODO: Should we have oversizeTextFailed?
         case oversizeTextDownloading
+
+        case oversizeTextUndownloadable(truncatedBody: DisplayableText)
 
         // We use the "body text" component to
         // render the "remotely deleted" indicator.
         case remotelyDeleted
 
         var displayableText: DisplayableText? {
-            if case .bodyText(let displayableText) = self {
-                return displayableText
+            switch self {
+            case .bodyText(let text, _), .oversizeTextUndownloadable(let text):
+                return text
+            default:
+                return nil
             }
-            return nil
         }
 
         func textValue(isTextExpanded: Bool) -> CVTextValue? {
             switch self {
-            case .bodyText(let displayableText):
-                return displayableText.textValue(isTextExpanded: isTextExpanded)
+            case .bodyText(let text, _), .oversizeTextUndownloadable(let text):
+                return text.textValue(isTextExpanded: isTextExpanded)
             default:
                 return nil
             }
@@ -128,8 +152,8 @@ public class CVComponentState: Equatable {
 
         var jumbomojiCount: UInt? {
             switch self {
-            case .bodyText(let displayableText):
-                return displayableText.jumbomojiCount
+            case .bodyText(let text, _), .oversizeTextUndownloadable(let text):
+                return text.jumbomojiCount
             default:
                 return nil
             }
@@ -226,12 +250,15 @@ public class CVComponentState: Equatable {
             attachmentPointer: ReferencedAttachmentPointer,
             downloadState: AttachmentDownloadState
         )
+        /// The attachment has no stream and cannot be downloaded because there is no cdn info.
+        /// Typically happens if we restore from a free-tier backup with old media expired from transit tier.
+        case undownloadable(ReferencedAttachment)
 
         public var stickerMetadata: (any StickerMetadata)? {
             switch self {
             case .available(let stickerMetadata, _):
                 return stickerMetadata
-            case .downloading, .failedOrPending:
+            case .downloading, .failedOrPending, .undownloadable:
                 return nil
             }
         }
@@ -243,6 +270,8 @@ public class CVComponentState: Equatable {
                 return nil
             case .failedOrPending:
                 return nil
+            case .undownloadable:
+                return nil
             }
         }
         public var attachmentPointer: ReferencedAttachmentPointer? {
@@ -253,6 +282,8 @@ public class CVComponentState: Equatable {
                 return attachmentPointer
             case .failedOrPending(let attachmentPointer, _):
                 return attachmentPointer
+            case .undownloadable:
+                return nil
             }
         }
 
@@ -269,7 +300,10 @@ public class CVComponentState: Equatable {
                 return lhsPointer.attachment.id == rhsPointer.attachment.id
                     && lhsPointer.reference.hasSameOwner(as: rhsPointer.reference)
                     && lhsState == rhsState
-            case (.available, _), (.downloading, _), (.failedOrPending, _):
+            case let (.undownloadable(lhsAttachment), .undownloadable(rhsAttachment)):
+                return lhsAttachment.attachment.id == rhsAttachment.attachment.id
+                    && lhsAttachment.reference.hasSameOwner(as: rhsAttachment.reference)
+            case (.available, _), (.downloading, _), (.failedOrPending, _), (.undownloadable, _):
                 return false
             }
         }
@@ -284,7 +318,6 @@ public class CVComponentState: Equatable {
     struct LinkPreview: Equatable {
         // TODO: convert OWSLinkPreview to Swift?
         let linkPreview: OWSLinkPreview
-        let linkPreviewAttachment: Attachment?
         let state: LinkPreviewState
 
         // MARK: - Equatable
@@ -1185,6 +1218,8 @@ fileprivate extension CVComponentState.Builder {
                 case .none:
                     return buildViewOnce(viewOnceState: .incomingPending)
                 }
+            } else {
+                return buildViewOnce(viewOnceState: .incomingUndownloadable)
             }
 
             owsFailDebug("Invalid content.")
@@ -1295,7 +1330,11 @@ fileprivate extension CVComponentState.Builder {
             }
             return build()
         } else {
-            throw OWSAssertionError("Invalid sticker.")
+            // TODO[AttachmentRendering]: represent state needed to render
+            // an undownloadable sticker attachment, which bears no visual
+            // relationship to other sticker attachment components.
+            self.sticker = .undownloadable(attachment)
+            return build()
         }
     }
 
@@ -1345,8 +1384,11 @@ fileprivate extension CVComponentState.Builder {
     }
 
     mutating func buildBodyText(message: TSMessage) throws {
-        bodyText = try CVComponentBodyText.buildComponentState(message: message,
-                                                               transaction: transaction)
+        bodyText = try CVComponentBodyText.buildComponentState(
+            message: message,
+            viewStateSnapshot: viewStateSnapshot,
+            transaction: transaction
+        )
     }
 
     // MARK: -
@@ -1371,10 +1413,7 @@ fileprivate extension CVComponentState.Builder {
                 return []
             }
 
-            guard let cvAttachment = CVAttachment.from(attachment, tx: transaction) else {
-                owsFailDebug("Invalid attachment!")
-                continue
-            }
+            let cvAttachment = CVAttachment.from(attachment, tx: transaction)
 
             let caption = attachment.reference.legacyMessageCaption
             let hasCaption = caption.map {
@@ -1463,6 +1502,22 @@ fileprivate extension CVComponentState.Builder {
                     threadHasPendingMessageRequest: threadHasPendingMessageRequest
                 ))
                 continue
+            case .undownloadable(let attachment):
+                var mediaSize: CGSize = .zero
+                if let sourceMediaSizePixels = attachment.reference.sourceMediaSizePixels {
+                    mediaSize = sourceMediaSizePixels
+                } else {
+                    owsFailDebug("Invalid attachment.")
+                }
+                mediaAlbumItems.append(CVMediaAlbumItem(
+                    attachment: cvAttachment,
+                    attachmentStream: nil,
+                    hasCaption: hasCaption,
+                    mediaSize: mediaSize,
+                    isBroken: true,
+                    threadHasPendingMessageRequest: threadHasPendingMessageRequest
+                ))
+                continue
             }
         }
         return mediaAlbumItems
@@ -1475,9 +1530,8 @@ fileprivate extension CVComponentState.Builder {
         }
 
         func buildGenericAttachment() {
-            if let cvAttachment = CVAttachment.from(attachment, tx: transaction) {
-                self.genericAttachment = .init(attachment: cvAttachment)
-            }
+            let cvAttachment = CVAttachment.from(attachment, tx: transaction)
+            self.genericAttachment = .init(attachment: cvAttachment)
         }
 
         guard
@@ -1508,7 +1562,15 @@ fileprivate extension CVComponentState.Builder {
                 downloadState: attachmentPointer.attachmentPointer.downloadState(tx: transaction.asV2Read)
             )
         } else {
-            buildGenericAttachment()
+            // TODO[AttachmentRendering]: represent state needed to render
+            // an undownloadable audio attachment, which bears no visual
+            // relationship to other audio attachment components.
+            self.audioAttachment = AudioAttachment(
+                undownloadableAttachment: attachment,
+                owningMessage: interaction as? TSMessage,
+                metadata: nil,
+                receivedAtDate: interaction.receivedAtDate
+            )
         }
     }
 
@@ -1578,7 +1640,6 @@ fileprivate extension CVComponentState.Builder {
                 )
                 self.linkPreview = LinkPreview(
                     linkPreview: linkPreview,
-                    linkPreviewAttachment: nil,
                     state: state
                 )
             }
@@ -1595,11 +1656,10 @@ fileprivate extension CVComponentState.Builder {
             let state = LinkPreviewCallLink(previewType: .sent(linkPreview, conversationStyle), callLink: callLink)
             self.linkPreview = LinkPreview(
                 linkPreview: linkPreview,
-                linkPreviewAttachment: nil,
                 state: state
             )
         } else {
-            let linkPreviewAttachment = { () -> Attachment? in
+            let linkPreviewAttachment = { () -> ReferencedAttachment? in
                 guard
                     let rowId = message.sqliteRowId,
                     let linkPreviewAttachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
@@ -1614,14 +1674,20 @@ fileprivate extension CVComponentState.Builder {
                     owsFailDebug("Link preview attachment isn't an image.")
                     return nil
                 }
-                guard let attachmentStream = linkPreviewAttachment.asReferencedStream else {
+                if let attachmentStream = linkPreviewAttachment.asReferencedStream {
+                    guard attachmentStream.attachmentStream.contentType.isImage else {
+                        owsFailDebug("Link preview image attachment isn't valid.")
+                        return nil
+                    }
+                    return attachmentStream
+                } else if
+                    let blurHash = linkPreviewAttachment.attachment.blurHash,
+                    BlurHash.isValidBlurHash(blurHash)
+                {
+                    return linkPreviewAttachment
+                } else {
                     return nil
                 }
-                guard attachmentStream.attachmentStream.contentType.isImage else {
-                    owsFailDebug("Link preview image attachment isn't valid.")
-                    return nil
-                }
-                return attachmentStream.attachment
             }()
 
             let state = LinkPreviewSent(
@@ -1631,7 +1697,6 @@ fileprivate extension CVComponentState.Builder {
             )
             self.linkPreview = LinkPreview(
                 linkPreview: linkPreview,
-                linkPreviewAttachment: linkPreviewAttachment,
                 state: state
             )
         }

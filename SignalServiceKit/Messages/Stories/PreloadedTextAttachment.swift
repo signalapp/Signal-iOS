@@ -9,9 +9,9 @@ import Foundation
 /// Doesn't load the preview's _image_, just the attachment database object.
 public struct PreloadedTextAttachment: Equatable {
     public let textAttachment: TextAttachment
-    public let linkPreviewAttachment: Attachment?
+    public let linkPreviewAttachment: ReferencedAttachment?
 
-    private init(textAttachment: TextAttachment, linkPreviewAttachment: Attachment?) {
+    private init(textAttachment: TextAttachment, linkPreviewAttachment: ReferencedAttachment?) {
         self.textAttachment = textAttachment
         self.linkPreviewAttachment = linkPreviewAttachment
     }
@@ -21,19 +21,26 @@ public struct PreloadedTextAttachment: Equatable {
         storyMessage: StoryMessage,
         tx: SDSAnyReadTransaction
     ) -> Self {
-        let linkPreviewAttachment: Attachment? = storyMessage.id.map { rowId in
+        let linkPreviewAttachment: ReferencedAttachment? = storyMessage.id.map { rowId in
             DependenciesBridge.shared.attachmentStore
                 .fetchFirstReferencedAttachment(
                     for: .storyMessageLinkPreview(storyMessageRowId: rowId),
                     tx: tx.asV2Read
-                )?
-                .attachment
+                )
         } ?? nil
         return .init(textAttachment: textAttachment, linkPreviewAttachment: linkPreviewAttachment)
     }
 
     public static func == (lhs: PreloadedTextAttachment, rhs: PreloadedTextAttachment) -> Bool {
-        return lhs.textAttachment == rhs.textAttachment
-            && lhs.linkPreviewAttachment?.id == rhs.linkPreviewAttachment?.id
+        var linkPreviewAttachmentsMatch = (lhs.linkPreviewAttachment == nil) == (rhs.linkPreviewAttachment == nil)
+        if
+            let lhsAttachment = lhs.linkPreviewAttachment,
+            let rhsAttachment = rhs.linkPreviewAttachment
+        {
+            linkPreviewAttachmentsMatch =
+                lhsAttachment.attachment.id == rhsAttachment.attachment.id
+                && lhsAttachment.reference.hasSameOwner(as: rhsAttachment.reference)
+        }
+        return lhs.textAttachment == rhs.textAttachment && linkPreviewAttachmentsMatch
     }
 }

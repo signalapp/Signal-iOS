@@ -99,15 +99,6 @@ public class CVAttachmentProgressView: ManualLayoutView {
             }
         }
 
-        private var isIncoming: Bool {
-            switch direction {
-            case .upload:
-                return false
-            case .download:
-                return true
-            }
-        }
-
         init(diameter: CGFloat,
              direction: Direction,
              isDarkThemeEnabled: Bool,
@@ -434,6 +425,8 @@ public class CVAttachmentProgressView: ManualLayoutView {
                     downloadState: downloadState
                 )
             }
+        case .undownloadable:
+            return .none
         }
     }
 }

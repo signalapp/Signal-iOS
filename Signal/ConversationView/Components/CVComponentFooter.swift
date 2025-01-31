@@ -16,11 +16,28 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         let isAnimated: Bool
     }
 
+    public enum TapForMoreState {
+        case none
+        case tapForMore
+        case undownloadableLongText
+
+        var shouldShowFooter: Bool {
+            switch self {
+            case .none:
+                return false
+            case .tapForMore:
+                return true
+            case .undownloadableLongText:
+                return true
+            }
+        }
+    }
+
     struct State: Equatable {
         let timestampText: String
         let statusIndicator: StatusIndicator?
         let accessibilityLabel: String?
-        let hasTapForMore: Bool
+        let tapForMoreState: TapForMoreState
         let displayEditedLabel: Bool
 
         struct Expiration: Equatable {
@@ -38,8 +55,8 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     private var statusIndicator: StatusIndicator? {
         footerState.statusIndicator
     }
-    public var hasTapForMore: Bool {
-        footerState.hasTapForMore
+    public var tapForMoreState: TapForMoreState {
+        footerState.tapForMoreState
     }
     public var displayEditedLabel: Bool {
         footerState.displayEditedLabel
@@ -223,7 +240,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     static func buildPaymentState(
         interaction: TSInteraction,
         paymentNotification: TSPaymentNotification?,
-        hasTapForMore: Bool,
+        tapForMoreState: TapForMoreState,
         transaction: SDSAnyReadTransaction
     ) -> State {
 
@@ -243,7 +260,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 timestampText: timestampText,
                 statusIndicator: nil,
                 accessibilityLabel: nil,
-                hasTapForMore: hasTapForMore,
+                tapForMoreState: tapForMoreState,
                 displayEditedLabel: false,
                 expiration: nil
             )
@@ -322,7 +339,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             timestampText: timestampText,
             statusIndicator: statusIndicator,
             accessibilityLabel: accessibilityLabel,
-            hasTapForMore: hasTapForMore,
+            tapForMoreState: tapForMoreState,
             displayEditedLabel: false,
             expiration: expiration
         )
@@ -353,7 +370,11 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         }
     }
 
-    static func buildState(interaction: TSInteraction, hasTapForMore: Bool, transaction: SDSAnyReadTransaction) -> State {
+    static func buildState(
+        interaction: TSInteraction,
+        tapForMoreState: TapForMoreState,
+        transaction: SDSAnyReadTransaction
+    ) -> State {
 
         let hasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(transaction: transaction) ?? false
         let timestampText = Self.timestampText(
@@ -426,7 +447,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             timestampText: timestampText,
             statusIndicator: statusIndicator,
             accessibilityLabel: accessibilityLabel,
-            hasTapForMore: hasTapForMore,
+            tapForMoreState: tapForMoreState,
             displayEditedLabel: displayEditedLabel,
             expiration: expiration
         )
@@ -454,21 +475,61 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     }
 
     private var tapForMoreLabelConfig: CVLabelConfig? {
-        guard hasTapForMore, !wasRemotelyDeleted else {
+        switch tapForMoreState {
+        case .none:
             return nil
+        case .tapForMore:
+            guard !wasRemotelyDeleted else {
+                return nil
+            }
+            guard let message = interaction as? TSMessage else {
+                owsFailDebug("Invalid interaction.")
+                return nil
+            }
+            let text = OWSLocalizedString("CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
+                                         comment: "Indicator on truncated text messages that they can be tapped to see the entire text message.")
+            return CVLabelConfig.unstyledText(
+                text,
+                font: UIFont.dynamicTypeSubheadlineClamped.semibold(),
+                textColor: conversationStyle.bubbleReadMoreTextColor(message: message),
+                textAlignment: .trailing
+            )
+        case .undownloadableLongText:
+            guard !wasRemotelyDeleted else {
+                return nil
+            }
+            guard let message = interaction as? TSMessage else {
+                owsFailDebug("Invalid interaction.")
+                return nil
+            }
+            let font = UIFont.dynamicTypeFootnoteClamped.semibold()
+            let textColor = conversationStyle.bubbleReadMoreTextColor(message: message)
+            let attributedString = NSAttributedString.composed(of: [
+                NSAttributedString.with(
+                    image: UIImage(named: "error-circle-20")!,
+                    font: font
+                ),
+                " ",
+                OWSLocalizedString(
+                    "OVERSIZE_TEXT_UNAVAILABLE_FOOTER",
+                    comment: "Footer for message cell for long text when it is expired and unavailable for download"
+                ),
+                " ",
+                NSAttributedString.with(
+                    image: UIImage(named: "chevron-right-20")!,
+                    font: font
+                ),
+            ])
+            // TODO[AttachmentRendering]: have to render a horizontal line
+            // above the text when showing undownloadable state.
+            return CVLabelConfig(
+                text: .attributedText(attributedString),
+                displayConfig: .forUnstyledText(font: font, textColor: textColor),
+                font: font,
+                textColor: textColor,
+                textAlignment: .trailing
+            )
         }
-        guard let message = interaction as? TSMessage else {
-            owsFailDebug("Invalid interaction.")
-            return nil
-        }
-        let text = OWSLocalizedString("CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
-                                     comment: "Indicator on truncated text messages that they can be tapped to see the entire text message.")
-        return CVLabelConfig.unstyledText(
-            text,
-            font: UIFont.dynamicTypeSubheadlineClamped.semibold(),
-            textColor: conversationStyle.bubbleReadMoreTextColor(message: message),
-            textAlignment: .trailing
-        )
     }
 
     private let tapForMoreHeightFactor: CGFloat = 1.25
@@ -567,12 +628,22 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             return false
         }
 
-        if hasTapForMore {
+        switch tapForMoreState {
+        case .none:
+            break
+        case .tapForMore, .undownloadableLongText:
             let readMoreLabel = componentView.tapForMoreLabel
             let location = sender.location(in: readMoreLabel)
             if readMoreLabel.bounds.contains(location) {
                 let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-                componentDelegate.didTapTruncatedTextMessage(itemViewModel)
+                switch tapForMoreState {
+                case .none:
+                    break
+                case .tapForMore:
+                    componentDelegate.didTapTruncatedTextMessage(itemViewModel)
+                case .undownloadableLongText:
+                    componentDelegate.didTapUndownloadableOversizeText()
+                }
                 return true
             }
         }

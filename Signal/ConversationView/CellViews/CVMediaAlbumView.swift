@@ -579,17 +579,6 @@ public struct CVMediaAlbumItem: Equatable {
     public let mediaSize: CGSize
 
     public let isBroken: Bool
-    public var isFailedDownload: Bool {
-        switch attachment {
-        case .stream:
-            return false
-        case .pointer(_, let downloadState):
-            return downloadState == .failed
-        case .backupThumbnail:
-            // TODO[Backups]: Check state of media tier download
-            return false
-        }
-    }
 
     /// Whether the containing thread has a pending message request
     public let threadHasPendingMessageRequest: Bool

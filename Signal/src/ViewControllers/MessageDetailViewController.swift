@@ -1060,6 +1060,12 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func didTapFailedOrPendingDownloads(_ message: TSMessage) {}
 
+    func didTapUndownloadableMedia() {}
+
+    func didTapUndownloadableGenericFile() {}
+
+    func didTapUndownloadableOversizeText() {}
+
     func didTapBrokenVideo() {}
 
     // MARK: - Messages

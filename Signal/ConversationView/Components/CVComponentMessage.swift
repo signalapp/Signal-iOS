@@ -192,8 +192,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
     }
 
-    private var hasTapForMore: Bool {
-        standaloneFooter?.hasTapForMore ?? false
+    private var tapForMoreState: CVComponentFooter.TapForMoreState {
+        standaloneFooter?.tapForMoreState ?? .none
     }
 
     private func buildComponentStates() {
@@ -305,7 +305,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         if let audioAttachmentState = componentState.audioAttachment {
-            let shouldFooterOverlayAudio = (bodyText == nil && !itemViewState.shouldHideFooter && !hasTapForMore)
+            let shouldFooterOverlayAudio = (bodyText == nil && !itemViewState.shouldHideFooter && !tapForMoreState.shouldShowFooter)
             if shouldFooterOverlayAudio {
                 if let footerState = itemViewState.footerState {
                     footerOverlay = CVComponentFooter(itemModel: itemModel,
@@ -326,7 +326,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         if let bodyMediaState = componentState.bodyMedia {
-            let shouldFooterOverlayMedia = (bodyText == nil && !isBorderless && !itemViewState.shouldHideFooter && !hasTapForMore)
+            let shouldFooterOverlayMedia = (bodyText == nil && !isBorderless && !itemViewState.shouldHideFooter && !tapForMoreState.shouldShowFooter)
             if shouldFooterOverlayMedia {
                 owsAssertDebug(footerOverlay == nil)
                 if let footerState = itemViewState.footerState {
@@ -1467,7 +1467,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 guard keys == [ .bodyText, .footer ],
                       let bodyText = self.bodyText as? CVComponentBodyText,
                       let standaloneFooter = self.standaloneFooter,
-                      !standaloneFooter.hasTapForMore else {
+                      !standaloneFooter.tapForMoreState.shouldShowFooter else {
                     return
                 }
                 guard let footerMeasurement = CVComponentFooter.footerMeasurement(measurementBuilder: measurementBuilder),
