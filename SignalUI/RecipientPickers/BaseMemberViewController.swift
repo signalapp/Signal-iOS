@@ -20,9 +20,7 @@ public protocol MemberViewDelegate: AnyObject {
 
     func memberViewRemoveRecipient(_ recipient: PickedRecipient)
 
-    func memberViewAddRecipient(_ recipient: PickedRecipient)
-
-    func memberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool
+    func memberViewAddRecipient(_ recipient: PickedRecipient) -> Bool
 
     func memberViewShouldShowMemberCount() -> Bool
 
@@ -158,9 +156,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
             return
         }
 
-        guard memberViewDelegate.memberViewCanAddRecipient(recipient) else { return }
-
-        memberViewDelegate.memberViewAddRecipient(recipient)
+        guard memberViewDelegate.memberViewAddRecipient(recipient) else { return }
         recipientPicker.pickedRecipients = recipientSet.orderedMembers
         recipientPicker.clearSearchText()
         updateMemberBar()

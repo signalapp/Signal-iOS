@@ -15,8 +15,6 @@ protocol GroupMemberViewDelegate: AnyObject {
 
     func groupMemberViewAddRecipient(_ recipient: PickedRecipient)
 
-    func groupMemberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool
-
     func groupMemberViewShouldShowMemberCount() -> Bool
 
     func groupMemberViewGroupMemberCountForDisplay() -> Int
@@ -123,20 +121,17 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         groupMemberViewDelegate.groupMemberViewRemoveRecipient(recipient)
     }
 
-    public func memberViewAddRecipient(_ recipient: PickedRecipient) {
-        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
-            owsFailDebug("Missing groupMemberViewDelegate.")
-            return
-        }
-        groupMemberViewDelegate.groupMemberViewAddRecipient(recipient)
-    }
-
-    public func memberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool {
+    public func memberViewAddRecipient(_ recipient: PickedRecipient) -> Bool {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return false
         }
-        guard groupMemberViewDelegate.groupMemberViewCanAddRecipient(recipient) else {
+        guard let address = recipient.address else {
+            owsFailDebug("Invalid recipient.")
+            GroupViewUtils.showInvalidGroupMemberAlert(fromViewController: self)
+            return false
+        }
+        guard GroupManager.doesUserSupportGroupsV2(address: address) else {
             GroupViewUtils.showInvalidGroupMemberAlert(fromViewController: self)
             return false
         }
@@ -148,6 +143,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
             showGroupFullAlert_SoftLimit(recipient: recipient, groupMemberViewDelegate: groupMemberViewDelegate)
             return false
         }
+        groupMemberViewDelegate.groupMemberViewAddRecipient(recipient)
         return true
     }
 

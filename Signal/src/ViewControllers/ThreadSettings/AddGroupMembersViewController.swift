@@ -164,14 +164,6 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         updateNavbar()
     }
 
-    func groupMemberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool {
-        guard let address = recipient.address else {
-            owsFailDebug("Invalid recipient.")
-            return false
-        }
-        return GroupManager.doesUserSupportGroupsV2(address: address)
-    }
-
     func groupMemberViewShouldShowMemberCount() -> Bool {
         true
     }

@@ -71,12 +71,11 @@ extension PrivateStoryAddRecipientsSettingsViewController: MemberViewDelegate {
         updateBarButtons()
     }
 
-    public func memberViewAddRecipient(_ recipient: PickedRecipient) {
+    public func memberViewAddRecipient(_ recipient: PickedRecipient) -> Bool {
         recipientSet.append(recipient)
         updateBarButtons()
+        return true
     }
-
-    public func memberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool { true }
 
     public func memberViewShouldShowMemberCount() -> Bool { false }
 
