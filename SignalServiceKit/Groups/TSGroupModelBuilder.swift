@@ -11,7 +11,7 @@ public struct TSGroupModelBuilder {
     public var groupId: Data?
     public var name: String?
     public var descriptionText: String?
-    public var avatarData: Data?
+    public var avatarDataState: TSGroupModel.AvatarDataState = .missing
     public var groupMembership = GroupMembership()
     public var groupAccess: GroupAccess?
     public var groupsVersion: GroupsVersion?
@@ -35,7 +35,7 @@ public struct TSGroupModelBuilder {
         self.groupId = try groupV2Snapshot.groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData
         self.name = groupV2Snapshot.title
         self.descriptionText = groupV2Snapshot.descriptionText
-        self.avatarData = groupV2Snapshot.avatarData
+        self.avatarDataState = groupV2Snapshot.avatarDataState
         self.groupMembership = groupV2Snapshot.groupMembership
         self.groupAccess = groupV2Snapshot.groupAccess
         self.groupsVersion = GroupsVersion.V2
@@ -66,32 +66,6 @@ public struct TSGroupModelBuilder {
                 throw OWSAssertionError("Invalid address.")
             }
         }
-    }
-
-    public func buildForMinorChanges() throws -> TSGroupModel {
-
-        try checkUsers()
-
-        guard let groupsVersion = self.groupsVersion else {
-            throw OWSAssertionError("Missing groupsVersion.")
-        }
-        guard let groupId = self.groupId else {
-            throw OWSAssertionError("Missing groupId.")
-        }
-
-        var groupSecretParams: GroupSecretParams?
-        if groupsVersion == .V2 {
-            guard let groupSecretParamsData = self.groupSecretParamsData else {
-                throw OWSAssertionError("Missing groupSecretParamsData.")
-            }
-            groupSecretParams = try GroupSecretParams(contents: [UInt8](groupSecretParamsData))
-        }
-
-        return try build(
-            groupsVersion: groupsVersion,
-            groupId: groupId,
-            groupSecretParams: groupSecretParams
-        )
     }
 
     public func build() throws -> TSGroupModel {
@@ -155,40 +129,25 @@ public struct TSGroupModelBuilder {
 
         switch groupsVersion {
         case .V1:
-            if !groupMembership.invitedMembers.isEmpty {
-                owsFailDebug("v1 group has pending profile key members.")
-            }
-            if !groupMembership.requestingMembers.isEmpty {
-                owsFailDebug("v1 group has pending request members.")
-            }
-            owsAssertDebug(!isJoinRequestPlaceholder)
-            return TSGroupModel(groupId: groupId,
-                                name: name,
-                                avatarData: avatarData,
-                                members: Array(groupMembership.fullMembers),
-                                addedBy: addedByAddress)
+            return TSGroupModel(
+                groupId: groupId,
+                name: name,
+                avatarData: avatarDataState.dataIfPresent,
+                members: Array(groupMembership.fullMembers),
+                addedBy: addedByAddress
+            )
         case .V2:
-            owsAssertDebug(addedByAddress == nil)
-
-            var descriptionText: String?
-            if let strippedDescriptionText = self.descriptionText?.stripped.nilIfEmpty {
-                descriptionText = strippedDescriptionText
-            }
-
-            let groupAccess = buildGroupAccess(groupsVersion: groupsVersion)
-            guard let groupSecretParams = groupSecretParams else {
+            guard let groupSecretParams else {
                 throw OWSAssertionError("Missing groupSecretParamsData.")
             }
-            // Don't set avatarUrlPath unless we have avatarData.
-            let avatarUrlPath = avatarData != nil ? self.avatarUrlPath : nil
 
             return TSGroupModelV2(
                 groupId: groupId,
                 name: name,
-                descriptionText: descriptionText,
-                avatarData: avatarData,
+                descriptionText: descriptionText?.stripped.nilIfEmpty,
+                avatarDataState: avatarDataState,
                 groupMembership: groupMembership,
-                groupAccess: groupAccess,
+                groupAccess: buildGroupAccess(groupsVersion: groupsVersion),
                 revision: groupV2Revision,
                 secretParamsData: groupSecretParams.serialize().asData,
                 avatarUrlPath: avatarUrlPath,
@@ -230,7 +189,7 @@ public extension TSGroupModel {
         var builder = TSGroupModelBuilder()
         builder.groupId = self.groupId
         builder.name = self.groupName
-        builder.avatarData = self.avatarData
+        builder.avatarDataState = self.avatarDataState
         builder.groupMembership = self.groupMembership
         builder.groupsVersion = self.groupsVersion
         builder.addedByAddress = self.addedByAddress

@@ -254,7 +254,7 @@ public class GroupsV2Impl: GroupsV2 {
         return try await handleGroupUpdatedOnService(
             changeResponse: changeResponse,
             messageBehavior: messageBehavior,
-            changes: changes,
+            justUploadedAvatars: GroupV2DownloadedAvatars.from(changes: changes),
             groupId: groupId,
             groupV2Params: groupV2Params
         )
@@ -329,7 +329,7 @@ public class GroupsV2Impl: GroupsV2 {
     private func handleGroupUpdatedOnService(
         changeResponse: GroupsProtoGroupChangeResponse,
         messageBehavior: GroupUpdateMessageBehavior,
-        changes: GroupsV2OutgoingChanges,
+        justUploadedAvatars: GroupV2DownloadedAvatars,
         groupId: Data,
         groupV2Params: GroupV2Params
     ) async throws -> TSGroupThread {
@@ -341,11 +341,6 @@ public class GroupsV2Impl: GroupsV2 {
         }
         let changeActionsProto = try GroupsV2Protos.parseGroupChangeProto(changeProto, verificationOperation: .alreadyTrusted)
 
-        // Collect avatar state from our change set so that we can
-        // avoid downloading any avatars we just uploaded while
-        // applying the change set locally.
-        let downloadedAvatars = GroupV2DownloadedAvatars.from(changes: changes)
-
         let groupSendEndorsementsResponse = try changeResponse.groupSendEndorsementsResponse.map {
             return try GroupSendEndorsementsResponse(contents: [UInt8]($0))
         }
@@ -355,7 +350,7 @@ public class GroupsV2Impl: GroupsV2 {
             spamReportingMetadata: .learnedByLocallyInitatedRefresh,
             changeActionsProto: changeActionsProto,
             groupSendEndorsementsResponse: groupSendEndorsementsResponse,
-            justUploadedAvatars: downloadedAvatars,
+            justUploadedAvatars: justUploadedAvatars,
             groupV2Params: groupV2Params
         )
 
@@ -916,7 +911,6 @@ public class GroupsV2Impl: GroupsV2 {
         groupV2Params: GroupV2Params
     ) async throws -> GroupV2DownloadedAvatars {
         var downloadedAvatars = downloadedAvatars
-
         let undownloadedAvatarUrlPaths = Set(avatarUrlPaths).subtracting(downloadedAvatars.avatarUrlPaths)
 
         try await withThrowingTaskGroup(of: (String, Data).self) { taskGroup in
@@ -944,16 +938,23 @@ public class GroupsV2Impl: GroupsV2 {
                     return (avatarUrlPath, avatarData)
                 }
             }
+
             while let (avatarUrlPath, avatarData) = try await taskGroup.next() {
-                guard avatarData.count > 0 else {
-                    owsFailDebug("Empty avatarData.")
-                    continue
+                let avatarDataState: TSGroupModel.AvatarDataState
+
+                if
+                    !avatarData.isEmpty,
+                    TSGroupModel.isValidGroupAvatarData(avatarData)
+                {
+                    avatarDataState = .available(avatarData)
+                } else {
+                    avatarDataState = .failedToFetchFromCDN
                 }
-                guard TSGroupModel.isValidGroupAvatarData(avatarData) else {
-                    owsFailDebug("Invalid group avatar")
-                    continue
-                }
-                downloadedAvatars.set(avatarData: avatarData, avatarUrlPath: avatarUrlPath)
+
+                downloadedAvatars.set(
+                    avatarDataState: avatarDataState,
+                    avatarUrlPath: avatarUrlPath
+                )
             }
         }
 
@@ -1499,20 +1500,26 @@ public class GroupsV2Impl: GroupsV2 {
             downloadedAvatars: GroupV2DownloadedAvatars(),
             groupV2Params: groupV2Params
         )
-        return try downloadedAvatars.avatarData(for: avatarUrlPath)
+
+        if let avatarData = downloadedAvatars.avatarDataState(for: avatarUrlPath)!.dataIfPresent {
+            return avatarData
+        } else {
+            throw OWSAssertionError("Unexpectedly missing downloaded avatar data!")
+        }
     }
 
     public func fetchGroupAvatarRestoredFromBackup(
         groupModel: TSGroupModelV2,
         avatarUrlPath: String
-    ) async throws -> Data {
+    ) async throws -> TSGroupModel.AvatarDataState {
         let groupV2Params = try GroupV2Params(groupSecretParams: groupModel.secretParams())
         let downloadedAvatars = try await fetchAvatarData(
             avatarUrlPaths: [avatarUrlPath],
             downloadedAvatars: GroupV2DownloadedAvatars(),
             groupV2Params: groupV2Params
         )
-        return try downloadedAvatars.avatarData(for: avatarUrlPath)
+
+        return downloadedAvatars.avatarDataState(for: avatarUrlPath)!
     }
 
     public func joinGroupViaInviteLink(
@@ -1806,15 +1813,12 @@ public class GroupsV2Impl: GroupsV2 {
                 builder.groupSecretParamsData = groupV2Params.groupSecretParamsData
                 builder.inviteLinkPassword = inviteLinkPassword
                 builder.isJoinRequestPlaceholder = true
+                builder.avatarUrlPath = groupInviteLinkPreview.avatarUrlPath
 
                 // The "group invite link" UI might not have downloaded
                 // the avatar. That's fine; this is just a placeholder
                 // model.
-                if let avatarData = avatarData,
-                   let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath {
-                    builder.avatarData = avatarData
-                    builder.avatarUrlPath = avatarUrlPath
-                }
+                builder.avatarDataState = TSGroupModel.AvatarDataState(avatarData: avatarData)
 
                 var membershipBuilder = GroupMembership.Builder()
                 membershipBuilder.addRequestingMember(localIdentifiers.aci)

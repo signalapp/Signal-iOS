@@ -17,7 +17,7 @@ public struct GroupV2Snapshot {
     let title: String
     let descriptionText: String?
     let avatarUrlPath: String?
-    let avatarData: Data?
+    let avatarDataState: TSGroupModel.AvatarDataState
     let groupMembership: GroupMembership
     let groupAccess: GroupAccess
     let inviteLinkPassword: Data?

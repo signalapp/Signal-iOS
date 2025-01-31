@@ -86,7 +86,7 @@ public class GroupsV2IncomingChanges {
 
         var newGroupName: String? = oldGroupModel.groupName
         var newGroupDescription: String? = oldGroupModel.descriptionText
-        var newAvatarData: Data? = oldGroupModel.avatarData
+        var newAvatarDataState: TSGroupModel.AvatarDataState = oldGroupModel.avatarDataState
         var newAvatarUrlPath = oldGroupModel.avatarUrlPath
         var newInviteLinkPassword: Data? = oldGroupModel.inviteLinkPassword
         var newIsAnnouncementsOnly: Bool = oldGroupModel.isAnnouncementsOnly
@@ -527,20 +527,15 @@ public class GroupsV2IncomingChanges {
                 owsFailDebug("Cannot modify avatar.")
             }
 
-            if let avatarUrl = action.avatar,
-               !avatarUrl.isEmpty {
-                do {
-                    newAvatarData = try downloadedAvatars.avatarData(for: avatarUrl)
-                    newAvatarUrlPath = avatarUrl
-                } catch {
-                    owsFailDebug("Missing or invalid avatar: \(error)")
-                    newAvatarData = nil
-                    newAvatarUrlPath = nil
-                }
+            if
+                let avatarUrl = action.avatar,
+                !avatarUrl.isEmpty
+            {
+                newAvatarUrlPath = avatarUrl
+                newAvatarDataState = downloadedAvatars.avatarDataState(for: avatarUrl) ?? .missing
             } else {
-                // Change clears the group avatar.
-                newAvatarData = nil
                 newAvatarUrlPath = nil
+                newAvatarDataState = .missing
             }
         }
 
@@ -619,7 +614,7 @@ public class GroupsV2IncomingChanges {
         var builder = oldGroupModel.asBuilder
         builder.name = newGroupName
         builder.descriptionText = newGroupDescription
-        builder.avatarData = newAvatarData
+        builder.avatarDataState = newAvatarDataState
         builder.groupMembership = newGroupMembership
         builder.groupAccess = newGroupAccess
         builder.groupV2Revision = newRevision

@@ -196,7 +196,7 @@ extension TSGroupThread {
                 groupId: groupId,
                 name: "Example Group",
                 descriptionText: nil,
-                avatarData: nil,
+                avatarDataState: .missing,
                 groupMembership: GroupMembership(membersForTest: groupMembers),
                 groupAccess: .defaultForV2,
                 revision: 1,

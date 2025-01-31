@@ -86,7 +86,7 @@ class GroupAttributesEditorHelper: NSObject {
             groupId: groupModel.groupId,
             groupNameOriginal: groupModel.groupName,
             groupDescriptionOriginal: (groupModel as? TSGroupModelV2)?.descriptionText,
-            avatarOriginalData: groupModel.avatarData,
+            avatarOriginalData: groupModel.avatarDataState.dataIfPresent,
             iconViewSize: iconViewSize,
             renderDefaultAvatarWhenCleared: renderDefaultAvatarWhenCleared
         )

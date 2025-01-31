@@ -140,7 +140,7 @@ public protocol GroupsV2 {
     func fetchGroupAvatarRestoredFromBackup(
         groupModel: TSGroupModelV2,
         avatarUrlPath: String
-    ) async throws -> Data
+    ) async throws -> TSGroupModel.AvatarDataState
 
     func joinGroupViaInviteLink(
         groupId: Data,
@@ -484,68 +484,52 @@ public class GroupInviteLinkPreview: NSObject {
 // MARK: -
 
 public struct GroupV2DownloadedAvatars {
-    // A map of avatar url-to-avatar data.
-    private var avatarMap = [String: Data]()
+    typealias AvatarDataState = TSGroupModel.AvatarDataState
 
-    public init() {}
+    private var avatarMap = [String: AvatarDataState]()
 
-    public mutating func set(avatarData: Data, avatarUrlPath: String) {
-        avatarMap[avatarUrlPath] = avatarData
+    init() {}
+
+    mutating func set(avatarDataState: AvatarDataState, avatarUrlPath: String) {
+        avatarMap[avatarUrlPath] = avatarDataState
     }
 
-    public mutating func merge(_ other: GroupV2DownloadedAvatars) {
-        for (avatarUrlPath, avatarData) in other.avatarMap {
-            avatarMap[avatarUrlPath] = avatarData
+    mutating func merge(_ other: GroupV2DownloadedAvatars) {
+        for (avatarUrlPath, avatarDataState) in other.avatarMap {
+            avatarMap[avatarUrlPath] = avatarDataState
         }
     }
 
-    public func hasAvatarData(for avatarUrlPath: String) -> Bool {
-        return avatarMap[avatarUrlPath] != nil
+    func avatarDataState(for avatarUrlPath: String) -> AvatarDataState? {
+        return avatarMap[avatarUrlPath]
     }
 
-    public func avatarData(for avatarUrlPath: String) throws -> Data {
-        guard let avatarData = avatarMap[avatarUrlPath] else {
-            throw OWSAssertionError("Missing avatarData.")
-        }
-        return avatarData
-    }
-
-    public var avatarUrlPaths: [String] {
+    var avatarUrlPaths: [String] {
         return Array(avatarMap.keys)
     }
 
-    public static var empty: GroupV2DownloadedAvatars {
-        return GroupV2DownloadedAvatars()
+    static func from(groupModel: TSGroupModelV2) -> GroupV2DownloadedAvatars {
+        return from(
+            avatarDataState: groupModel.avatarDataState,
+            avatarUrlPath: groupModel.avatarUrlPath
+        )
     }
 
-    public static func from(groupModel: TSGroupModelV2) -> GroupV2DownloadedAvatars {
-        return from(avatarData: groupModel.avatarData, avatarUrlPath: groupModel.avatarUrlPath)
+    static func from(changes: GroupsV2OutgoingChanges) -> GroupV2DownloadedAvatars {
+        return from(
+            avatarDataState: AvatarDataState(avatarData: changes.newAvatarData),
+            avatarUrlPath: changes.newAvatarUrlPath
+        )
     }
 
-    public static func from(changes: GroupsV2OutgoingChanges) -> GroupV2DownloadedAvatars {
-        return from(avatarData: changes.newAvatarData, avatarUrlPath: changes.newAvatarUrlPath)
-    }
-
-    private static func from(avatarData: Data?, avatarUrlPath: String?) -> GroupV2DownloadedAvatars {
-        let hasAvatarData = avatarData != nil
-        let hasAvatarUrlPath = avatarUrlPath != nil
-        guard hasAvatarData == hasAvatarUrlPath else {
-            // Fail but continue in production; we can recover from this scenario.
-            owsFailDebug("hasAvatarData: \(hasAvatarData) != hasAvatarUrlPath: \(hasAvatarUrlPath)")
-            return .empty
-        }
-        guard let avatarData = avatarData,
-              let avatarUrlPath = avatarUrlPath else {
-            // No avatar.
-            return .empty
-        }
-        guard TSGroupModel.isValidGroupAvatarData(avatarData) else {
-            owsFailDebug("Invalid group avatar")
-            return .empty
-        }
-        // Avatar found, add it to the result set.
+    private static func from(avatarDataState: AvatarDataState, avatarUrlPath: String?) -> GroupV2DownloadedAvatars {
         var downloadedAvatars = GroupV2DownloadedAvatars()
-        downloadedAvatars.set(avatarData: avatarData, avatarUrlPath: avatarUrlPath)
+
+        guard let avatarUrlPath else {
+            return downloadedAvatars
+        }
+
+        downloadedAvatars.set(avatarDataState: avatarDataState, avatarUrlPath: avatarUrlPath)
         return downloadedAvatars
     }
 }
@@ -676,7 +660,7 @@ public class MockGroupsV2: GroupsV2 {
     public func fetchGroupAvatarRestoredFromBackup(
         groupModel: TSGroupModelV2,
         avatarUrlPath: String
-    ) async throws -> Data {
+    ) async throws -> TSGroupModel.AvatarDataState {
         owsFail("Not implemented")
     }
 

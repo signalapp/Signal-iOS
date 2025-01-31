@@ -56,7 +56,6 @@ class OWSRecipientIdentityTest: SSKBaseTest {
             self.groupThread = try! GroupManager.createGroupForTests(
                 members: recipients.map { SignalServiceAddress($0) },
                 name: "Test Group",
-                avatarData: nil,
                 transaction: tx
             )
         }

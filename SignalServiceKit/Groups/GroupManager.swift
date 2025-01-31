@@ -186,18 +186,16 @@ public class GroupManager: NSObject {
             throw OWSAssertionError("Local ACI is missing from group membership.")
         }
 
-        // The avatar URL path will be filled in later.
         var groupModelBuilder = TSGroupModelBuilder()
         groupModelBuilder.groupId = groupId
         groupModelBuilder.name = name
-        groupModelBuilder.avatarData = avatarData
-        groupModelBuilder.avatarUrlPath = nil
         groupModelBuilder.groupMembership = separatedGroupMembership
         groupModelBuilder.groupAccess = groupAccess
         groupModelBuilder.newGroupSeed = newGroupSeed
+
         var proposedGroupModel = try groupModelBuilder.buildAsV2()
 
-        if let avatarData = avatarData {
+        if let avatarData {
             // Upload avatar.
             let avatarUrlPath = try await SSKEnvironment.shared.groupsV2Ref.uploadGroupAvatar(
                 avatarData: avatarData,
@@ -206,7 +204,9 @@ public class GroupManager: NSObject {
 
             // Fill in the avatarUrl on the group model.
             var builder = proposedGroupModel.asBuilder
+            builder.avatarDataState = .available(avatarData)
             builder.avatarUrlPath = avatarUrlPath
+
             proposedGroupModel = try builder.buildAsV2()
         }
 
@@ -309,7 +309,6 @@ public class GroupManager: NSObject {
                                            shouldInsertInfoMessage: Bool = false,
                                            name: String? = nil,
                                            descriptionText: String? = nil,
-                                           avatarData: Data? = nil,
                                            groupId: Data? = nil,
                                            transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
 
@@ -325,8 +324,6 @@ public class GroupManager: NSObject {
         builder.groupId = groupId
         builder.name = name
         builder.descriptionText = descriptionText
-        builder.avatarData = avatarData
-        builder.avatarUrlPath = nil
         builder.groupMembership = GroupMembership(membersForTest: members)
         builder.groupAccess = .defaultForV2
         let groupModel = try builder.buildAsV2()
@@ -1500,7 +1497,7 @@ extension GroupManager {
                 groupChangeSet.setAvatar((data: avatarData, urlPath: avatarUrlPath))
             } else if
                 avatarData == nil,
-                existingGroupModel.avatarData != nil
+                existingGroupModel.avatarUrlPath != nil
             {
                 groupChangeSet.setAvatar(nil)
             }

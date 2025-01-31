@@ -507,7 +507,7 @@ public class AvatarBuilder: NSObject {
         transaction tx: SDSAnyReadTransaction
     ) -> RequestType {
         func requestTypeForGroup(groupThread: TSGroupThread) -> RequestType {
-            if let avatarData = groupThread.groupModel.avatarData, avatarData.ows_isValidImage {
+            if let avatarData = groupThread.groupModel.avatarDataState.dataIfPresent {
                 let digestString = avatarData.sha1HexadecimalDigestString
                 return .group(groupId: groupThread.groupId, avatarData: avatarData, digestString: digestString)
             } else {

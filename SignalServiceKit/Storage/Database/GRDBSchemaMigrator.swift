@@ -4027,7 +4027,7 @@ public class GRDBSchemaMigrator: NSObject {
                 guard !TSGroupModel.isValidGroupAvatarData(avatarData) else { return }
 
                 var builder = groupThread.groupModel.asBuilder
-                builder.avatarData = nil
+                builder.avatarDataState = .missing
                 builder.avatarUrlPath = nil
 
                 do {
@@ -4161,7 +4161,21 @@ public class GRDBSchemaMigrator: NSObject {
 
             while let thread = try threadCursor.next() as? TSGroupThread {
                 try autoreleasepool {
-                    try thread.groupModel.attemptToMigrateLegacyAvatarDataToDisk()
+                    let groupModel = thread.groupModel
+
+                    guard
+                        let legacyAvatarData = groupModel.legacyAvatarData,
+                        !legacyAvatarData.isEmpty,
+                        TSGroupModel.isValidGroupAvatarData(legacyAvatarData)
+                    else {
+                        groupModel.avatarHash = nil
+                        groupModel.legacyAvatarData = nil
+                        return
+                    }
+
+                    try groupModel.persistAvatarData(legacyAvatarData)
+                    groupModel.legacyAvatarData = nil
+
                     thread.anyUpsert(transaction: transaction.asAnyWrite)
                 }
             }

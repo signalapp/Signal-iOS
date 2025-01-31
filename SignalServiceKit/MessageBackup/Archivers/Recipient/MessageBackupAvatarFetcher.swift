@@ -244,12 +244,27 @@ public class MessageBackupAvatarFetcher {
                 }
 
                 do {
-                    let avatarData = try await groupsV2.fetchGroupAvatarRestoredFromBackup(
+                    let avatarDataState = try await groupsV2.fetchGroupAvatarRestoredFromBackup(
                         groupModel: groupModel,
                         avatarUrlPath: avatarUrlPath
                     )
-                    try groupModel.persistAvatarData(avatarData)
-                    let avatarHash = groupModel.avatarHash
+
+                    let avatarHash: String?
+                    let avatarDataFailedToFetchFromCDN: Bool
+                    switch avatarDataState {
+                    case .available(let avatarData):
+                        // Persisting sets the avatar hash on the group model.
+                        try groupModel.persistAvatarData(avatarData)
+
+                        avatarHash = groupModel.avatarHash
+                        avatarDataFailedToFetchFromCDN = false
+                    case .failedToFetchFromCDN:
+                        avatarHash = nil
+                        avatarDataFailedToFetchFromCDN = true
+                    case .missing:
+                        throw OWSAssertionError("Unexpectedly missing avatar data!")
+                    }
+
                     await db.awaitableWrite { tx in
                         // Refetch the group thread and apply again.
                         guard
@@ -259,7 +274,9 @@ public class MessageBackupAvatarFetcher {
                         else {
                             return
                         }
+
                         refetchedGroupModel.avatarHash = avatarHash
+                        refetchedGroupModel.avatarDataFailedToFetchFromCDN = avatarDataFailedToFetchFromCDN
                         threadStore.update(
                             groupThread: refetchedGroupThread,
                             with: refetchedGroupModel,

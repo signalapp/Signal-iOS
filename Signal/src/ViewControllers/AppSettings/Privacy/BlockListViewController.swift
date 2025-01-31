@@ -118,7 +118,17 @@ class BlockListViewController: OWSTableViewController2 {
 
         // Groups
         let groupsSectionItems = groups.map { (groupId, groupName, groupModel) in
-            let image = groupModel?.avatarImage ?? SSKEnvironment.shared.avatarBuilderRef.avatarImage(forGroupId: groupId, diameterPoints: AvatarBuilder.standardAvatarSizePoints)
+            let image: UIImage? = {
+                if let avatarData = groupModel?.avatarDataState.dataIfPresent {
+                    return UIImage(data: avatarData)
+                }
+
+                return SSKEnvironment.shared.avatarBuilderRef.avatarImage(
+                    forGroupId: groupId,
+                    diameterPoints: AvatarBuilder.standardAvatarSizePoints
+                )
+            }()
+
             return OWSTableItem(
                 customCellBlock: {
                     let cell = AvatarTableViewCell()

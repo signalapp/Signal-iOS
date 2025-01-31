@@ -60,10 +60,12 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
     _addedByAddress = addedByAddress;
     _groupModelSchemaVersion = TSGroupModelSchemaVersion;
 
-    NSError *error;
-    [self persistAvatarData:avatarData error:&error];
-    if (error) {
-        OWSFailDebug(@"Failed to persist group avatar data %@", error);
+    if (avatarData) {
+        NSError *error;
+        [self persistAvatarData:avatarData error:&error];
+        if (error) {
+            OWSFailDebug(@"Failed to persist group avatar data %@", error);
+        }
     }
 
     OWSAssertDebug([GroupManager isValidGroupId:groupId groupsVersion:self.groupsVersion]);

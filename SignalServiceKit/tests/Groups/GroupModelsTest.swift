@@ -158,7 +158,7 @@ class GroupModelsTest: SSKBaseTest {
                 groupId: Data(repeating: groupIdRepeats, count: groupIdLength),
                 name: "name",
                 descriptionText: "description",
-                avatarData: nil,
+                avatarDataState: .missing,
                 groupMembership: .empty,
                 groupAccess: .allAccess,
                 revision: 1,
@@ -212,12 +212,15 @@ class GroupModelsTest: SSKBaseTest {
             XCTAssertEqual(groupModel.groupId, expectedGroupId)
             XCTAssertEqual(groupModel.groupName, "name")
             XCTAssertEqual(groupModel.descriptionText, "description")
-            XCTAssertNil(groupModel.avatarData)
             XCTAssertEqual(groupModel.groupMembership, .empty)
             XCTAssertEqual(groupModel.access, .allAccess)
             XCTAssertEqual(groupModel.revision, 1)
             XCTAssertEqual(groupModel.secretParamsData, Data(repeating: 8, count: 10))
             XCTAssertNil(groupModel.avatarUrlPath)
+            switch groupModel.avatarDataState {
+            case .missing: break
+            case .available, .failedToFetchFromCDN: XCTFail("Unexpected avatar data state")
+            }
             XCTAssertNil(groupModel.inviteLinkPassword)
             XCTAssertFalse(groupModel.isAnnouncementsOnly)
             XCTAssertEqual(groupModel.isJoinRequestPlaceholder, isJoinRequestPlaceholder)

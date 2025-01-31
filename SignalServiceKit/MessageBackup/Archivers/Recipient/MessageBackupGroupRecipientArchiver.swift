@@ -322,8 +322,8 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         groupModelBuilder.groupV2Revision = groupSnapshot.version
         groupModelBuilder.name = groupSnapshot.extractTitle
         groupModelBuilder.descriptionText = groupSnapshot.extractDescriptionText
-        // We'll try and download the avatar later. For now, put in dummy data.
-        groupModelBuilder.avatarData = Data()
+        // We'll try and download the avatar later. For now, leave it explicitly missing.
+        groupModelBuilder.avatarDataState = .missing
         groupModelBuilder.avatarUrlPath = groupSnapshot.avatarURL.nilIfEmpty
         groupModelBuilder.groupMembership = groupMembershipBuilder.build()
         groupModelBuilder.groupAccess = GroupAccess(backupProtoAccessControl: groupSnapshot.accessControl)

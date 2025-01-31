@@ -112,7 +112,7 @@ public class GroupsV2Protos {
         groupBuilder.setTitle(groupTitleEncrypted)
 
         let hasAvatarUrl = groupModel.avatarUrlPath != nil
-        let hasAvatarData = groupModel.avatarData != nil
+        let hasAvatarData = groupModel.avatarDataState.dataIfPresent != nil
         guard hasAvatarData == hasAvatarUrl else {
             throw OWSAssertionError("hasAvatarData: (\(hasAvatarData)) != hasAvatarUrl: (\(hasAvatarUrl))")
         }
@@ -288,19 +288,14 @@ public class GroupsV2Protos {
         let title = groupV2Params.decryptGroupName(groupProto.title) ?? ""
         let descriptionText = groupV2Params.decryptGroupDescription(groupProto.descriptionBytes)
 
-        var avatarUrlPath: String?
-        var avatarData: Data?
+        let avatarUrlPath: String?
+        let avatarDataState: TSGroupModel.AvatarDataState
         if let avatar = groupProto.avatar, !avatar.isEmpty {
             avatarUrlPath = avatar
-            do {
-                avatarData = try downloadedAvatars.avatarData(for: avatar)
-            } catch {
-                // This should only occur if the avatar is no longer available
-                // on the CDN.
-                owsFailDebug("Could not download avatar: \(error).")
-                avatarData = nil
-                avatarUrlPath = nil
-            }
+            avatarDataState = downloadedAvatars.avatarDataState(for: avatar) ?? .missing
+        } else {
+            avatarUrlPath = nil
+            avatarDataState = .missing
         }
 
         // This client can learn of profile keys from parsing group state protos.
@@ -460,7 +455,7 @@ public class GroupsV2Protos {
             title: title,
             descriptionText: descriptionText,
             avatarUrlPath: avatarUrlPath,
-            avatarData: avatarData,
+            avatarDataState: avatarDataState,
             groupMembership: groupMembership,
             groupAccess: groupAccess,
             inviteLinkPassword: inviteLinkPassword,
