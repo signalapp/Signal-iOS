@@ -24,12 +24,6 @@ public protocol RecipientPickerDelegate: RecipientContextMenuHelperDelegate {
         didSelectRecipient recipient: PickedRecipient
     )
 
-    /// This delegate method is only used if shouldUseAsyncSelection is set.
-    func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        prepareToSelectRecipient recipient: PickedRecipient
-    ) -> Promise<Void>
-
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient,
@@ -65,15 +59,6 @@ public protocol RecipientPickerDelegate: RecipientContextMenuHelperDelegate {
 }
 
 public extension RecipientPickerDelegate {
-
-    func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        prepareToSelectRecipient recipient: PickedRecipient
-    ) -> Promise<Void> {
-        owsFailDebug("Not implemented")
-        return Promise.value(())
-    }
-
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient,

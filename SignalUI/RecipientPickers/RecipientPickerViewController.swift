@@ -44,7 +44,6 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
     public var shouldShowInvites = false
     public var shouldShowAlphabetSlider = true
     public var shouldShowNewGroup = false
-    public var shouldUseAsyncSelection = false
     public var findByPhoneNumberButtonTitle: String?
 
     // MARK: Signal Connections
@@ -561,29 +560,7 @@ private extension RecipientPickerViewController {
             owsFailDebug("Trying to select recipient that shouldn't be visible")
             return
         }
-        if shouldUseAsyncSelection {
-            prepareToSelectRecipient(recipient)
-        } else {
-            didPrepareToSelectRecipient(recipient)
-        }
-    }
-
-    private func prepareToSelectRecipient(_ recipient: PickedRecipient) {
-        guard let delegate = delegate else { return }
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
-            firstly {
-                delegate.recipientPicker(self, prepareToSelectRecipient: recipient)
-            }.done(on: DispatchQueue.main) { [weak self] _ in
-                modal.dismiss {
-                    self?.didPrepareToSelectRecipient(recipient)
-                }
-            }.catch(on: DispatchQueue.main) { error in
-                owsFailDebugUnlessNetworkFailure(error)
-                modal.dismiss {
-                    OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
-                }
-            }
-        }
+        didPrepareToSelectRecipient(recipient)
     }
 
     private func didPrepareToSelectRecipient(_ recipient: PickedRecipient) {

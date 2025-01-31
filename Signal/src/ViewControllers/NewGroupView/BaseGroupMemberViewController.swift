@@ -54,12 +54,6 @@ public class BaseGroupMemberViewController: BaseMemberViewController {
         memberViewDelegate = self
     }
 
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-
-        recipientPicker.shouldUseAsyncSelection = true
-    }
-
     private func showGroupFullAlert_HardLimit() {
         let format = OWSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d", tableName: "PluralAware",
                                        comment: "Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}.")
@@ -155,27 +149,6 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
             return false
         }
         return true
-    }
-
-    public func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> Promise<Void> {
-        return tryToEnableGroupsV2(for: recipient)
-    }
-
-    private func tryToEnableGroupsV2(for recipient: PickedRecipient) -> Promise<Void> {
-        guard let address = recipient.address else {
-            owsFailDebug("Invalid recipient.")
-            return .value(())
-        }
-        guard !GroupManager.doesUserSupportGroupsV2(address: address) else {
-            // Recipient already supports groups v2.
-            return .value(())
-        }
-        guard let phoneNumber = address.phoneNumber, !phoneNumber.isEmpty else {
-            return Promise(error: OWSAssertionError("Invalid address: \(address)."))
-        }
-        return Promise.wrapAsync {
-            _ = try await SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
-        }
     }
 
     public func memberViewShouldShowMemberCount() -> Bool {

@@ -87,8 +87,6 @@ extension NewPrivateStoryRecipientsViewController: MemberViewDelegate {
 
     public func memberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool { true }
 
-    public func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> Promise<Void> { Promise.value(()) }
-
     public func memberViewShouldShowMemberCount() -> Bool { false }
 
     public func memberViewShouldAllowBlockedSelection() -> Bool { false }

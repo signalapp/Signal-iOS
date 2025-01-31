@@ -24,8 +24,6 @@ public protocol MemberViewDelegate: AnyObject {
 
     func memberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool
 
-    func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> Promise<Void>
-
     func memberViewShouldShowMemberCount() -> Bool
 
     func memberViewShouldAllowBlockedSelection() -> Bool
@@ -358,19 +356,6 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         }
 
         addRecipient()
-    }
-
-    public func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        prepareToSelectRecipient recipient: PickedRecipient
-    ) -> Promise<Void> {
-
-        guard let memberViewDelegate = memberViewDelegate else {
-            owsFailDebug("Missing delegate.")
-            return Promise.value(())
-        }
-
-        return memberViewDelegate.memberViewPrepareToSelectRecipient(recipient)
     }
 
     public func recipientPicker(
