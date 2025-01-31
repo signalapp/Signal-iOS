@@ -39,7 +39,7 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
             let sessionSwitchoverPhoneNumberString = infoMessage.sessionSwitchoverPhoneNumber,
             let sessionSwitchoverPhoneNumber = E164(sessionSwitchoverPhoneNumberString)
         else {
-            return .skippableChatUpdate(.legacyInfoMessage(.sessionSwitchoverWithoutPhoneNumber))
+            return .skippableInteraction(.legacyInfoMessage(.sessionSwitchoverWithoutPhoneNumber))
         }
 
         let switchedOverContactAddress: MessageBackup.ContactAddress

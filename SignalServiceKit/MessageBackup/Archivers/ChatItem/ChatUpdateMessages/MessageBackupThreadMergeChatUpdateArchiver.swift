@@ -39,7 +39,7 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
             let threadMergePhoneNumberString = infoMessage.threadMergePhoneNumber,
             let threadMergePhoneNumber = E164(threadMergePhoneNumberString)
         else {
-            return .skippableChatUpdate(.legacyInfoMessage(.threadMergeWithoutPhoneNumber))
+            return .skippableInteraction(.legacyInfoMessage(.threadMergeWithoutPhoneNumber))
         }
 
         let mergedContactAddress: MessageBackup.ContactAddress

@@ -19,7 +19,7 @@ public protocol MessageBackupErrorPresenter {
     /// We persist because display may be deferred until certain UI actions occur (finishing registration)
     /// during which time the app may be interrupted.
     /// We only care to hold onto the latest set of backup errors.
-    func persistErrors(_ errors: [MessageBackup.CollapsedErrorLog], tx: DBWriteTransaction)
+    func persistErrors(_ errors: [MessageBackup.CollapsedErrorLog], didFail: Bool, tx: DBWriteTransaction)
 
     /// Persist a validation error for future display.
     /// We persist because display may be deferred until certain UI actions occur (finishing registration)
@@ -47,7 +47,7 @@ public class NoOpMessageBackupErrorPresenter: MessageBackupErrorPresenter {
 
     public init() {}
 
-    public func persistErrors(_ errors: [MessageBackup.CollapsedErrorLog], tx: any DBWriteTransaction) {
+    public func persistErrors(_ errors: [MessageBackup.CollapsedErrorLog], didFail: Bool, tx: any DBWriteTransaction) {
         // do nothing
     }
 

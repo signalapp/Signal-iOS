@@ -193,7 +193,7 @@ public class ProfileChanges: MTLModel {
             return nil
         }
 
-        guard let oldFullName = oldFullName, let newFullName = newFullName else {
+        guard let oldFullName = oldFullName?.filterForDisplay, let newFullName = newFullName?.filterForDisplay else {
             owsFailDebug("Unexpectedly missing old and new full name")
             return nil
         }

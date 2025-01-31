@@ -107,7 +107,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
             /// This message represents a past revision of a message, which is
             /// archived as part of archiving the latest revision. Consequently,
             /// we can skip this past revision here.
-            return .skippableChatUpdate(.pastRevisionOfEditedMessage)
+            return .skippableInteraction(.pastRevisionOfEditedMessage)
         case .none:
             shouldArchiveEditHistory = false
         case .latestRevisionRead, .latestRevisionUnread:
@@ -238,7 +238,7 @@ final class MessageBackupTSMessageEditHistoryArchiver<MessageType: TSMessage>
                 continue
             case .completeFailure(let fatalError):
                 return .completeFailure(fatalError)
-            case .skippableChatUpdate:
+            case .skippableInteraction:
                 // This should never happen for an edit revision!
                 continue
             }

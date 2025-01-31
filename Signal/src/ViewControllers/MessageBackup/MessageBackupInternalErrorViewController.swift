@@ -43,7 +43,11 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
         self.kvStore = KeyValueStore(collection: "MessageBackupErrorPresenterImpl")
     }
 
-    func persistErrors(_ errors: [SignalServiceKit.MessageBackup.CollapsedErrorLog], tx outerTx: DBWriteTransaction) {
+    func persistErrors(
+        _ errors: [SignalServiceKit.MessageBackup.CollapsedErrorLog],
+        didFail: Bool,
+        tx outerTx: DBWriteTransaction
+    ) {
         guard FeatureFlags.messageBackupErrorDisplay else {
             return
         }
@@ -52,11 +56,10 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
             return
         }
 
-        let hadFatalError = errors.contains(where: \.wasFatal)
         let stringified = errors
             .map {
                 var text = ($0.typeLogString) + "\n"
-                + "wasFatal: \($0.wasFatal)\n"
+                + "Were frames dropped? \($0.wasFrameDropped)\n"
                 + "Repeated \($0.errorCount) times, from: \($0.idLogStrings)\n"
                 + "Example callsite: \($0.exampleCallsiteString)"
                 if let exampleProtoFrameJson = $0.exampleProtoFrameJson {
@@ -75,7 +78,7 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
 
             self.db.write { innerTx in
                 self.kvStore.setString(stringified, key: Self.stringifiedErrorsKey, transaction: innerTx)
-                self.kvStore.setBool(hadFatalError, key: Self.hadFatalErrorKey, transaction: innerTx)
+                self.kvStore.setBool(didFail, key: Self.hadFatalErrorKey, transaction: innerTx)
                 self.kvStore.setBool(false, key: Self.hasBeenDisplayedKey, transaction: innerTx)
             }
         }
@@ -84,6 +87,8 @@ class MessageBackupErrorPresenterInternal: MessageBackupErrorPresenter {
     func persistValidationError(_ error: MessageBackupValidationError) async {
         await self.db.awaitableWrite { tx in
             self.kvStore.setString(error.errorMessage, key: Self.validationErrorKey, transaction: tx)
+            // Validator errors are fatal failures
+            self.kvStore.setBool(true, key: Self.hadFatalErrorKey, transaction: tx)
             self.kvStore.setBool(false, key: Self.hasBeenDisplayedKey, transaction: tx)
         }
     }
@@ -150,7 +155,8 @@ private class MessageBackupInternalErrorViewController: OWSViewController {
         if hadFatalError {
             text = "!!!Backup import or export FAILED!!!"
         } else {
-            text = "Backup import or export succeeded with errors"
+            text = "Backup import or export SUCCESS!!!"
+            text.append("\n\nSUCCESS SUCCESS SUCCESS\n\n")
         }
         text.append("""
             \n\nPlease send the errors below to your nearest iOS dev.\n

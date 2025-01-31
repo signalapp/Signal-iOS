@@ -76,15 +76,8 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatItemRestoringContext
     ) -> RestoreChatUpdateMessageResult {
-        let oldName = profileChangeChatUpdateProto.previousName.filterForDisplay
-        let newName = profileChangeChatUpdateProto.newName.filterForDisplay
-
-        guard !oldName.isEmpty, !newName.isEmpty else {
-            return .partialRestore((), [.restoreFrameError(
-                .invalidProtoData(.profileChangeUpdateInvalidNames),
-                chatItem.id
-            )])
-        }
+        let oldName = profileChangeChatUpdateProto.previousName
+        let newName = profileChangeChatUpdateProto.newName
 
         guard
             let profileChangeAuthor = context.recipientContext[chatItem.authorRecipientId],

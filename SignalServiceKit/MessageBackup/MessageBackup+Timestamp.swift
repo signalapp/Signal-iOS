@@ -23,7 +23,7 @@ extension MessageBackup {
         /// and are never cases of valid, legitimate data that we shouldn't drop.
         static func validateTimestamp(_ timestamp: UInt64?) -> MessageBackup.ArchiveInteractionResult<Void> {
             guard isValid(timestamp) else {
-                return .skippableChatUpdate(.timestampTooLarge)
+                return .skippableInteraction(.timestampTooLarge)
             }
             return .success(())
         }

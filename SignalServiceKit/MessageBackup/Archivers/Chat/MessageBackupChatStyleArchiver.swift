@@ -91,7 +91,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
             // Just log these errors, but count as success and proceed.
             MessageBackup
                 .collapse(partialErrors
-                    .map { MessageBackup.LoggableErrorAndProto(error: $0, wasFatal: false) }
+                    .map { MessageBackup.LoggableErrorAndProto(error: $0, wasFrameDropped: false) }
                 )
                 .forEach { $0.log() }
         }
@@ -472,7 +472,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                         .failedToEnqueueAttachmentForUpload,
                         errorId
                     ),
-                    wasFatal: false
+                    wasFrameDropped: false
                 )]).forEach { $0.log() }
             }
         }

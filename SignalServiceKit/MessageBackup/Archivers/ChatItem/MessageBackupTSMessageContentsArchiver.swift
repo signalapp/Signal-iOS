@@ -373,7 +373,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             // We would hard-error here, but we know these exist in the wild
             // and don't want to hard error any user that has them when we can
             // just skip.
-            return .skippableChatUpdate(.emptyBodyMessage)
+            return .skippableInteraction(.emptyBodyMessage)
         }
 
         if let quotedMessage = message.quotedMessage {
@@ -887,7 +887,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         case .contactThread(let contactAddress):
             if contactAddress?.aci == context.recipientContext.localIdentifiers.aci {
                 // See comment on skippable update enum case.
-                return .skippableChatUpdate(.directStoryReplyInNoteToSelf)
+                return .skippableInteraction(.directStoryReplyInNoteToSelf)
             }
         }
 

@@ -183,7 +183,7 @@ extension MessageBackup {
         }
     }
 
-    enum SkippableChatUpdate {
+    enum SkippableInteraction {
         enum SkippableGroupUpdate {
             /// This is a group update from back when we kept raw strings on
             /// disk, instead of metadata required to construct the string. We
@@ -294,7 +294,7 @@ extension MessageBackup {
         // MARK: Skips
 
         /// We intentionally skip archiving some chat-update interactions.
-        case skippableChatUpdate(SkippableChatUpdate)
+        case skippableInteraction(SkippableInteraction)
 
         // MARK: Errors
 
@@ -374,8 +374,8 @@ extension MessageBackup.ArchiveInteractionResult {
             return .continue(value)
 
         // These types are just bubbled up as-is
-        case .skippableChatUpdate(let skippableChatUpdate):
-            return .bubbleUpError(.skippableChatUpdate(skippableChatUpdate))
+        case .skippableInteraction(let skippableInteraction):
+            return .bubbleUpError(.skippableInteraction(skippableInteraction))
         case .completeFailure(let error):
             return .bubbleUpError(.completeFailure(error))
 

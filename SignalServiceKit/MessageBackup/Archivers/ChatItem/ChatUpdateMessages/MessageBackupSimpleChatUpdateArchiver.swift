@@ -244,23 +244,23 @@ final class MessageBackupSimpleChatUpdateArchiver {
 
         switch errorMessage.errorType {
         case .noSession:
-            return .skippableChatUpdate(.legacyErrorMessage(.noSession))
+            return .skippableInteraction(.legacyErrorMessage(.noSession))
         case .wrongTrustedIdentityKey:
-            return .skippableChatUpdate(.legacyErrorMessage(.wrongTrustedIdentityKey))
+            return .skippableInteraction(.legacyErrorMessage(.wrongTrustedIdentityKey))
         case .invalidKeyException:
-            return .skippableChatUpdate(.legacyErrorMessage(.invalidKeyException))
+            return .skippableInteraction(.legacyErrorMessage(.invalidKeyException))
         case .missingKeyId:
-            return .skippableChatUpdate(.legacyErrorMessage(.missingKeyId))
+            return .skippableInteraction(.legacyErrorMessage(.missingKeyId))
         case .invalidMessage:
-            return .skippableChatUpdate(.legacyErrorMessage(.invalidMessage))
+            return .skippableInteraction(.legacyErrorMessage(.invalidMessage))
         case .duplicateMessage:
-            return .skippableChatUpdate(.legacyErrorMessage(.duplicateMessage))
+            return .skippableInteraction(.legacyErrorMessage(.duplicateMessage))
         case .invalidVersion:
-            return .skippableChatUpdate(.legacyErrorMessage(.invalidVersion))
+            return .skippableInteraction(.legacyErrorMessage(.invalidVersion))
         case .unknownContactBlockOffer:
-            return .skippableChatUpdate(.legacyErrorMessage(.unknownContactBlockOffer))
+            return .skippableInteraction(.legacyErrorMessage(.unknownContactBlockOffer))
         case .groupCreationFailed:
-            return .skippableChatUpdate(.legacyErrorMessage(.groupCreationFailed))
+            return .skippableInteraction(.legacyErrorMessage(.groupCreationFailed))
         case .nonBlockingIdentityChange:
             /// This type of error message historically put the person with the
             /// identity-key change on the `recipientAddress` property.

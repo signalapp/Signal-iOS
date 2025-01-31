@@ -126,24 +126,24 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
 
         switch infoMessage.messageType {
         case .typeGroupUpdate:
-            return .skippableChatUpdate(.skippableGroupUpdate(.missingUpdateMetadata))
+            return .skippableInteraction(.skippableGroupUpdate(.missingUpdateMetadata))
         case .userNotRegistered:
-            return .skippableChatUpdate(.legacyInfoMessage(.userNotRegistered))
+            return .skippableInteraction(.legacyInfoMessage(.userNotRegistered))
         case .typeUnsupportedMessage:
-            return .skippableChatUpdate(.legacyInfoMessage(.typeUnsupportedMessage))
+            return .skippableInteraction(.legacyInfoMessage(.typeUnsupportedMessage))
         case .typeGroupQuit:
-            return .skippableChatUpdate(.legacyInfoMessage(.typeGroupQuit))
+            return .skippableInteraction(.legacyInfoMessage(.typeGroupQuit))
         case .addToContactsOffer:
-            return .skippableChatUpdate(.legacyInfoMessage(.addToContactsOffer))
+            return .skippableInteraction(.legacyInfoMessage(.addToContactsOffer))
         case .addUserToProfileWhitelistOffer:
-            return .skippableChatUpdate(.legacyInfoMessage(.addUserToProfileWhitelistOffer))
+            return .skippableInteraction(.legacyInfoMessage(.addUserToProfileWhitelistOffer))
         case .addGroupToProfileWhitelistOffer:
-            return .skippableChatUpdate(.legacyInfoMessage(.addGroupToProfileWhitelistOffer))
+            return .skippableInteraction(.legacyInfoMessage(.addGroupToProfileWhitelistOffer))
         case .syncedThread:
-            return .skippableChatUpdate(.legacyInfoMessage(.syncedThread))
+            return .skippableInteraction(.legacyInfoMessage(.syncedThread))
         case .recipientHidden:
             /// This info message type is handled specially.
-            return .skippableChatUpdate(.contactHiddenInfoMessage)
+            return .skippableInteraction(.contactHiddenInfoMessage)
         case
                 .verificationStateChange,
                 .typeLocalUserEndedSession,

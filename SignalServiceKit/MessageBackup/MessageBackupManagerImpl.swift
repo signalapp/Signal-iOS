@@ -353,229 +353,229 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         var errors = [LoggableErrorAndProto]()
-        defer {
-            self.processErrors(errors: errors, tx: tx)
-        }
+        let result = Result<Void, Error>(catching: {
+            Logger.info("Exporting for \(purposeString) with version \(backupVersion), timestamp \(startTimestamp)")
 
-        Logger.info("Exporting for \(purposeString) with version \(backupVersion), timestamp \(startTimestamp)")
+            try autoreleasepool {
+                try writeHeader(
+                    stream: stream,
+                    backupVersion: backupVersion,
+                    backupTimeMs: startTimestamp,
+                    currentAppVersion: currentAppVersion,
+                    firstAppVersion: firstAppVersion,
+                    tx: tx
+                )
+            }
+            try Task.checkCancellation()
 
-        try autoreleasepool {
-            try writeHeader(
-                stream: stream,
-                backupVersion: backupVersion,
-                backupTimeMs: startTimestamp,
-                currentAppVersion: currentAppVersion,
-                firstAppVersion: firstAppVersion,
+            let currentBackupAttachmentUploadEra: String?
+            if MessageBackupMessageAttachmentArchiver.isFreeTierBackup() {
+                currentBackupAttachmentUploadEra = nil
+            } else {
+                currentBackupAttachmentUploadEra = try MessageBackupMessageAttachmentArchiver.currentUploadEra()
+            }
+
+            let customChatColorContext = MessageBackup.CustomChatColorArchivingContext(
+                backupPurpose: backupPurpose,
+                bencher: bencher,
+                currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+                backupAttachmentUploadManager: backupAttachmentUploadManager,
                 tx: tx
             )
-        }
-        try Task.checkCancellation()
-
-        let currentBackupAttachmentUploadEra: String?
-        if MessageBackupMessageAttachmentArchiver.isFreeTierBackup() {
-            currentBackupAttachmentUploadEra = nil
-        } else {
-            currentBackupAttachmentUploadEra = try MessageBackupMessageAttachmentArchiver.currentUploadEra()
-        }
-
-        let customChatColorContext = MessageBackup.CustomChatColorArchivingContext(
-            backupPurpose: backupPurpose,
-            bencher: bencher,
-            currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-            backupAttachmentUploadManager: backupAttachmentUploadManager,
-            tx: tx
-        )
-        try autoreleasepool {
-            let accountDataResult = accountDataArchiver.archiveAccountData(
-                stream: stream,
-                context: customChatColorContext
-            )
-            switch accountDataResult {
-            case .success:
-                break
-            case .failure(let error):
-                errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
-                throw OWSAssertionError("Failed to archive account data")
+            try autoreleasepool {
+                let accountDataResult = accountDataArchiver.archiveAccountData(
+                    stream: stream,
+                    context: customChatColorContext
+                )
+                switch accountDataResult {
+                case .success:
+                    break
+                case .failure(let error):
+                    errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                    throw OWSAssertionError("Failed to archive account data")
+                }
             }
-        }
-        try Task.checkCancellation()
+            try Task.checkCancellation()
 
-        let localRecipientResult = localRecipientArchiver.archiveLocalRecipient(
-            stream: stream,
-            bencher: bencher
-        )
+            let localRecipientResult = localRecipientArchiver.archiveLocalRecipient(
+                stream: stream,
+                bencher: bencher
+            )
 
-        try Task.checkCancellation()
+            try Task.checkCancellation()
 
-        let localRecipientId: MessageBackup.RecipientId
-        switch localRecipientResult {
-        case .success(let success):
-            localRecipientId = success
-        case .failure(let error):
-            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
-            throw OWSAssertionError("Failed to archive local recipient!")
-        }
+            let localRecipientId: MessageBackup.RecipientId
+            switch localRecipientResult {
+            case .success(let success):
+                localRecipientId = success
+            case .failure(let error):
+                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                throw OWSAssertionError("Failed to archive local recipient!")
+            }
 
-        let recipientArchivingContext = MessageBackup.RecipientArchivingContext(
-            backupPurpose: backupPurpose,
-            bencher: bencher,
-            currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-            backupAttachmentUploadManager: backupAttachmentUploadManager,
-            localIdentifiers: localIdentifiers,
-            localRecipientId: localRecipientId,
-            tx: tx
-        )
+            let recipientArchivingContext = MessageBackup.RecipientArchivingContext(
+                backupPurpose: backupPurpose,
+                bencher: bencher,
+                currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+                backupAttachmentUploadManager: backupAttachmentUploadManager,
+                localIdentifiers: localIdentifiers,
+                localRecipientId: localRecipientId,
+                tx: tx
+            )
 
-        try autoreleasepool {
-            switch releaseNotesRecipientArchiver.archiveReleaseNotesRecipient(
+            try autoreleasepool {
+                switch releaseNotesRecipientArchiver.archiveReleaseNotesRecipient(
+                    stream: stream,
+                    context: recipientArchivingContext
+                ) {
+                case .success:
+                    break
+                case .failure(let error):
+                    errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                    throw OWSAssertionError("Failed to archive release notes channel!")
+                }
+            }
+            try Task.checkCancellation()
+
+            switch try contactRecipientArchiver.archiveAllContactRecipients(
                 stream: stream,
                 context: recipientArchivingContext
             ) {
             case .success:
                 break
-            case .failure(let error):
-                errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
-                throw OWSAssertionError("Failed to archive release notes channel!")
+            case .partialSuccess(let partialFailures):
+                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+            case .completeFailure(let error):
+                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                throw BackupError()
             }
-        }
-        try Task.checkCancellation()
 
-        switch try contactRecipientArchiver.archiveAllContactRecipients(
-            stream: stream,
-            context: recipientArchivingContext
-        ) {
-        case .success:
-            break
-        case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
-        case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
-            throw BackupError()
-        }
-
-        switch try groupRecipientArchiver.archiveAllGroupRecipients(
-            stream: stream,
-            context: recipientArchivingContext
-        ) {
-        case .success:
-            break
-        case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
-        case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
-            throw BackupError()
-        }
-
-        switch try distributionListRecipientArchiver.archiveAllDistributionListRecipients(
-            stream: stream,
-            context: recipientArchivingContext
-        ) {
-        case .success:
-            break
-        case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
-        case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
-            throw BackupError()
-        }
-
-        switch try callLinkRecipientArchiver.archiveAllCallLinkRecipients(
-            stream: stream,
-            context: recipientArchivingContext
-        ) {
-        case .success:
-            break
-        case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
-        case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
-            throw BackupError()
-        }
-
-        let chatArchivingContext = MessageBackup.ChatArchivingContext(
-            backupPurpose: backupPurpose,
-            bencher: bencher,
-            currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-            backupAttachmentUploadManager: backupAttachmentUploadManager,
-            customChatColorContext: customChatColorContext,
-            recipientContext: recipientArchivingContext,
-            tx: tx
-        )
-        let chatArchiveResult = try chatArchiver.archiveChats(
-            stream: stream,
-            context: chatArchivingContext
-        )
-        switch chatArchiveResult {
-        case .success:
-            break
-        case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
-        case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
-            throw BackupError()
-        }
-
-        let chatItemArchiveResult = try chatItemArchiver.archiveInteractions(
-            stream: stream,
-            context: chatArchivingContext
-        )
-        switch chatItemArchiveResult {
-        case .success:
-            break
-        case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
-        case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
-            throw BackupError()
-        }
-
-        let archivingContext = MessageBackup.ArchivingContext(
-            backupPurpose: backupPurpose,
-            bencher: bencher,
-            currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
-            backupAttachmentUploadManager: backupAttachmentUploadManager,
-            tx: tx
-        )
-        let stickerPackArchiveResult = try stickerPackArchiver.archiveStickerPacks(
-            stream: stream,
-            context: archivingContext
-        )
-        switch stickerPackArchiveResult {
-        case .success:
-            break
-        case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
-        case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
-            throw BackupError()
-        }
-
-        let adHocCallArchiveResult = try adHocCallArchiver.archiveAdHocCalls(
-            stream: stream,
-            context: chatArchivingContext
-        )
-        switch adHocCallArchiveResult {
-        case .success:
-            break
-        case .partialSuccess(let partialFailures):
-            errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFatal: false) })
-        case .completeFailure(let error):
-            errors.append(LoggableErrorAndProto(error: error, wasFatal: true))
-            throw BackupError()
-        }
-
-        try stream.closeFileStream()
-
-        tx.addAsyncCompletion(on: DispatchQueue.global()) { [backupAttachmentUploadManager] in
-            Task {
-                // TODO: [Backups] this needs to talk to the banner at the top of the chat
-                // list to show progress.
-                try await backupAttachmentUploadManager.backUpAllAttachments()
+            switch try groupRecipientArchiver.archiveAllGroupRecipients(
+                stream: stream,
+                context: recipientArchivingContext
+            ) {
+            case .success:
+                break
+            case .partialSuccess(let partialFailures):
+                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+            case .completeFailure(let error):
+                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                throw BackupError()
             }
-        }
 
-        Logger.info("Finished exporting backup")
-        bencher.logResults()
+            switch try distributionListRecipientArchiver.archiveAllDistributionListRecipients(
+                stream: stream,
+                context: recipientArchivingContext
+            ) {
+            case .success:
+                break
+            case .partialSuccess(let partialFailures):
+                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+            case .completeFailure(let error):
+                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                throw BackupError()
+            }
+
+            switch try callLinkRecipientArchiver.archiveAllCallLinkRecipients(
+                stream: stream,
+                context: recipientArchivingContext
+            ) {
+            case .success:
+                break
+            case .partialSuccess(let partialFailures):
+                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+            case .completeFailure(let error):
+                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                throw BackupError()
+            }
+
+            let chatArchivingContext = MessageBackup.ChatArchivingContext(
+                backupPurpose: backupPurpose,
+                bencher: bencher,
+                currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+                backupAttachmentUploadManager: backupAttachmentUploadManager,
+                customChatColorContext: customChatColorContext,
+                recipientContext: recipientArchivingContext,
+                tx: tx
+            )
+            let chatArchiveResult = try chatArchiver.archiveChats(
+                stream: stream,
+                context: chatArchivingContext
+            )
+            switch chatArchiveResult {
+            case .success:
+                break
+            case .partialSuccess(let partialFailures):
+                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+            case .completeFailure(let error):
+                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                throw BackupError()
+            }
+
+            let chatItemArchiveResult = try chatItemArchiver.archiveInteractions(
+                stream: stream,
+                context: chatArchivingContext
+            )
+            switch chatItemArchiveResult {
+            case .success:
+                break
+            case .partialSuccess(let partialFailures):
+                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+            case .completeFailure(let error):
+                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                throw BackupError()
+            }
+
+            let archivingContext = MessageBackup.ArchivingContext(
+                backupPurpose: backupPurpose,
+                bencher: bencher,
+                currentBackupAttachmentUploadEra: currentBackupAttachmentUploadEra,
+                backupAttachmentUploadManager: backupAttachmentUploadManager,
+                tx: tx
+            )
+            let stickerPackArchiveResult = try stickerPackArchiver.archiveStickerPacks(
+                stream: stream,
+                context: archivingContext
+            )
+            switch stickerPackArchiveResult {
+            case .success:
+                break
+            case .partialSuccess(let partialFailures):
+                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+            case .completeFailure(let error):
+                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                throw BackupError()
+            }
+
+            let adHocCallArchiveResult = try adHocCallArchiver.archiveAdHocCalls(
+                stream: stream,
+                context: chatArchivingContext
+            )
+            switch adHocCallArchiveResult {
+            case .success:
+                break
+            case .partialSuccess(let partialFailures):
+                errors.append(contentsOf: partialFailures.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false) })
+            case .completeFailure(let error):
+                errors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true))
+                throw BackupError()
+            }
+
+            try stream.closeFileStream()
+
+            tx.addAsyncCompletion(on: DispatchQueue.global()) { [backupAttachmentUploadManager] in
+                Task {
+                    // TODO: [Backups] this needs to talk to the banner at the top of the chat
+                    // list to show progress.
+                    try await backupAttachmentUploadManager.backUpAllAttachments()
+                }
+            }
+
+            Logger.info("Finished exporting backup")
+            bencher.logResults()
+        })
+        processErrors(errors: errors, didFail: result.isSuccess.negated, tx: tx)
+        return try result.get()
     }
 
     private func writeHeader(
@@ -759,334 +759,359 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         var frameErrors = [LoggableErrorAndProto]()
-        defer {
-            self.processErrors(errors: frameErrors, tx: tx)
-        }
+        let result = Result<BackupProto_BackupInfo, Error>(catching: {
 
-        let backupInfo: BackupProto_BackupInfo
-        var hasMoreFrames = false
-        switch stream.readHeader() {
-        case .success(let header, let moreBytesAvailable):
-            backupInfo = header
-            hasMoreFrames = moreBytesAvailable
-        case .invalidByteLengthDelimiter:
-            throw OWSAssertionError("invalid byte length delimiter on header")
-        case .emptyFinalFrame:
-            throw OWSAssertionError("invalid empty header frame")
-        case .protoDeserializationError(let error):
-            // Fail if we fail to deserialize the header.
-            frameErrors.append(LoggableErrorAndProto(
-                error: MessageBackup.RestoreFrameError.restoreFrameError(
-                    .invalidProtoData(.missingBackupInfoHeader),
-                    MessageBackup.BackupInfoId()
-                ),
-                wasFatal: true
-            ))
-            throw error
-        }
-
-        Logger.info("Importing with version \(backupInfo.version), timestamp \(backupInfo.backupTimeMs)")
-
-        guard backupInfo.version == Constants.supportedBackupVersion else {
-            frameErrors.append(LoggableErrorAndProto(
-                error: MessageBackup.RestoreFrameError.restoreFrameError(
-                    .invalidProtoData(.unsupportedBackupInfoVersion),
-                    MessageBackup.BackupInfoId()
-                ),
-                wasFatal: true,
-                protoFrame: backupInfo
-            ))
-            throw BackupImportError.unsupportedVersion
-        }
-        do {
-            try mrbkStore.setMediaRootBackupKey(fromRestoredBackup: backupInfo, tx: tx)
-        } catch {
-            frameErrors.append(LoggableErrorAndProto(
-                error: MessageBackup.RestoreFrameError.restoreFrameError(
-                    .invalidProtoData(.invalidMediaRootBackupKey),
-                    MessageBackup.BackupInfoId()
-                ),
-                wasFatal: true,
-                protoFrame: backupInfo
-            ))
-            throw error
-        }
-
-        /// Wraps all the various "contexts" we pass to downstream archivers.
-        struct Contexts {
-            let chat: MessageBackup.ChatRestoringContext
-            var chatItem: MessageBackup.ChatItemRestoringContext
-            let customChatColor: MessageBackup.CustomChatColorRestoringContext
-            let recipient: MessageBackup.RecipientRestoringContext
-
-            var all: [MessageBackup.RestoringContext] {
-                [chat, chatItem, customChatColor, recipient]
+            let backupInfo: BackupProto_BackupInfo
+            var hasMoreFrames = false
+            switch stream.readHeader() {
+            case .success(let header, let moreBytesAvailable):
+                backupInfo = header
+                hasMoreFrames = moreBytesAvailable
+            case .invalidByteLengthDelimiter:
+                throw OWSAssertionError("invalid byte length delimiter on header")
+            case .emptyFinalFrame:
+                throw OWSAssertionError("invalid empty header frame")
+            case .protoDeserializationError(let error):
+                // Fail if we fail to deserialize the header.
+                frameErrors.append(LoggableErrorAndProto(
+                    error: MessageBackup.RestoreFrameError.restoreFrameError(
+                        .invalidProtoData(.missingBackupInfoHeader),
+                        MessageBackup.BackupInfoId()
+                    ),
+                    wasFrameDropped: true
+                ))
+                throw error
             }
 
-            init(localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {
-                customChatColor = MessageBackup.CustomChatColorRestoringContext(tx: tx)
-                recipient = MessageBackup.RecipientRestoringContext(
-                    localIdentifiers: localIdentifiers,
-                    tx: tx
-                )
-                chat = MessageBackup.ChatRestoringContext(
-                    customChatColorContext: customChatColor,
-                    recipientContext: recipient,
-                    tx: tx
-                )
-                chatItem = MessageBackup.ChatItemRestoringContext(
-                    recipientContext: recipient,
-                    chatContext: chat,
-                    tx: tx
-                )
-            }
-        }
-        let contexts = Contexts(localIdentifiers: localIdentifiers, tx: tx)
+            Logger.info("Importing with version \(backupInfo.version), timestamp \(backupInfo.backupTimeMs)")
 
-        while hasMoreFrames {
-            try Task.checkCancellation()
-            try autoreleasepool {
-                let frame: BackupProto_Frame?
-                switch stream.readFrame() {
-                case let .success(_frame, moreBytesAvailable):
-                    frame = _frame
-                    hasMoreFrames = moreBytesAvailable
-                case .invalidByteLengthDelimiter:
-                    throw OWSAssertionError("invalid byte length delimiter on header")
-                case .emptyFinalFrame:
-                    frame = nil
-                    hasMoreFrames = false
-                case .protoDeserializationError(let error):
-                    // fail the whole thing if we fail to deserialize one frame
-                    owsFailDebug("Failed to deserialize proto frame!")
-                    throw error
+            guard backupInfo.version == Constants.supportedBackupVersion else {
+                frameErrors.append(LoggableErrorAndProto(
+                    error: MessageBackup.RestoreFrameError.restoreFrameError(
+                        .invalidProtoData(.unsupportedBackupInfoVersion),
+                        MessageBackup.BackupInfoId()
+                    ),
+                    wasFrameDropped: true,
+                    protoFrame: backupInfo
+                ))
+                throw BackupImportError.unsupportedVersion
+            }
+            do {
+                try mrbkStore.setMediaRootBackupKey(fromRestoredBackup: backupInfo, tx: tx)
+            } catch {
+                frameErrors.append(LoggableErrorAndProto(
+                    error: MessageBackup.RestoreFrameError.restoreFrameError(
+                        .invalidProtoData(.invalidMediaRootBackupKey),
+                        MessageBackup.BackupInfoId()
+                    ),
+                    wasFrameDropped: true,
+                    protoFrame: backupInfo
+                ))
+                throw error
+            }
+
+            /// Wraps all the various "contexts" we pass to downstream archivers.
+            struct Contexts {
+                let chat: MessageBackup.ChatRestoringContext
+                var chatItem: MessageBackup.ChatItemRestoringContext
+                let customChatColor: MessageBackup.CustomChatColorRestoringContext
+                let recipient: MessageBackup.RecipientRestoringContext
+
+                var all: [MessageBackup.RestoringContext] {
+                    [chat, chatItem, customChatColor, recipient]
                 }
 
-                try bencher.processFrame { frameBencher in
-                    defer {
-                        if let frame {
-                            frameBencher.didProcessFrame(frame)
+                init(localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {
+                    customChatColor = MessageBackup.CustomChatColorRestoringContext(tx: tx)
+                    recipient = MessageBackup.RecipientRestoringContext(
+                        localIdentifiers: localIdentifiers,
+                        tx: tx
+                    )
+                    chat = MessageBackup.ChatRestoringContext(
+                        customChatColorContext: customChatColor,
+                        recipientContext: recipient,
+                        tx: tx
+                    )
+                    chatItem = MessageBackup.ChatItemRestoringContext(
+                        recipientContext: recipient,
+                        chatContext: chat,
+                        tx: tx
+                    )
+                }
+            }
+            let contexts = Contexts(localIdentifiers: localIdentifiers, tx: tx)
+
+            while hasMoreFrames {
+                try Task.checkCancellation()
+                try autoreleasepool {
+                    let frame: BackupProto_Frame?
+                    switch stream.readFrame() {
+                    case let .success(_frame, moreBytesAvailable):
+                        frame = _frame
+                        hasMoreFrames = moreBytesAvailable
+                    case .invalidByteLengthDelimiter:
+                        throw OWSAssertionError("invalid byte length delimiter on header")
+                    case .emptyFinalFrame:
+                        frame = nil
+                        hasMoreFrames = false
+                    case .protoDeserializationError(let error):
+                        // fail the whole thing if we fail to deserialize one frame
+                        owsFailDebug("Failed to deserialize proto frame!")
+                        if FeatureFlags.backupRestoreFailOnAnyError {
+                            throw error
+                        } else {
+                            return
                         }
                     }
 
-                    switch frame?.item {
-                    case .recipient(let recipient):
-                        let recipientResult: MessageBackup.RestoreFrameResult<MessageBackup.RecipientId>
-                        switch recipient.destination {
+                    try bencher.processFrame { frameBencher in
+                        defer {
+                            if let frame {
+                                frameBencher.didProcessFrame(frame)
+                            }
+                        }
+
+                        switch frame?.item {
+                        case .recipient(let recipient):
+                            let recipientResult: MessageBackup.RestoreFrameResult<MessageBackup.RecipientId>
+                            switch recipient.destination {
+                            case nil:
+                                recipientResult = .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
+                                    enumType: BackupProto_Recipient.OneOf_Destination.self
+                                ))
+                            case .self_p(let selfRecipientProto):
+                                recipientResult = localRecipientArchiver.restoreSelfRecipient(
+                                    selfRecipientProto,
+                                    recipient: recipient,
+                                    context: contexts.recipient
+                                )
+                            case .contact(let contactRecipientProto):
+                                recipientResult = contactRecipientArchiver.restoreContactRecipientProto(
+                                    contactRecipientProto,
+                                    recipient: recipient,
+                                    context: contexts.recipient
+                                )
+                            case .group(let groupRecipientProto):
+                                recipientResult = groupRecipientArchiver.restoreGroupRecipientProto(
+                                    groupRecipientProto,
+                                    recipient: recipient,
+                                    context: contexts.recipient
+                                )
+                            case .distributionList(let distributionListRecipientProto):
+                                recipientResult = distributionListRecipientArchiver.restoreDistributionListRecipientProto(
+                                    distributionListRecipientProto,
+                                    recipient: recipient,
+                                    context: contexts.recipient
+                                )
+                            case .releaseNotes(let releaseNotesRecipientProto):
+                                recipientResult = releaseNotesRecipientArchiver.restoreReleaseNotesRecipientProto(
+                                    releaseNotesRecipientProto,
+                                    recipient: recipient,
+                                    context: contexts.recipient
+                                )
+                            case .callLink(let callLinkRecipientProto):
+                                recipientResult = callLinkRecipientArchiver.restoreCallLinkRecipientProto(
+                                    callLinkRecipientProto,
+                                    recipient: recipient,
+                                    context: contexts.recipient
+                                )
+                            }
+
+                            switch recipientResult {
+                            case .success:
+                                return
+                            case .unrecognizedEnum(let error):
+                                frameErrors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true, protoFrame: recipient))
+                                return
+                            case .partialRestore(let errors):
+                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: recipient) })
+                            case .failure(let errors):
+                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: recipient) })
+                                if FeatureFlags.backupRestoreFailOnAnyError {
+                                    throw BackupError()
+                                }
+                            }
+                        case .chat(let chat):
+                            let chatResult = chatArchiver.restore(
+                                chat,
+                                context: contexts.chat
+                            )
+                            switch chatResult {
+                            case .success:
+                                return
+                            case .unrecognizedEnum(let error):
+                                frameErrors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true, protoFrame: chat))
+                                return
+                            case .partialRestore(let errors):
+                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: chat) })
+                            case .failure(let errors):
+                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: chat) })
+                                if FeatureFlags.backupRestoreFailOnAnyError {
+                                    throw BackupError()
+                                }
+                            }
+                        case .chatItem(let chatItem):
+                            let chatItemResult = chatItemArchiver.restore(
+                                chatItem,
+                                context: contexts.chatItem
+                            )
+                            switch chatItemResult {
+                            case .success:
+                                return
+                            case .unrecognizedEnum(let error):
+                                frameErrors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true, protoFrame: chatItem))
+                                return
+                            case .partialRestore(let errors):
+                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: chatItem) })
+                            case .failure(let errors):
+                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: chatItem) })
+                                if FeatureFlags.backupRestoreFailOnAnyError {
+                                    throw BackupError()
+                                }
+                            }
+                        case .account(let backupProtoAccountData):
+                            let accountDataResult = accountDataArchiver.restore(
+                                backupProtoAccountData,
+                                chatColorsContext: contexts.customChatColor,
+                                chatItemContext: contexts.chatItem
+                            )
+                            switch accountDataResult {
+                            case .success:
+                                return
+                            case .unrecognizedEnum(let error):
+                                frameErrors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true, protoFrame: backupProtoAccountData))
+                                return
+                            case .partialRestore(let errors):
+                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: backupProtoAccountData) })
+                            case .failure(let errors):
+                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: backupProtoAccountData) })
+                                // We always fail if we fail to import account data, even in prod.
+                                throw BackupError()
+                            }
+                        case .stickerPack(let backupProtoStickerPack):
+                            let stickerPackResult = stickerPackArchiver.restore(
+                                backupProtoStickerPack,
+                                context: MessageBackup.RestoringContext(tx: tx)
+                            )
+                            switch stickerPackResult {
+                            case .success:
+                                return
+                            case .unrecognizedEnum(let error):
+                                frameErrors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true, protoFrame: backupProtoStickerPack))
+                                return
+                            case .partialRestore(let errors):
+                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: backupProtoStickerPack) })
+                            case .failure(let errors):
+                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: backupProtoStickerPack) })
+                                if FeatureFlags.backupRestoreFailOnAnyError {
+                                    throw BackupError()
+                                }
+                            }
+                        case .adHocCall(let backupProtoAdHocCall):
+                            let adHocCallResult = adHocCallArchiver.restore(
+                                backupProtoAdHocCall,
+                                context: contexts.chatItem
+                            )
+                            switch adHocCallResult {
+                            case .success:
+                                return
+                            case .unrecognizedEnum(let error):
+                                frameErrors.append(LoggableErrorAndProto(error: error, wasFrameDropped: true, protoFrame: backupProtoAdHocCall))
+                                return
+                            case .partialRestore(let errors):
+                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: backupProtoAdHocCall) })
+                            case .failure(let errors):
+                                frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: backupProtoAdHocCall) })
+                                if FeatureFlags.backupRestoreFailOnAnyError {
+                                    throw BackupError()
+                                }
+                            }
+                        case .notificationProfile:
+                            // Notification profiles are unsupported on iOS and
+                            // we do not even round trip them per spec.
+                            break
+                        case .chatFolder:
+                            // Chat folders are unsupported on iOS and
+                            // we do not even round trip them per spec.
+                            break
                         case nil:
-                            recipientResult = .unrecognizedEnum(MessageBackup.UnrecognizedEnumError(
-                                enumType: BackupProto_Recipient.OneOf_Destination.self
-                            ))
-                        case .self_p(let selfRecipientProto):
-                            recipientResult = localRecipientArchiver.restoreSelfRecipient(
-                                selfRecipientProto,
-                                recipient: recipient,
-                                context: contexts.recipient
-                            )
-                        case .contact(let contactRecipientProto):
-                            recipientResult = contactRecipientArchiver.restoreContactRecipientProto(
-                                contactRecipientProto,
-                                recipient: recipient,
-                                context: contexts.recipient
-                            )
-                        case .group(let groupRecipientProto):
-                            recipientResult = groupRecipientArchiver.restoreGroupRecipientProto(
-                                groupRecipientProto,
-                                recipient: recipient,
-                                context: contexts.recipient
-                            )
-                        case .distributionList(let distributionListRecipientProto):
-                            recipientResult = distributionListRecipientArchiver.restoreDistributionListRecipientProto(
-                                distributionListRecipientProto,
-                                recipient: recipient,
-                                context: contexts.recipient
-                            )
-                        case .releaseNotes(let releaseNotesRecipientProto):
-                            recipientResult = releaseNotesRecipientArchiver.restoreReleaseNotesRecipientProto(
-                                releaseNotesRecipientProto,
-                                recipient: recipient,
-                                context: contexts.recipient
-                            )
-                        case .callLink(let callLinkRecipientProto):
-                            recipientResult = callLinkRecipientArchiver.restoreCallLinkRecipientProto(
-                                callLinkRecipientProto,
-                                recipient: recipient,
-                                context: contexts.recipient
-                            )
-                        }
-
-                        switch recipientResult {
-                        case .success:
-                            return
-                        case .unrecognizedEnum(let error):
-                            frameErrors.append(LoggableErrorAndProto(error: error, wasFatal: false, protoFrame: recipient))
-                            return
-                        case .partialRestore(let errors):
-                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: recipient) })
-                        case .failure(let errors):
-                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: recipient) })
-                            throw BackupError()
-                        }
-                    case .chat(let chat):
-                        let chatResult = chatArchiver.restore(
-                            chat,
-                            context: contexts.chat
-                        )
-                        switch chatResult {
-                        case .success:
-                            return
-                        case .unrecognizedEnum(let error):
-                            frameErrors.append(LoggableErrorAndProto(error: error, wasFatal: false, protoFrame: chat))
-                            return
-                        case .partialRestore(let errors):
-                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: chat) })
-                        case .failure(let errors):
-                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: chat) })
-                            throw BackupError()
-                        }
-                    case .chatItem(let chatItem):
-                        let chatItemResult = chatItemArchiver.restore(
-                            chatItem,
-                            context: contexts.chatItem
-                        )
-                        switch chatItemResult {
-                        case .success:
-                            return
-                        case .unrecognizedEnum(let error):
-                            frameErrors.append(LoggableErrorAndProto(error: error, wasFatal: false, protoFrame: chatItem))
-                            return
-                        case .partialRestore(let errors):
-                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: chatItem) })
-                        case .failure(let errors):
-                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: chatItem) })
-                            throw BackupError()
-                        }
-                    case .account(let backupProtoAccountData):
-                        let accountDataResult = accountDataArchiver.restore(
-                            backupProtoAccountData,
-                            chatColorsContext: contexts.customChatColor,
-                            chatItemContext: contexts.chatItem
-                        )
-                        switch accountDataResult {
-                        case .success:
-                            return
-                        case .unrecognizedEnum(let error):
-                            frameErrors.append(LoggableErrorAndProto(error: error, wasFatal: false, protoFrame: backupProtoAccountData))
-                            return
-                        case .partialRestore(let errors):
-                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoAccountData) })
-                        case .failure(let errors):
-                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoAccountData) })
-                            throw BackupError()
-                        }
-                    case .stickerPack(let backupProtoStickerPack):
-                        let stickerPackResult = stickerPackArchiver.restore(
-                            backupProtoStickerPack,
-                            context: MessageBackup.RestoringContext(tx: tx)
-                        )
-                        switch stickerPackResult {
-                        case .success:
-                            return
-                        case .unrecognizedEnum(let error):
-                            frameErrors.append(LoggableErrorAndProto(error: error, wasFatal: false, protoFrame: backupProtoStickerPack))
-                            return
-                        case .partialRestore(let errors):
-                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoStickerPack) })
-                        case .failure(let errors):
-                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoStickerPack) })
-                            throw BackupError()
-                        }
-                    case .adHocCall(let backupProtoAdHocCall):
-                        let adHocCallResult = adHocCallArchiver.restore(
-                            backupProtoAdHocCall,
-                            context: contexts.chatItem
-                        )
-                        switch adHocCallResult {
-                        case .success:
-                            return
-                        case .unrecognizedEnum(let error):
-                            frameErrors.append(LoggableErrorAndProto(error: error, wasFatal: false, protoFrame: backupProtoAdHocCall))
-                            return
-                        case .partialRestore(let errors):
-                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: false, protoFrame: backupProtoAdHocCall) })
-                        case .failure(let errors):
-                            frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFatal: true, protoFrame: backupProtoAdHocCall) })
-                            throw BackupError()
-                        }
-                    case .notificationProfile:
-                        // Notification profiles are unsupported on iOS and
-                        // we do not even round trip them per spec.
-                        break
-                    case .chatFolder:
-                        // Chat folders are unsupported on iOS and
-                        // we do not even round trip them per spec.
-                        break
-                    case nil:
-                        if hasMoreFrames {
-                            frameErrors.append(LoggableErrorAndProto(
-                                error: MessageBackup.UnrecognizedEnumError(
-                                    enumType: BackupProto_Frame.OneOf_Item.self
-                                ),
-                                wasFatal: false
-                            ))
+                            if hasMoreFrames {
+                                frameErrors.append(LoggableErrorAndProto(
+                                    error: MessageBackup.UnrecognizedEnumError(
+                                        enumType: BackupProto_Frame.OneOf_Item.self
+                                    ),
+                                    wasFrameDropped: true
+                                ))
+                            }
                         }
                     }
                 }
             }
-        }
 
-        stream.closeFileStream()
+            stream.closeFileStream()
 
-        /// Take any necessary post-frame-restore actions.
-        try postFrameRestoreActionManager.performPostFrameRestoreActions(
-            recipientActions: contexts.recipient.postFrameRestoreActions,
-            chatActions: contexts.chat.postFrameRestoreActions,
-            bencher: bencher,
-            chatItemContext: contexts.chatItem
-        )
+            /// Take any necessary post-frame-restore actions.
+            try postFrameRestoreActionManager.performPostFrameRestoreActions(
+                recipientActions: contexts.recipient.postFrameRestoreActions,
+                chatActions: contexts.chat.postFrameRestoreActions,
+                bencher: bencher,
+                chatItemContext: contexts.chatItem
+            )
 
-        // Index threads synchronously
-        bencher.benchPostFrameAction(.IndexThreads) {
-            fullTextSearchIndexer.indexThreads(tx: tx)
-        }
-        // Schedule message indexing asynchronously
-        try fullTextSearchIndexer.scheduleMessagesJob(tx: tx)
-
-        tx.addAsyncCompletion(on: DispatchQueue.global()) { [backupAttachmentDownloadManager, disappearingMessagesJob] in
-            Task {
-                // Enqueue downloads for all the attachments.
-                try await backupAttachmentDownloadManager.restoreAttachmentsIfNeeded()
+            // Index threads synchronously
+            bencher.benchPostFrameAction(.IndexThreads) {
+                fullTextSearchIndexer.indexThreads(tx: tx)
             }
-            // Start ticking down for disappearing messages.
-            disappearingMessagesJob.startIfNecessary()
-        }
+            // Schedule message indexing asynchronously
+            try fullTextSearchIndexer.scheduleMessagesJob(tx: tx)
 
-        Logger.info("Imported with version \(backupInfo.version), timestamp \(backupInfo.backupTimeMs)")
-        Logger.info("Backup app version: \(backupInfo.currentAppVersion.nilIfEmpty ?? "Missing!")")
-        Logger.info("Backup first app version: \(backupInfo.firstAppVersion.nilIfEmpty ?? "Missing!")")
-        bencher.logResults()
+            tx.addAsyncCompletion(on: DispatchQueue.global()) { [backupAttachmentDownloadManager, disappearingMessagesJob] in
+                Task {
+                    // Enqueue downloads for all the attachments.
+                    try await backupAttachmentDownloadManager.restoreAttachmentsIfNeeded()
+                }
+                // Start ticking down for disappearing messages.
+                disappearingMessagesJob.startIfNecessary()
+            }
 
-        kvStore.setBool(true, key: Constants.keyValueStoreHasRestoredBackupKey, transaction: tx)
+            Logger.info("Imported with version \(backupInfo.version), timestamp \(backupInfo.backupTimeMs)")
+            Logger.info("Backup app version: \(backupInfo.currentAppVersion.nilIfEmpty ?? "Missing!")")
+            Logger.info("Backup first app version: \(backupInfo.firstAppVersion.nilIfEmpty ?? "Missing!")")
+            bencher.logResults()
 
-        return backupInfo
+            kvStore.setBool(true, key: Constants.keyValueStoreHasRestoredBackupKey, transaction: tx)
+
+            return backupInfo
+        })
+        processErrors(errors: frameErrors, didFail: result.isSuccess.negated, tx: tx)
+        return try result.get()
     }
 
     // MARK: -
 
     private func processErrors(
         errors: [LoggableErrorAndProto],
+        didFail: Bool,
         tx: DBWriteTransaction
     ) {
         let collapsedErrors = MessageBackup.collapse(errors)
         var maxLogLevel = -1
+        var wasFrameDropped = false
         collapsedErrors.forEach { collapsedError in
             collapsedError.log()
             maxLogLevel = max(maxLogLevel, collapsedError.logLevel.rawValue)
+            if collapsedError.wasFrameDropped {
+                wasFrameDropped = true
+            }
+        }
+        if wasFrameDropped {
+            // Log this specifically so we can do a naive exact text search in debug logs.
+            Logger.error("Dropped frame(s) on backup export or import!!!")
         }
         // Only present errors if some error rises above warning.
         // (But if one does, present _all_ errors).
         if maxLogLevel > MessageBackup.LogLevel.warning.rawValue {
-            errorPresenter.persistErrors(collapsedErrors, tx: tx)
+            errorPresenter.persistErrors(collapsedErrors, didFail: didFail, tx: tx)
         }
     }
 
