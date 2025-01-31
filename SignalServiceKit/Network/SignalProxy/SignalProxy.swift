@@ -127,11 +127,11 @@ public class SignalProxy: NSObject {
         // The NSE manages the proxy relay itself
         guard !CurrentAppContext().isNSE else { return }
 
-        let libsignalNet = SSKEnvironment.shared.networkManagerRef.libsignalNet
+        let networkManager = SSKEnvironment.shared.networkManagerRef
         if isEnabled {
             if let (proxyHost, proxyPort) = host.flatMap({ ProxyClient.parseHost($0) }) {
                 do {
-                    try libsignalNet?.setProxy(host: proxyHost, port: proxyPort)
+                    try networkManager.libsignalNet?.setProxy(host: proxyHost, port: proxyPort)
                 } catch {
                     owsFailDebug("failed to set proxy on libsignal-net (need better validation)")
                     // This will poison the Net instance, failing all new connections,
@@ -148,7 +148,7 @@ public class SignalProxy: NSObject {
                 relayServer.start()
             }
         } else {
-            libsignalNet?.clearProxy()
+            networkManager.resetLibsignalNetProxySettings()
             relayServer.stop()
         }
     }
