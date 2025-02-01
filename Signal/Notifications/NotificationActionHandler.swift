@@ -118,63 +118,84 @@ public class NotificationActionHandler {
     }
 
     private class func reply(userInfo: [AnyHashable: Any], replyText: String) throws -> Promise<Void> {
+        
         return firstly { () -> Promise<NotificationMessage> in
             self.notificationMessage(forUserInfo: userInfo)
         }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
-            let thread = notificationMessage.thread
-            let interaction = notificationMessage.interaction
-            guard (interaction is TSOutgoingMessage) || (interaction is TSIncomingMessage) else {
-                throw OWSAssertionError("Unexpected interaction type.")
+            try sendReplyToNotificationMessage(replyText: replyText, notificationMessage: notificationMessage)
+        }
+    }
+    
+    private class func sendReplyToNotificationMessage(replyText: String, notificationMessage: NotificationMessage) throws -> Promise<Void> {
+        let thread = notificationMessage.thread
+        let interaction = notificationMessage.interaction
+        guard (interaction is TSOutgoingMessage) || (interaction is TSIncomingMessage) else {
+            throw OWSAssertionError("Unexpected interaction type.")
+        }
+        return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
+            SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
+                builder.messageBody = replyText
+
+                // If we're replying to a group story reply, keep the reply within that context.
+                if
+                    let incomingMessage = interaction as? TSIncomingMessage,
+                    notificationMessage.isGroupStoryReply,
+                    let storyTimestamp = incomingMessage.storyTimestamp,
+                    let storyAuthorAci = incomingMessage.storyAuthorAci
+                {
+                    builder.storyTimestamp = storyTimestamp
+                    builder.storyAuthorAci = storyAuthorAci
+                } else {
+                    // We only use the thread's DM timer for normal messages & 1:1 story
+                    // replies -- group story replies last for the lifetime of the story.
+                    let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+                    let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
+                    builder.expiresInSeconds = dmConfig.durationSeconds
+                    builder.expireTimerVersion = NSNumber(value: dmConfig.timerVersion)
+                }
+                
+//                if let incomingMessage = interaction as? TSIncomingMessage {
+//                    let quotedMessage = TSQuotedMessage(timestamp: incomingMessage.serverTimestamp, authorAddress: incomingMessage.authorAddress, body: incomingMessage.body, bodyRanges: incomingMessage.bodyRanges, quotedAttachmentForSending: nil, isGiftBadge: incomingMessage.giftBadge != nil, isTargetMessageViewOnce: false)
+//                    builder.quotedMessage = quotedMessage
+//                }
+                
+                let outgoingMessage = TSOutgoingMessage(
+                    outgoingMessageWith: builder,
+                    additionalRecipients: [],
+                    explicitRecipients: [],
+                    skippedRecipients: [],
+                    transaction: transaction
+                )
+                
+                let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(outgoingMessage)
+                do {
+                    let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
+                    return ThreadUtil.enqueueMessagePromise(message: preparedMessage, transaction: transaction)
+                } catch {
+                    return Promise(error: error)
+                }
             }
-
-            return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
-                    builder.messageBody = replyText
-
-                    // If we're replying to a group story reply, keep the reply within that context.
-                    if
-                        let incomingMessage = interaction as? TSIncomingMessage,
-                        notificationMessage.isGroupStoryReply,
-                        let storyTimestamp = incomingMessage.storyTimestamp,
-                        let storyAuthorAci = incomingMessage.storyAuthorAci
-                    {
-                        builder.storyTimestamp = storyTimestamp
-                        builder.storyAuthorAci = storyAuthorAci
-                    } else {
-                        // We only use the thread's DM timer for normal messages & 1:1 story
-                        // replies -- group story replies last for the lifetime of the story.
-                        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
-                        builder.expiresInSeconds = dmConfig.durationSeconds
-                        builder.expireTimerVersion = NSNumber(value: dmConfig.timerVersion)
-                    }
-                    
-                    if let incomingMessage = interaction as? TSIncomingMessage {
-                        let quotedMessage = TSQuotedMessage(timestamp: incomingMessage.serverTimestamp, authorAddress: incomingMessage.authorAddress, body: incomingMessage.body, bodyRanges: incomingMessage.bodyRanges, quotedAttachmentForSending: nil, isGiftBadge: incomingMessage.giftBadge != nil, isTargetMessageViewOnce: false)
-                        builder.quotedMessage = quotedMessage
-                    }
-                    
-                    let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(TSOutgoingMessage(
-                        outgoingMessageWith: builder,
-                        additionalRecipients: [],
-                        explicitRecipients: [],
-                        skippedRecipients: [],
-                        transaction: transaction
-                    ))
-                    do {
-                        let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
-                        return ThreadUtil.enqueueMessagePromise(message: preparedMessage, transaction: transaction)
-                    } catch {
-                        return Promise(error: error)
+        }.recover(on: DispatchQueue.global()) { error -> Promise<Void> in
+            Logger.warn("Failed to send reply message from notification with error: \(error)")
+            SSKEnvironment.shared.notificationPresenterRef.notifyUserOfFailedSend(inThread: thread)
+            throw error
+        }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
+            self.markMessageAsRead(notificationMessage: notificationMessage)
+        }
+    }
+    
+    private class func getDraftQuotedReplyModelForSendingFromIncomingMessage(notificationMessage: NotificationMessage) -> Promise<DraftQuotedReplyModel.ForSending?> {
+        return firstly(on: DispatchQueue.global()) { () -> DraftQuotedReplyModel.ForSending? in
+            var draftQuotedReplayModelForSending: DraftQuotedReplyModel.ForSending?
+            return SSKEnvironment.shared.databaseStorageRef.read { readTransaction in
+                //TODO: I dont know if this is the correct way to create a DraftQuotedReplyModel, but this is what I saw on ConversationViewController+MessageActionsDelegate line 190
+                if let incomingMessage = notificationMessage.interaction as? TSIncomingMessage {
+                    if let draftQuotedReplyModel = DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(originalMessage: incomingMessage, tx: readTransaction.asV2Read) {
+                        draftQuotedReplayModelForSending = try? DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending(draftQuotedReplyModel)
                     }
                 }
-            }.recover(on: DispatchQueue.global()) { error -> Promise<Void> in
-                Logger.warn("Failed to send reply message from notification with error: \(error)")
-                SSKEnvironment.shared.notificationPresenterRef.notifyUserOfFailedSend(inThread: thread)
-                throw error
-            }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
-                self.markMessageAsRead(notificationMessage: notificationMessage)
+                return draftQuotedReplayModelForSending
             }
         }
     }
