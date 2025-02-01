@@ -102,7 +102,7 @@ class StoryReplyInputToolbar: UIView {
             blurEffectView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -backgroundExtension)
         }
 
-        textView.mentionDelegate = self
+        textView.bodyRangesDelegate = self
 
         // The input toolbar should *always* be laid out left-to-right, even when using
         // a right-to-left language. The convention for messaging apps is for the send
@@ -195,7 +195,7 @@ class StoryReplyInputToolbar: UIView {
     private lazy var textView: BodyRangesTextView = {
         let textView = buildTextView()
         textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)
-        textView.mentionDelegate = self
+        textView.bodyRangesDelegate = self
         return textView
     }()
 

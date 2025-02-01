@@ -626,11 +626,11 @@ public class SignalAttachment: NSObject {
         }
     }
 
-    // Returns an attachment from the pasteboard, or nil if no attachment
-    // can be found.
-    //
-    // NOTE: The attachment returned by this method may not be valid.
-    //       Check the attachment's error property.
+    /// Returns an attachment from the pasteboard, or nil if no attachment
+    /// can be found.
+    ///
+    /// NOTE: The attachment returned by this method may not be valid.
+    ///       Check the attachment's error property.
     public class func attachmentFromPasteboard() -> SignalAttachment? {
         guard UIPasteboard.general.numberOfItems >= 1 else {
             return nil
@@ -698,6 +698,34 @@ public class SignalAttachment: NSObject {
             return nil
         }
         let dataSource = DataSourceValue(data, utiType: dataUTI)
+        return genericAttachment(dataSource: dataSource, dataUTI: dataUTI)
+    }
+
+    // Returns an attachment from the memoji, or nil if no attachment
+    /// can be created.
+    ///
+    /// NOTE: The attachment returned by this method may not be valid.
+    ///       Check the attachment's error property.
+    public class func attachmentFromMemoji(_ memojiGlyph: OWSAdaptiveImageGlyph) -> SignalAttachment? {
+        let dataUTI = filterDynamicUTITypes([memojiGlyph.contentType.identifier]).first
+        guard let dataUTI else {
+            return nil
+        }
+        let dataSource = DataSourceValue(memojiGlyph.imageContent, utiType: dataUTI)
+
+        if inputImageUTISet.contains(dataUTI) {
+            return imageAttachment(
+                dataSource: dataSource,
+                dataUTI: dataUTI,
+                isBorderless: dataSource?.hasStickerLikeProperties ?? false
+            )
+        }
+        if videoUTISet.contains(dataUTI) {
+            return videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
+        }
+        if audioUTISet.contains(dataUTI) {
+            return audioAttachment(dataSource: dataSource, dataUTI: dataUTI)
+        }
         return genericAttachment(dataSource: dataSource, dataUTI: dataUTI)
     }
 

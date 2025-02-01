@@ -272,7 +272,7 @@ extension ConversationViewController {
             editTarget: editTarget,
             inputToolbarDelegate: self,
             inputTextViewDelegate: self,
-            mentionDelegate: self
+            bodyRangesTextViewDelegate: self
         )
         inputToolbar.accessibilityIdentifier = "inputToolbar"
         if let voiceMemoDraft = voiceMemoDraft {

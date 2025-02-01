@@ -65,7 +65,7 @@ class AttachmentTextToolbar: UIView {
         layoutMargins.top = 10
         layoutMargins.bottom = 10
 
-        textView.mentionDelegate = self
+        textView.bodyRangesDelegate = self
 
         // Layout
 
@@ -209,7 +209,7 @@ class AttachmentTextToolbar: UIView {
         let textView = buildTextView()
         textView.returnKeyType = .done
         textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)
-        textView.mentionDelegate = self
+        textView.bodyRangesDelegate = self
         return textView
     }()
 
