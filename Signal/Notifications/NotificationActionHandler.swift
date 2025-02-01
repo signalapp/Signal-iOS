@@ -111,16 +111,15 @@ public class NotificationActionHandler {
 
     private class func markAsRead(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly {
-            self.notificationMessage(forUserInfo: userInfo)
+            self.getNotificationMessage(forUserInfo: userInfo)
         }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) in
             self.markMessageAsRead(notificationMessage: notificationMessage)
         }
     }
 
     private class func reply(userInfo: [AnyHashable: Any], replyText: String) throws -> Promise<Void> {
-        
         return firstly { () -> Promise<NotificationMessage> in
-            self.notificationMessage(forUserInfo: userInfo)
+            return self.getNotificationMessage(forUserInfo: userInfo)
         }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
             try sendReplyToNotificationMessage(replyText: replyText, notificationMessage: notificationMessage)
         }
@@ -202,7 +201,7 @@ public class NotificationActionHandler {
 
     private class func showThread(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly { () -> Promise<NotificationMessage> in
-            self.notificationMessage(forUserInfo: userInfo)
+            self.getNotificationMessage(forUserInfo: userInfo)
         }.done(on: DispatchQueue.main) { notificationMessage in
             if notificationMessage.isGroupStoryReply {
                 self.showGroupStoryReplyThread(notificationMessage: notificationMessage)
@@ -274,7 +273,7 @@ public class NotificationActionHandler {
 
     private class func reactWithThumbsUp(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly { () -> Promise<NotificationMessage> in
-            self.notificationMessage(forUserInfo: userInfo)
+            self.getNotificationMessage(forUserInfo: userInfo)
         }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
             let thread = notificationMessage.thread
             let interaction = notificationMessage.interaction
@@ -405,7 +404,7 @@ public class NotificationActionHandler {
         let hasPendingMessageRequest: Bool
     }
 
-    private class func notificationMessage(forUserInfo userInfo: [AnyHashable: Any]) -> Promise<NotificationMessage> {
+    private class func getNotificationMessage(forUserInfo userInfo: [AnyHashable: Any]) -> Promise<NotificationMessage> {
         firstly(on: DispatchQueue.global()) { () throws -> NotificationMessage in
             guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
                 throw OWSAssertionError("threadId was unexpectedly nil")
