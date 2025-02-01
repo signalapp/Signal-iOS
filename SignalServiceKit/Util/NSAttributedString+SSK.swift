@@ -4,6 +4,7 @@
 //
 
 import Foundation
+public import UniformTypeIdentifiers
 
 /// Represents an argument passed when creating an attributed string using
 /// formatting, where attributes may be applied to the substituted value of the
@@ -224,4 +225,47 @@ public extension NSAttributedString {
 private extension Character {
     static let unicodeFirstStrongIsolate: Character = "\u{2068}"
     static let unicodePopDirectionalIsolate: Character = "\u{2069}"
+}
+
+/// Equivalent to NSAdaptiveImageGlyph but available prior to iOS 18 being the deployment target.
+public struct OWSAdaptiveImageGlyph {
+
+    public let imageContent: Data
+    public let contentIdentifier: String
+    public let contentDescription: String
+    public let contentType: UTType
+
+    init(imageContent: Data, contentIdentifier: String, contentDescription: String, contentType: UTType) {
+        self.imageContent = imageContent
+        self.contentIdentifier = contentIdentifier
+        self.contentDescription = contentDescription
+        self.contentType = contentType
+    }
+
+    @available(iOS 18, *)
+    init(_ glyph: NSAdaptiveImageGlyph) {
+        self.init(
+            imageContent: glyph.imageContent,
+            contentIdentifier: glyph.contentIdentifier,
+            contentDescription: glyph.contentDescription,
+            contentType: type(of: glyph).contentType
+        )
+    }
+
+    /// Remove any NSAdaptiveImageGlyph from the passed in attributes, returning our representation of it if present.
+    public static func remove(from attributesParam: inout [NSAttributedString.Key: Any]?) -> OWSAdaptiveImageGlyph? {
+        guard var attributes = attributesParam else {
+            return nil
+        }
+        defer { attributesParam = attributes }
+        if #available(iOS 18, *) {
+            let glyph = attributes.removeValue(forKey: .adaptiveImageGlyph)
+            guard let glyph = glyph as? NSAdaptiveImageGlyph else {
+                return nil
+            }
+            return .init(glyph)
+        } else {
+            return nil
+        }
+    }
 }

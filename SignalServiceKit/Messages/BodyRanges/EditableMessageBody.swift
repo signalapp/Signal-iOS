@@ -20,6 +20,8 @@ public protocol EditableMessageBodyDelegate: AnyObject {
 
     // If this key changes, the cached mentions will be invalidated at read-time.
     func mentionCacheInvalidationKey() -> String
+
+    func didInsertMemoji(_ memojiGlyph: OWSAdaptiveImageGlyph)
 }
 
 public class EditableMessageBodyTextStorage: NSTextStorage {
@@ -77,6 +79,11 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
     }
 
     public override func setAttributes(_ attrs: [NSAttributedString.Key: Any]?, range: NSRange) {
+        // If we get any memoji attributes, remove them and pass them up to the delegate.
+        var attrs = attrs
+        if let memojiGlyph = OWSAdaptiveImageGlyph.remove(from: &attrs) {
+            editableBodyDelegate?.didInsertMemoji(memojiGlyph)
+        }
         guard isFixingAttributes else {
             // Don't allow external attribute setting except from
             // fixing, which is applied for emojis.

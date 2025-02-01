@@ -165,7 +165,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
         bottomConstraint = stackView.autoPinEdge(toSuperviewEdge: .bottom)
 
         // Text View
-        textView.mentionDelegate = self
+        textView.bodyRangesDelegate = self
         textView.backgroundColor = Theme.backgroundColor
         textView.textColor = Theme.primaryTextColor
         textView.font = UIFont.dynamicTypeBody

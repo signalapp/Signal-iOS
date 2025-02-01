@@ -19,11 +19,19 @@ public protocol BodyRangesTextViewDelegate: UITextViewDelegate {
 
     func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration
     func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle
+
+    func textViewDidInsertMemoji(_ memojiGlyph: OWSAdaptiveImageGlyph)
+}
+
+extension BodyRangesTextViewDelegate {
+
+    // Do nothing by default
+    public func textViewDidInsertMemoji(_ memojiGlyph: OWSAdaptiveImageGlyph) {}
 }
 
 open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
 
-    public weak var mentionDelegate: BodyRangesTextViewDelegate? {
+    public weak var bodyRangesDelegate: BodyRangesTextViewDelegate? {
         didSet { updateMentionState() }
     }
 
@@ -85,7 +93,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
         in range: NSRange,
         withMentionAddress mentionAddress: SignalServiceAddress
     ) {
-        guard let mentionDelegate = mentionDelegate else {
+        guard let bodyRangesDelegate = bodyRangesDelegate else {
             return owsFailDebug("Can't replace characters without delegate")
         }
         guard let mentionAci = mentionAddress.aci else {
@@ -99,7 +107,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
         let (hydrated, possibleAddresses) = DependenciesBridge.shared.db.read { tx in
             return (
                 body.hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: tx)),
-                mentionDelegate.textViewMentionPickerPossibleAddresses(self, tx: tx)
+                bodyRangesDelegate.textViewMentionPickerPossibleAddresses(self, tx: tx)
             )
         }
         let hydratedPlaintext = hydrated.asPlaintext()
@@ -228,24 +236,24 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
     private weak var pickerView: MentionPicker?
     private weak var pickerViewTopConstraint: NSLayoutConstraint?
     private func didBeginTypingMention() {
-        guard let mentionDelegate = mentionDelegate else { return }
+        guard let bodyRangesDelegate = bodyRangesDelegate else { return }
 
-        mentionDelegate.textViewDidBeginTypingMention(self)
+        bodyRangesDelegate.textViewDidBeginTypingMention(self)
 
         pickerView?.removeFromSuperview()
 
         let mentionableAddresses = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return mentionDelegate.textViewMentionPickerPossibleAddresses(self, tx: tx.asV2Read)
+            return bodyRangesDelegate.textViewMentionPickerPossibleAddresses(self, tx: tx.asV2Read)
         }
 
         guard !mentionableAddresses.isEmpty else { return }
 
-        guard let pickerReferenceView = mentionDelegate.textViewMentionPickerReferenceView(self),
-            let pickerParentView = mentionDelegate.textViewMentionPickerParentView(self) else { return }
+        guard let pickerReferenceView = bodyRangesDelegate.textViewMentionPickerReferenceView(self),
+            let pickerParentView = bodyRangesDelegate.textViewMentionPickerParentView(self) else { return }
 
         let pickerView = MentionPicker(
             mentionableAddresses: mentionableAddresses,
-            style: mentionDelegate.mentionPickerStyle(self)
+            style: bodyRangesDelegate.mentionPickerStyle(self)
         ) { [weak self] selectedAddress in
             self?.insertTypedMention(address: selectedAddress)
         }
@@ -279,7 +287,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
     }
 
     private func didEndTypingMention() {
-        mentionDelegate?.textViewDidEndTypingMention(self)
+        bodyRangesDelegate?.textViewDidEndTypingMention(self)
 
         guard let pickerView = pickerView else { return }
 
@@ -288,14 +296,14 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
         let pickerViewTopConstraint = self.pickerViewTopConstraint
         self.pickerViewTopConstraint = nil
 
-        guard let mentionDelegate = mentionDelegate,
-            let pickerReferenceView = mentionDelegate.textViewMentionPickerReferenceView(self),
-            let pickerParentView = mentionDelegate.textViewMentionPickerParentView(self) else {
+        guard let bodyRangesDelegate = bodyRangesDelegate,
+            let pickerReferenceView = bodyRangesDelegate.textViewMentionPickerReferenceView(self),
+            let pickerParentView = bodyRangesDelegate.textViewMentionPickerParentView(self) else {
                 pickerView.removeFromSuperview()
                 return
         }
 
-        let style = mentionDelegate.mentionPickerStyle(self)
+        let style = bodyRangesDelegate.mentionPickerStyle(self)
 
         // Slide down.
         UIView.animate(withDuration: 0.25, animations: {
@@ -350,7 +358,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
     private func updateMentionState() {
         // If we don't yet have a delegate, we can ignore any updates.
         // We'll check again when the delegate is assigned.
-        guard mentionDelegate != nil else { return }
+        guard bodyRangesDelegate != nil else { return }
 
         let bodyLength = (editableBody.hydratedPlaintext as NSString).length
         guard
@@ -698,7 +706,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
 
     public func editableMessageBodyHydrator(tx: DBReadTransaction) -> MentionHydrator {
         var possibleMentionAcis = Set<Aci>()
-        mentionDelegate?.textViewMentionPickerPossibleAddresses(self, tx: tx).forEach {
+        bodyRangesDelegate?.textViewMentionPickerPossibleAddresses(self, tx: tx).forEach {
             if let aci = $0.aci {
                 possibleMentionAcis.insert(aci)
             }
@@ -713,7 +721,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
     }
 
     public func editableMessageBodyDisplayConfig() -> HydratedMessageBody.DisplayConfiguration {
-        return mentionDelegate?.textViewDisplayConfiguration(self) ?? .composing(textViewColor: self.textColor)
+        return bodyRangesDelegate?.textViewDisplayConfiguration(self) ?? .composing(textViewColor: self.textColor)
     }
 
     public func isEditableMessageBodyDarkThemeEnabled() -> Bool {
@@ -725,7 +733,11 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
     }
 
     public func mentionCacheInvalidationKey() -> String {
-        return mentionDelegate?.textViewMentionCacheInvalidationKey(self) ?? UUID().uuidString
+        return bodyRangesDelegate?.textViewMentionCacheInvalidationKey(self) ?? UUID().uuidString
+    }
+
+    public func didInsertMemoji(_ memojiGlyph: OWSAdaptiveImageGlyph) {
+        bodyRangesDelegate?.textViewDidInsertMemoji(memojiGlyph)
     }
 }
 
@@ -833,7 +845,7 @@ extension BodyRangesTextView {
             var messageBody = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MessageBody.self, from: encodedMessageBody) {
             editableBody.beginEditing()
             DependenciesBridge.shared.db.read { tx in
-                if let possibleAddresses = mentionDelegate?.textViewMentionPickerPossibleAddresses(self, tx: tx) {
+                if let possibleAddresses = bodyRangesDelegate?.textViewMentionPickerPossibleAddresses(self, tx: tx) {
                     messageBody = messageBody.forPasting(intoContextWithPossibleAddresses: possibleAddresses, transaction: tx)
                 }
                 editableBody.replaceCharacters(in: selectedRange, withPastedMessageBody: messageBody, txProvider: { $0(tx) })
@@ -871,11 +883,11 @@ extension BodyRangesTextView {
 extension BodyRangesTextView: UITextViewDelegate {
     open func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         guard shouldUpdateMentionText(in: range, changedText: text) else { return false }
-        return mentionDelegate?.textView?(textView, shouldChangeTextIn: range, replacementText: text) ?? true
+        return bodyRangesDelegate?.textView?(textView, shouldChangeTextIn: range, replacementText: text) ?? true
     }
 
     open func textViewDidChangeSelection(_ textView: UITextView) {
-        mentionDelegate?.textViewDidChangeSelection?(textView)
+        bodyRangesDelegate?.textViewDidChangeSelection?(textView)
         updateMentionState()
         isShowingFormatMenu = false
         updateUIMenuState()
@@ -883,34 +895,34 @@ extension BodyRangesTextView: UITextViewDelegate {
 
     open func textViewDidChange(_ textView: UITextView) {
         isShowingFormatMenu = false
-        mentionDelegate?.textViewDidChange?(textView)
+        bodyRangesDelegate?.textViewDidChange?(textView)
         if editableBody.hydratedPlaintext.isEmpty { updateMentionState() }
         self.textAlignment = editableBody.naturalTextAlignment
     }
 
     open func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        return mentionDelegate?.textViewShouldBeginEditing?(textView) ?? true
+        return bodyRangesDelegate?.textViewShouldBeginEditing?(textView) ?? true
     }
 
     open func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
         isShowingFormatMenu = false
-        return mentionDelegate?.textViewShouldEndEditing?(textView) ?? true
+        return bodyRangesDelegate?.textViewShouldEndEditing?(textView) ?? true
     }
 
     open func textViewDidBeginEditing(_ textView: UITextView) {
-        mentionDelegate?.textViewDidBeginEditing?(textView)
+        bodyRangesDelegate?.textViewDidBeginEditing?(textView)
     }
 
     open func textViewDidEndEditing(_ textView: UITextView) {
-        mentionDelegate?.textViewDidEndEditing?(textView)
+        bodyRangesDelegate?.textViewDidEndEditing?(textView)
     }
 
     open func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        return mentionDelegate?.textView?(textView, shouldInteractWith: URL, in: characterRange, interaction: interaction) ?? true
+        return bodyRangesDelegate?.textView?(textView, shouldInteractWith: URL, in: characterRange, interaction: interaction) ?? true
     }
 
     open func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        return mentionDelegate?.textView?(textView, shouldInteractWith: textAttachment, in: characterRange, interaction: interaction) ?? true
+        return bodyRangesDelegate?.textView?(textView, shouldInteractWith: textAttachment, in: characterRange, interaction: interaction) ?? true
     }
 }
 

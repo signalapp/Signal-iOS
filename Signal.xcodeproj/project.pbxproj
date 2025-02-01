@@ -1471,7 +1471,7 @@
 		884DB95427DEB9E900C6A309 /* StoryPlaybackProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB95327DEB9E900C6A309 /* StoryPlaybackProgressView.swift */; };
 		884E4C4828AF2F2A007A338C /* OutgoingStorySentMessageTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884E4C4728AF2F2A007A338C /* OutgoingStorySentMessageTranscript.swift */; };
 		8851DB4324CCF0EB001EACD2 /* ConversationInputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */; };
-		8851DB4524CCFB93001EACD2 /* ConversationViewController+Mentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4424CCFB93001EACD2 /* ConversationViewController+Mentions.swift */; };
+		8851DB4524CCFB93001EACD2 /* ConversationViewController+BodyRangesTextViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4424CCFB93001EACD2 /* ConversationViewController+BodyRangesTextViewDelegate.swift */; };
 		8852572927DD366D0032073C /* StoriesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8852572827DD366D0032073C /* StoriesViewController.swift */; };
 		8852572C27DD40870032073C /* HomeTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8852572B27DD40870032073C /* HomeTabBarController.swift */; };
 		8852759527E1BA55003F2F9B /* EBGaramond-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8852759427E1BA55003F2F9B /* EBGaramond-Regular.ttf */; };
@@ -5229,7 +5229,7 @@
 		884DB95327DEB9E900C6A309 /* StoryPlaybackProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPlaybackProgressView.swift; sourceTree = "<group>"; };
 		884E4C4728AF2F2A007A338C /* OutgoingStorySentMessageTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingStorySentMessageTranscript.swift; sourceTree = "<group>"; };
 		8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationInputTextView.swift; sourceTree = "<group>"; };
-		8851DB4424CCFB93001EACD2 /* ConversationViewController+Mentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Mentions.swift"; sourceTree = "<group>"; };
+		8851DB4424CCFB93001EACD2 /* ConversationViewController+BodyRangesTextViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+BodyRangesTextViewDelegate.swift"; sourceTree = "<group>"; };
 		8852572827DD366D0032073C /* StoriesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesViewController.swift; sourceTree = "<group>"; };
 		8852572B27DD40870032073C /* HomeTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabBarController.swift; sourceTree = "<group>"; };
 		8852758B27E1B7F4003F2F9B /* Inter-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Variable.ttf"; sourceTree = "<group>"; };
@@ -7850,6 +7850,7 @@
 				76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */,
 				76ECBA912915B5BB00676507 /* ConversationScrollButton.swift */,
 				3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */,
+				8851DB4424CCFB93001EACD2 /* ConversationViewController+BodyRangesTextViewDelegate.swift */,
 				34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */,
 				347342F62548587800D440CD /* ConversationViewController+BottomBar.swift */,
 				34A4D8802677B2AB00A794E7 /* ConversationViewController+Calls.swift */,
@@ -7860,7 +7861,6 @@
 				88238EAE24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift */,
 				500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */,
 				88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */,
-				8851DB4424CCFB93001EACD2 /* ConversationViewController+Mentions.swift */,
 				34A4D87E2677B23100A794E7 /* ConversationViewController+MessageActions.swift */,
 				3426A367255D7BCA0036407F /* ConversationViewController+MessageActionsDelegate.swift */,
 				3457811A23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift */,
@@ -16422,6 +16422,7 @@
 				34235F3824213550008C74CB /* ConversationSettingsViewController.swift in Sources */,
 				880BFFEA234590FA00F6FAB1 /* ConversationSplitViewController.swift in Sources */,
 				3405C06E25435048008B24EF /* ConversationViewController+Banners.swift in Sources */,
+				8851DB4524CCFB93001EACD2 /* ConversationViewController+BodyRangesTextViewDelegate.swift in Sources */,
 				34E93F9226668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift in Sources */,
 				347342F72548587900D440CD /* ConversationViewController+BottomBar.swift in Sources */,
 				34A4D8812677B2AB00A794E7 /* ConversationViewController+Calls.swift in Sources */,
@@ -16432,7 +16433,6 @@
 				88238EAF24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift in Sources */,
 				500FE4E0288A11B000FA090C /* ConversationViewController+GiftBadges.swift in Sources */,
 				88411B60249B0759005D10AA /* ConversationViewController+LastVisibleSortId.swift in Sources */,
-				8851DB4524CCFB93001EACD2 /* ConversationViewController+Mentions.swift in Sources */,
 				34A4D87F2677B23100A794E7 /* ConversationViewController+MessageActions.swift in Sources */,
 				3426A368255D7BCA0036407F /* ConversationViewController+MessageActionsDelegate.swift in Sources */,
 				3457811B23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift in Sources */,

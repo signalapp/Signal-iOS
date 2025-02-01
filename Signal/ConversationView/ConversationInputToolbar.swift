@@ -74,7 +74,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         editTarget: TSOutgoingMessage?,
         inputToolbarDelegate: ConversationInputToolbarDelegate,
         inputTextViewDelegate: ConversationInputTextViewDelegate,
-        mentionDelegate: BodyRangesTextViewDelegate
+        bodyRangesTextViewDelegate: BodyRangesTextViewDelegate
     ) {
         self.conversationStyle = conversationStyle
         self.spoilerState = spoilerState
@@ -95,7 +95,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             messageDraft,
             quotedReplyDraft: quotedReplyDraft,
             inputTextViewDelegate: inputTextViewDelegate,
-            mentionDelegate: mentionDelegate
+            bodyRangesTextViewDelegate: bodyRangesTextViewDelegate
         )
 
         NotificationCenter.default.addObserver(
@@ -341,7 +341,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         _ messageDraft: MessageBody?,
         quotedReplyDraft: DraftQuotedReplyModel?,
         inputTextViewDelegate: ConversationInputTextViewDelegate,
-        mentionDelegate: BodyRangesTextViewDelegate
+        bodyRangesTextViewDelegate: BodyRangesTextViewDelegate
     ) {
         // The input toolbar should *always* be laid out left-to-right, even when using
         // a right-to-left language. The convention for messaging apps is for the send
@@ -355,7 +355,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         isUserInteractionEnabled = true
 
         // NOTE: Don't set inputTextViewDelegate until configuration is complete.
-        inputTextView.mentionDelegate = mentionDelegate
+        inputTextView.bodyRangesDelegate = bodyRangesTextViewDelegate
         inputTextView.inputTextViewDelegate = inputTextViewDelegate
 
         textViewHeightConstraint = inputTextView.autoSetDimension(.height, toSize: LayoutMetrics.minTextViewHeight)
