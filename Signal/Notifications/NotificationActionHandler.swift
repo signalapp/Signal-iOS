@@ -125,6 +125,7 @@ public class NotificationActionHandler {
         }
     }
         
+    //TODO: Lets invest a lot of time and resources in order to convert promises into using await Task as this below was the problem that await Task was created to solve.
     private class func sendReplyToNotificationMessage(replyText: String, notificationMessage: NotificationMessage) throws -> Promise<Void> {
         let thread = notificationMessage.thread
         let interaction = notificationMessage.interaction
