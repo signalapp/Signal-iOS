@@ -1,1 +1,2 @@
 • Teraz si môžete preniesť históriu četov a médiá z posledných 45 dní do nového prepojeného zariadenia. Prenos je voliteľný a jeho proces chránený end-to-end šifrovaním.
+• Fixed an issue preventing sending Memoji and iOS stickers.

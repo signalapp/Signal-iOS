@@ -1,1 +1,2 @@
 • Anda kini dapat mentransfer riwayat chat dan media dari 45 hari terakhir ke Desktop atau iPad baru saat Anda menghubungkan Signal dari perangkat utama Anda. Proses transfernya dienkripsi secara menyeluruh dan bersifat opsional.  Anda bisa bebas untuk tetap menyimpan atau menghapus riwayat chat dan media.
+• Fixed an issue preventing sending Memoji and iOS stickers.

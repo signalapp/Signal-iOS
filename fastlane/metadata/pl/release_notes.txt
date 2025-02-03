@@ -1,1 +1,2 @@
 • Od teraz, gdy połączysz w aplikacji Signal swoje główne urządzenie z nowym komputerem lub iPadem, możesz przenieść również historię czatów oraz multimedia z ostatnich 45 dni. Proces transferu danych jest szyfrowany metodą end-to-end i całkowicie opcjonalny. Wymazać przeszłość czy zachować ciągłość historii? Tę decyzję zostawiamy Tobie.
+• Fixed an issue preventing sending Memoji and iOS stickers.

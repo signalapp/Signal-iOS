@@ -1,1 +1,2 @@
 • Giờ đây bạn có thể chọn chuyển lịch sử trò chuyện và tập tin đa phương tiện trong 45 ngày vừa qua của mình đến thiết bị liên kết mới. Quá trình chuyển dữ liệu được mã hóa đầu cuối và hoàn toàn là tùy chọn.
+• Fixed an issue preventing sending Memoji and iOS stickers.

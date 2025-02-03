@@ -1,1 +1,2 @@
 • チャット履歴と過去45日間のメディアを、新しいリンク済み端末に移行するかどうかを選択できるようになりました。移行プロセスはエンドツーエンドで暗号化されており、完全にオプションです。
+• Fixed an issue preventing sending Memoji and iOS stickers.

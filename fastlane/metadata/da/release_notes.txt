@@ -1,1 +1,2 @@
 • Når du forbinder din primære Signal-enhed til en ny computer eller iPad, kan du tage din chathistorik og medierne for de sidste 45 dage med dig. Overførselsprocessen er end-til-end-krypteret og helt valgfri. Når det kommer til at træffe valget om, hvorvidt du vil lade fortiden være fortid eller ej, er valget dit.
+• Fixed an issue preventing sending Memoji and iOS stickers.

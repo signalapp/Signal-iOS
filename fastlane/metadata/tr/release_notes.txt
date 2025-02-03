@@ -1,1 +1,2 @@
 • Bundan böyle sohbet geçmişini ve son 45 günlük medyanı yeni bağlanmış bir cihaza aktarmayı tercih edebilirsin. Aktarım süreci uçtan uca şifrelidir ve tamamen isteğe bağlıdır. İster geçmişi arkanda bırak ister bugüne taşı; kararı kendin ver!
+• Fixed an issue preventing sending Memoji and iOS stickers.
