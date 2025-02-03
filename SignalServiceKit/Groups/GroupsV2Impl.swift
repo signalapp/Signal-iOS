@@ -1112,6 +1112,20 @@ public class GroupsV2Impl: GroupsV2 {
                 }
                 return try await retryBlock(error)
             case 403:
+                guard
+                    let responseHeaders = error.httpResponseHeaders,
+                    responseHeaders.hasValueForHeader("x-signal-timestamp")
+                else {
+                    // The cloud infrastructure that sits in front of the Groups
+                    // server is known to, in some situations, short-circuit
+                    // requests with a 403 before they make it to a Signal
+                    // server. That's a problem, since we might take destructive
+                    // action locally in response to a 403. 403s from a Signal
+                    // server will always contain this header; if we find one
+                    // without, we can't trust it and should bail.
+                    throw OWSAssertionError("Dropping 403 response without x-signal-timestamp header! \(error)")
+                }
+
                 // 403 indicates that we are no longer in the group for
                 // many (but not all) group v2 service requests.
                 switch behavior403 {
