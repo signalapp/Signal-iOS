@@ -440,6 +440,7 @@ public class GroupsV2Impl: GroupsV2 {
         }
 
         let plaintextData: Data
+        let timestamp = MessageTimestampGenerator.sharedInstance.generateTimestamp()
         do {
             let groupV2Context = try GroupsV2Protos.buildGroupContextProto(
                 groupModel: groupModel,
@@ -449,6 +450,7 @@ public class GroupsV2Impl: GroupsV2 {
             let dataBuilder = SSKProtoDataMessage.builder()
             dataBuilder.setGroupV2(groupV2Context)
             dataBuilder.setRequiredProtocolVersion(1)
+            dataBuilder.setTimestamp(timestamp)
 
             let dataProto = try dataBuilder.build()
             let contentBuilder = SSKProtoContent.builder()
@@ -463,7 +465,7 @@ public class GroupsV2Impl: GroupsV2 {
             for serviceId in serviceIds {
                 let address = SignalServiceAddress(serviceId)
                 let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: tx)
-                let message = OWSStaticOutgoingMessage(thread: contactThread, plaintextData: plaintextData, transaction: tx)
+                let message = OWSStaticOutgoingMessage(thread: contactThread, timestamp: timestamp, plaintextData: plaintextData, transaction: tx)
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
                     transientMessageWithoutAttachments: message
                 )

@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
                  plaintextData:(NSData *)plaintextData
                    transaction:(SDSAnyReadTransaction *)transaction;
 
