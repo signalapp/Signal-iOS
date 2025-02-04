@@ -56,7 +56,7 @@ public class SenderKeyStore {
                 // Only remove the recipient in question from our send targets if the cached state contains
                 // every device from the current state. Any new devices mean we need to re-send.
                 let currentRecipientState = try KeyRecipient.currentState(for: serviceId, transaction: readTx)
-                if priorSendRecipientState.containsEveryDevice(from: currentRecipientState) {
+                if priorSendRecipientState.containsEveryDevice(from: currentRecipientState), !currentRecipientState.devices.isEmpty {
                     serviceIdsNeedingSenderKey.remove(serviceId)
                 }
             } catch {
