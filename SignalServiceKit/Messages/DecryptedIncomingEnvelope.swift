@@ -80,5 +80,13 @@ class DecryptedIncomingEnvelope {
         if let isPlaintextCipher, isPlaintextCipher != hasDecryptionError {
             throw OWSGenericError("Plaintext ciphers must have decryption errors.")
         }
+
+        // This prevents replay attacks by the service.
+        if let dataMessage = content?.dataMessage, dataMessage.timestamp != timestamp {
+            throw OWSGenericError("Data messages must have matching timestamps \(sourceAci)")
+        }
+        if let typingMessage = content?.typingMessage, typingMessage.timestamp != timestamp {
+            throw OWSGenericError("Typing messages must have matching timestamps \(sourceAci)")
+        }
     }
 }

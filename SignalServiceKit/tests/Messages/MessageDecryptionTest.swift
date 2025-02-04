@@ -89,7 +89,10 @@ class MessageDecryptionTest: SSKBaseTest {
                 return
             }
 
+            let timestamp = MessageTimestampGenerator.sharedInstance.generateTimestamp()
+
             var contentProto = SignalServiceProtos_Content()
+            contentProto.dataMessage.timestamp = timestamp
             contentProto.dataMessage.body = message
 
             let ciphertext = try! runner.encrypt(try! contentProto.serializedData().paddedMessageBody,
@@ -97,7 +100,7 @@ class MessageDecryptionTest: SSKBaseTest {
                                                  recipient: localClient.protocolAddress,
                                                  context: transaction)
 
-            let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: Date.ows_millisecondTimestamp())
+            let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: timestamp)
             envelopeBuilder.setType(type)
             envelopeBuilder.setDestinationServiceID((destinationServiceId ?? localDestinationServiceId).serviceIdString)
             envelopeBuilder.setServerTimestamp(Date.ows_millisecondTimestamp())

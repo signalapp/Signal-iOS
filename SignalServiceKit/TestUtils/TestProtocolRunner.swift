@@ -296,7 +296,10 @@ public struct FakeService {
         builder.setType(.ciphertext)
         builder.setSourceDevice(senderClient.deviceId)
 
-        let content = try buildEncryptedContentData(fromSenderClient: senderClient, bodyText: bodyText)
+        let timestamp = MessageTimestampGenerator.sharedInstance.generateTimestamp()
+        builder.setTimestamp(timestamp)
+
+        let content = try buildEncryptedContentData(fromSenderClient: senderClient, timestamp: timestamp, bodyText: bodyText)
         builder.setContent(content)
 
         // builder.setServerTimestamp(serverTimestamp)
@@ -352,8 +355,8 @@ public struct FakeService {
         return builder
     }
 
-    public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, bodyText: String?) throws -> Data {
-        let plaintext = try buildContentData(bodyText: bodyText)
+    public func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, timestamp: UInt64, bodyText: String?) throws -> Data {
+        let plaintext = try buildContentData(timestamp: timestamp, bodyText: bodyText)
         let cipherMessage: CiphertextMessage = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             return try! self.runner.encrypt(plaintext,
                                             senderClient: senderClient,
@@ -392,8 +395,9 @@ public struct FakeService {
         return Data(cipherMessage.serialize())
     }
 
-    public func buildContentData(bodyText: String?) throws -> Data {
+    public func buildContentData(timestamp: UInt64, bodyText: String?) throws -> Data {
         let dataMessageBuilder = SSKProtoDataMessage.builder()
+        dataMessageBuilder.setTimestamp(timestamp)
         if let bodyText = bodyText {
             dataMessageBuilder.setBody(bodyText)
         } else {

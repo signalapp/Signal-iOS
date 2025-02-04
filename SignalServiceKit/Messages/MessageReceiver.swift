@@ -750,12 +750,6 @@ public final class MessageReceiver {
             }
         }
 
-        // This prevents replay attacks by the service.
-        guard !dataMessage.hasTimestamp || dataMessage.timestamp == envelope.timestamp else {
-            owsFailDebug("Ignoring message with non-matching data message timestamp from \(envelope.sourceAci)")
-            return
-        }
-
         if let profileKey = dataMessage.profileKey {
             setProfileKeyIfValid(profileKey, for: envelope.sourceAci, localIdentifiers: localIdentifiers, tx: tx)
         }
@@ -1363,10 +1357,6 @@ public final class MessageReceiver {
     ) {
         let envelope = request.decryptedEnvelope
 
-        guard typingMessage.timestamp == envelope.timestamp else {
-            owsFailDebug("typingMessage has invalid timestamp")
-            return
-        }
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         if envelope.sourceAci == tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci {
             return

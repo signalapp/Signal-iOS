@@ -186,7 +186,8 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobClient.serviceId, tx: transaction.asV2Read))
         }
 
-        let content = try! fakeService.buildContentData(bodyText: "Those who stands for nothing will fall for anything")
+        let timestamp = MessageTimestampGenerator.sharedInstance.generateTimestamp()
+        let content = try! fakeService.buildContentData(timestamp: timestamp, bodyText: "Those who stands for nothing will fall for anything")
         let ciphertext = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             try! runner.encrypt(content,
                                 senderClient: bobClient,
@@ -197,6 +198,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: 100)
         envelopeBuilder.setContent(Data(ciphertext.serialize()))
         envelopeBuilder.setType(.prekeyBundle)
+        envelopeBuilder.setTimestamp(timestamp)
         envelopeBuilder.setSourceServiceID(bobClient.serviceId.serviceIdString)
         envelopeBuilder.setSourceDevice(1)
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
