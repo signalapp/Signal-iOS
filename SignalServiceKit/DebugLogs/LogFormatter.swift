@@ -31,12 +31,12 @@ final class LogFormatter: NSObject, DDLogFormatter {
     }()
 
     private static func formattedLevel(for flag: DDLogFlag) -> String {
-        if flag.contains(.error) { return "❤️" }
-        if flag.contains(.warning) { return "🧡" }
-        if flag.contains(.info) { return "💛" }
-        if flag.contains(.debug) { return "💚" }
-        if flag.contains(.verbose) { return "💙" }
-        return "💜"
+        if flag.contains(.error) { return "ERR❤️" }  // Error
+        if flag.contains(.warning) { return "WRN🧡" }  // Warning
+        if flag.contains(.info) { return "INF💛" }  // Info
+        if flag.contains(.debug) { return "DBG💚" }  // Debug
+        if flag.contains(.verbose) { return "VRB💙" }  // Verbose
+        return "UNK💜"  // Unknown
     }
 
     private static func formattedLocation(logMessage: DDLogMessage) -> String {
