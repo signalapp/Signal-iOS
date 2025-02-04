@@ -797,7 +797,9 @@ struct LinkedDevicesView: View {
     }
 
     private var headerSubtitle: String {
-        if FeatureFlags.linkAndSync {
+        if FeatureFlags.linkAndSyncPrimaryExport && FeatureFlags.linkAndSyncLinkedImport {
+            // This string references syncing messages to Desktop & iPad, so
+            // check both sides of the feature flag here.
             OWSLocalizedString(
                 "LINKED_DEVICES_HEADER_DESCRIPTION",
                 comment: "Description for header of the linked devices list"

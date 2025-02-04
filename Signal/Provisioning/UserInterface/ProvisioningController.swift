@@ -320,7 +320,7 @@ class ProvisioningController: NSObject {
                 return
             }
 
-            if FeatureFlags.linkAndSync {
+            if FeatureFlags.linkAndSyncLinkedImport {
                 // Don't confirm the name in link'n'sync, just keep going.
                 didSetDeviceName(
                     UIDevice.current.name,
@@ -784,7 +784,7 @@ class ProvisioningController: NSObject {
         let shouldLinkAndSync: Bool = {
             switch DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction {
             case .unregistered:
-                return FeatureFlags.linkAndSync
+                return FeatureFlags.linkAndSyncLinkedImport
             case .delinked, .relinking:
                 // We don't allow relinking secondaries to link'n'sync.
                 return false

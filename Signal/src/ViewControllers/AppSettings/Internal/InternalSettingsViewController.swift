@@ -106,7 +106,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         ))
 
-        if FeatureFlags.linkAndSync || FeatureFlags.messageBackupFileAlpha {
+        if FeatureFlags.linkAndSyncPrimaryExport || FeatureFlags.messageBackupFileAlpha {
             debugSection.add(.actionItem(withText: "Validate Message Backup") {
                 self.validateMessageBackupProto()
             })

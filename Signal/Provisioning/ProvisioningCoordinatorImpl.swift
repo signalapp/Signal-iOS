@@ -207,7 +207,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         var didLinkNSync = false
         var postLinkNSyncProgress: OWSProgressSource?
         if
-            FeatureFlags.linkAndSync,
+            FeatureFlags.linkAndSyncLinkedImport,
             let ephemeralBackupKey
         {
             postLinkNSyncProgress = try await completeProvisioning_linkAndSync(
@@ -415,7 +415,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             do {
                 try self.mrbkStore.setMediaRootBackupKey(fromProvisioningMessage: provisionMessage, tx: tx)
             } catch {
-                if FeatureFlags.linkAndSync || FeatureFlags.messageBackupFileAlpha {
+                if FeatureFlags.linkAndSyncLinkedImport || FeatureFlags.messageBackupFileAlpha {
                     return .obsoleteLinkedDeviceError
                 } else {
                     Logger.warn("Invalid MRBK; ignoring")

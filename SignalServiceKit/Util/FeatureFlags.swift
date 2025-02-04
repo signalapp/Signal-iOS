@@ -42,11 +42,13 @@ public enum FeatureFlags {
     public static let messageBackupFileAlpha = build.includes(.internal)
     public static let messageBackupRemoteExportAlpha = build.includes(.dev)
     public static let messageBackupFileAlphaRegistrationFlow = build.includes(.dev)
-    public static let linkAndSync = build.includes(.beta)
     public static let backupsMemorySamplerRatio: Float = build.includes(.internal) ? 0.1 : 0
     public static let messageBackupQuickRestoreFlow = false
     public static let verboseBackupBenchLogging = build.includes(.internal)
     public static let backupRestoreFailOnAnyError = build.includes(.beta)
+
+    public static let linkAndSyncPrimaryExport = true
+    public static let linkAndSyncLinkedImport = build.includes(.beta)
 
     public static let storageServiceRecordIkmMigration = true
 

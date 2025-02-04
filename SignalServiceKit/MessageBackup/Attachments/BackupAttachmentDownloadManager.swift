@@ -162,7 +162,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
     }
 
     public func restoreAttachmentsIfNeeded() async throws {
-        guard FeatureFlags.messageBackupFileAlpha || FeatureFlags.linkAndSync else {
+        guard FeatureFlags.messageBackupFileAlpha || FeatureFlags.linkAndSyncLinkedImport else {
             return
         }
         guard appReadiness.isAppReady else {
