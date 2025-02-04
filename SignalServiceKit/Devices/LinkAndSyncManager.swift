@@ -166,7 +166,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
     }
 
     public func generateEphemeralBackupKey() -> BackupKey {
-        owsAssertDebug(FeatureFlags.linkAndSync)
+        owsAssertDebug(FeatureFlags.linkAndSyncPrimaryExport)
         owsAssertDebug(tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true)
         return try! BackupKey(contents: Array(Randomness.generateRandomBytes(UInt(SVR.DerivedKey.backupKeyLength))))
     }
@@ -176,7 +176,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         tokenId: DeviceProvisioningTokenId,
         progress: OWSProgressSink
     ) async throws(PrimaryLinkNSyncError) {
-        guard FeatureFlags.linkAndSync else {
+        guard FeatureFlags.linkAndSyncPrimaryExport else {
             owsFailDebug("link'n'sync not available")
             return
         }
@@ -318,7 +318,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
         ephemeralBackupKey: BackupKey,
         progress: OWSProgressSink
     ) async throws(SecondaryLinkNSyncError) {
-        guard FeatureFlags.linkAndSync else {
+        guard FeatureFlags.linkAndSyncLinkedImport else {
             owsFailDebug("link'n'sync not available")
             return
         }

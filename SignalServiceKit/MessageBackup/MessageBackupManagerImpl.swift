@@ -207,7 +207,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
         guard
             FeatureFlags.messageBackupFileAlpha
-            || FeatureFlags.linkAndSync
+                || FeatureFlags.linkAndSyncPrimaryExport
         else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
@@ -618,7 +618,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         backupKey: BackupKey,
         progress: OWSProgressSink?
     ) async throws {
-        guard FeatureFlags.messageBackupFileAlpha || FeatureFlags.linkAndSync else {
+        guard FeatureFlags.messageBackupFileAlpha || FeatureFlags.linkAndSyncLinkedImport else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }

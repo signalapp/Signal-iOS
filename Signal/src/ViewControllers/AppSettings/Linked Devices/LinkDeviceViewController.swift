@@ -113,7 +113,7 @@ class LinkDeviceViewController: OWSViewController {
     // MARK: -
 
     private func confirmProvisioningWithUrl(_ deviceProvisioningUrl: DeviceProvisioningURL) {
-        if FeatureFlags.linkAndSync, deviceProvisioningUrl.capabilities.contains(.linknsync) {
+        if FeatureFlags.linkAndSyncPrimaryExport, deviceProvisioningUrl.capabilities.contains(.linknsync) {
             let linkOrSyncSheet = LinkOrSyncPickerSheet {
                 self.popToLinkedDeviceList()
             } linkAndSync: {
@@ -178,7 +178,7 @@ class LinkDeviceViewController: OWSViewController {
 
         let ephemeralBackupKey: BackupKey?
         if
-            FeatureFlags.linkAndSync,
+            FeatureFlags.linkAndSyncPrimaryExport,
             shouldLinkNSync,
             deviceProvisioningUrl.capabilities.contains(where: { $0 == .linknsync })
         {
