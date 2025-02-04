@@ -13,6 +13,12 @@ extension ConversationViewController {
 
         self.title = nil
 
+        //HACK: If you look at issue #5837, the navigation title view is disappering. You can confirm this by looking at the view hierarchy; however, the navigation titleview says that its title view is not nil. Setting active breakpoints in this function prevents the bug from happening. I'm confident that this is a UIKit bug. To get around this we simply remove and add the headerview back again. This seems to only happen with iPad
+        DispatchQueue.main.async { [weak self] in
+            self?.navigationItem.titleView = nil
+            self?.navigationItem.titleView = self?.headerView
+        }
+        
         if thread.isNoteToSelf {
             headerView.titleIcon = Theme.iconImage(.official)
             headerView.titleIconSize = 16
