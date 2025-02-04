@@ -44,6 +44,11 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (BOOL)shouldSyncTranscript
+{
+    return NO;
+}
+
 - (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
 {
     return self.plaintextData;
