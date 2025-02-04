@@ -4111,6 +4111,12 @@
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "Du hast ein neues Gerät gekoppelt";
 
+/* Message for an action sheet telling users how to link a device, when trying to open an external device-linking URL. */
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To link a desktop or iPad to this Signal account, go to Linked Devices and tap \"Link a New Device\" and scan the QR code again. Make sure you only scan QR codes that come directly from Signal.";
+
+/* Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera. */
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "It looks like you're trying to link a Signal device. Tap continue and then tap \"Link a New Device\" and scan the QR code again.";
+
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
 "LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "Besuche %1$@ auf deinem anderen Gerät, um die iPad-App zu installieren, oder besuche %2$@, um die Desktop-App zu installieren.";
 
@@ -4580,7 +4586,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Deine Gruppenbeitrittanfrage abbrechen?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Deine Beitrittsanfrage wurde an den Gruppen-Admin versendet. Du wirst über die Entscheidung darüber benachrichtigt.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Deine Beitrittsanfrage wurde an den Gruppen-Admin versendet. Du wirst über die Entscheidung informiert.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Zugestellt";

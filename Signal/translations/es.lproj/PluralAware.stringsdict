@@ -707,9 +707,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d participante usa el mismo nombre.</string>
+			<string>%1$d participante tiene el mismo nombre.</string>
 			<key>other</key>
-			<string>%1$d participantes usan el mismo nombre.</string>
+			<string>%1$d participantes tienen el mismo nombre.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>

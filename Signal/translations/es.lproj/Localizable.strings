@@ -305,7 +305,7 @@
 "APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Comprueba que tu método de pago está actualizado en Apple Pay. Si no es así, actualízalo e inténtalo de nuevo.";
 
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
-"APPLICATION_SHORTCUT_NEW_MESSAGE" = "Mensaje nuevo";
+"APPLICATION_SHORTCUT_NEW_MESSAGE" = "Nuevo mensaje";
 
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Archivar";
@@ -437,7 +437,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Archivo no compatible";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animado";
+"ATTACHMENT_TYPE_ANIMATED" = "Con animación";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Audio";
@@ -503,7 +503,7 @@
 "BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ apoya a Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Tu insignia Boost ha caducado y ya no es visible en tu perfil.\n\nPuedes continuar usando Signal, pero para sostener la tecnología hecha para ti, considera en convertirte en donante mensual.";
+"BADGE_EXPIRED_BOOST_BODY" = "Tu insignia Apoyo Signal ha caducado y ya no se muestra en tu perfil.\n\nPuedes seguir usando Signal, pero para apoyar una tecnología desarrollada para ti, considera optar por una suscripción mensual.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Tu insignia Apoyo Signal ha caducado y ya no se muestra en tu perfil.\n\nPuedes hacer una donación puntual para reactivar tu insignia Apoyo Signal por 30 días más.";
@@ -809,7 +809,7 @@
 "CALL_LINK_SHARE_VIA_SYSTEM" = "Compartir enlace";
 
 /* An error alert that's shown when deleting multiple calls and some of them couldn't be deleted. */
-"CALL_LINK_SOME_NOT_DELETED" = "No se han podido eliminar todos los enlaces de llamada. Comprueba tu conexión e inténtalo de nuevo.";
+"CALL_LINK_SOME_NOT_DELETED" = "No se han podido eliminar todos los enlaces. Comprueba tu conexión e inténtalo de nuevo.";
 
 /* Description of sheet presented when call link update fails. */
 "CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "No se ha podido actualizar el enlace de llamada. Comprueba tu conexión a Internet e inténtalo de nuevo.";
@@ -1085,7 +1085,7 @@
 "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER" = "MM/AA";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
-"CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal no recoge ni almacena tu información personal cuando haces una donación.\n\nUtilizamos Stripe como nuestro procesador de pagos para recibir tus donaciones. No accedemos, ni almacenamos, ni guardamos ninguno de los datos que les proporcionas.\n\nSignal no conecta ni puede conectar tu donación a tu cuenta de Signal.\n\n¡Gracias por tu apoyo!";
+"CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal no recoge ni almacena tu información personal cuando haces una donación.\n\nUsamos Stripe como nuestro procesador de pagos para recibir tus donaciones. No accedemos, ni almacenamos, ni guardamos ninguno de los datos que les proporcionas.\n\nSignal no vincula ni puede vincular tu donación con tu cuenta de Signal.\n\n¡Gracias por tu apoyo!";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the title of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_TITLE" = "Tu información es privada";
@@ -1211,13 +1211,13 @@
 "CONFIGURE_REACTIONS" = "Configurar reacciones";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "Esta acción hará que se reinicie la aplicación y se eliminen todos tus mensajes. Signal se cerrará después de completar el proceso.";
+"CONFIRM_DELETE_DATA_TEXT" = "Esta acción hará que se restablezca la aplicación y se eliminen todos tus mensajes. Signal se cerrará después de que finalice este proceso.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "¿Seguro que quieres eliminar todos los datos?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Esta acción hará que se reinicie la aplicación y se eliminen todos los mensajes de este dispositivo. Siempre puedes volver a vincular tu teléfono, pero no podrás restaurar los mensajes eliminados. Signal se cerrará después de completar el proceso.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Esta acción hará que se restablezca la aplicación y se eliminen todos los mensajes de este dispositivo. Siempre puedes volver a vincular tu teléfono, pero no podrás restaurar los mensajes eliminados. Signal se cerrará después de que finalice este proceso.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "¿Seguro que quieres eliminar todos los datos?";
@@ -1724,7 +1724,7 @@
 "COPIED_TO_CLIPBOARD" = "Copiado al portapapeles";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Si reinicias tu sesión podrás recibir mensajes de %1$@, pero no podrás recuperar los mensajes corruptos que ya hayas recibido.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Si restableces tu sesión podrás recibir mensajes de %1$@, pero no podrás recuperar los mensajes corruptos que ya hayas recibido.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Seleccionar código de país";
@@ -1796,7 +1796,7 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "¿Realizar diagnóstico de la base de datos?";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Parte de tu historial de mensajes puede estar dañado. Esto no ha afectado a la seguridad de tu cuenta ni de tus mensajes. Toca \"Continuar\" para recuperar tus datos.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Es posible que parte de tu historial de mensajes esté dañado. Esto no ha afectado a la seguridad de tu cuenta ni de tus mensajes. Toca \"Continuar\" para recuperar tus datos.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problema al recuperar los datos";
@@ -1811,19 +1811,19 @@
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Se necesita más espacio de almacenamiento";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "No se ha podido recuperar tu historial de mensajes. Puedes seguir utilizando Signal después de la reinstalación. Envía un informe de depuración para que podamos entender mejor qué ha ido mal.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "No se ha podido recuperar tu historial de mensajes. Puedes seguir usando Signal después de reinstalar la app. Envía un informe de depuración para que podamos identificar el problema.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Resetear Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Restablecer Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Reiniciar";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Restablecer";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Se eliminará la información de tu cuenta, alias, foto de perfil y todos tus mensajes. La app se cerrará después de completar este proceso.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Se eliminará la información de tu cuenta, tu perfil y todos tus mensajes. La app se cerrará después de que finalice este proceso.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Resetear Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Restablecer Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Enviar registro de depuración";
@@ -1832,13 +1832,13 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Datos no recuperados";
 
 /* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Mantén la app abierta durante el proceso de recuperación. Esto puede tomar unos minutos.";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Mantén la app abierta durante el proceso de recuperación. Esto puede tardar varios minutos.";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Recuperando de datos";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Recuperando datos";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "La recuperación ha salido bien, pero algunos mensajes pueden no haber sido recuperados.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "El proceso de recuperación se ha completado correctamente, pero es posible que no se hayan recuperado algunos mensajes.";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
 "DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Datos recuperados correctamente";
@@ -1898,7 +1898,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Eliminar cuenta";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Esta acción hará que se elimine tu cuenta de Signal y se reinicie la aplicación. Signal se cerrará después de que se complete este proceso.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Esta acción hará que se elimine tu cuenta de Signal y se restablezca la aplicación. Signal se cerrará después de que finalice este proceso.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "¿Seguro que quieres eliminar tu cuenta?";
@@ -2033,10 +2033,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Transferir cuenta y mensajes";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transferir cuenta y mensajes desde tu dispositivo iOS antiguo";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transfiere tu cuenta e historial de mensajes desde tu dispositivo iOS anterior";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transferir cuenta y mensajes desde tu antiguo iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfiere tu cuenta e historial de mensajes desde tu iPad anterior";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transferir desde otro iPad";
@@ -2231,7 +2231,7 @@
 "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Tu donación aún se está procesando. Este proceso puede llevar unos minutos dependiendo de tu conexión. Espera hasta que se complete esta donación antes de actualizar tu suscripción.";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
-"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Selecciona una importe para donar.";
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Selecciona un importe para donar.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\". */
 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "El importe mínimo que puedes donar es de %1$@.";
@@ -2387,13 +2387,13 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "¡%1$@ ha hecho una donación a Signal en tu nombre! Muestra tu insignia de apoyo a Signal en tu perfil.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Mensajería privada. Sin anuncios, ni rastreos, ni vigilancia.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Mensajería privada. Sin anuncios, sin seguimiento, sin vigilancia.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal se mantiene con tus donaciones, con lo que tu privacidad es nuestra máxima prioridad. Signal está diseñada para ti; no para tus datos o para obtener beneficios.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal se financia con donaciones de personas como tú, con lo que tu privacidad es nuestra máxima prioridad. Signal está diseñada para ti, no para obtener datos ni ganancias.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Si puedes, dona hoy para que Signal siga siendo un lugar divertido, fiable y disponible para todos.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Si puedes, haz una donación hoy para que Signal siga siendo un espacio seguro, confiable y accesible para todo el mundo.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
 "DONATION_READ_MORE_SCREEN_TITLE" = "Signal es diferente.";
@@ -2831,7 +2831,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Verificar identidad";
 
 /* Label for button to reset a session. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reiniciar sesión";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Restablecer sesión";
 
 /* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Terminar de crear el grupo";
@@ -2840,7 +2840,7 @@
 "FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "El botón para cambiar de cámara ahora está aquí. Toca el vídeo para probarlo.";
 
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Los mensajes que reenvíes ahora se envían al instante.";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Los mensajes que reenvías ahora se envían al instante.";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Tus mensajes ya no esperan";
@@ -3068,10 +3068,10 @@
 "GROUP_CALL_REQUEST_DENIED_MESSAGE" = "Se ha rechazado tu solicitud para unirte a la llamada.";
 
 /* notification body when you join a group call and an already-joined participant has an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "Un participante de la llamada ha cambiado su número de seguridad. Toca para verlo.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "Ha cambiado el número de seguridad de una persona que está en la llamada. Toca para ver más.";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Un participante que se ha unido a la llamada ha cambiado su número de seguridad. Toca para verlo.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Ha cambiado el número de seguridad de una persona que se ha unido a la llamada. Toca para ver más.";
 
 /* Toast view text informing user about swiping to screen share */
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "Desliza hacia arriba para ver la pantalla compartida";
@@ -4111,6 +4111,12 @@
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "Has vinculado un nuevo dispositivo";
 
+/* Message for an action sheet telling users how to link a device, when trying to open an external device-linking URL. */
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To link a desktop or iPad to this Signal account, go to Linked Devices and tap \"Link a New Device\" and scan the QR code again. Make sure you only scan QR codes that come directly from Signal.";
+
+/* Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera. */
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "It looks like you're trying to link a Signal device. Tap continue and then tap \"Link a New Device\" and scan the QR code again.";
+
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
 "LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "En tu otro dispositivo, ve a %1$@ para instalar la aplicación para iPad o a %2$@ para instalar la de escritorio.";
 
@@ -4502,7 +4508,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "¿Eliminar y abandonar grupo?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Esta persona usa el mismo nombre que otro contacto";
+"MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "Esta persona tiene el mismo nombre que otro contacto";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Si no sabes quién ha enviado esta solicitud, revisa la siguiente lista de contactos para decidir si aceptarla o denegarla.";
@@ -4838,7 +4844,7 @@
 "NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Nueva historia personalizada";
 
 /* Subtitle for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Compartir en un grupo";
+"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Compartir con un grupo";
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Nueva historia de grupo";
@@ -5543,7 +5549,7 @@
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Tu número de teléfono no será visible para nadie a menos que lo tenga guardado en los contactos de su teléfono.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Tu número de teléfono ya no es visible para nadie.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Tu número de teléfono no será visible para nadie.";
 
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "casa";
@@ -6434,7 +6440,7 @@
 "SEARCH_SECTION_MESSAGES" = "Mensajes";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Para vincular este dispositivo con otra cuenta, primero debes reiniciar Signal en este dispositivo. ¿Quieres eliminar todo tu historial (mensajes, archivos, llamadas, etc.)? Esta acción es irreversible.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Para vincular este dispositivo con otra cuenta, primero debes restablecer Signal en este dispositivo. ¿Quieres eliminar todo tu historial (mensajes, archivos, llamadas, etc.)? Esta acción es irreversible.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Eliminar todo";
@@ -7025,7 +7031,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Si tienes un saldo elevado, te recomendamos cambiar tu PIN de Signal por uno alfanumérico para añadir protección extra a tu cuenta.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Actualiza tu PIN de Signal";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Actualiza tu PIN";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Dirección de cartera no válida";
@@ -7796,13 +7802,13 @@
 "STORIES_SHARE_STORY_ACTION" = "Compartir";
 
 /* Section title shown when sending to non-story conversations but failing to send the file to stories. */
-"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Enviado a";
+"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Enviada a";
 
 /* Section title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
-"STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "No enviado a";
+"STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "No enviada a";
 
 /* Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
-"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Enviado parcialmente";
+"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Enviada parcialmente";
 
 /* Subtitle shown when failing to send an incompatible file to stories via the sharesheet. */
 "STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "El tipo de archivo seleccionado no es compatible.";
@@ -7835,7 +7841,7 @@
 "STORY_COMPOSER_LINK_PREVIEW_ERROR" = "No se ha podido cargar el enlace. Comprueba tu conexión e inténtalo de nuevo.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Comparte tu historia vía enlace con quien tú quieras";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Comparte un enlace en tu historia";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "Toca para escribir";
@@ -7844,7 +7850,7 @@
 "STORY_COMPOSER_TEXT" = "Texto";
 
 /* Placeholder text for URL input field in Text Story composer UI. */
-"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "Escribe o añade una URL";
+"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "Escribe o pega una URL";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Abrir enlace";
@@ -7856,7 +7862,7 @@
 "STORY_PRIVACY_SETTINGS" = "Privacidad";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Privacidad de la historia";
+"STORY_PRIVACY_TITLE" = "Privacidad de mis historias";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Ha reaccionado con %1$@ a tu historia";
@@ -7916,10 +7922,10 @@
 "STORY_SEND_FAILED_TAP_FOR_DETAILS" = "No enviado. Toca para reintentar.";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED" = "Enviado parcialmente";
+"STORY_SEND_PARTIALLY_FAILED" = "Enviada parcialmente";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Enviado parcialmente. Toca para ver más.";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Enviada parcialmente. Toca para ver más.";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "Enviando…";
@@ -8576,7 +8582,7 @@
 "WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "No se ha podido eliminar el fondo de pantalla. Inténtalo de nuevo más tarde o contacta con el equipo de asistencia si el problema persiste.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "No se han podido eliminar todos los fondos de pantalla. Inténtalo de nuevo más tarde o contacta con el equipo de asistencia si el problema persiste.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "No se han podido restablecer todos los fondos de pantalla. Inténtalo de nuevo más tarde o contacta con el equipo de asistencia si el problema persiste.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Restablecer todos";
