@@ -404,7 +404,7 @@ public class BlockingManager {
 
     private func sendBlockListSyncMessage(force: Bool) async {
         do {
-            try await _sendBlockListSyncMessage(force: true)
+            try await _sendBlockListSyncMessage(force: force)
         } catch {
             Logger.warn("\(error)")
         }
