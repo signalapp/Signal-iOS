@@ -1,2 +1,1 @@
-• Sada možete prenijeti svoju povijest razgovora i medijske zapise iz posljednjih 45 dana na novi povezani uređaj. Proces prijenosa je sveobuhvatno šifriran i potpuno neobavezan.
-• Fixed an issue preventing sending Memoji and iOS stickers.
+• Riješen je problem koji je sprječavao slanje Memoji i iOS naljepnica.

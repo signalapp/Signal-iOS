@@ -1,2 +1,1 @@
-• Nyt voit halutessasi tuoda keskusteluhistoriasi ja viimeisten 45 päivän mediasisällön mukanasi uuteen yhdistettyyn laitteeseen. Siirtoprosessi on salattu päästä päähän ja täysin valinnainen.
-• Fixed an issue preventing sending Memoji and iOS stickers.
+• Korjasimme ongelman, joka esti Memoji- ja iOS-tarrojen lähettämisen.

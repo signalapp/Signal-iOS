@@ -1,2 +1,1 @@
-• Mostantól dönthetsz úgy, hogy a csevegési előzményeidet és az elmúlt 45 nap médiatartalmát áthelyezed egy új kapcsolt eszközre. Az átviteli folyamat végponttól végpontig titkosított, és teljesen opcionális.
-• Fixed an issue preventing sending Memoji and iOS stickers.
+• Kijavítottuk a Memoji- és iOS-matricák küldését megakadályozó problémát.

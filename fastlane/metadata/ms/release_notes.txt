@@ -1,2 +1,1 @@
-• Kini anda boleh memilih untuk memindahkan sejarah sembang anda dan media 45 hari lalu ke peranti baru yang dipautkan. Proses pemindahan ini disulitkan hujung ke hujung dan sepenuhnya terpulang kepada anda.
-• Fixed an issue preventing sending Memoji and iOS stickers.
+• Isu yang menghalang penghantaran pelekat Memoji dan iOS telah diperbaiki.

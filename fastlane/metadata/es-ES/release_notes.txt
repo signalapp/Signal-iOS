@@ -1,2 +1,1 @@
-• Ahora, al vincular tu dispositivo Signal principal a un nuevo ordenador o iPad, podrás llevarte contigo tu historial de chats y tus últimos 45 días de archivos multimedia. El proceso de transferencia está cifrado de extremo a extremo y es completamente opcional. Así, la decisión de dejar tu pasado atrás solo dependerá de ti (¡y de tus dispositivos!).
-• Fixed an issue preventing sending Memoji and iOS stickers.
+• Hemos solucionado un problema que impedía enviar Memoji y stickers de iOS.

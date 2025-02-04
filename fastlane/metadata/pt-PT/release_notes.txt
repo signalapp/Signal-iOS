@@ -1,2 +1,1 @@
-• Agora pode escolher transferir o seu histórico de mensagens e os seus últimos 45 dias de ficheiros multimédia para um novo dispositivo vinculado. Este processo de transferência está encriptado de ponta a ponta e é totalmente opcional.
-• Fixed an issue preventing sending Memoji and iOS stickers.
+• Corrigido um erro que impedia o envio de Memojis e stickers iOS.

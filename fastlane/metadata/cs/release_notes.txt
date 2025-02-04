@@ -1,2 +1,1 @@
-• Nyní se můžete rozhodnout, zda chcete přenést historii chatů a médií za posledních 45 dní do nového propojeného zařízení. Přenos je koncově šifrovaný a zcela volitelný.
-• Fixed an issue preventing sending Memoji and iOS stickers.
+• Opraven problém, který bránil odesílání nálepek Memoji a iOS.

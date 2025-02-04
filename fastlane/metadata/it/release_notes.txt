@@ -1,2 +1,1 @@
-• Da ora quando colleghi il tuo dispositivo principale di Signal a un nuovo Desktop o iPad, puoi importare la cronologia delle tue chat e gli ultimi 45 giorni di media inviati/ricevuti. Il trasferimento è crittografato e del tutto opzionale. Insomma, scegli tu se lasciarti il passato alle spalle o meno!
-• Fixed an issue preventing sending Memoji and iOS stickers.
+• Risolto il bug che impediva il corretto invio dei Memoji e degli sticker iOS.

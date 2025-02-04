@@ -1,2 +1,1 @@
-• Nå kan du overføre samtaleloggen din og mediefilene dine fra de siste 45 dagene til en annen tilkoblet enhet. Overføringen er ende-til-ende-kryptert og helt valgfri.
-• Fixed an issue preventing sending Memoji and iOS stickers.
+• Rettet opp en feil som ført til at man ikke kunne sende Memoji- og iOS-klistremerker.

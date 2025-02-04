@@ -1,2 +1,1 @@
-• 现在您可以选择将聊天记录和最近 45 天的媒体转移到新的已链接设备。转移过程受端到端加密保护，并且是完全可选的选项。
-• Fixed an issue preventing sending Memoji and iOS stickers.
+• 修复了无法发送拟我表情 （Memoji） 和 3D 贴纸的问题。
