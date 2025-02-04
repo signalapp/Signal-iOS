@@ -449,7 +449,7 @@ public class GroupsV2Impl: GroupsV2 {
 
             let dataBuilder = SSKProtoDataMessage.builder()
             dataBuilder.setGroupV2(groupV2Context)
-            dataBuilder.setRequiredProtocolVersion(1)
+            dataBuilder.setRequiredProtocolVersion(UInt32(SSKProtoDataMessageProtocolVersion.initial.rawValue))
             dataBuilder.setTimestamp(timestamp)
 
             let dataProto = try dataBuilder.build()
