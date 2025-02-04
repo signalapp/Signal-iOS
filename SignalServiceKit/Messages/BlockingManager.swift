@@ -474,12 +474,18 @@ public class BlockingManager {
     }
 
     private func shouldSync(changeToken: UInt64, tx: SDSAnyReadTransaction) -> Bool {
-        if changeToken > Constants.initialChangeToken, changeToken != fetchLastSyncedChangeToken(tx: tx) {
+        // If we've ever sync'd with this mechanism, we need only sync again if the
+        // token has changed.
+        if let lastSyncedChangeToken = fetchLastSyncedChangeToken(tx: tx) {
+            return changeToken != lastSyncedChangeToken
+        }
+        // Otherwise, if we've made any change, we must sync.
+        if changeToken > Constants.initialChangeToken {
             return true
         }
-        // If we don't have a last synced change token, we can use the existence of one of our
-        // old KVS keys as a hint that we may need to sync. If they don't exist this is
-        // probably a fresh install and we don't need to sync.
+        // If we don't have a last synced change token, we can use the existence of
+        // one of our old KVS keys as a hint that we may need to sync. If they
+        // don't exist this is probably a fresh install and we don't need to sync.
         return PersistenceKey.Legacy.allCases.contains { key in
             return keyValueStore.hasValue(key.rawValue, transaction: tx.asV2Read)
         }
