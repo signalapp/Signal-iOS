@@ -1355,7 +1355,7 @@ public class GroupManager: NSObject {
 
         // We've never uploaded a profile key commitment - do so now.
         Logger.info("No profile key credential available for local account - uploading local profile!")
-        _ = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+        let uploadAndFetchPromise = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             SSKEnvironment.shared.profileManagerRef.reuploadLocalProfile(
                 unsavedRotatedProfileKey: nil,
                 mustReuploadAvatar: false,
@@ -1363,6 +1363,7 @@ public class GroupManager: NSObject {
                 tx: tx.asV2Write
             )
         }
+        try await uploadAndFetchPromise.awaitable()
     }
 }
 
