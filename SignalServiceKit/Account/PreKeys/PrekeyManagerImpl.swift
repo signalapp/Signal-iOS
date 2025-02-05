@@ -17,7 +17,9 @@ public class PreKeyManagerImpl: PreKeyManager {
 
         // Maximum amount of time that can elapse without rotating signed prekeys
         // before the message sending is disabled.
-        static let SignedPreKeyMaxRotationDuration = (14 * kDayInterval)
+        static let SignedPreKeyMaxRotationDuration: TimeInterval = (
+            FeatureFlags.shouldUseTestIntervals ? (4 * kDayInterval) : (14 * kDayInterval)
+        )
 
         fileprivate static let preKeyRotationVersion = 1
         fileprivate static let aciPreKeyRotationVersionKey = "ACIPreKeyRotationVersion"

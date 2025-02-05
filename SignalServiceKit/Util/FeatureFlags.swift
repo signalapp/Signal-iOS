@@ -34,6 +34,8 @@ public enum FeatureFlags {
 
     public static let isPrerelease = build.includes(.beta)
 
+    public static let shouldUseTestIntervals = build.includes(.beta)
+
     /// If we ever need to internally detect database corruption again in the
     /// future, we can re-enable this.
     public static let periodicallyCheckDatabaseIntegrity: Bool = false
