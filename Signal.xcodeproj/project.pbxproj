@@ -1630,6 +1630,7 @@
 		B93296692BBB3FF200B8BD39 /* ProfileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95BBAC12BB36025009EFB4A /* ProfileName.swift */; };
 		B9488E752CDED27200C1294B /* ScrollOffset.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9488E742CDED27200C1294B /* ScrollOffset.swift */; };
 		B94E48012D385D7800128318 /* linear_indeterminate.json in Resources */ = {isa = PBXBuildFile; fileRef = B94E48002D385D7800128318 /* linear_indeterminate.json */; };
+		B95967842D52976A00F9A800 /* NavigationPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95967832D52976A00F9A800 /* NavigationPreviewController.swift */; };
 		B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */; };
 		B95A765E2B76E93500AA7E97 /* FindByUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */; };
 		B96D6D792B9F83270039EB99 /* SignalSymbols-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96D6D782B9F83270039EB99 /* SignalSymbols-Regular.otf */; };
@@ -5453,6 +5454,7 @@
 		B93296662BB5CF7500B8BD39 /* NicknameRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameRecordStore.swift; sourceTree = "<group>"; };
 		B9488E742CDED27200C1294B /* ScrollOffset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollOffset.swift; sourceTree = "<group>"; };
 		B94E48002D385D7800128318 /* linear_indeterminate.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = linear_indeterminate.json; sourceTree = "<group>"; };
+		B95967832D52976A00F9A800 /* NavigationPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationPreviewController.swift; sourceTree = "<group>"; };
 		B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarViewPresentationContextProvider.swift; sourceTree = "<group>"; };
 		B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByUsernameViewController.swift; sourceTree = "<group>"; };
 		B95BBAC12BB36025009EFB4A /* ProfileName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileName.swift; sourceTree = "<group>"; };
@@ -8110,6 +8112,7 @@
 				34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */,
 				34A95507271B510400B05242 /* GroupViewUtils.swift */,
 				6605D5042A86EE50004DC345 /* MessageRecipientStatusUtils.swift */,
+				B95967832D52976A00F9A800 /* NavigationPreviewController.swift */,
 				B9A53B922CF7928A0000578B /* SheetPreviewViewController.swift */,
 				C1D9B1522B7E949500D94595 /* SpamReportingUIUtils.swift */,
 			);
@@ -16076,6 +16079,7 @@
 				34BB78B7272C51B600DA0D04 /* MobileCoinHelperSDK.swift in Sources */,
 				3402AA44271D9DCD0084CBAE /* ModalActivityIndicatorViewController.swift in Sources */,
 				66FBC4E128DA820900BD9E8B /* MyStorySettingsViewController.swift in Sources */,
+				B95967842D52976A00F9A800 /* NavigationPreviewController.swift in Sources */,
 				88B986F4287F5B6500F8C74D /* NewGroupStoryViewController.swift in Sources */,
 				88B98701288088BC00F8C74D /* NewMembersBar.swift in Sources */,
 				88F5D78C2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift in Sources */,

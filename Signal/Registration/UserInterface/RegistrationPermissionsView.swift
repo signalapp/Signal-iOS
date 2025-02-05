@@ -42,6 +42,10 @@ struct RegistrationPermissionsView: View {
     var body: some View {
         VStack {
             VStack(spacing: headerSpacing) {
+                if requestingContactsAuthorization {
+                    Color.clear.frame(height: 32)
+                }
+
                 Text(OWSLocalizedString("ONBOARDING_PERMISSIONS_TITLE", comment: "Title of the 'onboarding permissions' view."))
                     .font(.title.weight(.semibold))
                     .lineLimit(1)
@@ -234,9 +238,32 @@ private extension RegistrationPermissionsView {
     }
 }
 
-final class RegistrationPermissionsViewController: HostingController<RegistrationPermissionsView> {
+final class RegistrationPermissionsViewController: OWSViewController, OWSNavigationChildController {
+    let requestingContactsAuthorization: Bool
+    let presenter: any RegistrationPermissionsPresenter
+
+    var prefersNavigationBarHidden: Bool { true }
+
     init(requestingContactsAuthorization: Bool, presenter: any RegistrationPermissionsPresenter) {
-        super.init(wrappedView: RegistrationPermissionsView(requestingContactsAuthorization: requestingContactsAuthorization, presenter: presenter))
+        self.requestingContactsAuthorization = requestingContactsAuthorization
+        self.presenter = presenter
+        super.init()
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = UIColor.Signal.background
+
+        let hostingController = HostingController(
+            wrappedView: RegistrationPermissionsView(
+                requestingContactsAuthorization: requestingContactsAuthorization,
+                presenter: presenter
+            )
+        )
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.view.autoPinEdgesToSuperviewEdges()
+        hostingController.didMove(toParent: self)
     }
 
     @available(*, unavailable)
@@ -252,10 +279,14 @@ private struct PreviewPermissionsPresenter: RegistrationPermissionsPresenter {
     }
 }
 
+@available(iOS 17, *)
 #Preview {
-    VStack {
-        Color.clear.frame(height: 44)
-        RegistrationPermissionsView(requestingContactsAuthorization: true, presenter: PreviewPermissionsPresenter())
-    }
+    NavigationPreviewController(
+        animateFirstAppearance: true,
+        viewController: RegistrationPermissionsViewController(
+            requestingContactsAuthorization: true,
+            presenter: PreviewPermissionsPresenter()
+        )
+    )
 }
 #endif
