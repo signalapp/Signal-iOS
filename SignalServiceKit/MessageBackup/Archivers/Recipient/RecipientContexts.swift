@@ -278,14 +278,27 @@ extension MessageBackup {
             /// encounter a hidden `Contact` frame, we'll track that we should,
             /// after all other frames are restored, insert an in-chat message
             /// that the contact is hidden.
-            var insertContactHiddenInfoMessage: Bool
+            var insertContactHiddenInfoMessage: Bool = false
+
+            /// This recipient has incoming messages that lack an ACI. We need to make a
+            /// note of that in `AuthorMergeHelper` to ensure we latch them onto their
+            /// ACI if/when we learn it.
+            var hasIncomingMessagesMissingAci: Bool = false
         }
 
         /// Represents actions that should be taken after all `Frame`s have been restored.
         private(set) var postFrameRestoreActions = SharedMap<RecipientId, PostFrameRestoreActions>()
 
         func setNeedsPostRestoreContactHiddenInfoMessage(recipientId: RecipientId) {
-            postFrameRestoreActions[recipientId] = PostFrameRestoreActions(insertContactHiddenInfoMessage: true)
+            var actions = postFrameRestoreActions[recipientId] ?? PostFrameRestoreActions()
+            actions.insertContactHiddenInfoMessage = true
+            postFrameRestoreActions[recipientId] = actions
+        }
+
+        func setHasIncomingMessagesMissingAci(recipientId: RecipientId) {
+            var actions = postFrameRestoreActions[recipientId] ?? PostFrameRestoreActions()
+            actions.hasIncomingMessagesMissingAci = true
+            postFrameRestoreActions[recipientId] = actions
         }
     }
 }

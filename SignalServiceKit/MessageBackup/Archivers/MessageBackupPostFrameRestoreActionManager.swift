@@ -57,6 +57,11 @@ public class MessageBackupPostFrameRestoreActionManager {
                     try insertContactHiddenInfoMessage(recipientId: recipientId, chatItemContext: chatItemContext)
                 }
             }
+            if actions.hasIncomingMessagesMissingAci {
+                bencher.benchPostFrameAction(.InsertPhoneNumberMissingAci) {
+                    insertPhoneNumberMissingAci(recipientId: recipientId, chatItemContext: chatItemContext)
+                }
+            }
         }
         // Note: This should happen after recipient actions; the recipient actions insert
         // messages which may themselves influence the set of chat actions.
@@ -192,6 +197,18 @@ public class MessageBackupPostFrameRestoreActionManager {
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             context: chatItemContext
         )
+    }
+
+    private func insertPhoneNumberMissingAci(recipientId: MessageBackup.RecipientId, chatItemContext: MessageBackup.ChatItemRestoringContext) {
+        guard
+            let address = chatItemContext.recipientContext[recipientId],
+            case .contact(let contactAddress) = address,
+            let phoneNumber = contactAddress.e164
+        else {
+            Logger.warn("Skipping insert of phone number missing ACI because there's no phone number!")
+            return
+        }
+        AuthorMergeHelper().foundMissingAci(for: phoneNumber.stringValue, tx: chatItemContext.tx)
     }
 
     private func updateLastInteractionTimestamps(

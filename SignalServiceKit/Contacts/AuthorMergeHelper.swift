@@ -44,7 +44,7 @@ import GRDB
 /// generally measured in months rather than minutes. Between (1) and (2),
 /// we can run our non-blocking migration again, such that by the time we
 /// get to (2), the phone number no longer requires a migration.
-public class AuthorMergeHelper {
+public struct AuthorMergeHelper {
     private let metadataStore: KeyValueStore
     public let nextRowIdStore: KeyValueStore
     private let phoneNumberMissingAciStore: KeyValueStore

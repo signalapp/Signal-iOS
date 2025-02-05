@@ -250,8 +250,9 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
         let authorE164: E164?
         switch context.recipientContext[chatItem.authorRecipientId] {
         case .contact(let address):
+            // See NormalizedDatabaseRecordAddress for more details.
             authorAci = address.aci
-            authorE164 = address.e164
+            authorE164 = authorAci == nil ? address.e164 : nil
             if authorAci == nil && authorE164 == nil {
                 // Don't accept pni-only addresses. An incoming
                 // message can only come from an aci, or if its
@@ -418,6 +419,10 @@ extension MessageBackupTSIncomingMessageArchiver: MessageBackupTSMessageEditHist
             )
         } catch let error {
             return .messageFailure(partialErrors + [.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
+        }
+
+        if authorAci == nil {
+            context.recipientContext.setHasIncomingMessagesMissingAci(recipientId: chatItem.authorRecipientId)
         }
 
         switch contentsArchiver

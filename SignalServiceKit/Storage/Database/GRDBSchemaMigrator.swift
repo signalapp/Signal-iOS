@@ -380,6 +380,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_indexSearchableNames
         case dataMigration_removeSystemContacts
         case dataMigration_clearLaunchScreenCache2
+        case dataMigration_resetLinkedDeviceAuthorMergeBuilder
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -4380,6 +4381,23 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.dataMigration_clearLaunchScreenCache2) { _ in
             OWSFileSystem.deleteFileIfExists(NSHomeDirectory() + "/Library/SplashBoard")
+            return .success(())
+        }
+
+        migrator.registerMigration(.dataMigration_resetLinkedDeviceAuthorMergeBuilder) { tx in
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard tsAccountManager.registrationState(tx: tx.asAnyRead.asV2Read).isPrimaryDevice != true else {
+                return .success(())
+            }
+
+            let keyValueCollections = [
+                "AuthorMergeMetadata",
+                "AuthorMergeNextRowId",
+            ]
+
+            for collection in keyValueCollections {
+                KeyValueStore(collection: collection).removeAll(transaction: tx.asAnyWrite.asV2Write)
+            }
             return .success(())
         }
 

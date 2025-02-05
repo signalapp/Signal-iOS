@@ -422,6 +422,7 @@ extension MessageBackup {
 
         enum PostFrameRestoreAction: String, CaseIterable {
             case InsertContactHiddenInfoMessage
+            case InsertPhoneNumberMissingAci
             case UpdateThreadMetadata
             case EnqueueAvatarFetch
             case IndexThreads
