@@ -205,10 +205,6 @@ public extension UIBarButtonItem {
             self.handler = handler
         }
     }
-    /*
-     Instead of having all of these different kinds of methods for the different kinds of combinatins of buttons, invest in turning
-     all of this into either a builder or a fluent builder. https://www.geeksforgeeks.org/builder-fluent-builder-and-faceted-builder-method-design-pattern-in-java/
-     */
     
     /// Creates a bar button with the given title that performs the action in the provided closure.
     static func button(
