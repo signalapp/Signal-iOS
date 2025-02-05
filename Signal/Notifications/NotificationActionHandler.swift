@@ -125,7 +125,6 @@ public class NotificationActionHandler {
         }
     }
         
-    //TODO: Lets invest a lot of time and resources in order to convert promises into using await Task as this below was the problem that await Task was created to solve.
     private class func sendReplyToNotificationMessage(replyText: String, notificationMessage: NotificationMessage) throws -> Promise<Void> {
         let thread = notificationMessage.thread
         let interaction = notificationMessage.interaction
@@ -148,10 +147,10 @@ public class NotificationActionHandler {
     private class func getDraftQuotedReplyModelForSendingFromIncomingMessage(notificationMessage: NotificationMessage) throws -> Promise<DraftQuotedReplyModel.ForSending?> {
         return firstly { () -> Promise<DraftQuotedReplyModel?> in
             return getDraftQuotedReplyModelFromIncomingMessage(notificationMessage: notificationMessage)
-        }.then(on: DispatchQueue.global()) { (draftModel: DraftQuotedReplyModel?) -> Promise<DraftQuotedReplyModel.ForSending?> in
+        }.then(on: DispatchQueue.global()) { (optionalDraftModel: DraftQuotedReplyModel?) -> Promise<DraftQuotedReplyModel.ForSending?> in
             return firstly(on: DispatchQueue.global()) {
-                if let nonNilDraftModel = draftModel {
-                    return try DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending(nonNilDraftModel)
+                if let draftModel = optionalDraftModel {
+                    return try DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending(draftModel)
                 }
                 return nil
             }
@@ -161,11 +160,10 @@ public class NotificationActionHandler {
     private class func getDraftQuotedReplyModelFromIncomingMessage(notificationMessage: NotificationMessage) -> Promise<DraftQuotedReplyModel?> {
         return firstly(on: DispatchQueue.global()) {
             return SSKEnvironment.shared.databaseStorageRef.read { readTransaction in
-                //TODO: I dont know if this is the correct way to create a DraftQuotedReplyModel, but this is what I saw on ConversationViewController+MessageActionsDelegate line 190
-                if let incomingMessage = notificationMessage.interaction as? TSIncomingMessage {
-                    if let draftQuotedReplyModel = DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(originalMessage: incomingMessage, tx: readTransaction.asV2Read) {
-                        return draftQuotedReplyModel
-                    }
+                if
+                    let incomingMessage = notificationMessage.interaction as? TSIncomingMessage,
+                    let draftQuotedReplyModel = DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(originalMessage: incomingMessage, tx: readTransaction.asV2Read) {
+                    return draftQuotedReplyModel
                 }
                 return nil
             }
