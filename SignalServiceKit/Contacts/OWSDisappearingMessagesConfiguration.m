@@ -4,7 +4,6 @@
 //
 
 #import "OWSDisappearingMessagesConfiguration.h"
-#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -82,19 +81,19 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSNumber *> *)presetDurationsSeconds
 {
     return @[
-        @(30 * kSecondInterval),
-        @(5 * kMinuteInterval),
-        @(1 * kHourInterval),
-        @(8 * kHourInterval),
-        @(24 * kHourInterval),
-        @(1 * kWeekInterval),
-        @(4 * kWeekInterval)
+        @(30 * NSTimeIntervalConstants.second),
+        @(5 * NSTimeIntervalConstants.minute),
+        @(1 * NSTimeIntervalConstants.hour),
+        @(8 * NSTimeIntervalConstants.hour),
+        @(24 * NSTimeIntervalConstants.hour),
+        @(1 * NSTimeIntervalConstants.week),
+        @(4 * NSTimeIntervalConstants.week)
     ];
 }
 
 + (uint32_t)maxDurationSeconds
 {
-    return (uint32_t)kYearInterval;
+    return (uint32_t)NSTimeIntervalConstants.year;
 }
 
 - (NSString *)durationString

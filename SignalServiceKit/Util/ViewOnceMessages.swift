@@ -49,7 +49,7 @@ public class ViewOnceMessages: NSObject {
         }
 
         // We need to "check for auto-completion" once per day.
-        DispatchQueue.global().asyncAfter(wallDeadline: .now() + kDayInterval) {
+        DispatchQueue.global().asyncAfter(wallDeadline: .now() + .day) {
             self.checkForAutoCompletion()
         }
     }

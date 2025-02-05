@@ -391,7 +391,7 @@ public class SystemContactsFetcher: NSObject {
                 var shouldNotifyDelegate = false
 
                 // If nothing has changed, only notify delegate (to perform contact intersection) every N hours
-                let kDebounceInterval = 12 * kHourInterval
+                let kDebounceInterval: TimeInterval = 12 * .hour
 
                 if self.lastContactUpdateHash != contactsHash {
                     Logger.info("Updating contacts because hash changed")

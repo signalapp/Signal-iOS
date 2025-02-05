@@ -231,7 +231,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
 
     private enum Constants {
         /// Defines the time between retries for SEPA and recurring iDEAL transactions.
-        static let sepaRetryInterval = TSConstants.isUsingProductionService ? kDayInterval : kMinuteInterval
+        static let sepaRetryInterval: TimeInterval = TSConstants.isUsingProductionService ? .day : .minute
     }
 
     private enum RetryInterval {

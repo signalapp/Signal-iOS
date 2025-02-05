@@ -10,7 +10,7 @@ import Foundation
 public class MockAppExpiry: AppExpiry {
     public var dateProvider: DateProvider = { Date() }
 
-    public var expirationDate = Date().addingTimeInterval(30 * kDayInterval)
+    public var expirationDate = Date().addingTimeInterval(30 * .day)
 
     public var isExpired: Bool { expirationDate < dateProvider() }
 

@@ -184,7 +184,7 @@ private extension Date {
     /// lifetime constant is copied from the one hardcoded into
     /// ``DeletedCallRecord`` in the cleanup manager.
     static func fixture(seconds: UInt64) -> Date {
-        return Date(millisecondsSince1970: seconds.milliseconds + UInt64(8 * kHourInterval).milliseconds)
+        return Date(millisecondsSince1970: seconds.milliseconds + UInt64(8 * TimeInterval.hour).milliseconds)
     }
 }
 

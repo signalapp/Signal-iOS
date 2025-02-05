@@ -278,7 +278,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     func testValidationFiresIfValidatedAWhileAgo() async {
         mockDB.write { tx in
             validationManager.setLastValidation(
-                date: Date().addingTimeInterval(-kDayInterval).addingTimeInterval(-1),
+                date: Date().addingTimeInterval(-.day).addingTimeInterval(-1),
                 tx
             )
         }

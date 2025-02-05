@@ -11,7 +11,7 @@ import XCTest
 final class CooperativeTimeoutTest: XCTestCase {
     func testResolved() async throws {
         try await withCooperativeTimeout(
-            seconds: kDayInterval,
+            seconds: .day,
             operation: {}
         )
     }
@@ -32,7 +32,7 @@ final class CooperativeTimeoutTest: XCTestCase {
         let cancellableTask = Task {
             while !Task.isCancelled { await Task.yield() }
             try await withCooperativeTimeout(
-                seconds: kDayInterval,
+                seconds: .day,
                 operation: { try await Task.sleep(nanoseconds: 1_000_000 * NSEC_PER_SEC) }
             )
         }

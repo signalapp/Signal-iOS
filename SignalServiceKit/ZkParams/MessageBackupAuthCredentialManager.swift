@@ -27,8 +27,8 @@ public protocol MessageBackupAuthCredentialManager {
 public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentialManager {
 
     private enum Constants {
-        static let numberOfDaysToFetchInSeconds: TimeInterval = 7 * kDayInterval
-        static let numberOfDaysRemainingFutureCredentialsInSeconds: TimeInterval = 4 * kDayInterval
+        static let numberOfDaysToFetchInSeconds: TimeInterval = 7 * .day
+        static let numberOfDaysRemainingFutureCredentialsInSeconds: TimeInterval = 4 * .day
         static let keyValueStoreCollectionName = "MessageBackupAuthCredentialManager"
     }
 
@@ -203,6 +203,6 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
 fileprivate extension Date {
     /// The "start of today", i.e. midnight at the beginning of today, in epoch seconds.
     func startOfTodayUTCTimestamp() -> UInt64 {
-        return UInt64(self.timeIntervalSince1970 / kDayInterval) * UInt64(kDayInterval)
+        return UInt64(self.timeIntervalSince1970 / .day) * UInt64(TimeInterval.day)
     }
 }

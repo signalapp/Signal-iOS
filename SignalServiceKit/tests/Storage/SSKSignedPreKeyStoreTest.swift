@@ -24,7 +24,7 @@ class SSKSignedPreKeyStoreTest: SSKBaseTest {
         let lastPreKeyId = days
 
         for i in 0...days { // 4 signed keys are generated, one per day from now until 3 days ago.
-            let secondsAgo = TimeInterval(i - days) * kDayInterval
+            let secondsAgo = TimeInterval(i - days) * .day
             assert(secondsAgo <= 0, "Time in past must be negative")
             let generatedAt = Date(timeIntervalSinceNow: secondsAgo)
             let record = SignedPreKeyRecord(id: i,
@@ -39,7 +39,7 @@ class SSKSignedPreKeyStoreTest: SSKBaseTest {
         XCTAssertNotNil(aciStore.loadSignedPreKey(lastPreKeyId))
 
         for i in 0...days { // 4 signed keys are generated, one per day from now until 3 days ago.
-            let secondsAgo = TimeInterval(i - days) * kDayInterval
+            let secondsAgo = TimeInterval(i - days) * .day
             assert(secondsAgo <= 0, "Time in past must be negative")
             let generatedAt = Date(timeIntervalSinceNow: secondsAgo)
             let record = SignedPreKeyRecord(id: i,

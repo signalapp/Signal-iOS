@@ -844,7 +844,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 // otherwise don't bother trying automatically.
                 // (The user could still try a manual download later).
                 canDownloadTransitTierFullsize = Date(millisecondsSince1970: timestampForComparison)
-                    .addingTimeInterval(45 * kDayInterval)
+                    .addingTimeInterval(45 * .day)
                     .isAfter(dateProvider())
             } else {
                 canDownloadTransitTierFullsize = false

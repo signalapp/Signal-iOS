@@ -238,7 +238,7 @@ private extension InternalSettingsViewController {
             } else {
                 let animation = CABasicAnimation(keyPath: "transform.rotation.z")
                 animation.toValue = NSNumber(value: Double.pi * 2)
-                animation.duration = kSecondInterval * 1
+                animation.duration = TimeInterval.second
                 animation.isCumulative = true
                 animation.repeatCount = .greatestFiniteMagnitude
                 view.layer.add(animation, forKey: "spin")

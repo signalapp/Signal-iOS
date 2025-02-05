@@ -120,6 +120,6 @@ public extension ExperienceUpgrade {
         guard firstViewedTimestamp > 0 else { return 0 }
 
         let secondsSinceFirstView = -Date(timeIntervalSince1970: firstViewedTimestamp).timeIntervalSinceNow
-        return Int(secondsSinceFirstView / kDayInterval)
+        return Int(secondsSinceFirstView / .day)
     }
 }

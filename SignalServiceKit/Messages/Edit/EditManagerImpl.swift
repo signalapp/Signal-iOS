@@ -13,7 +13,7 @@ public class EditManagerImpl: EditManager {
 
         // Edits will only be received for up to 48 hours from the
         // original message
-        static let editWindowMilliseconds: UInt64 = UInt64(kHourInterval * 48 * 1000)
+        static let editWindowMilliseconds: UInt64 = 2 * UInt64.dayInMs
 
         // Receiving more than this number of edits on the same message
         // will result in subsequent edits being dropped
@@ -23,7 +23,7 @@ public class EditManagerImpl: EditManager {
 
         // Edits can only be sent for up to 24 hours from the
         // original message
-        static let editSendWindowMilliseconds: UInt64 = UInt64(kHourInterval * 24 * 1000)
+        static let editSendWindowMilliseconds: UInt64 = UInt64.dayInMs
 
         // Message can only be edited 10 times
         static let maxSendEdits: UInt = UInt(10)

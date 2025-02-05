@@ -59,7 +59,7 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
 
         let chatUpdateExpiresInMs: UInt64
         if dmUpdateInfoMessage.configurationIsEnabled {
-            chatUpdateExpiresInMs = UInt64(dmUpdateInfoMessage.configurationDurationSeconds) * kSecondInMs
+            chatUpdateExpiresInMs = UInt64(dmUpdateInfoMessage.configurationDurationSeconds) * UInt64.secondInMs
         } else {
             chatUpdateExpiresInMs = 0
         }

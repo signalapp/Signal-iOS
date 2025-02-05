@@ -194,7 +194,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
     @objc
     private func didTapCopyToClipboard() {
         // Ensure that passphrase only resides in pasteboard for short window of time.
-        let pasteboardDuration = kSecondInterval * 30
+        let pasteboardDuration: TimeInterval = .second * 30
         let expireDate = Date().addingTimeInterval(pasteboardDuration)
         UIPasteboard.general.setItems([[UIPasteboard.typeAutomatic: passphrase.asPassphrase]],
                                       options: [.expirationDate: expireDate])

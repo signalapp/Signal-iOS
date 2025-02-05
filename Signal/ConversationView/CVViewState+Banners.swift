@@ -182,14 +182,14 @@ public extension CVViewState {
     /// responsive to changes in pending member request state.
     private static let isPendingMemberRequestsBannerHiding = PendingMemberRequestsBannerHiding(
         identifier: "BannerHiding_pendingMemberRequests",
-        hideDuration: kWeekInterval
+        hideDuration: .week
     )
 
     /// This banner will snooze for only 1 hour after each hiding, since this
     /// is a potential safety concern (and only appears in message requests).
     private static let isMessageRequestNameCollisionBannerHiding = BannerHiding(
         identifier: "BannerHiding_messageRequestNameCollision",
-        hideDuration: kHourInterval
+        hideDuration: .hour
     )
 
     func shouldShowPendingMemberRequestsBanner(

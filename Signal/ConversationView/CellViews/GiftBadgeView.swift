@@ -422,7 +422,7 @@ class GiftBadgeView: ManualStackView {
         // give the badge a bit more consistency, even though this may not be
         // perfect across all languages.
 
-        let timeRemainingCandidates: [TimeInterval] = [59*kMinuteInterval, 23*kHourInterval, 59*kDayInterval]
+        let timeRemainingCandidates: [TimeInterval] = [59 * TimeInterval.minute, 23 * TimeInterval.hour, 59 * TimeInterval.day]
         for timeRemaining in timeRemainingCandidates {
             let candidateConfig = CVLabelConfig.unstyledText(
                 self.localizedDurationText(for: timeRemaining),

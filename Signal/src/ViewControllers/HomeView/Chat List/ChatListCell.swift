@@ -1074,8 +1074,7 @@ class CLVCellContentToken {
         guard let lastReloadDate = configuration.lastReloadDate else {
             return true
         }
-        let avatarAsyncLoadInterval = kSecondInterval * 1
-        return abs(lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval
+        return abs(lastReloadDate.timeIntervalSinceNow) > .second
     }
 
     fileprivate init(configuration: CLVCellContentConfiguration, measurements: CLVCellContentMeasurements) {

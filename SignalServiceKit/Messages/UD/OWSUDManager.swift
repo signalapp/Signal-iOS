@@ -283,7 +283,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
 
         // Discard certificates that we obtained more than 24 hours ago.
-        if certificateExpirationPolicy == .strict, -dateValue.timeIntervalSinceNow >= kDayInterval {
+        if certificateExpirationPolicy == .strict, -dateValue.timeIntervalSinceNow >= .day {
             return nil
         }
 
@@ -408,7 +408,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         // We want a threshold long enough to ensure that any outgoing message
         // sends will complete before the expiration.
         let nowMs = NSDate.ows_millisecondTimeStamp()
-        let anHourFromNowMs = nowMs + kHourInMs
+        let anHourFromNowMs = nowMs + UInt64.hourInMs
 
         guard case .some(true) = try? certificate.validate(trustRoot: trustRoot, time: anHourFromNowMs) else {
             return false

@@ -253,18 +253,18 @@ public final class APNSRotationStore: NSObject {
         /// We also store the date at which the token last worked,
         /// if it was too long ago we might be eligible to rotate.
         fileprivate static let lastKnownWorkingAPNSTokenTimestampKey = "lastKnownWorkingAPNSTokenTimestampKey"
-        internal static let lastKnownWorkingAPNSTokenExpirationTimeMs: UInt64 = 60 /*days*/ * kDayInMs
+        internal static let lastKnownWorkingAPNSTokenExpirationTimeMs: UInt64 = 60 /*days*/ * UInt64.dayInMs
 
         /// See comments on `setAppVersionTimeForAPNSRotationIfNeeded`.
         /// Time we wait after the app first updates to a version with this code before we issue
         /// a token rotation due to missed messages.
-        internal static let appVersionBakeTimeMs: UInt64 = kWeekInMs
+        internal static let appVersionBakeTimeMs: UInt64 = UInt64.weekInMs
         /// See comments on `setAppVersionTimeForAPNSRotationIfNeeded`.
         /// This is the key where we store when we have updated.
         fileprivate static let apnsRotationAppVersionUpdateTimestampKey = "apnsRotationAppVersionUpdateTimestampKey"
 
         /// Don't ever rotate tokens more often than this.
-        internal static let minRotationInterval: UInt64 = kWeekInMs
+        internal static let minRotationInterval: UInt64 = UInt64.weekInMs
         fileprivate static let lastAPNSRotationTimestampKey = "lastAPNSRotationTimestampKey"
     }
 }

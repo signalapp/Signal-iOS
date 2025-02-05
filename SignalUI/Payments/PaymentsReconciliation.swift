@@ -19,7 +19,7 @@ public class PaymentsReconciliation {
             // check whether we should perform reconciliation.
             //
             // TODO: Tune.
-            let refreshCheckInterval = kMinuteInterval * 5
+            let refreshCheckInterval: TimeInterval = .minute * 5
             self.refreshEvent = RefreshEvent(appReadiness: appReadiness, refreshInterval: refreshCheckInterval) { [weak self] in
                 self?.reconcileIfNecessary()
             }
@@ -93,8 +93,7 @@ public class PaymentsReconciliation {
         guard let date = Self.schedulingStore.getDate(Self.successDateKey, transaction: transaction.asV2Read) else {
             return true
         }
-        let reconciliationInterval = kHourInterval * 1
-        return abs(date.timeIntervalSinceNow) >= reconciliationInterval
+        return abs(date.timeIntervalSinceNow) >= .hour
     }
 
     private static func shouldReconcileWithSneakyTransaction(transactionHistory: MCTransactionHistory) -> Bool {

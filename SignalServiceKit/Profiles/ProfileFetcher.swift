@@ -201,7 +201,7 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         }
         let now = MonotonicDate()
         if case .failure(ProfileRequestError.rateLimit) = result {
-            self.rateLimitExpirationDate = now.adding(5*kMinuteInterval)
+            self.rateLimitExpirationDate = now.adding(5 * .minute)
         }
         self.recentFetchResults[serviceId] = FetchResult(outcome: outcome, completionDate: now)
         return try result.get()
@@ -249,17 +249,17 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         } else {
             switch fetchResult.outcome {
             case .success:
-                retryDelay = 2 * kMinuteInterval
+                retryDelay = 2 * .minute
             case .networkFailure:
-                retryDelay = 1 * kMinuteInterval
+                retryDelay = 1 * .minute
             case .requestFailure(.notAuthorized):
-                retryDelay = 30 * kMinuteInterval
+                retryDelay = 30 * .minute
             case .requestFailure(.notFound):
-                retryDelay = 6 * kHourInterval
+                retryDelay = 6 * .hour
             case .requestFailure(.rateLimit):
-                retryDelay = 5 * kMinuteInterval
+                retryDelay = 5 * .minute
             case .otherFailure:
-                retryDelay = 30 * kMinuteInterval
+                retryDelay = 30 * .minute
             }
         }
 

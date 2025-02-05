@@ -1248,7 +1248,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
 
         // Has it been at least an hour since we upgraded?
-        guard -upgradeDate.timeIntervalSinceNow > kHourInterval else {
+        guard -upgradeDate.timeIntervalSinceNow > .hour else {
             return
         }
 
@@ -1281,13 +1281,13 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 case 0:
                     return 0
                 case 1, 2:
-                    return 24*kHourInterval
+                    return 24 * .hour
                 case 3:
-                    return 48*kHourInterval
+                    return 48 * .hour
                 case 4:
-                    return 72*kHourInterval
+                    return 72 * .hour
                 default:
-                    return 96*kHourInterval
+                    return 96 * .hour
                 }
             }()
             let mostRecentDate = keyValueStore.getDate(mostRecentDateKey, transaction: tx.asV2Read)

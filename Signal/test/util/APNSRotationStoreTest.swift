@@ -46,7 +46,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
 
             // Fake a missed message so we'd rotate.
             self.createIncomingMessage(
-                receivedTimestamp: now - kMinuteInMs,
+                receivedTimestamp: now - UInt64.minuteInMs,
                 transaction: transaction
             )
         }

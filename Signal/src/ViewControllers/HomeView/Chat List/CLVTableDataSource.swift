@@ -146,7 +146,7 @@ class CLVTableDataSource: NSObject {
         let isScrollingDownward = deltaY > 0
 
         // Debounce.
-        let maxPreloadFrequency: TimeInterval = kSecondInterval / 100
+        let maxPreloadFrequency: TimeInterval = .second / 100
         if let lastPreloadCellDate = self.lastPreloadCellDate,
            abs(lastPreloadCellDate.timeIntervalSinceNow) < maxPreloadFrequency {
             return

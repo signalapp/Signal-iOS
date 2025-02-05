@@ -137,7 +137,7 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
     private enum Constants {
         static let keyValueStoreCollectionName = "MessageBackupRequestManager"
 
-        static let cdnNumberOfDaysFetchIntervalInSeconds: TimeInterval = kDayInterval
+        static let cdnNumberOfDaysFetchIntervalInSeconds: TimeInterval = .day
         private static let keyValueStoreCdn2CredentialKey = "Cdn2Credential:"
         private static let keyValueStoreCdn3CredentialKey = "Cdn3Credential:"
 
@@ -153,7 +153,7 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
             }
         }
 
-        static let backupInfoNumberOfDaysFetchIntervalInSeconds: TimeInterval = kDayInterval
+        static let backupInfoNumberOfDaysFetchIntervalInSeconds: TimeInterval = .day
         private static let keyValueStoreBackupInfoKeyPrefix = "BackupInfo:"
         private static let keyValueStoreLastBackupInfoFetchTimeKeyPrefix = "LastBackupInfoFetchTime:"
 
@@ -534,7 +534,7 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
 }
 
 private struct CDNReadCredential: Codable, Equatable {
-    private static let cdnCredentialLifetimeInSeconds = kDayInterval
+    private static let cdnCredentialLifetimeInSeconds: TimeInterval = .day
 
     let createDate: Date
     let headers: [String: String]

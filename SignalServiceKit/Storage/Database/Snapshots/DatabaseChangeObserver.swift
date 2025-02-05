@@ -565,7 +565,7 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
         //
         // We measure load using a heuristics: Can the display link
         // maintain its preferred frame rate?
-        let maxWindowDuration: TimeInterval = 5 * kSecondInterval
+        let maxWindowDuration: TimeInterval = 5 * .second
         recentDisplayLinkDates = recentDisplayLinkDates.filter {
             abs($0.timeIntervalSinceNow) < maxWindowDuration
         }

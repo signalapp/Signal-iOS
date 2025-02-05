@@ -271,11 +271,11 @@ public class NotificationPresenterImpl: NotificationPresenter {
             case ..<0:
                 owsFailDebug("Formatting a notification for an event in the future")
                 self = .other
-            case ...(5 * kMinuteInterval):
+            case ...(5 * .minute):
                 self = .lastFewMinutes
-            case ...kDayInterval:
+            case ...(.day):
                 self = .last24Hours
-            case ...kWeekInterval:
+            case ...(.week):
                 self = .lastWeek
             default:
                 self = .other
@@ -1356,7 +1356,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
 
         let now = NSDate.ows_millisecondTimeStamp()
-        let recentThreshold = now - UInt64(kAudioNotificationsThrottleInterval * Double(kSecondInMs))
+        let recentThreshold = now - UInt64(kAudioNotificationsThrottleInterval * Double(UInt64.secondInMs))
 
         return unfairLock.withLock {
             let recentNotifications = mostRecentNotifications.filter { $0 > recentThreshold }

@@ -88,7 +88,7 @@ public class OWSPaymentsLock: NSObject {
         let currentDate = Date()
         let numberOfSnoozeDays = 30.0
         let nextTimeToShowSuggestion = currentDate.addingTimeInterval(
-            Double(numberOfSnoozeDays * kDayInterval)
+            Double(numberOfSnoozeDays * .day)
         )
 
         self.keyValueStore.setDate(nextTimeToShowSuggestion,

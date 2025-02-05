@@ -15,7 +15,7 @@ final class AppExpiryTest: XCTestCase {
 
     private var appExpiry: AppExpiryImpl!
 
-    private var defaultExpiry: Date { appVersion.buildDate.addingTimeInterval(90 * kDayInterval) }
+    private var defaultExpiry: Date { appVersion.buildDate.addingTimeInterval(90 * .day) }
 
     private func loadPersistedExpirationDate() -> Date {
         let newAppExpiry = AppExpiryImpl(

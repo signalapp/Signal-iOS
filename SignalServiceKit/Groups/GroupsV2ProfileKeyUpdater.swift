@@ -185,7 +185,7 @@ class GroupsV2ProfileKeyUpdater {
                 return
             } catch {
                 failureCount += 1
-                try? await Task.sleep(nanoseconds: OWSOperation.retryIntervalForExponentialBackoffNs(failureCount: failureCount, maxBackoff: 6*kHourInterval))
+                try? await Task.sleep(nanoseconds: OWSOperation.retryIntervalForExponentialBackoffNs(failureCount: failureCount, maxBackoff: 6 * .hour))
             }
         }
     }

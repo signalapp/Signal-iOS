@@ -381,7 +381,7 @@ public class MessageSendLog {
                 Logger.warn("Couldn't prune stale MSL entries \(error)")
             }
 
-            schedulers.main.asyncAfter(wallDeadline: .now() + kDayInterval) { [weak self] in
+            schedulers.main.asyncAfter(wallDeadline: .now() + .day) { [weak self] in
                 self?.cleanUpAndScheduleNextOccurrence(on: schedulers)
             }
         }

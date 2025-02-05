@@ -179,7 +179,7 @@ public class AppExpiryImpl: AppExpiry {
 // MARK: - Build time
 
 fileprivate extension AppVersion {
-    var defaultExpirationDate: Date { buildDate.addingTimeInterval(90 * kDayInterval) }
+    var defaultExpirationDate: Date { buildDate.addingTimeInterval(90 * .day) }
 }
 
 // MARK: - Objective-C interop

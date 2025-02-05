@@ -93,7 +93,7 @@ public class RemoteConfig {
     }
 
     public var cdsSyncInterval: TimeInterval {
-        interval(.cdsSyncInterval, defaultInterval: kDayInterval * 2)
+        interval(.cdsSyncInterval, defaultInterval: .day * 2)
     }
 
     public var automaticSessionResetKillSwitch: Bool {
@@ -101,11 +101,11 @@ public class RemoteConfig {
     }
 
     public var automaticSessionResetAttemptInterval: TimeInterval {
-        interval(.automaticSessionResetAttemptInterval, defaultInterval: kHourInterval)
+        interval(.automaticSessionResetAttemptInterval, defaultInterval: .hour)
     }
 
     public var reactiveProfileKeyAttemptInterval: TimeInterval {
-        interval(.reactiveProfileKeyAttemptInterval, defaultInterval: kHourInterval)
+        interval(.reactiveProfileKeyAttemptInterval, defaultInterval: .hour)
     }
 
     public var paymentsResetKillSwitch: Bool {
@@ -174,15 +174,15 @@ public class RemoteConfig {
     }
 
     public var replaceableInteractionExpiration: TimeInterval {
-        interval(.replaceableInteractionExpiration, defaultInterval: kHourInterval)
+        interval(.replaceableInteractionExpiration, defaultInterval: .hour)
     }
 
     public var messageSendLogEntryLifetime: TimeInterval {
-        interval(.messageSendLogEntryLifetime, defaultInterval: 2 * kWeekInterval)
+        interval(.messageSendLogEntryLifetime, defaultInterval: 2 * .week)
     }
 
     public var maxSenderKeyAge: TimeInterval {
-        return Double(getStringConvertibleValue(forFlag: .maxSenderKeyAge, defaultValue: 2 * kWeekInMs)) / 1000
+        return Double(getStringConvertibleValue(forFlag: .maxSenderKeyAge, defaultValue: 2 * UInt64.weekInMs)) / 1000
     }
 
     public var maxGroupCallRingSize: UInt {
@@ -225,7 +225,7 @@ public class RemoteConfig {
     public var backgroundRefreshInterval: TimeInterval {
         return TimeInterval(getUIntValue(
             forFlag: .backgroundRefreshInterval,
-            defaultValue: UInt(kDayInterval)
+            defaultValue: UInt(TimeInterval.day)
         ))
     }
 
@@ -244,7 +244,7 @@ public class RemoteConfig {
     }
 
     public var messageQueueTime: TimeInterval {
-        return interval(.messageQueueTimeInSeconds, defaultInterval: 45 * kDayInterval)
+        return interval(.messageQueueTimeInSeconds, defaultInterval: 45 * .day)
     }
 
     public var messageQueueTimeMs: UInt64 {
@@ -802,7 +802,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         checkClientExpiration(valueFlags: valueFlags)
     }
 
-    private static let refreshInterval = 2 * kHourInterval
+    private static let refreshInterval: TimeInterval = 2 * .hour
     private let refreshTaskQueue = SerialTaskQueue()
 
     /// Nil if no attempt made this app session (not persisted across launches)

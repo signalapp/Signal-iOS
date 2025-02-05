@@ -984,8 +984,6 @@
 		668A00E22C2B5F0C007B8808 /* OWSAssertionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00E12C2B5F0C007B8808 /* OWSAssertionError.swift */; };
 		668A00E42C2B5F35007B8808 /* OWSLocalizedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00E32C2B5F35007B8808 /* OWSLocalizedString.swift */; };
 		668A00E92C2B5F59007B8808 /* TSMutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00E62C2B5F58007B8808 /* TSMutex.swift */; };
-		668A00F42C2B5F81007B8808 /* NSDate+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00EC2C2B5F80007B8808 /* NSDate+OWS.m */; };
-		668A00F82C2B5F81007B8808 /* NSDate+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00F02C2B5F81007B8808 /* NSDate+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		668A01002C2B5FC8007B8808 /* OWSSwiftUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00FD2C2B5FC8007B8808 /* OWSSwiftUtils.swift */; };
 		668A01012C2B5FC8007B8808 /* OWSAsserts.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00FE2C2B5FC8007B8808 /* OWSAsserts.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		668A01022C2B5FC8007B8808 /* OWSAsserts.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00FF2C2B5FC8007B8808 /* OWSAsserts.m */; };
@@ -1205,6 +1203,8 @@
 		66FC638C29E9E9D200F00DAC /* TextCheckingDataItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638B29E9E9D200F00DAC /* TextCheckingDataItem.swift */; };
 		66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */; };
 		66FFDADC2C823C270079C0E7 /* MessageBackupContexts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FFDADB2C823C270079C0E7 /* MessageBackupContexts.swift */; };
+		7203F5332D53B53000639949 /* UInt64+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7203F5322D53B52900639949 /* UInt64+SSK.swift */; };
+		7203F5352D53B83500639949 /* TimeInterval+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7203F5342D53B83000639949 /* TimeInterval+SSK.swift */; };
 		720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FD1269F642F00841DF9 /* AvatarModel.swift */; };
 		720547F52B9C97EC00E2CF2F /* APNSRotationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64C2925C012007A311E /* APNSRotationStore.swift */; };
 		720547F62B9C985300E2CF2F /* RefreshEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D31D25DBF70400885B14 /* RefreshEvent.swift */; };
@@ -4808,8 +4808,6 @@
 		668A00E12C2B5F0C007B8808 /* OWSAssertionError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSAssertionError.swift; sourceTree = "<group>"; };
 		668A00E32C2B5F35007B8808 /* OWSLocalizedString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSLocalizedString.swift; sourceTree = "<group>"; };
 		668A00E62C2B5F58007B8808 /* TSMutex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSMutex.swift; sourceTree = "<group>"; };
-		668A00EC2C2B5F80007B8808 /* NSDate+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+OWS.m"; sourceTree = "<group>"; };
-		668A00F02C2B5F81007B8808 /* NSDate+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+OWS.h"; sourceTree = "<group>"; };
 		668A00FD2C2B5FC8007B8808 /* OWSSwiftUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSwiftUtils.swift; sourceTree = "<group>"; };
 		668A00FE2C2B5FC8007B8808 /* OWSAsserts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAsserts.h; sourceTree = "<group>"; };
 		668A00FF2C2B5FC8007B8808 /* OWSAsserts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAsserts.m; sourceTree = "<group>"; };
@@ -5038,6 +5036,8 @@
 		675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BB92957776B3173894CD3E9 /* Pods-SignalServiceKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.app store release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.app store release.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		7203F5322D53B52900639949 /* UInt64+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt64+SSK.swift"; sourceTree = "<group>"; };
+		7203F5342D53B83000639949 /* TimeInterval+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+SSK.swift"; sourceTree = "<group>"; };
 		7205701F2C8E860300826421 /* StringExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensionTests.swift; sourceTree = "<group>"; };
 		721BC7EB2BC8253600648981 /* MimeTypeUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MimeTypeUtil.swift; sourceTree = "<group>"; };
 		72328C862C6C3E6D000EA728 /* OWSMultipart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSMultipart.swift; sourceTree = "<group>"; };
@@ -14012,8 +14012,6 @@
 				721BC7EB2BC8253600648981 /* MimeTypeUtil.swift */,
 				F9C5CB57289453B200548EEE /* ModelReadCache.swift */,
 				D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */,
-				668A00F02C2B5F81007B8808 /* NSDate+OWS.h */,
-				668A00EC2C2B5F80007B8808 /* NSDate+OWS.m */,
 				507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */,
 				F9C5CB39289453B200548EEE /* NSNotificationCenter+OWS.swift */,
 				F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */,
@@ -14063,12 +14061,14 @@
 				66FC638129E2172400F00DAC /* ThemedColor.swift */,
 				F9C5CB10289453B200548EEE /* ThreadBacked.swift */,
 				348C686C246B0B100039705A /* ThreadUtil.swift */,
+				7203F5342D53B83000639949 /* TimeInterval+SSK.swift */,
 				D91A39E22AD9D1A000F57A61 /* TSYapDatabaseObject+SQLiteRowId.swift */,
 				F9C5CB08289453B200548EEE /* TypingIndicators.swift */,
 				34A955B5271B54BC00B05242 /* UIColor+OWS.swift */,
 				F9C5CB13289453B200548EEE /* UIColor+SSK.swift */,
 				45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */,
 				F9C5CB4D289453B200548EEE /* UIImage+OWS.swift */,
+				7203F5322D53B52900639949 /* UInt64+SSK.swift */,
 				3402A9E0271D96570084CBAE /* UIView+OWS.swift */,
 				6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */,
 				F9D5BFCE2979AFF4001737E5 /* URLPathComponents.swift */,
@@ -14190,7 +14190,6 @@
 				668A00E02C2B5ECF007B8808 /* DebuggerUtils.h in Headers */,
 				F9C5CDA7289453B400548EEE /* IncomingGroupsV2MessageJob.h in Headers */,
 				F9C5CC0A289453B300548EEE /* InstalledSticker.h in Headers */,
-				668A00F82C2B5F81007B8808 /* NSDate+OWS.h in Headers */,
 				F9C5CBC6289453B300548EEE /* OutgoingPaymentSyncMessage.h in Headers */,
 				F9C5CC1E289453B300548EEE /* OWSAddToContactsOfferMessage.h in Headers */,
 				F9C5CC84289453B300548EEE /* OWSAddToProfileWhitelistOfferMessage.h in Headers */,
@@ -17586,7 +17585,6 @@
 				725465612BA033E200EABFD2 /* NotificationPresenterImpl.swift in Sources */,
 				D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */,
 				F9C5CE09289453B400548EEE /* NSData+Image.swift in Sources */,
-				668A00F42C2B5F81007B8808 /* NSDate+OWS.m in Sources */,
 				507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */,
 				F9C5CE0B289453B400548EEE /* NSNotificationCenter+OWS.swift in Sources */,
 				66F2CE212A3CBE4A00519342 /* NSRangedValue.swift in Sources */,
@@ -18058,6 +18056,7 @@
 				725465252BA017EF00EABFD2 /* ThreadUtil.swift in Sources */,
 				F9C5CD90289453B300548EEE /* TimeElapsedChallenge.swift in Sources */,
 				50F86FC42AFEFEC20045F58B /* TimeGatedBatch.swift in Sources */,
+				7203F5352D53B83500639949 /* TimeInterval+SSK.swift in Sources */,
 				66485EB72CD1331D00B8613F /* TransactionCompletion.swift in Sources */,
 				C14EC1A22BA891D200A4D064 /* TransformingInputStream.swift in Sources */,
 				C1CF83D42B9A207800CDC9C4 /* TransformingOutputStream.swift in Sources */,
@@ -18161,6 +18160,7 @@
 				7255A4CD2B98E0DF00E95368 /* UIDevice+FeatureSupport.swift in Sources */,
 				6649651E2BDF169F00E2DE98 /* UIImage+Attachment.swift in Sources */,
 				F9C5CE1F289453B400548EEE /* UIImage+OWS.swift in Sources */,
+				7203F5332D53B53000639949 /* UInt64+SSK.swift in Sources */,
 				663D02DD2C06717900350632 /* UInt64SafeRecord.swift in Sources */,
 				7255A4CB2B98E04900E95368 /* UIView+OWS.swift in Sources */,
 				50D6A93F2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift in Sources */,

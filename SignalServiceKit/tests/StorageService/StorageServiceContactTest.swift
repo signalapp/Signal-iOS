@@ -16,9 +16,9 @@ class StorageServiceContactTest: XCTestCase {
             (nil, .registered),
             (nowMs, .unregisteredRecently),
             (nowMs, .unregisteredRecently),
-            (nowMs - 44 * kDayInMs, .unregisteredRecently),
-            (nowMs - 47 * kDayInMs, .unregisteredAWhileAgo),
-            (nowMs + 100 * kDayInMs, .unregisteredRecently)
+            (nowMs - 44 * UInt64.dayInMs, .unregisteredRecently),
+            (nowMs - 47 * UInt64.dayInMs, .unregisteredAWhileAgo),
+            (nowMs + 100 * UInt64.dayInMs, .unregisteredRecently)
         ]
 
         for (unregisteredAtTimestamp, expectedValue) in testCases {
@@ -41,9 +41,9 @@ class StorageServiceContactTest: XCTestCase {
             (nil, true),
             (nowMs, true),
             (nowMs, true),
-            (nowMs - 44 * kDayInMs, true),
-            (nowMs + 100 * kDayInMs, true),
-            (nowMs - 47 * kDayInMs, false)
+            (nowMs - 44 * UInt64.dayInMs, true),
+            (nowMs + 100 * UInt64.dayInMs, true),
+            (nowMs - 47 * UInt64.dayInMs, false)
         ]
 
         for (unregisteredAtTimestamp, expectedValue) in testCases {

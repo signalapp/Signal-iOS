@@ -8,7 +8,7 @@ public import LibSignalClient
 
 @objc
 public class StoryManager: NSObject {
-    public static let storyLifetimeMillis = kDayInMs
+    public static let storyLifetimeMillis = UInt64.dayInMs
 
     public class func setup(appReadiness: AppReadiness) {
         cacheAreStoriesEnabled()

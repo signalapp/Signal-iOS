@@ -119,7 +119,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
             return true
         }
 
-        if Date() > lastValidationDate.addingTimeInterval(kDayInterval) {
+        if Date() > lastValidationDate.addingTimeInterval(.day) {
             // It's been more than a day - check again.
             return true
         }

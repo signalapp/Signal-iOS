@@ -1486,7 +1486,7 @@ extension CallService: CallManagerDelegate {
             databaseStorage.asyncWrite { transaction in
                 do {
                     try CancelledGroupRing(id: ringId).insert(transaction.unwrapGrdbWrite.database)
-                    try CancelledGroupRing.deleteExpired(expiration: Date().addingTimeInterval(-30 * kMinuteInterval),
+                    try CancelledGroupRing.deleteExpired(expiration: Date().addingTimeInterval(-30 * .minute),
                                                          transaction: transaction)
                 } catch {
                     owsFailDebug("failed to update cancellation table: \(error)")

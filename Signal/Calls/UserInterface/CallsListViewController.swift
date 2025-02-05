@@ -1263,7 +1263,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 // Skip any where the link is more than 10 days old.
                 if
                     let timestamp = viewModel.callRecords.first?.callBeganTimestamp,
-                    -Date(millisecondsSince1970: timestamp).timeIntervalSinceNow > 10 * kDayInterval
+                    -Date(millisecondsSince1970: timestamp).timeIntervalSinceNow > 10 * .day
                 {
                     continue
                 }

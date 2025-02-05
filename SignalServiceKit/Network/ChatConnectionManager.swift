@@ -98,7 +98,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
             return
         }
         // After 30 seconds, we try anyways. We'll probably fail.
-        let maxWaitInterval = 30 * kSecondInterval
+        let maxWaitInterval: TimeInterval = 30 * .second
         _ = try? await withCooperativeTimeout(
             seconds: maxWaitInterval,
             operation: { try await connection.waitForOpen() }

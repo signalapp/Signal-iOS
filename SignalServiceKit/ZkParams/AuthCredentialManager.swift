@@ -136,7 +136,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
         startTimestamp: UInt64,
         localIdentifiers: LocalIdentifiers
     ) async throws -> ReceivedAuthCredentials {
-        let endTimestamp = startTimestamp + Constants.numberOfDaysToFetch * UInt64(kDayInterval)
+        let endTimestamp = startTimestamp + Constants.numberOfDaysToFetch * UInt64(TimeInterval.day)
         let timestampRange = startTimestamp...endTimestamp
 
         let request = OWSRequestFactory.authCredentialRequest(from: startTimestamp, to: endTimestamp)
@@ -189,7 +189,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
     /// The "start of today", i.e. midnight at the beginning of today, in epoch seconds.
     private func startOfTodayTimestamp() -> UInt64 {
         let now = self.dateProvider()
-        return UInt64(now.timeIntervalSince1970 / kDayInterval) * UInt64(kDayInterval)
+        return UInt64(now.timeIntervalSince1970 / .day) * UInt64(.day)
     }
 
     private struct AuthCredentialResponse: Decodable {

@@ -52,9 +52,9 @@ internal struct PreKeyTaskManager {
         internal static let PqPreKeysMinimumCount: UInt = 10
 
         // Signed prekeys should be rotated every at least every 2 days
-        internal static let SignedPreKeyRotationTime: TimeInterval = 2 * kDayInterval
+        internal static let SignedPreKeyRotationTime: TimeInterval = 2 * .day
 
-        internal static let LastResortPqPreKeyRotationTime: TimeInterval = 2 * kDayInterval
+        internal static let LastResortPqPreKeyRotationTime: TimeInterval = 2 * .day
     }
 
     enum Error: Swift.Error {

@@ -346,7 +346,7 @@ private class PaymentProcessingOperation {
     private let paymentId: String
     private let retryDelayInteral: TimeInterval
 
-    private static let defaultRetryDelayInteral: TimeInterval = 1 * kSecondInterval
+    private static let defaultRetryDelayInteral: TimeInterval = .second
 
     init(delegate: PaymentProcessingOperationDelegate,
          paymentModel: TSPaymentModel,
@@ -504,7 +504,7 @@ private class PaymentProcessingOperation {
                     // Things work reasonably well without this extra info, it's not clear
                     // how long a missing ledger timestamp might take to appear, and we might
                     // have a large number of payments without this info.
-                    retryDelayInteral += kHourInterval * 1
+                    retryDelayInteral += .hour
                 }
                 let nextRetryDelayInteral = self.retryDelayInteral * backoffFactor
                 delegate?.scheduleRetryProcessing(paymentModel: paymentModel,
@@ -602,7 +602,7 @@ private class PaymentProcessingOperation {
         // being initiated.  If the app is terminated right after a transaction
         // is initiated (before transaction it can be submitted), we don't want
         // to submit it if the app is opened much later.
-        let submissionInterval = kMinuteInterval * 5
+        let submissionInterval: TimeInterval = .minute * 5
         let createdDate = paymentModel.createdDate
         let isRecentEnoughToSubmit = abs(createdDate.timeIntervalSinceNow) <= submissionInterval
 

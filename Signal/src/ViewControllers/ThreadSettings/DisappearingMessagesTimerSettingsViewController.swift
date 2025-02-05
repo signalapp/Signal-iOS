@@ -304,11 +304,11 @@ private class CustomTimePicker: UIPickerView, UIPickerViewDataSource, UIPickerVi
 
         var interval: TimeInterval {
             switch self {
-            case .second: return kSecondInterval
-            case .minute: return kMinuteInterval
-            case .hour: return kHourInterval
-            case .day: return kDayInterval
-            case .week: return kWeekInterval
+            case .second: return .second
+            case .minute: return .minute
+            case .hour: return .hour
+            case .day: return .day
+            case .week: return .week
             }
         }
     }

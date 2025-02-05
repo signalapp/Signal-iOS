@@ -534,9 +534,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         return nil
                     }
                     // Exponential backoff, starting at 1 day.
-                    let initialDelay = kDayInMs
+                    let initialDelay = UInt64.dayInMs
                     let delay = UInt64(pow(2.0, Double(record.retryAttempts))) * initialDelay
-                    if delay > kDayInMs * 30 {
+                    if delay > UInt64.dayInMs * 30 {
                         // Don't go more than 30 days; stop retrying.
                         Logger.info("Giving up retrying attachment download")
                         return nil

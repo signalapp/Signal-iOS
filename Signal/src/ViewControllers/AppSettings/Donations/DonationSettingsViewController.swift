@@ -539,7 +539,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
     /// failed and can be tried again.
     private func showPendingIDEALAuthorizationSheetIfNeeded() -> Bool {
         let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
-        let expiration = 15 * kMinuteInterval
+        let expiration: TimeInterval = 15 * .minute
 
         func showError(title: String, message: String, donationMode: DonateViewController.DonateMode) {
             let actionSheet = ActionSheetController(

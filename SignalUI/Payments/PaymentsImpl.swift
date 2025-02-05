@@ -29,7 +29,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         // check whether we should refresh the balance.
         //
         // TODO: Tune.
-        let refreshCheckInterval = kMinuteInterval * 5
+        let refreshCheckInterval: TimeInterval = .minute * 5
         refreshBalanceEvent = RefreshEvent(appReadiness: appReadiness, refreshInterval: refreshCheckInterval) { [weak self] in
             self?.updateCurrentPaymentBalanceIfNecessary()
         }
@@ -85,8 +85,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         var hasExpired: Bool {
             // Authentication expires after 24 hours, so we build new
             // API instances every 12 hours.
-            let expiration = kHourInterval * 12
-            return abs(creationDate.timeIntervalSinceNow) > expiration
+            return abs(creationDate.timeIntervalSinceNow) > 12 * .hour
         }
     }
 
@@ -293,8 +292,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
         if let lastUpdateDate = paymentBalanceCache.get()?.date {
             // Don't bother updating if we've already updated in the last N hours.
-            let updateFrequency: TimeInterval = kHourInterval * 4
-            guard abs(lastUpdateDate.timeIntervalSinceNow) > updateFrequency else {
+            guard abs(lastUpdateDate.timeIntervalSinceNow) > 4 * .hour else {
                 return
             }
         }
@@ -737,7 +735,7 @@ public extension PaymentsImpl {
     }
 
     private func blockOnVerificationOfDefragmentation(paymentModels: [TSPaymentModel]) -> Promise<Void> {
-        let maxBlockInterval = kSecondInterval * 30
+        let maxBlockInterval: TimeInterval = .second * 30
 
         return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             let promises = paymentModels.map { paymentModel in

@@ -514,7 +514,7 @@ public class EarlyMessageManager: NSObject {
 
     private func cleanupStaleMessages() {
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
-            let oldestTimestampToKeep = Date.ows_millisecondTimestamp() - kWeekInMs
+            let oldestTimestampToKeep = Date.ows_millisecondTimestamp() - UInt64.weekInMs
 
             let allEnvelopeKeys = self.pendingEnvelopeStore.allKeys(transaction: transaction.asV2Read)
             let staleEnvelopeKeys = allEnvelopeKeys.filter {

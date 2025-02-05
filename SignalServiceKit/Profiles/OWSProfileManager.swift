@@ -658,7 +658,7 @@ extension OWSProfileManager: ProfileManager {
             // No need to rotate the profile key.
             if tsRegistrationState.isPrimaryDevice ?? true {
                 // But if it's been more than a week since we checked that our groups are up to date, schedule that.
-                if -(lastGroupProfileKeyCheckTimestamp?.timeIntervalSinceNow ?? 0) > kWeekInterval {
+                if -(lastGroupProfileKeyCheckTimestamp?.timeIntervalSinceNow ?? 0) > .week {
                     SSKEnvironment.shared.groupsV2Ref.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: tx)
                     self.setLastGroupProfileKeyCheckTimestamp(tx: tx)
                     tx.addAsyncCompletionOffMain {
@@ -1695,7 +1695,7 @@ extension OWSProfileManager: ProfileManager {
         // lastMessagingDate is coarse; we don't need to track every single message
         // sent or received. It is sufficient to update it only when the value
         // changes by more than an hour.
-        if let lastMessagingDate = userProfile.lastMessagingDate, abs(lastMessagingDate.timeIntervalSinceNow) < kHourInterval {
+        if let lastMessagingDate = userProfile.lastMessagingDate, abs(lastMessagingDate.timeIntervalSinceNow) < .hour {
             return
         }
 

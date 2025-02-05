@@ -38,7 +38,7 @@ public final class OWSDisappearingMessagesJob: NSObject {
         SwiftSingletons.register(self)
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
-            self?.fallbackTimer = .scheduledTimer(withTimeInterval: 5 * kMinuteInterval, repeats: true) { timer in
+            self?.fallbackTimer = .scheduledTimer(withTimeInterval: 5 * .minute, repeats: true) { timer in
                 guard let self else {
                     timer.invalidate()
                     return

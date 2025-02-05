@@ -619,7 +619,7 @@ private class SendingSpinner: UIImageView {
 
         let animation = CABasicAnimation.init(keyPath: "transform.rotation.z")
         animation.toValue = CGFloat.pi * 2
-        animation.duration = kSecondInterval * 1
+        animation.duration = TimeInterval.second
         animation.isCumulative = true
         animation.repeatCount = .infinity
         layer.add(animation, forKey: "spin")

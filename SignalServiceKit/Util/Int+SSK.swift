@@ -12,7 +12,7 @@ public extension UInt32 {
     /// The millisecond time in seconds, or `nil` if the resulting value would
     /// overflow `UInt32`.
     static func msToSecs(_ millis: UInt64) -> UInt32? {
-        let secs: UInt64 = millis / kSecondInMs
+        let secs: UInt64 = millis / UInt64.secondInMs
 
         if secs <= UInt32.max {
             return UInt32(secs)

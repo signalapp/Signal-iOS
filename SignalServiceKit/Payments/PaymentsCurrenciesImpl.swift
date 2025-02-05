@@ -13,7 +13,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
         super.init()
 
         // TODO: Tune.
-        let refreshCheckInterval = kMinuteInterval * 15
+        let refreshCheckInterval: TimeInterval = .minute * 15
         refreshEvent = RefreshEvent(appReadiness: appReadiness, refreshInterval: refreshCheckInterval) { [weak self] in
             self?.updateConversationRatesIfStale()
         }
@@ -103,8 +103,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
             // agree we don't want to treat future values as stale.
             //
             // PAYMENTS TODO: Tune.
-            let staleInverval: TimeInterval = 1 * kHourInterval
-            return -serviceDate.timeIntervalSinceNow > staleInverval
+            return -serviceDate.timeIntervalSinceNow > .hour
         }
     }
 
@@ -153,7 +152,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
             guard let conversionRates = self.conversionRates else {
                 return true
             }
-            let staleInverval: TimeInterval = 5 * kMinuteInterval
+            let staleInverval: TimeInterval = 5 * .minute
             return abs(conversionRates.serviceDate.timeIntervalSinceNow) > staleInverval
         }()
 

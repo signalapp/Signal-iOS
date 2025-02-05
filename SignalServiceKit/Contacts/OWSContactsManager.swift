@@ -1057,7 +1057,7 @@ extension OWSContactsManager: ContactManager {
         guard let aci = address.serviceId as? Aci else {
             return
         }
-        let minFetchInterval = kMinuteInterval * 30
+        let minFetchInterval: TimeInterval = .minute * 30
         if
             let lastFetchDate = Self.unknownAddressFetchDateMap[aci],
             abs(lastFetchDate.timeIntervalSinceNow) < minFetchInterval

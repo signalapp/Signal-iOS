@@ -516,7 +516,7 @@ enum OWSOrphanDataCleaner {
 
         // We need to avoid cleaning up new files that are still in the process of
         // being created/written, so we don't clean up anything recent.
-        let minimumOrphanAgeSeconds: TimeInterval = CurrentAppContext().isRunningTests ? 0 : 15 * kMinuteInterval
+        let minimumOrphanAgeSeconds: TimeInterval = CurrentAppContext().isRunningTests ? 0 : 15 * .minute
         let appLaunchTime = CurrentAppContext().appLaunchTime
         let thresholdTimestamp = appLaunchTime.timeIntervalSince1970 - minimumOrphanAgeSeconds
         let thresholdDate = Date(timeIntervalSince1970: thresholdTimestamp)

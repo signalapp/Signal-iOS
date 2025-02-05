@@ -552,7 +552,7 @@ private struct SequentialTimestampBuilder {
     /// Generates a timestamp earlier that is than and not coalescable with the
     /// previously-generated one.
     mutating func uncoalescable() -> UInt64 {
-        let millisecondsOutsideCoalesceWindow = 4 * 1000 * UInt64(kHourInterval) + 1
+        let millisecondsOutsideCoalesceWindow = 4 * 1000 * UInt64(TimeInterval.hour) + 1
         current -= millisecondsOutsideCoalesceWindow
         return current
     }

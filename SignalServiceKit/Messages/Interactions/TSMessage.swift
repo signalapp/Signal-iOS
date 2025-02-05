@@ -319,7 +319,7 @@ public extension TSMessage {
         guard outgoingMessage.giftBadge == nil else { return false }
 
         let (elapsedTime, isInFuture) = Date.ows_millisecondTimestamp().subtractingReportingOverflow(outgoingMessage.timestamp)
-        guard isInFuture || (elapsedTime <= (kHourInMs * 24)) else { return false }
+        guard isInFuture || (elapsedTime <= UInt64.dayInMs) else { return false }
 
         return true
     }
@@ -380,7 +380,7 @@ public extension TSMessage {
                     return .invalidDelete
                 }
 
-                guard serverTimestamp - messageToDeleteServerTimestamp < (2 * kDayInMs) else {
+                guard serverTimestamp - messageToDeleteServerTimestamp < (2 * UInt64.dayInMs) else {
                     owsFailDebug("Ignoring message delete sent more than 48 hours after the original message")
                     return .invalidDelete
                 }

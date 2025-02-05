@@ -86,7 +86,7 @@ final class JobQueueRunnerTest: XCTestCase {
         serialRunner.start(shouldRestartExistingJobs: false)
         let job = SessionResetJobRecord(contactThreadId: "A")
         jobFinder.addJob(job)
-        serialRunner.addPersistedJob(job, runner: jobRunnerFactory.buildRunner(completionContinuation: nil, retryInterval: kHourInterval))
+        serialRunner.addPersistedJob(job, runner: jobRunnerFactory.buildRunner(completionContinuation: nil, retryInterval: .hour))
         while true {
             serialRunner.retryWaitingJobs()
             if jobRunnerFactory.executedJobs.get() == ["A", "A"] {

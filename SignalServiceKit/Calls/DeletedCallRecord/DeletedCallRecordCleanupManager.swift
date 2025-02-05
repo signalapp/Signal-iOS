@@ -209,7 +209,7 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
 
 private extension DeletedCallRecord {
     private enum Constants {
-        static let deletedRecordLifetime: TimeInterval = 8 * kHourInterval
+        static let deletedRecordLifetime: TimeInterval = 8 * .hour
     }
 
     private var expirationDate: Date {

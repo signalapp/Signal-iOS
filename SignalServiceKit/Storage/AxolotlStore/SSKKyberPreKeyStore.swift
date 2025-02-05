@@ -128,7 +128,7 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
 
         static let lastKeyRotationDate = "lastKeyRotationDate"
 
-        static let oneTimeKeyExpirationInterval = kDayInterval * 90
+        static let oneTimeKeyExpirationInterval: TimeInterval = .day * 90
     }
 
     let identity: OWSIdentity

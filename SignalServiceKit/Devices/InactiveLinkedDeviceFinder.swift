@@ -58,10 +58,10 @@ public extension InactiveLinkedDeviceFinder {
 class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
     private enum Constants {
         /// How long we should wait between device state refreshes.
-        static let intervalForDeviceRefresh: TimeInterval = kDayInterval
+        static let intervalForDeviceRefresh: TimeInterval = .day
 
         /// How long before a device expires it is considered "inactive".
-        static let intervalBeforeExpirationConsideredInactive = kWeekInterval
+        static let intervalBeforeExpirationConsideredInactive: TimeInterval = .week
     }
 
     private enum StoreKeys {

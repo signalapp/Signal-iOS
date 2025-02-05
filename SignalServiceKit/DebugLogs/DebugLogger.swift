@@ -51,7 +51,7 @@ private final class DebugLogFileManager: DDLogFileManagerDefault {
 
         // Use this opportunity to delete old log files from extensions as well.
         // Compute an approximate "N days ago", ignoring calendars and dayling savings changes.
-        let cutoffDate = Date(timeIntervalSinceNow: -kDayInterval * Double(maximumNumberOfLogFiles))
+        let cutoffDate = Date(timeIntervalSinceNow: -.day * Double(maximumNumberOfLogFiles))
 
         for logsDirPath in DebugLogger.allLogsDirPaths {
             Self.deleteLogFiles(inDirectory: logsDirPath, olderThanDate: cutoffDate)
@@ -151,7 +151,7 @@ public final class DebugLogger {
         logFileManager.logFilesDiskQuota = 0
 
         let fileLogger = DDFileLogger(logFileManager: logFileManager)
-        fileLogger.rollingFrequency = kDayInterval
+        fileLogger.rollingFrequency = .day
         fileLogger.maximumFileSize = 12_000_000
         fileLogger.logFormatter = ScrubbingLogFormatter()
 

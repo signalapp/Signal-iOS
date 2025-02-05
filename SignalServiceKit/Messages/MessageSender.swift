@@ -364,7 +364,7 @@ public class MessageSender {
             return false
         }
 
-        let staleIdentityLifetime = kMinuteInterval * 5
+        let staleIdentityLifetime: TimeInterval = .minute * 5
         guard abs(mostRecentError.lastErrorDate.timeIntervalSinceNow) < staleIdentityLifetime else {
 
             // Error has expired, remove it to reset the count
@@ -795,7 +795,7 @@ public class MessageSender {
                     endorsements = try fetchEndorsements(forThreadId: threadId, secretParams: secretParams, tx: tx.asV2Read)
                     if
                         recoveryState.canRefreshExpiringGroupSendEndorsements,
-                        endorsements == nil || endorsements!.expiration.timeIntervalSinceNow < 2 * kHourInterval
+                        endorsements == nil || endorsements!.expiration.timeIntervalSinceNow < 2 * .hour
                     {
                         Logger.warn("Refetching GSEs for \(thread.uniqueId) that are missing or about to expire.")
                         return .fetchGroupSendEndorsementsAndTryAgain(secretParams)

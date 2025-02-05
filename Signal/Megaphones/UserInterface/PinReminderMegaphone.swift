@@ -58,42 +58,42 @@ class PinReminderMegaphone: MegaphoneView {
     ) {
         let toastText: String
         switch (SSKEnvironment.shared.ows2FAManagerRef.repetitionInterval, wasSuccessful) {
-        case (1 * kDayInterval, false):
+        case (1 * .day, false):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again tomorrow."
             )
-        case (1 * kDayInterval, true):
+        case (1 * .day, true):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_TOMORROW_SUCCESSFUL_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it."
             )
-        case (3 * kDayInterval, false):
+        case (3 * .day, false):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again in 3 days."
             )
-        case (3 * kDayInterval, true):
+        case (3 * .day, true):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_SUCCESSFUL_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it."
             )
-        case (7 * kDayInterval, false):
+        case (7 * .day, false):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again in a week."
             )
-        case (7 * kDayInterval, true):
+        case (7 * .day, true):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_WEEK_SUCCESSFUL_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it."
             )
-        case (14 * kDayInterval, false):
+        case (14 * .day, false):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again tomorrow."
             )
-        case (14 * kDayInterval, true):
+        case (14 * .day, true):
             toastText = OWSLocalizedString(
                 "PIN_REMINDER_MEGAPHONE_TWO_WEEK_SUCCESSFUL_TOAST",
                 comment: "Toast indicating that we'll ask you for your PIN again in 2 weeks, after successfully entering it."

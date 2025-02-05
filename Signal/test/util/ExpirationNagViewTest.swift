@@ -38,13 +38,13 @@ final class ExpirationNagViewTest: XCTestCase {
         )
 
         // Hidden with 12 days left.
-        date = appExpiry.expirationDate.subtractingTimeInterval(12 * kDayInterval)
+        date = appExpiry.expirationDate.subtractingTimeInterval(12 * .day)
         XCTAssertNil(nag.expirationMessage())
 
         // Shown with nonempty text if 10 days or sooner.
         for dayCount in [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -99] {
             date = appExpiry.expirationDate.subtractingTimeInterval(
-                TimeInterval(dayCount) * kDayInterval
+                TimeInterval(dayCount) * .day
             )
             nag.update()
             XCTAssertNotNil(nag.text.strippedOrNil)
@@ -57,7 +57,7 @@ final class ExpirationNagViewTest: XCTestCase {
         var texts = Set<String>()
         for dayCount in [2, 1, -1] {
             date = appExpiry.expirationDate.subtractingTimeInterval(
-                TimeInterval(dayCount) * kDayInterval
+                TimeInterval(dayCount) * .day
             )
             nag.update()
             texts.insert(nag.text)
@@ -68,11 +68,11 @@ final class ExpirationNagViewTest: XCTestCase {
     func testOsExpiry() {
         let now = Date(timeIntervalSince1970: 1720000000)
         let osExpiration = Date(timeIntervalSince1970: 1727740800)
-        let appExpiration1 = osExpiration.addingTimeInterval(-5 * kDayInterval)
-        let appExpiration2 = osExpiration.addingTimeInterval(5 * kDayInterval)
+        let appExpiration1 = osExpiration.addingTimeInterval(-5 * .day)
+        let appExpiration2 = osExpiration.addingTimeInterval(5 * .day)
 
         func d(_ offset: Int) -> Date {
-            return now.addingTimeInterval(TimeInterval(offset) * kDayInterval)
+            return now.addingTimeInterval(TimeInterval(offset) * .day)
         }
 
         let testCases: [(
@@ -96,7 +96,7 @@ final class ExpirationNagViewTest: XCTestCase {
             (appExpiration2, 99, .osExpired(canUpgrade: true)),
         ]
         for testCase in testCases {
-            self.date = now.addingTimeInterval(TimeInterval(testCase.timeToCheck) * kDayInterval)
+            self.date = now.addingTimeInterval(TimeInterval(testCase.timeToCheck) * .day)
             self.appExpiry.expirationDate = testCase.appExpiration
             let nag = ExpirationNagView(
                 dateProvider: dateProvider,
@@ -109,7 +109,7 @@ final class ExpirationNagViewTest: XCTestCase {
     }
 
     func testOsExpirySoonToExpire() {
-        let osExpirationDate = date.addingTimeInterval(5 * kDayInterval)
+        let osExpirationDate = date.addingTimeInterval(5 * .day)
 
         let nag = ExpirationNagView(
             dateProvider: dateProvider,

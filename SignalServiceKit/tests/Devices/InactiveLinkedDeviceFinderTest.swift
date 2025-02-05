@@ -19,7 +19,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
 
     private var activeLastSeenAt: Date {
         return mockDateProvider()
-            .addingTimeInterval(-kMinuteInterval)
+            .addingTimeInterval(-.minute)
     }
 
     private var inactiveLastSeenAt: Date {
@@ -27,9 +27,9 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         // be inactive, so we'll go back exactly that far and then go one more
         // hour back to avoid any boundary-time issues.
         return mockDateProvider()
-            .addingTimeInterval(-45 * kDayInterval)
-            .addingTimeInterval(kWeekInterval)
-            .addingTimeInterval(-kHourInterval)
+            .addingTimeInterval(-45 * .day)
+            .addingTimeInterval(.week)
+            .addingTimeInterval(-.hour)
     }
 
     override func setUp() {
@@ -106,7 +106,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
             findLeastActive(),
             InactiveLinkedDevice(
                 displayName: "eye pad",
-                expirationDate: inactiveLastSeenAt.addingTimeInterval(45 * kDayInterval)
+                expirationDate: inactiveLastSeenAt.addingTimeInterval(45 * .day)
             )
         )
 
@@ -114,14 +114,14 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         mockTSAccountManager.registrationStateMock = { .registered }
         mockDeviceStore.devices = [
             .primary(),
-            .fixture(name: "🏖️", lastSeenAt: inactiveLastSeenAt.addingTimeInterval(-kSecondInterval)),
+            .fixture(name: "🏖️", lastSeenAt: inactiveLastSeenAt.addingTimeInterval(-.second)),
             .fixture(name: "🦩", lastSeenAt: inactiveLastSeenAt),
         ]
         XCTAssertEqual(
             findLeastActive(),
             InactiveLinkedDevice(
                 displayName: "🏖️",
-                expirationDate: inactiveLastSeenAt.addingTimeInterval(-kSecondInterval).addingTimeInterval(45 * kDayInterval)
+                expirationDate: inactiveLastSeenAt.addingTimeInterval(-.second).addingTimeInterval(45 * .day)
             )
         )
 

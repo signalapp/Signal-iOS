@@ -260,7 +260,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         let shouldHideCollectionViewContent: Bool = {
             // Don't hide content for more than a couple of seconds.
             let viewAge = abs(self.viewState.viewCreationDate.timeIntervalSinceNow)
-            let maxHideTime = kSecondInterval * 2
+            let maxHideTime: TimeInterval = .second * 2
             guard viewAge < maxHideTime else {
                 // This should only occur on very slow devices.
                 Logger.warn("View taking a long time to render content.")
@@ -684,7 +684,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             return buildDefaultConversationStyle(type: .`default`)
         } else {
             let viewAge = abs(self.viewState.viewCreationDate.timeIntervalSinceNow)
-            let maxHideTime = kSecondInterval * 2
+            let maxHideTime: TimeInterval = .second * 2
             guard viewAge < maxHideTime else {
                 // This should never happen, but we want to put an upper bound on
                 // how long we're willing to infer view state from the

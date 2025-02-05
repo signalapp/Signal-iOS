@@ -178,7 +178,7 @@ class UserNotificationPresenter {
             assert(userInfo[AppNotificationUserInfoKey.threadId] != nil)
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForRemoteRead, repeats: false)
         } else if category == .newDeviceLinked {
-            let delay = TimeInterval.random(in: kHourInterval...(kHourInterval * 3))
+            let delay = TimeInterval.random(in: .hour...(3 * .hour))
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: delay, repeats: false)
         } else {
             trigger = nil

@@ -56,7 +56,7 @@ public class IncrementalTSAttachmentMigrationStore {
             return true
         }
         let lastAttemptDate: Date? = userDefaults.object(forKey: Self.lastMigrationAttemptDateKey) as? Date
-        if Date().timeIntervalSince((lastAttemptDate ?? .distantPast)) >= kWeekInterval {
+        if Date().timeIntervalSince((lastAttemptDate ?? .distantPast)) >= .week {
             return true
         }
         let incompleteAttemptCount = userDefaults.integer(forKey: Self.migrationIncompleteAttemptCountKey)

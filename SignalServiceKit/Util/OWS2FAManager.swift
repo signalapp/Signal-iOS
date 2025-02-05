@@ -90,7 +90,7 @@ extension OWS2FAManager {
         return Self.keyValueStore.getString(kOWS2FAManager_PinCode, transaction: transaction.asV2Read)
     }
 
-    static var allRepetitionIntervals: [TimeInterval] = [12 * kHourInterval, 1 * kDayInterval, 3 * kDayInterval, 7 * kDayInterval, 14 * kDayInterval]
+    static var allRepetitionIntervals: [TimeInterval] = [12 * .hour, 1 * .day, 3 * .day, 7 * .day, 14 * .day]
     var defaultRepetitionInterval: TimeInterval {
         return Self.allRepetitionIntervals.first!
     }

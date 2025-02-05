@@ -73,7 +73,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     private func startUpdateBalanceTimer() {
         stopUpdateBalanceTimer()
 
-        let updateInterval = kSecondInterval * 30
+        let updateInterval: TimeInterval = .second * 30
         self.updateBalanceTimer = WeakTimer.scheduledTimer(timeInterval: updateInterval,
                                                            target: self,
                                                            userInfo: nil,

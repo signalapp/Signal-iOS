@@ -711,7 +711,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         fileprivate func animateSpinningIcon() {
             let animation = CABasicAnimation.init(keyPath: "transform.rotation.z")
             animation.toValue = CGFloat.pi * 2
-            animation.duration = kSecondInterval * 1
+            animation.duration = TimeInterval.second
             animation.isCumulative = true
             animation.repeatCount = .greatestFiniteMagnitude
             statusIndicatorImageView.layer.add(animation, forKey: "animation")

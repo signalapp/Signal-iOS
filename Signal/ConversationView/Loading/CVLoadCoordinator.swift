@@ -298,7 +298,7 @@ public class CVLoadCoordinator: NSObject {
 
     private var isBuildingLoad = false
 
-    private let autoLoadMoreThreshold: TimeInterval = 2 * kSecondInterval
+    private let autoLoadMoreThreshold: TimeInterval = 2 * .second
 
     private var lastLoadOlderDate: Date?
     public var didLoadOlderRecently: Bool {

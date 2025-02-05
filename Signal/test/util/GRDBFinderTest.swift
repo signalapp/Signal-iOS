@@ -225,19 +225,19 @@ class GRDBFinderTest: SignalBaseTest {
             do {
                 // This profile is _not_ expected; lastMessagingDate is nil.
                 let userProfile = buildUserProfile()
-                updateUserProfile(userProfile, lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * kMonthInterval)))
+                updateUserProfile(userProfile, lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.month)))
             }
 
             do {
                 // This profile is _not_ expected; lastMessagingDate is nil.
                 let userProfile = buildUserProfile()
-                updateUserProfile(userProfile, lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * kMinuteInterval)))
+                updateUserProfile(userProfile, lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.minute)))
             }
 
             do {
                 // This profile is _not_ expected; lastMessagingDate is old.
                 let userProfile = buildUserProfile()
-                updateUserProfile(userProfile, lastMessagingDate: .setTo(dateWithOffsetFromNow(-2 * kMonthInterval)))
+                updateUserProfile(userProfile, lastMessagingDate: .setTo(dateWithOffsetFromNow(-2 * TimeInterval.month)))
             }
 
             do {
@@ -245,8 +245,8 @@ class GRDBFinderTest: SignalBaseTest {
                 let userProfile = buildUserProfile()
                 updateUserProfile(
                     userProfile,
-                    lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * kMonthInterval)),
-                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-2 * kMonthInterval))
+                    lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.month)),
+                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-2 * TimeInterval.month))
                 )
             }
 
@@ -255,15 +255,15 @@ class GRDBFinderTest: SignalBaseTest {
                 let userProfile = buildUserProfile()
                 updateUserProfile(
                     userProfile,
-                    lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * kMinuteInterval)),
-                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-2 * kMonthInterval))
+                    lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.minute)),
+                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-2 * TimeInterval.month))
                 )
             }
 
             do {
                 // This profile is expected; lastMessagingDate is recent and lastFetchDate is nil.
                 let userProfile = buildUserProfile()
-                updateUserProfile(userProfile, lastMessagingDate: .setTo(dateWithOffsetFromNow(-1 * kHourInterval)))
+                updateUserProfile(userProfile, lastMessagingDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.hour)))
                 expectedAddresses.insert(userProfile.internalAddress)
             }
 
@@ -272,8 +272,8 @@ class GRDBFinderTest: SignalBaseTest {
                 let userProfile = buildUserProfile()
                 updateUserProfile(
                     userProfile,
-                    lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * kMonthInterval)),
-                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-1 * kHourInterval))
+                    lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.month)),
+                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.hour))
                 )
                 expectedAddresses.insert(userProfile.internalAddress)
             }
@@ -283,8 +283,8 @@ class GRDBFinderTest: SignalBaseTest {
                 let userProfile = buildUserProfile()
                 updateUserProfile(
                     userProfile,
-                    lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * kMinuteInterval)),
-                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-1 * kHourInterval))
+                    lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.minute)),
+                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.hour))
                 )
             }
         }

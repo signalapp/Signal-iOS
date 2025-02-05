@@ -283,7 +283,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                 // Don't cluster message if the earlier message has a reaction.
                 return false
             }
-            let maxClusterTimeDifferenceMs = UInt64(kMinuteInMs) * 3
+            let maxClusterTimeDifferenceMs = UInt64.minuteInMs * 3
             let elapsedMs = rightTime - leftTime
             return elapsedMs < maxClusterTimeDifferenceMs
         }

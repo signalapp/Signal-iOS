@@ -40,7 +40,7 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
     ) async throws -> Void
 
     private enum Constants {
-        static var intervalBetweenChecks: TimeInterval { 3 * kDayInterval }
+        static var intervalBetweenChecks: TimeInterval { 3 * .day }
     }
 
     private let checkerStore: SubscriptionRedemptionNecessityCheckerStore

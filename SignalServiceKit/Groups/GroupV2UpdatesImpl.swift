@@ -43,7 +43,7 @@ public class GroupV2UpdatesImpl {
         let groupId = groupInfoToRefresh.groupId
         let groupSecretParams = groupInfoToRefresh.groupSecretParams
         if let lastRefreshDate = groupInfoToRefresh.lastRefreshDate {
-            let formattedDays = String(format: "%.1f", -lastRefreshDate.timeIntervalSinceNow/kDayInterval)
+            let formattedDays = String(format: "%.1f", -lastRefreshDate.timeIntervalSinceNow / TimeInterval.day)
             Logger.info("Auto-refreshing group: \(groupId.base64EncodedString()) which hasn't been refreshed in \(formattedDays) days.")
         } else {
             Logger.info("Auto-refreshing group: \(groupId.base64EncodedString()) which has never been refreshed.")
@@ -102,7 +102,7 @@ public class GroupV2UpdatesImpl {
                 }
 
                 // Don't auto-refresh groups more than once a week.
-                let maxRefreshFrequencyInternal: TimeInterval = kWeekInterval
+                let maxRefreshFrequencyInternal: TimeInterval = .week
                 guard abs(lastRefreshDate.timeIntervalSinceNow) > maxRefreshFrequencyInternal else {
                     return
                 }
@@ -210,7 +210,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
                 return false
             }
             // Don't auto-refresh more often than once every N minutes.
-            let refreshFrequency: TimeInterval = kMinuteInterval * 5
+            let refreshFrequency: TimeInterval = .minute * 5
             return abs(lastSuccessfulRefreshDate.timeIntervalSinceNow) < refreshFrequency
         }()
 

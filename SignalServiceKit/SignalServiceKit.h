@@ -15,7 +15,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/DebuggerUtils.h>
 #import <SignalServiceKit/IncomingGroupsV2MessageJob.h>
 #import <SignalServiceKit/InstalledSticker.h>
-#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalServiceKit/OWSArchivedPaymentMessage.h>

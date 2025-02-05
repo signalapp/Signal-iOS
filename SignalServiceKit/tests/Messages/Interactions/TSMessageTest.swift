@@ -42,7 +42,7 @@ class TSMessageTest: SSKBaseTest {
 
         do {
             let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread)
-            builder.timestamp = now - kMinuteInMs
+            builder.timestamp = now - UInt64.minuteInMs
             let message = SSKEnvironment.shared.databaseStorageRef.read { builder.build(transaction: $0) }
 
             XCTAssert(message.canBeRemotelyDeleted)
@@ -50,7 +50,7 @@ class TSMessageTest: SSKBaseTest {
 
         do {
             let builder: TSIncomingMessageBuilder = .withDefaultValues(thread: self.thread)
-            builder.timestamp = now - kMinuteInMs
+            builder.timestamp = now - UInt64.minuteInMs
             let message = builder.build()
 
             XCTAssertFalse(message.canBeRemotelyDeleted)
@@ -58,7 +58,7 @@ class TSMessageTest: SSKBaseTest {
 
         do {
             let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread)
-            builder.timestamp = now - kMinuteInMs
+            builder.timestamp = now - UInt64.minuteInMs
             let message = SSKEnvironment.shared.databaseStorageRef.read { builder.build(transaction: $0) }
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 message.anyInsert(transaction: transaction)
@@ -70,7 +70,7 @@ class TSMessageTest: SSKBaseTest {
 
         do {
             let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread)
-            builder.timestamp = now - kMinuteInMs
+            builder.timestamp = now - UInt64.minuteInMs
             builder.giftBadge = OWSGiftBadge()
             let message = SSKEnvironment.shared.databaseStorageRef.read { builder.build(transaction: $0) }
 
@@ -79,7 +79,7 @@ class TSMessageTest: SSKBaseTest {
 
         do {
             let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread)
-            builder.timestamp = now + kMinuteInMs
+            builder.timestamp = now + UInt64.minuteInMs
             let message = SSKEnvironment.shared.databaseStorageRef.read { builder.build(transaction: $0) }
 
             XCTAssertTrue(message.canBeRemotelyDeleted)
@@ -87,7 +87,7 @@ class TSMessageTest: SSKBaseTest {
 
         do {
             let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread)
-            builder.timestamp = now + (25 * kHourInMs)
+            builder.timestamp = now + (25 * UInt64.hourInMs)
             let message = SSKEnvironment.shared.databaseStorageRef.read { builder.build(transaction: $0) }
 
             XCTAssertTrue(message.canBeRemotelyDeleted)
@@ -95,7 +95,7 @@ class TSMessageTest: SSKBaseTest {
 
         do {
             let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: self.thread)
-            builder.timestamp = now - (25 * kHourInMs)
+            builder.timestamp = now - (25 * UInt64.hourInMs)
             let message = SSKEnvironment.shared.databaseStorageRef.read { builder.build(transaction: $0) }
 
             XCTAssertFalse(message.canBeRemotelyDeleted)

@@ -309,11 +309,11 @@ extension ExperienceUpgradeManifest {
         case
                 .introducingPins,
                 .pinReminder:
-            return 2 * kDayInterval
+            return 2 * .day
         case
                 .notificationPermissionReminder,
                 .inactiveLinkedDeviceReminder:
-            return 3 * kDayInterval
+            return 3 * .day
         case .createUsernameReminder:
             // On snooze, never show again.
             return .infinity
@@ -351,9 +351,9 @@ extension ExperienceUpgradeManifest {
                 return 3
             }()
 
-            return Double(daysToSnooze) * kDayInterval
+            return Double(daysToSnooze) * .day
         case .contactPermissionReminder:
-            return 30 * kDayInterval
+            return 30 * .day
         case .unrecognized:
             return .infinity
         }
@@ -387,9 +387,9 @@ extension ExperienceUpgradeManifest {
                 .createUsernameReminder,
                 .inactiveLinkedDeviceReminder,
                 .contactPermissionReminder:
-            return kDayInterval
+            return .day
         case .introducingPins:
-            return 2 * kHourInterval
+            return 2 * .hour
         case .remoteMegaphone(let megaphone):
             guard let conditionalCheck = megaphone.manifest.conditionalCheck else {
                 return 0
@@ -397,14 +397,14 @@ extension ExperienceUpgradeManifest {
 
             switch conditionalCheck {
             case .standardDonate:
-                return 7 * kDayInterval
+                return 7 * .day
             case .internalUser:
                 return 0
             case .unrecognized:
                 return .infinity
             }
         case .pinReminder:
-            return 8 * kHourInterval
+            return 8 * .hour
         case .unrecognized:
             return .infinity
         }
@@ -557,7 +557,7 @@ extension ExperienceUpgradeManifest {
             .lastSetIsDiscoverableByPhoneNumber(tx: transaction.asV2Read)
             .timeIntervalSinceNow * -1
 
-        let requiredDelayAfterDisablingDiscovery: TimeInterval = 3 * kDayInterval
+        let requiredDelayAfterDisablingDiscovery: TimeInterval = 3 * .day
 
         return timeIntervalSinceDisabledDiscovery > requiredDelayAfterDisablingDiscovery
     }

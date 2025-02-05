@@ -55,7 +55,7 @@ private enum Constant {
     /// result, the phone number will still be missing a UUID, so we may try to
     /// fetch it again, and again, and again. This timeout controls how long
     /// we'll cache these negative lookup results.
-    static let undiscoverableCacheTimeout = 6 * kHourInterval
+    static let undiscoverableCacheTimeout: TimeInterval = 6 * .hour
 }
 
 public enum ContactDiscoveryMode {

@@ -575,7 +575,7 @@ private extension CallRecord {
     private enum Constants {
         /// A time interval representing a window within which two call records
         /// can be coalesced together.
-        static let coalescingTimeWindow: TimeInterval = 4 * kHourInterval
+        static let coalescingTimeWindow: TimeInterval = 4 * .hour
     }
 
     /// Whether the given call record can be coalesced under this call record.

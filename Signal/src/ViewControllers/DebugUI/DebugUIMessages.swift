@@ -561,14 +561,14 @@ class DebugUIMessages: DebugUIPage {
             actions.append(fakeOutgoingTextMessageAction(thread: thread, messageState: .sent, text: "⚠️ Back-Dated ⚠️"))
         }
 
-        actions.append(fakeBackDatedMessageAction(thread: thread, label: "One Minute Ago", dateOffset: -Int64(kMinuteInMs)))
-        actions.append(fakeBackDatedMessageAction(thread: thread, label: "One Hour Ago", dateOffset: -Int64(kHourInMs)))
-        actions.append(fakeBackDatedMessageAction(thread: thread, label: "One Day Ago", dateOffset: -Int64(kDayInMs)))
-        actions.append(fakeBackDatedMessageAction(thread: thread, label: "Two Days Ago", dateOffset: -Int64(kDayInMs) * 2))
-        actions.append(fakeBackDatedMessageAction(thread: thread, label: "Ten Days Ago", dateOffset: -Int64(kDayInMs) * 10))
-        actions.append(fakeBackDatedMessageAction(thread: thread, label: "5 Months Ago", dateOffset: -Int64(kDayInMs) * 30 * 5))
-        actions.append(fakeBackDatedMessageAction(thread: thread, label: "7 Months Ago", dateOffset: -Int64(kDayInMs) * 30 * 7))
-        actions.append(fakeBackDatedMessageAction(thread: thread, label: "400 Days Ago", dateOffset: -Int64(kDayInMs) * 400))
+        actions.append(fakeBackDatedMessageAction(thread: thread, label: "One Minute Ago", dateOffset: -Int64(UInt64.minuteInMs)))
+        actions.append(fakeBackDatedMessageAction(thread: thread, label: "One Hour Ago", dateOffset: -Int64(UInt64.hourInMs)))
+        actions.append(fakeBackDatedMessageAction(thread: thread, label: "One Day Ago", dateOffset: -Int64(UInt64.dayInMs)))
+        actions.append(fakeBackDatedMessageAction(thread: thread, label: "Two Days Ago", dateOffset: -Int64(UInt64.dayInMs) * 2))
+        actions.append(fakeBackDatedMessageAction(thread: thread, label: "Ten Days Ago", dateOffset: -Int64(UInt64.dayInMs) * 10))
+        actions.append(fakeBackDatedMessageAction(thread: thread, label: "5 Months Ago", dateOffset: -Int64(UInt64.dayInMs) * 30 * 5))
+        actions.append(fakeBackDatedMessageAction(thread: thread, label: "7 Months Ago", dateOffset: -Int64(UInt64.dayInMs) * 30 * 7))
+        actions.append(fakeBackDatedMessageAction(thread: thread, label: "400 Days Ago", dateOffset: -Int64(UInt64.dayInMs) * 400))
 
         return actions
     }
@@ -1067,19 +1067,19 @@ class DebugUIMessages: DebugUIPage {
     private static func createTimestampMessagesInThread(_ thread: TSThread) {
         let now = Date.ows_millisecondTimestamp()
         let timestamps = [
-            now + 1 * kHourInMs,
+            now + 1 * UInt64.hourInMs,
             now,
-            now - 1 * kHourInMs,
-            now - 12 * kHourInMs,
-            now - 1 * kDayInMs,
-            now - 2 * kDayInMs,
-            now - 3 * kDayInMs,
-            now - 6 * kDayInMs,
-            now - 7 * kDayInMs,
-            now - 8 * kDayInMs,
-            now - 2 * kWeekInMs,
-            now - 1 * 30 * kDayInMs,
-            now - 2 * 30 * kDayInMs
+            now - 1 * UInt64.hourInMs,
+            now - 12 * UInt64.hourInMs,
+            now - 1 * UInt64.dayInMs,
+            now - 2 * UInt64.dayInMs,
+            now - 3 * UInt64.dayInMs,
+            now - 6 * UInt64.dayInMs,
+            now - 7 * UInt64.dayInMs,
+            now - 8 * UInt64.dayInMs,
+            now - 2 * UInt64.weekInMs,
+            now - 1 * 30 * UInt64.dayInMs,
+            now - 2 * 30 * UInt64.dayInMs
         ]
 
         guard let incomingSenderAci = anyIncomingSenderAddress(forThread: thread)?.aci else {

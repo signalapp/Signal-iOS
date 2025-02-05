@@ -13,12 +13,12 @@ public class PreKeyManagerImpl: PreKeyManager {
     public enum Constants {
 
         // How often we check prekey state on app activation.
-        static let oneTimePreKeyCheckFrequencySeconds = 12 * kHourInterval
+        static let oneTimePreKeyCheckFrequencySeconds: TimeInterval = 12 * .hour
 
         // Maximum amount of time that can elapse without rotating signed prekeys
         // before the message sending is disabled.
         static let SignedPreKeyMaxRotationDuration: TimeInterval = (
-            FeatureFlags.shouldUseTestIntervals ? (4 * kDayInterval) : (14 * kDayInterval)
+            FeatureFlags.shouldUseTestIntervals ? (4 * .day) : (14 * .day)
         )
 
         fileprivate static let preKeyRotationVersion = 1

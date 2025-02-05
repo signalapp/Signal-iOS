@@ -88,7 +88,7 @@ extension TSAttachmentMigration {
 
         /// The maximum duration asset that we will display waveforms for.
         /// It's too intensive to sample a waveform for really long audio files.
-        private static let maximumDuration: TimeInterval = 15 * kMinuteInterval
+        private static let maximumDuration: TimeInterval = 15 * .minute
         private static let sampleCount = 100
 
         private static func sampleWaveform(asset: AVAsset) throws -> TSAttachmentMigration.AudioWaveform {

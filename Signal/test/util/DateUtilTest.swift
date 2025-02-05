@@ -61,34 +61,34 @@ class DateUtilTest: XCTestCase {
         Logger.info("now: \(formatter.string(from: now))")
 
         let oneSecondAgo =
-            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate - kSecondInterval)
+            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate - .second)
         let oneMinuteAgo =
-            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate - kMinuteInterval)
+            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate - .minute)
         let oneDayAgo =
-            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate - kDayInterval)
+            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate - .day)
         let threeDaysAgo =
-            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate - kDayInterval * 3)
+            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate - .day * 3)
         let tenDaysAgo =
-            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate - kDayInterval * 10)
+            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate - .day * 10)
         let oneYearAgo =
-            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate - kYearInterval)
+            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate - .year)
         let twoYearsAgo =
-            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate - kYearInterval * 2)
+            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate - .year * 2)
 
         let oneSecondAhead =
-            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate + kSecondInterval)
+            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate + .second)
         let oneMinuteAhead =
-            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate + kMinuteInterval)
+            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate + .minute)
         let oneDayAhead =
-            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate + kDayInterval)
+            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate + .day)
         let threeDaysAhead =
-            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate + kDayInterval * 3)
+            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate + .day * 3)
         let tenDaysAhead =
-            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate + kDayInterval * 10)
+            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate + .day * 10)
         let oneYearAhead =
-            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate + kYearInterval)
+            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate + .year)
         let twoYearsAhead =
-            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate + kYearInterval * 2)
+            Date(timeIntervalSinceReferenceDate: now.timeIntervalSinceReferenceDate + .year * 2)
 
         Logger.info("oneSecondAgo: \(formatter.string(from: oneSecondAgo))")
 

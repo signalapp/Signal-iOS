@@ -15,14 +15,14 @@ public class ScreenLock: NSObject {
         case unexpectedFailure(error: String)
     }
 
-    public static let screenLockTimeoutDefault = 15 * kMinuteInterval
+    public static let screenLockTimeoutDefault: TimeInterval = 15 * .minute
 
-    public let screenLockTimeouts = [
-        1 * kMinuteInterval,
-        5 * kMinuteInterval,
-        15 * kMinuteInterval,
-        30 * kMinuteInterval,
-        1 * kHourInterval,
+    public let screenLockTimeouts: [TimeInterval] = [
+        1 * .minute,
+        5 * .minute,
+        15 * .minute,
+        30 * .minute,
+        1 * .hour,
         0
     ]
 
