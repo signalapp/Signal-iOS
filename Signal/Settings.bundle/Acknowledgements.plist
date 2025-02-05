@@ -1099,7 +1099,7 @@ You should also get your employer (if you work as a programmer) or school, if an
 			<key>License</key>
 			<string>GNU Affero General Public License v3.0</string>
 			<key>Title</key>
-			<string>attest, device-transfer, libsignal-account-keys, libsignal-account-keys 0.1.0, libsignal-bridge, libsignal-bridge-macros, libsignal-bridge-testing, libsignal-bridge-types, libsignal-core, libsignal-core 0.1.0, libsignal-ffi, libsignal-jni, libsignal-jni-testing, libsignal-keytrans, libsignal-message-backup, libsignal-message-backup-macros, libsignal-net, libsignal-net-infra, libsignal-node, libsignal-protocol, libsignal-svr3, mrp 2.49.3, partial-default-derive 0.1.0, poksho, protobuf 2.49.3, regex-aot 0.1.0, ringrtc 2.49.3, signal-crypto, signal-media, signal-neon-futures, signal-neon-futures-tests, usernames, zkcredential, zkgroup</string>
+			<string>attest, device-transfer, libsignal-account-keys, libsignal-account-keys 0.1.0, libsignal-bridge, libsignal-bridge-macros, libsignal-bridge-testing, libsignal-bridge-types, libsignal-core, libsignal-core 0.1.0, libsignal-ffi, libsignal-jni, libsignal-jni-impl, libsignal-jni-testing, libsignal-keytrans, libsignal-message-backup, libsignal-message-backup-macros, libsignal-net, libsignal-net-infra, libsignal-node, libsignal-protocol, libsignal-svr3, mrp 2.49.3, partial-default-derive 0.1.0, poksho, protobuf 2.49.3, regex-aot 0.1.0, ringrtc 2.49.3, signal-crypto, signal-media, signal-neon-futures, signal-neon-futures-tests, usernames, zkcredential, zkgroup</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -3159,7 +3159,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>darling 0.14.4, darling 0.20.10, darling_core 0.14.4, darling_core 0.20.10, darling_macro 0.14.4, darling_macro 0.20.10</string>
+			<string>darling 0.20.10, darling_core 0.20.10, darling_macro 0.20.10</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -3493,7 +3493,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>derive_builder 0.12.0, derive_builder_core 0.12.0, derive_builder_macro 0.12.0</string>
+			<string>derive_builder 0.20.2, derive_builder_core 0.20.2, derive_builder_macro 0.20.2</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -8466,7 +8466,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>mediasan-common 0.5.1, mp4san 0.5.1, mp4san-derive 0.5.1, webpsan 0.5.1</string>
+			<string>mediasan-common 0.5.3, mp4san 0.5.3, mp4san-derive 0.5.3, webpsan 0.5.3</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -12658,7 +12658,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>strsim 0.10.0, strsim 0.11.1</string>
+			<string>strsim 0.11.1</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
