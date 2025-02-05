@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const TSGroupThreadAvatarChangedNotification = @"TSGroupThreadAvatarChangedNotification";
 NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_NotificationKey_UniqueId";
 
+BOOL areNullableObjectsEqual(NSObject *_Nullable left, NSObject *_Nullable right);
+
 @interface TSGroupThread ()
 
 @property (nonatomic) TSGroupModel *groupModel;
@@ -141,6 +143,13 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     [self updateWithGroupModel:groupModel shouldUpdateChatListUi:YES transaction:transaction];
 }
 
+BOOL areNullableObjectsEqual(NSObject *_Nullable left, NSObject *_Nullable right)
+{
+    // if both are nil, they are equal; if left is nil and right is not, objc runtime will return NO to the isEqual
+    // msgSend.
+    return left == right || [left isEqual:right];
+}
+
 - (void)updateWithGroupModel:(TSGroupModel *)newGroupModel
       shouldUpdateChatListUi:(BOOL)shouldUpdateChatListUi
                  transaction:(SDSAnyWriteTransaction *)transaction
@@ -157,7 +166,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
             break;
     }
 
-    BOOL didAvatarChange = ![NSObject isNullableObject:newGroupModel.avatarHash equalTo:self.groupModel.avatarHash];
+    BOOL didAvatarChange = !areNullableObjectsEqual(newGroupModel.avatarHash, self.groupModel.avatarHash);
     BOOL didNameChange = ![newGroupModel.groupNameOrDefault isEqualToString:self.groupModel.groupNameOrDefault];
 
     NSArray<SignalServiceAddress *> *oldGroupMembers = self.groupModel.groupMembers;

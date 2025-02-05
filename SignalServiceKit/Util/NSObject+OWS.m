@@ -21,17 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self.class.logTag;
 }
 
-+ (BOOL)isNullableObject:(nullable NSObject *)left equalTo:(nullable NSObject *)right
-{
-    if (!left && !right) {
-        return YES;
-    } else if (!left || !right) {
-        return NO;
-    } else {
-        return [left isEqual:right];
-    }
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

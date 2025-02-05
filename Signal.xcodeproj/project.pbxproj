@@ -1014,7 +1014,6 @@
 		668A01382C2B6088007B8808 /* Thenable+Timeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A01252C2B6088007B8808 /* Thenable+Timeout.swift */; };
 		668A01392C2B6088007B8808 /* Thenable+When.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A01262C2B6088007B8808 /* Thenable+When.swift */; };
 		668A013D2C2B60A1007B8808 /* PromiseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A013B2C2B60A0007B8808 /* PromiseTests.swift */; };
-		668A01402C2B60B0007B8808 /* NSObjectTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A013F2C2B60B0007B8808 /* NSObjectTest.swift */; };
 		668A01442C2B6117007B8808 /* StringSanitizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A01432C2B6117007B8808 /* StringSanitizerTests.swift */; };
 		668A28AF2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A28AE2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift */; };
 		668B24182BBB663400EB60C4 /* MockAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668B24172BBB663400EB60C4 /* MockAttachment.swift */; };
@@ -4841,7 +4840,6 @@
 		668A01252C2B6088007B8808 /* Thenable+Timeout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Thenable+Timeout.swift"; sourceTree = "<group>"; };
 		668A01262C2B6088007B8808 /* Thenable+When.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Thenable+When.swift"; sourceTree = "<group>"; };
 		668A013B2C2B60A0007B8808 /* PromiseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PromiseTests.swift; sourceTree = "<group>"; };
-		668A013F2C2B60B0007B8808 /* NSObjectTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSObjectTest.swift; sourceTree = "<group>"; };
 		668A01432C2B6117007B8808 /* StringSanitizerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringSanitizerTests.swift; sourceTree = "<group>"; };
 		668A28AE2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateV2AttachmentTablesMigrationTest.swift; sourceTree = "<group>"; };
 		668AB0CB28AD610600B31984 /* StoryUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryUtil.swift; sourceTree = "<group>"; };
@@ -14024,7 +14022,6 @@
 				F9C5CB39289453B200548EEE /* NSNotificationCenter+OWS.swift */,
 				668A00ED2C2B5F80007B8808 /* NSObject+OWS.h */,
 				668A00F12C2B5F81007B8808 /* NSObject+OWS.m */,
-				668A013F2C2B60B0007B8808 /* NSObjectTest.swift */,
 				F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */,
 				72976BF12BDCF00C0054FAC2 /* NSTimer+OWS.swift */,
 				F9C5CB44289453B200548EEE /* OffMainThreadTimer.swift */,
@@ -18324,7 +18321,6 @@
 				500BAD822C519F3600B4CD7F /* MessageTimestampGeneratorTest.swift in Sources */,
 				F942624C289B1B5500460798 /* ModelReadCacheTest.swift in Sources */,
 				F9426256289B1B5500460798 /* NSData+ImageTest.swift in Sources */,
-				668A01402C2B60B0007B8808 /* NSObjectTest.swift in Sources */,
 				D979CC3A2AD3964E006AAC49 /* Numbers+Random.swift in Sources */,
 				663D02DF2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift in Sources */,
 				D9AA37A02A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift in Sources */,
