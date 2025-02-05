@@ -7,8 +7,7 @@ import Foundation
 import GRDB
 public import LibSignalClient
 
-@objc
-public class StoryFinder: NSObject {
+public class StoryFinder {
     public static func unviewedSenderCount(transaction: SDSAnyReadTransaction) -> Int {
         let ownAciClause = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read).map {
             "AND \(StoryContextAssociatedData.columnName(.contactAci)) IS NOT '\($0.aci.serviceIdUppercaseString)'"

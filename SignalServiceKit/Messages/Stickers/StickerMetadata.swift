@@ -5,8 +5,7 @@
 
 import Foundation
 
-@objc
-public enum StickerType: UInt {
+public enum StickerType {
     case webp
     case apng
     case gif

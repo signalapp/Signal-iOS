@@ -81,7 +81,7 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         syncManager: any SyncManagerProtocol,
         tsAccountManager: any TSAccountManager,
         udManager: any OWSUDManager,
-        versionedProfiles: any VersionedProfilesSwift
+        versionedProfiles: any VersionedProfiles
     ) {
         self.reachabilityManager = reachabilityManager
         self.tsAccountManager = tsAccountManager

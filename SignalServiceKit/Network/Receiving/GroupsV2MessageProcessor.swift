@@ -857,7 +857,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
 
 // MARK: -
 
-public class GroupsV2MessageProcessor: NSObject {
+public class GroupsV2MessageProcessor {
 
     public static let didFlushGroupsV2MessageQueue = Notification.Name("didFlushGroupsV2MessageQueue")
 
@@ -865,7 +865,6 @@ public class GroupsV2MessageProcessor: NSObject {
 
     public init(appReadiness: AppReadiness) {
         self.processingQueue = IncomingGroupsV2MessageQueue(appReadiness: appReadiness)
-        super.init()
         SwiftSingletons.register(self)
         processingQueue.drainQueueWhenReady()
     }

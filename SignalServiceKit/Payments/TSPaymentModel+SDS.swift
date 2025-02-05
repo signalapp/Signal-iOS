@@ -438,6 +438,7 @@ public class TSPaymentModelCursor: NSObject, SDSCursor {
 
 @objc
 public extension TSPaymentModel {
+    @nonobjc
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSPaymentModelCursor {
         let database = transaction.database
         do {

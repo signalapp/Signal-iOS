@@ -26,8 +26,7 @@ extension GiphyError: LocalizedError, UserErrorDescriptionProvider {
 }
 
 // Represents a single Giphy image.
-@objc
-public class GiphyImageInfo: NSObject {
+public class GiphyImageInfo {
     public let giphyId: String
     private let assets: [GiphyAsset]
 
@@ -42,8 +41,6 @@ public class GiphyImageInfo: NSObject {
         assets = renditionDict.flatMap { (rendition, dict) in
             GiphyAsset.parsing(renditionString: rendition, definition: dict)
         }
-
-        super.init()
 
         if giphyId.isEmpty {
             Logger.error("Invalid id when parsing image info")

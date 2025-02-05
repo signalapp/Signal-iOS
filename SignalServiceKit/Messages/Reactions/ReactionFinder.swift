@@ -60,7 +60,6 @@ public class ReactionFinder {
     }
 
     /// Returns a list of all reactions to this message
-    @objc
     public func allReactions(transaction: GRDBReadTransaction) -> [OWSReaction] {
         let sql = """
             SELECT * FROM \(OWSReaction.databaseTableName)
@@ -84,7 +83,6 @@ public class ReactionFinder {
     }
 
     /// Returns a list of reactions to this message that have yet to be read
-    @objc
     public func unreadReactions(transaction: GRDBReadTransaction) -> [OWSReaction] {
         let sql = """
             SELECT * FROM \(OWSReaction.databaseTableName)
@@ -108,7 +106,6 @@ public class ReactionFinder {
     }
 
     /// A list of all the unique reaction IDs linked to this message, ordered by creation from oldest to neweset
-    @objc
     public func allUniqueIds(transaction: GRDBReadTransaction) -> [String] {
         let sql = """
             SELECT \(OWSReaction.columnName(.uniqueId))
@@ -127,7 +124,6 @@ public class ReactionFinder {
     }
 
     /// Delete all reaction records associated with this message
-    @objc
     public func deleteAllReactions(transaction: GRDBWriteTransaction) {
         let sql = """
             DELETE FROM \(OWSReaction.databaseTableName)

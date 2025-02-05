@@ -298,7 +298,7 @@ public class Sounds {
     fileprivate static let defaultNotificationSoundFilename = "NewMessage.aifc"
     fileprivate static let soundsStorageGlobalNotificationKey = "kOWSSoundsStorageGlobalNotificationKey"
 
-    private static let cachedSystemSounds = AnyLRUCache(maxSize: 4, nseMaxSize: 0, shouldEvacuateInBackground: false)
+    private static let cachedSystemSounds = LRUCache<String, SystemSound>(maxSize: 4, nseMaxSize: 0, shouldEvacuateInBackground: false)
 
     private static let keyValueStore = KeyValueStore(collection: "kOWSSoundsStorageNotificationCollection")
 
@@ -343,7 +343,7 @@ public class Sounds {
 
     public static func systemSoundIDForSound(_ sound: Sound, quiet: Bool) -> SystemSoundID? {
         let cacheKey = String(format: "%lu:%d", sound.id, quiet)
-        if let cachedSound = cachedSystemSounds.get(key: cacheKey as NSString) as? SystemSound {
+        if let cachedSound = cachedSystemSounds.get(key: cacheKey) {
             return cachedSound.id
         }
 
@@ -354,7 +354,7 @@ public class Sounds {
             owsFailDebug("Failed to create system sound")
             return nil
         }
-        cachedSystemSounds.set(key: cacheKey as NSString, value: systemSound)
+        cachedSystemSounds.set(key: cacheKey, value: systemSound)
         return systemSound.id
     }
 

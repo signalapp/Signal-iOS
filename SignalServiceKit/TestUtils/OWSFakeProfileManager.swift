@@ -8,15 +8,12 @@ import LibSignalClient
 
 #if TESTABLE_BUILD
 
-class OWSFakeProfileManager: NSObject {
+class OWSFakeProfileManager {
     let badgeStore: BadgeStore = BadgeStore()
     var fakeUserProfiles: [SignalServiceAddress: OWSUserProfile]?
 
     private var recipientWhitelist: Set<SignalServiceAddress> = []
     private var threadWhitelist: Set<String> = []
-
-    override init() {
-    }
 }
 
 extension OWSFakeProfileManager: ProfileManagerProtocol {

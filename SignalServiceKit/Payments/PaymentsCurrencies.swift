@@ -5,7 +5,6 @@
 
 import Foundation
 
-@objc
 public protocol PaymentsCurrencies: AnyObject {
 
     // Expressed as a ratio:
@@ -87,7 +86,7 @@ public struct CurrencyConversionInfo {
 
 // MARK: -
 
-public class MockPaymentsCurrencies: NSObject, PaymentsCurrenciesSwift, PaymentsCurrencies {
+public class MockPaymentsCurrencies: PaymentsCurrenciesSwift, PaymentsCurrencies {
 
     public let currentCurrencyCode: Currency.Code = PaymentsConstants.currencyCodeGBP
 

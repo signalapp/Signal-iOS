@@ -6,8 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-@objc
-public class EarlyMessageManager: NSObject {
+public class EarlyMessageManager {
     private struct MessageIdentifier: Hashable {
         let timestamp: UInt64
         let author: Aci
@@ -169,8 +168,6 @@ public class EarlyMessageManager: NSObject {
     private var metadataStore =  KeyValueStore(collection: "EarlyMessageManager.metadata")
 
     public init(appReadiness: AppReadiness) {
-        super.init()
-
         SwiftSingletons.register(self)
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {

@@ -27,7 +27,7 @@ public struct VersionedProfileRequest {
 
 // MARK: -
 
-public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedProfiles {
+public class VersionedProfilesImpl: VersionedProfiles {
 
     private enum CredentialStore {
         private static let deprecatedCredentialStore = KeyValueStore(collection: "VersionedProfiles.credentialStore")
@@ -96,8 +96,6 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
     // MARK: - Init
 
     public init(appReadiness: AppReadiness) {
-        super.init()
-
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             // Once we think all clients in the world have migrated to expiring
             // credentials we can remove this.
@@ -350,12 +348,8 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         try CredentialStore.getValidCredential(for: aci, transaction: transaction)
     }
 
-    @objc(clearProfileKeyCredentialForServiceId:transaction:)
-    public func clearProfileKeyCredential(
-        for aci: AciObjC,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        CredentialStore.removeValue(for: aci.wrappedAciValue, transaction: transaction)
+    public func clearProfileKeyCredential(for aci: Aci, transaction: SDSAnyWriteTransaction) {
+        CredentialStore.removeValue(for: aci, transaction: transaction)
     }
 
     public func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {

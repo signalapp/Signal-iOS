@@ -6,8 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-@objc
-public class StoryManager: NSObject {
+public class StoryManager {
     public static let storyLifetimeMillis = UInt64.dayInMs
 
     public class func setup(appReadiness: AppReadiness) {
@@ -211,12 +210,10 @@ public class StoryManager: NSObject {
 
     private static let hasSetMyStoriesPrivacyKey = "hasSetMyStoriesPrivacyKey"
 
-    @objc
     public class func hasSetMyStoriesPrivacy(transaction: SDSAnyReadTransaction) -> Bool {
         return keyValueStore.getBool(hasSetMyStoriesPrivacyKey, defaultValue: false, transaction: transaction.asV2Read)
     }
 
-    @objc
     public class func setHasSetMyStoriesPrivacy(
         _ hasSet: Bool,
         shouldUpdateStorageService: Bool,
@@ -346,7 +343,6 @@ extension StoryManager {
     private static var areStoriesEnabledCache = AtomicBool(true, lock: .sharedGlobal)
 
     /// A cache of if stories are enabled for the local user. For convenience, this also factors in whether the overall feature is available to the user.
-    @objc
     public static var areStoriesEnabled: Bool { areStoriesEnabledCache.get() }
 
     public static func setAreStoriesEnabled(_ areStoriesEnabled: Bool, shouldUpdateStorageService: Bool = true, transaction: SDSAnyWriteTransaction) {
@@ -407,7 +403,6 @@ extension StoryManager {
 extension StoryManager {
     private static let areViewReceiptsEnabledKey = "areViewReceiptsEnabledKey"
 
-    @objc
     @Atomic public private(set) static var areViewReceiptsEnabled: Bool = false
 
     public static func areViewReceiptsEnabled(transaction: SDSAnyReadTransaction) -> Bool {

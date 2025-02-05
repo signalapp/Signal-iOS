@@ -40,8 +40,7 @@ public enum NotificationType: UInt {
     }
 }
 
-@objc(OWSPreferences)
-public class Preferences: NSObject {
+public class Preferences {
 
     private enum Key: String {
         case screenSecurity = "Screen Security Key"
@@ -73,8 +72,7 @@ public class Preferences: NSObject {
     private static let preferencesCollection = "SignalPreferences"
     private let keyValueStore = KeyValueStore(collection: Preferences.preferencesCollection)
 
-    public override init() {
-        super.init()
+    public init() {
         if CurrentAppContext().hasUI {
             CurrentAppContext().appUserDefaults().set(UIScreen.main.scale, forKey: UserDefaultsKeys.deviceScale)
         }

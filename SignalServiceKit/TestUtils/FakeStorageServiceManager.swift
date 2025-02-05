@@ -8,8 +8,7 @@
 import Foundation
 public import SignalRingRTC
 
-@objc(OWSFakeStorageServiceManager)
-public class FakeStorageServiceManager: NSObject, StorageServiceManager {
+public class FakeStorageServiceManager: StorageServiceManager {
     public func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers) {}
 
     public func currentManifestVersion(tx: DBReadTransaction) -> UInt64 { 0 }

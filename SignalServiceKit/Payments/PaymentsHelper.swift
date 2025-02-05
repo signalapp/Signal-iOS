@@ -141,8 +141,7 @@ public enum PaymentsState: Equatable {
 
 // MARK: -
 
-public class MockPaymentsHelper: NSObject {
-}
+public class MockPaymentsHelper {}
 
 // MARK: -
 

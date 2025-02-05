@@ -86,7 +86,7 @@ public enum ContactDiscoveryMode {
     ]
 }
 
-public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManager {
+public final class ContactDiscoveryManagerImpl: ContactDiscoveryManager {
 
     /// Locks all internal state for this object.
     private var lock = UnfairLock()
@@ -95,7 +95,6 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
 
     init(contactDiscoveryTaskQueue: ContactDiscoveryTaskQueue) {
         self.contactDiscoveryTaskQueue = contactDiscoveryTaskQueue
-        super.init()
         SwiftSingletons.register(self)
     }
 

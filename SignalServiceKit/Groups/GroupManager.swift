@@ -55,12 +55,10 @@ public class GroupManager: NSObject {
         }
     }
 
-    @objc
     public static func isV1GroupId(_ groupId: Data) -> Bool {
         groupId.count == groupIdLength(for: .V1)
     }
 
-    @objc
     public static func isV2GroupId(_ groupId: Data) -> Bool {
         groupId.count == groupIdLength(for: .V2)
     }
@@ -75,7 +73,6 @@ public class GroupManager: NSObject {
         return true
     }
 
-    @objc
     public static func isValidGroupIdOfAnyKind(_ groupId: Data) -> Bool {
         return isV1GroupId(groupId) || isV2GroupId(groupId)
     }
@@ -858,7 +855,6 @@ public class GroupManager: NSObject {
         thread.groupModel.groupMembership.invitedOrRequestMembers.filter { doesUserSupportGroupsV2(address: $0) }
     }
 
-    @objc
     public static func shouldMessageHaveAdditionalRecipients(_ message: TSOutgoingMessage,
                                                              groupThread: TSGroupThread) -> Bool {
         guard groupThread.groupModel.groupsVersion == .V2 else {
@@ -874,8 +870,7 @@ public class GroupManager: NSObject {
 
     // MARK: - Group Database
 
-    @objc
-    public enum InfoMessagePolicy: UInt {
+    public enum InfoMessagePolicy {
         case always
         case insertsOnly
         case updatesOnly

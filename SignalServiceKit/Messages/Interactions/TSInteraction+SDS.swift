@@ -5325,6 +5325,7 @@ public class TSInteractionCursor: NSObject, SDSCursor {
 
 @objc
 public extension TSInteraction {
+    @nonobjc
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSInteractionCursor {
         let database = transaction.database
         do {

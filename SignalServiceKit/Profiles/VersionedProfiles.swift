@@ -17,20 +17,11 @@ public struct VersionedProfileUpdate {
 
 // MARK: -
 
-@objc
 public protocol VersionedProfiles: AnyObject {
-    @objc(clearProfileKeyCredentialForServiceId:transaction:)
-    func clearProfileKeyCredential(
-        for aci: AciObjC,
-        transaction: SDSAnyWriteTransaction
-    )
+
+    func clearProfileKeyCredential(for aci: Aci, transaction: SDSAnyWriteTransaction)
 
     func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction)
-}
-
-// MARK: -
-
-public protocol VersionedProfilesSwift: VersionedProfiles {
 
     func updateProfile(
         profileGivenName: OWSUserProfile.NameComponent?,
@@ -78,10 +69,8 @@ public enum VersionedProfileAvatarMutation {
 
 // MARK: -
 
-@objc
-public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedProfiles {
-    public func clearProfileKeyCredential(for aci: AciObjC,
-                                          transaction: SDSAnyWriteTransaction) {}
+public class MockVersionedProfiles: VersionedProfiles {
+    public func clearProfileKeyCredential(for aci: Aci, transaction: SDSAnyWriteTransaction) {}
 
     public func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {}
 

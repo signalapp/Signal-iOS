@@ -5,8 +5,7 @@
 
 import Foundation
 
-@objc
-public class GiphyAPI: NSObject {
+public enum GiphyAPI {
 
     // MARK: - Properties
 

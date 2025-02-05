@@ -32,7 +32,7 @@ import Foundation
 // we can avoid building avatars unnecessarily while ensuring that avatars
 // update correctly without worrying about cache evacuation.
 
-public class AvatarBuilder: NSObject {
+public class AvatarBuilder {
 
     public static var shared: AvatarBuilder { SSKEnvironment.shared.avatarBuilderRef }
 
@@ -49,8 +49,6 @@ public class AvatarBuilder: NSObject {
     // MARK: -
 
     public init(appReadiness: AppReadiness) {
-        super.init()
-
         SwiftSingletons.register(self)
 
         appReadiness.runNowOrWhenAppWillBecomeReady {

@@ -80,7 +80,7 @@ public extension Factory {
     }
 }
 
-public class ContactThreadFactory: NSObject, Factory {
+public class ContactThreadFactory: Factory {
 
     public var messageCount: UInt = 0
 
@@ -114,7 +114,7 @@ public class ContactThreadFactory: NSObject, Factory {
     }
 }
 
-public class OutgoingMessageFactory: NSObject, Factory {
+public class OutgoingMessageFactory: Factory {
 
     // MARK: Factory
 
@@ -270,7 +270,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
     }
 }
 
-public class IncomingMessageFactory: NSObject, Factory {
+public class IncomingMessageFactory: Factory {
 
     // MARK: Factory
 
@@ -426,7 +426,9 @@ public class IncomingMessageFactory: NSObject, Factory {
     }
 }
 
-public class ConversationFactory: NSObject {
+public class ConversationFactory {
+
+    public init() {}
 
     @discardableResult
     public func createSentMessage(
@@ -1654,7 +1656,9 @@ public class CommonGenerator {
     }
 }
 
-public class ImageFactory: NSObject {
+public class ImageFactory {
+
+    public init() {}
 
     public func build() -> UIImage {
         return type(of: self).buildImage(size: sizeBuilder(),

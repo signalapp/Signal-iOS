@@ -7,7 +7,7 @@ import CommonCrypto
 import CryptoKit
 public import LibSignalClient
 
-public class OWSProvisioningCipher: NSObject {
+public class OWSProvisioningCipher {
     // Local errors for logging purposes only.
     // FIXME: If we start propagating errors out of encrypt(_:), we'll want to revisit this.
     private enum Error: Swift.Error {
@@ -52,7 +52,6 @@ public class OWSProvisioningCipher: NSObject {
 
     // FIXME: propagate errors from here instead of just returning nil.
     // This means auditing all of the places we throw OR deciding it's okay to throw arbitrary errors.
-    @objc
     public func encrypt(_ data: Data) -> Data? {
         do {
             let sharedSecret = self.ourKeyPair.privateKey.keyAgreement(with: self.theirPublicKey)

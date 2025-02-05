@@ -112,13 +112,10 @@ public protocol AppContext {
     func resetAppDataAndExit() -> Never
 }
 
-@objcMembers
 public final class AppContextObjCBridge: NSObject {
+    @objc
     @available(swift, obsoleted: 1)
     public static let shared = AppContextObjCBridge()
-
-    public static let owsApplicationWillResignActiveNotification = Notification.Name.OWSApplicationWillResignActive
-    public static let owsApplicationDidBecomeActiveNotification = Notification.Name.OWSApplicationDidBecomeActive
 
     private var appContext: any AppContext {
         SignalServiceKit.CurrentAppContext()
@@ -126,36 +123,9 @@ public final class AppContextObjCBridge: NSObject {
 
     private override init() {}
 
-    public var appDocumentDirectoryPath: String {
-        appContext.appDocumentDirectoryPath()
-    }
-
-    public var appSharedDataDirectoryPath: String {
-        appContext.appSharedDataDirectoryPath()
-    }
-
-    public var appLaunchTime: Date {
-        appContext.appLaunchTime
-    }
-
-    public var isMainApp: Bool {
-        appContext.isMainApp
-    }
-
-    public var isMainAppAndActive: Bool {
-        appContext.isMainAppAndActive
-    }
-
+    @objc
     public var isRunningTests: Bool {
         appContext.isRunningTests
-    }
-
-    public func beginBackgroundTask(expirationHandler: @escaping () -> Void) -> UIBackgroundTaskIdentifier {
-        appContext.beginBackgroundTask(with: expirationHandler)
-    }
-
-    public func endBackgroundTask(_ identifier: UIBackgroundTaskIdentifier) {
-        appContext.endBackgroundTask(identifier)
     }
 }
 

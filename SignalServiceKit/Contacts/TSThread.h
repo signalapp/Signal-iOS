@@ -7,7 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class GRDBReadTransaction;
 @class MessageBody;
 @class MessageBodyRanges;
 @class OWSDisappearingMessagesConfiguration;

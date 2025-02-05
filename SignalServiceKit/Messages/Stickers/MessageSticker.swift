@@ -7,36 +7,27 @@ import Foundation
 
 // MARK: - MessageStickerDraft
 
-@objc
 public class MessageStickerDraft: NSObject {
-    @objc
     public let info: StickerInfo
 
-    @objc
     public var packId: Data {
         return info.packId
     }
 
-    @objc
     public var packKey: Data {
         return info.packKey
     }
 
-    @objc
     public var stickerId: UInt32 {
         return info.stickerId
     }
 
-    @objc
     public let stickerData: Data
 
-    @objc
     public let stickerType: StickerType
 
-    @objc
     public let emoji: String?
 
-    @objc
     public init(info: StickerInfo, stickerData: Data, stickerType: StickerType, emoji: String?) {
         self.info = info
         self.stickerData = stickerData

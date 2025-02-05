@@ -5,7 +5,7 @@
 
 import Foundation
 
-public protocol ProfileManagerProtocol: NSObjectProtocol {
+public protocol ProfileManagerProtocol {
     var badgeStore: BadgeStore { get }
 
     /// Fetch the profile for the local user. (It should always exist.)

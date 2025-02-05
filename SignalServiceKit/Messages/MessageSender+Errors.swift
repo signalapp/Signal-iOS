@@ -47,15 +47,6 @@ public enum MessageSenderError: Error, IsRetryableProvider, UserErrorDescription
 
 // MARK: -
 
-extension NSError {
-    @objc
-    public var shouldBeIgnoredForNonContactThreads: Bool {
-        (self as Error).shouldBeIgnoredForNonContactThreads
-    }
-}
-
-// MARK: -
-
 extension Error {
     public var shouldBeIgnoredForNonContactThreads: Bool {
         self is MessageSenderNoSuchSignalRecipientError
@@ -64,13 +55,9 @@ extension Error {
 
 // MARK: -
 
-extension NSError {
-    @objc
-    public var isFatalError: Bool { isFatalErrorImpl }
-
-    fileprivate var isFatalErrorImpl: Bool {
-        let error: Error = self as Error
-        switch error {
+extension Error {
+    public var isFatalError: Bool {
+        switch self {
         case is MessageSenderNoSessionForTransientMessageError:
             return true
         case is UntrustedIdentityError:
@@ -89,14 +76,7 @@ extension NSError {
 
 // MARK: -
 
-extension Error {
-    public var isFatalError: Bool { (self as NSError).isFatalErrorImpl }
-}
-
-// MARK: -
-
-@objc
-public class MessageSenderNoSuchSignalRecipientError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
+public class MessageSenderNoSuchSignalRecipientError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     // NSError bridging: the domain of the error.
     public static let errorDomain = OWSError.errorDomain
 
@@ -115,10 +95,11 @@ public class MessageSenderNoSuchSignalRecipientError: NSObject, CustomNSError, I
         )
     }
 
-    @objc
     public class func isNoSuchSignalRecipientError(_ error: Error?) -> Bool {
         error is MessageSenderNoSuchSignalRecipientError
     }
+
+    public init() {}
 
     // MARK: - IsRetryableProvider
 
@@ -128,9 +109,7 @@ public class MessageSenderNoSuchSignalRecipientError: NSObject, CustomNSError, I
 
 // MARK: -
 
-@objc
-class MessageSenderErrorNoValidRecipients: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
-    @objc
+class MessageSenderErrorNoValidRecipients: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     public static var asNSError: NSError {
         MessageSenderErrorNoValidRecipients() as Error as NSError
     }
@@ -158,7 +137,7 @@ class MessageSenderErrorNoValidRecipients: NSObject, CustomNSError, IsRetryableP
 
 // MARK: -
 
-class MessageSenderNoSessionForTransientMessageError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
+class MessageSenderNoSessionForTransientMessageError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     // NSError bridging: the domain of the error.
     public static let errorDomain = OWSError.errorDomain
 
@@ -176,7 +155,7 @@ class MessageSenderNoSessionForTransientMessageError: NSObject, CustomNSError, I
 
 // MARK: -
 
-public class UntrustedIdentityError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
+public class UntrustedIdentityError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     public let serviceId: ServiceId
 
     init(serviceId: ServiceId) {
@@ -211,7 +190,7 @@ public class UntrustedIdentityError: NSObject, CustomNSError, IsRetryableProvide
     public var isRetryableProvider: Bool { false }
 }
 
-public class InvalidKeySignatureError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
+public class InvalidKeySignatureError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     public let serviceId: ServiceId
     public let isTerminalFailure: Bool
 
@@ -252,9 +231,8 @@ public class InvalidKeySignatureError: NSObject, CustomNSError, IsRetryableProvi
 
 // MARK: -
 
-class SignalServiceRateLimitedError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
+class SignalServiceRateLimitedError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     // NSError bridging: the domain of the error.
-    @objc
     public static let errorDomain = OWSError.errorDomain
 
     // NSError bridging: the error code within the given domain.
@@ -278,10 +256,8 @@ class SignalServiceRateLimitedError: NSObject, CustomNSError, IsRetryableProvide
 
 // MARK: -
 
-@objc
-public class SpamChallengeRequiredError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
+public class SpamChallengeRequiredError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     // NSError bridging: the domain of the error.
-    @objc
     public static let errorDomain = OWSError.errorDomain
 
     // NSError bridging: the error code within the given domain.
@@ -304,8 +280,7 @@ public class SpamChallengeRequiredError: NSObject, CustomNSError, IsRetryablePro
 
 // MARK: -
 
-@objc
-class SpamChallengeResolvedError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
+class SpamChallengeResolvedError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     // NSError bridging: the domain of the error.
     public static let errorDomain = OWSError.errorDomain
 
@@ -329,9 +304,7 @@ class SpamChallengeResolvedError: NSObject, CustomNSError, IsRetryableProvider, 
 
 // MARK: -
 
-@objc
-class OWSRetryableMessageSenderError: NSObject, Error, IsRetryableProvider {
-    @objc
+class OWSRetryableMessageSenderError: Error, IsRetryableProvider {
     public static var asNSError: NSError {
         OWSRetryableMessageSenderError() as Error as NSError
     }
@@ -344,9 +317,7 @@ class OWSRetryableMessageSenderError: NSObject, Error, IsRetryableProvider {
 // MARK: -
 
 // NOTE: We typically prefer to use a more specific error.
-@objc
-class OWSUnretryableMessageSenderError: NSObject, Error, IsRetryableProvider {
-    @objc
+class OWSUnretryableMessageSenderError: Error, IsRetryableProvider {
     public static var asNSError: NSError {
         OWSUnretryableMessageSenderError() as Error as NSError
     }
@@ -358,19 +329,15 @@ class OWSUnretryableMessageSenderError: NSObject, Error, IsRetryableProvider {
 
 // MARK: -
 
-@objc
-public class AppExpiredError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
-    @objc
+public class AppExpiredError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     public static var asNSError: NSError {
         AppExpiredError() as Error as NSError
     }
 
     // NSError bridging: the domain of the error.
-    @objc
     public static let errorDomain = OWSError.errorDomain
 
     // NSError bridging: the error code within the given domain.
-    @objc
     public static var errorCode: Int { OWSErrorCode.appExpired.rawValue }
 
     // NSError bridging: the error code within the given domain.
@@ -391,19 +358,15 @@ public class AppExpiredError: NSObject, CustomNSError, IsRetryableProvider, User
 
 // MARK: -
 
-@objc
-public class AppDeregisteredError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
-    @objc
+public class AppDeregisteredError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     public static var asNSError: NSError {
         AppDeregisteredError() as Error as NSError
     }
 
     // NSError bridging: the domain of the error.
-    @objc
     public static let errorDomain = OWSError.errorDomain
 
     // NSError bridging: the error code within the given domain.
-    @objc
     public static var errorCode: Int { OWSErrorCode.appDeregistered.rawValue }
 
     // NSError bridging: the error code within the given domain.
@@ -427,9 +390,7 @@ public class AppDeregisteredError: NSObject, CustomNSError, IsRetryableProvider,
 
 // MARK: -
 
-@objc
-class MessageDeletedBeforeSentError: NSObject, CustomNSError, IsRetryableProvider {
-    @objc
+class MessageDeletedBeforeSentError: CustomNSError, IsRetryableProvider {
     public static var asNSError: NSError {
         MessageDeletedBeforeSentError() as Error as NSError
     }
@@ -445,7 +406,7 @@ class MessageDeletedBeforeSentError: NSObject, CustomNSError, IsRetryableProvide
 
 // MARK: -
 
-class MessageSendUnauthorizedError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
+class MessageSendUnauthorizedError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     // NSError bridging: the domain of the error.
     public static let errorDomain = OWSError.errorDomain
 
@@ -470,7 +431,7 @@ class MessageSendUnauthorizedError: NSObject, CustomNSError, IsRetryableProvider
 
 // MARK: -
 
-class MessageSendEncryptionError: NSObject, CustomNSError, IsRetryableProvider {
+class MessageSendEncryptionError: CustomNSError, IsRetryableProvider {
     public let serviceId: ServiceId
     public let deviceId: UInt32
 

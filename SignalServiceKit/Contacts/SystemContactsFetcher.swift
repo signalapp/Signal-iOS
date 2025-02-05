@@ -15,7 +15,7 @@ protocol ContactStoreAdaptee {
     func startObservingChanges(changeHandler: @escaping () -> Void)
 }
 
-public class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
+public class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
     private let contactStoreForLargeRequests = CNContactStore()
     private let contactStoreForSmallRequests = CNContactStore()
     private var changeHandler: (() -> Void)?
@@ -26,7 +26,6 @@ public class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee
 
     init(appReadiness: AppReadiness) {
         self.appReadiness = appReadiness
-        super.init()
     }
 
     private static let discoveryContactKeys: [CNKeyDescriptor] = [
@@ -161,8 +160,7 @@ protocol SystemContactsFetcherDelegate: AnyObject {
     )
 }
 
-@objc
-public class SystemContactsFetcher: NSObject {
+public class SystemContactsFetcher {
 
     private let serialQueue = DispatchQueue(label: "org.signal.contacts.system-fetcher")
 
@@ -172,7 +170,6 @@ public class SystemContactsFetcher: NSObject {
 
     weak var delegate: SystemContactsFetcherDelegate?
 
-    @objc
     public var rawAuthorizationStatus: RawContactAuthorizationStatus {
         return contactStoreAdapter.rawAuthorizationStatus
     }
@@ -191,9 +188,6 @@ public class SystemContactsFetcher: NSObject {
 
     public init(appReadiness: AppReadiness) {
         self.contactStoreAdapter = ContactsFrameworkContactStoreAdaptee(appReadiness: appReadiness)
-
-        super.init()
-
         SwiftSingletons.register(self)
     }
 
@@ -217,7 +211,6 @@ public class SystemContactsFetcher: NSObject {
      *
      * @param   completionParam  completion handler is called on main thread.
      */
-    @objc
     public func requestOnce(completion completionParam: ((Error?) -> Void)?) {
         AssertIsOnMainThread()
 
@@ -271,7 +264,6 @@ public class SystemContactsFetcher: NSObject {
         }
     }
 
-    @objc
     public func fetchOnceIfAlreadyAuthorized() {
         AssertIsOnMainThread()
 
@@ -290,7 +282,6 @@ public class SystemContactsFetcher: NSObject {
         updateContacts(isUserRequested: false, completion: nil)
     }
 
-    @objc
     public func userRequestedRefresh(completion: @escaping (Error?) -> Void) {
         AssertIsOnMainThread()
 
@@ -417,7 +408,6 @@ public class SystemContactsFetcher: NSObject {
         }
     }
 
-    @objc
     public func fetchCNContact(contactId: String) -> CNContact? {
         guard canReadSystemContacts else {
             Logger.error("contact fetch failed; no access.")

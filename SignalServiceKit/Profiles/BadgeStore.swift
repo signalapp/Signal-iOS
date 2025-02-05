@@ -7,7 +7,7 @@ import Foundation
 public import GRDB
 
 /// Model object for a badge. Only information for the badge itself, nothing user-specific (expirations, visibility, etc.)
-public class ProfileBadge: NSObject, Codable {
+public class ProfileBadge: Codable, Equatable {
     public let id: String
     public let category: Category
     public let localizedName: String
@@ -68,25 +68,17 @@ public class ProfileBadge: NSObject, Codable {
         duration = try values.decodeIfPresent(TimeInterval.self, forKey: .duration)
     }
 
-    override public func isEqual(_ object: Any?) -> Bool {
-        guard
-            let other = object as? Self,
-            type(of: self) == type(of: other)
-        else {
-            return false
-        }
-
-        return
-            id == other.id &&
-            category == other.category &&
-            localizedName == other.localizedName &&
-            localizedDescriptionFormatString == other.localizedDescriptionFormatString &&
-            resourcePath == other.resourcePath &&
-            badgeVariant == other.badgeVariant &&
-            localization == other.localization &&
-            duration == other.duration
-            // Don't check assets -- it's essentially a derived property that doesn't
-            // need to be included in equality checks.
+    public static func == (lhs: ProfileBadge, rhs: ProfileBadge) -> Bool {
+        return (lhs.id == rhs.id &&
+                lhs.category == rhs.category &&
+                lhs.localizedName == rhs.localizedName &&
+                lhs.localizedDescriptionFormatString == rhs.localizedDescriptionFormatString &&
+                lhs.resourcePath == rhs.resourcePath &&
+                lhs.badgeVariant == rhs.badgeVariant &&
+                lhs.localization == rhs.localization &&
+                lhs.duration == rhs.duration)
+        // Don't check assets -- it's essentially a derived property that doesn't
+        // need to be included in equality checks.
     }
 }
 
@@ -191,8 +183,7 @@ extension ProfileBadge: FetchableRecord, PersistableRecord {
 
 // MARK: - BadgeStore
 
-@objc
-public class BadgeStore: NSObject {
+public class BadgeStore {
     let lock = UnfairLock()
     var badgeCache = LRUCache<String, ProfileBadge>(maxSize: 5)
     // BadgeAssets have two roles: fetching assets we don't currently have and vending retrieved assets as UIImages

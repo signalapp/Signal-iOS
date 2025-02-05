@@ -327,6 +327,7 @@ public class OWSDisappearingMessagesConfigurationCursor: NSObject, SDSCursor {
 
 @objc
 public extension OWSDisappearingMessagesConfiguration {
+    @nonobjc
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSDisappearingMessagesConfigurationCursor {
         let database = transaction.database
         do {

@@ -6,8 +6,7 @@
 import blurhash
 import Foundation
 
-@objc
-public class BlurHash: NSObject {
+public class BlurHash {
 
     // This should be generous.
     private static let maxLength = 100
@@ -17,7 +16,6 @@ public class BlurHash: NSObject {
     // See: https://github.com/woltapp/blurhash/blob/master/Algorithm.md
     private static let validCharacterSet = CharacterSet(charactersIn: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~")
 
-    @objc
     public class func isValidBlurHash(_ blurHash: String?) -> Bool {
         guard let blurHash = blurHash else {
             return false
@@ -58,7 +56,6 @@ public class BlurHash: NSObject {
     // these thumbnails.
     private static let kDefaultSize: CGFloat = 16
 
-    @objc(imageForBlurHash:)
     public class func image(for blurHash: String) -> UIImage? {
         let thumbnailSize = imageSize(for: blurHash)
         guard let image = UIImage(blurHash: blurHash, size: thumbnailSize) else {

@@ -84,11 +84,7 @@ private func ClearOldTemporaryDirectoriesSync() {
     }
 }
 
-// TODO: Convert to enum after eliminating objc callers
-@objc
-public class OWSFileSystem: NSObject {
-
-    override private init() {}
+public enum OWSFileSystem {
 
     @discardableResult
     private static func protectRecursiveContents(atPath path: String) -> Bool {
@@ -148,7 +144,6 @@ public class OWSFileSystem: NSObject {
         return last.path
     }
 
-    @objc
     public static func appDocumentDirectoryPath() -> String {
         CurrentAppContext().appDocumentDirectoryPath()
     }
@@ -157,7 +152,6 @@ public class OWSFileSystem: NSObject {
         URL(fileURLWithPath: Self.appSharedDataDirectoryPath())
     }
 
-    @objc
     public static func appSharedDataDirectoryPath() -> String {
         CurrentAppContext().appSharedDataDirectoryPath()
     }
@@ -168,7 +162,6 @@ public class OWSFileSystem: NSObject {
         }
         return result
     }()
-    @objc
     public static func cachesDirectoryPath() -> String {
         return cachesDirectoryPathPrecomputed
     }
@@ -193,7 +186,6 @@ public class OWSFileSystem: NSObject {
         return false
     }
 
-    @objc
     public static func deleteContents(ofDirectory dirPath: String) {
         do {
             let filePaths = try Self.recursiveFilesInDirectory(dirPath)
@@ -227,7 +219,6 @@ extension OWSFileSystem {
 
     /// - Returns: false iff the directory does not exist and could not be created or setting the file protection type fails
     @discardableResult
-    @objc
     public static func ensureDirectoryExists(_ dirPath: String) -> Bool {
         ensureDirectoryExists(dirPath, fileProtectionType: .completeUntilFirstUserAuthentication)
     }
@@ -244,41 +235,39 @@ extension OWSFileSystem {
 }
 
 public extension OWSFileSystem {
-    @objc
-    class func fileOrFolderExists(atPath filePath: String) -> Bool {
+    static func fileOrFolderExists(atPath filePath: String) -> Bool {
         FileManager.default.fileExists(atPath: filePath)
     }
 
-    class func fileOrFolderExists(url: URL) -> Bool {
+    static func fileOrFolderExists(url: URL) -> Bool {
         fileOrFolderExists(atPath: url.path)
     }
 
-    class func fileExistsAndIsNotDirectory(atPath filePath: String) -> Bool {
+    static func fileExistsAndIsNotDirectory(atPath filePath: String) -> Bool {
         var isDirectory: ObjCBool = false
         let exists = FileManager.default.fileExists(atPath: filePath, isDirectory: &isDirectory)
         return exists && !isDirectory.boolValue
     }
 
-    class func fileExistsAndIsNotDirectory(url: URL) -> Bool {
+    static func fileExistsAndIsNotDirectory(url: URL) -> Bool {
         fileExistsAndIsNotDirectory(atPath: url.path)
     }
 
     @discardableResult
-    class func deleteFile(_ filePath: String) -> Bool {
+    static func deleteFile(_ filePath: String) -> Bool {
         deleteFile(filePath, ignoreIfMissing: false)
     }
 
     @discardableResult
-    @objc
-    class func deleteFileIfExists(_ filePath: String) -> Bool {
+    static func deleteFileIfExists(_ filePath: String) -> Bool {
         return deleteFile(filePath, ignoreIfMissing: true)
     }
 
-    class func deleteFile(url: URL) throws {
+    static func deleteFile(url: URL) throws {
         try FileManager.default.removeItem(at: url)
     }
 
-    class func deleteFileIfExists(url: URL) throws {
+    static func deleteFileIfExists(url: URL) throws {
         do {
             try deleteFile(url: url)
         } catch POSIXError.ENOENT, CocoaError.fileNoSuchFile {
@@ -286,7 +275,7 @@ public extension OWSFileSystem {
         }
     }
 
-    class func moveFile(from fromUrl: URL, to toUrl: URL) throws {
+    static func moveFile(from fromUrl: URL, to toUrl: URL) throws {
         guard FileManager.default.fileExists(atPath: fromUrl.path) else {
             throw OWSAssertionError("Source file does not exist.")
         }
@@ -312,7 +301,7 @@ public extension OWSFileSystem {
         #endif
     }
 
-    class func copyFile(from fromUrl: URL, to toUrl: URL) throws {
+    static func copyFile(from fromUrl: URL, to toUrl: URL) throws {
         guard FileManager.default.fileExists(atPath: fromUrl.path) else {
             throw OWSAssertionError("Source file does not exist.")
         }
@@ -335,7 +324,7 @@ public extension OWSFileSystem {
         #endif
     }
 
-    class func recursiveFilesInDirectory(_ dirPath: String) throws -> [String] {
+    static func recursiveFilesInDirectory(_ dirPath: String) throws -> [String] {
         owsAssertDebug(!dirPath.isEmpty)
 
         do {
@@ -357,7 +346,7 @@ public extension OWSFileSystem {
 
 public extension OWSFileSystem {
 
-    class func temporaryFileUrl(
+    static func temporaryFileUrl(
         fileExtension: String? = nil,
         isAvailableWhileDeviceLocked: Bool = false
     ) -> URL {
@@ -368,7 +357,7 @@ public extension OWSFileSystem {
         ))
     }
 
-    class func temporaryFileUrl(
+    static func temporaryFileUrl(
         fileName: String,
         fileExtension: String? = nil,
         isAvailableWhileDeviceLocked: Bool = false
@@ -380,7 +369,7 @@ public extension OWSFileSystem {
         ))
     }
 
-    class func temporaryFilePath(
+    static func temporaryFilePath(
         fileName: String? = nil,
         fileExtension: String? = nil
     ) -> String {
@@ -391,7 +380,7 @@ public extension OWSFileSystem {
         )
     }
 
-    class func temporaryFilePath(
+    static func temporaryFilePath(
         fileName: String? = nil,
         fileExtension: String? = nil,
         isAvailableWhileDeviceLocked: Bool = false
@@ -406,7 +395,7 @@ public extension OWSFileSystem {
         return filePath
     }
 
-    private class func tempDirPath(availableWhileDeviceLocked: Bool) -> String {
+    private static func tempDirPath(availableWhileDeviceLocked: Bool) -> String {
         return availableWhileDeviceLocked
             ? OWSTemporaryDirectoryAccessibleAfterFirstAuth()
             : OWSTemporaryDirectory()
@@ -416,7 +405,7 @@ public extension OWSFileSystem {
 // MARK: -
 
 public extension OWSFileSystem {
-    class func deleteFile(_ filePath: String, ignoreIfMissing: Bool = false) -> Bool {
+    static func deleteFile(_ filePath: String, ignoreIfMissing: Bool = false) -> Bool {
         do {
             try FileManager.default.removeItem(atPath: filePath)
             return true
@@ -445,7 +434,7 @@ public extension OWSFileSystem {
     /// See [Apple's example][0]. It checks "important" storage (versus "opportunistic" storage).
     ///
     /// [0]: https://developer.apple.com/documentation/foundation/nsurlresourcekey/checking_volume_storage_capacity
-    class func freeSpaceInBytes(forPath path: URL) throws -> UInt64 {
+    static func freeSpaceInBytes(forPath path: URL) throws -> UInt64 {
         let resourceValues = try path.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey])
         guard let result = resourceValues.volumeAvailableCapacityForImportantUsage else {
             throw OWSGenericError("Could not determine remaining disk space")
@@ -460,7 +449,7 @@ public extension OWSFileSystem {
 // MARK: - Creating Partial files
 
 public extension OWSFileSystem {
-    class func createTempFileSlice(url: URL, start: Int) throws -> (URL, Int) {
+    static func createTempFileSlice(url: URL, start: Int) throws -> (URL, Int) {
         // Resuming, slice attachment data in memory.
         let dataSliceFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
 

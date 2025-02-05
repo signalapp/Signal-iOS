@@ -7,13 +7,12 @@ import Foundation
 
 // MARK: -
 
-public class MessageFetcherJob: NSObject {
+public class MessageFetcherJob {
 
     private let appReadiness: AppReadiness
 
     public init(appReadiness: AppReadiness) {
         self.appReadiness = appReadiness
-        super.init()
 
         SwiftSingletons.register(self)
 

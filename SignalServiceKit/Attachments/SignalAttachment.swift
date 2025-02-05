@@ -741,7 +741,7 @@ public class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    private class func imageAttachment(dataSource: DataSource?, dataUTI: String, isBorderless: Bool = false) -> SignalAttachment {
+    private class func imageAttachment(dataSource: (any DataSource)?, dataUTI: String, isBorderless: Bool = false) -> SignalAttachment {
         assert(!dataUTI.isEmpty)
         assert(dataSource != nil)
         guard let dataSource = dataSource else {

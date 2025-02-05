@@ -6,7 +6,7 @@
 import Foundation
 import LocalAuthentication
 
-public class OWSPaymentsLock: NSObject {
+public class OWSPaymentsLock {
 
     public enum LocalAuthOutcome: Equatable {
         case success
@@ -22,7 +22,6 @@ public class OWSPaymentsLock: NSObject {
 
     init(appReadiness: AppReadiness) {
         self.appReadiness = appReadiness
-        super.init()
         SwiftSingletons.register(self)
     }
 

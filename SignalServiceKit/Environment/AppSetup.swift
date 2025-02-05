@@ -40,7 +40,7 @@ public class AppSetup {
         let svrKeyDeriver: SVRKeyDeriver?
         let syncManager: (any SyncManagerProtocol)?
         let systemStoryManager: (any SystemStoryManagerProtocol)?
-        let versionedProfiles: (any VersionedProfilesSwift)?
+        let versionedProfiles: (any VersionedProfiles)?
         let webSocketFactory: (any WebSocketFactory)?
 
         public init(
@@ -63,7 +63,7 @@ public class AppSetup {
             svrKeyDeriver: SVRKeyDeriver? = nil,
             syncManager: (any SyncManagerProtocol)? = nil,
             systemStoryManager: (any SystemStoryManagerProtocol)? = nil,
-            versionedProfiles: (any VersionedProfilesSwift)? = nil,
+            versionedProfiles: (any VersionedProfiles)? = nil,
             webSocketFactory: (any WebSocketFactory)? = nil
         ) {
             self.backupAttachmentDownloadManager = backupAttachmentDownloadManager

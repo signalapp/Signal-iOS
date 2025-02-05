@@ -13,8 +13,7 @@ import UIKit
 /// sent to (if sent to a group).
 /// Outgoing story threads are not represented, but this table could be extended to include
 /// them in the future.
-@objc
-public final class StoryContextAssociatedData: NSObject, SDSCodableModel, Decodable {
+public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
     public static var recordType: UInt { 0 }
 
     public static let databaseTableName = "model_StoryContextAssociatedData"
@@ -33,7 +32,6 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel, Decoda
     }
 
     public var id: Int64?
-    @objc
     public let uniqueId: String
 
     public enum SourceContext: Hashable {
@@ -130,8 +128,6 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel, Decoda
         self.lastReadTimestamp = lastReadTimestamp
         self.lastViewedTimestamp = lastViewedTimestamp
 
-        super.init()
-
         updateLatestUnexpiredTimestampIfNeeded()
         updateLastReadTimestampIfNeeded()
     }
@@ -164,7 +160,7 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel, Decoda
 
         if
             let storedCopy = StoryFinder.getAssociatedData(forContext: sourceContext, transaction: transaction),
-            storedCopy != self
+            storedCopy !== self
         {
             // Update the existing record.
             block(storedCopy)
@@ -225,7 +221,7 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel, Decoda
 
         if
             let storedCopy = StoryFinder.getAssociatedData(forContext: sourceContext, transaction: transaction),
-            storedCopy != self
+            storedCopy !== self
         {
             // Update the existing record.
             block(storedCopy)
@@ -275,8 +271,6 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel, Decoda
         lastReceivedTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .lastReceivedTimestamp)
         lastReadTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .lastReadTimestamp)
         lastViewedTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .lastViewedTimestamp)
-
-        super.init()
 
         updateLastReadTimestampIfNeeded()
     }

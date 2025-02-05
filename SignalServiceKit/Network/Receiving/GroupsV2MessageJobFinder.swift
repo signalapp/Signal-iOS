@@ -6,12 +6,10 @@
 import Foundation
 import GRDB
 
-@objc
-public class GRDBGroupsV2MessageJobFinder: NSObject {
+public class GRDBGroupsV2MessageJobFinder {
     typealias ReadTransaction = GRDBReadTransaction
     typealias WriteTransaction = GRDBWriteTransaction
 
-    @objc
     public func addJob(envelopeData: Data,
                        plaintextData: Data,
                        groupId: Data,
@@ -26,7 +24,6 @@ public class GRDBGroupsV2MessageJobFinder: NSObject {
         job.anyInsert(transaction: transaction.asAnyWrite)
     }
 
-    @objc
     public func allEnqueuedGroupIds(transaction: GRDBReadTransaction) -> [Data] {
         let sql = """
             SELECT DISTINCT \(incomingGroupsV2MessageJobColumn: .groupId)
@@ -41,7 +38,6 @@ public class GRDBGroupsV2MessageJobFinder: NSObject {
         return result
     }
 
-    @objc
     public func nextJobs(batchSize: UInt, transaction: GRDBReadTransaction) -> [IncomingGroupsV2MessageJob] {
         let sql = """
             SELECT *
@@ -55,7 +51,6 @@ public class GRDBGroupsV2MessageJobFinder: NSObject {
         return try! cursor.all()
     }
 
-    @objc
     public func nextJobs(forGroupId groupId: Data,
                          batchSize: UInt,
                          transaction: GRDBReadTransaction) -> [IncomingGroupsV2MessageJob] {
@@ -73,7 +68,6 @@ public class GRDBGroupsV2MessageJobFinder: NSObject {
         return try! cursor.all()
     }
 
-    @objc
     public func existsJob(forGroupId groupId: Data, transaction: GRDBReadTransaction) -> Bool {
         let sql = """
             SELECT EXISTS (
@@ -92,7 +86,6 @@ public class GRDBGroupsV2MessageJobFinder: NSObject {
         }
     }
 
-    @objc
     public func jobCount(forGroupId groupId: Data, transaction: GRDBReadTransaction) -> UInt {
         let sql = """
             SELECT COUNT(*)
@@ -110,7 +103,6 @@ public class GRDBGroupsV2MessageJobFinder: NSObject {
         }
     }
 
-    @objc
     public func removeJobs(withUniqueIds uniqueIds: [String], transaction: GRDBWriteTransaction) {
         guard uniqueIds.count > 0 else {
             return
@@ -125,7 +117,6 @@ public class GRDBGroupsV2MessageJobFinder: NSObject {
         transaction.execute(sql: sql)
     }
 
-    @objc
     public func jobCount(transaction: SDSAnyReadTransaction) -> UInt {
         return IncomingGroupsV2MessageJob.anyCount(transaction: transaction)
     }

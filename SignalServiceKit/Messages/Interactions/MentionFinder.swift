@@ -9,8 +9,7 @@ public import LibSignalClient
 
 // MARK: -
 
-@objc
-public class MentionFinder: NSObject {
+public class MentionFinder {
 
     public class func messagesMentioning(
         aci: Aci,
@@ -82,7 +81,6 @@ public class MentionFinder: NSObject {
         return messages
     }
 
-    @objc
     public class func deleteAllMentions(for message: TSMessage, transaction: GRDBWriteTransaction) {
         let sql = """
             DELETE FROM \(TSMention.databaseTableName)
@@ -91,7 +89,6 @@ public class MentionFinder: NSObject {
         transaction.execute(sql: sql, arguments: [message.uniqueId])
     }
 
-    @objc
     public class func mentionedAddresses(for message: TSMessage, transaction: GRDBReadTransaction) -> [SignalServiceAddress] {
         let sql = """
             SELECT *
@@ -113,7 +110,6 @@ public class MentionFinder: NSObject {
         return addresses
     }
 
-    @objc
     public class func tryToCleanupOrphanedMention(
         uniqueId: String,
         thresholdDate: Date,

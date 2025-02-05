@@ -19,12 +19,8 @@ protocol ProxiedContentDownloaderDelegate: AnyObject {
 
 // MARK: -
 
-@objc
-open class ProxiedContentAssetDescription: NSObject {
-    @objc
+open class ProxiedContentAssetDescription {
     public let url: NSURL
-
-    @objc
     public let fileExtension: String
 
     public init?(url: NSURL,
@@ -391,11 +387,7 @@ public class ProxiedContentAssetRequest: NSObject {
 // this instance as long as they are using the asset.
 @objc
 public class ProxiedContentAsset: NSObject {
-
-    @objc
     public let assetDescription: ProxiedContentAssetDescription
-
-    @objc
     public let filePath: String
 
     init(assetDescription: ProxiedContentAssetDescription,

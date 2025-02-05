@@ -330,6 +330,7 @@ public class InstalledStickerCursor: NSObject, SDSCursor {
 
 @objc
 public extension InstalledSticker {
+    @nonobjc
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> InstalledStickerCursor {
         let database = transaction.database
         do {

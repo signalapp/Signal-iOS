@@ -13,9 +13,11 @@ public protocol StoryBadgeCountObserver: AnyObject {
 }
 
 @MainActor
-public class StoryBadgeCountManager: NSObject {
+public class StoryBadgeCountManager {
 
     private weak var observer: StoryBadgeCountObserver?
+
+    public init() {}
 
     /// Should only be called once per object lifetime.
     public func beginObserving(observer: StoryBadgeCountObserver) {

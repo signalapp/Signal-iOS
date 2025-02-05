@@ -9,8 +9,7 @@ public import LibSignalClient
 
 // MARK: - Any*Transaction
 
-@objc
-public class GRDBReadTransaction: NSObject {
+public class GRDBReadTransaction {
 
     public let database: Database
 
@@ -20,7 +19,6 @@ public class GRDBReadTransaction: NSObject {
         self.database = database
     }
 
-    @objc
     public var asAnyRead: SDSAnyReadTransaction {
         return SDSAnyReadTransaction(.grdbRead(self))
     }
@@ -28,7 +26,6 @@ public class GRDBReadTransaction: NSObject {
 
 // MARK: -
 
-@objc
 public class GRDBWriteTransaction: GRDBReadTransaction {
 
     private enum TransactionState {
@@ -49,7 +46,6 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
     }
 
     // This method must be called before the transaction is deallocated.
-    @objc
     public func finalizeTransaction() {
         guard transactionState == .open else {
             owsFailDebug("Write transaction finalized more than once.")
@@ -60,7 +56,6 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
         transactionState = .finalized
     }
 
-    @objc
     public var asAnyWrite: SDSAnyWriteTransaction {
         return SDSAnyWriteTransaction(.grdbWrite(self))
     }
@@ -282,7 +277,6 @@ public extension Database {
 
 // MARK: -
 
-@objc
 public extension SDSAnyReadTransaction {
     var unwrapGrdbRead: GRDBReadTransaction {
         switch readTransaction {
@@ -294,7 +288,6 @@ public extension SDSAnyReadTransaction {
 
 // MARK: -
 
-@objc
 public extension SDSAnyWriteTransaction {
     var unwrapGrdbWrite: GRDBWriteTransaction {
         switch writeTransaction {

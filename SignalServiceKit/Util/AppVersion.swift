@@ -321,30 +321,6 @@ public class AppVersionImpl: AppVersion {
     }
 }
 
-// MARK: - Objective-C interop
-
-@objc(AppVersion)
-@objcMembers
-public class AppVersionForObjC: NSObject {
-    public static var shared: AppVersionForObjC { .init(AppVersionImpl.shared) }
-
-    private var appVersion: AppVersion
-
-    public var lastCompletedLaunchAppVersion: String? { appVersion.lastCompletedLaunchAppVersion }
-    public var lastCompletedLaunchMainAppVersion: String? { appVersion.lastCompletedLaunchMainAppVersion }
-    public var currentAppVersion: String { appVersion.currentAppVersion }
-
-    private init(_ appVersion: AppVersion) {
-        self.appVersion = appVersion
-    }
-
-    public func mainAppLaunchDidComplete() { appVersion.mainAppLaunchDidComplete() }
-
-    public func saeLaunchDidComplete() { appVersion.saeLaunchDidComplete() }
-
-    public func nseLaunchDidComplete() { appVersion.nseLaunchDidComplete() }
-}
-
 // MARK: - Helpers
 
 fileprivate extension Bundle {

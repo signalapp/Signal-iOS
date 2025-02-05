@@ -8,7 +8,7 @@ import Foundation
 /**
  * Strings re-used in multiple places should be added here.
  */
-public class CommonStrings: NSObject {
+public enum CommonStrings {
 
     static public var archiveAction: String {
         OWSLocalizedString("ARCHIVE_ACTION", comment: "Label for the archive button for conversations list view")
@@ -23,7 +23,6 @@ public class CommonStrings: NSObject {
         OWSLocalizedString("BACK_BUTTON", comment: "return to the previous screen")
     }
 
-    @objc
     static public var cancelButton: String {
         OWSLocalizedString("TXT_CANCEL_TITLE", comment: "Label for the cancel button in an alert or action sheet.")
     }
@@ -71,18 +70,15 @@ public class CommonStrings: NSObject {
             comment: "The title for the action that deletes a message for the local user only.")
     }
 
-    @objc
     static public var retryButton: String {
         OWSLocalizedString("RETRY_BUTTON_TEXT",
                           comment: "Generic text for button that retries whatever the last action was.")
     }
 
-    @objc
     static public var okayButton: String {
         OWSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
     }
 
-    @objc
     static public var okButton: String {
         OWSLocalizedString("OK", comment: "Label for the 'ok' button.")
     }
@@ -141,7 +137,6 @@ public class CommonStrings: NSObject {
                           comment: "Button text to initiate an email to signal support staff")
     }
 
-    @objc
     static public var learnMore: String {
         OWSLocalizedString("LEARN_MORE", comment: "Label for the 'learn more' button.")
     }
@@ -246,7 +241,6 @@ public class CommonStrings: NSObject {
         OWSLocalizedString("UNKNOWN_USER", comment: "Label indicating an unknown user.")
     }
 
-    @objc
     static public var you: String {
         OWSLocalizedString("YOU", comment: "Second person pronoun to represent the local user.")
     }
@@ -291,7 +285,7 @@ public extension Usernames.RemoteMutationError {
 
 // MARK: -
 
-public class MessageStrings: NSObject {
+public enum MessageStrings {
 
     static public var conversationIsBlocked: String {
         OWSLocalizedString("CONTACT_CELL_IS_BLOCKED",
@@ -320,7 +314,6 @@ public class MessageStrings: NSObject {
         OWSLocalizedString("SEND_BUTTON_TITLE", comment: "Label for the button to send a message")
     }
 
-    @objc
     static public var noteToSelf: String {
         OWSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
     }
@@ -343,7 +336,7 @@ public class MessageStrings: NSObject {
 
 // MARK: -
 
-public class NotificationStrings: NSObject {
+public enum NotificationStrings {
 
     static public var missedCallBecauseOfIdentityChangeBody: String {
         OWSLocalizedString("CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY",
@@ -483,7 +476,7 @@ public enum CallStrings {
 
 // MARK: -
 
-public class MediaStrings: NSObject {
+public enum MediaStrings {
 
     static public var allMedia: String {
         OWSLocalizedString("MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON", comment: "nav bar button item")
@@ -492,7 +485,7 @@ public class MediaStrings: NSObject {
 
 // MARK: -
 
-public class SafetyNumberStrings: NSObject {
+public enum SafetyNumberStrings {
 
     static public var confirmSendButton: String {
         OWSLocalizedString(
@@ -511,7 +504,7 @@ public class SafetyNumberStrings: NSObject {
 
 // MARK: -
 
-public class MegaphoneStrings: NSObject {
+public enum MegaphoneStrings {
 
     static public var remindMeLater: String {
         OWSLocalizedString("MEGAPHONE_REMIND_LATER", comment: "button title to snooze a megaphone")
@@ -525,7 +518,7 @@ public class MegaphoneStrings: NSObject {
 
 // MARK: -
 
-public class StoryStrings: NSObject {
+public enum StoryStrings {
 
     static public var repliesAndReactionsHeader: String {
         OWSLocalizedString(

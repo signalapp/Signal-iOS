@@ -6,8 +6,7 @@
 import Foundation
 
 /// Like MessageBody but with styles only, no mentions.
-@objcMembers
-public class StyleOnlyMessageBody: NSObject, Codable {
+public class StyleOnlyMessageBody: Codable, Equatable {
     public typealias Style = MessageBodyRanges.Style
     public typealias CollapsedStyle = MessageBodyRanges.CollapsedStyle
 
@@ -186,18 +185,15 @@ public class StyleOnlyMessageBody: NSObject, Codable {
         return .init(text: finalText, collapsedStyles: finalStyles)
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
-        guard let rhs = object as? StyleOnlyMessageBody else {
+    public static func == (lhs: StyleOnlyMessageBody, rhs: StyleOnlyMessageBody) -> Bool {
+        guard lhs.text == rhs.text else {
             return false
         }
-        guard text == rhs.text else {
+        guard lhs.collapsedStyles.count == rhs.collapsedStyles.count else {
             return false
         }
-        guard collapsedStyles.count == rhs.collapsedStyles.count else {
-            return false
-        }
-        for i in 0..<collapsedStyles.count {
-            guard collapsedStyles[i] == rhs.collapsedStyles[i] else {
+        for i in 0..<lhs.collapsedStyles.count {
+            guard lhs.collapsedStyles[i] == rhs.collapsedStyles[i] else {
                 return false
             }
         }

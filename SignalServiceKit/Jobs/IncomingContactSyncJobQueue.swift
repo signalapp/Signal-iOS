@@ -7,7 +7,7 @@ public extension Notification.Name {
     static let incomingContactSyncDidComplete = Notification.Name("IncomingContactSyncDidComplete")
 }
 
-public class IncomingContactSyncJobQueue: NSObject {
+public class IncomingContactSyncJobQueue {
     public enum Constants {
         public static let insertedThreads = "insertedThreads"
     }
@@ -25,7 +25,6 @@ public class IncomingContactSyncJobQueue: NSObject {
             jobFinder: JobRecordFinderImpl(db: db),
             jobRunnerFactory: IncomingContactSyncJobRunnerFactory(appReadiness: appReadiness)
         )
-        super.init()
         self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
     }
 

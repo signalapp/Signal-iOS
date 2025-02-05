@@ -8,8 +8,7 @@ import GRDB
 
 // TODO: Support stubbing out OWSFileSystem more generally. This is a temporary
 // SystemStoryManager-scoped wrapper to avoid refactoring all usages of OWSFileSystem.
-@objc
-public class OnboardingStoryManagerFilesystem: NSObject {
+public class OnboardingStoryManagerFilesystem {
 
     public class func fileOrFolderExists(url: URL) -> Bool {
         return OWSFileSystem.fileOrFolderExists(url: url)
@@ -33,8 +32,7 @@ public class OnboardingStoryManagerFilesystem: NSObject {
 }
 
 // TODO: Support stubbing out StoryMessage init more generally.
-@objc
-public class OnboardingStoryManagerStoryMessageFactory: NSObject {
+public class OnboardingStoryManagerStoryMessageFactory {
 
     public class func createFromSystemAuthor(
         attachmentSource: AttachmentDataSource,
@@ -62,8 +60,7 @@ public class OnboardingStoryManagerStoryMessageFactory: NSObject {
     }
 }
 
-@objc
-public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
+public class SystemStoryManager: SystemStoryManagerProtocol {
 
     private let fileSystem: OnboardingStoryManagerFilesystem.Type
     private let messageProcessor: any Shims.MessageProcessor
@@ -100,7 +97,6 @@ public class SystemStoryManager: NSObject, SystemStoryManagerProtocol {
         self.storyMessageFactory = storyMessageFactory
         self.queue = schedulers.queue(label: "org.signal.story.onboarding", qos: .utility)
         self.chainedPromise = ChainedPromise<Void>(scheduler: self.queue)
-        super.init()
 
         if CurrentAppContext().isMainApp {
             appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in

@@ -19,7 +19,6 @@ extension Bundle {
     /// Returns the value of the OWSBundleIDPrefix from current executable's Info.plist
     /// Note: This does not parse the executable's bundleID. This only returns the value of OWSBundleIDPrefix
     /// (which the bundleID should be derived from)
-    @objc
     public var bundleIdPrefix: String {
         if let prefix = infoPlistString(for: Self.InfoPlistKey.bundleIdPrefix) {
             return prefix
@@ -30,7 +29,6 @@ extension Bundle {
     }
 
     /// Returns the value of the OWSMerchantID from current executable's Info.plist
-    @objc
     public var merchantId: String {
         if let prefix = infoPlistString(for: Self.InfoPlistKey.merchantId) {
             return prefix

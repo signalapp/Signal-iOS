@@ -20,7 +20,6 @@ public protocol AppExpiry {
 
 public class AppExpiryImpl: AppExpiry {
 
-    @objc
     public static let appExpiredStatusCode: UInt = 499
 
     private let keyValueStore: KeyValueStore
@@ -153,7 +152,6 @@ public class AppExpiryImpl: AppExpiry {
         updateExpirationState(newState, db: db)
     }
 
-    @objc
     public static let AppExpiryDidChange = Notification.Name("AppExpiryDidChange")
 
     public var expirationDate: Date {
@@ -172,7 +170,6 @@ public class AppExpiryImpl: AppExpiry {
         }
     }
 
-    @objc
     public var isExpired: Bool { expirationDate < dateProvider() }
 }
 
@@ -180,22 +177,4 @@ public class AppExpiryImpl: AppExpiry {
 
 fileprivate extension AppVersion {
     var defaultExpirationDate: Date { buildDate.addingTimeInterval(90 * .day) }
-}
-
-// MARK: - Objective-C interop
-
-@objc(AppExpiry)
-public class AppExpiryForObjC: NSObject {
-    private let appExpiry: AppExpiry
-
-    @objc
-    public static let shared = AppExpiryForObjC(DependenciesBridge.shared.appExpiry)
-
-    public init(_ appExpiry: AppExpiry) {
-        self.appExpiry = appExpiry
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public var isExpired: Bool { appExpiry.isExpired }
 }

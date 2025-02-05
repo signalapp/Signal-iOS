@@ -785,6 +785,7 @@ public class TSThreadCursor: NSObject, SDSCursor {
 
 @objc
 public extension TSThread {
+    @nonobjc
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSThreadCursor {
         let database = transaction.database
         do {

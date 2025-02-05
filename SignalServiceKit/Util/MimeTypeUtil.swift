@@ -31,87 +31,33 @@ public enum MimeType: String {
     case unknownMimetype = "unknown/mimetype"
 }
 
-@objc
-public class MimeTypeUtil: NSObject {
-    override private init() {}
-
-    // MARK: - Objective-C Exposed MimeType Raw Values
-    @objc
-    @available(swift, obsoleted: 1)
-    public static let mimeTypeApplicationOctetStream = MimeType.applicationOctetStream.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
-    public static let mimeTypeImagePng = MimeType.imagePng.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
-    public static let mimeTypeImageJpeg = MimeType.imageJpeg.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
-    public static let mimeTypeImageGif = MimeType.imageGif.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
-    public static let mimeTypeImageTiff1 = MimeType.imageTiff.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
-    public static let mimeTypeImageTiff2 = MimeType.imageXTiff.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
-    public static let mimeTypeImageBmp1 = MimeType.imageBmp.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
-    public static let mimeTypeImageBmp2 = MimeType.imageXWindowsBmp.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
-    public static let mimeTypeImageWebp = MimeType.imageWebp.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
-    public static let mimeTypeImageHeic = MimeType.imageHeic.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
-    public static let mimeTypeImageHeif = MimeType.imageHeif.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
-    public static let mimeTypeOversizeTextMessage = MimeType.textXSignalPlain.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
-    public static let mimeTypeImageApng1 = MimeType.imageApng.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
-    public static let mimeTypeImageApng2 = MimeType.imageVndMozillaApng.rawValue
+public enum MimeTypeUtil {
 
     // MARK: - Constants
     public static let oversizeTextAttachmentUti = "org.whispersystems.oversize-text-attachment"
-    @objc
     public static let oversizeTextAttachmentFileExtension = "txt"
     public static let unknownTestAttachmentUti = "org.whispersystems.unknown"
-    @objc
     public static let syncMessageFileExtension = "bin"
 
     // MARK: - Supported Mime Types
-    @objc
     public static func isSupportedVideoMimeType(_ contentType: String) -> Bool {
         supportedVideoMimeTypesToExtensionTypes[contentType] != nil
     }
-    @objc
     public static func isSupportedAudioMimeType(_ contentType: String) -> Bool {
         supportedAudioMimeTypesToExtensionTypes[contentType] != nil
     }
-    @objc
     public static func isSupportedImageMimeType(_ contentType: String) -> Bool {
         supportedImageMimeTypesToExtensionTypes[contentType] != nil
     }
-    @objc
     public static func isSupportedDefinitelyAnimatedMimeType(_ contentType: String) -> Bool {
         supportedDefinitelyAnimatedMimeTypesToExtensionTypes[contentType] != nil
     }
-    @objc
     public static func isSupportedMaybeAnimatedMimeType(_ contentType: String) -> Bool {
         supportedMaybeAnimatedMimeTypesToExtensionTypes[contentType] != nil
     }
     public static func isSupportedBinaryDataMimeType(_ contentType: String) -> Bool {
         supportedBinaryDataMimeTypesToExtensionTypes[contentType] != nil
     }
-    @objc
     public static func isSupportedVisualMediaMimeType(_ contentType: String) -> Bool {
         isSupportedImageMimeType(contentType)
         || isSupportedVideoMimeType(contentType)
@@ -119,7 +65,6 @@ public class MimeTypeUtil: NSObject {
     }
 
     // MARK: - Supported File Extensions
-    @objc
     public static func isSupportedVideoFile(_ filePath: String) -> Bool {
         supportedVideoFileExtensions.contains((filePath as NSString).pathExtension.lowercased())
     }
@@ -173,12 +118,10 @@ public class MimeTypeUtil: NSObject {
         return UTType(filenameExtension: fileExtension)?.identifier
     }
 
-    @objc
     public static func mimeTypeForFileExtension(_ fileExtension: String) -> String? {
         owsAssertDebug(!fileExtension.isEmpty)
         return genericExtensionTypesToMimeTypes[fileExtension]
     }
-    @objc
     public static func fileExtensionForUtiType(_ utiType: String) -> String? {
         // Special-case the "aac" filetype we use for voice messages (for legacy reasons)
         // to use a .m4a file extension, not .aac, since AVAudioPlayer can't handle .aac
@@ -189,7 +132,6 @@ public class MimeTypeUtil: NSObject {
             return UTType(utiType)?.preferredFilenameExtension
         }
     }
-    @objc
     public static func fileExtensionForMimeType(_ mimeType: String) -> String? {
         if mimeType == MimeType.textXSignalPlain.rawValue {
             return oversizeTextAttachmentFileExtension

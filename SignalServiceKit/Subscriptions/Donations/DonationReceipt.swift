@@ -6,7 +6,7 @@
 import Foundation
 public import GRDB
 
-public final class DonationReceipt: NSObject, SDSCodableModel, Decodable {
+public final class DonationReceipt: SDSCodableModel, Decodable {
     public static var recordType: UInt { 0 }
 
     public enum DonationReceiptType {

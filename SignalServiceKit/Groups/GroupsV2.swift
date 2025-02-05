@@ -442,8 +442,7 @@ public struct GroupInviteLinkInfo {
 
 // MARK: -
 
-@objc
-public class GroupInviteLinkPreview: NSObject {
+public struct GroupInviteLinkPreview: Equatable {
     public let title: String
     public let descriptionText: String?
     public let avatarUrlPath: String?
@@ -451,34 +450,6 @@ public class GroupInviteLinkPreview: NSObject {
     public let addFromInviteLinkAccess: GroupV2Access
     public let revision: UInt32
     public let isLocalUserRequestingMember: Bool
-
-    public init(title: String,
-                descriptionText: String?,
-                avatarUrlPath: String?,
-                memberCount: UInt32,
-                addFromInviteLinkAccess: GroupV2Access,
-                revision: UInt32,
-                isLocalUserRequestingMember: Bool) {
-        self.title = title
-        self.descriptionText = descriptionText
-        self.avatarUrlPath = avatarUrlPath
-        self.memberCount = memberCount
-        self.addFromInviteLinkAccess = addFromInviteLinkAccess
-        self.revision = revision
-        self.isLocalUserRequestingMember = isLocalUserRequestingMember
-    }
-
-    @objc
-    public override func isEqual(_ object: Any?) -> Bool {
-        guard let otherRecipient = object as? GroupInviteLinkPreview else { return false }
-        return (title == otherRecipient.title &&
-                    descriptionText == otherRecipient.descriptionText &&
-                    avatarUrlPath == otherRecipient.avatarUrlPath &&
-                    memberCount == otherRecipient.memberCount &&
-                    addFromInviteLinkAccess == otherRecipient.addFromInviteLinkAccess &&
-                    revision == otherRecipient.revision &&
-                    isLocalUserRequestingMember == otherRecipient.isLocalUserRequestingMember)
-    }
 }
 
 // MARK: -

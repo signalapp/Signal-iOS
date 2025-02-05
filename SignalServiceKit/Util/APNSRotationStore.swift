@@ -6,14 +6,13 @@
 /// This object serves as a store of data for interop between the NSE and SyncPushTokensJob.
 /// It lets the NSE record when it handles messages, so that if it hasn't done so in a while,
 /// SyncPushTokensJob can rotate the APNS token to try and recover.
-public final class APNSRotationStore: NSObject {
+public final class APNSRotationStore {
 
     private static let kvStore = KeyValueStore(collection: "APNSRotationStore")
 
     // exposed for testing. we need a better way to do this.
     internal static var nowMs: () -> UInt64 = { Date().ows_millisecondsSince1970 }
 
-    @objc
     public static func didReceiveAPNSPush(transaction: SDSAnyWriteTransaction) {
         // See comments on `setAppVersionTimeForAPNSRotationIfNeeded`.
         // If we actually get an APNS push, even before the app version bake time

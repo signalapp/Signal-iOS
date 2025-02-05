@@ -6,8 +6,7 @@
 import Foundation
 import GRDB
 
-@objc
-public class PaymentFinder: NSObject {
+public class PaymentFinder {
 
     public class func paymentModels(paymentStates: [TSPaymentState],
                                     transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {
@@ -39,7 +38,6 @@ public class PaymentFinder: NSObject {
         return paymentModels
     }
 
-    @objc
     public class func firstUnreadPaymentModel(transaction: SDSAnyReadTransaction) -> TSPaymentModel? {
         let sql = """
         SELECT * FROM \(PaymentModelRecord.databaseTableName)
@@ -51,7 +49,6 @@ public class PaymentFinder: NSObject {
                                            transaction: transaction.unwrapGrdbRead)
     }
 
-    @objc
     public class func allUnreadPaymentModels(transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {
         let sql = """
         SELECT * FROM \(PaymentModelRecord.databaseTableName)
@@ -66,7 +63,6 @@ public class PaymentFinder: NSObject {
         }
     }
 
-    @objc
     public class func unreadCount(transaction: SDSAnyReadTransaction) -> UInt {
         do {
             guard let count = try UInt.fetchOne(transaction.unwrapGrdbRead.database,
@@ -86,7 +82,6 @@ public class PaymentFinder: NSObject {
 
     // MARK: -
 
-    @objc
     public class func paymentModels(forMcLedgerBlockIndex mcLedgerBlockIndex: UInt64,
                                     transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {
         let sql = """
@@ -102,7 +97,6 @@ public class PaymentFinder: NSObject {
         }
     }
 
-    @objc
     public class func paymentModels(forMcReceiptData mcReceiptData: Data,
                                     transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {
         let sql = """
@@ -118,7 +112,6 @@ public class PaymentFinder: NSObject {
         }
     }
 
-    @objc
     public class func paymentModels(forMcTransactionData mcTransactionData: Data,
                                     transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {
         let sql = """

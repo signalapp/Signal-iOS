@@ -13,38 +13,25 @@ public protocol UserErrorDescriptionProvider {
 // MARK: -
 
 extension Error {
-    public var hasUserErrorDescription: Bool { (self as NSError).hasUserErrorDescriptionImpl }
-    public var userErrorDescription: String { (self as NSError).userErrorDescriptionImpl }
-}
-
-// MARK: -
-
-extension NSError {
-    @objc
-    public var hasUserErrorDescription: Bool { hasUserErrorDescriptionImpl }
-
-    @objc
-    public var userErrorDescription: String { userErrorDescriptionImpl }
-
-    fileprivate var hasUserErrorDescriptionImpl: Bool {
+    public var hasUserErrorDescription: Bool {
         if self is UserErrorDescriptionProvider {
             return true
         }
-        if (self as Error) is UserErrorDescriptionProvider {
+        if (self as NSError) is UserErrorDescriptionProvider {
             return true
         }
         if let error = self as? LocalizedError,
            nil != error.errorDescription {
             return true
         }
-        if let error = (self as Error) as? LocalizedError,
+        if let error = (self as NSError) as? LocalizedError,
            nil != error.errorDescription {
             return true
         }
         return false
     }
 
-    fileprivate var userErrorDescriptionImpl: String {
+    public var userErrorDescription: String {
         // Error and NSError have a special relationship.
         // They can be "cast" back and forth, but are separate objects.
         //
@@ -63,14 +50,14 @@ extension NSError {
         if let error = self as? UserErrorDescriptionProvider {
             return error.localizedDescription
         }
-        if let error = (self as Error) as? UserErrorDescriptionProvider {
+        if let error = (self as NSError) as? UserErrorDescriptionProvider {
             return error.localizedDescription
         }
         if let error = self as? LocalizedError,
            let errorDescription = error.errorDescription {
             return errorDescription
         }
-        if let error = (self as Error) as? LocalizedError,
+        if let error = (self as NSError) as? LocalizedError,
            let errorDescription = error.errorDescription {
             return errorDescription
         }

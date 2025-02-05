@@ -5,8 +5,7 @@
 
 import Foundation
 
-@objc
-public class LocalDevice: NSObject {
+public class LocalDevice {
     public struct MemoryStatus {
         public let fetchDate: Date
         public let footprint: UInt64
@@ -67,7 +66,6 @@ public class LocalDevice: NSObject {
         }
     }
 
-    @objc
     public static var memoryUsageString: String {
         // Since this string is intended to be logged, we should fetch a fresh status
         guard let currentMemoryStatus = currentMemoryStatus(forceUpdate: true) else {

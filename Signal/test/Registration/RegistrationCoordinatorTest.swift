@@ -1630,12 +1630,6 @@ public class RegistrationCoordinatorTest {
             )
         }
 
-        // When registered, we should create pre-keys.
-        preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
-            #expect(auth == expectedAuthedAccount())
-            return .value(())
-        }
-
         // And at t=3 once we do the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
@@ -3404,12 +3398,6 @@ public class RegistrationCoordinatorTest {
             return .value(())
         }
 
-        // When registered, we should create pre-keys.
-        preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
-            #expect(auth == expectedAuthedAccount())
-            return .value(())
-        }
-
         // And at t=0 once we skip the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
@@ -3583,12 +3571,6 @@ public class RegistrationCoordinatorTest {
 
         }
         storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { _ in
-            return .value(())
-        }
-
-        // When registered, we should create pre-keys.
-        preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
-            #expect(auth == expectedAuthedAccount())
             return .value(())
         }
 

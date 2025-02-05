@@ -6,8 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-@objc
-public class AuthedAccount: NSObject {
+public class AuthedAccount: Hashable, Equatable {
 
     public typealias DeviceId = AuthedDevice.DeviceId
 
@@ -38,16 +37,13 @@ public class AuthedAccount: NSObject {
         case explicit(Explicit)
     }
 
-    @nonobjc
     public let info: Info
 
     private init(_ info: Info) {
         self.info = info
-        super.init()
     }
 
     /// Will use info present on TSAccountManager
-    @objc
     public static func implicit() -> AuthedAccount {
         return AuthedAccount(.implicit)
     }
@@ -68,8 +64,7 @@ public class AuthedAccount: NSObject {
         )))
     }
 
-    public override var hash: Int {
-        var hasher = Hasher()
+    public func hash(into hasher: inout Hasher) {
         switch info {
         case .implicit:
             break
@@ -78,14 +73,10 @@ public class AuthedAccount: NSObject {
             hasher.combine(info.e164)
             hasher.combine(info.authPassword)
         }
-        return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? AuthedAccount else {
-            return false
-        }
-        return self.info == other.info
+    public static func == (lhs: AuthedAccount, rhs: AuthedAccount) -> Bool {
+        return lhs.info == rhs.info
     }
 
     public func orIfImplicitUse(_ other: AuthedAccount) -> AuthedAccount {
@@ -99,7 +90,6 @@ public class AuthedAccount: NSObject {
         }
     }
 
-    @objc
     public func isAddressForLocalUser(_ address: SignalServiceAddress) -> Bool {
         switch info {
         case .implicit:
@@ -109,7 +99,6 @@ public class AuthedAccount: NSObject {
         }
     }
 
-    @objc
     public var chatServiceAuth: ChatServiceAuth {
         switch info {
         case .implicit:

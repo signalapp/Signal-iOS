@@ -10,8 +10,7 @@ import Foundation
 ///
 /// * Lazy-load if possible.
 /// * Avoid duplicate reads & writes.
-@objc
-public protocol DataSource {
+public protocol DataSource: AnyObject {
 
     var sourceFilename: String? { get set }
 

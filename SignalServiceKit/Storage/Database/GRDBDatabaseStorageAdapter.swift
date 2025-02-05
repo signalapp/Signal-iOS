@@ -7,10 +7,8 @@ import Foundation
 public import GRDB
 import UIKit
 
-@objc
-public class GRDBDatabaseStorageAdapter: NSObject {
+public class GRDBDatabaseStorageAdapter {
 
-    @objc
     public enum DirectoryMode: Int {
         public static let commonGRDBPrefix = "grdb"
         public static var primaryFolderNameKey: String { "GRDBPrimaryDirectoryNameKey" }
@@ -52,12 +50,10 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         }
     }
 
-    @objc
     public static func databaseDirUrl(directoryMode: DirectoryMode = .primary) -> URL {
         return SDSDatabaseStorage.baseDir.appendingPathComponent(directoryMode.folderName, isDirectory: true)
     }
 
-    @objc
     public static func databaseFileUrl(directoryMode: DirectoryMode = .primary) -> URL {
         let databaseDir = databaseDirUrl(directoryMode: directoryMode)
         OWSFileSystem.ensureDirectoryExists(databaseDir.path)
@@ -167,7 +163,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         )
     }
 
-    @objc
     private func primaryDBFolderNameDidChange(darwinNotificationToken: Int32) {
         checkForDatabasePathChange()
     }
@@ -238,7 +233,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
 @available(iOSApplicationExtension, unavailable)
 extension GRDBDatabaseStorageAdapter {
-    @objc
     public static var hasAssignedTransferDirectory: Bool { DirectoryMode.storedTransferFolderName != nil }
 
     /// This should be called during restoration to set up a staging database directory name
@@ -370,7 +364,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         return value
     }
 
-    @objc
     public func read(block: (GRDBReadTransaction) -> Void) throws {
 
         #if TESTABLE_BUILD

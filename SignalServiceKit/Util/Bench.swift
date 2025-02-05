@@ -163,10 +163,8 @@ private struct Event {
 private var runningEvents: [BenchmarkEventId: Event] = [:]
 private let eventQueue = DispatchQueue(label: "org.signal.bench")
 
-@objc
-public class BenchManager: NSObject {
-    @objc
-    public class func bench(title: String, logIfLongerThan intervalLimit: TimeInterval, logInProduction: Bool, block: () -> Void) {
+public class BenchManager {
+    public static func bench(title: String, logIfLongerThan intervalLimit: TimeInterval, logInProduction: Bool, block: () -> Void) {
         Bench(title: title, logIfLongerThan: intervalLimit, logInProduction: logInProduction, block: block)
     }
 }

@@ -112,7 +112,6 @@ public enum ImageQualityLevel: UInt, Comparable {
     }
 }
 
-@objc
 public enum ImageQualityTier: UInt {
     case one = 1
     case two = 2

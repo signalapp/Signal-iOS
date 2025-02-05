@@ -10,7 +10,6 @@ public enum OWSMediaError: Error {
     case failure(description: String)
 }
 
-@objc
 public class OWSMediaUtils: NSObject {
 
     @available(*, unavailable, message: "do not instantiate this class.")
@@ -39,7 +38,6 @@ public class OWSMediaUtils: NSObject {
         return try thumbnail(forImage: image, maxDimensionPixels: maxDimensionPixels)
     }
 
-    @objc
     public class func thumbnail(forImageAtPath path: String, maxDimensionPixels: CGFloat) throws -> UIImage {
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")
@@ -53,7 +51,6 @@ public class OWSMediaUtils: NSObject {
         return try thumbnail(forImage: originalImage, maxDimensionPixels: maxDimensionPixels)
     }
 
-    @objc
     public class func thumbnail(forImageAtPath path: String, maxDimensionPoints: CGFloat) throws -> UIImage {
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")
@@ -67,7 +64,6 @@ public class OWSMediaUtils: NSObject {
         return try thumbnail(forImage: originalImage, maxDimensionPoints: maxDimensionPoints)
     }
 
-    @objc
     public class func thumbnail(forImageData imageData: Data, maxDimensionPoints: CGFloat) throws -> UIImage {
         guard imageData.ows_isValidImage else {
             throw OWSMediaError.failure(description: "Invalid image.")
@@ -78,7 +74,6 @@ public class OWSMediaUtils: NSObject {
         return try thumbnail(forImage: originalImage, maxDimensionPoints: maxDimensionPoints)
     }
 
-    @objc
     public class func thumbnail(forImageData imageData: Data, maxDimensionPixels: CGFloat) throws -> UIImage {
         guard imageData.ows_isValidImage else {
             throw OWSMediaError.failure(description: "Invalid image.")
@@ -89,7 +84,6 @@ public class OWSMediaUtils: NSObject {
         return try thumbnail(forImage: originalImage, maxDimensionPixels: maxDimensionPixels)
     }
 
-    @objc
     public class func thumbnail(forWebpAtPath path: String, maxDimensionPoints: CGFloat) throws -> UIImage {
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")
@@ -104,7 +98,6 @@ public class OWSMediaUtils: NSObject {
         return try thumbnail(forImage: stillImage, maxDimensionPoints: maxDimensionPoints)
     }
 
-    @objc
     public class func thumbnail(forVideoAtPath path: String, maxDimensionPoints: CGFloat) throws -> UIImage {
         guard isVideoOfValidContentTypeAndSize(path: path) else {
             throw OWSMediaError.failure(description: "Media file has missing or invalid length.")
@@ -142,12 +135,10 @@ public class OWSMediaUtils: NSObject {
         return data
     }
 
-    @objc
     public class func isValidVideo(path: String) -> Bool {
         return isValidVideo(path: path, ignoreSize: false)
     }
 
-    @objc
     public class func isValidVideo(path: String, ignoreSize: Bool) -> Bool {
         let pathValidationMethod: (String) -> Bool
         if ignoreSize {
@@ -231,25 +222,16 @@ public class OWSMediaUtils: NSObject {
      *
      * https://github.com/signalapp/Signal-Android/blob/c4bc2162f23e0fd6bc25941af8fb7454d91a4a35/app/src/main/java/org/thoughtcrime/securesms/mms/PushMediaConstraints.java
      */
-    @objc
     public static let kMaxFileSizeAnimatedImage = UInt(25 * 1024 * 1024)
-    @objc
     public static let kMaxFileSizeImage = UInt(8 * 1024 * 1024)
     // Cloudflare limits uploads to 100 MB. To avoid hitting those limits,
     // we use limits that are 5% lower for the unencrypted content.
-    @objc
     public static let kMaxFileSizeVideo = UInt(95 * 1000 * 1000)
-    @objc
     public static let kMaxFileSizeAudio = UInt(95 * 1000 * 1000)
-    @objc
     public static let kMaxFileSizeGeneric = UInt(95 * 1000 * 1000)
-    @objc
     public static let kMaxAttachmentUploadSizeBytes = UInt(100 * 1000 * 1000)
 
-    @objc
     public static let kMaxVideoDimensions: CGFloat = 4096 // 4k video width
-    @objc
     public static let kMaxAnimatedImageDimensions: UInt = 12 * 1024
-    @objc
     public static let kMaxStillImageDimensions: UInt = 12 * 1024
 }

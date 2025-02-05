@@ -5,16 +5,13 @@
 
 import Foundation
 
-@objc
 public protocol DeliveryReceiptContext: AnyObject {
-    @objc(addUpdateForMessage:transaction:update:)
     func addUpdate(
         message: TSOutgoingMessage,
         transaction: SDSAnyWriteTransaction,
         update: @escaping (TSOutgoingMessage) -> Void
     )
 
-    @objc(messagesWithTimestamp:transaction:)
     func messages(_ timestamps: UInt64, transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage]
 }
 
@@ -39,9 +36,9 @@ fileprivate extension TSOutgoingMessage {
     }
 }
 
-@objc
-public class PassthroughDeliveryReceiptContext: NSObject, DeliveryReceiptContext {
-    @objc(addUpdateForMessage:transaction:update:)
+public class PassthroughDeliveryReceiptContext: DeliveryReceiptContext {
+    public init() {}
+
     public func addUpdate(
         message: TSOutgoingMessage,
         transaction: SDSAnyWriteTransaction,
@@ -53,23 +50,18 @@ public class PassthroughDeliveryReceiptContext: NSObject, DeliveryReceiptContext
         }
     }
 
-    @objc(messagesWithTimestamp:transaction:)
     public func messages(_ timestamp: UInt64, transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage] {
         return TSOutgoingMessage.fetch(timestamp, transaction: transaction)
     }
 }
 
-public class BatchingDeliveryReceiptContext: NSObject, DeliveryReceiptContext {
+public class BatchingDeliveryReceiptContext: DeliveryReceiptContext {
     private var messages = [UInt64: [TSOutgoingMessage]]()
     private var deferredUpdates: [Update] = []
 
 #if TESTABLE_BUILD
     static var didRunDeferredUpdates: ((Int, SDSAnyWriteTransaction) -> Void)?
 #endif
-
-    private override init() {
-        super.init()
-    }
 
     static func withDeferredUpdates(transaction: SDSAnyWriteTransaction, _ closure: (DeliveryReceiptContext) -> Void) {
         let instance = BatchingDeliveryReceiptContext()
@@ -79,7 +71,6 @@ public class BatchingDeliveryReceiptContext: NSObject, DeliveryReceiptContext {
 
     // Adds a closure to run that mutates a message. Note that it will be run twice - once for the
     // in-memory instance and a second time for the most up-to-date copy in the database.
-    @objc(addUpdateForMessage:transaction:update:)
     public func addUpdate(
         message: TSOutgoingMessage,
         transaction: SDSAnyWriteTransaction,
@@ -88,7 +79,6 @@ public class BatchingDeliveryReceiptContext: NSObject, DeliveryReceiptContext {
         deferredUpdates.append(Update(message: message, update: update))
     }
 
-    @objc(messagesWithTimestamp:transaction:)
     public func messages(_ timestamp: UInt64, transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage] {
         if let result = messages[timestamp] {
             return result

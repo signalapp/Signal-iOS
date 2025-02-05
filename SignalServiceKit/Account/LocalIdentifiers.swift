@@ -6,23 +6,6 @@
 import Foundation
 public import LibSignalClient
 
-public class LocalIdentifiersObjC: NSObject {
-    public let wrappedValue: LocalIdentifiers
-
-    public init(_ wrappedValue: LocalIdentifiers) {
-        self.wrappedValue = wrappedValue
-    }
-
-    @objc
-    public var aci: AciObjC { AciObjC(wrappedValue.aci) }
-
-    @objc
-    public var aciAddress: SignalServiceAddress { wrappedValue.aciAddress }
-
-    @objc
-    public var phoneNumber: String { wrappedValue.phoneNumber }
-}
-
 public class LocalIdentifiers {
     /// The ACI for the current user.
     public let aci: Aci

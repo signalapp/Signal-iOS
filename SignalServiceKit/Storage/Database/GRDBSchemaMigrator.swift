@@ -6,11 +6,9 @@
 import Foundation
 import GRDB
 
-@objc
-public class GRDBSchemaMigrator: NSObject {
+public class GRDBSchemaMigrator {
 
     private static let _areMigrationsComplete = AtomicBool(false, lock: .sharedGlobal)
-    @objc
     public static var areMigrationsComplete: Bool { _areMigrationsComplete.get() }
     public static let migrationSideEffectsCollectionName = "MigrationSideEffects"
     public static let avatarRepairAttemptCount = "Avatar Repair Attempt Count"

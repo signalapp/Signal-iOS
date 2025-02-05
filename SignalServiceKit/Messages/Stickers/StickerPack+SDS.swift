@@ -367,6 +367,7 @@ public class StickerPackCursor: NSObject, SDSCursor {
 
 @objc
 public extension StickerPack {
+    @nonobjc
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> StickerPackCursor {
         let database = transaction.database
         do {

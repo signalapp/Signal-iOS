@@ -9,10 +9,7 @@ import Foundation
 @objc(OWSAES256Key)
 public final class Aes256Key: NSObject, NSSecureCoding {
 
-    @objc
     public static let keyByteLength: UInt = 32
-
-    @objc
     public let keyData: Data
 
     /// Generates a new secure random key.
@@ -23,7 +20,6 @@ public final class Aes256Key: NSObject, NSSecureCoding {
     /// Generates a new secure random key.
     ///
     /// Equivalent to calling ``Aes256Key/init()``.
-    @objc(generateRandomKey)
     public static func generateRandom() -> Aes256Key {
         return Aes256Key()
     }

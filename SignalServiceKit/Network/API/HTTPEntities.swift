@@ -13,7 +13,6 @@ import Foundation
 // * a Websocket (e.g. OWSChatConnection).
 
 // A common protocol for responses from OWSUrlSession, NetworkManager, ChatConnectionManager, etc.
-@objc
 public protocol HTTPResponse {
     var requestUrl: URL { get }
     var responseStatusCode: Int { get }
@@ -273,18 +272,14 @@ extension OWSHTTPError {
 
 // MARK: -
 
-@objc
-public class HTTPResponseImpl: NSObject {
+public class HTTPResponseImpl {
 
-    @objc
     public let requestUrl: URL
 
-    @objc
     public let status: Int
 
     public let headers: OWSHttpHeaders
 
-    @objc
     public let bodyData: Data?
 
     public let stringEncoding: String.Encoding
@@ -322,7 +317,6 @@ public class HTTPResponseImpl: NSObject {
                                 stringEncoding: stringEncoding)
     }
 
-    @objc
     public var bodyJson: Any? {
         Self.unfairLock.withLock {
             if let jsonValue = self.jsonValue {
@@ -352,15 +346,10 @@ public class HTTPResponseImpl: NSObject {
 // MARK: -
 
 extension HTTPResponseImpl: HTTPResponse {
-    @objc
     public var responseStatusCode: Int { Int(status) }
-    @objc
     public var responseHeaders: [String: String] { headers.headers }
-    @objc
     public var responseBodyData: Data? { bodyData }
-    @objc
     public var responseBodyJson: Any? { bodyJson }
-    @objc
     public var responseBodyString: String? {
         guard let data = bodyData,
               let string = String(data: data, encoding: stringEncoding) else {
@@ -383,21 +372,5 @@ extension HTTPURLResponse {
             return nil
         }
         return String.Encoding(rawValue: CFStringConvertEncodingToNSStringEncoding(encoding))
-    }
-}
-
-// MARK: -
-
-// Temporary obj-c wrapper for OWSHTTPError until
-// OWSChatConnection, etc. have been ported to Swift.
-@objc
-public class OWSHTTPErrorWrapper: NSObject {
-    public let error: OWSHTTPError
-
-    @objc
-    public var asNSError: NSError { error as NSError }
-
-    public init(error: OWSHTTPError) {
-        self.error = error
     }
 }

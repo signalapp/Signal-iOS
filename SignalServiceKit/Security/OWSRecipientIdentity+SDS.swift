@@ -346,6 +346,7 @@ public class OWSRecipientIdentityCursor: NSObject, SDSCursor {
 
 @objc
 public extension OWSRecipientIdentity {
+    @nonobjc
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSRecipientIdentityCursor {
         let database = transaction.database
         do {

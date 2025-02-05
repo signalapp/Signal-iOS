@@ -224,7 +224,7 @@ public struct ComparableDisplayName {
     }
 }
 
-public class CollatableComparableDisplayName: NSObject {
+public class CollatableComparableDisplayName {
     private let rawValue: ComparableDisplayName
 
     public init(_ rawValue: ComparableDisplayName) {

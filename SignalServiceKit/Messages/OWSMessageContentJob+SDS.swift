@@ -346,6 +346,7 @@ public class OWSMessageContentJobCursor: NSObject, SDSCursor {
 
 @objc
 public extension OWSMessageContentJob {
+    @nonobjc
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSMessageContentJobCursor {
         let database = transaction.database
         do {

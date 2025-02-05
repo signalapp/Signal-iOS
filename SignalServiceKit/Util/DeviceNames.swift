@@ -13,14 +13,11 @@ public enum DeviceNameError: Error {
     case cryptError(_ description: String)
 }
 
-@objc
-public class DeviceNames: NSObject {
-    // Never instantiate this class.
-    private override init() {}
+public enum DeviceNames {
 
     private static let syntheticIVLength = 16
 
-    public class func encryptDeviceName(plaintext: String, identityKeyPair: IdentityKeyPair) throws -> Data {
+    public static func encryptDeviceName(plaintext: String, identityKeyPair: IdentityKeyPair) throws -> Data {
 
         guard let plaintextData = plaintext.data(using: .utf8) else {
             owsFailDebug("Could not convert text to UTF-8.")
@@ -51,7 +48,7 @@ public class DeviceNames: NSObject {
         return try protoBuilder.buildSerializedData()
     }
 
-    private class func computeSyntheticIV(masterSecret: Data, plaintextData: Data) -> Data {
+    private static func computeSyntheticIV(masterSecret: Data, plaintextData: Data) -> Data {
         // synthetic_iv = HmacSHA256(key=HmacSHA256(key=master_secret, input=“auth”), input=plaintext)[0:16]
         let syntheticIVInput = Data("auth".utf8)
         let syntheticIVKey = Data(HMAC<SHA256>.authenticationCode(for: syntheticIVInput, using: .init(data: masterSecret)))
@@ -59,7 +56,7 @@ public class DeviceNames: NSObject {
         return syntheticIV
     }
 
-    private class func computeCipherKey(masterSecret: Data, syntheticIV: Data) -> Data {
+    private static func computeCipherKey(masterSecret: Data, syntheticIV: Data) -> Data {
         // cipher_key = HmacSHA256(key=HmacSHA256(key=master_secret, “cipher”), input=synthetic_iv)
         let cipherKeyInput = Data("cipher".utf8)
         let cipherKeyKey = Data(HMAC<SHA256>.authenticationCode(for: cipherKeyInput, using: .init(data: masterSecret)))
@@ -67,7 +64,7 @@ public class DeviceNames: NSObject {
         return cipherKey
     }
 
-    public class func decryptDeviceName(base64String: String, identityKeyPair: IdentityKeyPair) throws -> String {
+    public static func decryptDeviceName(base64String: String, identityKeyPair: IdentityKeyPair) throws -> String {
 
         guard let protoData = Data(base64Encoded: base64String) else {
             // Not necessarily an error; might be a legacy device name.
@@ -77,7 +74,7 @@ public class DeviceNames: NSObject {
         return try decryptDeviceName(protoData: protoData, identityKeyPair: identityKeyPair)
     }
 
-    public class func decryptDeviceName(protoData: Data, identityKeyPair: IdentityKeyPair) throws -> String {
+    public static func decryptDeviceName(protoData: Data, identityKeyPair: IdentityKeyPair) throws -> String {
 
         let proto: SignalIOSProtoDeviceName
         do {

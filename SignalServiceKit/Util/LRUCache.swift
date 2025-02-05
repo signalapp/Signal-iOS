@@ -5,64 +5,6 @@
 
 import Foundation
 
-// An @objc wrapper around LRUCache.
-@objc
-public class AnyLRUCache: NSObject {
-
-    private let backingCache: LRUCache<NSObject, NSObject>
-
-    @objc
-    public init(maxSize: Int, nseMaxSize: Int, shouldEvacuateInBackground: Bool) {
-        backingCache = LRUCache(maxSize: maxSize,
-                                nseMaxSize: nseMaxSize,
-                                shouldEvacuateInBackground: shouldEvacuateInBackground)
-    }
-
-    @objc
-    public func get(key: NSObject) -> NSObject? {
-        backingCache.get(key: key)
-    }
-
-    @objc
-    public func set(key: NSObject, value: NSObject) {
-        backingCache.set(key: key, value: value)
-    }
-
-    @objc
-    public func remove(key: NSObject) {
-        backingCache.remove(key: key)
-    }
-
-    @objc
-    public func clear() {
-        backingCache.clear()
-    }
-
-    // MARK: - NSCache Compatibility
-
-    @objc
-    public func setObject(_ value: NSObject, forKey key: NSObject) {
-        set(key: key, value: value)
-    }
-
-    @objc
-    public func object(forKey key: NSObject) -> NSObject? {
-        self.get(key: key)
-    }
-
-    @objc
-    public func removeObject(forKey key: NSObject) {
-        remove(key: key)
-    }
-
-    @objc
-    public func removeAllObjects() {
-        clear()
-    }
-}
-
-// MARK: -
-
 // A simple LRU cache bounded by the number of entries.
 public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 

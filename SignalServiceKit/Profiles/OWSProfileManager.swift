@@ -12,7 +12,7 @@ public import LibSignalClient
 /// This class can be safely accessed and used from any thread.
 ///
 /// Access to most state should happen while locked. Writes should happen off the main thread, wherever possible.
-public class OWSProfileManager: NSObject, ProfileManagerProtocol {
+public class OWSProfileManager: ProfileManagerProtocol {
     public static let maxAvatarDiameterPixels: UInt = 1024
     public static let notificationKeyUserProfileWriter = "kNSNotificationKey_UserProfileWriter"
 
@@ -37,8 +37,6 @@ public class OWSProfileManager: NSObject, ProfileManagerProtocol {
     @MainActor
     init(appReadiness: AppReadiness, databaseStorage: SDSDatabaseStorage) {
         self.appReadiness = appReadiness
-
-        super.init()
 
         SwiftSingletons.register(self)
 
@@ -621,7 +619,6 @@ extension OWSProfileManager: ProfileManager {
 
     // MARK: -
 
-    @objc
     internal func rotateLocalProfileKeyIfNecessary() {
         DispatchQueue.global().async {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
@@ -813,7 +810,7 @@ extension OWSProfileManager: ProfileManager {
 
             // Whenever a user's profile key changes, we need to fetch a new profile
             // key credential for them.
-            SSKEnvironment.shared.versionedProfilesRef.clearProfileKeyCredential(for: AciObjC(localAci), transaction: tx)
+            SSKEnvironment.shared.versionedProfilesRef.clearProfileKeyCredential(for: localAci, transaction: tx)
 
             // We schedule the updates here but process them below using
             // processProfileKeyUpdates. It's more efficient to process them after the
@@ -954,7 +951,6 @@ extension OWSProfileManager: ProfileManager {
         }
     }
 
-    @objc
     func swift_normalizeRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: SDSAnyWriteTransaction) {
         Self.swift_normalizeRecipientInProfileWhitelist(
             recipient,
@@ -1006,7 +1002,6 @@ extension OWSProfileManager: ProfileManager {
         }
     }
 
-    @objc
     class func updateStorageServiceIfNecessary() {
         guard
             CurrentAppContext().isMainApp,
@@ -1086,7 +1081,7 @@ extension OWSProfileManager: ProfileManager {
         if let aci = serviceId as? Aci {
             // Whenever a user's profile key changes, we need to fetch a new
             // profile key credential for them.
-            SSKEnvironment.shared.versionedProfilesRef.clearProfileKeyCredential(for: AciObjC(aci), transaction: SDSDB.shimOnlyBridge(tx))
+            SSKEnvironment.shared.versionedProfilesRef.clearProfileKeyCredential(for: aci, transaction: SDSDB.shimOnlyBridge(tx))
         }
 
         // If this is the profile for the local user, we always want to defer to local state
@@ -1147,7 +1142,6 @@ extension OWSProfileManager: ProfileManager {
 
     // MARK: - Bulk Fetching
 
-    @objc
     func _getUserProfile(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> OWSUserProfile? {
         // TODO: Don't reach out to global state.
         if address.isLocalAddress {
@@ -1598,7 +1592,6 @@ extension OWSProfileManager: ProfileManager {
     /// for the use case of recipient hiding.
     ///
     /// - Parameter tx: The transaction to use for this operation.
-    @objc
     func rotateProfileKeyUponRecipientHideObjC(tx: SDSAnyWriteTransaction) {
         let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read)
         guard tsRegistrationState.isRegistered else {
@@ -1613,7 +1606,6 @@ extension OWSProfileManager: ProfileManager {
         self.rotateProfileKeyIfNecessary(tx: tx)
     }
 
-    @objc
     func forceRotateLocalProfileKeyForGroupDepartureObjc(tx: SDSAnyWriteTransaction) {
         let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read)
         guard tsRegistrationState.isRegistered else {

@@ -2030,6 +2030,7 @@ public class %sCursor: NSObject, SDSCursor {
 
 @objc
 public extension %(class_name)s {
+    @nonobjc
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> %(class_name)sCursor {
         let database = transaction.database
         do {

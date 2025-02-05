@@ -32,7 +32,7 @@ public class ProfileFetcherJob {
     private let syncManager: any SyncManagerProtocol
     private let tsAccountManager: any TSAccountManager
     private let udManager: any OWSUDManager
-    private let versionedProfiles: any VersionedProfilesSwift
+    private let versionedProfiles: any VersionedProfiles
 
     init(
         serviceId: ServiceId,
@@ -50,7 +50,7 @@ public class ProfileFetcherJob {
         syncManager: any SyncManagerProtocol,
         tsAccountManager: any TSAccountManager,
         udManager: any OWSUDManager,
-        versionedProfiles: any VersionedProfilesSwift
+        versionedProfiles: any VersionedProfiles
     ) {
         self.serviceId = serviceId
         self.authedAccount = authedAccount

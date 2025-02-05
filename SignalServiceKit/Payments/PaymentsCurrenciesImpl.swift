@@ -3,14 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, PaymentsCurrencies {
+public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies {
 
     private let appReadiness: AppReadiness
     private var refreshEvent: RefreshEvent?
 
     public init(appReadiness: AppReadiness) {
         self.appReadiness = appReadiness
-        super.init()
 
         // TODO: Tune.
         let refreshCheckInterval: TimeInterval = .minute * 15
@@ -140,6 +139,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
         }
     }
 
+    @objc
     public func updateConversationRatesIfStale() {
         let shouldUpdate: Bool = {
             guard CurrentAppContext().isMainApp,

@@ -66,7 +66,7 @@ public class SSKEnvironment: NSObject {
     public let sskPreferencesRef: SSKPreferences
     public let groupV2UpdatesRef: GroupV2Updates
     public let messageFetcherJobRef: MessageFetcherJob
-    public let versionedProfilesRef: VersionedProfilesSwift
+    public let versionedProfilesRef: VersionedProfiles
     @objc
     public let modelReadCachesRef: ModelReadCaches
     public let earlyMessageManagerRef: EarlyMessageManager
@@ -133,7 +133,7 @@ public class SSKEnvironment: NSObject {
         groupsV2: GroupsV2,
         groupV2Updates: GroupV2Updates,
         messageFetcherJob: MessageFetcherJob,
-        versionedProfiles: VersionedProfilesSwift,
+        versionedProfiles: VersionedProfiles,
         modelReadCaches: ModelReadCaches,
         earlyMessageManager: EarlyMessageManager,
         messagePipelineSupervisor: MessagePipelineSupervisor,

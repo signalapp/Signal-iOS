@@ -13,7 +13,7 @@ public protocol MobileCoinHelper: AnyObject {
 
 // MARK: -
 
-public class MobileCoinReceiptInfo: NSObject {
+public class MobileCoinReceiptInfo {
     public let txOutPublicKey: Data
 
     public init(txOutPublicKey: Data) {
@@ -23,7 +23,7 @@ public class MobileCoinReceiptInfo: NSObject {
 
 // MARK: -
 
-public class MobileCoinHelperMock: NSObject, MobileCoinHelper {
+public class MobileCoinHelperMock: MobileCoinHelper {
     public func info(forReceiptData receiptData: Data) throws -> MobileCoinReceiptInfo {
         throw OWSAssertionError("Not implemented.")
     }

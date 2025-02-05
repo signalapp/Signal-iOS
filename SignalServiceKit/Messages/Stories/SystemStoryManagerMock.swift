@@ -5,8 +5,7 @@
 
 import Foundation
 
-@objc
-public class SystemStoryManagerMock: NSObject, SystemStoryManagerProtocol {
+public class SystemStoryManagerMock: SystemStoryManagerProtocol {
 
     /// In tests, set some other handler to this to return different results when the system under test calls enqueueOnboardingStoryDownload
     public lazy var downloadOnboardingStoryHandler: () -> Promise<Void> = {

@@ -5,14 +5,10 @@
 
 import Foundation
 
-public class SwiftSingletons: NSObject {
+public class SwiftSingletons {
     private static let shared = SwiftSingletons()
 
     private var registeredTypes = Set<ObjectIdentifier>()
-
-    private override init() {
-        super.init()
-    }
 
     public func register(_ singleton: AnyObject) {
         assert({

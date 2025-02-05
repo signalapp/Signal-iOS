@@ -355,6 +355,7 @@ public class IncomingGroupsV2MessageJobCursor: NSObject, SDSCursor {
 
 @objc
 public extension IncomingGroupsV2MessageJob {
+    @nonobjc
     class func grdbFetchCursor(transaction: GRDBReadTransaction) -> IncomingGroupsV2MessageJobCursor {
         let database = transaction.database
         do {

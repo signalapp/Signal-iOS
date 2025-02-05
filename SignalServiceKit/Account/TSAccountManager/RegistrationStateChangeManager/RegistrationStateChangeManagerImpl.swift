@@ -25,7 +25,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
     private let udManager: OWSUDManager
-    private let versionedProfiles: VersionedProfilesSwift
+    private let versionedProfiles: VersionedProfiles
 
     init(
         appContext: AppContext,
@@ -43,7 +43,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
-        versionedProfiles: VersionedProfilesSwift
+        versionedProfiles: VersionedProfiles
     ) {
         self.appContext = appContext
         self.authCredentialStore = authCredentialStore

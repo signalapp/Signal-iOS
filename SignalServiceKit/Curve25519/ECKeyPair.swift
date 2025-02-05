@@ -65,7 +65,6 @@ public final class ECKeyPair: NSObject, NSSecureCoding {
         return true
     }
 
-    @objc
     public static func generateKeyPair() -> ECKeyPair {
         return ECKeyPair(IdentityKeyPair.generate())
     }
@@ -74,7 +73,6 @@ public final class ECKeyPair: NSObject, NSSecureCoding {
         return Data(identityKeyPair.privateKey.generateSignature(message: data))
     }
 
-    @objc
     public var publicKey: Data {
         return Data(identityKeyPair.publicKey.keyBytes)
     }

@@ -5,9 +5,7 @@
 
 import Foundation
 
-@objc
-public class Batching: NSObject {
-    @objc
+public enum Batching {
     public static let kDefaultBatchSize: UInt = 1000
 
     // Break loop cycles into batches, releasing stale objects
@@ -36,33 +34,6 @@ public class Batching: NSObject {
                     try loopBlock(&stop)
                 }
             }
-        }
-    }
-
-    @objc
-    public static func loopObjc(batchSize: UInt,
-                                loopBlock: (UnsafeMutablePointer<ObjCBool>) -> Void) {
-        var stop: ObjCBool = false
-        guard batchSize > 0 else {
-            // No batching.
-            while !stop.boolValue {
-                loopBlock(&stop)
-            }
-            return
-        }
-
-        // With batching.
-        var batchIndex = 0
-        while !stop.boolValue {
-            autoreleasepool {
-                for _ in 0..<batchSize {
-                    guard !stop.boolValue else {
-                        return
-                    }
-                    loopBlock(&stop)
-                }
-            }
-            batchIndex += 1
         }
     }
 }

@@ -327,20 +327,6 @@ public func owsFailBetaUnlessNetworkFailure(
 
 // MARK: -
 
-extension NSError {
-    @objc
-    public func matchesDomainAndCode(of other: NSError) -> Bool {
-        other.hasDomain(domain, code: code)
-    }
-
-    @objc
-    public func hasDomain(_ domain: String, code: Int) -> Bool {
-        self.domain == domain && self.code == code
-    }
-}
-
-// MARK: -
-
 extension OWSHttpHeaders {
 
     // fallback retry-after delay if we fail to parse a non-empty retry-after string

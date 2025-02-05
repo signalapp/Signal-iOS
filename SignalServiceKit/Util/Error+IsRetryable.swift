@@ -6,28 +6,8 @@
 import Foundation
 import ObjectiveC
 
-extension NSError {
-
-    @objc
-    public var hasIsRetryable: Bool { hasIsRetryableImpl }
-
-    @objc
-    public var isRetryable: Bool { isRetryableImpl }
-}
-
-// MARK: -
-
 extension Error {
-    public var hasIsRetryable: Bool { (self as NSError).hasIsRetryable }
-
-    public var isRetryable: Bool { (self as NSError).isRetryableImpl }
-}
-
-// MARK: -
-
-extension NSError {
-
-    fileprivate var hasIsRetryableImpl: Bool {
+    public var hasIsRetryable: Bool {
         if self is IsRetryableProvider {
             return true
         }
@@ -37,7 +17,7 @@ extension NSError {
         return false
     }
 
-    fileprivate var isRetryableImpl: Bool {
+    public var isRetryable: Bool {
         // Error and NSError have a special relationship.
         // They can be "cast" back and forth, but are separate objects.
         //
@@ -56,7 +36,7 @@ extension NSError {
         if let error = self as? IsRetryableProvider {
             return error.isRetryableProvider
         }
-        if let error = (self as Error) as? IsRetryableProvider {
+        if let error = (self as NSError) as? IsRetryableProvider {
             return error.isRetryableProvider
         }
 
@@ -95,9 +75,7 @@ extension OWSGenericError: IsRetryableProvider {
 // MARK: -
 
 // NOTE: We typically prefer to use a more specific error.
-@objc
-public class OWSRetryableError: NSObject, CustomNSError, IsRetryableProvider {
-    @objc
+public class OWSRetryableError: CustomNSError, IsRetryableProvider {
     public static var asNSError: NSError {
         OWSRetryableError() as Error as NSError
     }
@@ -110,12 +88,12 @@ public class OWSRetryableError: NSObject, CustomNSError, IsRetryableProvider {
 // MARK: -
 
 // NOTE: We typically prefer to use a more specific error.
-@objc
-public class OWSUnretryableError: NSObject, CustomNSError, IsRetryableProvider {
-    @objc
+public class OWSUnretryableError: CustomNSError, IsRetryableProvider {
     public static var asNSError: NSError {
         OWSUnretryableError() as Error as NSError
     }
+
+    public init() {}
 
     // MARK: - IsRetryableProvider
 

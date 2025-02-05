@@ -10,7 +10,6 @@ public extension Error {
     var shortDescription: String { (self as NSError).shortDescription }
 }
 
-@objc
 public extension NSError {
     /// A description comprised of "domain/code" pairs for this error and its underlying errors.
     var shortDescription: String {

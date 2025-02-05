@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 import LibSignalClient
 
-public class MessageProcessor: NSObject {
+public class MessageProcessor {
     public static let messageProcessorDidDrainQueue = Notification.Name("messageProcessorDidDrainQueue")
 
     private var hasPendingEnvelopes: Bool {
@@ -145,7 +145,6 @@ public class MessageProcessor: NSObject {
 
     public init(appReadiness: AppReadiness) {
         self.appReadiness = appReadiness
-        super.init()
 
         SwiftSingletons.register(self)
 

@@ -6,26 +6,22 @@
 import Foundation
 import Reachability
 
-@objc(SSKReachabilityType)
-public enum ReachabilityType: Int {
+public enum ReachabilityType {
     case any, wifi, cellular
 }
 
 // MARK: -
 
-@objc
-public class SSKReachability: NSObject {
+public class SSKReachability {
     // Unlike reachabilityChanged, this notification is only fired:
     //
     // * If the app is ready.
     // * If the app is not in the background.
-    @objc
     public static let owsReachabilityDidChange = Notification.Name("owsReachabilityDidChange")
 }
 
 // MARK: -
 
-@objc
 public protocol SSKReachabilityManager {
 
     var isReachable: Bool { get }
@@ -43,8 +39,7 @@ public extension SSKReachabilityManager {
 
 // MARK: -
 
-@objc
-public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
+public class SSKReachabilityManagerImpl: SSKReachabilityManager {
 
     private let backgroundSession = OWSURLSession(
         securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
@@ -90,8 +85,6 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
         AssertIsOnMainThread()
 
         self.reachability = Reachability.forInternetConnection()
-
-        super.init()
 
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.configure()
@@ -188,8 +181,7 @@ private extension NetworkInterface {
 
 #if TESTABLE_BUILD
 
-@objc
-public class MockSSKReachabilityManager: NSObject, SSKReachabilityManager {
+public class MockSSKReachabilityManager: SSKReachabilityManager {
     public var isReachable: Bool = false
     public func isReachable(via reachabilityType: ReachabilityType) -> Bool { isReachable }
 }

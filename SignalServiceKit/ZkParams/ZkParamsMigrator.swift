@@ -12,7 +12,7 @@ class ZkParamsMigrator {
     private let migrationStore: KeyValueStore
     private let profileManager: ProfileManager
     private let tsAccountManager: TSAccountManager
-    private let versionedProfiles: VersionedProfilesSwift
+    private let versionedProfiles: VersionedProfiles
 
     init(
         appReadiness: AppReadiness,
@@ -20,7 +20,7 @@ class ZkParamsMigrator {
         db: any DB,
         profileManager: ProfileManager,
         tsAccountManager: TSAccountManager,
-        versionedProfiles: VersionedProfilesSwift
+        versionedProfiles: VersionedProfiles
     ) {
         self.appReadiness = appReadiness
         self.authCredentialStore = authCredentialStore
