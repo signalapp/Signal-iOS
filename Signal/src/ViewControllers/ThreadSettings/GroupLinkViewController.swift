@@ -367,7 +367,7 @@ private extension GroupLinkViewController {
     func updateLinkMode(linkMode: GroupsV2LinkMode) {
         GroupLinkViewUtils.updateLinkMode(groupModelV2: groupModelV2,
                                           linkMode: linkMode,
-                                          description: self.logTag,
+                                          description: "[\(type(of: self))]",
                                           fromViewController: self) { [weak self] groupThread in
             self?.updateView(groupThread: groupThread)
         }
@@ -376,7 +376,7 @@ private extension GroupLinkViewController {
     func resetLink() {
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            updateDescription: self.logTag,
+            updateDescription: "[\(type(of: self))]",
             updateBlock: {
                 return try await GroupManager.resetLinkV2(groupModel: self.groupModelV2)
             },

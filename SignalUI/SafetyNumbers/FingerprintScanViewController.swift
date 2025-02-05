@@ -103,7 +103,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
                 identityKey: identityKey,
                 recipientAci: recipientAci,
                 contactName: contactName,
-                tag: logTag
+                tag: "[\(type(of: self))]"
             )
         }
 
@@ -114,7 +114,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
                 localizedErrorDescription: localizedErrorDescription,
                 retry: { self.qrCodeScanViewController.tryToStartScanning() },
                 cancel: { self.navigationController?.popViewController(animated: true) },
-                tag: logTag
+                tag: "[\(type(of: self))]"
             )
         }
 

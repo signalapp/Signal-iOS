@@ -9,7 +9,6 @@
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
 
-    #import <SignalServiceKit/NSObject+OWS.h>
     #import <SignalServiceKit/OWSAsserts.h>
     #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
 #endif

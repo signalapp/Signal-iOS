@@ -921,7 +921,7 @@ public func serializedData() throws -> Data {
                     writer.add("guard proto.%s else {" % field.has_accessor_name())
                     writer.push_indent()
                     writer.add(
-                        'throw %s.invalidProtobuf(description: "\\(Self.logTag()) missing required field: %s")'
+                        'throw %s.invalidProtobuf(description: "[\\(Self.self)] missing required field: %s")'
                         % (
                             writer.invalid_protobuf_error_name,
                             field.name_swift,

@@ -17,7 +17,7 @@ public class GroupTableViewCell: UITableViewCell {
     var customAccessoryView: UIView?
 
     public init() {
-        super.init(style: .default, reuseIdentifier: GroupTableViewCell.logTag())
+        super.init(style: .default, reuseIdentifier: "[\(Self.self)]")
 
         // Font config
         nameLabel.font = .dynamicTypeBody

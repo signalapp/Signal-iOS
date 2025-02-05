@@ -156,7 +156,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            updateDescription: self.logTag,
+            updateDescription: "[\(type(of: self))]",
             updateBlock: {
                 _ = try await GroupManager.addOrInvite(
                     serviceIds: [serviceId],

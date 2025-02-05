@@ -178,7 +178,7 @@ public class SMKSecretSessionCipher: NSObject {
         protocolContext: StoreContext?
     ) throws -> SMKDecryptResult {
         guard timestamp > 0 else {
-            throw SMKError.assertionError(description: "\(logTag) invalid timestamp")
+            throw SMKError.assertionError(description: "[\(type(of: self))] invalid timestamp")
         }
 
         // Allow nil contexts for testing.
@@ -191,10 +191,10 @@ public class SMKSecretSessionCipher: NSObject {
 
         // NOTE: We use the sender properties from the sender certificate, not from this class' properties.
         guard sender.deviceId <= Int32.max else {
-            throw SMKError.assertionError(description: "\(logTag) Invalid senderDeviceId.")
+            throw SMKError.assertionError(description: "[\(type(of: self))] Invalid senderDeviceId.")
         }
         guard let senderAci = Aci.parseFrom(aciString: sender.uuidString) else {
-            throw SMKError.assertionError(description: "\(logTag) Invalid senderAci.")
+            throw SMKError.assertionError(description: "[\(type(of: self))] Invalid senderAci.")
         }
 
         if localIdentifiers.aci == senderAci && sender.deviceId == localDeviceId {
@@ -242,7 +242,7 @@ public class SMKSecretSessionCipher: NSObject {
         // NOTE: We use the sender properties from the sender certificate, not from this class' properties.
         let sender = messageContent.senderCertificate.sender
         guard sender.deviceId >= 0 && sender.deviceId <= Int32.max else {
-            throw SMKError.assertionError(description: "\(logTag) Invalid senderDeviceId.")
+            throw SMKError.assertionError(description: "[\(type(of: self))] Invalid senderDeviceId.")
         }
 
         // switch (message.getType()) {
@@ -283,7 +283,7 @@ public class SMKSecretSessionCipher: NSObject {
             plaintextData = plaintextMessage.body
         case let unknownType:
             throw SMKError.assertionError(
-                description: "\(logTag) Not prepared to handle this message type: \(unknownType.rawValue)")
+                description: "[\(type(of: self))] Not prepared to handle this message type: \(unknownType.rawValue)")
         }
         return Data(plaintextData)
     }

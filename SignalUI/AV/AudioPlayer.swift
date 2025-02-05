@@ -91,7 +91,7 @@ public class AudioPlayer: NSObject {
 
     private init(source: Source, audioBehavior: AudioBehavior) {
         self.source = source
-        audioActivity = AudioActivity(audioDescription: "\(Self.logTag()) \(source.description)", behavior: audioBehavior)
+        audioActivity = AudioActivity(audioDescription: "[\(Self.self)] \(source.description)", behavior: audioBehavior)
 
         super.init()
 

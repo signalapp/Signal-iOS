@@ -472,7 +472,7 @@ extension FingerprintViewController: CompareSafetyNumbersActivityDelegate {
             identityKey: identityKey,
             recipientAci: recipientAci,
             contactName: fingerprint.theirName,
-            tag: logTag
+            tag: "[\(type(of: self))]"
         )
     }
 
@@ -483,7 +483,7 @@ extension FingerprintViewController: CompareSafetyNumbersActivityDelegate {
             from: self,
             isUserError: isUserError,
             localizedErrorDescription: error.userErrorDescription,
-            tag: logTag
+            tag: "[\(type(of: self))]"
         )
     }
 

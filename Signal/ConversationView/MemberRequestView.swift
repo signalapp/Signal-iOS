@@ -113,7 +113,7 @@ class MemberRequestView: UIStackView {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: fromViewController,
-            updateDescription: self.logTag,
+            updateDescription: "[\(type(of: self))]",
             updateBlock: {
                 return try await GroupManager.cancelRequestToJoin(groupModel: groupModelV2)
             },

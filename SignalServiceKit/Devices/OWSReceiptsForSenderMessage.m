@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)debugDescription
 {
     return [NSString
-        stringWithFormat:@"%@ with message timestamps: %lu", self.logTag, (unsigned long)self.messageTimestamps.count];
+        stringWithFormat:@"[%@] with message timestamps: %lu", self.class, (unsigned long)self.messageTimestamps.count];
 }
 
 - (NSSet<NSString *> *)relatedUniqueIds

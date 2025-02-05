@@ -180,7 +180,7 @@ private extension GroupLinkPromotionActionSheet {
                                                    approveNewMembers: approveNewMembers)
         GroupLinkViewUtils.updateLinkMode(groupModelV2: groupModelV2,
                                           linkMode: linkMode,
-                                          description: self.logTag,
+                                          description: "[\(type(of: self))]",
                                           fromViewController: actionSheetController) { [weak self] (groupThread) in
             guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
                 owsFailDebug("Invalid groupModel.")

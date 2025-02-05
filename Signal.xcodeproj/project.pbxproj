@@ -985,9 +985,7 @@
 		668A00E42C2B5F35007B8808 /* OWSLocalizedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00E32C2B5F35007B8808 /* OWSLocalizedString.swift */; };
 		668A00E92C2B5F59007B8808 /* TSMutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00E62C2B5F58007B8808 /* TSMutex.swift */; };
 		668A00F42C2B5F81007B8808 /* NSDate+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00EC2C2B5F80007B8808 /* NSDate+OWS.m */; };
-		668A00F52C2B5F81007B8808 /* NSObject+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00ED2C2B5F80007B8808 /* NSObject+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		668A00F82C2B5F81007B8808 /* NSDate+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00F02C2B5F81007B8808 /* NSDate+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		668A00F92C2B5F81007B8808 /* NSObject+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00F12C2B5F81007B8808 /* NSObject+OWS.m */; };
 		668A01002C2B5FC8007B8808 /* OWSSwiftUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00FD2C2B5FC8007B8808 /* OWSSwiftUtils.swift */; };
 		668A01012C2B5FC8007B8808 /* OWSAsserts.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00FE2C2B5FC8007B8808 /* OWSAsserts.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		668A01022C2B5FC8007B8808 /* OWSAsserts.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00FF2C2B5FC8007B8808 /* OWSAsserts.m */; };
@@ -4811,9 +4809,7 @@
 		668A00E32C2B5F35007B8808 /* OWSLocalizedString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSLocalizedString.swift; sourceTree = "<group>"; };
 		668A00E62C2B5F58007B8808 /* TSMutex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSMutex.swift; sourceTree = "<group>"; };
 		668A00EC2C2B5F80007B8808 /* NSDate+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+OWS.m"; sourceTree = "<group>"; };
-		668A00ED2C2B5F80007B8808 /* NSObject+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+OWS.h"; sourceTree = "<group>"; };
 		668A00F02C2B5F81007B8808 /* NSDate+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+OWS.h"; sourceTree = "<group>"; };
-		668A00F12C2B5F81007B8808 /* NSObject+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+OWS.m"; sourceTree = "<group>"; };
 		668A00FD2C2B5FC8007B8808 /* OWSSwiftUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSwiftUtils.swift; sourceTree = "<group>"; };
 		668A00FE2C2B5FC8007B8808 /* OWSAsserts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAsserts.h; sourceTree = "<group>"; };
 		668A00FF2C2B5FC8007B8808 /* OWSAsserts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAsserts.m; sourceTree = "<group>"; };
@@ -14020,8 +14016,6 @@
 				668A00EC2C2B5F80007B8808 /* NSDate+OWS.m */,
 				507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */,
 				F9C5CB39289453B200548EEE /* NSNotificationCenter+OWS.swift */,
-				668A00ED2C2B5F80007B8808 /* NSObject+OWS.h */,
-				668A00F12C2B5F81007B8808 /* NSObject+OWS.m */,
 				F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */,
 				72976BF12BDCF00C0054FAC2 /* NSTimer+OWS.swift */,
 				F9C5CB44289453B200548EEE /* OffMainThreadTimer.swift */,
@@ -14197,7 +14191,6 @@
 				F9C5CDA7289453B400548EEE /* IncomingGroupsV2MessageJob.h in Headers */,
 				F9C5CC0A289453B300548EEE /* InstalledSticker.h in Headers */,
 				668A00F82C2B5F81007B8808 /* NSDate+OWS.h in Headers */,
-				668A00F52C2B5F81007B8808 /* NSObject+OWS.h in Headers */,
 				F9C5CBC6289453B300548EEE /* OutgoingPaymentSyncMessage.h in Headers */,
 				F9C5CC1E289453B300548EEE /* OWSAddToContactsOfferMessage.h in Headers */,
 				F9C5CC84289453B300548EEE /* OWSAddToProfileWhitelistOfferMessage.h in Headers */,
@@ -17596,7 +17589,6 @@
 				668A00F42C2B5F81007B8808 /* NSDate+OWS.m in Sources */,
 				507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */,
 				F9C5CE0B289453B400548EEE /* NSNotificationCenter+OWS.swift in Sources */,
-				668A00F92C2B5F81007B8808 /* NSObject+OWS.m in Sources */,
 				66F2CE212A3CBE4A00519342 /* NSRangedValue.swift in Sources */,
 				F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */,
 				72976BF22BDCF00C0054FAC2 /* NSTimer+OWS.swift in Sources */,
