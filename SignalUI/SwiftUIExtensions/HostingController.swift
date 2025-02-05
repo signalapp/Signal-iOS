@@ -128,7 +128,7 @@ extension HostingController: OWSNavigationChildController {
     }
 
     public var navbarBackgroundColorOverride: UIColor? {
-        usesSolidNavbarStyle ? Theme.navbarBackgroundColor : nil
+        usesSolidNavbarStyle ? UIColor.Signal.background : nil
     }
 }
 
