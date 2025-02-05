@@ -242,21 +242,6 @@ public class SignalAttachment: NSObject {
         return errorDescription
     }
 
-    public func cloneAttachment() throws -> SignalAttachment {
-        guard let sourceUrl = dataUrl else {
-            owsFailDebug("Missing data URL for attachment!")
-            return SignalAttachment.empty()
-        }
-
-        let newUrl = OWSFileSystem.temporaryFileUrl(fileExtension: sourceUrl.pathExtension)
-        try FileManager.default.copyItem(at: sourceUrl, to: newUrl)
-
-        let clonedDataSource = try DataSourcePath(fileUrl: newUrl, shouldDeleteOnDeallocation: true)
-        clonedDataSource.sourceFilename = sourceFilename
-
-        return self.replacingDataSource(with: clonedDataSource)
-    }
-
     public func preparedForOutput(qualityLevel: ImageQualityLevel) -> SignalAttachment {
         owsAssertDebug(!Thread.isMainThread)
 
@@ -631,7 +616,7 @@ public class SignalAttachment: NSObject {
     ///
     /// NOTE: The attachment returned by this method may not be valid.
     ///       Check the attachment's error property.
-    public class func attachmentFromPasteboard() -> SignalAttachment? {
+    public class func attachmentFromPasteboard() async -> SignalAttachment? {
         guard UIPasteboard.general.numberOfItems >= 1 else {
             return nil
         }
@@ -673,12 +658,18 @@ public class SignalAttachment: NSObject {
         }
         for dataUTI in videoUTISet {
             if pasteboardUTISet.contains(dataUTI) {
-                guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
-                    owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
+                guard
+                    let data = dataForFirstPasteboardItem(dataUTI: dataUTI),
+                    let dataSource = DataSourceValue(data, utiType: dataUTI)
+                else {
+                    owsFailDebug("Failed to build data source from pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
-                let dataSource = DataSourceValue(data, utiType: dataUTI)
-                return videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
+
+                return try? await SignalAttachment.compressVideoAsMp4(
+                    dataSource: dataSource,
+                    dataUTI: dataUTI
+                )
             }
         }
         for dataUTI in audioUTISet {

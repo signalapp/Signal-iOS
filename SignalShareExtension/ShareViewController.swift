@@ -710,8 +710,16 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return try await self.buildFileAttachment(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
         case .fileUrl, .json:
             let url: NSURL = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: TypedItemProvider.ItemType.fileUrl.typeIdentifier, cannotLoadError: .cannotLoadURLObject, failedLoadError: .loadURLObjectFailed)
-            let attachment = try Self.copyAttachment(fromUrl: url as URL)
-            return try await self.compressVideo(attachment: attachment)
+
+            let (dataSource, dataUTI) = try Self.copyFileUrl(
+                fileUrl: url as URL,
+                defaultTypeIdentifier: UTType.data.identifier
+            )
+
+            return try await compressVideoIfNecessary(
+                dataSource: dataSource,
+                dataUTI: dataUTI
+            )
         case .webUrl:
             let url: NSURL = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, cannotLoadError: .cannotLoadURLObject, failedLoadError: .loadURLObjectFailed)
             return try Self.createAttachment(withText: (url as URL).absoluteString)
@@ -739,41 +747,65 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
     }
 
-    nonisolated private static func copyAttachment(fromUrl url: URL, defaultTypeIdentifier: String = UTType.data.identifier) throws -> SignalAttachment {
-        guard let dataSource = try? DataSourcePath(fileUrl: url, shouldDeleteOnDeallocation: false) else {
-            throw ShareViewControllerError.nonFileUrl
+    nonisolated private static func copyFileUrl(
+        fileUrl: URL,
+        defaultTypeIdentifier: String
+    ) throws -> (DataSource, dataUTI: String) {
+        guard fileUrl.isFileURL else {
+            throw OWSAssertionError("Unexpectedly not a file URL: \(fileUrl)")
         }
-        dataSource.sourceFilename = url.lastPathComponent
-        let utiType = MimeTypeUtil.utiTypeForFileExtension(url.pathExtension) ?? defaultTypeIdentifier
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: utiType)
-        if let attachmentError = attachment.error {
-            throw attachmentError
-        }
-        return try attachment.cloneAttachment()
+
+        let copiedUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileUrl.pathExtension)
+        try FileManager.default.copyItem(at: fileUrl, to: copiedUrl)
+
+        let dataSource = try DataSourcePath(fileUrl: copiedUrl, shouldDeleteOnDeallocation: true)
+        dataSource.sourceFilename = fileUrl.lastPathComponent
+
+        let dataUTI = MimeTypeUtil.utiTypeForFileExtension(fileUrl.pathExtension) ?? defaultTypeIdentifier
+
+        return (dataSource, dataUTI)
     }
 
-    nonisolated private func compressVideo(attachment: SignalAttachment) async throws -> SignalAttachment {
-        if attachment.isVideoThatNeedsCompression() {
+    nonisolated private func compressVideoIfNecessary(
+        dataSource: DataSource,
+        dataUTI: String
+    ) async throws -> SignalAttachment {
+        if SignalAttachment.isVideoThatNeedsCompression(
+            dataSource: dataSource,
+            dataUTI: dataUTI
+        ) {
             // TODO: Move waiting for this export to the end of the share flow rather than up front
-            let compressedAttachment = try await SignalAttachment.compressVideoAsMp4(dataSource: attachment.dataSource, dataUTI: attachment.dataUTI, sessionCallback: { exportSession in
-                let progressPoller = ProgressPoller(timeInterval: 0.1, ratioCompleteBlock: { return exportSession.progress })
+            let compressedAttachment = try await SignalAttachment.compressVideoAsMp4(
+                dataSource: dataSource,
+                dataUTI: dataUTI,
+                sessionCallback: { exportSession in
+                    let progressPoller = ProgressPoller(timeInterval: 0.1, ratioCompleteBlock: { return exportSession.progress })
 
-                self.progressPoller = progressPoller
-                progressPoller.startPolling()
+                    self.progressPoller = progressPoller
+                    progressPoller.startPolling()
 
-                self.loadViewController.progress = progressPoller.progress
-            })
+                    self.loadViewController.progress = progressPoller.progress
+                }
+            )
+
             if let attachmentError = compressedAttachment.error {
                 throw attachmentError
             }
+
             return compressedAttachment
         } else {
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
+
+            if let attachmentError = attachment.error {
+                throw attachmentError
+            }
+
             return attachment
         }
     }
 
     nonisolated private func buildFileAttachment(fromItemProvider itemProvider: NSItemProvider, forTypeIdentifier typeIdentifier: String) async throws -> SignalAttachment {
-        let attachment: SignalAttachment = try await withCheckedThrowingContinuation { continuation in
+        let (dataSource, dataUTI): (DataSource, String) = try await withCheckedThrowingContinuation { continuation in
             _ = itemProvider.loadInPlaceFileRepresentation(forTypeIdentifier: typeIdentifier, completionHandler: { fileUrl, _, error in
                 if let error {
                     continuation.resume(throwing: error)
@@ -783,7 +815,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     } else {
                         do {
                             // NOTE: Compression here rather than creating an additional temp file would be nice but blocking this completion handler for video encoding is probably not a good way to go.
-                            continuation.resume(returning: try Self.copyAttachment(fromUrl: fileUrl, defaultTypeIdentifier: typeIdentifier))
+                            continuation.resume(returning: try Self.copyFileUrl(fileUrl: fileUrl, defaultTypeIdentifier: typeIdentifier))
                         } catch {
                             continuation.resume(throwing: error)
                         }
@@ -794,11 +826,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             })
         }
 
-        if let attachmentError = attachment.error {
-            throw attachmentError
-        }
-
-        return try await self.compressVideo(attachment: attachment)
+        return try await compressVideoIfNecessary(dataSource: dataSource, dataUTI: dataUTI)
     }
 
     nonisolated private static func loadDataRepresentation(fromItemProvider itemProvider: NSItemProvider, forTypeIdentifier typeIdentifier: String) async throws -> Data {

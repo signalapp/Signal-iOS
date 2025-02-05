@@ -7,7 +7,7 @@ public import SignalServiceKit
 import SignalUI
 
 public protocol ConversationInputTextViewDelegate: AnyObject {
-    func didPasteAttachment(_ attachment: SignalAttachment?)
+    func didAttemptAttachmentPaste()
     func inputTextViewSendMessagePressed()
     func textViewDidChange(_ textView: UITextView)
 }
@@ -157,9 +157,7 @@ class ConversationInputTextView: BodyRangesTextView {
 
     override func paste(_ sender: Any?) {
         if pasteboardHasPossibleAttachment {
-            // Note: attachment might be nil or have an error at this point; that's fine.
-            let attachment = SignalAttachment.attachmentFromPasteboard()
-            inputTextViewDelegate?.didPasteAttachment(attachment)
+            inputTextViewDelegate?.didAttemptAttachmentPaste()
             return
         }
 

@@ -201,7 +201,20 @@ extension ConversationViewController: ConversationHeaderViewDelegate {
 // MARK: -
 
 extension ConversationViewController: ConversationInputTextViewDelegate {
-    public func didPasteAttachment(_ attachment: SignalAttachment?) {
+    public func didAttemptAttachmentPaste() {
+        ModalActivityIndicatorViewController.present(fromViewController: self) { modal in
+            let attachment: SignalAttachment? = await SignalAttachment.attachmentFromPasteboard()
+
+            await MainActor.run {
+                modal.dismiss {
+                    // Note: attachment might be nil or have an error at this point; that's fine.
+                    self.didPasteAttachment(attachment)
+                }
+            }
+        }
+    }
+
+    func didPasteAttachment(_ attachment: SignalAttachment?) {
         AssertIsOnMainThread()
 
         guard let attachment = attachment else {
