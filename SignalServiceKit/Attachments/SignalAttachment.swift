@@ -425,7 +425,7 @@ public class SignalAttachment: NSObject {
             let kDefaultAttachmentName = "signal"
 
             let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "YYYY-MM-dd-HHmmss"
+            dateFormatter.dateFormat = "yyyy-MM-dd-HHmmss"
             let dateString = dateFormatter.string(from: Date())
 
             let withoutExtension = "\(kDefaultAttachmentName)-\(dateString)"
