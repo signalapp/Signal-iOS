@@ -4,7 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
-        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -28,7 +28,7 @@
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" name="Signal/BackgroundLevels/backgroundBase"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="b92-yg-YYQ" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="3n6-fz-Z3k"/>
                             <constraint firstItem="b92-yg-YYQ" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="gMB-yR-CiP"/>
@@ -42,8 +42,8 @@
     </scenes>
     <resources>
         <image name="signal-logo-128-launch-screen" width="128" height="128"/>
-        <namedColor name="Signal/BackgroundLevels/backgroundBase">
-            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>
