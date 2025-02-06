@@ -118,6 +118,12 @@ class ProvisioningController: NSObject {
         }
     }
 
+#if DEBUG
+    static func preview() -> ProvisioningController {
+        ProvisioningController(appReadiness: AppReadinessMock())
+    }
+#endif
+
     private func setUpDebugLogsGesture(
         on navigationController: UINavigationController
     ) {

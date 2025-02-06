@@ -2015,13 +2015,16 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Stop Transfer?";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "If you were previously using Signal on a linked iPad, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Choose how you’d like to transfer your message history and account data";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Continue without transferring your account and messages";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device";
+
+/* The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available */
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "You’ll have the option to transfer messages and recent media from your phone";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Add as New Device";
@@ -2036,16 +2039,13 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transfer your account and message history from your old iOS device";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iOS device";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from Another iPad";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Transfer from iOS Device";
-
-/* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
 
 /* Button shown to contract a QR code and exit the fullscreen view. */
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "View smaller";

@@ -318,9 +318,9 @@ public class AppReadinessObjcBridge: NSObject {
     public static var isAppReady: Bool { readyFlag?.isSet ?? false }
 }
 
-#if TESTABLE_BUILD
+#if TESTABLE_BUILD || DEBUG
 
-open class AppReadinessMock: AppReadiness {
+open class AppReadinessMock: AppReadinessSetter {
 
     public init() {}
 
@@ -373,6 +373,17 @@ open class AppReadinessMock: AppReadiness {
         // Do nothing
     }
 
+    public func setAppIsReady() {
+        // Do nothing
+    }
+
+    public func setAppIsReadyUIStillPending() {
+        // Do nothing
+    }
+
+    public func setUIIsReady() {
+        // Do nothing
+    }
 }
 
 #endif
