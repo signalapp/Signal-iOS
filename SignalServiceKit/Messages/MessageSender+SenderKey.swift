@@ -161,7 +161,7 @@ extension MessageSender {
                     message: message,
                     serializedMessage: serializedMessage,
                     endorsementBuilder: {
-                        guard let endorsements else {
+                        guard let endorsements, !message.isStorySend else {
                             return nil
                         }
                         var combined = endorsements.combined
