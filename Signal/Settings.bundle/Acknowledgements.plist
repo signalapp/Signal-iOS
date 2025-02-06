@@ -1099,7 +1099,7 @@ You should also get your employer (if you work as a programmer) or school, if an
 			<key>License</key>
 			<string>GNU Affero General Public License v3.0</string>
 			<key>Title</key>
-			<string>attest, device-transfer, libsignal-account-keys, libsignal-account-keys 0.1.0, libsignal-bridge, libsignal-bridge-macros, libsignal-bridge-testing, libsignal-bridge-types, libsignal-core, libsignal-core 0.1.0, libsignal-ffi, libsignal-jni, libsignal-jni-impl, libsignal-jni-testing, libsignal-keytrans, libsignal-message-backup, libsignal-message-backup-macros, libsignal-net, libsignal-net-infra, libsignal-node, libsignal-protocol, libsignal-svr3, mrp 2.49.3, partial-default-derive 0.1.0, poksho, protobuf 2.49.3, regex-aot 0.1.0, ringrtc 2.49.3, signal-crypto, signal-media, signal-neon-futures, signal-neon-futures-tests, usernames, zkcredential, zkgroup</string>
+			<string>attest, device-transfer, libsignal-account-keys, libsignal-account-keys 0.1.0, libsignal-bridge, libsignal-bridge-macros, libsignal-bridge-testing, libsignal-bridge-types, libsignal-core, libsignal-core 0.1.0, libsignal-ffi, libsignal-jni, libsignal-jni-impl, libsignal-jni-testing, libsignal-keytrans, libsignal-message-backup, libsignal-message-backup-macros, libsignal-net, libsignal-net-infra, libsignal-node, libsignal-protocol, libsignal-svr3, mrp 2.49.4, partial-default-derive 0.1.0, poksho, protobuf 2.49.4, regex-aot 0.1.0, ringrtc 2.49.4, signal-crypto, signal-media, signal-neon-futures, signal-neon-futures-tests, usernames, zkcredential, zkgroup</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
