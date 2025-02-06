@@ -111,7 +111,7 @@ public class NotificationActionHandler {
 
     private class func markAsRead(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly {
-            self.getNotificationMessage(forUserInfo: userInfo)
+            self.notificationMessage(forUserInfo: userInfo)
         }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) in
             self.markMessageAsRead(notificationMessage: notificationMessage)
         }
@@ -119,28 +119,58 @@ public class NotificationActionHandler {
 
     private class func reply(userInfo: [AnyHashable: Any], replyText: String) throws -> Promise<Void> {
         return firstly { () -> Promise<NotificationMessage> in
-            return self.getNotificationMessage(forUserInfo: userInfo)
+            self.notificationMessage(forUserInfo: userInfo)
         }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
-            try sendReplyToNotificationMessage(replyText: replyText, notificationMessage: notificationMessage)
-        }
-    }
-        
-    private class func sendReplyToNotificationMessage(replyText: String, notificationMessage: NotificationMessage) throws -> Promise<Void> {
-        let thread = notificationMessage.thread
-        let interaction = notificationMessage.interaction
-        guard (interaction is TSOutgoingMessage) || (interaction is TSIncomingMessage) else {
-            throw OWSAssertionError("Unexpected interaction type.")
-        }
-        return firstly { () -> Promise<DraftQuotedReplyModel.ForSending?> in
-            return try getDraftQuotedReplyModelForSendingFromIncomingMessage(notificationMessage: notificationMessage)
-        }.then(on: DispatchQueue.global()) { (draftModelForSending: DraftQuotedReplyModel.ForSending?) -> Promise<Void> in
-            try sendReplyToNoficationMessageWithMessageToReplyTo(replyText: replyText, messageBeingRespondedTo: draftModelForSending, notificationMessage: notificationMessage)
-        }.recover(on: DispatchQueue.global()) { error -> Promise<Void> in
-            Logger.warn("Failed to send reply message from notification with error: \(error)")
-            SSKEnvironment.shared.notificationPresenterRef.notifyUserOfFailedSend(inThread: thread)
-            throw error
-        }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
-            self.markMessageAsRead(notificationMessage: notificationMessage)
+            let thread = notificationMessage.thread
+            let interaction = notificationMessage.interaction
+            guard (interaction is TSOutgoingMessage) || (interaction is TSIncomingMessage) else {
+                throw OWSAssertionError("Unexpected interaction type.")
+            }
+
+            return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                    let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
+                    builder.messageBody = replyText
+
+                    // If we're replying to a group story reply, keep the reply within that context.
+                    if
+                        let incomingMessage = interaction as? TSIncomingMessage,
+                        notificationMessage.isGroupStoryReply,
+                        let storyTimestamp = incomingMessage.storyTimestamp,
+                        let storyAuthorAci = incomingMessage.storyAuthorAci
+                    {
+                        builder.storyTimestamp = storyTimestamp
+                        builder.storyAuthorAci = storyAuthorAci
+                    } else {
+                        // We only use the thread's DM timer for normal messages & 1:1 story
+                        // replies -- group story replies last for the lifetime of the story.
+                        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+                        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
+                        builder.expiresInSeconds = dmConfig.durationSeconds
+                        builder.expireTimerVersion = NSNumber(value: dmConfig.timerVersion)
+                    }
+
+                    let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(TSOutgoingMessage(
+                        outgoingMessageWith: builder,
+                        additionalRecipients: [],
+                        explicitRecipients: [],
+                        skippedRecipients: [],
+                        transaction: transaction
+                    ))
+                    do {
+                        let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
+                        return ThreadUtil.enqueueMessagePromise(message: preparedMessage, transaction: transaction)
+                    } catch {
+                        return Promise(error: error)
+                    }
+                }
+            }.recover(on: DispatchQueue.global()) { error -> Promise<Void> in
+                Logger.warn("Failed to send reply message from notification with error: \(error)")
+                SSKEnvironment.shared.notificationPresenterRef.notifyUserOfFailedSend(inThread: thread)
+                throw error
+            }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
+                self.markMessageAsRead(notificationMessage: notificationMessage)
+            }
         }
     }
     
@@ -213,7 +243,7 @@ public class NotificationActionHandler {
 
     private class func showThread(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly { () -> Promise<NotificationMessage> in
-            self.getNotificationMessage(forUserInfo: userInfo)
+            self.notificationMessage(forUserInfo: userInfo)
         }.done(on: DispatchQueue.main) { notificationMessage in
             if notificationMessage.isGroupStoryReply {
                 self.showGroupStoryReplyThread(notificationMessage: notificationMessage)
@@ -285,7 +315,7 @@ public class NotificationActionHandler {
 
     private class func reactWithThumbsUp(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly { () -> Promise<NotificationMessage> in
-            self.getNotificationMessage(forUserInfo: userInfo)
+            self.notificationMessage(forUserInfo: userInfo)
         }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
             let thread = notificationMessage.thread
             let interaction = notificationMessage.interaction
@@ -416,7 +446,7 @@ public class NotificationActionHandler {
         let hasPendingMessageRequest: Bool
     }
 
-    private class func getNotificationMessage(forUserInfo userInfo: [AnyHashable: Any]) -> Promise<NotificationMessage> {
+    private class func notificationMessage(forUserInfo userInfo: [AnyHashable: Any]) -> Promise<NotificationMessage> {
         firstly(on: DispatchQueue.global()) { () throws -> NotificationMessage in
             guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
                 throw OWSAssertionError("threadId was unexpectedly nil")
