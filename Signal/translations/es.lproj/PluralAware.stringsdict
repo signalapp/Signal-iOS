@@ -467,9 +467,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se alcanzó el número máximo de participantes (%1$d).</string>
+			<string>Se ha alcanzado el número máximo de participantes (%1$d).</string>
 			<key>other</key>
-			<string>Se alcanzó el número máximo de participantes (%1$d).</string>
+			<string>Se ha alcanzado el número máximo de participantes (%1$d).</string>
 		</dict>
 	</dict>
 	<key>EDIT_MESSAGE_SEND_TOO_MANY_EDITS_ERROR</key>
@@ -499,9 +499,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Reenviar mensaje</string>
+			<string>Enviar mensaje</string>
 			<key>other</key>
-			<string>Reenviar %1$d mensajes</string>
+			<string>Enviar %1$d mensajes</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -531,9 +531,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se alcanzó el número máximo de %1$d participante para esta llamada. Inténtalo más tarde.</string>
+			<string>Se ha alcanzado el número máximo de %1$d participante para esta llamada. Inténtalo más tarde.</string>
 			<key>other</key>
-			<string>Se alcanzó el número máximo de %1$d participantes para esta llamada. Inténtalo más tarde.</string>
+			<string>Se ha alcanzado el número máximo de %1$d participantes para esta llamada. Inténtalo más tarde.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -707,9 +707,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d participante usa el mismo nombre.</string>
+			<string>%1$d participante tiene el mismo nombre.</string>
 			<key>other</key>
-			<string>%1$d participantes usan el mismo nombre.</string>
+			<string>%1$d participantes tienen el mismo nombre.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -851,9 +851,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se han retirado las invitaciones al grupo para %1$d persona.</string>
+			<string>Se ha retirado la invitación al grupo enviada a %1$d persona.</string>
 			<key>other</key>
-			<string>Se han retirado las invitaciones al grupo para %1$d personas.</string>
+			<string>Se han retirado las invitaciones al grupo enviadas a %1$d personas.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -883,9 +883,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ ha solicitado y cancelado unirse al grupo mediante enlace.</string>
+			<string>%2$@ ha enviado y cancelado una solicitud para unirse al grupo mediante enlace.</string>
 			<key>other</key>
-			<string>%2$@ ha solicitado y cancelado %1$d veces unirse al grupo mediante enlace.</string>
+			<string>%2$@ ha enviado y cancelado %1$d solicitudes para unirse al grupo mediante enlace.</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -1299,9 +1299,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Retirar invitación inválida</string>
+			<string>Retirar invitación no válida</string>
 			<key>other</key>
-			<string>Retirar %1$d invitaciones inválidas</string>
+			<string>Retirar %1$d invitaciones no válidas</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1331,9 +1331,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>¿Retirar la invitación de grupo enviada por &quot;%2$@&quot;?</string>
+			<string>¿Retirar la invitación al grupo enviada por &quot;%2$@&quot;?</string>
 			<key>other</key>
-			<string>¿Retirar %1$d invitaciones de grupo enviadas por &quot;%2$@&quot;?</string>
+			<string>¿Retirar %1$d invitaciones al grupo enviadas por &quot;%2$@&quot;?</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -1395,9 +1395,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>No se han podido enviar todos los elementos a la historia seleccionada porque el tipo de archivo no es compatible.</string>
+			<string>No se han podido compartir todos los elementos en la historia seleccionada porque el tipo de archivo no es compatible.</string>
 			<key>other</key>
-			<string>No se han podido enviar todos los elementos a las historias seleccionadas porque el tipo de archivo no es compatible.</string>
+			<string>No se han podido compartir todos los elementos en las historias seleccionadas porque el tipo de archivo no es compatible.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

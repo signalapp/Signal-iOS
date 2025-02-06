@@ -2809,6 +2809,15 @@
 /* The title for the featured badge settings page */
 "FEATURED_BADGE_SETTINGS_TITLE" = "شارة مُمَيَّزة";
 
+/* Footer for message cell for documents/files when they are expired and unavailable for download */
+"FILE_UNAVAILABLE_FOOTER" = "File not available";
+
+/* Message for sheet shown when tapping a document/file that has expired and is unavailable for download */
+"FILE_UNAVAILABLE_SHEET_MESSAGE" = "This file was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+
+/* Title for sheet shown when tapping a document/file that has expired and is unavailable for download */
+"FILE_UNAVAILABLE_SHEET_TITLE" = "File Not Available";
+
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_BODY" = "ابحث عن رقم IBAN الخاص بك في الجزء العلوي من كشف حسابك المصرفي. يحتوي رقم IBAN على ما يصل إلى 34 رمزًا. يَجب أن يتطابق الاسم الذي تُدخله مع اسمك الكامل في حسابك المصرفي. تواصَل مع مصرفك للمزيد من المعلومات.";
 
@@ -4111,6 +4120,12 @@
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "قُمتَ بربط جهازٍ جديد";
 
+/* Message for an action sheet telling users how to link a device, when trying to open an external device-linking URL. */
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To link a desktop or iPad to this Signal account, go to Linked Devices and tap \"Link a New Device\" and scan the QR code again. Make sure you only scan QR codes that come directly from Signal.";
+
+/* Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera. */
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "It looks like you're trying to link a Signal device. Tap continue and then tap \"Link a New Device\" and scan the QR code again.";
+
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
 "LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "قُم بزيارة %1$@ لتثبيت تطبيق iPad أو %2$@ على جهازك لتثبيت نسخة التطبيق الخاصة بالحاسوب.";
 
@@ -4847,16 +4862,16 @@
 "NEW_STORY_SHEET_TITLE" = "اختر نوع القصة";
 
 /* Title for the table cell in conversation settings for presenting the profile nickname editor. */
-"NICKNAME_BUTTON_TITLE" = "اسم مستعار";
+"NICKNAME_BUTTON_TITLE" = "اسم مُستعار";
 
 /* The message for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "هذا الإجراء سَيحذف الاسم المستعار والملاحظة بشكل دائم.";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "هذا الإجراء سَيحذف الاسم المستعار والملاحظة بشكلٍ دائم.";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "هل تريد حذف الاسم المستعار؟";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "هل تريد حذف الاسم المُستعار؟";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "يَتم تخزين الأسماء المُستعارة والملاحظات لدى سيجنال وهي مشفرة من طرف لطرف. تكون الأسماء المستعارة والملاحظات مرئية لك فقط.";
+"NICKNAME_EDITOR_DESCRIPTION" = "يَتمُّ تخزين الأسماء المُستعارة والملاحظات لدى سيجنال وهي مُشفَّرة من طرف لطرف. تكون الأسماء المُستعارة والملاحظات مرئية لك فقط.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
 "NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "اسم العائلة";
@@ -4865,7 +4880,7 @@
 "NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER" = "الاسم الشخصي";
 
 /* Placeholder text it the text box for the note in the profile nickname editor. */
-"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "مُلاحظة";
+"NICKNAME_EDITOR_NOTE_PLACEHOLDER" = "ملاحظة";
 
 /* The title for the profile nickname editor view. */
 "NICKNAME_EDITOR_TITLE" = "اسم مستعار";
@@ -4919,10 +4934,10 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "هل ترغبُ بتفعيل الإشعارات؟";
 
 /* Shown as the body of an alert when notifications can't be shown due to an error. */
-"NOTIFICATIONS_ERROR_MESSAGE" = "أعد تشغيل %1$@ الخاص بك إذا كانت لا تصِلك إشعارات سيجنال.";
+"NOTIFICATIONS_ERROR_MESSAGE" = "أعِد تشغيل %1$@ الخاص بك إذا كانت لا تصِلك إشعارات سيجنال.";
 
 /* Shown as the title of an alert when notifications can't be shown due to an error. */
-"NOTIFICATIONS_ERROR_TITLE" = "تعذر إظهار الإشعارات";
+"NOTIFICATIONS_ERROR_TITLE" = "تعذَّر إظهار الإشعارات";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "تتضمن الإجراءات \"تحديد كمقروء\"، \"رد\"، و \"إعادة الاتصال.\"";
@@ -5000,7 +5015,7 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "لا يُوصَى بربط الآي فون الخاص بك، إذ سيحدُّ من بعض الوظف الأساسية.";
 
 /* Description of the 'Contacts' permission in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "اعثر على أشخاص تعرفهم. جهات اتصالك مشفرة وغير مرئية لخدمة سيجنال.";
+"ONBOARDING_PERMISSIONS_CONTACTS_DESCRIPTION" = "اعثر على أشخاص تعرفهم. جهات اتصالك مُشفَّرة وغير مرئية لخدمة سيجنال.";
 
 /* Title introducing the 'Contacts' permission in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_CONTACTS_TITLE" = "جهات الاتصال";
@@ -5093,19 +5108,19 @@
 "OPEN_SETTINGS_BUTTON" = "الإعدادات";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. */
-"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "لم يعُد تطبيق سيجنال يَعمل على هذا الجهاز. لاستخدام سيجنال مُجددًا، يُرجى تحديث إصدار iOS على جهازك.";
+"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "لم يعُد تطبيق سيجنال يَعمل على هذا الجهاز. لاستخدام سيجنال مُجدَّدًا، يُرجى تحديث إصدار iOS على جهازك.";
 
 /* Signal doesn't support old devices. If that's the case, they'll be shown this action, and tapping it will open information about Signal's minimum supported operating systems. */
-"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "لم يعُد تطبيق سيجنال يَعمل على هذا الجهاز. لاستخدام سيجنال مجددًا، يُرجى الانتقال إلى جهاز أحدث.";
+"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "لم يعُد تطبيق سيجنال يَعمل على هذا الجهاز. لاستخدام سيجنال مُجدَّدًا، يُرجى الانتقال إلى جهاز أحدث.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this action, and tapping it will open device update instructions. */
 "OS_SOON_TO_EXPIRE_ACTION_TITLE" = "حدِّث الآن";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're an old version that will soon lose support. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "سَيتوقف سيجنال عن دعم إصدار iOS على جهازك قريبًا. للاستمرار في استخدام سيجنال، يُرجى تحديث إصدار iOS على جهازك قبل %1$@.";
+"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "سَيتوقف سيجنال عن دعم إصدار iOS على جهازك قريبًا. للاستمرار في استخدام سيجنال، قُم بتحديث إصدار iOS على جهازك قبل %1$@.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version that will soon lose support. This is the text on that warning when users can't upgrade iOS without getting a new device. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "سَيتوقف سيجنال عن دعم إصدار iOS على جهازك قريبًا. لمُواصلة استخدام سيجنال، يُرجى تغيير جهازك إلى جهاز أحدث قبل %1$@.";
+"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "سَيتوقَّف سيجنال عن دعم إصدار iOS على جهازك قريبًا. لمُواصلة استخدام سيجنال، قُم بتغيير جهازك إلى جهاز أحدث قبل %1$@.";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "عطَّلَ %1$@ ميزة إخفاء الرسائل.";
@@ -5132,16 +5147,25 @@
 "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "مغادرة سيجنال";
 
 /* Message for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "سيُغلق سيجنال على هذا الجهاز الآن";
+"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "سيُغلِق سيجنال على هذا الجهاز الآن";
 
 /* Title for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_TITLE" = "انتهى النقل!";
+"OUTGOING_TRANSFER_COMPLETE_TITLE" = "اكتمَلَ النقل!";
 
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "مكالمة فيديو صادرة";
 
 /* info message text in conversation view */
 "OUTGOING_VOICE_CALL" = "مكالمة صوتية صادرة";
+
+/* Footer for message cell for long text when it is expired and unavailable for download */
+"OVERSIZE_TEXT_UNAVAILABLE_FOOTER" = "This message is incomplete";
+
+/* Message for sheet shown when tapping oversized text that has expired and is unavailable for download */
+"OVERSIZE_TEXT_UNAVAILABLE_SHEET_MESSAGE" = "The complete text in this message was not transferred from your phone when this device was linked. Long text messages older than 45 days at the time of device linking can not be synced.";
+
+/* Title for sheet shown when tapping oversized text that has expired and is unavailable for download */
+"OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE" = "Complete Message Not Available";
 
 /* Header title for bank payment details screen */
 "PAYMENT_DETAILS_BANK_TITLE" = "تحويل مصرفي";
@@ -5180,13 +5204,13 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "غير صالحة";
 
 /* Payments in-chat message shown if a payment fails to send, bottom half. */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "يُرجى النقر للتفاصيل";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "انقر للتفاصيل";
 
 /* Payments in-chat message shown if a payment fails to send, top part. Embeds {{ number, amount of MOB coin not sent }} */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ لم تُرسل عملة MOB";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ من عملة MOB لم تُرسَل.";
 
 /* Status indicator for invalid payments which could not be processed. */
-"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "غير متوفر";
+"PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "غير متوفِّر";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
 "PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "تعذَّر الوصول إلى المُصادقة.";
@@ -5219,34 +5243,34 @@
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "أَضِف طبقة أمان إضافية واِشترط رمز المرور لإرسال المبالغ.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "أَضف طبقة أمان إضافية واِشترط بصمة الأصبع (Touch ID) لإرسال المبالغ.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "أَضِف طبقة أمان إضافية واِشترط بصمة الأصبع (Touch ID) لإرسال المبالغ.";
 
 /* First time payments suggest payments lock title */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "هل تريد تفعيل قفل عملية الدفع للعمليات المُستقبلية؟";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "هل تريد تفعيل قفل عملية الدفع لعمليات الإرسال المُستقبلية؟";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "اِشترط رمز المرور الخاص بك أو بصمة الأصبع (Touch ID) للإرسال";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "يتطلَّب رمز المرور الخاص بك أو بصمة الأصبع (Touch ID) للإرسال";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "اِشترط تقنية التعرُّف على الوجه (Face ID) للإرسال";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "يتطلَّب تقنية التعرُّف على الوجه (Face ID) للإرسال";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "يشترط استخدام Optic ID للإرسال.";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "يُشترَط استخدام Optic ID للإرسال.";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "اِشترط رمز المرور الخاص بهاتفك للإرسال";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "يتطلَّب رمز المرور الخاص بهاتفك للإرسال";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "اِشترط بصمة الأصبع (Touch ID) للإرسال";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "يتطلَّب بصمة الأصبع (Touch ID) للإرسال";
 
 /* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
-"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "فشلت المُصادَقة. تأكّد من تمكين المصادقة البيومترية على جهازك وتعيين رمز مرور.";
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "فشلت المُصادَقة. تأكَّد من تمكين المصادقة البيومترية على جهازك وتعيين رمز مرور.";
 
 /* Title for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
 "PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "فشلت المُصادَقة البيومترية";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
-"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "يُرجى المصادقة لتأكيد الدفع.";
+"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "قُم بالمصادقة لتأكيد الدفع.";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "إضافة مُلاحظة";
@@ -5282,10 +5306,10 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "لم يتم التحقُّق بعد من عملية الدفع";
 
 /* Indicates that a payment failed because the payments lock attempt was cancelled. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "تمّ إلغاء المُصادَقة على قفل عمليات الدفع.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "تمَّ إلغاء المُصادَقة على قفل عمليات الدفع.";
 
 /* Indicates that a payment failed because the payments lock failed to authenticate. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "تعذّرت المُصادَقة على قفل عمليات الدفع.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "تعذَّرت المُصادَقة على قفل عمليات الدفع.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "تعذَّر إتمام الدفع لأن رصيدك غير متاح. يُرجى التحقُّق من اتصالك بالانترنت ثم حاوِل مُجدَّدًا.";
@@ -5330,13 +5354,13 @@
 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "عملية دفع إلى %1$@";
 
 /* Payment status context while sending */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "تجري معالجة الدفوعات…";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "تجري معالجة المدفوعات…";
 
 /* Payment status context with contact name, incoming. Embeds {{ Name of sending contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "أرسل لك %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "%1$@ أرسلَ لك";
 
 /* Payment status context with contact name, sent. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "أرسلت %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "أرسلتَ إلى %1$@";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "مدفوعة";
@@ -5402,7 +5426,7 @@
 "PAYMENTS_PREVIEW_TEXT_QUOTED_REPLY" = "عملية دفع: %1$@ %2$@";
 
 /* Payments Preview Text shown in quoted replies, for unknown payments. */
-"PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "عملية دفع مجهولة";
+"PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "عملية دفع غير معروفة";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "على هذا المُستخدِم أن يوافق على طلب التراسُل معك للتمكُّن من إرسال المبلغ إليه.";
@@ -5420,7 +5444,7 @@
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "هل تُريد أن ترسل لهم طلبًا لتفعيل عمليات الدفع؟";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. Embeds {{ the contact's name }} */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "لم يُفعّل %1$@ عمليات الدفع";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "لم يُفعِّل %1$@ عمليات الدفع";
 
 /* Payments Preview Text shown in chat list for payments. */
 "PAYMENTS_THREAD_PREVIEW_TEXT" = "💳 عملية دفع";
@@ -5491,6 +5515,9 @@
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "المدعوون من قبلك";
 
+/* Label for view-once messages indicating that the message's contents are expired and unavailable to download. */
+"PER_MESSAGE_EXPIRATION_EXPIRED" = "Expired";
+
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "خطأ في مُعاملة الرسالة الواردة";
 
@@ -5507,25 +5534,25 @@
 "PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "فيديو للعرض لمرّة واحدة";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "إظهار الصورة";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "عرض الصورة";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "عرض الفيديو";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEWED" = "لقد تمَّ عرضه";
+"PER_MESSAGE_EXPIRATION_VIEWED" = "تمَّت المشاهدة";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "الجميع";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "أي شخص لديه رقم هاتفك سَيرى أنك مُتواجد على سيجنال وسيتمكّن من بدء دردشات معك.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "أي شخص لديه رقم هاتفك سَيرى أنك مُتواجد على سيجنال وسيتمكَّن من بدء دردشات معك.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "لا أحد";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "لن يتمكن أي أحد من رؤيتك على سيجنال إلا إذا راسلته أو كانت لديك دردشة موجودة معه.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "لن يتمكن أي أحد من رؤيتك على سيجنال إلّا إذا راسلته أو كانت لديك دردشة موجودة معه.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "مِثال: %1$@";
@@ -5540,7 +5567,7 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "لا أحد";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "لن يكون رقم هاتفك مرئيًا لأي أحد إلاّ إذا كان مسجلاً على هاتفه في جهات اتصاله.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "لن يكون رقم هاتفك مرئيًا لأي أحد إلّا إذا كان مُسجَّلًا على هاتفه في جهات اتصاله.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "رقم هاتفك لن يكون مرئيًا لأي أحد.";
@@ -5552,7 +5579,7 @@
 "PHONE_NUMBER_TYPE_HOME_FAX" = "فاكس المنزل";
 
 /* Label for 'iPhone' phone numbers. */
-"PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
+"PHONE_NUMBER_TYPE_IPHONE" = "الآي فون";
 
 /* Label for 'Main' phone numbers. */
 "PHONE_NUMBER_TYPE_MAIN" = "الأساسي";
@@ -5567,7 +5594,7 @@
 "PHONE_NUMBER_TYPE_OTHER_FAX" = "فاكس آخر";
 
 /* Label for 'Pager' phone numbers. */
-"PHONE_NUMBER_TYPE_PAGER" = "بيجر";
+"PHONE_NUMBER_TYPE_PAGER" = "البيجر";
 
 /* Label for 'Work' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK" = "العمل";
@@ -5576,25 +5603,25 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "فاكس العمل";
 
 /* alert title, generic error preventing user from capturing a photo */
-"PHOTO_CAPTURE_GENERIC_ERROR" = "تعذر التقاط الصورة.";
+"PHOTO_CAPTURE_GENERIC_ERROR" = "تعذَّر التقاط الصورة.";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "تعذر التقاط الصورة.";
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "تعذَّر التقاط الصورة.";
 
 /* alert title */
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "فشلت تهيئة الكاميرا.";
 
 /* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "توجّه للدردشة";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "انتقل للدردشة";
 
 /* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "بدء دردشة مع \"%1$@\"";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "ابدأ دردشة مع \"%1$@\"";
 
 /* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "تم العثور على %1$@";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "تمَّ العثور على %1$@";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
-"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "فيديو طويل جدًا.";
+"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "الفيديو طويل جدًا.";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "ألبوم بدون اسم";
@@ -5603,52 +5630,52 @@
 "PIN_ACTION" = "تثبيت";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "تعذر إنشاء رقم تعريفك الشخصي الجديد. عُطِّل رقم تعريفك الشخصي الحالي. تحقق من اتصالك وحاول مجددًا.";
+"PIN_CHANGE_ERROR_MESSAGE" = "تعذَّر إنشاء رقم التعريف الشخصي (PIN) الجديد الخاص بك. عُطِّل رقم التعريف الشخصي الحالي. تحقَّق من اتصالك وحاوِل مُجدَّدًا.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "فشل تغيير رقم التعريف الشخصي";
+"PIN_CHANGE_ERROR_TITLE" = "فشل تغيير رقم التعريف الشخصي (PIN)";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "الـPIN يجب أن يحوي اربعة رموز على الأقل";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "رقم التعريف الشخصي (PIN) يجب أن يحوي أربعة رموز على الأقل.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "تغيير PIN الخاص بك";
+"PIN_CREATION_CHANGING_TITLE" = "تغيير رقم التعريف الشخصي (PIN)";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "تأكيد PIN الخاص بك";
+"PIN_CREATION_CONFIRM_TITLE" = "تأكيد رقم التعريف الشخصي (PIN)";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "أدخل الـPIN الذي أنشأته للتو.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "أدخِل رقم التعريف الشخصي (PIN) الذي أنشأته للتو.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "إنشاء PIN أبجدي رَقمي";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "إنشاء رقم تعريف شخصي (PIN) من أحرف وأرقام";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "إنشاء PIN رَقمي";
+"PIN_CREATION_CREATE_NUMERIC" = "إنشاء رقم تعريف شخصي (PIN) من أرقام";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "تعطيل الـPIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "تعطيل رقم التعريف الشخصي (PIN)";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "إذا عطّلتَ الـPIN، ستفقد جميع البيانات عند إعادة التسجيل في سيجنال إلّا إذا قمت بنقلِها مِن جهاز  iOS آخر. لا يُمكنُك تفعيل قفل التسجيل أثناء تعطيل الـPIN.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "إذا عطَّلتَ رقم التعريف الشخصي (PIN)، ستفقد جميع البيانات عند إعادة التسجيل في سيجنال إلّا إذا قُمتَ بنقلِها مِن جهاز  iOS آخر. لا يُمكنُك تفعيل قفل التسجيل أثناء تعطيل رقم التعريف الشخصي (PIN).";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "تحذير";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "الـPIN يُبقي المعلومات المحفوظة مع سيجنال مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع حسابك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد التثبيت. أنت لست بحاجة إلى الـPIN لفتح التطبيق.";
+"PIN_CREATION_EXPLANATION" = "يُبقي رقم التعريف الشخصي (PIN) المعلومات المحفوظة مع سيجنال مُشفَّرة، بحيث تستطيع أنت فقط الوصول إليها. سيتمُّ استعادة حسابك الشخصي، والإعدادات وجهات الاتصال عندما تُعيد التثبيت. لست بحاجة إلى رقم التعريف الشخصي (PIN) لفتح التطبيق.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "المزيد بخصوص رموز PIN";
+"PIN_CREATION_LEARN_MORE" = "المزيد عن رقم التعريف الشخصي (PIN)";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
-"PIN_CREATION_LEARN_MORE_TEXT" = "يمكِّنك رمز PIN من حفظ معلوماتك بشكل مُعمَّى في سيجنال بحيث يمكنك الوصول إليها وحدك. سَتتم استعادة حسابك وإعداداتك وجهات اتصالك عند إعادة تثبيت سيجنال.";
+"PIN_CREATION_LEARN_MORE_TEXT" = "يُمكِّنك رقم التعريف الشخصي (PIN) من حفظ معلوماتك بشكلٍ مُشفَّر في سيجنال بحيث يمكنك الوصول إليها وحدك. سَتتمُّ استعادة حسابك وإعداداتك وجهات اتصالك عند إعادة تثبيت سيجنال.";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
-"PIN_CREATION_LEARN_MORE_TITLE" = "نبذة حول رموز PIN لسيجنال";
+"PIN_CREATION_LEARN_MORE_TITLE" = "نبذة حول رقم التعريف الشخصي (PIN) لسيجنال";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "الـPIN غير مُطابق. حاول مرة أُخرى.";
+"PIN_CREATION_MISMATCH_ERROR" = "رقم التعريف الشخصي (PIN) غير مُطابِق. حاوِل مرّة أُخرى.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
 "PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "تحقق من اتصالك بالشبكة ثم حاول مجددًا.";
@@ -5657,112 +5684,124 @@
 "PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "لا يوجد اتصال بالشبكة";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "الـPIN يجب أن يحوي اربعة ارقام على الأقل";
+"PIN_CREATION_NUMERIC_HINT" = "رقم التعريف الشخصي (PIN) يجب أن يحوي أربعة ارقام على الأقل.";
 
 /* Label indication the user must confirm their PIN. */
-"PIN_CREATION_PIN_CONFIRMATION_HINT" = "أعِد إدخال الـPIN";
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "أعِد إدخال رقم التعريف الشخصي (PIN)";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "جارٍ إنشاء الـ PIN…";
+"PIN_CREATION_PIN_PROGRESS" = "جارٍ إنشاء رقم التعريف الشخصي (PIN)…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "يُمكنك تغيير الـPIN الخاص بك طالما أن هذا الجهاز مُسجّل.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "يُمكنك تغيير رقم التعريف الشخصي (PIN) الخاص بك طالما أن هذا الجهاز مُسجَّل.";
 
 /* Action of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "تعطيل";
+"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "إيقاف";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "لتعطيل الـPIN الخاص بك ، عليك أولاً تعطيل قفل التسجيل.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "لإيقاف رقم التعريف الشخصي (PIN) الخاص بك، عليك أولًا إيقاف قفل التسجيل.";
 
 /* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "هل تُريد تعطيل قفل التسجيل؟";
+"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "هل تُريد إيقاف قفل التسجيل؟";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "أُنشئَ رقم التعريف الشخصي بنجاح، لكن قفل التسجيل تعذر تفعيله. تحقق من اتصالك وحاول مجددًا.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "أُنشِئَ رقم التعريف الشخصي (PIN) بنجاح، لكن قفل التسجيل تعذَّر تفعيله. تحقَّق من اتصالك وحاوِل مُجدَّدًا.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
 "PIN_CREATION_REGLOCK_ERROR_TITLE" = "فشل تفعيل قفل التسجيل";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "تعطيل الـPIN";
+"PIN_CREATION_SKIP" = "تعطيل رقم التعريف الشخصي (PIN)";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "إنشاء الـPIN الخاص بك";
+"PIN_CREATION_TITLE" = "إنشاء رقم التعريف الشخصي (PIN)";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "اختر PIN أقوى";
+"PIN_CREATION_WEAK_ERROR" = "اختر رقم تعريف شخصي (PIN) أقوى";
 
 /* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
-"PIN_CREATION_WEAK_ERROR_MESSAGE" = "يمكِّنك الرقم التعريفي الشخصي من حفظ معلوماتك بشكل مُعمَّى في سيجنال بحيث يمكنك الوصول إليها وحدك. اختر رقم تعريف شخصي أقوى لحماية حسابك.";
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "يُمكِّنك رقم التعريف الشخصي (PIN) من حفظ معلوماتك بشكلٍ مُشفَّر في سيجنال بحيث يمكنك الوصول إليها وحدك. اختر رقم تعريف شخصي (PIN) أقوى لحماية حسابك.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "لقد تعذّر تعطيل الـPIN الخاص بك. سنُطالِبُك مرة أُخرى لاحقًا.";
+"PIN_DISABLE_ERROR_MESSAGE" = "تعذَّر تعطيل رقم التعريف الشخصي (PIN) الخاص بك. سنذكِّرك به مرّة أُخرى لاحقًا.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "فشل تعطيل الـPIN";
+"PIN_DISABLE_ERROR_TITLE" = "فشل تعطيل رقم التعريف الشخصي (PIN)";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
-"PIN_ENTER_EXISTING_SKIP" = "تخطّى رمز PIN";
+"PIN_ENTER_EXISTING_SKIP" = "تَخَطَّ رقم التعريف الشخصي (PIN)";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
-"PIN_RECREATION_ERROR_TITLE" = "فشل إنشاء الـPIN";
+"PIN_RECREATION_ERROR_TITLE" = "فشل إنشاء رقم التعريف الشخصي (PIN)";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "تعذر إنشاء رقم التعريف الشخصي. تحقق من اتصالك وحاول مجددًا.";
+"PIN_RECRETION_ERROR_MESSAGE" = "تعذَّر إنشاء رقم التعريف الشخصي (PIN). تحقَّق من اتصالك وحاوِل مُجدَّدًا.";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "لمُساعدتك في حفظ الـPIN الخاص بك، سوف نسألك لإدخاله من حين لآخر. سنسألك عنه بشكل أقل مع مرور الزمن.";
+"PIN_REMINDER_EXPLANATION" = "لمُساعدتك في حفظ رقم التعريف الشخصي (PIN) الخاص بك، سوف نسألك لإدخاله من حينٍ لآخر. سنسألك عنه بشكلٍ أقل مع مرور الوقت.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "هل نسيت الـPIN الخاص بك؟";
+"PIN_REMINDER_FORGOT_PIN" = "هل نسيت رقم التعريف الشخصي (PIN) الخاص بك؟";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "التحقُّق من الـPIN";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "التحقُّق من رقم التعريف الشخصي (PIN)";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "من حين لآخر سنُطالبك بالتحقُّق من الرقم التعريفي الشخصي حتى يسهل عليك تذكره.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "من حين لآخر سنُطالبك بالتحقُّق من رقم التعريف الشخصي (PIN) حتى يسهل عليك تذكره.";
+
+/* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_SUCCESSFUL_TOAST" = "PIN correct. We’ll remind you again in a few days.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "سنذكِرك مرة أُخرى في غُضون بضعة أيام.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "سنذكِّرك مرّة أُخرى في غُضون بضعة أيام.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "التحقق من الـPIN الخاص بك في سيجنال";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "التحقُّق من رقم التعريف الشخصي (PIN) على سيجنال";
+
+/* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
+"PIN_REMINDER_MEGAPHONE_TOMORROW_SUCCESSFUL_TOAST" = "PIN correct. We’ll remind you again tomorrow.";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "سنُذكرك مرة أُخرى غداً.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "سنُذكِّرك مرّة أُخرى غدًا.";
 
-/* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "سنُذكرك مرة أُخرى في غضون بضع أسابيع.";
+/* Toast indicating that we'll ask you for your PIN again in 2 weeks, after successfully entering it. */
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_SUCCESSFUL_TOAST" = "PIN correct. We’ll remind you again in a couple of weeks.";
+
+/* Toast indicating that we'll ask you for your PIN again tomorrow. */
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "سنُذكِّرك مرّة أُخرى في غضون بضعة أسابيع.";
+
+/* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
+"PIN_REMINDER_MEGAPHONE_WEEK_SUCCESSFUL_TOAST" = "PIN correct. We’ll remind you again in a week.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "سنُذكرك مرة أُخرى في عُضون أسبوع.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "سنُذكِّرك مرّة أُخرى في عُضون أسبوع.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "إنَّ الـPIN غير صالح، حاول مرة أُخرى.";
+"PIN_REMINDER_MISMATCH_ERROR" = "رقم التعريف الشخصي (PIN) غير صالح. حاوِل مرّة أُخرى.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "أدخل الـPIN الخاص بك في سيجنال";
+"PIN_REMINDER_TITLE" = "أدخِل رقم التعريف الشخصي (PIN) الخاص بك في سيجنال";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "الـPIN يجب أن يحوي اربعة ارقام على الأقل.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "رقم التعريف الشخصي (PIN) يجب أن يحوي أربعة ارقام على الأقل.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
 "PINNED_CONVERSATION_LIMIT" = "يُمكنك تثبيت ما يصل إلى 4 دردشات فقط.";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "المُثبَّتة";
+"PINNED_SECTION_TITLE" = "الدردشات المُثبَّتة";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_ACTION" = "إنشاء PIN";
+"PINS_MEGAPHONE_ACTION" = "إنشاء رقم التعريف الشخصي (PIN)";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "أتمِم إنشاء رقم التعريف لسيجنال.";
+"PINS_MEGAPHONE_BODY" = "أكمِل إنشاء رقم التعريف الشخصي (PIN) على سيجنال.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_TITLE" = "أنشيء PIN";
+"PINS_MEGAPHONE_TITLE" = "إنشاء رقم تعريف شخصي (PIN)";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "تمَّ إنشاء PIN. يُمكنك تغييره في الإعدادات.";
+"PINS_MEGAPHONE_TOAST" = "تمَّ إنشاء رقم التعريف الشخصي (PIN). يُمكنك تغييره في الإعدادات.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "تشغيل الوسط";
@@ -5774,43 +5813,43 @@
 "PRIVACY_TAP_TO_SCAN" = "يُرجى اللمس من أجل المسح الضوئي";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "مَحوُ التحقُّق";
+"PRIVACY_UNVERIFY_BUTTON" = "انقر للمسح";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "لا يبدو هذا رقم أمانك مع %1$@. هل تتحقق من جهة الاتصال الصحيحة؟";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "لا يبدو هذا رقم أمانك مع %1$@. هل تتحقَّق من جهة الاتصال الصحيحة؟";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "لا يبدو الرقم الذي في حافظتك أنه رقم الأمان الصحيح لهذه الدردشة.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "لم يجد سيجنال أي رقم أمان في حافظتك. هل نسخته بشكل صحيح ؟";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "لم يجد سيجنال أي رقم أمان في حافظتك. هل نسخته بشكلٍ صحيح؟";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "كل زوج من مستخدمي سيجنال يتشاركان رقم أمان فريد. يُرجى التأكد أن %1$@ يعرض رقم أمانك الفريد.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "كل زوج من مستخدمي سيجنال يتشاركان رقم أمان فريد. يُرجى التأكُّد أن %1$@ يعرض رقم أمانك الفريد.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "أنت تستخدم إصدارا قديما من سيجنال. تحتاج للتحديث لتتمكن من التحقق.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "أنت تستخدم إصدارًا قديمًا من سيجنال. تحتاج للتحديث لتتمكَّن من التحقُّق.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "شريكك يستخدم إصدارا قديما من سيجنال. سيحتاج للتحديث ليتمكن من التحقق.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "شريكك يستخدم إصدارًا قديمًا من سيجنال. سيحتاج للتحديث ليتمكَّن من التحقُّق.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "الرمز الممسوح لا يبدو كرقم أمان. هل تستخدمان إصدارًا حديثًا من سيجنال؟";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "الكود الممسوح لا يبدو كرقم أمان. هل تستخدمان إصدارًا حديثًا من سيجنال؟";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "التحقق من رقم اﻷمان";
+"PRIVACY_VERIFICATION_TITLE" = "التحقَّق من رقم اﻷمان";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "علِّم كمُتحقَّق منه";
+"PRIVACY_VERIFY_BUTTON" = "تحديد كتمَّ التحقُّق منه";
 
 /* Button to add a new viewer on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "إضافة مشاهدين";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "إزالة قصة مخصصة";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "إزالة قصة مُخصَّصة";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "هل أنت متأكد من أنك تريد حذف \"%1$@\"؟ سيتم أيضًا حذف تحديثات شاركتها مؤخرًا في هذه القصة.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "هل أنت متأكِّد من أنك تريد حذف \"%1$@\"؟ سيتمُّ أيضًا حذف تحديثات شاركتها مؤخَّرًا في هذه القصة.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "إزالة";
@@ -5819,46 +5858,46 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "لن يتمكن هذا الشخص من رؤية هذه القِصة بعد الآن.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "إزالة %1$@؟";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "هل ترغبُ بإزالة %1$@؟";
 
 /* No comment provided by engineer. */
-"PROCEED_BUTTON" = "تقدم";
+"PROCEED_BUTTON" = "مواصلة";
 
 /* Placeholder text for the bio field of the profile bio view. */
 "PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "اكتب بضع كلمات عن نفسك…";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "كُن طيِّبَ القَلب";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "كُن لطيفًا";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "مُحِبٌ لِلقهوَة";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "مُعمّى";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "مُشفَّر";
 
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "مُتفرِّغٌ لِلدردشة";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "ما عليك إلا التحدث بكل حرية";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "تحدَّث بحرية";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "آخُذُ اِستِراحة";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "في حالة استراحة";
 
 /* The 'Working on something new' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "أَعمَلُ عَلَى شَيءٍ جَدِيد";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "أَعمَلُ على شيءٍ جَدِيد";
 
 /* Title for the profile bio view. */
 "PROFILE_BIO_VIEW_TITLE" = "حول";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
-"PROFILE_BIO_VIEW_TITLE_FORMAT" = "حَول (%1$@)";
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "حول (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "لَقَد غيَّر %1$@ اِسم حسابه الشخصي مِن %2$@ إلى %3$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "غيَّرَ %1$@ اسم حسابه الشخصي مِن %2$@ إلى %3$@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "لَقَد غيَّرَ %1$@ اِسم حسابه الشخصي إلى %2$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "غيَّرَ %1$@ اسم حسابه الشخصي إلى %2$@.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "اِسمُك";
@@ -5867,37 +5906,37 @@
 "PROFILE_SETTINGS_BIO_PLACEHOLDER" = "حول";
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
-"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "اِسم";
+"PROFILE_SETTINGS_NAME_PLACEHOLDER" = "الاسم";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "حدثت مشكلة مع اسم المُستخدم الخاص بك ولم يعُد مخصصًا لحسابك. يمكنك محاولة تعيينه من جديد أو اختيار اسم مُستخدم جديد.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "حدثت مشكلة مع اسم المُستخدِم الخاص بك ولم يعُد مُخصَّصًا لحسابك. يمكنك محاولة تعيينه من جديد أو اختيار اسم مُستخدِم جديد.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "حذف اسم المُستخدم";
 
 /* Title for an action sheet button allowing users to fix their username when their current one is corrupted. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "إصلاح الآن";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "الإصلاح الآن";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "سيُؤدي هذا إلى إزالة اسم المُستخدم الخاص بك وتعطيل رمز الاستجابة السريع والرابط الخاصين بك. \"%1$@\" ستُصبح متوفرة للآخرين ليستفيدوا منه. هل أنت متأكد؟";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "سيُؤدِّي هذا إلى إزالة اسم المُستخدم الخاص بك وتعطيل كود الـ QR والرابط الخاصين بك. ستُصبح \"%1$@\" متوفِّرة للآخرين ليستفيدوا منها. هل أنت متأكِّد؟";
 
 /* The title of an action sheet button that will delete a user's username. */
-"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "حذف اسم المُستخدم";
+"PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "حذف اسم المُستخدِم";
 
 /* Title for a menu action allowing users to edit their existing username. */
-"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "تعديل اِسمُ المُستخدِم";
+"PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "تعديل اسم المُستخدِم";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "رمز أو رابط الاستجابة السريع";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "رابط أو كود QR";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
-"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "اِسمُ المُستخدِم";
+"PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "اسمُ المُستخدِم";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "اسمكَ الأخير طويلٌ جدًا.";
 
 /* Error message shown when user tries to update profile without a given name */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "اسمُكَ الأول مُتَطلَّب.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "اسمُكَ الأول مطلوب.";
 
 /* Error message shown when user tries to update profile with a given name that is too long. */
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "اسمكَ الأول طويلٌ جدًا.";
@@ -5906,10 +5945,10 @@
 "PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "الاسم الأخير (اختياري)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "الاسم الأول (مُتَطلَّب)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "الاسم الأول (مطلوب)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
-"PROFILE_VIEW_NO_CONNECTION" = "يُمكنكَ تحديث حسابك الشخصي فقط إذا كُنتَ متصلاً بالانترنت.";
+"PROFILE_VIEW_NO_CONNECTION" = "يُمكنكَ تحديث حسابك الشخصي فقط إذا كُنتَ متصلًا بالإنترنت.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "سيَظهر حسابك الشخصي والتغييرات التي طرأت عليه للأشخاص الذين تُراسلهم وجهات الاتصال والمجموعات.";
@@ -5918,28 +5957,28 @@
 "PROFILE_VIEW_TITLE" = "الحساب الشخصي";
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
-"PROFILE_VIEW_USERNAME_DESCRIPTION" = "اسم المُستخدم الخاص بك ليس مرئيًا على حسابك الشخصي، وكذلك رمز ورابط الاستجابة السريعة الخاصين بك. شارك اسم المُستخدم الخاص بك فقط مع الناس الذين تثق بهم.";
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "اسم المُستخدم الخاص بك ليس مرئيًا على حسابك الشخصي، وكذلك رابط وكود الـ QR الخاصين بك. شارِك اسم المُستخدِم الخاص بك فقط مع الناس الذين تثق بهم.";
 
 /* Footer below the usernames section of the profile settings when a username has not been set. */
 "PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "يُمكن للناس مراسلتك الآن باستخدام اسم المُستخدم الاختياري الخاص بك حتى لا تضطر إلى إعطاء رقم هاتفك.";
 
 /* The title for the address of the signal proxy */
-"PROXY_ADDRESS" = "عنوان الوكيل";
+"PROXY_ADDRESS" = "عنوان البروكسي";
 
 /* The provided proxy connected successfully */
-"PROXY_CONNECTED_SUCCESSFULLY" = "إنك متصل بالوكيل. يمكنك تعطيله في أي وقت، انطلاقا من اﻹعدادات.";
+"PROXY_CONNECTED_SUCCESSFULLY" = "أنت متصل بالبروكسي. يمكنك تعطيله في أي وقت من قسم \"اﻹعدادات\".";
 
 /* The provided proxy couldn't connect */
-"PROXY_FAILED_TO_CONNECT" = "تعذّر الاتصال بالوكيل. تحقّق من عنوان الوكيل ثم أعد المحاولة مرة أخرى.";
+"PROXY_FAILED_TO_CONNECT" = "تعذَّر الاتصال بالبروكسي. تحقَّق من عنوان البروكسي ثم حاوِل مرّة أُخرى.";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "عليك بإدخال عنوان الوكيل";
+"PROXY_PLACEHOLDER" = "أدخِل عنوان البروكسي";
 
 /* Title for the signal proxy settings */
-"PROXY_SETTINGS_TITLE" = "الوكيل";
+"PROXY_SETTINGS_TITLE" = "البروكسي";
 
 /* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "وسم كَمقروءة";
+"PUSH_MANAGER_MARKREAD" = "تحديد كمقروء";
 
 /* Notification action button title for 'react with thumbs up.' */
 "PUSH_MANAGER_REACT_WITH_THUMBS_UP" = "👍";
@@ -5948,7 +5987,7 @@
 "PUSH_MANAGER_REPLY" = "رد";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "تمَّت إعادة الاشتراك بنجاح في الإشعارات اللحظية.";
+"PUSH_REGISTER_SUCCESS" = "تمَّت إعادة التسجيل بنجاح في الإشعارات داخل التطبيق.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
 "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "رداً على %1$@.";
@@ -5960,7 +5999,7 @@
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "لم يُعثَر على الرسالة الأصلية.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "لم تَعُد الرسالة الأصلية مُتاحة.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "لم تَعُد الرسالة الأصلية مُتوفِّرة.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "لم يُعثَر على الرسالة الأصلية.";
@@ -5975,19 +6014,19 @@
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "قصة · %1$@";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
-"QUOTED_REPLY_TYPE_ATTACHMENT" = "مُرفق";
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "ملف مُرفَق";
 
 /* Indicates this message is a quoted reply to an audio file. */
 "QUOTED_REPLY_TYPE_AUDIO" = "صوت";
 
 /* Indicates this message is a quoted reply to animated GIF file. */
-"QUOTED_REPLY_TYPE_GIF" = "صورة متحركة";
+"QUOTED_REPLY_TYPE_GIF" = "صورة متحركة (GIF)";
 
 /* Indicates this message is a quoted reply to an image file. */
 "QUOTED_REPLY_TYPE_IMAGE" = "صورة";
 
 /* Indicates this message is a quoted reply to a photo file. */
-"QUOTED_REPLY_TYPE_PHOTO" = "صورة";
+"QUOTED_REPLY_TYPE_PHOTO" = "صورة شخصية";
 
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "فيديو";
@@ -6008,40 +6047,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "الكُل · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "تفاعل %1$@ مع رسالتك";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "تفاعَل %1$@ مع رسالتك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "تفاعل %1$@ مع ألبومك";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "تفاعَل %1$@ مع ألبومك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "تفاعل %1$@ مع صوتك";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "تفاعَل %1$@ مع ملفك الصوتي";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "تفاعل %1$@ مع جهة اتصالك المُشارَكة";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "تفاعَل %1$@ مع جهة اتصالك المُشارَكة";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "تفاعل %1$@ مع ملفك";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "تفاعَل %1$@ مع ملفك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "تفاعل %1$@ مع صورتك المتحركة";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "تفاعَل %1$@ مع الصورة المتحركة GIF الخاصة بك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "تفاعل %1$@ مع صورتك";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "تفاعَل %1$@ مع صورتك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "تفاعل %1$@ مع مُلصقك";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "تفاعَل %1$@ مع مُلصَقك";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "تفاعل %1$@ مع : \"%2$@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "تفاعَل %1$@ مع : \"%2$@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "تفاعل %1$@ مع الفيديو الخاص بك";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "تفاعَل %1$@ مع الفيديو الخاص بك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "تفاعل %1$@ مع وسيطك المعروض لمرة واحدة";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "تفاعَل %1$@ مع ملف الوسائط المعروض لمرّة واحدة";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "تفاعل %1$@ مع تسجيلكَ الصوتي";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "تفاعَل %1$@ مع تسجيلكَ الصوتي";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "مقروء";
@@ -6053,19 +6092,19 @@
 "RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "إزالة";
 
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "يتعذّر تحديد المُستخدم.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "يتعذَّر تحديد المُستخدِم.";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "لم يعُد %1$@ من مستخدمي سيجنال. أعد المحاولة مرة أخرى باستخدام رقم هاتف صحيح.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "لم يعُد %1$@ من مُستخدِمي سيجنال. حاوِل مرّة أُخرى باستخدام رقم هاتف صحيح.";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "رقم الهاتف خاطئ";
+"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "رقم هاتف غير صحيح";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
 "RECIPIENT_PICKER_INVITE_ACTION" = "رسالة";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "لم يعُد %1$@ من مستخدمي سيجنال. هل تريد دعوة هذا الرقم؟";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "لم يعُد %1$@ من مُستخدِمي سيجنال. هل تريد دعوة هذا الرقم؟";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_TITLE" = "ادعُ إلى سيجنال";
@@ -6074,31 +6113,31 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "هل تُريد المُساعدة؟";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "إنَّ الـPIN الخاص بك عِبارة عَن أربع خانات أو أكثر والتي يُمكن أن تكون إما أرقام أو حُروف. إذا لم تستطع تَذكُر الـPIN الخاص بك، يجبُ عليك الانتظار لمدة سبعة أيام لكي تُعيد تسجيل الحساب الخاص بك.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "رقم التعريف الشخصي (PIN) الخاص بك عبارة عن كود من أربع خانات أو أكثر والتي يُمكن أن تكون إما أرقام أو حُروف. إذا لم تستطع تَذكُّر رقم التعريف الشخصي (PIN) الخاص بك، يجبُ عليك الانتظار لمدة سبعة أيام لكي تُعيد تسجيل الحساب الخاص بك.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "إنَّ الرقم التعريفي الشخصي الخاص بك عِبارة عَن رمز أنشأته مكوّن من أربع خانات أو أكثر والتي يُمكن أن تكون إما أرقامًا أو حُروفًا. إذا لم تستطع تَذكُر الرقم التعريفي الشخصي الخاص بك، تستطيع إنشاء واحِد جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة، مِثل معلومات حسابك الشخصي.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "رقم التعريف الشخصي (PIN) الخاص بك عِبارة عن كود أنشأته مُكوَّن من أربع خانات أو أكثر والتي يُمكن أن تكون إما أرقامًا أو حُروفًا. إذا لم تستطع تَذكُّر رقم التعريف الشخصي (PIN) الخاص بك، تستطيع إنشاء واحِد جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة، مِثل معلومات حسابك الشخصي.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "إنَّ الرقم التعريفي الشخصي الخاص بك عِبارة عَن رمز أنشأته مكوّن من أربع خانات أو أكثر والتي يُمكن أن تكون إما أرقامًا أو حُروفًا. إذا لم تستطع تَذكُر الرقم التعريفي الشخصي الخاص بك، تستطيع إنشاء واحِد جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة، مِثل معلومات حسابك الشخصي.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "رقم التعريف الشخصي (PIN) الخاص بك عِبارة عَن كود أنشأته مُكوَّن من أربع خانات أو أكثر والذي يُمكن أن يكون إما أرقامًا أو حُروفًا. إذا لم تستطع تَذكُّر رقم التعريفي الشخصي (PIN) الخاص بك، تستطيع إنشاء واحِد جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكنك ستفقِد بعض الإعدادات المحفوظة، مِثل معلومات حسابك الشخصي.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "إنَّ الـPIN غير صحيح";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "رقم التعريف الشخصي (PIN) غير صحيح";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "مرحبًا!";
 
 /* Body of action sheet shown when rate-limited during registration. */
-"REGISTER_RATE_LIMITING_ALERT" = "حاولت كثيرًا. يُرجى الانتِظار بضع دقائق قبل المُحاولة مرة أُخرى.";
+"REGISTER_RATE_LIMITING_ALERT" = "حاولتَ كثيرًا. يُرجى الانتِظار بضع دقائق قبل المُحاولة مرّة أُخرى.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "حاولت كثيرًا. فضلًا انتظر دقيقة واحدة قبل إعادة المحاولة.";
+"REGISTER_RATE_LIMITING_BODY" = "حاولتَ كثيرًا. يُرجى الانتظار لدقيقة واحدة قبل إعادة المحاولة.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "أنتَ قد حاولتَ كثيرًا. يُرجى الانتظار لمُدة دقيقة واحدة قبل المُحاولة مرة أُخرى.";
+"REGISTER_RATE_LIMITING_ERROR" = "حاولتَ كثيرًا. يُرجى الانتظار لمُدة دقيقة واحدة قبل إعادة المحاولة.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "فشلت إعادة الاشتراك في الإشعارات اللحظية.";
+"REGISTRATION_BODY" = "فشلت إعادة الاشتراك في الإشعارات داخل التطبيق.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "تحديث";
@@ -6107,16 +6146,16 @@
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "لمتابعة التسجيل، يُرجى التحديث إلى أحدث إصدار من سيجنال.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "يَجب تحديث التطبيق";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "التحديث مطلوب";
 
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
-"REGISTRATION_CAPTCHA_TITLE" = "علينا التحقق من أنك إنسان";
+"REGISTRATION_CAPTCHA_TITLE" = "نحتاج للتحقُّق من أنك لستَ روبوتًا.";
 
 /* Label for the country code field */
-"REGISTRATION_DEFAULT_COUNTRY_NAME" = "رمز البلد";
+"REGISTRATION_DEFAULT_COUNTRY_NAME" = "كود البلد";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
-"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "الاستمرار سيُعطل سيجنال على الأجهزة الأُخرى المُسجلة بنفس رقم الهاتف.";
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "الاستمرار سيُعطِّل سيجنال على الأجهزة الأُخرى المُسجَّلة حاليًا بنفس رقم الهاتف.";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "نَقل الحساب والرسائل";
@@ -6131,28 +6170,28 @@
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "أدخِل الرقم";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
-"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "لقد تم قفل حسابك لِحماية خصوصيتك وأمانك. بعد %1$@ من خمول حسابك، سَيكون بإمكانك إعادة التسجيل برقم هاتفك دون الحاجة إلى رقم التعريف الشخصي. ستُحذَف جميع محتويات حسابك.";
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "تمَّ قفل حسابك لِحماية خصوصيتك وأمانك. بعد %1$@ من خمول حسابك، سَيكون بإمكانك إعادة التسجيل برقم هاتفك دون الحاجة إلى رقم التعريف الشخصي (PIN). ستُحذَف جميع محتويات حسابك.";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
-"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "تعرّف على المزيد حول الحِسابات المُقفلة";
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "اعرف المزيد عن الحِسابات المُقفلة";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
-"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "استخدم رقم هاتف مختلف";
+"REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "استخدم رقم هاتف مُختلِف";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
-"REGISTRATION_LOCK_TIMEOUT_TITLE" = "لقد تمَّ قَفل الحِساب";
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "تمَّ قَفل الحِساب";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_BODY" = "للمُتابعة، تأكَّد أنَّ الهاتف الخاص بك مُتَّصل بالانترنت ثمَّ حاول مرَّة أخرى.";
+"REGISTRATION_NETWORK_ERROR_BODY" = "للمُتابعة، تأكَّد من أنَّ الهاتف الخاص بك مُتَّصل بالإنترنت ثم حاول مرّة أخرى.";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the title on that error sheet. */
-"REGISTRATION_NETWORK_ERROR_TITLE" = "تأكَّد مِنَ الاِتِّصال";
+"REGISTRATION_NETWORK_ERROR_TITLE" = "تحقَّق من الاتصال";
 
 /* Title of button to tap if you do not have a backup key during registration. */
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "ليس بمتناولك مفتاح النسخة الاحتياطية؟";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "أدخل رقم هاتفك للبدء.";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "أدخِل رقم هاتفك للبدء.";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "رقم هاتفك";
@@ -6164,34 +6203,34 @@
 "REGISTRATION_PHONENUMBER_BUTTON" = "رقم الهاتف";
 
 /* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_CONFIRM_SUBTITLE" = "أعد إدخال رقم التعريف الشخصي الذي أنشأته للتو.";
+"REGISTRATION_PIN_CONFIRM_SUBTITLE" = "أعِد إدخال رقم التعريف الشخصي (PIN) الذي أنشأته للتو.";
 
 /* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_CONFIRM_TITLE" = "تأكيد PIN الخاص بك";
+"REGISTRATION_PIN_CONFIRM_TITLE" = "تأكيد رقم PIN";
 
 /* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
-"REGISTRATION_PIN_CREATE_SUBTITLE" = "يُمكن أن تساعدك أرقام التعريف الشخصية على استعادة حسابك والحفاظ على معلوماتك مُشفّرة مع سيجنال.";
+"REGISTRATION_PIN_CREATE_SUBTITLE" = "يُمكن أن تساعدك أرقام التعريف الشخصية (PINs) على استعادة حسابك والحفاظ على معلوماتك مُشفَّرة مع سيجنال.";
 
 /* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_CREATE_TITLE" = "إنشاء الـPIN الخاص بك";
+"REGISTRATION_PIN_CREATE_TITLE" = "إنشاء رقم PIN";
 
 /* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
-"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "يُمكن أن تساعدك أرقام التعريف الشخصية على استعادة حسابك والحفاظ على معلوماتك مُشفّرة مع سيجنال.";
+"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "يُمكن أن تساعدك أرقام التعريف الشخصية (PINs) على استعادة حسابك والحفاظ على معلوماتك مُشفَّرة مع سيجنال.";
 
 /* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "أدخل PIN الخاص بِكَ";
+"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "أدخِل رقم PIN";
 
 /* During registration, users set up their profile. Users input a family name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "اسم العائلة";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "مَن يُمكنه العثور عليَّ باستخدام رقمي الخاص؟";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "مَن يُمكنه إيجادي باستخدام رقمي؟";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "الاسم الأول";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
-"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "سَيظهر اسمك والصورة والتغييرات التي أحدِثت لها لِجهات اتصالك عندما تبدأ دردشة جديدة أو تقبلها.";
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "سَيظهر اسمك والصورة والتغييرات التي أُحدِثت عليها لِجهات اتصالك عندما تبدأ دردشة جديدة أو تقبلها.";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
 "REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "عن خصوصية الحساب الشخصي";
@@ -6236,19 +6275,19 @@
 "REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "لقد قمت بمحاولات كثيرة لإدخال الرمز. حاول مجددًا في %1$@";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "الرمز الذي أدخلته غير صحيح. يُرجى إعادة إرسال الرمز والمحاولة من جديد.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "الكود الذي أدخلته غير صحيح. يُرجى إعادة إرسال الكود والمحاولة من جديد.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "فضلاً أدخل رقم هاتف صالح للتسجيل.";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "يُرجى إدخال رقم هاتف صالح للتسجيل.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "رقم هاتف غير صالح";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "سَوف يتمُّ إرسال رَمز تَحقُّق إلى هذا الرَّقم. هل رقمُ هاتِفك أعلاه صحيح؟";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "سَوف يتمُّ إرسال كود التحقُّق إلى هذا الرقم. هل رقمُ هاتِفك أعلاه صحيح؟";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "تأكيدُ الرَّقم: %1$@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "تأكيدُ الرقم: %1$@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "تحرير";
@@ -6278,10 +6317,10 @@
 "REMOVE_PREVIEW" = "إزالة المعاينة";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "اختر مُشرف جديد";
+"REPLACE_ADMIN_VIEW_TITLE" = "اختر مُشرِف جديد";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "إعادة الاشتراك في الإشعارات اللحظية";
+"REREGISTER_FOR_PUSH" = "إعادة الاشتراك في الإشعارات داخل التطبيق";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
 "REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "لديك %1$@ محاولة/محاولات متبقية. إذا استنفذتَ جميع المُحاولات، يُمكنك إنشاء رمز PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة مِثل معلومات حسابك الشخصي.";
@@ -6293,7 +6332,7 @@
 "RESET" = "إعادة التعيين";
 
 /* Generic text for button that retries whatever the last action was. */
-"RETRY_BUTTON_TEXT" = "إعادة المحاولة";
+"RETRY_BUTTON_TEXT" = "إعادة المُحاولة";
 
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "العودة";
@@ -6305,22 +6344,22 @@
 "RING_ON_CONFIRMATION_TOAST_LABEL" = "تم تفعيل الرنين";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "أضف على أي حال";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "أضِف على أي حال";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "اتصل على أي حال";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "أرسل على أي حال";
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "أرسِل على أي حال";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "هؤلاء الأشخاص التالون رُبما قد أعادوا التثبيت أو قد غيروا أجهزتهم. تحقق من رقم الأمان الخاص بك أنت معهم لِضمان الخصوصية.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "هؤلاء الأشخاص التاليون رُبما قد أعادوا التثبيت أو قد غيَّروا أجهزتهم. تحقَّق من رقم الأمان الخاص بك أنت معهم لِضمان الخصوصية.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "تمَّ التحقُّق مِنهُ مُسبقًا";
 
 /* Title for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_TITLE" = "تغييرات رقم الأمان";
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "التغيُّرات في رقم الأمان";
 
 /* Text explaining that the given contact has had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "مُتحقَّق منه";
@@ -6332,7 +6371,7 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "رقم أمان سيجنال الخاص بنا:\n%1$@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "تغير رقم أمانك مع %1$@. قد ترغب بالتحقق منه.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "تغيَّر رقم أمانك مع %1$@. قد ترغب بالتحقُّق منه.";
 
 /* Title for Safety Tips button in thread details. */
 "SAFETY_TIPS_BUTTON_ACTION_TITLE" = "نصائح السلامة";
@@ -6377,43 +6416,43 @@
 "SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "الرسائل الغامضة أو غير ذات الصلة";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "امسح رمز الاستجابة السريعة المعروض على جهاز جهة اتصالك.";
+"SCAN_CODE_INSTRUCTIONS" = "امسح كود الـ QR المعروض على جهاز جهة اتصالك.";
 
 /* Title for the 'scan QR code' view. */
-"SCAN_QR_CODE_VIEW_TITLE" = "مسح رمز الاستجابة السريعة";
+"SCAN_QR_CODE_VIEW_TITLE" = "امسح ضوئيًا كود الـ QR";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "فوراً";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "فورًا";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "تعذَّر الوصُل إلى المُصادقة.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "تعذَّر الوصول إلى المُصادقة.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "فشلت المُصادَقة.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "إن عدد كبير من مُحاولات المُصادقة فاشلة. يُرجى مُعاودة المُحاولة في وقت لاحق.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "عدد كبير من مُحاولات المُصادقة فاشلة. يُرجى مُعاودة المُحاولة في وقتٍ لاحق.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "يجب عليك تمكين رمز المرور في إعدادات الـiOS الخاصة بك من أجل استخدام قفل الشاشة.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "يجب عليك تمكين رمز المرور في إعدادات iOS الخاصة بك من أجل استخدام قفل الشاشة.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "يجب عليك تمكين رمز المرور في إعدادات الـiOS الخاصة بك من أجل استخدام قفل الشاشة.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "يجب عليك تمكين رمز المرور في إعدادات iOS الخاصة بك من أجل استخدام قفل الشاشة.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "يجب عليك تمكين رمز المرور في إعدادات الـiOS الخاصة بك من أجل استخدام قفل الشاشة.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "يجب عليك تمكين رمز المرور في إعدادات iOS الخاصة بك من أجل استخدام قفل الشاشة.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "صَادِق لِفَتح سيجنال.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "قُم بالمصادقة لفتح سيجنال.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "فشلت المُصادَقة.";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "فَكّ قُفل سيجنال";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "فتح قفل سيجنال";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "اسم، اسم مُستخدم، أو رقم";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "اسم، أو اسم مُستخدِم، أو رقم";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "البحث بالاسم أو الرقم";
@@ -6434,13 +6473,13 @@
 "SEARCH_SECTION_MESSAGES" = "الرسائل";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "لربط هذا الجهاز مع حساب مُختلف، يجب عليك أولا إعادة تعيين هذا الجهاز. هل أنت متأكد من أنك تريد حذف كل المحفوظات (رسائل ومرفقات ومكالمات، إلخ.)؟ لا يمكن التراجع عن هذا الإجراء.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "لربط هذا الجهاز مع حساب مُختلف، يجب عليك أولًا إعادة تعيين هذا الجهاز. هل أنت متأكِّد من أنك تريد حذف كل السجلات (رسائل ومرفقات ومكالمات، إلخ.)؟ لا يمكن التراجع عن هذا الإجراء.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "حذف كل شيء";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "الحساب غير متوافق";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "الحساب غير مُطابِق";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "حدِّث سيجنال في هذا الجهاز حتى تستطيع ربطه بهاتفك.";
@@ -6449,10 +6488,10 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "إصدار غير مدعوم";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "إن الجهاز الآخر الخاص بك يُشغِّل إصدار قديم من سيجنال وهو لا يدعم مسح رُموز الاستجابة السريعة للـiPad. يُرجى تثبيت آخر إصدار من سيجنال ثم المُحاولة مرة أُخرى.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "الجهاز الآخر الخاص بك يُشغِّل إصدار قديم من سيجنال وهو لا يدعم مسح كودات الـ QR الخاصة بالآيباد. يُرجى تثبيت آخر إصدار من سيجنال ثم المُحاولة مرّة أُخرى.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "حَدِّث الجِهاز الماسِح";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "حَدِّث الجهاز الماسِح";
 
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "فشل ربط الجهاز الخاص بك";
@@ -6479,7 +6518,7 @@
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "اختر اسمًا لهذا الجهاز";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "سترى هذا الاسم ضمن \"الأجهزة المُرتبطة\".";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "سترى هذا الاسم ضمن \"الأجهزة المُرتبِطة\".";
 
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "اختر اسمًا";
@@ -6488,37 +6527,37 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "إنهاء الارتباط";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "شغِّل  سيجنال على الهاتف الخاص بك لربط هذا الـiPad بحسابك";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "شغِّل سيجنال على الهاتف الخاص بك لربط هذا الآيباد بحسابك.";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "ليس لديّ تطبيق سيجنال على هاتفي…";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "اذهب إلى الـAppStore على هاتفك ، ثبِّت سيجنال، أكمل عملية التسجيل، وبعد ذلك يُمكنك ربط الـiPad الخاص بك بنفس الحساب.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "اذهب إلى متجر التطبيقات على هاتفك، وثبِّت سيجنال، وأكمِل عملية التسجيل، وبعد ذلك يُمكنك ربط الآيباد الخاص بك بنفس الحساب.";
 
 /* alert title */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "ثبِّت سيجنال على الهاتف الخاص بك";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "قُم بتثبيت سيجنال على الهاتف الخاص بك";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "انقر على صورة حسابك الشخصي لفتح ‫إعدادات ‫‫سيجنال‬‬‫ على الهاتف الخاص بك. بعد ذلك \"اﻷجهزة المُرتبطة\" ثم \"ربط جهاز جديد\" لمسح هذا الرمز عن طريق هاتفك:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "انقر على صورة حسابك الشخصي لفتح ‫إعدادات ‫‫سيجنال‬‬‫ على الهاتف الخاص بك. بعد ذلك انقر على \"اﻷجهزة المُرتبطة\" ثم \"ربط جهاز جديد\" لمسح هذا الكود عن طريق هاتفك:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "مِن هُنا احصل على المُساعدة في ربط الـiPad الخاص بك";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "مِن هُنا احصل على المُساعدة في ربط الآيباد الخاص بك";
 
 /* Text for a button offering to refresh the QR code to link an iPad. */
 "SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON" = "تحديث الرمز";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "اِمسَح رَمز الاِستِجابَة السَّريعَة عَن طَريق هاتِفك";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "امسَح كود الـ QR باستخدام هاتفك";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "شَغِّل سيجنال على جهاز الـiPad القديم الخاص بك لكي تنقل الحساب الخاص بك";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "شَغِّل سيجنال على جهاز الآيباد القديم الخاص بك لكي تنقل الحساب الخاص بك.";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "أُعيدَ ضبط الجلسة الآمنة.";
 
 /* Label for the 'see all' button. */
-"SEE_ALL_BUTTON" = "إظهارُ الجَميع";
+"SEE_ALL_BUTTON" = "مشاهدة الكل";
 
 /* Button text to select all in any list selection mode */
 "SELECT_ALL" = "اختيار الكل";
@@ -6530,10 +6569,10 @@
 "SEND_BUTTON_TITLE" = "إرسال";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "لقد فشل إرسال رسالتك.";
+"SEND_FAILED_NOTIFICATION_BODY" = "فشل إرسال رسالتك.";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "فشل إرسال الدعوة، فضلاً أعد المحاولة لاحقاً.";
+"SEND_INVITE_FAILURE" = "فشل إرسال الدعوة. يُرجى إعادة المحاولة لاحقًا.";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "تجاهُل الوسائط";
@@ -6542,16 +6581,16 @@
 "SEND_MEDIA_RETURN_TO_CAMERA" = "العودة إلى الكاميرا";
 
 /* In-app camera: confirmation button in the prompt to turn off multi-mode. */
-"SEND_MEDIA_TURN_OFF_MM_BUTTON" = "تعطيل";
+"SEND_MEDIA_TURN_OFF_MM_BUTTON" = "إيقاف";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "ستفقد أي صور أو مقاطع فيديو تم التقاطها.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "ستفقد أي صور أو مقاطع فيديو تمَّ التقاطها.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "إطفاء الوضع المُتعدد؟";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "هل ترغبُ بإيقاف الوضع المُتعدِّد؟";
 
 /* String describing high quality sent media */
-"SENT_MEDIA_QUALITY_HIGH" = "بالغ الأهميّة";
+"SENT_MEDIA_QUALITY_HIGH" = "عالي الدقة";
 
 /* String describing standard quality sent media */
 "SENT_MEDIA_QUALITY_STANDARD" = "قياسي";
@@ -6602,22 +6641,22 @@
 "SEPA_DONATION_NAME_PLACEHOLDER" = "الاسم كما يظهر في الحساب المصرفي";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "يستخدم سيجنال تعمية النهاية-إلى-النهاية وقد يحتاج إلى إنعاش جلسة الدردشة الخاصة بك في بعض الأحيان. لا يُؤثر هذا على أمان الدردشة ولكن أنت رُبما تكون قد فوّتَ رسالة من جهة الاتصال هذه، يُمكِنُك سؤاله لإعادة إرسالها.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "يستخدم سيجنال التشفير من طرف لطرف، وقد يحتاج إلى إنعاش جلسة الدردشة الخاصة بك في بعض الأحيان. لا يُؤثِّر هذا على أمان الدردشة ولكن رُبما تكون أنت قد فوَّتَ رسالة من جهة الاتصال هذه. ولذلك، يُمكِنُك سؤاله لإعادة إرسالها.";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "تمَّ إنعاش جلسة الدردشة";
+"SESSION_REFRESH_ALERT_TITLE" = "تمَّ تحديث جلسة الدردشة";
 
 /* If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient. */
 "SESSION_SWITCHOVER_EVENT" = "يعود الرقم %1$@ إلى %2$@";
 
 /* Title for the wallpaper choose from photos option */
-"SET_WALLPAPER_CHOOSE_PHOTO" = "الاختيار من الصور";
+"SET_WALLPAPER_CHOOSE_PHOTO" = "اختر من الصور";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "الإعدادات المسبقة";
+"SET_WALLPAPER_PRESETS" = "الإعدادات الأولية";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "تعيين خلفية";
+"SET_WALLPAPER_TITLE" = "تعيين الخلفية";
 
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "الحِساب";
@@ -6635,37 +6674,37 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "الموقع الجغرافي";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "في حالة التفعيل، سيُحاول تطبيق سيجنال تجاوز الرقابة. لا تُفعِّل هذه الميزة إلا إذا كنتَ في مكان يخضع فيه سيجنال للرقابة.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "في حالة التفعيل، سيُحاول تطبيق سيجنال تجاوز الرقابة. لا تُفعِّل هذه الميزة إلّا إذا كُنتَ في مكان يخضع فيه سيجنال للرقابة.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "تم تنشيط تجاوز الرقابة إستنادًا على رقم الهاتف الخاص بحسابك.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "تمَّ تنشيط تجاوز الرقابة استنادًا على رقم الهاتف الخاص بحسابك.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "أنتَ قَد عطَّلتَ يدويًا تجاوز الرقابة.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "أنتَ عطَّلتَ يدويًا تجاوز الرقابة.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "لا يمكن تفعيل تجاوز الرقابة إلا عند الاتصال بالإنترنت.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "لا يمكن تفعيل تجاوز الرقابة إلّا عند الاتصال بالإنترنت.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "تجاوز الرقابة ليس ضُروريًا ؛ أنت بالفعل مُتصل بخدمة سيجنال.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "تجاوُز الرقابة ليس ضُروريًا؛ أنت بالفعل مُتصل بخدمة سيجنال.";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "إعدادات PIN المُتقدمة";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "إعدادات رقم PIN المُتقدِّمة";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "إعدادات PIN المُتقدمة";
+"SETTINGS_ADVANCED_PIN_TITLE" = "إعدادات رقم PIN المُتقدِّمة";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "تعطيل الـPIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "تعطيل رقم PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "تفعيل الـPIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "تفعيل رقم PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "تسليم سجل التصحيح";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "إرسال سجل التصحيح";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "سجلات الأخطاء";
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "سجلَّات الأخطاء";
 
 /* Information on sheet about changing the app icon - first line */
 "SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "سيظهر اسم التطبيق \"سيجنال\" على الشاشة الرئيسية وفي الإشعارات ومكتبة التطبيقات.";
@@ -6689,16 +6728,16 @@
 "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "استخدام صور جهات اتصال الهاتف";
 
 /* The title for the theme section in the appearance settings. */
-"SETTINGS_APPEARANCE_THEME_TITLE" = "السِّمَة";
+"SETTINGS_APPEARANCE_THEME_TITLE" = "النمط";
 
 /* The title for the appearance settings. */
 "SETTINGS_APPEARANCE_TITLE" = "المظهر";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
-"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@ (اِفتراضي)";
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@ (افتراضي)";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "إضافة مستخدم محظور";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "إضافة مُستخدِم محظور";
 
 /* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "ليس لديك جهات اتصال على سيجنال.";
@@ -6710,10 +6749,10 @@
 "SETTINGS_BLOCK_LIST_TITLE" = "محظور";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "إعادة توجيه المكالمات دائماً";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "إعادة توجيه المكالمات دائمًا";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "إعادة توجيه جميع المكالمات عبر خادم سيجنال لتفادي كشف عنوان بروتوكول الإنترنت الخاص بك لجهة اتصالك. ستنخفض جودة المكالمات عند التفعيل.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "إعادة توجيه جميع المكالمات عبر خادم سيجنال لتفادي كشف عنوان البروكسي الخاص بك لجهة اتصالك. ستنخفض جودة المكالمات عند التفعيل.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "تعديل الرقم";
@@ -6725,10 +6764,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "تغيير الرقم";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "تُوشِك على تغيير رقم هاتفك من %1$@ إلى %2$@.\n\nقبل الإستمرار, يُرجى التحقق من صحّة الرقم أدناه.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "تُوشِك على تغيير رقم هاتفك من %1$@ إلى %2$@.\n\nقبل الاستمرار، يُرجى التحقُّق من صحّة الرقم أدناه.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "رمز البلد";
+"SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "كود الدولة";
 
 /* Format for the 'country code' in the 'change phone number' settings. Embeds: {{ %1$@ the numeric country code prefix, %2$@ the country code abbreviation }}. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT" = "%1$@ (%2$@)";
@@ -6743,7 +6782,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "رقم الهاتف";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "يمكنك تغيير رقم هاتفك الحالي برقم جديد. لا يمكن التراجع عن هذا الإجراء.\n\nقبل الاستمرار, تأكد أن رقمك الجديد يمكنه تلقي الرسائل القصيرة أو المكالمات.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "استخدِم هذا لتغيير رقم هاتفك الحالي إلى رقم جديد. لا يمكن التراجع عن هذا الإجراء.\n\nقبل الاستمرار، تأكَّد أن رقمك الجديد يمكنه تلقِّي الرسائل القصيرة أو المكالمات.";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "تغيير رقم الهاتف";
@@ -6755,7 +6794,7 @@
 "SETTINGS_CHATS" = "الدردشات";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "مسح تاريخ الدردشات";
+"SETTINGS_CLEAR_HISTORY" = "مسح سجل الدردشات";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "حقوق النشر محفوظة لسيجنال Messenger\nمُرخص بموجب AGPLv3";
@@ -6767,7 +6806,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "استخدم بيانات أقل";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "اِستِخدامُ بَيَانَاتٍ أقَل قَد يُحسِّن المُكالَمات عَلَى الشَّبَكاتِ السَّيِّئَة.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "استخدام بيانات أقل قد يُحسِّن المكالمات على الشبكات الضعيفة.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "المُكالمات";
@@ -8229,6 +8268,9 @@
 
 /* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "إخراج من اﻷرشيف";
+
+/* Toast shown when tapping older media that can no longer be downloaded */
+"UNAVAILABLE_MEDIA_TAP_TOAST" = "This media is no longer available";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "إن المُستخدم ليس ضمن جهات اتصالك. هل تود حظر هذا المُستخدم؟";
