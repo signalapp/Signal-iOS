@@ -65,12 +65,16 @@ class GroupCallNotificationView: UIView {
 
         guard let bannerView: BannerView = {
             if membersPendingJoinNotification.count > 0 {
-                callService.audioService.playJoinSound()
+                if !CurrentAppContext().isAppForegroundAndActive() {
+                    callService.audioService.playJoinSound()
+                }
                 let addresses = membersPendingJoinNotification.map { $0.address }
                 membersPendingJoinNotification.removeAll()
                 return BannerView(addresses: addresses, action: .join)
             } else if membersPendingLeaveNotification.count > 0 {
-                callService.audioService.playLeaveSound()
+                if !CurrentAppContext().isAppForegroundAndActive() {
+                    callService.audioService.playLeaveSound()
+                }
                 let addresses = membersPendingLeaveNotification.map { $0.address }
                 membersPendingLeaveNotification.removeAll()
                 return BannerView(addresses: addresses, action: .leave)
