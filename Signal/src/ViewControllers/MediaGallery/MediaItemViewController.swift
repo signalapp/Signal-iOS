@@ -9,9 +9,9 @@ import SignalUI
 import YYImage
 
 protocol MediaItemViewControllerDelegate: AnyObject {
-
     func mediaItemViewControllerDidTapMedia(_ viewController: MediaItemViewController)
     func mediaItemViewControllerWillBeginZooming(_ viewController: MediaItemViewController)
+    func mediaItemViewControllerFullyZoomedOut(_ viewController: MediaItemViewController)
 }
 
 protocol VideoPlaybackStatusProvider: AnyObject {
@@ -401,6 +401,12 @@ extension MediaItemViewController: UIScrollViewDelegate {
 
     func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
         delegate?.mediaItemViewControllerWillBeginZooming(self)
+    }
+
+    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        if scale <= scrollView.minimumZoomScale {
+            delegate?.mediaItemViewControllerFullyZoomedOut(self)
+        }
     }
 
     func scrollViewDidZoom(_ scrollView: UIScrollView) {

@@ -733,6 +733,10 @@ extension MediaPageViewController: MediaItemViewControllerDelegate {
     func mediaItemViewControllerWillBeginZooming(_ viewController: MediaItemViewController) {
         setShouldHideToolbars(true, animated: true)
     }
+
+    func mediaItemViewControllerFullyZoomedOut(_ viewController: MediaItemViewController) {
+        setShouldHideToolbars(false, animated: true)
+    }
 }
 
 extension MediaGalleryItem: GalleryRailItem {
