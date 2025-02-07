@@ -25,7 +25,7 @@ public struct StorageService {
         case manifestProtoDeserializationFailed(version: UInt64)
         case itemProtoDeserializationFailed(identifier: StorageIdentifier)
 
-        case networkError(statusCode: Int)
+        case networkError
     }
 
     /// An identifier representing a given storage item.
@@ -648,7 +648,7 @@ public struct StorageService {
             )
         } catch {
             Logger.warn("Failure. <- \(requestDescription): \(error)")
-            throw .networkError(statusCode: 0)
+            throw .networkError
         }
 
         let status: StorageResponse.Status

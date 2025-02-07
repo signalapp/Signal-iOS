@@ -290,6 +290,7 @@ fileprivate extension HTTPUtils {
         case PaymentsError.timeout: return true
         case SignalError.connectionTimeoutError: return true
         case SignalError.connectionFailed: return true
+        case StorageService.StorageError.networkError: return true
         default: return false
         }
     }
