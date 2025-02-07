@@ -123,8 +123,22 @@ public class NotificationActionHandler {
         }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
             let thread = notificationMessage.thread
             let interaction = notificationMessage.interaction
+            var draftModelForSending: DraftQuotedReplyModel.ForSending?
             guard (interaction is TSOutgoingMessage) || (interaction is TSIncomingMessage) else {
                 throw OWSAssertionError("Unexpected interaction type.")
+            }
+
+            let optionalDraftModel: DraftQuotedReplyModel? = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+                if
+                    let incomingMessage = notificationMessage.interaction as? TSIncomingMessage,
+                    let draftQuotedReplyModel = DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(originalMessage: incomingMessage, tx: transaction.asV2Read) {
+                    return draftQuotedReplyModel
+                }
+                return nil
+            }
+
+            if let draftModel = optionalDraftModel {
+                draftModelForSending = try? DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending(draftModel)
             }
 
             return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
@@ -156,7 +170,7 @@ public class NotificationActionHandler {
                         explicitRecipients: [],
                         skippedRecipients: [],
                         transaction: transaction
-                    ))
+                    ), quotedReplyDraft: draftModelForSending)
                     do {
                         let preparedMessage = try unpreparedMessage.prepare(tx: transaction)
                         return ThreadUtil.enqueueMessagePromise(message: preparedMessage, transaction: transaction)
