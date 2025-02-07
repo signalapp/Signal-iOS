@@ -213,6 +213,16 @@ private class MockDeviceStore: OWSDeviceStore {
     func setEncryptedName(_ encryptedName: String, for device: OWSDevice, tx: any DBWriteTransaction) {
         device.encryptedName = encryptedName
     }
+
+    func mostRecentlyLinkedDeviceDetails(tx: any SignalServiceKit.DBReadTransaction) throws -> SignalServiceKit.MostRecentlyLinkedDeviceDetails? {
+        nil
+    }
+
+    func setMostRecentlyLinkedDeviceDetails(linkedTime: Date, notificationDelay: TimeInterval, tx: any SignalServiceKit.DBWriteTransaction) throws {
+    }
+
+    func clearMostRecentlyLinkedDeviceDetails(tx: any SignalServiceKit.DBWriteTransaction) {
+    }
 }
 
 private class MockDevicesService: OWSDeviceService {

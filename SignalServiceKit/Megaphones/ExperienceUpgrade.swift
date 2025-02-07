@@ -99,6 +99,12 @@ public class ExperienceUpgrade: SDSCodableModel, Decodable {
     }
 }
 
+extension ExperienceUpgrade {
+    public var shouldCheckPreconditions: Bool {
+        !isComplete && !isSnoozed && !hasPassedNumberOfDaysToShow
+    }
+}
+
 // MARK: - Removal
 
 extension ExperienceUpgrade {
@@ -107,6 +113,7 @@ extension ExperienceUpgrade {
         case
                 .introducingPins,
                 .notificationPermissionReminder,
+                .newLinkedDeviceNotification,
                 .createUsernameReminder,
                 .inactiveLinkedDeviceReminder,
                 .pinReminder,

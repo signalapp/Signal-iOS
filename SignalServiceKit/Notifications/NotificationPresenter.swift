@@ -50,7 +50,7 @@ public protocol NotificationPresenter {
         presentAtJoin: Bool
     )
 
-    func scheduleNotifyForNewLinkedDevice()
+    func scheduleNotifyForNewLinkedDevice(deviceLinkTimestamp: Date)
 
     /// Notify user to relaunch the app after we deliberately terminate when an incoming device transfer completes.
     func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void)
@@ -61,6 +61,7 @@ public protocol NotificationPresenter {
     func clearAllNotifications()
     func clearAllNotificationsExceptNewLinkedDevices()
     static func clearAllNotificationsExceptNewLinkedDevices()
+    func clearDeliveredNewLinkedDevicesNotifications()
 
     func cancelNotifications(threadId: String)
 

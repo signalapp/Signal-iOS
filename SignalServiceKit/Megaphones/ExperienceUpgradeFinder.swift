@@ -9,22 +9,6 @@ public class ExperienceUpgradeFinder {
 
     // MARK: -
 
-    public class func next(transaction: GRDBReadTransaction) -> ExperienceUpgrade? {
-        return allKnownExperienceUpgrades(transaction: transaction.asAnyRead)
-            .first(where: { upgrade in
-                if
-                    !upgrade.isComplete,
-                    !upgrade.isSnoozed,
-                    !upgrade.hasPassedNumberOfDaysToShow,
-                    upgrade.manifest.shouldBeShown(transaction: transaction.asAnyRead)
-                {
-                    return true
-                }
-
-                return false
-            })
-    }
-
     public class func markAsViewed(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
         Logger.info("marking experience upgrade as seen \(experienceUpgrade.uniqueId)")
         experienceUpgrade.markAsViewed(transaction: transaction.asAnyWrite)
@@ -66,7 +50,7 @@ public class ExperienceUpgradeFinder {
     /// Returns an array of all recognized ``ExperienceUpgrade``s. Contains the
     /// persisted record if one exists and is applicable, and an in-memory
     /// model otherwise.
-    private class func allKnownExperienceUpgrades(
+    public class func allKnownExperienceUpgrades(
         transaction: SDSAnyReadTransaction
     ) -> [ExperienceUpgrade] {
         var experienceUpgrades = [ExperienceUpgrade]()

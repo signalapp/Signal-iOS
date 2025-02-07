@@ -83,7 +83,7 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
-    public func scheduleNotifyForNewLinkedDevice() {
+    public func scheduleNotifyForNewLinkedDevice(deviceLinkTimestamp: Date) {
         Logger.warn("")
     }
 
@@ -104,6 +104,10 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
     }
 
     public static func clearAllNotificationsExceptNewLinkedDevices() {
+        Logger.warn("")
+    }
+
+    public func clearDeliveredNewLinkedDevicesNotifications() {
         Logger.warn("")
     }
 

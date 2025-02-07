@@ -178,7 +178,21 @@ class UserNotificationPresenter {
             assert(userInfo[AppNotificationUserInfoKey.threadId] != nil)
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForRemoteRead, repeats: false)
         } else if category == .newDeviceLinked {
-            let delay = TimeInterval.random(in: .hour...(3 * .hour))
+            let db = DependenciesBridge.shared.db
+            let deviceStore = DependenciesBridge.shared.deviceStore
+            let linkedDeviceDetails = db.read { tx in
+                try? deviceStore.mostRecentlyLinkedDeviceDetails(tx: tx)
+            }
+
+            let delay = {
+                if let linkedDeviceDetails {
+                    return linkedDeviceDetails.notificationDelay
+                } else {
+                    owsFailDebug("mostRecentlyLinkedDeviceDetails should be set before scheduling notification")
+                    return TimeInterval.random(in: .hour...(3 * .hour))
+                }
+            }()
+
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: delay, repeats: false)
         } else {
             trigger = nil
@@ -335,6 +349,19 @@ class UserNotificationPresenter {
 
             Self.notificationCenter.removePendingNotificationRequests(withIdentifiers: pendingNotificationIDs)
             Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: deliveredNotificationIDs)
+        }
+    }
+
+    static func clearDeliveredNewLinkedDevicesNotifications() {
+        Logger.info("Clearing delivered new linked device notifications")
+        Task {
+            let pendingNotificationRequestIDs = await Self.notificationCenter.deliveredNotifications()
+                .filter { notification in
+                    notification.request.content.categoryIdentifier == AppNotificationCategory.newDeviceLinked.identifier
+                }
+                .map(\.request.identifier)
+
+            Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: pendingNotificationRequestIDs)
         }
     }
 

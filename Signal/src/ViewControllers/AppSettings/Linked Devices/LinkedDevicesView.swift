@@ -172,6 +172,8 @@ class LinkedDevicesViewModel: ObservableObject {
                 self.editMode = .inactive
             }
         }
+
+        self.clearDeliveredNewLinkedDevicesNotificationsAndMegaphone()
     }
 
     func unlinkDevice(_ device: OWSDevice) {
@@ -279,6 +281,7 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
         from linkDeviceViewController: LinkDeviceViewController
     ) {
         self.deviceIdToIgnore = nil
+        self.scheduleNewLinkedDeviceNotification()
 
         guard let linkNSyncData else {
             linkDeviceViewController.popToLinkedDeviceList { [weak self] in
@@ -354,6 +357,44 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
                 }
             }
         }
+    }
+
+    private func scheduleNewLinkedDeviceNotification() {
+        let deviceLinkTimestamp = Date()
+        let notificationDelay = TimeInterval.random(in: .hour...(.hour * 3))
+        db.write { tx in
+            do {
+                try deviceStore.setMostRecentlyLinkedDeviceDetails(
+                    linkedTime: deviceLinkTimestamp,
+                    notificationDelay: notificationDelay,
+                    tx: tx
+                )
+            } catch {
+                owsFailDebug("Unable to set linked device details: \(error)")
+            }
+        }
+        SSKEnvironment.shared.notificationPresenterRef.scheduleNotifyForNewLinkedDevice(deviceLinkTimestamp: deviceLinkTimestamp)
+    }
+
+    private func clearDeliveredNewLinkedDevicesNotificationsAndMegaphone() {
+        let details = db.read { tx in
+            try? deviceStore.mostRecentlyLinkedDeviceDetails(tx: tx)
+        }
+
+        // Only clear them if the delivery time for the notification and
+        // megaphone has passed, otherwise it would just clear right away
+        // after linking.
+        if let details, Date() > details.shouldRemindUserAfter {
+            db.write { tx in
+                deviceStore.clearMostRecentlyLinkedDeviceDetails(tx: tx)
+                ExperienceUpgradeManager.clearExperienceUpgrade(
+                    .newLinkedDeviceNotification,
+                    transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite
+                )
+            }
+        }
+
+        SSKEnvironment.shared.notificationPresenterRef.clearDeliveredNewLinkedDevicesNotifications()
     }
 }
 

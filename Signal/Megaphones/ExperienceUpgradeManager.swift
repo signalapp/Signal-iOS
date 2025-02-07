@@ -15,9 +15,78 @@ class ExperienceUpgradeManager {
     static let splashStartDay = 7
 
     static func presentNext(fromViewController: UIViewController) -> Bool {
-        let optionalNext = SSKEnvironment.shared.databaseStorageRef.read(block: { transaction in
-            return ExperienceUpgradeFinder.next(transaction: transaction.unwrapGrdbRead)
-        })
+        var shouldClearNewDeviceNotification = false
+
+        let optionalNext = SSKEnvironment.shared.databaseStorageRef.read { transaction -> ExperienceUpgrade? in
+            let tx = transaction.unwrapGrdbRead.asAnyRead
+
+            guard let registrationDate = DependenciesBridge.shared.tsAccountManager.registrationDate(tx: tx.asV2Read) else {
+                return nil
+            }
+            let timeIntervalSinceRegistration = Date().timeIntervalSince(registrationDate)
+
+            let isRegisteredPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegisteredPrimaryDevice
+
+            return ExperienceUpgradeFinder.allKnownExperienceUpgrades(transaction: tx)
+                .first { upgrade in
+                    guard
+                        upgrade.shouldCheckPreconditions,
+                        upgrade.manifest.shouldCheckPreconditions(
+                            timeIntervalSinceRegistration: timeIntervalSinceRegistration,
+                            isRegisteredPrimaryDevice: isRegisteredPrimaryDevice,
+                            tx: tx
+                        )
+                    else {
+                        return false
+                    }
+
+                    switch upgrade.manifest {
+                    case .introducingPins:
+                        return ExperienceUpgradeManifest
+                            .checkPreconditionsForIntroducingPins(transaction: transaction)
+                    case .notificationPermissionReminder:
+                        return ExperienceUpgradeManifest
+                            .checkPreconditionsForNotificationsPermissionsReminder()
+                    case .newLinkedDeviceNotification:
+                        let result = ExperienceUpgradeManifest
+                            .checkPreconditionsForNewLinkedDeviceNotification(tx: transaction.asV2Read)
+                        switch result {
+                        case .display:
+                            return true
+                        case .skip:
+                            return false
+                        case .clearNotification:
+                            shouldClearNewDeviceNotification = true
+                            return false
+                        }
+                    case .createUsernameReminder:
+                        return ExperienceUpgradeManifest
+                            .checkPreconditionsForCreateUsernameReminder(transaction: transaction)
+                    case .remoteMegaphone(let megaphone):
+                        return ExperienceUpgradeManifest
+                            .checkPreconditionsForRemoteMegaphone(megaphone, tx: transaction)
+                    case .inactiveLinkedDeviceReminder:
+                        return ExperienceUpgradeManifest
+                            .checkPreconditionsForInactiveLinkedDeviceReminder(tx: transaction)
+                    case .pinReminder:
+                        return ExperienceUpgradeManifest
+                            .checkPreconditionsForPinReminder(transaction: transaction)
+                    case .contactPermissionReminder:
+                        return ExperienceUpgradeManifest
+                            .checkPreconditionsForContactsPermissionReminder()
+                    case .unrecognized:
+                        break
+                    }
+
+                    return false
+                }
+        }
+
+        if shouldClearNewDeviceNotification {
+            DependenciesBridge.shared.db.write { tx in
+                DependenciesBridge.shared.deviceStore.clearMostRecentlyLinkedDeviceDetails(tx: tx)
+            }
+        }
 
         // If we already have presented this experience upgrade, do nothing.
         guard
@@ -130,6 +199,7 @@ class ExperienceUpgradeManager {
                 .introducingPins,
                 .pinReminder,
                 .notificationPermissionReminder,
+                .newLinkedDeviceNotification,
                 .createUsernameReminder,
                 .inactiveLinkedDeviceReminder,
                 .contactPermissionReminder:
@@ -152,6 +222,23 @@ class ExperienceUpgradeManager {
             return PinReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .notificationPermissionReminder:
             return NotificationPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .newLinkedDeviceNotification:
+            let mostRecentlyLinkedDeviceDetails = SSKEnvironment.shared.databaseStorageRef.read { tx in
+                try? DependenciesBridge.shared.deviceStore
+                    .mostRecentlyLinkedDeviceDetails(tx: tx.asV2Read)
+            }
+
+            guard let mostRecentlyLinkedDeviceDetails else {
+                owsFailDebug("Missing mostRecentlyLinkedDeviceDetails")
+                return nil
+            }
+
+            return NewLinkedDeviceNotificationMegaphone(
+                db: DependenciesBridge.shared.db,
+                deviceStore: DependenciesBridge.shared.deviceStore,
+                experienceUpgrade: experienceUpgrade,
+                mostRecentlyLinkedDeviceDetails: mostRecentlyLinkedDeviceDetails
+            )
         case .createUsernameReminder:
             let usernameIsUnset: Bool = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return DependenciesBridge.shared.localUsernameManager

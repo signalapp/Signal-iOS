@@ -890,7 +890,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
     }
 
-    public func scheduleNotifyForNewLinkedDevice() {
+    public func scheduleNotifyForNewLinkedDevice(deviceLinkTimestamp: Date) {
         enqueueNotificationAction {
             await self.notifyViaPresenter(
                 category: .newDeviceLinked,
@@ -903,7 +903,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                         "LINKED_DEVICE_NOTIFICATION_BODY",
                         comment: "Body for system notification when a new device is linked. Embeds {{ time the device was linked }}"
                     ),
-                    Date().formatted(date: .omitted, time: .shortened)
+                    deviceLinkTimestamp.formatted(date: .omitted, time: .shortened)
                 ),
                 threadIdentifier: nil,
                 userInfo: [AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showLinkedDevices.rawValue],
@@ -1289,6 +1289,10 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     public static func clearAllNotificationsExceptNewLinkedDevices() {
         UserNotificationPresenter.clearAllNotificationsExceptNewLinkedDevices()
+    }
+
+    public func clearDeliveredNewLinkedDevicesNotifications() {
+        UserNotificationPresenter.clearDeliveredNewLinkedDevicesNotifications()
     }
 
     // MARK: - Serialization

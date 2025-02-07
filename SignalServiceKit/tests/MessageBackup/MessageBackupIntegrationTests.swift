@@ -561,12 +561,13 @@ private enum CrashyMocks {
         func notifyUserOfMissedCallBecauseOfNewIdentity(notificationInfo: CallNotificationInfo, tx: SDSAnyReadTransaction) { failTest(Self.self) }
         func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(notificationInfo: CallNotificationInfo, tx: SDSAnyReadTransaction) { failTest(Self.self) }
         func notifyForGroupCallSafetyNumberChange(callTitle: String, threadUniqueId: String?, roomId: Data?, presentAtJoin: Bool) { failTest(Self.self) }
-        func scheduleNotifyForNewLinkedDevice() { failTest(Self.self) }
+        func scheduleNotifyForNewLinkedDevice(deviceLinkTimestamp: Date) { failTest(Self.self) }
         func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void) { failTest(Self.self) }
         func notifyUserOfDeregistration(tx: any DBWriteTransaction) { failTest(Self.self) }
         func clearAllNotifications() { failTest(Self.self) }
         func clearAllNotificationsExceptNewLinkedDevices() { failTest(Self.self) }
         static func clearAllNotificationsExceptNewLinkedDevices() { failTest(Self.self) }
+        func clearDeliveredNewLinkedDevicesNotifications() { failTest(Self.self) }
         func cancelNotifications(threadId: String) { failTest(Self.self) }
         func cancelNotifications(messageIds: [String]) { failTest(Self.self) }
         func cancelNotifications(reactionId: String) { failTest(Self.self) }
