@@ -1514,7 +1514,7 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         // We track these errors separately just in case.
         _ = Task { [chatService] in
             do {
-                try await chatService.waitToFinishConnecting()?.disconnect()
+                try await chatService.waitToFinishConnecting(cancel: true)?.disconnect()
             } catch {
                 Logger.error("\(logPrefix): failed to disconnect libsignal: \(error)")
             }
@@ -1644,11 +1644,17 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
             return activeConnection === connection
         }
 
-        func waitToFinishConnecting() async -> Connection? {
+        func waitToFinishConnecting(cancel: Bool = false) async -> Connection? {
             switch self {
-            case .closed: nil
-            case .connecting(token: _, task: let task): await task.value
-            case .open(let connection): connection
+            case .closed:
+                return nil
+            case .connecting(token: _, task: let task):
+                if cancel {
+                    task.cancel()
+                }
+                return await task.value
+            case .open(let connection):
+                return connection
             }
         }
     }
@@ -1727,6 +1733,10 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                 OutageDetection.shared.reportConnectionSuccess()
                 return chatService
 
+            } catch is CancellationError {
+                // We've been asked to disconnect, no other action necessary.
+                // (We could even skip updating state, since the disconnect action should have already set it to "closed",
+                // but just in case it's still on "connecting" we'll continue on to execute that cleanup.)
             } catch SignalError.appExpired(_) {
                 appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
             } catch SignalError.deviceDeregistered(_) {
@@ -1742,6 +1752,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
                 OutageDetection.shared.reportConnectionFailure()
             }
 
+            // Only failure cases get here.
             connectionAttemptCompleted(.closed)
             return nil
         })
@@ -1767,7 +1778,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
         // Spin off a background task to disconnect the previous connection.
         _ = Task {
             do {
-                try await previousConnection.waitToFinishConnecting()?.disconnect()
+                try await previousConnection.waitToFinishConnecting(cancel: true)?.disconnect()
             } catch {
                 Logger.warn("\(self.logPrefix): error while disconnecting: \(error)")
             }
