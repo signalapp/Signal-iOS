@@ -317,9 +317,17 @@ private class CustomTimePicker: UIPickerView, UIPickerViewDataSource, UIPickerVi
         didSet {
             guard oldValue != selectedUnit else { return }
             reloadComponent(Component.duration.rawValue)
+            clampSelectedTimeIfSelectedUnitIsWeeks(selectedUnit)
             durationChangeCallback(selectedDuration)
         }
     }
+    
+    private func clampSelectedTimeIfSelectedUnitIsWeeks(_ unit: CustomTimePicker.Unit) {
+        if unit.interval == .week {
+            selectedTime = unit.maxValue
+        }
+    }
+    
     var selectedTime: Int = 1 {
         didSet {
             guard oldValue != selectedTime else { return }
