@@ -6,12 +6,10 @@
 import Foundation
 
 /// Generates timestamps for messages/envelopes.
-@objc
-public class MessageTimestampGenerator: NSObject {
+public class MessageTimestampGenerator {
     private let rangeToAvoid = AtomicValue<ClosedRange<UInt64>?>(nil, lock: .init())
     private let nowMs: () -> UInt64
 
-    @objc
     public static let sharedInstance = MessageTimestampGenerator()
 
     public init(nowMs: @escaping () -> UInt64 = NSDate.ows_millisecondTimeStamp) {
@@ -22,7 +20,6 @@ public class MessageTimestampGenerator: NSObject {
     ///
     /// Performs a few heuristics to try and avoid generating the same timestamp
     /// repeatedly when called in a tight loop.
-    @objc
     public func generateTimestamp() -> UInt64 {
         let generatedTimestamp = max(nowMs(), 1)
         return rangeToAvoid.update { rangeToAvoid in
