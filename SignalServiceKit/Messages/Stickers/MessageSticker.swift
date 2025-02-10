@@ -7,7 +7,7 @@ import Foundation
 
 // MARK: - MessageStickerDraft
 
-public class MessageStickerDraft: NSObject {
+public class MessageStickerDraft {
     public let info: StickerInfo
 
     public var packId: Data {
