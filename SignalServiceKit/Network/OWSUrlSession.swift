@@ -15,7 +15,7 @@ public enum OWSURLSessionError: Error, IsRetryableProvider {
     }
 }
 
-public class OWSURLSession: NSObject, OWSURLSessionProtocol {
+public class OWSURLSession: OWSURLSessionProtocol {
 
     // MARK: - OWSURLSessionProtocol conformance
 
@@ -103,8 +103,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         self.configuration = configuration
         self.maxResponseSize = maxResponseSize
         self.canUseSignalProxy = canUseSignalProxy
-
-        super.init()
 
         // Ensure this is set so that we don't try to create it in deinit().
         _ = self.delegateBox
