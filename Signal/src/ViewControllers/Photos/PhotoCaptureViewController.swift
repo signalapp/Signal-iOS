@@ -1051,9 +1051,7 @@ extension PhotoCaptureViewController {
 
     @objc
     private func didTapFlashMode() {
-        firstly {
-            cameraCaptureSession.toggleFlashMode()
-        }.done {
+        cameraCaptureSession.toggleFlashMode().done {
             self.updateFlashModeControl(animated: true)
         }.catch { error in
             owsFailDebug("Error: \(error)")
@@ -1218,9 +1216,7 @@ extension PhotoCaptureViewController {
 
     private func pausePhotoCapture() {
         guard cameraCaptureSession.avCaptureSession.isRunning else { return }
-        firstly {
-            cameraCaptureSession.stop()
-        }.done { [weak self] in
+        cameraCaptureSession.stop().done { [weak self] in
             self?.hasCameraStarted = false
         }.catch { [weak self] error in
             self?.showFailureUI(error: error)
@@ -1229,9 +1225,7 @@ extension PhotoCaptureViewController {
 
     private func resumePhotoCapture() {
         guard !cameraCaptureSession.avCaptureSession.isRunning else { return }
-        firstly {
-            cameraCaptureSession.resume()
-        }.done { [weak self] in
+        cameraCaptureSession.resume().done { [weak self] in
             self?.hasCameraStarted = true
         }.catch { [weak self] error in
             self?.showFailureUI(error: error)

@@ -134,10 +134,8 @@ public class MessageProcessor {
     public func waitForFetchingAndProcessing(
         suspensionBehavior: SuspensionBehavior = .alwaysWait
     ) -> Guarantee<Void> {
-        return firstly { () -> Guarantee<Void> in
-            return SSKEnvironment.shared.messageFetcherJobRef.waitForFetchingComplete()
-        }.then { () -> Guarantee<Void> in
-            return self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
+        SSKEnvironment.shared.messageFetcherJobRef.waitForFetchingComplete().then { () -> Guarantee<Void> in
+            self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
         }
     }
 

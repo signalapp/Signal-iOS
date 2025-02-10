@@ -18,15 +18,6 @@ public func firstly<T: Thenable>(
     return promise
 }
 
-public func firstly<T>(
-    on scheduler: Scheduler? = nil,
-    _ block: () -> Guarantee<T>
-) -> Guarantee<T> {
-    let (promise, future) = Guarantee<T>.pending()
-    future.resolve(on: scheduler, with: block())
-    return promise
-}
-
 public func firstly<T: Thenable>(
     on scheduler: Scheduler,
     _ block: @escaping () throws -> T
