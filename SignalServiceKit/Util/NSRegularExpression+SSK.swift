@@ -5,7 +5,6 @@
 
 import Foundation
 
-@objc
 public extension NSRegularExpression {
 
     func hasMatch(input: String) -> Bool {
@@ -52,13 +51,11 @@ public extension NSRegularExpression {
         return substring
     }
 
-    @nonobjc
     func firstMatchSet(in searchString: String) -> MatchSet? {
         firstMatch(in: searchString, options: [], range: searchString.completeNSRange)?
             .createMatchSet(originalSearchString: searchString)
     }
 
-    @nonobjc
     func allMatchSets(in searchString: String) -> [MatchSet] {
         matches(in: searchString, options: [], range: searchString.completeNSRange)
             .compactMap { $0.createMatchSet(originalSearchString: searchString) }
