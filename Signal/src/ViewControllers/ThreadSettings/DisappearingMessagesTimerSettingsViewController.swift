@@ -323,7 +323,7 @@ private class CustomTimePicker: UIPickerView, UIPickerViewDataSource, UIPickerVi
     }
     
     private func clampSelectedTimeIfSelectedUnitIsWeeks(_ unit: CustomTimePicker.Unit) {
-        if unit.interval == .week {
+        if unit.interval == .week && selectedTime > unit.maxValue {
             selectedTime = unit.maxValue
         }
     }
