@@ -976,14 +976,7 @@ extension DonationSubscriptionManager {
 
 // MARK: -
 
-public class OWSRetryableSubscriptionError: NSObject, CustomNSError, IsRetryableProvider {
-    @objc
-    public static var asNSError: NSError {
-        OWSRetryableSubscriptionError() as Error as NSError
-    }
-
-    // MARK: - IsRetryableProvider
-
+public class OWSRetryableSubscriptionError: CustomNSError, IsRetryableProvider {
     public var isRetryableProvider: Bool { true }
 }
 
