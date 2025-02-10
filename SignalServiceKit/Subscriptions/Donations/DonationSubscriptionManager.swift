@@ -63,8 +63,7 @@ public extension Notification.Name {
 /// Not to be confused with ``BackupSubscriptionManager``, which does many
 /// similar things but designed around In-App Payments (StoreKit) and paid-tier
 /// Backups.
-@objc
-public class DonationSubscriptionManager: NSObject {
+public enum DonationSubscriptionManager {
 
     public static func warmCaches() {
         let value = SSKEnvironment.shared.databaseStorageRef.read { displayBadgesOnProfile(transaction: $0) }
@@ -119,7 +118,7 @@ public class DonationSubscriptionManager: NSObject {
 
     // MARK: Current subscription status
 
-    public class func currentProfileSubscriptionBadges(tx: SDSAnyReadTransaction) -> [OWSUserProfileBadgeInfo] {
+    public static func currentProfileSubscriptionBadges(tx: SDSAnyReadTransaction) -> [OWSUserProfileBadgeInfo] {
         let localProfile = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: tx)
         return (localProfile?.badges ?? []).filter { SubscriptionBadgeIds.contains($0.badgeId) }
     }
@@ -127,11 +126,11 @@ public class DonationSubscriptionManager: NSObject {
     /// A low-overhead, synchronous check for whether we *probably* have a
     /// current donation subscription. Callers who need to know precise details
     /// about our subscription should use `getCurrentSubscriptionStatus`.
-    public class func probablyHasCurrentSubscription(tx: SDSAnyReadTransaction) -> Bool {
+    public static func probablyHasCurrentSubscription(tx: SDSAnyReadTransaction) -> Bool {
         return !currentProfileSubscriptionBadges(tx: tx).isEmpty
     }
 
-    public class func getCurrentSubscriptionStatus(
+    public static func getCurrentSubscriptionStatus(
         for subscriberID: Data,
         networkManager: NetworkManager = SSKEnvironment.shared.networkManagerRef
     ) -> Promise<Subscription?> {
@@ -174,7 +173,7 @@ public class DonationSubscriptionManager: NSObject {
     /// payment has been authorized.
     ///
     /// - Returns: The new subscriber ID.
-    public class func prepareNewSubscription(currencyCode: Currency.Code) -> Promise<Data> {
+    public static func prepareNewSubscription(currencyCode: Currency.Code) -> Promise<Data> {
         firstly {
             Logger.info("[Donations] Setting up new subscription")
 
@@ -198,7 +197,7 @@ public class DonationSubscriptionManager: NSObject {
 
     /// Finalize a new subscription, after payment has been authorized with the
     /// given processor.
-    public class func finalizeNewSubscription(
+    public static func finalizeNewSubscription(
         forSubscriberId subscriberId: Data,
         paymentType: RecurringSubscriptionPaymentType,
         subscription: DonationSubscriptionLevel,
@@ -243,7 +242,7 @@ public class DonationSubscriptionManager: NSObject {
     }
 
     /// Update the subscription level for the given subscriber ID.
-    public class func updateSubscriptionLevel(
+    public static func updateSubscriptionLevel(
         for subscriberID: Data,
         to subscription: DonationSubscriptionLevel,
         currencyCode: Currency.Code
@@ -258,7 +257,7 @@ public class DonationSubscriptionManager: NSObject {
     }
 
     /// Cancel a subscription for the given subscriber ID.
-    public class func cancelSubscription(for subscriberID: Data) -> Promise<Void> {
+    public static func cancelSubscription(for subscriberID: Data) -> Promise<Void> {
         Logger.info("[Donations] Cancelling subscription")
 
         return firstly(on: DispatchQueue.global())  {
@@ -314,7 +313,7 @@ public class DonationSubscriptionManager: NSObject {
     /// Generate and register an ID for a new subscriber.
     ///
     /// - Returns the new subscriber ID.
-    private class func setupNewSubscriberID() -> Promise<Data> {
+    private static func setupNewSubscriberID() -> Promise<Data> {
         Logger.info("[Donations] Setting up new subscriber ID")
 
         let newSubscriberID = Randomness.generateRandomBytes(UInt(32))
@@ -325,7 +324,7 @@ public class DonationSubscriptionManager: NSObject {
         }
     }
 
-    private class func postSubscriberID(subscriberID: Data) -> Promise<Void> {
+    private static func postSubscriberID(subscriberID: Data) -> Promise<Void> {
         let request = OWSRequestFactory.setSubscriberID(subscriberID)
         return firstly {
             SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
@@ -338,7 +337,7 @@ public class DonationSubscriptionManager: NSObject {
         }
     }
 
-    private class func setDefaultPaymentMethod(
+    private static func setDefaultPaymentMethod(
         for subscriberId: Data,
         using processor: DonationPaymentProcessor,
         paymentMethodId: String
@@ -359,7 +358,7 @@ public class DonationSubscriptionManager: NSObject {
         }
     }
 
-    private class func setDefaultIDEALPaymentMethod(
+    private static func setDefaultIDEALPaymentMethod(
         for subscriberId: Data,
         setupIntentId: String
     ) -> Promise<Void> {
@@ -382,7 +381,7 @@ public class DonationSubscriptionManager: NSObject {
     ///
     /// - Returns
     /// The updated subscription.
-    private class func setSubscription(
+    private static func setSubscription(
         for subscriberID: Data,
         subscription: DonationSubscriptionLevel,
         currencyCode: Currency.Code
@@ -418,7 +417,7 @@ public class DonationSubscriptionManager: NSObject {
         }
     }
 
-    public class func requestAndRedeemReceipt(
+    public static func requestAndRedeemReceipt(
         subscriberId: Data,
         subscriptionLevel: UInt,
         priorSubscriptionLevel: UInt?,
@@ -454,7 +453,7 @@ public class DonationSubscriptionManager: NSObject {
         )
     }
 
-    public class func requestAndRedeemReceipt(
+    public static func requestAndRedeemReceipt(
         boostPaymentIntentId: String,
         amount: FiatMoney,
         paymentProcessor: DonationPaymentProcessor,
@@ -484,7 +483,7 @@ public class DonationSubscriptionManager: NSObject {
         )
     }
 
-    public class func generateReceiptRequest() -> (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest) {
+    public static func generateReceiptRequest() -> (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest) {
         do {
             let clientOperations = clientZKReceiptOperations()
             let receiptSerial = try generateReceiptSerial()
@@ -524,7 +523,7 @@ public class DonationSubscriptionManager: NSObject {
         }
     }
 
-    public class func requestReceiptCredential(
+    public static func requestReceiptCredential(
         subscriberId: Data,
         isValidReceiptLevelPredicate: @escaping (UInt64) -> Bool,
         context: ReceiptCredentialRequestContext,
@@ -589,7 +588,7 @@ public class DonationSubscriptionManager: NSObject {
         )
     }
 
-    private class func parseReceiptCredentialResponse(
+    private static func parseReceiptCredentialResponse(
         httpResponse: HTTPResponse,
         receiptCredentialRequestContext: ReceiptCredentialRequestContext,
         isValidReceiptLevelPredicate: (UInt64) -> Bool,
@@ -656,7 +655,7 @@ public class DonationSubscriptionManager: NSObject {
         return receiptCredential
     }
 
-    private class func parseReceiptCredentialPresentationError(
+    private static func parseReceiptCredentialPresentationError(
         error: Error
     ) -> Error {
         guard
@@ -679,7 +678,7 @@ public class DonationSubscriptionManager: NSObject {
         return KnownReceiptCredentialRequestError(errorCode: errorCode)
     }
 
-    public class func redeemReceiptCredentialPresentation(
+    public static func redeemReceiptCredentialPresentation(
         receiptCredentialPresentation: ReceiptCredentialPresentation
     ) -> Promise<Void> {
         let expiresAtForLogging: String = {
@@ -706,20 +705,20 @@ public class DonationSubscriptionManager: NSObject {
         }
     }
 
-    private class func generateReceiptSerial() throws -> ReceiptSerial {
+    private static func generateReceiptSerial() throws -> ReceiptSerial {
         let count = ReceiptSerial.SIZE
         let bytes = Randomness.generateRandomBytes(UInt(count))
         return try ReceiptSerial(contents: [UInt8](bytes))
     }
 
-    private class func clientZKReceiptOperations() -> ClientZkReceiptOperations {
+    private static func clientZKReceiptOperations() -> ClientZkReceiptOperations {
         let params = GroupsV2Protos.serverPublicParams()
         return ClientZkReceiptOperations(serverPublicParams: params)
     }
 
     // MARK: Heartbeat
 
-    public class func redeemSubscriptionIfNecessary() async throws {
+    public static func redeemSubscriptionIfNecessary() async throws {
         struct CheckerStore: SubscriptionRedemptionNecessityCheckerStore {
             let donationSubscriptionManager: DonationSubscriptionManager.Type
 
@@ -992,7 +991,7 @@ extension DonationSubscriptionManager {
 
     private static var cachedBadges = [OneTimeBadgeLevel: CachedBadge]()
 
-    public class func getCachedBadge(level: OneTimeBadgeLevel) -> CachedBadge {
+    public static func getCachedBadge(level: OneTimeBadgeLevel) -> CachedBadge {
         if let cachedBadge = self.cachedBadges[level] {
             return cachedBadge
         }
@@ -1001,7 +1000,7 @@ extension DonationSubscriptionManager {
         return cachedBadge
     }
 
-    public class func getBoostBadge() -> Promise<ProfileBadge> {
+    public static func getBoostBadge() -> Promise<ProfileBadge> {
         firstly {
             getOneTimeBadge(level: .boostBadge)
         }.map { profileBadge in
@@ -1012,7 +1011,7 @@ extension DonationSubscriptionManager {
         }
     }
 
-    public class func getOneTimeBadge(level: OneTimeBadgeLevel) -> Promise<ProfileBadge?> {
+    public static func getOneTimeBadge(level: OneTimeBadgeLevel) -> Promise<ProfileBadge?> {
         firstly { () -> Promise<DonationConfiguration> in
             fetchDonationConfiguration()
         }.map { donationConfiguration -> ProfileBadge? in
@@ -1030,7 +1029,7 @@ extension DonationSubscriptionManager {
         }
     }
 
-    public class func getSubscriptionBadge(subscriptionLevel levelRawValue: UInt) -> Promise<ProfileBadge> {
+    public static func getSubscriptionBadge(subscriptionLevel levelRawValue: UInt) -> Promise<ProfileBadge> {
         firstly { () -> Promise<DonationConfiguration> in
             fetchDonationConfiguration()
         }.map { donationConfiguration throws -> ProfileBadge in
