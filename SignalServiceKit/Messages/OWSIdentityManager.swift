@@ -1056,17 +1056,6 @@ class OWSIdentityManagerObjCBridge: NSObject {
     static let identityKeyLength = UInt(OWSIdentityManagerImpl.Constants.identityKeyLength)
 
     @objc
-    static let identityStateDidChangeNotification = NSNotification.Name.identityStateDidChange
-
-    @objc
-    static func identityKeyPair(forIdentity identity: OWSIdentity) -> ECKeyPair? {
-        return SSKEnvironment.shared.databaseStorageRef.read { tx in
-            let identityManager = DependenciesBridge.shared.identityManager
-            return identityManager.identityKeyPair(for: identity, tx: tx.asV2Read)
-        }
-    }
-
-    @objc
     static func identityKey(forAddress address: SignalServiceAddress) -> Data? {
         return SSKEnvironment.shared.databaseStorageRef.read { tx in
             let identityManager = DependenciesBridge.shared.identityManager
