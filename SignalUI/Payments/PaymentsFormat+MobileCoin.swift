@@ -133,7 +133,6 @@ public extension PaymentsFormat {
         return text
     }
 
-    @objc
     static func paymentPreviewText(
         paymentMessage: OWSPaymentMessage,
         type: OWSInteractionType,
