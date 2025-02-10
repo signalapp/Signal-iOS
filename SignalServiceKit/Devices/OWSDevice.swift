@@ -6,12 +6,6 @@
 import Foundation
 public import GRDB
 
-@available(swift, obsoleted: 1.0)
-@objcMembers
-public class OWSDeviceObjc: NSObject {
-    public static let primaryDeviceId: UInt32 = OWSDevice.primaryDeviceId
-}
-
 public final class OWSDevice: SDSCodableModel, Decodable {
     public static let primaryDeviceId: UInt32 = 1
 
