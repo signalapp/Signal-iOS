@@ -63,14 +63,16 @@ final class MessageBackupIndividualCallArchiver {
         }()
         individualCallUpdate.state = { () -> BackupProto_IndividualCall.State in
             switch individualCallInteraction.callType {
-            case .incoming, .outgoing:
+            case
+                    .incoming,
+                    .incomingAnsweredElsewhere,
+                    .outgoing:
                 return .accepted
             case
                     .outgoingIncomplete,
                     .incomingIncomplete,
                     .incomingDeclined,
                     .incomingDeclinedElsewhere,
-                    .incomingAnsweredElsewhere,
                     .incomingBusyElsewhere:
                 return .notAccepted
             case
