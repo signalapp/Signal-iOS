@@ -67,13 +67,9 @@ public struct OWSUDAccess {
 
 // MARK: -
 
-public class SenderCertificates: NSObject {
+public struct SenderCertificates {
     let defaultCert: SenderCertificate
     let uuidOnlyCert: SenderCertificate
-    init(defaultCert: SenderCertificate, uuidOnlyCert: SenderCertificate) {
-        self.defaultCert = defaultCert
-        self.uuidOnlyCert = uuidOnlyCert
-    }
 }
 
 // MARK: -
@@ -120,7 +116,7 @@ public protocol OWSUDManager {
 
 // MARK: -
 
-public class OWSUDManagerImpl: NSObject, OWSUDManager {
+public class OWSUDManagerImpl: OWSUDManager {
 
     private let keyValueStore = KeyValueStore(collection: "kUDCollection")
     private let serviceIdAccessStore = KeyValueStore(collection: "kUnidentifiedAccessUUIDCollection")
@@ -144,8 +140,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     public init(appReadiness: AppReadiness) {
         self.appReadiness = appReadiness
         self.trustRoot = OWSUDManagerImpl.trustRoot()
-
-        super.init()
 
         SwiftSingletons.register(self)
 
