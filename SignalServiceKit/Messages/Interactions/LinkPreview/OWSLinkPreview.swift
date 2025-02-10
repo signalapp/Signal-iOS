@@ -5,7 +5,7 @@
 
 import Foundation
 
-public enum LinkPreviewError: Int, Error {
+public enum LinkPreviewError: Error {
     /// A preview could not be generated from available input
     case noPreview
     /// A preview should have been generated, but something unexpected caused it to fail
@@ -19,7 +19,7 @@ public enum LinkPreviewError: Int, Error {
 // MARK: - OWSLinkPreviewDraft
 
 // This contains the info for a link preview "draft".
-public class OWSLinkPreviewDraft: NSObject {
+public class OWSLinkPreviewDraft: Equatable {
 
     public let url: URL
     public var urlString: String {
@@ -49,6 +49,13 @@ public class OWSLinkPreviewDraft: NSObject {
 
     public var displayDomain: String? {
         return URL(string: urlString).flatMap(LinkPreviewHelper.displayDomain(forUrl:))
+    }
+
+    /// Uses identity equatability even though comparing fields seems like it would make more sense because this
+    /// object used to inherit from `NSObject` without overridding `isEqual(_)` so it would have inherited
+    /// identity equatability.
+    public static func == (lhs: OWSLinkPreviewDraft, rhs: OWSLinkPreviewDraft) -> Bool {
+        return lhs === rhs
     }
 }
 
