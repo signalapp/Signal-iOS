@@ -7,16 +7,7 @@ import Foundation
 public import LibSignalClient
 
 extension Notification.Name {
-    public static var isCensorshipCircumventionActiveDidChange: Self {
-        return .init(rawValue: OWSSignalServiceObjC.isCensorshipCircumventionActiveDidChangeNotificationName)
-    }
-}
-
-public class OWSSignalServiceObjC: NSObject {
-    @objc
-    public static var isCensorshipCircumventionActiveDidChangeNotificationName: String {
-        return "NSNotificationNameIsCensorshipCircumventionActiveDidChange"
-    }
+    public static let isCensorshipCircumventionActiveDidChange = Notification.Name("NSNotificationNameIsCensorshipCircumventionActiveDidChange")
 }
 
 public class OWSSignalService: OWSSignalServiceProtocol {
