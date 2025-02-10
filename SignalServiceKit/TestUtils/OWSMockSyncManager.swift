@@ -7,9 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-@objc
-public class OWSMockSyncManager: NSObject, SyncManagerProtocol {
-    @objc
+public class OWSMockSyncManager: SyncManagerProtocol {
     public func sendConfigurationSyncMessage() {
         Logger.info("")
     }
