@@ -25,8 +25,7 @@ public enum BackgroundTaskState {
 /// * Retain a strong reference to the OWSBackgroundTask during the "work".
 /// * Clear all references to the OWSBackgroundTask when the work is done,
 ///   if possible.
-@objc
-public class OWSBackgroundTask: NSObject {
+public class OWSBackgroundTask {
     private let label: String
 
     // TODO: Replace all of the below ivars with Mutex in Swift 6.
@@ -39,7 +38,6 @@ public class OWSBackgroundTask: NSObject {
     private var completionBlock: (@MainActor @Sendable (BackgroundTaskState) -> Void)?
 
     // This could be a default param but objc is in the way for now.
-    @objc
     public convenience init(label: String) {
         self.init(label: label, completionBlock: nil)
     }
@@ -51,8 +49,6 @@ public class OWSBackgroundTask: NSObject {
 
         self.label = label
         self.completionBlock = completionBlock
-
-        super.init()
 
         start()
     }
