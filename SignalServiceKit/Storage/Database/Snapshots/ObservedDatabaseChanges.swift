@@ -14,7 +14,7 @@ import GRDB
 // Not all observers will update all of the properties below.
 //
 // UniqueId: Some observers use RowIds, some use uniqueIds.
-class ObservedDatabaseChanges: NSObject {
+class ObservedDatabaseChanges {
     typealias UniqueId = String
     typealias RowId = Int64
 
