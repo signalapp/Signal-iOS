@@ -11,10 +11,3 @@ public extension Locale {
         return ["zk", "zh", "ja", "ko", "vi"].contains(languageCode)
     }
 }
-
-@objc
-public extension NSLocale {
-    var isCJKV: Bool {
-        return (self as Locale).isCJKV
-    }
-}
