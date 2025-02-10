@@ -40,7 +40,7 @@ public enum OWSChatConnectionState: Int, CustomDebugStringConvertible {
 }
 
 // MARK: -
-public class OWSChatConnection: NSObject {
+public class OWSChatConnection {
     // TODO: Should we use a higher-priority queue?
     fileprivate static let messageProcessingQueue = DispatchQueue(label: "org.signal.chat-connection.message-processing")
 
@@ -200,8 +200,6 @@ public class OWSChatConnection: NSObject {
         self.accountManager = accountManager
         self.currentCallProvider = currentCallProvider
         self.registrationStateChangeManager = registrationStateChangeManager
-
-        super.init()
 
         appReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
             guard let self = self else { return }
