@@ -317,8 +317,8 @@ public struct StoryConversationItem {
                 if (lhs.0 as? TSPrivateStoryThread)?.isMyStory == true { return true }
                 if (rhs.0 as? TSPrivateStoryThread)?.isMyStory == true { return false }
                 if let priorityDateThreshold = prioritizeThreadsCreatedAfter {
-                    let lhsCreatedAfterThreshold = lhs.0.creationDate?.isAfter(priorityDateThreshold) ?? false
-                    let rhsCreatedAfterThreshold = rhs.0.creationDate?.isAfter(priorityDateThreshold) ?? false
+                    let lhsCreatedAfterThreshold = lhs.0.creationDate != nil && lhs.0.creationDate! > priorityDateThreshold
+                    let rhsCreatedAfterThreshold = rhs.0.creationDate != nil && rhs.0.creationDate! > priorityDateThreshold
                     if lhsCreatedAfterThreshold != rhsCreatedAfterThreshold {
                         return lhsCreatedAfterThreshold
                     }

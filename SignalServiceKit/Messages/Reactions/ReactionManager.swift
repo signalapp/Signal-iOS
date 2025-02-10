@@ -271,7 +271,7 @@ public class ReactionManager: NSObject {
         }
 
         let creationDate = Date(millisecondsSince1970: reaction.sentAtTimestamp)
-        guard !creationDate.isAfter(thresholdDate) else {
+        guard creationDate <= thresholdDate else {
             Logger.info("Skipping orphan reaction due to age: \(creationDate.timeIntervalSinceNow)")
             return false
         }

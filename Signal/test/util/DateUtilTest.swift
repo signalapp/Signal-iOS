@@ -4,8 +4,27 @@
 //
 
 import XCTest
+import Testing
 
 import SignalServiceKit
+
+@Test func testDateComparison() {
+    let firstDate = Date()
+    let sameDate = Date(timeIntervalSinceReferenceDate: firstDate.timeIntervalSinceReferenceDate)
+    let laterDate = Date(timeIntervalSinceReferenceDate: firstDate.timeIntervalSinceReferenceDate + 1)
+
+    #expect(firstDate.timeIntervalSinceReferenceDate == sameDate.timeIntervalSinceReferenceDate)
+    #expect(firstDate.timeIntervalSinceReferenceDate != laterDate.timeIntervalSinceReferenceDate)
+    #expect(firstDate == sameDate)
+    #expect(firstDate != laterDate)
+    #expect(firstDate.timeIntervalSinceReferenceDate < laterDate.timeIntervalSinceReferenceDate)
+    #expect(!(firstDate < sameDate))
+    #expect(firstDate < laterDate)
+    #expect(!(laterDate < firstDate))
+    #expect(!(firstDate > sameDate))
+    #expect(!(firstDate > laterDate))
+    #expect(laterDate > firstDate)
+}
 
 class DateUtilTest: XCTestCase {
     func buildDate(year: Int = 0,
@@ -25,24 +44,6 @@ class DateUtilTest: XCTestCase {
                                             minute: minute,
                                             second: second)
         return calendar.date(from: dateComponents)!
-    }
-
-    func testDateComparison() {
-        let firstDate = Date()
-        let sameDate = Date(timeIntervalSinceReferenceDate: firstDate.timeIntervalSinceReferenceDate)
-        let laterDate = Date(timeIntervalSinceReferenceDate: firstDate.timeIntervalSinceReferenceDate + 1)
-
-        XCTAssertEqual(firstDate.timeIntervalSinceReferenceDate, sameDate.timeIntervalSinceReferenceDate)
-        XCTAssertNotEqual(firstDate.timeIntervalSinceReferenceDate, laterDate.timeIntervalSinceReferenceDate)
-        XCTAssertEqual(firstDate, sameDate)
-        XCTAssertNotEqual(firstDate, laterDate)
-        XCTAssertTrue(firstDate.timeIntervalSinceReferenceDate < laterDate.timeIntervalSinceReferenceDate)
-        XCTAssertFalse(firstDate.isBefore(sameDate))
-        XCTAssertTrue(firstDate.isBefore(laterDate))
-        XCTAssertFalse(laterDate.isBefore(firstDate))
-        XCTAssertFalse(firstDate.isAfter(sameDate))
-        XCTAssertFalse(firstDate.isAfter(laterDate))
-        XCTAssertTrue(laterDate.isAfter(firstDate))
     }
 
     func testDateComparators() {

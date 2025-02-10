@@ -701,7 +701,7 @@ public class OWSMessageDecrypter {
         // about 5 seconds of leeway sufficient.
         let latestAcceptableFireDate = expirationDate.addingTimeInterval(5)
 
-        if latestAcceptableFireDate.isBefore(fireDate) {
+        if latestAcceptableFireDate < fireDate {
             placeholderCleanupTimer = Timer.scheduledTimer(
                 withTimeInterval: expirationDate.timeIntervalSinceNow,
                 repeats: false,

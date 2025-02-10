@@ -66,7 +66,7 @@ private func ClearOldTemporaryDirectoriesSync() {
                     Logger.error("failed to get a modification date for file or directory at: \(filePath)")
                     continue
                 }
-                if mtime.isAfter(thresholdDate) {
+                if mtime > thresholdDate {
                     continue
                 }
             } catch {

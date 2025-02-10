@@ -683,7 +683,7 @@ extension CLVTableDataSource: UITableViewDataSource {
 extension CLVTableDataSource {
     func updateAndSetRefreshTimer(for cell: ChatListCell?) {
         if let cell = cell, let timestamp = cell.nextUpdateTimestamp {
-            if nextUpdateAt == nil || timestamp.isBefore(nextUpdateAt!) {
+            if nextUpdateAt == nil || timestamp < nextUpdateAt! {
                 nextUpdateAt = timestamp
             }
         }

@@ -84,16 +84,8 @@ public extension Date {
         return result
     }
 
-    func isBefore(_ date: Date) -> Bool {
-        self < date
-    }
-
     var isBeforeNow: Bool {
         self < Date()
-    }
-
-    func isAfter(_ date: Date) -> Bool {
-        self > date
     }
 
     var isAfterNow: Bool {

@@ -821,11 +821,11 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
             let shouldStoreAllMediaLocally = backupAttachmentDownloadStore
                 .getShouldStoreAllMediaLocally(tx: tx)
 
+            let now = dateProvider()
             let isRecent: Bool
             if let attachmentTimestamp {
                 // We're "recent" if our newest owning message wouldn't have expired off the queue.
-                isRecent = dateProvider().ows_millisecondsSince1970 - attachmentTimestamp
-                    <= remoteConfigProvider.currentConfig().messageQueueTimeMs
+                isRecent = now.ows_millisecondsSince1970 - attachmentTimestamp <= remoteConfigProvider.currentConfig().messageQueueTimeMs
             } else {
                 // If we don't have a timestamp, its a wallpaper and we should always pass
                 // the recency check.
@@ -843,9 +843,7 @@ public class BackupAttachmentDownloadManagerImpl: BackupAttachmentDownloadManage
                 // Download if the upload was < 45 days old,
                 // otherwise don't bother trying automatically.
                 // (The user could still try a manual download later).
-                canDownloadTransitTierFullsize = Date(millisecondsSince1970: timestampForComparison)
-                    .addingTimeInterval(45 * .day)
-                    .isAfter(dateProvider())
+                canDownloadTransitTierFullsize = Date(millisecondsSince1970: timestampForComparison).addingTimeInterval(45 * .day) > now
             } else {
                 canDownloadTransitTierFullsize = false
             }

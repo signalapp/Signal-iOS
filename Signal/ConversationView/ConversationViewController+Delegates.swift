@@ -348,8 +348,7 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
                 // how long they will be blocked for.
                 let animationCompletionDate = Date().addingTimeInterval(duration)
                 let lastKeyboardAnimationDate = Date().addingTimeInterval(-1.0)
-                if viewState.lastKeyboardAnimationDate == nil ||
-                    viewState.lastKeyboardAnimationDate?.isBefore(lastKeyboardAnimationDate) == true {
+                if viewState.lastKeyboardAnimationDate == nil || viewState.lastKeyboardAnimationDate! < lastKeyboardAnimationDate {
                     viewState.lastKeyboardAnimationDate = animationCompletionDate
                 }
             }

@@ -35,7 +35,7 @@ private final class DebugLogFileManager: DDLogFileManagerDefault {
                 // retrieving last modification date didn't throw but didn't return NSDate type
                 continue
             }
-            if lastModified.isAfter(cutoffDate) {
+            if lastModified > cutoffDate {
                 // Still within the window.
                 continue
             }
