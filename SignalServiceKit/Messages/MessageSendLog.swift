@@ -13,17 +13,6 @@ class MessageSendLogObjC: NSObject {
         let messageSendLog = SSKEnvironment.shared.messageSendLogRef
         messageSendLog.deleteAllPayloadsForInteraction(interaction, tx: tx)
     }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    static func recordPayload(
-        _ plaintext: Data,
-        forMessageBeingSent message: TSOutgoingMessage,
-        tx: SDSAnyWriteTransaction
-    ) -> NSNumber? {
-        let messageSendLog = SSKEnvironment.shared.messageSendLogRef
-        return messageSendLog.recordPayload(plaintext, for: message, tx: tx).map { NSNumber(value: $0) }
-    }
 }
 
 public class MessageSendLog {
