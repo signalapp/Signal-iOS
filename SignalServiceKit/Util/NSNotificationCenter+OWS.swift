@@ -46,14 +46,12 @@ extension NotificationCenter {
         }
     }
 
-    @objc
     public func postNotificationNameAsync(_ name: Notification.Name, object: Any?) {
         DispatchQueue.main.async {
             self.post(name: name, object: object)
         }
     }
 
-    @objc
     public func postNotificationNameAsync(_ name: Notification.Name, object: Any?, userInfo: [AnyHashable: Any]? = nil) {
         DispatchQueue.main.async {
             self.post(name: name, object: object, userInfo: userInfo)
