@@ -175,22 +175,6 @@ public extension UUID {
     }
 }
 
-public extension NSUUID {
-    @objc
-    func asData() -> NSData {
-        return (self as UUID).data as NSData
-    }
-
-    @objc
-    static func fromData(_ data: NSData) -> NSUUID? {
-        if let uuid = Foundation.UUID(data: data as Data) {
-            return uuid as NSUUID
-        }
-
-        return nil
-    }
-}
-
 // MARK: - FixedWidthInteger
 
 extension FixedWidthInteger {
