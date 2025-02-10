@@ -5,11 +5,7 @@
 
 import Foundation
 
-@objc
-public class OWSFormat: NSObject {
-
-    @available(*, unavailable, message: "Do not instantiate this class.")
-    private override init() {}
+public enum OWSFormat {
 
     // We evacuate this cache in the background in case the
     // user changes a system setting that would affect
@@ -18,17 +14,14 @@ public class OWSFormat: NSObject {
                                                                            nseMaxSize: 64,
                                                                            shouldEvacuateInBackground: true)
 
-    @objc
     public static func formatNameComponents(_ nameComponents: PersonNameComponents) -> String {
         formatNameComponents(nameComponents, style: .default)
     }
 
-    @objc
     public static func formatNameComponentsShort(_ nameComponents: PersonNameComponents) -> String {
         formatNameComponents(nameComponents, style: .short)
     }
 
-    @objc
     public static func formatNameComponents(_ nameComponents: PersonNameComponents,
                                             style: PersonNameComponentsFormatter.Style) -> String {
         let cacheKey = String(describing: nameComponents) + ".\(style.rawValue)"
@@ -45,7 +38,6 @@ public class OWSFormat: NSObject {
 
 // MARK: -
 
-@objc
 public extension OWSFormat {
 
     private static let defaultNumberFormatter: NumberFormatter = {
@@ -96,7 +88,7 @@ public extension OWSFormat {
         }
     }
 
-    class func formatNSInt(_ value: NSNumber) -> String {
+    static func formatNSInt(_ value: NSNumber) -> String {
         guard let value = defaultNumberFormatter.string(from: value) else {
             owsFailDebug("Could not format value.")
             return ""
@@ -104,19 +96,19 @@ public extension OWSFormat {
         return value
     }
 
-    class func formatInt(_ value: Int) -> String {
+    static func formatInt(_ value: Int) -> String {
         return formatNSInt(NSNumber(value: value))
     }
 
-    class func formatUInt(_ value: UInt) -> String {
+    static func formatUInt(_ value: UInt) -> String {
         return formatNSInt(NSNumber(value: value))
     }
 
-    class func formatUInt32(_ value: UInt32) -> String {
+    static func formatUInt32(_ value: UInt32) -> String {
         return formatNSInt(NSNumber(value: value))
     }
 
-    class func formatUInt64(_ value: UInt64) -> String {
+    static func formatUInt64(_ value: UInt64) -> String {
         return formatNSInt(NSNumber(value: value))
     }
 }
