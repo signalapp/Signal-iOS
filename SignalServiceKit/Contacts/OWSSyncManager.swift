@@ -12,8 +12,7 @@ extension Notification.Name {
     public static let syncManagerKeysSyncDidComplete = Notification.Name("OWSSyncManagerKeysSyncDidCompleteNotification")
 }
 
-@objc
-public class OWSSyncManager: NSObject {
+public class OWSSyncManager {
     private static var keyValueStore: KeyValueStore {
         KeyValueStore(collection: "kTSStorageManagerOWSSyncManagerCollection")
     }
@@ -24,7 +23,6 @@ public class OWSSyncManager: NSObject {
 
     public init(appReadiness: AppReadiness) {
         self.appReadiness = appReadiness
-        super.init()
         SwiftSingletons.register(self)
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             self.addObservers()
