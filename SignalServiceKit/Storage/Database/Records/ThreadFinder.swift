@@ -330,7 +330,7 @@ public class ThreadFinder {
             return false
         }
 
-        // Make sure there the current timer is disabled.
+        // Make sure the current timer is disabled.
         guard !dmConfigurationStore.fetchOrBuildDefault(
             for: .thread(contactThread),
             tx: tx.asV2Read
