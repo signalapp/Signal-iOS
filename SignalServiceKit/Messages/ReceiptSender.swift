@@ -13,7 +13,6 @@ class MessageReceiptSet: NSObject, Codable {
     @objc
     public private(set) var uniqueIds: Set<String> = Set()
 
-    @objc
     func insert(timestamp: UInt64, messageUniqueId: String? = nil) {
         timestamps.insert(timestamp)
         if let uniqueId = messageUniqueId {
@@ -21,13 +20,11 @@ class MessageReceiptSet: NSObject, Codable {
         }
     }
 
-    @objc
     func union(_ other: MessageReceiptSet) {
         timestamps.formUnion(other.timestamps)
         uniqueIds.formUnion(other.uniqueIds)
     }
 
-    @objc
     func subtract(_ other: MessageReceiptSet) {
         timestamps.subtract(other.timestamps)
         uniqueIds.subtract(other.uniqueIds)
