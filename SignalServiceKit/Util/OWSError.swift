@@ -66,8 +66,7 @@ public enum OWSErrorCode: Int {
     case uploadFailed = 777442  // NOTE: This value does not match the value before conversion to objc due to duplication of the raw value (was 777428 same as invalidKeySignature)
 }
 
-@objc
-public class OWSError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
+public class OWSError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider, CustomStringConvertible {
     public let errorCode: Int
     private let customLocalizedDescription: String
     private let customIsRetryable: Bool
@@ -93,7 +92,7 @@ public class OWSError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDe
         self.customUserInfo = customUserInfo
     }
 
-    public override var description: String {
+    public var description: String {
         var result = "[OWSError code: \(errorCode), description: \(customLocalizedDescription)"
         if let customUserInfo = self.customUserInfo,
            !customUserInfo.isEmpty {
@@ -123,22 +122,17 @@ public class OWSError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDe
 
     // MARK: - Old OWSError.h functions
 
-    @available(swift, obsoleted: 1)
-    @objc
-    public static func makeAssertionError(_ description: String) -> NSError {
-        owsFailDebug("Assertion failed: \(description)")
-        return makeAssertionError() as Error as NSError
-    }
-
     @inlinable
     public static func genericErrorDescription() -> String {
         OWSLocalizedString("ERROR_DESCRIPTION_UNKNOWN_ERROR", comment: "Worst case generic error message")
     }
 
+    @inlinable
     public static func makeAssertionError() -> OWSError {
         OWSError(error: .assertionFailure, description: genericErrorDescription(), isRetryable: false)
     }
 
+    @inlinable
     public static func makeGenericError() -> OWSError {
         OWSError(error: .genericFailure, description: genericErrorDescription(), isRetryable: false)
     }
