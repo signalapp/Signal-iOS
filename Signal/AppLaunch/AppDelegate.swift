@@ -687,6 +687,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             AppEnvironment.shared.ownedObjects.append(fetchJobRunner)
         }
 
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+            ViewOnceMessages.startExpiringWhenNecessary()
+        }
+
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         appReadiness.setAppIsReadyUIStillPending()
 

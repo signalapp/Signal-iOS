@@ -9,14 +9,8 @@ public import LibSignalClient
 @objc
 public class ViewOnceMessages: NSObject {
 
-    public init(appReadiness: AppReadiness) {
+    private override init() {
         super.init()
-
-        if CurrentAppContext().isMainApp {
-            appReadiness.runNowOrWhenAppDidBecomeReadySync {
-                Self.appDidBecomeReady()
-            }
-        }
     }
 
     // MARK: - Events
@@ -25,19 +19,11 @@ public class ViewOnceMessages: NSObject {
         return NSDate.ows_millisecondTimeStamp()
     }
 
-    private class func appDidBecomeReady() {
-        AssertIsOnMainThread()
-
-        DispatchQueue.global().async {
-            self.checkForAutoCompletion()
-        }
-    }
-
     // "Check for auto-completion", e.g. complete messages whether or
     // not they have been read after N days.  Also complete outgoing
     // sent messages. We need to repeat this check periodically while
     // the app is running.
-    private class func checkForAutoCompletion() {
+    public static func startExpiringWhenNecessary() {
         // Find all view-once messages which are not yet complete.
         // Complete messages if necessary.
         SSKEnvironment.shared.databaseStorageRef.write { (transaction) in
@@ -50,7 +36,7 @@ public class ViewOnceMessages: NSObject {
 
         // We need to "check for auto-completion" once per day.
         DispatchQueue.global().asyncAfter(wallDeadline: .now() + .day) {
-            self.checkForAutoCompletion()
+            self.startExpiringWhenNecessary()
         }
     }
 
