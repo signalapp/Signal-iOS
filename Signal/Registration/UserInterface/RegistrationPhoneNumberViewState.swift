@@ -125,15 +125,16 @@ extension RegistrationPhoneNumberViewState.ValidationError.RateLimited {
             "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT",
             comment: "Label indicating that registration has been ratelimited. Embeds {{remaining time string}}."
         )
+        let timeRemaining = max(expiration.timeIntervalSince(now), 0)
 
         let retryAfterFormatter: DateFormatter = {
             let result = DateFormatter()
-            result.dateFormat = "m:ss"
+            // Only display hour if the coundown is greater than 60 min
+            result.dateFormat = timeRemaining > 3600 ? "H:mm:ss" : "m:ss"
             result.timeZone = TimeZone(identifier: "UTC")!
             return result
         }()
 
-        let timeRemaining = max(expiration.timeIntervalSince(now), 0)
         let durationString = retryAfterFormatter.string(from: Date(timeIntervalSinceReferenceDate: timeRemaining))
         return String(format: rateLimitFormat, durationString)
     }
