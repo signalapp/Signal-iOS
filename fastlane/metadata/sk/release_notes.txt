@@ -1,1 +1,1 @@
-• Teraz si môžete preniesť históriu četov a médiá z posledných 45 dní do nového prepojeného zariadenia. Prenos je voliteľný a jeho proces chránený end-to-end šifrovaním.
+• Teraz si po prepojení svojho primárneho zariadenia Signal s novým počítačom môžete preniesť históriu četov a médiá z posledných 45 dní. Prenos je voliteľný a jeho proces chránený end-to-end šifrovaním.
