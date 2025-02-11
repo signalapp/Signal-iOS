@@ -6,4 +6,4 @@
 import AuthenticationServices
 import Foundation
 
-public struct Paypal {}
+public enum Paypal {}

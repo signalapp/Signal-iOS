@@ -112,8 +112,10 @@ extension DonateViewController {
             }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId -> Promise<(Data, Paypal.SubscriptionAuthorizationParams)> in
                 Logger.info("[Donations] Creating Signal payment method for new monthly subscription with PayPal")
 
-                return Paypal.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
-                    .map(on: DispatchQueue.sharedUserInitiated) { createParams in (subscriberId, createParams) }
+                return Promise.wrapAsync {
+                    let createParams = try await Paypal.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
+                    return (subscriberId, createParams)
+                }
             }.map(on: DispatchQueue.main) { retVal in
                 modal.dismiss { future.resolve(retVal) }
             }.catch(on: DispatchQueue.main) { error in

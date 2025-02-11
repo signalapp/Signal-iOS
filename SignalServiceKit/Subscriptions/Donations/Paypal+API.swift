@@ -12,31 +12,29 @@ public extension Paypal {
     static func createBoost(
         amount: FiatMoney,
         level: OneTimeBadgeLevel
-    ) -> Promise<(URL, String)> {
-        firstly(on: DispatchQueue.sharedUserInitiated) {
-            let createBoostRequest = OWSRequestFactory.boostPaypalCreatePayment(
-                integerMoneyValue: DonationUtilities.integralAmount(for: amount),
-                inCurrencyCode: amount.currencyCode,
-                level: level.rawValue,
-                returnUrl: Self.webAuthReturnUrl,
-                cancelUrl: Self.webAuthCancelUrl
-            )
+    ) async throws -> (URL, String) {
+        let createBoostRequest = OWSRequestFactory.boostPaypalCreatePayment(
+            integerMoneyValue: DonationUtilities.integralAmount(for: amount),
+            inCurrencyCode: amount.currencyCode,
+            level: level.rawValue,
+            returnUrl: Self.webAuthReturnUrl,
+            cancelUrl: Self.webAuthCancelUrl
+        )
 
-            return SSKEnvironment.shared.networkManagerRef.makePromise(request: createBoostRequest)
-        }.map(on: DispatchQueue.sharedUserInitiated) { response throws -> (URL, String) in
-            guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
-                throw OWSAssertionError("[Donations] Failed to decode JSON response")
-            }
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(createBoostRequest)
 
-            let approvalUrlString: String = try parser.required(key: "approvalUrl")
-            let paymentId: String = try parser.required(key: "paymentId")
-
-            guard let approvalUrl = URL(string: approvalUrlString) else {
-                throw OWSAssertionError("[Donations] Approval URL was not a valid URL!")
-            }
-
-            return (approvalUrl, paymentId)
+        guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
+            throw OWSAssertionError("[Donations] Failed to decode JSON response")
         }
+
+        let approvalUrlString: String = try parser.required(key: "approvalUrl")
+        let paymentId: String = try parser.required(key: "paymentId")
+
+        guard let approvalUrl = URL(string: approvalUrlString) else {
+            throw OWSAssertionError("[Donations] Approval URL was not a valid URL!")
+        }
+
+        return (approvalUrl, paymentId)
     }
 
     /// Confirms a payment after a successful authentication via PayPal's web
@@ -46,25 +44,23 @@ public extension Paypal {
         level: OneTimeBadgeLevel,
         paymentId: String,
         approvalParams: OneTimePaymentWebAuthApprovalParams
-    ) -> Promise<String> {
-        firstly(on: DispatchQueue.sharedUserInitiated) {
-            let confirmOneTimePaymentRequest = OWSRequestFactory.oneTimePaypalConfirmPayment(
-                integerMoneyValue: DonationUtilities.integralAmount(for: amount),
-                inCurrencyCode: amount.currencyCode,
-                level: level.rawValue,
-                payerId: approvalParams.payerId,
-                paymentId: paymentId,
-                paymentToken: approvalParams.paymentToken
-            )
+    ) async throws -> String {
+        let confirmOneTimePaymentRequest = OWSRequestFactory.oneTimePaypalConfirmPayment(
+            integerMoneyValue: DonationUtilities.integralAmount(for: amount),
+            inCurrencyCode: amount.currencyCode,
+            level: level.rawValue,
+            payerId: approvalParams.payerId,
+            paymentId: paymentId,
+            paymentToken: approvalParams.paymentToken
+        )
 
-            return SSKEnvironment.shared.networkManagerRef.makePromise(request: confirmOneTimePaymentRequest)
-        }.map(on: DispatchQueue.sharedUserInitiated) { response throws -> String in
-            guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
-                throw OWSAssertionError("[Donations] Failed to decode JSON response")
-            }
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(confirmOneTimePaymentRequest)
 
-            return try parser.required(key: "paymentId")
+        guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
+            throw OWSAssertionError("[Donations] Failed to decode JSON response")
         }
+
+        return try parser.required(key: "paymentId")
     }
 }
 
@@ -87,30 +83,28 @@ public extension Paypal {
     /// PayPal params used to authorize payment for the new subscription.
     static func createSignalPaymentMethodForSubscription(
         subscriberId: Data
-    ) -> Promise<SubscriptionAuthorizationParams> {
-        firstly {
-            let request = OWSRequestFactory.subscriptionCreatePaypalPaymentMethodRequest(
-                subscriberID: subscriberId,
-                returnURL: Self.webAuthReturnUrl,
-                cancelURL: Self.webAuthCancelUrl
-            )
+    ) async throws -> SubscriptionAuthorizationParams {
+        let request = OWSRequestFactory.subscriptionCreatePaypalPaymentMethodRequest(
+            subscriberID: subscriberId,
+            returnURL: Self.webAuthReturnUrl,
+            cancelURL: Self.webAuthCancelUrl
+        )
 
-            return SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
-        }.map(on: DispatchQueue.sharedUserInitiated) { response in
-            guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
-                throw OWSAssertionError("[Donations] Missing or invalid response.")
-            }
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 
-            guard let approvalUrl = URL(string: try parser.required(key: "approvalUrl")) else {
-                throw OWSAssertionError("[Donations] Approval URL string was not valid URL!")
-            }
-
-            let paymentMethodId: String = try parser.required(key: "token")
-
-            return SubscriptionAuthorizationParams(
-                approvalUrl: approvalUrl,
-                paymentMethodId: paymentMethodId
-            )
+        guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
+            throw OWSAssertionError("[Donations] Missing or invalid response.")
         }
+
+        guard let approvalUrl = URL(string: try parser.required(key: "approvalUrl")) else {
+            throw OWSAssertionError("[Donations] Approval URL string was not valid URL!")
+        }
+
+        let paymentMethodId: String = try parser.required(key: "token")
+
+        return SubscriptionAuthorizationParams(
+            approvalUrl: approvalUrl,
+            paymentMethodId: paymentMethodId
+        )
     }
 }

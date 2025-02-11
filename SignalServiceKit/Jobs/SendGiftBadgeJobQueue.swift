@@ -296,7 +296,7 @@ private class SendGiftBadgeJobRunner: JobRunner {
                 level: .giftBadge(.signalGift),
                 paymentId: paymentId,
                 approvalParams: paypalApprovalParams
-            ).awaitable()
+            )
         }
     }
 

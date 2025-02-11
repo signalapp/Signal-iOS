@@ -26,11 +26,13 @@ extension BadgeGiftingConfirmationViewController {
                 )
             }
         }.then(on: DispatchQueue.main) { () -> Promise<(URL, String)> in
-            DonationViewsUtil.Paypal.createPaypalPaymentBehindActivityIndicator(
-                amount: self.price,
-                level: .giftBadge(.signalGift),
-                fromViewController: self
-            )
+            Promise.wrapAsync {
+                try await DonationViewsUtil.Paypal.createPaypalPaymentBehindActivityIndicator(
+                    amount: self.price,
+                    level: .giftBadge(.signalGift),
+                    fromViewController: self
+                )
+            }
         }.then(on: DispatchQueue.main) { [weak self] (approvalUrl, paymentId) -> Promise<PreparedGiftPayment> in
             guard let self else {
                 throw SendGiftError.userCanceledBeforeChargeCompleted

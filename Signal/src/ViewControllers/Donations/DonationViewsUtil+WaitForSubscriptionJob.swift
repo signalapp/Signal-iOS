@@ -40,4 +40,14 @@ extension DonationViewsUtil {
             .recover({ _ in throw DonationJobError.assertion })
             .timeout(seconds: paymentMethod.timeoutDuration, timeoutErrorBlock: { DonationJobError.timeout })
     }
+
+    public static func waitForRedemption(paymentMethod: DonationPaymentMethod?, _ block: sending @escaping () async throws -> Void) async throws {
+        do {
+            try await withCooperativeTimeout(seconds: paymentMethod.timeoutDuration, operation: block)
+        } catch is CooperativeTimeoutError {
+            throw DonationJobError.timeout
+        } catch {
+            throw DonationJobError.assertion
+        }
+    }
 }
