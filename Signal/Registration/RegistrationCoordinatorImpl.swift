@@ -1498,10 +1498,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private func wipeInMemoryStateToPreventSVRPathAttempts() {
         inMemoryState.regRecoveryPw = nil
+        inMemoryState.reglockToken = nil
         inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = true
-        // Wiping auth credential state too; if we failed with the local
-        // SVR master key we don't expect the backed up master key to work
-        // either so we shouldn't bother trying.
+        // Wiping auth credential state too. It's possible that the remote master key is current
+        // even if our local one is outdated, so we'll make a note to restore the remote one after
+        // registration. For the time being, we can move forward without the master key.
         inMemoryState.svrAuthCredential = nil
         inMemoryState.svr2AuthCredentialCandidates = nil
     }
