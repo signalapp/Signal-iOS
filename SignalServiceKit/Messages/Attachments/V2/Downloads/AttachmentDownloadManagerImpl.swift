@@ -40,6 +40,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         orphanedAttachmentStore: OrphanedAttachmentStore,
         orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
         profileManager: Shims.ProfileManager,
+        remoteConfigManager: RemoteConfigManager,
         signalService: OWSSignalServiceProtocol,
         stickerManager: Shims.StickerManager,
         storyStore: StoryStore,
@@ -89,6 +90,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             downloadabilityChecker: downloadabilityChecker,
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             messageBackupRequestManager: messageBackupRequestManager,
+            remoteConfigManager: remoteConfigManager,
             stickerManager: stickerManager,
             tsAccountManager: tsAccountManager
         )
@@ -411,6 +413,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private let downloadQueue: DownloadQueue
         private let messageBackupKeyMaterial: MessageBackupKeyMaterial
         private let messageBackupRequestManager: MessageBackupRequestManager
+        private let remoteConfigManager: RemoteConfigManager
         private let stickerManager: Shims.StickerManager
         let store: Store
         private let tsAccountManager: TSAccountManager
@@ -426,6 +429,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             downloadabilityChecker: DownloadabilityChecker,
             messageBackupKeyMaterial: MessageBackupKeyMaterial,
             messageBackupRequestManager: MessageBackupRequestManager,
+            remoteConfigManager: RemoteConfigManager,
             stickerManager: Shims.StickerManager,
             tsAccountManager: TSAccountManager
         ) {
@@ -439,6 +443,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             self.downloadabilityChecker = downloadabilityChecker
             self.messageBackupKeyMaterial = messageBackupKeyMaterial
             self.messageBackupRequestManager = messageBackupRequestManager
+            self.remoteConfigManager = remoteConfigManager
             self.stickerManager = stickerManager
             self.store = DownloadTaskRecordStore(store: attachmentDownloadStore)
             self.tsAccountManager = tsAccountManager
@@ -491,12 +496,20 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     source: record.sourceType,
                     tx: tx
                 )
-                try? self.attachmentStore.updateAttachmentAsFailedToDownload(
-                    from: record.sourceType,
-                    id: record.attachmentId,
-                    timestamp: self.dateProvider().ows_millisecondsSince1970,
-                    tx: tx
-                )
+                if error is TransitTierExpiredError {
+                    Logger.info("Expiring transit tier due to failed download")
+                    try? self.attachmentStore.removeTransitTierInfo(
+                        forAttachmentId: record.attachmentId,
+                        tx: tx
+                    )
+                } else {
+                    try? self.attachmentStore.updateAttachmentAsFailedToDownload(
+                        from: record.sourceType,
+                        id: record.attachmentId,
+                        timestamp: self.dateProvider().ows_millisecondsSince1970,
+                        tx: tx
+                    )
+                }
                 if shouldReEnqueueAsTransitTier {
                     try? self.attachmentDownloadStore.enqueueDownloadOfAttachment(
                         withId: record.attachmentId,
@@ -516,6 +529,48 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     }
                 }
             }
+        }
+
+        private struct TransitTierExpiredError: Error {}
+
+        private func wrapDownloadError(
+            error: Error,
+            record: QueuedAttachmentDownloadRecord,
+            attachmentBeforeDownloadAttempt: Attachment
+        ) -> TaskRecordResult {
+
+            // Check if we should mark the transit tier download as
+            // "expired" (meaning we wipe the transit tier info).
+            let now = dateProvider().ows_millisecondsSince1970
+            if
+                // We only expire if we get a 404 from the server
+                error.httpStatusCode == 404,
+
+                // We only expire transit tier downloads
+                record.sourceType == .transitTier,
+
+                // Check that the transit tier info hasn't changed (cdn key downloads unlikely)
+                let refetchedAttachment = db.read(
+                    block: { attachmentStore.fetch(id: record.attachmentId, tx: $0) }
+                ),
+                refetchedAttachment.transitTierInfo?.cdnKey
+                    == attachmentBeforeDownloadAttempt.transitTierInfo?.cdnKey,
+
+                // Only proactively expire if the upload is old enough
+                let uploadTimestamp = refetchedAttachment.transitTierInfo?.uploadTimestamp,
+                uploadTimestamp < now,
+                now - uploadTimestamp >= remoteConfigManager.currentConfig().messageQueueTimeMs
+            {
+                return .unretryableError(TransitTierExpiredError())
+            }
+
+            // We retry all other network-level errors (with an exponential backoff).
+            // Even if we get e.g. a 404, the file may not be available _yet_
+            // but might be in the future (exception below)
+            // The other type of error that can be expected here is if CDN
+            // credentials expire between enqueueing the download and the download
+            // excuting. The outcome is the same: fail the current download and retry.
+            return .retryableError(error)
         }
 
         /// Returns nil if should not be retried.
@@ -709,13 +764,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 )
             } catch let error {
                 Logger.error("Failed to download: \(error)")
-                // We retry all network-level errors (with an exponential backoff).
-                // Even if we get e.g. a 404, the file may not be available _yet_
-                // but might be in the future.
-                // The other type of error that can be expected here is if CDN
-                // credentials expire between enqueueing the download and the download
-                // excuting. The outcome is the same: fail the current download and retry.
-                return .retryableError(error)
+                return wrapDownloadError(
+                    error: error,
+                    record: record,
+                    attachmentBeforeDownloadAttempt: attachment
+                )
             }
 
             let pendingAttachment: PendingAttachment

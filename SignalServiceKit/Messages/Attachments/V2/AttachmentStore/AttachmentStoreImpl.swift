@@ -466,6 +466,23 @@ public class AttachmentStoreImpl: AttachmentStore {
         try newRecord.update(tx.databaseConnection)
     }
 
+    public func removeTransitTierInfo(
+        forAttachmentId id: Attachment.IDType,
+        tx: DBWriteTransaction
+    ) throws {
+        let existingAttachment = fetch(ids: [id], tx: tx).first
+        guard let existingAttachment else {
+            throw OWSAssertionError("Attachment does not exist")
+        }
+
+        var newRecord = Attachment.Record(
+            params: .forRemovingTransitTierInfo(attachment: existingAttachment)
+        )
+        newRecord.sqliteId = id
+        try newRecord.checkAllUInt64FieldsFitInInt64()
+        try newRecord.update(tx.databaseConnection)
+    }
+
     public func updateAttachment(
         _ attachment: Attachment,
         revalidatedContentType contentType: Attachment.ContentType,

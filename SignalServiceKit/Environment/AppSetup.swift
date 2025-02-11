@@ -392,6 +392,7 @@ public class AppSetup {
             orphanedAttachmentStore: orphanedAttachmentStore,
             orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
             profileManager: AttachmentDownloadManagerImpl.Wrappers.ProfileManager(profileManager),
+            remoteConfigManager: remoteConfigManager,
             signalService: signalService,
             stickerManager: AttachmentDownloadManagerImpl.Wrappers.StickerManager(),
             storyStore: storyStore,

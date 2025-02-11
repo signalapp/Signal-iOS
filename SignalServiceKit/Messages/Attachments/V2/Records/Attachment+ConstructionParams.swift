@@ -218,6 +218,23 @@ extension Attachment {
             )
         }
 
+        public static func forRemovingTransitTierInfo(
+            attachment: Attachment
+        ) -> ConstructionParams {
+            return .init(
+                blurHash: attachment.blurHash,
+                mimeType: attachment.mimeType,
+                encryptionKey: attachment.encryptionKey,
+                streamInfo: attachment.streamInfo,
+                transitTierInfo: nil,
+                mediaName: attachment.mediaName,
+                mediaTierInfo: attachment.mediaTierInfo,
+                thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
+                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+            )
+        }
+
         public static func forUpdatingAsDownlodedFromMediaTier(
             attachment: Attachment,
             validatedMimeType: String,

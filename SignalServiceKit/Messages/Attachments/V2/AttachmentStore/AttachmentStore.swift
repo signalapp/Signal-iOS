@@ -140,6 +140,11 @@ public protocol AttachmentStore {
         tx: DBWriteTransaction
     ) throws
 
+    func removeTransitTierInfo(
+        forAttachmentId id: Attachment.IDType,
+        tx: DBWriteTransaction
+    ) throws
+
     /// Update an attachment after revalidating.
     func updateAttachment(
         _ attachment: Attachment,
