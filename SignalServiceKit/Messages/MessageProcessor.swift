@@ -155,63 +155,6 @@ public class MessageProcessor {
 
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
             SSKEnvironment.shared.messagePipelineSupervisorRef.register(pipelineStage: self)
-
-            SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                // We may have legacy process jobs queued. We want to schedule them for
-                // processing immediately when we launch, so that we can drain the old queue.
-                let legacyProcessingJobRecords = LegacyMessageJobFinder().allJobs(transaction: transaction)
-                for jobRecord in legacyProcessingJobRecords {
-                    let completion: (Error?) -> Void = { _ in
-                        SSKEnvironment.shared.databaseStorageRef.write { jobRecord.anyRemove(transaction: $0) }
-                    }
-                    do {
-                        let envelope = try SSKProtoEnvelope(serializedData: jobRecord.envelopeData)
-                        self.processReceivedEnvelope(
-                            ReceivedEnvelope(
-                                envelope: envelope,
-                                encryptionStatus: .decrypted(plaintextData: jobRecord.plaintextData, wasReceivedByUD: jobRecord.wasReceivedByUD),
-                                serverDeliveryTimestamp: jobRecord.serverDeliveryTimestamp,
-                                completion: completion
-                            ),
-                            envelopeSource: .unknown
-                        )
-                    } catch {
-                        completion(error)
-                    }
-                }
-
-                // We may have legacy decrypt jobs queued. We want to schedule them for
-                // processing immediately when we launch, so that we can drain the old queue.
-                let legacyDecryptJobRecords: [LegacyMessageDecryptJobRecord]
-                do {
-                    let jobRecordFinder = JobRecordFinderImpl<LegacyMessageDecryptJobRecord>(db: DependenciesBridge.shared.db)
-                    legacyDecryptJobRecords = try jobRecordFinder.allRecords(
-                        status: .ready,
-                        transaction: transaction.asV2Read
-                    )
-                } catch {
-                    legacyDecryptJobRecords = []
-                    Logger.error("Couldn't fetch legacy job records: \(error)")
-                }
-                for jobRecord in legacyDecryptJobRecords {
-                    let completion: (Error?) -> Void = { _ in
-                        SSKEnvironment.shared.databaseStorageRef.write { jobRecord.anyRemove(transaction: $0) }
-                    }
-                    do {
-                        guard let envelopeData = jobRecord.envelopeData else {
-                            throw OWSAssertionError("Skipping job with no envelope data")
-                        }
-                        self.processReceivedEnvelopeData(
-                            envelopeData,
-                            serverDeliveryTimestamp: jobRecord.serverDeliveryTimestamp,
-                            envelopeSource: .unknown,
-                            completion: completion
-                        )
-                    } catch {
-                        completion(error)
-                    }
-                }
-            }
         }
     }
 
@@ -244,7 +187,6 @@ public class MessageProcessor {
         processReceivedEnvelope(
             ReceivedEnvelope(
                 envelope: protoEnvelope,
-                encryptionStatus: .encrypted,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 completion: completion
             ),
@@ -261,7 +203,6 @@ public class MessageProcessor {
         processReceivedEnvelope(
             ReceivedEnvelope(
                 envelope: envelopeProto,
-                encryptionStatus: .encrypted,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 completion: completion
             ),
@@ -723,14 +664,7 @@ extension MessageProcessor: MessageProcessingPipelineStage {
 // MARK: -
 
 private struct ReceivedEnvelope {
-    enum EncryptionStatus {
-        case encrypted
-        /// Kept for historical purposes -- unused by new clients.
-        case decrypted(plaintextData: Data?, wasReceivedByUD: Bool)
-    }
-
     let envelope: SSKProtoEnvelope
-    let encryptionStatus: EncryptionStatus
     let serverDeliveryTimestamp: UInt64
     let completion: (Error?) -> Void
 
@@ -748,47 +682,21 @@ private struct ReceivedEnvelope {
         // Figure out what type of envelope we're dealing with.
         let validatedEnvelope = try ValidatedIncomingEnvelope(envelope, localIdentifiers: localIdentifiers)
 
-        switch encryptionStatus {
-        case .encrypted:
-            switch validatedEnvelope.kind {
-            case .serverReceipt:
-                return .serverReceipt(try ServerReceiptEnvelope(validatedEnvelope))
-            case .identifiedSender(let cipherType):
-                return .decryptedMessage(
-                    try messageDecrypter.decryptIdentifiedEnvelope(
-                        validatedEnvelope, cipherType: cipherType, localIdentifiers: localIdentifiers, tx: tx
-                    )
+        switch validatedEnvelope.kind {
+        case .serverReceipt:
+            return .serverReceipt(try ServerReceiptEnvelope(validatedEnvelope))
+        case .identifiedSender(let cipherType):
+            return .decryptedMessage(
+                try messageDecrypter.decryptIdentifiedEnvelope(
+                    validatedEnvelope, cipherType: cipherType, localIdentifiers: localIdentifiers, tx: tx
                 )
-            case .unidentifiedSender:
-                return .decryptedMessage(
-                    try messageDecrypter.decryptUnidentifiedSenderEnvelope(
-                        validatedEnvelope, localIdentifiers: localIdentifiers, localDeviceId: localDeviceId, tx: tx
-                    )
+            )
+        case .unidentifiedSender:
+            return .decryptedMessage(
+                try messageDecrypter.decryptUnidentifiedSenderEnvelope(
+                    validatedEnvelope, localIdentifiers: localIdentifiers, localDeviceId: localDeviceId, tx: tx
                 )
-            }
-
-        case .decrypted(let plaintextData, let wasReceivedByUD):
-            switch validatedEnvelope.kind {
-            case .serverReceipt:
-                return .serverReceipt(try ServerReceiptEnvelope(validatedEnvelope))
-            case .identifiedSender, .unidentifiedSender:
-                // In this flow, we've already decrypted the sender and added them to our
-                // local copy of the envelope. So we can grab the source from the envelope
-                // in both cases.
-                let (sourceAci, sourceDeviceId) = try validatedEnvelope.validateSource(Aci.self)
-                guard let plaintextData else {
-                    throw OWSAssertionError("Missing plaintextData for previously-encrypted message.")
-                }
-                return .decryptedMessage(try DecryptedIncomingEnvelope(
-                    validatedEnvelope: validatedEnvelope,
-                    updatedEnvelope: envelope,
-                    sourceAci: sourceAci,
-                    sourceDeviceId: sourceDeviceId,
-                    wasReceivedByUD: wasReceivedByUD,
-                    plaintextData: plaintextData,
-                    isPlaintextCipher: nil
-                ))
-            }
+            )
         }
     }
 

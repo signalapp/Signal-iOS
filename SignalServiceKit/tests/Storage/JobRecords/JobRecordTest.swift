@@ -17,7 +17,6 @@ class JobRecordTest: XCTestCase {
     ) -> any (JobRecord & ValidatableModel).Type {
         switch recordType {
         case .incomingContactSync: return IncomingContactSyncJobRecord.self
-        case .legacyMessageDecrypt: return LegacyMessageDecryptJobRecord.self
         case .localUserLeaveGroup: return LocalUserLeaveGroupJobRecord.self
         case .messageSender: return MessageSenderJobRecord.self
         case .donationReceiptCredentialRedemption: return DonationReceiptCredentialRedemptionJobRecord.self
@@ -185,38 +184,6 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
             throw ValidatableModelError.failedToValidate
         }
 
-    }
-}
-
-extension LegacyMessageDecryptJobRecord: ValidatableModel {
-    static let constants: [(LegacyMessageDecryptJobRecord, jsonData: Data)] = [
-        (
-            LegacyMessageDecryptJobRecord(
-                envelopeData: Data(base64Encoded: "beef")!,
-                serverDeliveryTimestamp: 12,
-                failureCount: 0,
-                status: .ready
-            ),
-            Data(#"{"super":{"failureCount":0,"label":"SSKMessageDecrypt","status":1,"uniqueId":"0D5C1108-FD33-433F-BCF8-1E2084A864A5","recordType":53},"envelopeData":"beef","serverDeliveryTimestamp":12}"#.utf8)
-        ),
-        (
-            LegacyMessageDecryptJobRecord(
-                envelopeData: nil,
-                serverDeliveryTimestamp: 12,
-                failureCount: 0,
-                status: .ready
-            ),
-            Data(#"{"super":{"failureCount":0,"label":"SSKMessageDecrypt","status":1,"uniqueId":"8F8545C6-0683-4FB4-BDB5-291D5876A09C","recordType":53},"serverDeliveryTimestamp":12}"#.utf8)
-        )
-    ]
-
-    func validate(against: LegacyMessageDecryptJobRecord) throws {
-        guard
-            envelopeData == against.envelopeData,
-            serverDeliveryTimestamp == against.serverDeliveryTimestamp
-        else {
-            throw ValidatableModelError.failedToValidate
-        }
     }
 }
 

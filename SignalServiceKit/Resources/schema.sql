@@ -219,21 +219,6 @@ CREATE
 
 CREATE
     TABLE
-        IF NOT EXISTS "model_OWSMessageContentJob" (
-            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-            ,"recordType" INTEGER NOT NULL
-            ,"uniqueId" TEXT NOT NULL UNIQUE
-                ON CONFLICT FAIL
-            ,"createdAt" DOUBLE NOT NULL
-            ,"envelopeData" BLOB NOT NULL
-            ,"plaintextData" BLOB
-            ,"wasReceivedByUD" INTEGER NOT NULL
-            ,"serverDeliveryTimestamp" INTEGER NOT NULL DEFAULT 0
-        )
-;
-
-CREATE
-    TABLE
         IF NOT EXISTS "model_OWSRecipientIdentity" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"recordType" INTEGER NOT NULL

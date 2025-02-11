@@ -26,27 +26,6 @@ public protocol JobRecordFinder<JobRecordType> {
     ///
     /// Conforming types should avoid long-running write transactions.
     func loadRunnableJobs(updateRunnableJobRecord: @escaping (JobRecordType, DBWriteTransaction) -> Void) async throws -> [JobRecordType]
-
-    func enumerateJobRecords(
-        transaction: DBReadTransaction,
-        block: (JobRecordType, inout Bool) -> Void
-    ) throws
-
-    func enumerateJobRecords(
-        status: JobRecord.Status,
-        transaction: DBReadTransaction,
-        block: (JobRecordType, inout Bool) -> Void
-    ) throws
-}
-
-public extension JobRecordFinder {
-    func allRecords(status: JobRecord.Status, transaction: DBReadTransaction) throws -> [JobRecordType] {
-        var result: [JobRecordType] = []
-        try enumerateJobRecords(status: status, transaction: transaction) { jobRecord, _ in
-            result.append(jobRecord)
-        }
-        return result
-    }
 }
 
 private enum Constants {
@@ -63,70 +42,6 @@ public class JobRecordFinderImpl<JobRecordType>: JobRecordFinder where JobRecord
 
     public init(db: any DB) {
         self.db = db
-    }
-
-    private func iterateJobsWith(
-        sql: String,
-        arguments: StatementArguments,
-        database: Database,
-        block: (JobRecordType, inout Bool) -> Void
-    ) throws {
-        let cursor = try JobRecordType.fetchCursor(
-            database,
-            sql: sql,
-            arguments: arguments
-        )
-
-        var stop = false
-        while let nextJobRecord = try cursor.next() {
-            block(nextJobRecord, &stop)
-
-            if stop {
-                return
-            }
-        }
-    }
-
-    public func enumerateJobRecords(
-        transaction: DBReadTransaction,
-        block: (JobRecordType, inout Bool) -> Void
-    ) throws {
-        let transaction = SDSDB.shimOnlyBridge(transaction)
-
-        let sql = """
-            SELECT * FROM \(JobRecord.databaseTableName)
-            WHERE \(JobRecord.columnName(.label)) = ?
-            ORDER BY \(JobRecord.columnName(.id))
-        """
-
-        try iterateJobsWith(
-            sql: sql,
-            arguments: [JobRecordType.jobRecordType.jobRecordLabel],
-            database: transaction.unwrapGrdbRead.database,
-            block: block
-        )
-    }
-
-    public func enumerateJobRecords(
-        status: JobRecord.Status,
-        transaction: DBReadTransaction,
-        block: (JobRecordType, inout Bool) -> Void
-    ) throws {
-        let transaction = SDSDB.shimOnlyBridge(transaction)
-
-        let sql = """
-            SELECT * FROM \(JobRecord.databaseTableName)
-            WHERE \(JobRecord.columnName(.status)) = ?
-              AND \(JobRecord.columnName(.label)) = ?
-            ORDER BY \(JobRecord.columnName(.id))
-        """
-
-        try iterateJobsWith(
-            sql: sql,
-            arguments: [status.rawValue, JobRecordType.jobRecordType.jobRecordLabel],
-            database: transaction.unwrapGrdbRead.database,
-            block: block
-        )
     }
 
     public func fetchJob(rowId: JobRecord.RowId, tx: DBReadTransaction) throws -> JobRecordType? {

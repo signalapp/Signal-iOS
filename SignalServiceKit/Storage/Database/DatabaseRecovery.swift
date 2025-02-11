@@ -458,7 +458,6 @@ public extension DatabaseRecovery {
             JobRecord.databaseTableName,
             PendingReadReceiptRecord.databaseTableName,
             PendingViewedReceiptRecord.databaseTableName,
-            OWSMessageContentJob.table.tableName, // also, this one is deprecated
             // Can be recovered in other ways, after recovery is done.
             IncomingGroupsV2MessageJob.table.tableName,
             ProfileBadge.databaseTableName,

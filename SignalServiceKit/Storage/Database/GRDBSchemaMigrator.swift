@@ -319,6 +319,8 @@ public class GRDBSchemaMigrator {
         case recreateTSAttachmentMigration
         case addBlockedGroup
         case addGroupSendEndorsement
+        case deleteLegacyMessageDecryptJobRecords
+        case dropMessageContentJobTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -382,7 +384,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 108
+    public static let grdbSchemaVersionLatest: UInt = 109
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3916,6 +3918,16 @@ public class GRDBSchemaMigrator {
                 on: "IndividualGroupSendEndorsement",
                 columns: ["recipientId"]
             )
+            return .success(())
+        }
+
+        migrator.registerMigration(.deleteLegacyMessageDecryptJobRecords) { tx in
+            try tx.database.execute(sql: "DELETE FROM model_SSKJobRecord WHERE label = ?", arguments: ["SSKMessageDecrypt"])
+            return .success(())
+        }
+
+        migrator.registerMigration(.dropMessageContentJobTable) { tx in
+            try tx.database.execute(sql: "DROP TABLE IF EXISTS model_OWSMessageContentJob")
             return .success(())
         }
 

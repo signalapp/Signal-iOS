@@ -88,7 +88,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
     func test_retryableFailure() async throws {
         let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
 
-        let (message, promise) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+        let (jobRecord, message, promise) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let message = OutgoingMessageFactory().create(transaction: tx)
             let jobRecord = try MessageSenderJobRecord(
                 persistedMessage: .init(
@@ -103,21 +103,8 @@ class MessageSenderJobQueueTest: SSKBaseTest {
                 tx: tx
             )!
             let promise = jobQueue.add(.promise, message: preparedMessage, transaction: tx)
-            return (message, promise)
+            return (jobRecord, message, promise)
         }
-
-        let finder = JobRecordFinderImpl<MessageSenderJobRecord>(db: DependenciesBridge.shared.db)
-        var readyRecords: [MessageSenderJobRecord] = []
-        self.read { tx in
-            readyRecords = try! finder.allRecords(
-                status: .ready,
-                transaction: tx.asV2Read
-            )
-        }
-        XCTAssertEqual(1, readyRecords.count)
-
-        let jobRecord = readyRecords.first!
-        XCTAssertEqual(0, jobRecord.failureCount)
 
         // simulate permanent failure (via `maxRetries` retryable failures)
         let retryCount: Int = 110 // Matches MessageSenderOperation
@@ -153,7 +140,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
     func test_permanentFailure() async throws {
         let jobQueue = MessageSenderJobQueue(appReadiness: AppReadinessMock())
 
-        let (message, promise) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+        let (jobRecord, message, promise) = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             let message = OutgoingMessageFactory().create(transaction: tx)
             let jobRecord = try MessageSenderJobRecord(
                 persistedMessage: .init(
@@ -168,21 +155,8 @@ class MessageSenderJobQueueTest: SSKBaseTest {
                 tx: tx
             )!
             let promise = jobQueue.add(.promise, message: preparedMessage, transaction: tx)
-            return (message, promise)
+            return (jobRecord, message, promise)
         }
-
-        let finder = JobRecordFinderImpl<MessageSenderJobRecord>(db: DependenciesBridge.shared.db)
-        var readyRecords: [MessageSenderJobRecord] = []
-        self.read { tx in
-            readyRecords = try! finder.allRecords(
-                status: .ready,
-                transaction: tx.asV2Read
-            )
-        }
-        XCTAssertEqual(1, readyRecords.count)
-
-        let jobRecord = readyRecords.first!
-        XCTAssertEqual(0, jobRecord.failureCount)
 
         // simulate permanent failure
         let error = OWSUnretryableError()

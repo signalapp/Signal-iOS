@@ -25,7 +25,6 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
         // MARK: Values originally from SDSRecordType
 
         case incomingContactSync = 61
-        case legacyMessageDecrypt = 53
         case localUserLeaveGroup = 74
         case messageSender = 35
         case donationReceiptCredentialRedemption = 71
@@ -50,7 +49,6 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
 
         switch jobRecordType {
         case .incomingContactSync: return IncomingContactSyncJobRecord.self
-        case .legacyMessageDecrypt: return LegacyMessageDecryptJobRecord.self
         case .localUserLeaveGroup: return LocalUserLeaveGroupJobRecord.self
         case .messageSender: return MessageSenderJobRecord.self
         case .donationReceiptCredentialRedemption: return DonationReceiptCredentialRedemptionJobRecord.self
@@ -69,8 +67,6 @@ extension JobRecord.JobRecordType {
         switch self {
         case .incomingContactSync:
             return "IncomingContactSync"
-        case .legacyMessageDecrypt:
-            return "SSKMessageDecrypt"
         case .localUserLeaveGroup:
             return "LocalUserLeaveGroup"
         case .messageSender:
