@@ -880,7 +880,7 @@ public class MessageSender {
                 localIdentifiers: state.localIdentifiers
             )
             let recipientErrors = MessageSenderRecipientErrors(recipientErrors: perRecipientErrors)
-            if recipientErrors.containsAny(of: .invalidAuthHeader, .invalidRecipient) {
+            if recipientErrors.containsAny(of: .invalidAuthHeader) {
                 retryRecoveryState = recoveryState.mutated({ $0.canUseMultiRecipientSealedSender = false })
                 break
             }

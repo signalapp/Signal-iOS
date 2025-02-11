@@ -24,7 +24,6 @@ extension MessageSender {
 
     enum SenderKeyError: Error, IsRetryableProvider, UserErrorDescriptionProvider {
         case invalidAuthHeader
-        case invalidRecipient
         case deviceUpdate
         case staleDevices
 
@@ -513,9 +512,6 @@ extension MessageSender {
                 case 401:
                     Logger.warn("Invalid composite authorization header for sender key send request. Falling back to fanout")
                     throw SenderKeyError.invalidAuthHeader
-                case 404:
-                    Logger.warn("One of the recipients could not match an account. We don't know which. Falling back to fanout")
-                    throw SenderKeyError.invalidRecipient
                 case 409:
                     // Incorrect device set. We should add/remove devices and try again.
                     let responseBody = try Self.decode409Response(data: responseData ?? Data())
