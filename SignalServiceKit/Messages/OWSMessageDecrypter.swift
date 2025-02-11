@@ -251,8 +251,11 @@ public class OWSMessageDecrypter {
         case .pni:
             Logger.info("Not resetting or requesting resend of message sent to PNI.")
 
-            DependenciesBridge.shared.linkedDevicePniKeyManager
-                .recordSuspectedIssueWithPniIdentityKey(tx: transaction.asV2Write)
+            let linkedDevicePniKeyManager = DependenciesBridge.shared.linkedDevicePniKeyManager
+            linkedDevicePniKeyManager.recordSuspectedIssueWithPniIdentityKey(tx: transaction.asV2Write)
+            Task {
+                await linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary()
+            }
 
             errorMessage = .failedDecryption(
                 sender: sourceAddress,

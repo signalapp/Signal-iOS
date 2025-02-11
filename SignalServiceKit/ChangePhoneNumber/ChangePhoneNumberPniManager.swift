@@ -105,7 +105,6 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
     private let pniKyberPreKeyStore: SignalKyberPreKeyStore
     private let preKeyManager: Shims.PreKeyManager
     private let registrationIdGenerator: RegistrationIdGenerator
-    private let schedulers: Schedulers
     private let tsAccountManager: TSAccountManager
 
     init(
@@ -116,7 +115,6 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         pniKyberPreKeyStore: SignalKyberPreKeyStore,
         preKeyManager: Shims.PreKeyManager,
         registrationIdGenerator: RegistrationIdGenerator,
-        schedulers: Schedulers,
         tsAccountManager: TSAccountManager
     ) {
         self.db = db
@@ -126,7 +124,6 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         self.pniKyberPreKeyStore = pniKyberPreKeyStore
         self.preKeyManager = preKeyManager
         self.registrationIdGenerator = registrationIdGenerator
-        self.schedulers = schedulers
         self.tsAccountManager = tsAccountManager
     }
 
@@ -144,10 +141,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         let pniIdentityKeyPair = identityManager.generateNewIdentityKeyPair()
 
         let localDevicePniPqLastResortPreKeyRecord = db.write { tx in
-            try? pniKyberPreKeyStore.generateLastResortKyberPreKey(signedBy: pniIdentityKeyPair, tx: tx)
-        }
-        guard let localDevicePniPqLastResortPreKeyRecord else {
-            return Guarantee.value(.failure)
+            pniKyberPreKeyStore.generateLastResortKyberPreKey(signedBy: pniIdentityKeyPair, tx: tx)
         }
 
         let pendingState = ChangePhoneNumberPni.PendingState(
@@ -158,23 +152,21 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
             localDevicePniRegistrationId: registrationIdGenerator.generate()
         )
 
-        return firstly(on: schedulers.sync) { () -> Guarantee<PniDistribution.ParameterGenerationResult> in
-            self.pniDistributionParameterBuilder.buildPniDistributionParameters(
-                localAci: localAci,
-                localRecipientUniqueId: localRecipientUniqueId,
-                localDeviceId: localDeviceId,
-                localUserAllDeviceIds: localUserAllDeviceIds,
-                localPniIdentityKeyPair: pniIdentityKeyPair,
-                localE164: newE164,
-                localDevicePniSignedPreKey: pendingState.localDevicePniSignedPreKeyRecord,
-                localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKeyRecord,
-                localDevicePniRegistrationId: pendingState.localDevicePniRegistrationId
-            )
-        }.map(on: schedulers.sync) { paramGenerationResult in
-            switch paramGenerationResult {
-            case .success(let parameters):
+        return Guarantee.wrapAsync {
+            do {
+                let parameters = try await self.pniDistributionParameterBuilder.buildPniDistributionParameters(
+                    localAci: localAci,
+                    localRecipientUniqueId: localRecipientUniqueId,
+                    localDeviceId: localDeviceId,
+                    localUserAllDeviceIds: localUserAllDeviceIds,
+                    localPniIdentityKeyPair: pniIdentityKeyPair,
+                    localE164: newE164,
+                    localDevicePniSignedPreKey: pendingState.localDevicePniSignedPreKeyRecord,
+                    localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKeyRecord,
+                    localDevicePniRegistrationId: pendingState.localDevicePniRegistrationId
+                )
                 return .success(parameters: parameters, pendingState: pendingState)
-            case .failure:
+            } catch {
                 return .failure
             }
         }
@@ -217,7 +209,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
 
         // Followup tasks
 
-        transaction.addAsyncCompletion(on: schedulers.main) { [preKeyManager] in
+        transaction.addSyncCompletion { [preKeyManager] in
             // Since we rotated the identity key, we need new one-time pre-keys.
             // However, no need to update the signed pre-key, which we also just
             // rotated.

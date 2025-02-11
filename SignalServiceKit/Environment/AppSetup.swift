@@ -443,8 +443,7 @@ public class AppSetup {
             messageSender: PniDistributionParameterBuilderImpl.Wrappers.MessageSender(messageSender),
             pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
             pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
-            registrationIdGenerator: RegistrationIdGenerator(),
-            schedulers: schedulers
+            registrationIdGenerator: RegistrationIdGenerator()
         )
 
         let badgeCountFetcher = BadgeCountFetcherImpl()
@@ -472,7 +471,6 @@ public class AppSetup {
             pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
             preKeyManager: ChangePhoneNumberPniManagerImpl.Wrappers.PreKeyManager(),
             registrationIdGenerator: RegistrationIdGenerator(),
-            schedulers: schedulers,
             tsAccountManager: tsAccountManager
         )
 
@@ -756,26 +754,23 @@ public class AppSetup {
         let pniIdentityKeyChecker = PniIdentityKeyCheckerImpl(
             db: db,
             identityManager: PniIdentityKeyCheckerImpl.Wrappers.IdentityManager(identityManager),
-            profileFetcher: PniIdentityKeyCheckerImpl.Wrappers.ProfileFetcher(schedulers: schedulers),
-            schedulers: schedulers
+            profileFetcher: PniIdentityKeyCheckerImpl.Wrappers.ProfileFetcher(schedulers: schedulers)
         )
         let linkedDevicePniKeyManager = LinkedDevicePniKeyManagerImpl(
             db: db,
             messageProcessor: LinkedDevicePniKeyManagerImpl.Wrappers.MessageProcessor(messageProcessor),
             pniIdentityKeyChecker: pniIdentityKeyChecker,
             registrationStateChangeManager: registrationStateChangeManager,
-            schedulers: schedulers,
             tsAccountManager: tsAccountManager
         )
         let pniHelloWorldManager = PniHelloWorldManagerImpl(
-            database: db,
+            db: db,
             identityManager: identityManager,
             networkManager: PniHelloWorldManagerImpl.Wrappers.NetworkManager(networkManager),
             pniDistributionParameterBuilder: pniDistributionParameterBuilder,
             pniSignedPreKeyStore: pniProtocolStore.signedPreKeyStore,
             pniKyberPreKeyStore: pniProtocolStore.kyberPreKeyStore,
             recipientDatabaseTable: recipientDatabaseTable,
-            schedulers: schedulers,
             tsAccountManager: tsAccountManager
         )
 

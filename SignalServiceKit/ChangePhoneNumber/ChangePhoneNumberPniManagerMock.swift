@@ -25,8 +25,8 @@ public class ChangePhoneNumberPniManagerMock: ChangePhoneNumberPniManager {
         let keyPair = ECKeyPair.generateKeyPair()
         let registrationId = UInt32.random(in: 1...0x3fff)
 
-        let localPqKey1 = try! self.mockKyberStore.generateLastResortKyberPreKeyForLinkedDevice(signedBy: keyPair)
-        let localPqKey2 = try! self.mockKyberStore.generateLastResortKyberPreKeyForLinkedDevice(signedBy: keyPair)
+        let localPqKey1 = self.mockKyberStore.generateLastResortKyberPreKeyForLinkedDevice(signedBy: keyPair)
+        let localPqKey2 = self.mockKyberStore.generateLastResortKyberPreKeyForLinkedDevice(signedBy: keyPair)
 
         return .value(.success(
             parameters: PniDistribution.Parameters.mock(

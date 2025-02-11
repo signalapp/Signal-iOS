@@ -32,31 +32,30 @@ class PniDistributionParameterBuilderTest: XCTestCase {
             messageSender: messageSenderMock,
             pniSignedPreKeyStore: pniSignedPreKeyStoreMock,
             pniKyberPreKeyStore: pniKyberPreKeyStoreMock,
-            registrationIdGenerator: registrationIdGeneratorMock,
-            schedulers: DispatchQueueSchedulers()
+            registrationIdGenerator: registrationIdGeneratorMock
         )
     }
 
-    func testBuildParametersHappyPath() async {
+    func testBuildParametersHappyPath() async throws {
         let pniKeyPair = ECKeyPair.generateKeyPair()
         let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
         let localRegistrationId = registrationIdGeneratorMock.generate()
-        let localPqLastResortPreKey = try! db.write { tx in
-            try self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
+        let localPqLastResortPreKey = db.write { tx in
+            self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
         }
 
         messageSenderMock.deviceMessageMocks.update {
             $0[123] = .valid(registrationId: 456)
         }
 
-        let parameters = await build(
+        let parameters = try await build(
             localDeviceId: 1,
             localUserAllDeviceIds: [1, 123],
             localPniIdentityKeyPair: pniKeyPair,
             localDevicePniSignedPreKey: localSignedPreKey,
             localDevicePniPqLastResortPreKey: localPqLastResortPreKey,
             localDevicePniRegistrationId: localRegistrationId
-        ).awaitable().unwrapSuccess
+        )
 
         XCTAssertEqual(parameters.pniIdentityKey, pniKeyPair.keyPair.identityKey)
 
@@ -86,35 +85,36 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         let pniKeyPair = ECKeyPair.generateKeyPair()
         let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
         let localRegistrationId = registrationIdGeneratorMock.generate()
-        let localPqLastResortPreKey = try! db.write { tx in
-            try self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
+        let localPqLastResortPreKey = db.write { tx in
+            self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
         }
 
         messageSenderMock.deviceMessageMocks.update {
             $0[123] = .valid(registrationId: 456)
         }
 
-        let isFailureResult = await build(
-            localDeviceId: 1,
-            localUserAllDeviceIds: [2, 123],
-            localPniIdentityKeyPair: pniKeyPair,
-            localDevicePniSignedPreKey: localSignedPreKey,
-            localDevicePniPqLastResortPreKey: localPqLastResortPreKey,
-            localDevicePniRegistrationId: localRegistrationId
-        ).awaitable().isError
-
-        XCTAssertTrue(isFailureResult)
+        let result = await Result {
+            return try await build(
+                localDeviceId: 1,
+                localUserAllDeviceIds: [2, 123],
+                localPniIdentityKeyPair: pniKeyPair,
+                localDevicePniSignedPreKey: localSignedPreKey,
+                localDevicePniPqLastResortPreKey: localPqLastResortPreKey,
+                localDevicePniRegistrationId: localRegistrationId
+            )
+        }
+        XCTAssertThrowsError(try result.get())
         XCTAssertEqual(messageSenderMock.deviceMessageMocks.get().count, 1)
     }
 
     /// If one of our linked devices is invalid, per the message sender, we
     /// should skip it and generate identity without parameters for it.
-    func testBuildParametersWithInvalidDevice() async {
+    func testBuildParametersWithInvalidDevice() async throws {
         let pniKeyPair = ECKeyPair.generateKeyPair()
         let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
         let localRegistrationId = registrationIdGeneratorMock.generate()
-        let localPqLastResortPreKey = try! db.write { tx in
-            try self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
+        let localPqLastResortPreKey = db.write { tx in
+            self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
         }
 
         messageSenderMock.deviceMessageMocks.update {
@@ -122,14 +122,14 @@ class PniDistributionParameterBuilderTest: XCTestCase {
             $0[1234] = .invalidDevice
         }
 
-        let parameters = await build(
+        let parameters = try await build(
             localDeviceId: 1,
             localUserAllDeviceIds: [1, 123, 1234],
             localPniIdentityKeyPair: pniKeyPair,
             localDevicePniSignedPreKey: localSignedPreKey,
             localDevicePniPqLastResortPreKey: localPqLastResortPreKey,
             localDevicePniRegistrationId: localRegistrationId
-        ).awaitable().unwrapSuccess
+        )
 
         XCTAssertEqual(parameters.pniIdentityKey, pniKeyPair.keyPair.identityKey)
 
@@ -152,24 +152,26 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         let pniKeyPair = ECKeyPair.generateKeyPair()
         let localSignedPreKey = pniSignedPreKeyStoreMock.generateSignedPreKey(signedBy: pniKeyPair)
         let localRegistrationId = registrationIdGeneratorMock.generate()
-        let localPqLastResortPreKey = try! db.write { tx in
-            try self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
+        let localPqLastResortPreKey = db.write { tx in
+            self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
         }
 
         messageSenderMock.deviceMessageMocks.update {
             $0[123] = .error
         }
 
-        let isFailureResult = await build(
-            localDeviceId: 1,
-            localUserAllDeviceIds: [1, 123],
-            localPniIdentityKeyPair: pniKeyPair,
-            localDevicePniSignedPreKey: localSignedPreKey,
-            localDevicePniPqLastResortPreKey: localPqLastResortPreKey,
-            localDevicePniRegistrationId: localRegistrationId
-        ).awaitable().isError
+        let result = await Result {
+            return try await build(
+                localDeviceId: 1,
+                localUserAllDeviceIds: [1, 123],
+                localPniIdentityKeyPair: pniKeyPair,
+                localDevicePniSignedPreKey: localSignedPreKey,
+                localDevicePniPqLastResortPreKey: localPqLastResortPreKey,
+                localDevicePniRegistrationId: localRegistrationId
+            )
+        }
 
-        XCTAssert(isFailureResult)
+        XCTAssertThrowsError(try result.get())
         XCTAssertEqual(pniSignedPreKeyStoreMock.generatedSignedPreKeys.count, 2)
         XCTAssertEqual(registrationIdGeneratorMock.generatedRegistrationIds.count, 2)
         XCTAssert(messageSenderMock.deviceMessageMocks.get().isEmpty)
@@ -184,12 +186,12 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
         localDevicePniPqLastResortPreKey: SignalServiceKit.KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32
-    ) -> Guarantee<PniDistribution.ParameterGenerationResult> {
+    ) async throws -> PniDistribution.Parameters {
         let aci = Aci.randomForTesting()
         let recipientUniqueId = "what's up"
         let e164 = E164("+17735550199")!
 
-        return pniDistributionParameterBuilder.buildPniDistributionParameters(
+        return try await pniDistributionParameterBuilder.buildPniDistributionParameters(
             localAci: aci,
             localRecipientUniqueId: recipientUniqueId,
             localDeviceId: localDeviceId,
@@ -200,24 +202,6 @@ class PniDistributionParameterBuilderTest: XCTestCase {
             localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKey,
             localDevicePniRegistrationId: localDevicePniRegistrationId
         )
-    }
-}
-
-private extension PniDistribution.ParameterGenerationResult {
-    var unwrapSuccess: PniDistribution.Parameters {
-        switch self {
-        case .success(let parameters):
-            return parameters
-        case .failure:
-            owsFail("Unwrapped failed result!")
-        }
-    }
-
-    var isError: Bool {
-        switch self {
-        case .success: return false
-        case .failure: return true
-        }
     }
 }
 

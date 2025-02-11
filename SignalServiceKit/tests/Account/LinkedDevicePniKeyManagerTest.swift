@@ -30,7 +30,6 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
     private var messageProcessorMock: MessageProcessorMock!
     private var pniIdentityKeyCheckerMock: PniIdentityKeyCheckerMock!
     private var registrationStateChangeManagerMock: MockRegistrationStateChangeManager!
-    private var testScheduler: TestScheduler!
     private var tsAccountManagerMock: MockTSAccountManager!
 
     private var linkedDevicePniKeyManager: LinkedDevicePniKeyManagerImpl!
@@ -38,12 +37,9 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
     private var isMarkedDeregistered: Bool = false
 
     override func setUp() {
-        testScheduler = TestScheduler()
-        let testSchedulers = TestSchedulers(scheduler: testScheduler)
-
         db = InMemoryDB()
         kvStore = TestKVStore(db: db)
-        messageProcessorMock = MessageProcessorMock(schedulers: testSchedulers)
+        messageProcessorMock = MessageProcessorMock()
         pniIdentityKeyCheckerMock = PniIdentityKeyCheckerMock()
         registrationStateChangeManagerMock = .init()
         tsAccountManagerMock = .init()
@@ -59,98 +55,94 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
             messageProcessor: messageProcessorMock,
             pniIdentityKeyChecker: pniIdentityKeyCheckerMock,
             registrationStateChangeManager: registrationStateChangeManagerMock,
-            schedulers: testSchedulers,
             tsAccountManager: tsAccountManagerMock
         )
     }
 
-    override func tearDown() {
-        messageProcessorMock.fetchProcessResult.ensureUnset()
-        pniIdentityKeyCheckerMock.matchResult.ensureUnset()
-    }
-
-    private func runRunRun(recordIssue: Bool) {
-        db.write { tx in
-            if recordIssue {
+    private func runRunRun(recordIssue: Bool) async {
+        if recordIssue {
+            await db.awaitableWrite { tx in
                 linkedDevicePniKeyManager.recordSuspectedIssueWithPniIdentityKey(tx: tx)
-            } else {
-                linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary(tx: tx)
             }
         }
-
-        testScheduler.runUntilIdle()
+        await linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary()
     }
 
-    func testDoesntRecordIfPrimaryDevice() {
+    func testDoesntRecordIfPrimaryDevice() async {
         tsAccountManagerMock.registrationStateMock = { .registered }
 
-        db.write { tx in
-            linkedDevicePniKeyManager.recordSuspectedIssueWithPniIdentityKey(tx: tx)
+        await db.awaitableWrite { tx in
+            return linkedDevicePniKeyManager.recordSuspectedIssueWithPniIdentityKey(tx: tx)
         }
-
-        testScheduler.runUntilIdle()
+        await linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary()
 
         XCTAssertFalse(kvStore.hasDecryptionError())
     }
 
-    func testUnlinkedIfDecryptionErrorAndMissingPni() {
-        messageProcessorMock.fetchProcessResult = .value({})
+    func testUnlinkedIfDecryptionErrorAndMissingPni() async {
+        messageProcessorMock.waitForFetchingAndProcessingMock = {}
         tsAccountManagerMock.localIdentifiersMock = { .missingPni }
 
-        runRunRun(recordIssue: true)
+        await runRunRun(recordIssue: true)
 
         XCTAssertFalse(kvStore.hasDecryptionError())
         XCTAssertTrue(self.isMarkedDeregistered)
     }
 
-    func testUnlinkedIfDecryptionErrorAndMismatchedIdentityKey() {
-        messageProcessorMock.fetchProcessResult = .value({})
+    func testUnlinkedIfDecryptionErrorAndMismatchedIdentityKey() async {
+        messageProcessorMock.waitForFetchingAndProcessingMock = {}
         tsAccountManagerMock.localIdentifiersMock = { .mock }
-        pniIdentityKeyCheckerMock.matchResult = .value(false)
+        var serverHasSameKeyResponses = [false]
+        pniIdentityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _ in serverHasSameKeyResponses.popFirst()! }
 
-        runRunRun(recordIssue: true)
+        await runRunRun(recordIssue: true)
 
         XCTAssertFalse(kvStore.hasDecryptionError())
         XCTAssertTrue(self.isMarkedDeregistered)
+        XCTAssertEqual(serverHasSameKeyResponses, [])
     }
 
-    func testNotUnlinkedIfIdentityKeyCheckingFails() {
-        messageProcessorMock.fetchProcessResult = .value({})
+    func testNotUnlinkedIfIdentityKeyCheckingFails() async {
+        messageProcessorMock.waitForFetchingAndProcessingMock = {}
         tsAccountManagerMock.localIdentifiersMock = { .mock }
-        pniIdentityKeyCheckerMock.matchResult = .error()
+        var serverHasSameKeyResponses = [OWSGenericError("")]
+        pniIdentityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _ in throw serverHasSameKeyResponses.popFirst()! }
 
-        runRunRun(recordIssue: true)
+        await runRunRun(recordIssue: true)
 
         XCTAssertTrue(kvStore.hasDecryptionError())
         XCTAssertFalse(self.isMarkedDeregistered)
+        XCTAssertTrue(serverHasSameKeyResponses.isEmpty)
     }
 
-    func testNotUnlinkedIfIdentityKeyMatches() {
-        messageProcessorMock.fetchProcessResult = .value({})
+    func testNotUnlinkedIfIdentityKeyMatches() async {
+        messageProcessorMock.waitForFetchingAndProcessingMock = {}
         tsAccountManagerMock.localIdentifiersMock = { .mock }
-        pniIdentityKeyCheckerMock.matchResult = .value(true)
+        var serverHasSameKeyResponses = [true]
+        pniIdentityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _ in serverHasSameKeyResponses.popFirst()! }
 
-        runRunRun(recordIssue: true)
+        await runRunRun(recordIssue: true)
 
         XCTAssertFalse(kvStore.hasDecryptionError())
         XCTAssertFalse(self.isMarkedDeregistered)
+        XCTAssertEqual(serverHasSameKeyResponses, [])
     }
 
-    func testEarlyExitIfPrimary() {
+    func testEarlyExitIfPrimary() async {
         tsAccountManagerMock.registrationStateMock = { .registered }
 
         // This will fail if it doesn't early-exit, due to missing mocks.
-        runRunRun(recordIssue: false)
+        await runRunRun(recordIssue: false)
 
         XCTAssertFalse(kvStore.hasDecryptionError())
         XCTAssertFalse(self.isMarkedDeregistered)
     }
 
-    func testEarlyExitIfNoError() {
-        messageProcessorMock.fetchProcessResult = .value({})
+    func testEarlyExitIfNoError() async {
+        messageProcessorMock.waitForFetchingAndProcessingMock = {}
 
         // This will fail if it doesn't early-exit, due to missing mocks.
-        runRunRun(recordIssue: false)
+        await runRunRun(recordIssue: false)
 
         XCTAssertFalse(kvStore.hasDecryptionError())
         XCTAssertFalse(self.isMarkedDeregistered)
@@ -159,45 +151,63 @@ final class LinkedDevicePniKeyManagerTest: XCTestCase {
     /// It's important that we don't check for the decryption error until
     /// *after* the message queue is cleared, because that's where we'll
     /// register the error.
-    func testChecksForDecryptionErrorAfterClearingQueue() {
-        messageProcessorMock.fetchProcessResult = .value({ self.runRunRun(recordIssue: true) })
+    func testChecksForDecryptionErrorAfterClearingQueue() async {
+        messageProcessorMock.waitForFetchingAndProcessingMock = { [db, linkedDevicePniKeyManager] in
+            await db!.awaitableWrite { tx in
+                linkedDevicePniKeyManager!.recordSuspectedIssueWithPniIdentityKey(tx: tx)
+            }
+        }
         tsAccountManagerMock.localIdentifiersMock = { .mock }
-        pniIdentityKeyCheckerMock.matchResult = .value(false)
+        var serverHasSameKeyResponses = [false]
+        pniIdentityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _ in serverHasSameKeyResponses.popFirst()! }
 
-        runRunRun(recordIssue: false)
+        await runRunRun(recordIssue: false)
 
         // Expect an unlink
         XCTAssertFalse(kvStore.hasDecryptionError())
         XCTAssertTrue(self.isMarkedDeregistered)
+        XCTAssertEqual(serverHasSameKeyResponses, [])
     }
 
     /// Checks that multiple overlapping validation attempts are collapsed into
     /// one. Also checks that a subsequent validation runs.
-    func testMultipleCallsResultInOneRun() {
-        messageProcessorMock.fetchProcessResult = .value({})
+    func testMultipleCallsResultInOneRun() async {
+        let fetchingAndProcessing = CancellableContinuation<Void>()
+        messageProcessorMock.waitForFetchingAndProcessingMock = { try! await fetchingAndProcessing.wait() }
         tsAccountManagerMock.localIdentifiersMock = { .mock }
-        pniIdentityKeyCheckerMock.matchResult = .value(true)
+        var serverHasSameKeyResponses = [true]
+        pniIdentityKeyCheckerMock.serverHasSameKeyAsLocalMock = { _ in serverHasSameKeyResponses.popFirst()! }
 
-        db.write { tx in
-            linkedDevicePniKeyManager.recordSuspectedIssueWithPniIdentityKey(tx: tx)
+        await db.awaitableWrite { tx in
             linkedDevicePniKeyManager.recordSuspectedIssueWithPniIdentityKey(tx: tx)
         }
-        testScheduler.runUntilIdle()
+        await withTaskGroup(of: Void.self) { taskGroup in
+            taskGroup.addTask {
+                await self.linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary()
+            }
+            taskGroup.addTask {
+                await self.linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary()
+            }
+            // One of the two Tasks should be able to complete immediately.
+            _ = await taskGroup.next()
+            // Once it does, we can let the other one complete as well.
+            fetchingAndProcessing.resume(with: .success(()))
+            _ = await taskGroup.next()
+        }
 
         XCTAssertFalse(kvStore.hasDecryptionError())
         XCTAssertFalse(self.isMarkedDeregistered)
+        XCTAssertEqual(serverHasSameKeyResponses, [])
 
-        messageProcessorMock.fetchProcessResult = .value({})
+        messageProcessorMock.waitForFetchingAndProcessingMock = {}
         tsAccountManagerMock.localIdentifiersMock = { .mock }
-        pniIdentityKeyCheckerMock.matchResult = .value(false)
+        serverHasSameKeyResponses = [false]
 
-        db.write { tx in
-            linkedDevicePniKeyManager.recordSuspectedIssueWithPniIdentityKey(tx: tx)
-        }
-        testScheduler.runUntilIdle()
+        await runRunRun(recordIssue: true)
 
         XCTAssertFalse(kvStore.hasDecryptionError())
         XCTAssertTrue(self.isMarkedDeregistered)
+        XCTAssertEqual(serverHasSameKeyResponses, [])
     }
 }
 
@@ -218,23 +228,17 @@ private extension LocalIdentifiers {
 }
 
 private class MessageProcessorMock: LinkedDevicePniKeyManagerImpl.Shims.MessageProcessor {
-    var fetchProcessResult: ConsumableMockGuarantee<() -> Void> = .unset
+    var waitForFetchingAndProcessingMock: (() async -> Void)!
 
-    private let schedulers: Schedulers
-
-    init(schedulers: Schedulers) {
-        self.schedulers = schedulers
-    }
-
-    func waitForFetchingAndProcessing() -> Guarantee<Void> {
-        return fetchProcessResult.consumeIntoGuarantee().map(on: schedulers.sync) { $0() }
+    func waitForFetchingAndProcessing() async {
+        await waitForFetchingAndProcessingMock!()
     }
 }
 
 private class PniIdentityKeyCheckerMock: PniIdentityKeyChecker {
-    var matchResult: ConsumableMockPromise<Bool> = .unset
+    var serverHasSameKeyAsLocalMock: ((_ localPni: Pni) async throws -> Bool)!
 
-    func serverHasSameKeyAsLocal(localPni: Pni, tx: DBReadTransaction) -> Promise<Bool> {
-        return matchResult.consumeIntoPromise()
+    func serverHasSameKeyAsLocal(localPni: Pni) async throws -> Bool {
+        return try await serverHasSameKeyAsLocalMock!(localPni)
     }
 }

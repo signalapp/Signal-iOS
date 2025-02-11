@@ -187,29 +187,29 @@ internal class MockKyberPreKeyStore: SignalKyberPreKeyStore {
         self.dateProvider = dateProvider
     }
 
-    func generateLastResortKyberPreKey(signedBy keyPair: ECKeyPair, tx: DBWriteTransaction) throws -> SignalServiceKit.KyberPreKeyRecord {
-        let record = try generateKyberPreKey(signedBy: keyPair, isLastResort: true)
+    func generateLastResortKyberPreKey(signedBy keyPair: ECKeyPair, tx: DBWriteTransaction) -> SignalServiceKit.KyberPreKeyRecord {
+        let record = generateKyberPreKey(signedBy: keyPair, isLastResort: true)
         lastResortRecords.append(record)
         return record
     }
 
-    func generateLastResortKyberPreKeyForLinkedDevice(signedBy keyPair: ECKeyPair) throws -> SignalServiceKit.KyberPreKeyRecord {
-        let record = try generateKyberPreKey(signedBy: keyPair, isLastResort: true)
+    func generateLastResortKyberPreKeyForLinkedDevice(signedBy keyPair: ECKeyPair) -> SignalServiceKit.KyberPreKeyRecord {
+        let record = generateKyberPreKey(signedBy: keyPair, isLastResort: true)
         lastResortRecords.append(record)
         return record
     }
 
     func storeLastResortPreKeyFromLinkedDevice(record: KyberPreKeyRecord, tx: DBWriteTransaction) throws { }
 
-    func generateKyberPreKeyRecords(count: Int, signedBy keyPair: ECKeyPair, tx: DBWriteTransaction) throws -> [SignalServiceKit.KyberPreKeyRecord] {
-        let records = try (0..<count).map { _ in
-            try generateKyberPreKey(signedBy: keyPair, isLastResort: false)
+    func generateKyberPreKeyRecords(count: Int, signedBy keyPair: ECKeyPair, tx: DBWriteTransaction) -> [SignalServiceKit.KyberPreKeyRecord] {
+        let records = (0..<count).map { _ in
+            generateKyberPreKey(signedBy: keyPair, isLastResort: false)
         }
         oneTimeRecords.append(contentsOf: records)
         return records
     }
 
-    func generateKyberPreKey(signedBy keyPair: ECKeyPair, isLastResort: Bool) throws -> SignalServiceKit.KyberPreKeyRecord {
+    func generateKyberPreKey(signedBy keyPair: ECKeyPair, isLastResort: Bool) -> SignalServiceKit.KyberPreKeyRecord {
 
         let keyPair = KEMKeyPair.generate()
         let signature = Data(identityKeyPair.keyPair.privateKey.generateSignature(message: Data(keyPair.publicKey.serialize())))

@@ -94,15 +94,16 @@ public class AppEnvironment: NSObject {
 
             if isPrimaryDevice {
                 Task {
-                    try await learnMyOwnPniManager.learnMyOwnPniIfNecessary()
-
-                    await db.awaitableWrite { tx in
-                        pniHelloWorldManager.sayHelloWorldIfNecessary(tx: tx)
+                    do {
+                        try await learnMyOwnPniManager.learnMyOwnPniIfNecessary()
+                        try await pniHelloWorldManager.sayHelloWorldIfNecessary()
+                    } catch {
+                        Logger.warn("Couldn't initialize PNI: \(error)")
                     }
                 }
             } else {
-                db.read { tx in
-                    linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary(tx: tx)
+                Task {
+                    await linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary()
                 }
             }
 

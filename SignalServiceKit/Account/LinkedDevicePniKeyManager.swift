@@ -34,30 +34,13 @@ public protocol LinkedDevicePniKeyManager {
     ///
     /// We do not expect many devices to have ended up in a bad state, and so we
     /// hope that this unlinking will be a rare last resort.
-    func validateLocalPniIdentityKeyIfNecessary(tx: DBReadTransaction)
+    func validateLocalPniIdentityKeyIfNecessary() async
 }
 
 class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
     private enum Constants {
         static let collection = "LinkedDevicePniKeyManagerImpl"
         static let hasRecordedSuspectedIssueKey = "hasSuspectedIssue"
-    }
-
-    /// Scenarios that should interrupt regular processing.
-    private enum Interrupts: Error {
-        case noPniDecryptionError
-        case missingLocalPni
-        case localPniIdentityKeyDidntMatchRemote
-
-        /// Whether this interrupt should result in unlinking.
-        var shouldResultInUnlink: Bool {
-            switch self {
-            case .noPniDecryptionError:
-                return false
-            case .missingLocalPni, .localPniIdentityKeyDidntMatchRemote:
-                return true
-            }
-        }
     }
 
     private let logger = PrefixedLogger(prefix: "LDPKM")
@@ -67,7 +50,6 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
     private let messageProcessor: Shims.MessageProcessor
     private let pniIdentityKeyChecker: PniIdentityKeyChecker
     private let registrationStateChangeManager: RegistrationStateChangeManager
-    private let schedulers: Schedulers
     private let tsAccountManager: TSAccountManager
 
     private let isValidating = AtomicBool(false, lock: .init())
@@ -77,7 +59,6 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
         messageProcessor: Shims.MessageProcessor,
         pniIdentityKeyChecker: PniIdentityKeyChecker,
         registrationStateChangeManager: RegistrationStateChangeManager,
-        schedulers: Schedulers,
         tsAccountManager: TSAccountManager
     ) {
         self.db = db
@@ -85,13 +66,11 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
         self.messageProcessor = messageProcessor
         self.pniIdentityKeyChecker = pniIdentityKeyChecker
         self.registrationStateChangeManager = registrationStateChangeManager
-        self.schedulers = schedulers
         self.tsAccountManager = tsAccountManager
     }
 
     func recordSuspectedIssueWithPniIdentityKey(tx: DBWriteTransaction) {
         guard tsAccountManager.registrationState(tx: tx).isPrimaryDevice == false else {
-            logger.warn("Not recording suspected PNI identity key issue - not a linked device!")
             return
         }
 
@@ -100,80 +79,68 @@ class LinkedDevicePniKeyManagerImpl: LinkedDevicePniKeyManager {
             key: Constants.hasRecordedSuspectedIssueKey,
             transaction: tx
         )
-
-        validateLocalPniIdentityKeyIfNecessary(tx: tx)
     }
 
-    func validateLocalPniIdentityKeyIfNecessary(tx syncTx: DBReadTransaction) {
+    func validateLocalPniIdentityKeyIfNecessary() async {
         let logger = logger
 
         guard isValidating.tryToSetFlag() else {
             logger.warn("Skipping validation - already in flight!")
             return
         }
+        defer {
+            self.isValidating.set(false)
+        }
 
-        guard tsAccountManager.registrationState(tx: syncTx).isPrimaryDevice == false else {
-            logger.info("Skipping validation - not a linked device!")
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == false else {
             return
         }
 
-        firstly(on: schedulers.sync) { () -> Guarantee<Void> in
-            return self.messageProcessor.waitForFetchingAndProcessing()
+        await self.messageProcessor.waitForFetchingAndProcessing()
+
+        let hasSuspectedIssue = self.db.read { tx in
+            return self.kvStore.getBool(
+                Constants.hasRecordedSuspectedIssueKey,
+                defaultValue: false,
+                transaction: tx
+            )
         }
-        .then(on: schedulers.global()) { () throws -> Promise<Bool> in
-            return try self.db.read { tx throws in
-                guard self.kvStore.getBool(
-                    Constants.hasRecordedSuspectedIssueKey,
-                    defaultValue: false,
-                    transaction: tx
-                ) else {
-                    logger.info("Skipping validation - no reason to suspect an issue.")
-                    throw Interrupts.noPniDecryptionError
-                }
-
-                guard let localPni = self.tsAccountManager.localIdentifiers(
-                    tx: tx
-                )?.pni else {
-                    logger.warn("Missing local PNI!")
-                    throw Interrupts.missingLocalPni
-                }
-
-                return self.pniIdentityKeyChecker.serverHasSameKeyAsLocal(
-                    localPni: localPni,
-                    tx: tx
-                )
-            }
+        guard hasSuspectedIssue else {
+            return
         }
-        .done(on: schedulers.global()) { matched throws in
-            guard matched else {
-                logger.warn("Local PNI identity key didn't match remote!")
-                throw Interrupts.localPniIdentityKeyDidntMatchRemote
-            }
 
-            self.db.write { tx in
-                self.clearPniMessageDecryptionError(tx: tx)
-            }
-
-            logger.info("Local identity keys matched remote - no further action.")
-        }
-        .catch(on: schedulers.global()) { error in
-            guard let interrupt = error as? Interrupts else {
-                logger.error("Error during validation! \(error)")
-                return
-            }
-
-            self.db.write { tx in
-                if interrupt.shouldResultInUnlink {
+        do {
+            let isValid = try await _validateLocalPniIdentityKey()
+            await self.db.awaitableWrite { tx in
+                if !isValid {
                     logger.warn("Marking as deregistered.")
                     self.registrationStateChangeManager.setIsDeregisteredOrDelinked(true, tx: tx)
                 }
                 self.clearPniMessageDecryptionError(tx: tx)
             }
+        } catch {
+            logger.warn("Couldn't check PNI identity key: \(error)")
         }
-        .ensure(on: schedulers.sync) {
-            self.isValidating.set(false)
+    }
+
+    private func _validateLocalPniIdentityKey() async throws -> Bool {
+        let logger = logger
+
+        let localPni = self.db.read { tx in
+            return self.tsAccountManager.localIdentifiers(tx: tx)?.pni
         }
-        .cauterize()
+        guard let localPni else {
+            logger.warn("Missing local PNI.")
+            return false
+        }
+
+        let matched = try await self.pniIdentityKeyChecker.serverHasSameKeyAsLocal(localPni: localPni)
+        guard matched else {
+            logger.warn("Local PNI identity key didn't match remote!")
+            return false
+        }
+
+        return true
     }
 
     private func clearPniMessageDecryptionError(tx: DBWriteTransaction) {
@@ -199,7 +166,7 @@ extension LinkedDevicePniKeyManagerImpl {
 // MARK: MessageProcessor
 
 protocol _LinkedDevicePniKeyManagerImpl_MessageProcessor_Shim {
-    func waitForFetchingAndProcessing() -> Guarantee<Void>
+    func waitForFetchingAndProcessing() async
 }
 
 class _LinkedDevicePniKeyManagerImpl_MessageProcessor_Wrapper: _LinkedDevicePniKeyManagerImpl_MessageProcessor_Shim {
@@ -209,7 +176,7 @@ class _LinkedDevicePniKeyManagerImpl_MessageProcessor_Wrapper: _LinkedDevicePniK
         self.messageProcessor = messageProcessor
     }
 
-    public func waitForFetchingAndProcessing() -> Guarantee<Void> {
-        messageProcessor.waitForFetchingAndProcessing()
+    public func waitForFetchingAndProcessing() async {
+        await messageProcessor.waitForFetchingAndProcessing().awaitable()
     }
 }

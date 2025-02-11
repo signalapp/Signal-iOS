@@ -9,13 +9,13 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
     func generateLastResortKyberPreKey(
         signedBy keyPair: ECKeyPair,
         tx: DBWriteTransaction
-    ) throws -> SignalServiceKit.KyberPreKeyRecord
+    ) -> SignalServiceKit.KyberPreKeyRecord
 
     /// Keys returned by this method should not be stored in the local
     /// KyberPreKeyStore since there is no guarantee the key ID is unique.
     func generateLastResortKyberPreKeyForLinkedDevice(
         signedBy keyPair: ECKeyPair
-    ) throws -> SignalServiceKit.KyberPreKeyRecord
+    ) -> SignalServiceKit.KyberPreKeyRecord
 
     func storeLastResortPreKeyFromLinkedDevice(
         record: KyberPreKeyRecord,
@@ -26,7 +26,7 @@ public protocol SignalKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
         count: Int,
         signedBy keyPair: ECKeyPair,
         tx: DBWriteTransaction
-    ) throws -> [SignalServiceKit.KyberPreKeyRecord]
+    ) -> [SignalServiceKit.KyberPreKeyRecord]
 
     func storeLastResortPreKey(
         record: SignalServiceKit.KyberPreKeyRecord,
@@ -172,7 +172,7 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
         id: UInt32,
         signedBy identityKeyPair: ECKeyPair,
         isLastResort: Bool
-    ) throws -> KyberPreKeyRecord {
+    ) -> KyberPreKeyRecord {
         let keyPair = KEMKeyPair.generate()
         let signature = Data(identityKeyPair.keyPair.privateKey.generateSignature(message: Data(keyPair.publicKey.serialize())))
 
@@ -193,10 +193,10 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
         count: Int,
         signedBy keyPair: ECKeyPair,
         tx: DBWriteTransaction
-    ) throws -> [KyberPreKeyRecord] {
+    ) -> [KyberPreKeyRecord] {
         var nextKeyId = nextKyberPreKeyId(minimumCapacity: UInt32(count), tx: tx)
-        let records = try (0..<count).map { _ in
-            let record = try generateKyberPreKeyRecord(
+        let records = (0..<count).map { _ in
+            let record = generateKyberPreKeyRecord(
                 id: nextKeyId,
                 signedBy: keyPair,
                 isLastResort: false
@@ -213,9 +213,9 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
     public func generateLastResortKyberPreKey(
         signedBy keyPair: ECKeyPair,
         tx: DBWriteTransaction
-    ) throws -> SignalServiceKit.KyberPreKeyRecord {
+    ) -> SignalServiceKit.KyberPreKeyRecord {
         let keyId = nextKyberPreKeyId(tx: tx)
-        let record = try generateKyberPreKeyRecord(
+        let record = generateKyberPreKeyRecord(
             id: keyId,
             signedBy: keyPair,
             isLastResort: true
@@ -226,8 +226,8 @@ public class SSKKyberPreKeyStore: SignalKyberPreKeyStore {
 
     public func generateLastResortKyberPreKeyForLinkedDevice(
         signedBy keyPair: ECKeyPair
-    ) throws -> SignalServiceKit.KyberPreKeyRecord {
-        return try generateKyberPreKeyRecord(
+    ) -> SignalServiceKit.KyberPreKeyRecord {
+        return generateKyberPreKeyRecord(
             id: PreKeyId.random(),
             signedBy: keyPair,
             isLastResort: true

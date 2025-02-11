@@ -62,7 +62,8 @@ class _PreKey_LinkedDevicePniKeyManagerMock: LinkedDevicePniKeyManager {
         hasSuspectedIssue = true
     }
 
-    func validateLocalPniIdentityKeyIfNecessary(tx: DBReadTransaction) { owsFail("Not implemented!") }
+    func validateLocalPniIdentityKeyIfNecessary() async {
+    }
 }
 
 struct _PreKey_MessageProcessorMock: PreKey.Shims.MessageProcessor {

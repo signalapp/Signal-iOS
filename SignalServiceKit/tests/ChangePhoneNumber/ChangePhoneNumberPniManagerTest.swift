@@ -18,7 +18,6 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
     private var registrationIdGeneratorMock: MockRegistrationIdGenerator!
     private var tsAccountManagerMock: MockTSAccountManager!
 
-    private var schedulers: TestSchedulers!
     private var db: InMemoryDB!
 
     private var changeNumberPniManager: ChangePhoneNumberPniManager!
@@ -32,9 +31,6 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         registrationIdGeneratorMock = .init()
         tsAccountManagerMock = .init()
 
-        schedulers = TestSchedulers(scheduler: TestScheduler())
-        schedulers.scheduler.start()
-
         db = .init()
 
         changeNumberPniManager = ChangePhoneNumberPniManagerImpl(
@@ -45,22 +41,21 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
             pniKyberPreKeyStore: kyberPreKeyStoreMock,
             preKeyManager: preKeyManagerMock,
             registrationIdGenerator: registrationIdGeneratorMock,
-            schedulers: schedulers,
             tsAccountManager: tsAccountManagerMock
         )
     }
 
     // MARK: - Generate identity
 
-    func testGenerateIdentityHappyPath() {
+    func testGenerateIdentityHappyPath() async {
         let e164 = E164("+17735550199")!
 
         pniDistributionParameterBuilderMock.buildOutcomes = [.success]
 
-        let (parameters, pendingState) = generateIdentity(
+        let (parameters, pendingState) = await generateIdentity(
             e164: e164,
             linkedDeviceIds: [2, 3]
-        ).value!.unwrapSuccess
+        ).awaitable().unwrapSuccess
 
         XCTAssertEqual(e164, pendingState.newE164)
 
@@ -78,15 +73,15 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         XCTAssertTrue(pniDistributionParameterBuilderMock.buildOutcomes.isEmpty)
     }
 
-    func testGenerateIdentityWithError() {
+    func testGenerateIdentityWithError() async {
         let e164 = E164("+17735550199")!
 
         pniDistributionParameterBuilderMock.buildOutcomes = [.failure]
 
-        let isFailureResult = generateIdentity(
+        let isFailureResult = await generateIdentity(
             e164: e164,
             linkedDeviceIds: [2, 3]
-        ).value!.isError
+        ).awaitable().isError
 
         XCTAssertTrue(isFailureResult)
 
@@ -100,15 +95,15 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
     // MARK: - Finalize identity
 
-    func testFinalizeIdentityHappyPath() {
+    func testFinalizeIdentityHappyPath() async {
         let e164 = E164("+17735550199")!
 
         pniDistributionParameterBuilderMock.buildOutcomes = [.success]
 
-        let (_, pendingState) = generateIdentity(
+        let (_, pendingState) = await generateIdentity(
             e164: e164,
             linkedDeviceIds: [2, 3]
-        ).value!.unwrapSuccess
+        ).awaitable().unwrapSuccess
 
         db.write { transaction in
             try! changeNumberPniManager.finalizePniIdentity(
@@ -240,27 +235,23 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
         localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord,
         localDevicePniPqLastResortPreKey: SignalServiceKit.KyberPreKeyRecord,
         localDevicePniRegistrationId: UInt32
-    ) -> Guarantee<PniDistribution.ParameterGenerationResult> {
-        guard let buildOutcome = buildOutcomes.first else {
-            XCTFail("Missing build outcome!")
-            return .value(.failure)
-        }
-
+    ) async throws -> PniDistribution.Parameters {
+        let buildOutcome = buildOutcomes.first!
         buildOutcomes = Array(buildOutcomes.dropFirst())
 
         buildRequestedForDeviceIds.append(localUserAllDeviceIds)
 
         switch buildOutcome {
         case .success:
-            return .value(.success(PniDistribution.Parameters.mock(
+            return PniDistribution.Parameters.mock(
                 pniIdentityKeyPair: localPniIdentityKeyPair,
                 localDeviceId: localDeviceId,
                 localDevicePniSignedPreKey: localDevicePniSignedPreKey,
                 localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKey,
                 localDevicePniRegistrationId: localDevicePniRegistrationId
-            )))
+            )
         case .failure:
-            return .value(.failure)
+            throw OWSGenericError("")
         }
     }
 }

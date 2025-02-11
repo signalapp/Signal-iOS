@@ -75,8 +75,8 @@ internal struct PreKeyTaskManager {
 
         try Task.checkCancellation()
         let (aciBundle, pniBundle) = try await db.awaitableWrite { tx in
-            let aciBundle = try self.generateKeysForRegistration(identity: .aci, tx: tx)
-            let pniBundle = try self.generateKeysForRegistration(identity: .pni, tx: tx)
+            let aciBundle = self.generateKeysForRegistration(identity: .aci, tx: tx)
+            let pniBundle = self.generateKeysForRegistration(identity: .pni, tx: tx)
             try self.persistKeysPriorToUpload(bundle: aciBundle, tx: tx)
             try self.persistKeysPriorToUpload(bundle: pniBundle, tx: tx)
             return (aciBundle, pniBundle)
@@ -95,12 +95,12 @@ internal struct PreKeyTaskManager {
 
         try Task.checkCancellation()
         let (aciBundle, pniBundle) = try await db.awaitableWrite { tx in
-            let aciBundle = try self.generateKeysForProvisioning(
+            let aciBundle = self.generateKeysForProvisioning(
                 identity: .aci,
                 identityKeyPair: aciIdentityKeyPair,
                 tx: tx
             )
-            let pniBundle = try self.generateKeysForProvisioning(
+            let pniBundle = self.generateKeysForProvisioning(
                 identity: .pni,
                 identityKeyPair: pniIdentityKeyPair,
                 tx: tx
@@ -240,14 +240,14 @@ internal struct PreKeyTaskManager {
     private func generateKeysForRegistration(
         identity: OWSIdentity,
         tx: DBWriteTransaction
-    ) throws -> RegistrationPreKeyUploadBundle {
+    ) -> RegistrationPreKeyUploadBundle {
         let identityKeyPair = getOrCreateIdentityKeyPair(identity: identity, tx: tx)
         let protocolStore = self.protocolStoreManager.signalProtocolStore(for: identity)
         return RegistrationPreKeyUploadBundle(
             identity: identity,
             identityKeyPair: identityKeyPair,
             signedPreKey: protocolStore.signedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair),
-            lastResortPreKey: try protocolStore.kyberPreKeyStore.generateLastResortKyberPreKey(
+            lastResortPreKey: protocolStore.kyberPreKeyStore.generateLastResortKyberPreKey(
                 signedBy: identityKeyPair,
                 tx: tx
             )
@@ -258,7 +258,7 @@ internal struct PreKeyTaskManager {
         identity: OWSIdentity,
         identityKeyPair: ECKeyPair,
         tx: DBWriteTransaction
-    ) throws -> RegistrationPreKeyUploadBundle {
+    ) -> RegistrationPreKeyUploadBundle {
         let protocolStore = self.protocolStoreManager.signalProtocolStore(for: identity)
         return RegistrationPreKeyUploadBundle(
             identity: identity,
@@ -266,7 +266,7 @@ internal struct PreKeyTaskManager {
             signedPreKey: protocolStore.signedPreKeyStore.generateSignedPreKey(
                 signedBy: identityKeyPair
             ),
-            lastResortPreKey: try protocolStore.kyberPreKeyStore.generateLastResortKyberPreKey(
+            lastResortPreKey: protocolStore.kyberPreKeyStore.generateLastResortKyberPreKey(
                 signedBy: identityKeyPair,
                 tx: tx
             )
@@ -321,20 +321,20 @@ internal struct PreKeyTaskManager {
         var lastResortPreKey: KyberPreKeyRecord?
         var pqPreKeyRecords: [KyberPreKeyRecord]?
 
-        try targets.targets.forEach { target in
+        targets.targets.forEach { target in
             switch target {
             case .oneTimePreKey:
                 preKeyRecords = protocolStore.preKeyStore.generatePreKeyRecords(tx: tx)
             case .signedPreKey:
                 signedPreKey = protocolStore.signedPreKeyStore.generateSignedPreKey(signedBy: identityKeyPair)
             case .oneTimePqPreKey:
-                pqPreKeyRecords = try protocolStore.kyberPreKeyStore.generateKyberPreKeyRecords(
+                pqPreKeyRecords = protocolStore.kyberPreKeyStore.generateKyberPreKeyRecords(
                     count: 100,
                     signedBy: identityKeyPair,
                     tx: tx
                 )
             case .lastResortPqPreKey:
-                lastResortPreKey = try protocolStore.kyberPreKeyStore.generateLastResortKyberPreKey(
+                lastResortPreKey = protocolStore.kyberPreKeyStore.generateLastResortKyberPreKey(
                     signedBy: identityKeyPair,
                     tx: tx
                 )
@@ -538,9 +538,12 @@ internal struct PreKeyTaskManager {
 
             // We think we have an incorrect PNI identity key, which
             // we should record so we can handle it later.
-            db.asyncWrite { tx in
+            await db.awaitableWrite { tx in
                 self.linkedDevicePniKeyManager
                     .recordSuspectedIssueWithPniIdentityKey(tx: tx)
+            }
+            Task {
+                await self.linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary()
             }
         case let .failure(error):
             PreKey.logger.info("[\(identity)] Failed to upload prekeys")

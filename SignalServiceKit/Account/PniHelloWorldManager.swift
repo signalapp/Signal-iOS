@@ -22,7 +22,7 @@ public protocol PniHelloWorldManager {
     /// This "hello world" operation runs when all devices on the local account
     /// are confirmed to be "PNP capable", to ensure that they have the correct
     /// PNI identity key.
-    func sayHelloWorldIfNecessary(tx: DBWriteTransaction)
+    func sayHelloWorldIfNecessary() async throws
 }
 
 class PniHelloWorldManagerImpl: PniHelloWorldManager {
@@ -33,7 +33,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
 
     private let logger = PrefixedLogger(prefix: "PHWM")
 
-    private let database: any DB
+    private let db: any DB
     private let identityManager: any OWSIdentityManager
     private let keyValueStore: KeyValueStore
     private let networkManager: Shims.NetworkManager
@@ -41,21 +41,19 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
     private let pniSignedPreKeyStore: SignalSignedPreKeyStore
     private let pniKyberPreKeyStore: SignalKyberPreKeyStore
     private let recipientDatabaseTable: any RecipientDatabaseTable
-    private let schedulers: Schedulers
     private let tsAccountManager: TSAccountManager
 
     init(
-        database: any DB,
+        db: any DB,
         identityManager: any OWSIdentityManager,
         networkManager: Shims.NetworkManager,
         pniDistributionParameterBuilder: PniDistributionParamaterBuilder,
         pniSignedPreKeyStore: SignalSignedPreKeyStore,
         pniKyberPreKeyStore: SignalKyberPreKeyStore,
         recipientDatabaseTable: any RecipientDatabaseTable,
-        schedulers: Schedulers,
         tsAccountManager: TSAccountManager
     ) {
-        self.database = database
+        self.db = db
         self.identityManager = identityManager
         self.keyValueStore = KeyValueStore(collection: StoreConstants.collectionName)
         self.networkManager = networkManager
@@ -63,7 +61,6 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         self.pniSignedPreKeyStore = pniSignedPreKeyStore
         self.pniKyberPreKeyStore = pniKyberPreKeyStore
         self.recipientDatabaseTable = recipientDatabaseTable
-        self.schedulers = schedulers
         self.tsAccountManager = tsAccountManager
     }
 
@@ -71,96 +68,111 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         keyValueStore.setBool(true, key: StoreConstants.hasSaidHelloWorldKey, transaction: tx)
     }
 
-    func sayHelloWorldIfNecessary(tx syncTx: DBWriteTransaction) {
+    func sayHelloWorldIfNecessary() async throws {
         let logger = logger
 
-        guard tsAccountManager.registrationState(tx: syncTx).isRegisteredPrimaryDevice else {
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
             return
         }
 
-        guard !keyValueStore.getBool(
-            StoreConstants.hasSaidHelloWorldKey,
-            defaultValue: false,
-            transaction: syncTx
-        ) else {
+        let hasSaidHelloWorld = db.read { tx in
+            return keyValueStore.getBool(
+                StoreConstants.hasSaidHelloWorldKey,
+                defaultValue: false,
+                transaction: tx
+            )
+        }
+        if hasSaidHelloWorld {
             return
         }
+        try await _sayHelloWorld()
+        await self.db.awaitableWrite { tx in
+            self.keyValueStore.setBool(
+                true,
+                key: StoreConstants.hasSaidHelloWorldKey,
+                transaction: tx
+            )
+        }
+        logger.info("Hello world succeeded!")
+    }
 
+    private struct PniDistributionAccountState {
+        var localIdentifiers: LocalIdentifiers
+        var localE164: E164
+        var localRecipient: SignalRecipient
+        var localPniIdentityKeyPair: ECKeyPair
+        var localDeviceId: UInt32
+        var localDevicePniRegistrationId: UInt32
+        var localDevicePniSignedPreKey: SignalServiceKit.SignedPreKeyRecord
+        var localDevicePniPqLastResortPreKey: SignalServiceKit.KyberPreKeyRecord
+    }
+
+    private func buildAccountState(tx: any DBWriteTransaction) -> PniDistributionAccountState? {
         guard
-            let localIdentifiers = tsAccountManager.localIdentifiers(tx: syncTx),
-            localIdentifiers.pni != nil,
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx),
             let localE164 = E164(localIdentifiers.phoneNumber),
-            let localRecipient = recipientDatabaseTable.fetchRecipient(serviceId: localIdentifiers.aci, transaction: syncTx)
+            let localRecipient = recipientDatabaseTable.fetchRecipient(serviceId: localIdentifiers.aci, transaction: tx)
         else {
-            logger.warn("Skipping PNI Hello World, missing local account parameters!")
-            return
+            return nil
         }
-        let localRecipientUniqueId = localRecipient.uniqueId
-        let localDeviceIds = localRecipient.deviceIds
 
         let localPniIdentityKeyPair: ECKeyPair
-        if let existingKeyPair = identityManager.identityKeyPair(for: .pni, tx: syncTx) {
+        if let existingKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx) {
             localPniIdentityKeyPair = existingKeyPair
         } else {
             localPniIdentityKeyPair = identityManager.generateNewIdentityKeyPair()
-            identityManager.setIdentityKeyPair(localPniIdentityKeyPair, for: .pni, tx: syncTx)
+            identityManager.setIdentityKeyPair(localPniIdentityKeyPair, for: .pni, tx: tx)
         }
 
-        let localDeviceId = tsAccountManager.storedDeviceId(tx: syncTx)
-        let localDevicePniRegistrationId = tsAccountManager.getOrGeneratePniRegistrationId(tx: syncTx)
+        let localDeviceId = tsAccountManager.storedDeviceId(tx: tx)
+        let localDevicePniRegistrationId = tsAccountManager.getOrGeneratePniRegistrationId(tx: tx)
 
         let localDevicePniSignedPreKey = pniSignedPreKeyStore.generateSignedPreKey(signedBy: localPniIdentityKeyPair)
-        pniSignedPreKeyStore.storeSignedPreKey(localDevicePniSignedPreKey.id, signedPreKeyRecord: localDevicePniSignedPreKey, tx: syncTx)
+        pniSignedPreKeyStore.storeSignedPreKey(localDevicePniSignedPreKey.id, signedPreKeyRecord: localDevicePniSignedPreKey, tx: tx)
 
-        let localDevicePniPqLastResortPreKey: KyberPreKeyRecord
+        let localDevicePniPqLastResortPreKey = pniKyberPreKeyStore.generateLastResortKyberPreKey(signedBy: localPniIdentityKeyPair, tx: tx)
         do {
-            localDevicePniPqLastResortPreKey = try pniKyberPreKeyStore.generateLastResortKyberPreKey(signedBy: localPniIdentityKeyPair, tx: syncTx)
-            try pniKyberPreKeyStore.storeLastResortPreKey(record: localDevicePniPqLastResortPreKey, tx: syncTx)
+            try pniKyberPreKeyStore.storeLastResortPreKey(record: localDevicePniPqLastResortPreKey, tx: tx)
         } catch {
-            logger.warn("Skipping PNI Hello World; couldn't generate last resort key")
-            return
+            owsFailDebug("Couldn't save last resort pq pre key: \(error)")
+            return nil
         }
 
-        firstly(on: schedulers.sync) { () -> Guarantee<PniDistribution.ParameterGenerationResult> in
-            logger.info("Building PNI distribution parameters.")
+        return PniDistributionAccountState(
+            localIdentifiers: localIdentifiers,
+            localE164: localE164,
+            localRecipient: localRecipient,
+            localPniIdentityKeyPair: localPniIdentityKeyPair,
+            localDeviceId: localDeviceId,
+            localDevicePniRegistrationId: localDevicePniRegistrationId,
+            localDevicePniSignedPreKey: localDevicePniSignedPreKey,
+            localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKey
+        )
+    }
 
-            return self.pniDistributionParameterBuilder.buildPniDistributionParameters(
-                localAci: localIdentifiers.aci,
-                localRecipientUniqueId: localRecipientUniqueId,
-                localDeviceId: localDeviceId,
-                localUserAllDeviceIds: localDeviceIds,
-                localPniIdentityKeyPair: localPniIdentityKeyPair,
-                localE164: localE164,
-                localDevicePniSignedPreKey: localDevicePniSignedPreKey,
-                localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKey,
-                localDevicePniRegistrationId: localDevicePniRegistrationId
-            )
-        }.map(on: schedulers.sync) { parameterGenerationResult throws -> PniDistribution.Parameters in
-            switch parameterGenerationResult {
-            case .success(let parameters):
-                return parameters
-            case .failure:
-                throw OWSGenericError("Failed to generate PNI distribution parameters!")
-            }
-        }.then(on: schedulers.sync) { pniDistributionParameters -> Promise<Void> in
-            logger.info("Making hello world request.")
-
-            return self.networkManager.makeHelloWorldRequest(
-                pniDistributionParameters: pniDistributionParameters
-            )
-        }.done(on: schedulers.global()) {
-            self.database.write { tx in
-                self.keyValueStore.setBool(
-                    true,
-                    key: StoreConstants.hasSaidHelloWorldKey,
-                    transaction: tx
-                )
-            }
-
-            logger.info("Hello world succeeded!")
-        }.catch(on: schedulers.sync) { error in
-            logger.error("Failed to say Hello World! \(error)")
+    private func _sayHelloWorld() async throws {
+        let accountState = await db.awaitableWrite { tx in
+            return self.buildAccountState(tx: tx)
         }
+        guard let accountState, accountState.localIdentifiers.pni != nil else {
+            throw OWSGenericError("Skipping PNI Hello World, missing local account parameters!")
+        }
+
+        logger.info("Building PNI distribution parameters.")
+
+        let pniDistributionParameters = try await self.pniDistributionParameterBuilder.buildPniDistributionParameters(
+            localAci: accountState.localIdentifiers.aci,
+            localRecipientUniqueId: accountState.localRecipient.uniqueId,
+            localDeviceId: accountState.localDeviceId,
+            localUserAllDeviceIds: accountState.localRecipient.deviceIds,
+            localPniIdentityKeyPair: accountState.localPniIdentityKeyPair,
+            localE164: accountState.localE164,
+            localDevicePniSignedPreKey: accountState.localDevicePniSignedPreKey,
+            localDevicePniPqLastResortPreKey: accountState.localDevicePniPqLastResortPreKey,
+            localDevicePniRegistrationId: accountState.localDevicePniRegistrationId
+        )
+
+        try await self.networkManager.makeHelloWorldRequest(pniDistributionParameters: pniDistributionParameters)
     }
 }
 
@@ -191,7 +203,7 @@ extension PniHelloWorldManagerImpl {
 // MARK: NetworkManager
 
 protocol _PniHelloWorldManagerImpl_NetworkManager_Shim {
-    func makeHelloWorldRequest(pniDistributionParameters: PniDistribution.Parameters) -> Promise<Void>
+    func makeHelloWorldRequest(pniDistributionParameters: PniDistribution.Parameters) async throws
 }
 
 class _PniHelloWorldManagerImpl_NetworkManager_Wrapper: _PniHelloWorldManagerImpl_NetworkManager_Shim {
@@ -201,12 +213,12 @@ class _PniHelloWorldManagerImpl_NetworkManager_Wrapper: _PniHelloWorldManagerImp
         self.networkManager = networkManager
     }
 
-    func makeHelloWorldRequest(pniDistributionParameters: PniDistribution.Parameters) -> Promise<Void> {
+    func makeHelloWorldRequest(pniDistributionParameters: PniDistribution.Parameters) async throws {
         let helloWorldRequest = OWSRequestFactory.pniHelloWorldRequest(
             pniDistributionParameters: pniDistributionParameters
         )
 
-        return networkManager.makePromise(request: helloWorldRequest).asVoid()
+        _ = try await networkManager.asyncRequest(helloWorldRequest)
     }
 }
 
@@ -217,7 +229,7 @@ class _PniHelloWorldManagerImpl_NetworkManager_Wrapper: _PniHelloWorldManagerImp
 struct PniHelloWorldManagerMock: PniHelloWorldManager {
     func markHelloWorldAsUnnecessary(tx: any DBWriteTransaction) {}
 
-    func sayHelloWorldIfNecessary(tx: any DBWriteTransaction) {}
+    func sayHelloWorldIfNecessary() async throws {}
 }
 
 #endif
