@@ -28,6 +28,8 @@ public enum FeatureFlags {
 
     public static let choochoo = build.includes(.internal)
 
+    public static let failDebug = build.includes(.internal)
+
     public static let linkedPhones = build.includes(.internal)
 
     public static let preRegDeviceTransfer = build.includes(.dev)

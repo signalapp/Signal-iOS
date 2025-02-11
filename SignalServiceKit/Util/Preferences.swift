@@ -67,6 +67,7 @@ public class Preferences {
     private enum UserDefaultsKeys {
         static let deviceScale = "OWSPreferencesKeyDeviceScale"
         static let isAudibleErrorLoggingEnabled = "IsAudibleErrorLoggingEnabled"
+        static let isFailDebugEnabled = "IsFailDebugEnabled"
     }
 
     private static let preferencesCollection = "SignalPreferences"
@@ -162,7 +163,14 @@ public class Preferences {
 
     // MARK: Logging
 
-    @objc
+    public static var isFailDebugEnabled: Bool {
+        return FeatureFlags.failDebug && UserDefaults.app.bool(forKey: UserDefaultsKeys.isFailDebugEnabled)
+    }
+
+    public static func setIsFailDebugEnabled(_ value: Bool) {
+        UserDefaults.app.set(value, forKey: UserDefaultsKeys.isFailDebugEnabled)
+    }
+
     public static var isAudibleErrorLoggingEnabled: Bool {
         UserDefaults.app.bool(forKey: UserDefaultsKeys.isAudibleErrorLoggingEnabled) && FeatureFlags.choochoo
     }

@@ -47,6 +47,10 @@ public func owsFailDebug(
     logger.error(logMessage, file: file, function: function, line: line)
     if IsDebuggerAttached() {
         TrapDebugger()
+    } else if Preferences.isFailDebugEnabled {
+        Preferences.setIsFailDebugEnabled(false)
+        logger.flush()
+        fatalError(logMessage)
     } else {
         assertionFailure(logMessage)
     }

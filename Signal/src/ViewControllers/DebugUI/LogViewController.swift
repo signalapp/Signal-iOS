@@ -28,11 +28,19 @@ public class LogPickerViewController: OWSTableViewController2 {
     }
 
     private func buildPreferenceSection() -> OWSTableSection {
-        let enableItem = OWSTableItem.switch(withText: "🚂 Play Sound When Errors Occur",
-                                             isOn: { Preferences.isAudibleErrorLoggingEnabled},
-                                             target: self,
-                                             selector: #selector(didToggleAudiblePreference(_:)))
-        return OWSTableSection(title: "Preferences", items: [enableItem])
+        let chooChoo = OWSTableItem.switch(
+            withText: "🚂 Play Sound When Errors Occur",
+            isOn: { Preferences.isAudibleErrorLoggingEnabled},
+            target: self,
+            selector: #selector(didToggleAudiblePreference(_:))
+        )
+        let failDebug = OWSTableItem.switch(
+            withText: "💥 Crash When owsFailDebugs Occur",
+            isOn: { Preferences.isFailDebugEnabled },
+            target: self,
+            selector: #selector(didToggleFailDebug(_:))
+        )
+        return OWSTableSection(title: "Preferences", items: [chooChoo, failDebug])
     }
 
     private func buildActionsSection() -> OWSTableSection {
@@ -90,6 +98,11 @@ public class LogPickerViewController: OWSTableViewController2 {
         if sender.isOn {
             ErrorLogger.playAlertSound()
         }
+    }
+
+    @objc
+    private func didToggleFailDebug(_ sender: UISwitch) {
+        Preferences.setIsFailDebugEnabled(sender.isOn)
     }
 }
 
