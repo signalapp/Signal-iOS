@@ -245,7 +245,6 @@ private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.Messa
         deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
-        isStoryMessage: Bool,
         isResendRequestMessage: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) throws -> DeviceMessage? {

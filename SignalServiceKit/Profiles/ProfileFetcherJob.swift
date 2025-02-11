@@ -159,6 +159,7 @@ public class ProfileFetcherJob {
         let requestMaker = RequestMaker(
             label: "Profile Fetch",
             serviceId: serviceId,
+            canUseStoryAuth: false,
             accessKey: udAccess,
             endorsement: endorsement,
             authedAccount: self.authedAccount,
@@ -170,6 +171,8 @@ public class ProfileFetcherJob {
             if let aci = serviceId as? Aci, let profileKey {
                 let udAccessKey: SMKUDAccessKey?
                 switch sealedSenderAuth {
+                case .story:
+                    owsFail("Can't use story auth.")
                 case .accessKey(let _udAccessKey):
                     udAccessKey = _udAccessKey
                 case .endorsement:

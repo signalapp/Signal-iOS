@@ -116,13 +116,12 @@ public enum OWSRequestFactory {
         timestamp: UInt64,
         isOnline: Bool,
         isUrgent: Bool,
-        isStory: Bool,
         auth: TSRequest.SealedSenderAuth?
     ) -> TSRequest {
         // NOTE: messages may be empty; See comments in OWSDeviceManager.
         owsAssertDebug(timestamp > 0)
 
-        let path = "\(self.textSecureMessagesAPI)\(serviceId.serviceIdString)?story=\(isStory ? "true" : "false")"
+        let path = "\(self.textSecureMessagesAPI)\(serviceId.serviceIdString)?story=\(auth?.isStory == true ? "true" : "false")"
 
         // Returns the per-account-message parameters used when submitting a message to
         // the Signal Web Service.
@@ -147,7 +146,6 @@ public enum OWSRequestFactory {
         timestamp: UInt64,
         isOnline: Bool,
         isUrgent: Bool,
-        isStory: Bool,
         auth: TSRequest.SealedSenderAuth
     ) -> TSRequest {
         owsAssertDebug(timestamp > 0)
@@ -159,7 +157,7 @@ public enum OWSRequestFactory {
             URLQueryItem(name: "ts", value: "\(timestamp)"),
             URLQueryItem(name: "online", value: isOnline ? "true" : "false"),
             URLQueryItem(name: "urgent", value: isUrgent ? "true" : "false"),
-            URLQueryItem(name: "story", value: isStory ? "true" : "false"),
+            URLQueryItem(name: "story", value: auth.isStory ? "true" : "false"),
         ]
 
         let request = TSRequest(url: components.url!, method: "PUT", parameters: nil)

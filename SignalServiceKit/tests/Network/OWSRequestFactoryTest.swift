@@ -52,7 +52,6 @@ class OWSRequestFactoryTest: XCTestCase {
             timestamp: 1234,
             isOnline: true,
             isUrgent: false,
-            isStory: false,
             auth: .accessKey(udAccessKey)
         )
 
@@ -77,7 +76,6 @@ class OWSRequestFactoryTest: XCTestCase {
             timestamp: 1234,
             isOnline: true,
             isUrgent: false,
-            isStory: false,
             auth: .accessKey(udAccessKey)
         )
 

@@ -312,7 +312,6 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                 deviceId: recipientDeviceId,
                 isOnlineMessage: false,
                 isTransientSenderKeyDistributionMessage: false,
-                isStoryMessage: false,
                 isResendRequestMessage: false,
                 sealedSenderParameters: nil // Sync messages do not use UD
             )
@@ -343,7 +342,6 @@ protocol _PniDistributionParameterBuilder_MessageSender_Shim {
         deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
-        isStoryMessage: Bool,
         isResendRequestMessage: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> DeviceMessage?
@@ -364,7 +362,6 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
         deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
-        isStoryMessage: Bool,
         isResendRequestMessage: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> DeviceMessage? {
@@ -376,7 +373,6 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
             deviceId: deviceId,
             isOnlineMessage: isOnlineMessage,
             isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
-            isStoryMessage: isStoryMessage,
             isResendRequestMessage: isResendRequestMessage,
             sealedSenderParameters: sealedSenderParameters
         )

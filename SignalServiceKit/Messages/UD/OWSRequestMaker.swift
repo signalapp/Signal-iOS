@@ -46,8 +46,8 @@ final class RequestMaker {
             self.rawValue = rawValue
         }
 
-        /// If the initial request uses Sealed Sender and that fails, send the
-        /// request again as an identified request.
+        /// If the initial request is unidentified and that fails, send the request
+        /// again as an identified request.
         static let allowIdentifiedFallback = Options(rawValue: 1 << 0)
 
         /// This RequestMaker is used when fetching profiles, so it shouldn't kick
@@ -62,6 +62,7 @@ final class RequestMaker {
     private let label: String
     private let serviceId: ServiceId
     private let address: SignalServiceAddress
+    private let canUseStoryAuth: Bool
     private let accessKey: OWSUDAccess?
     private let endorsement: GroupSendFullTokenBuilder?
     private let authedAccount: AuthedAccount
@@ -70,6 +71,7 @@ final class RequestMaker {
     init(
         label: String,
         serviceId: ServiceId,
+        canUseStoryAuth: Bool,
         accessKey: OWSUDAccess?,
         endorsement: GroupSendFullTokenBuilder?,
         authedAccount: AuthedAccount,
@@ -78,6 +80,7 @@ final class RequestMaker {
         self.label = label
         self.serviceId = serviceId
         self.address = SignalServiceAddress(serviceId)
+        self.canUseStoryAuth = canUseStoryAuth
         self.accessKey = accessKey
         self.endorsement = endorsement
         self.authedAccount = authedAccount
@@ -85,11 +88,13 @@ final class RequestMaker {
     }
 
     private enum SealedSenderAuth {
+        case story
         case accessKey(OWSUDAccess)
         case endorsement(GroupSendFullToken)
 
         func toRequestAuth() -> TSRequest.SealedSenderAuth {
             switch self {
+            case .story: .story
             case .accessKey(let udAccess): .accessKey(udAccess.udAccessKey)
             case .endorsement(let endorsement): .endorsement(endorsement)
             }
@@ -101,12 +106,18 @@ final class RequestMaker {
     /// The `block` is always invoked at least once, and it may be invoked
     /// multiple times when Sealed Sender auth errors occur.
     private func forEachAuthMechanism<T>(block: (SealedSenderAuth?) async throws -> T) async throws -> T {
-        var authMechanisms: [() -> SealedSenderAuth?] = [
-            accessKey.map({ accessKey in { .accessKey(accessKey) } }),
-            endorsement.map({ endorsement in { .endorsement(endorsement.build()) } }),
-        ].compacted()
-        if authMechanisms.isEmpty || self.options.contains(.allowIdentifiedFallback) {
-            authMechanisms.append({ nil })
+        var authMechanisms: [() -> SealedSenderAuth?]
+        if canUseStoryAuth {
+            authMechanisms = [{ .story }]
+            owsAssertDebug(!self.options.contains(.allowIdentifiedFallback))
+        } else {
+            authMechanisms = [
+                accessKey.map({ accessKey in { .accessKey(accessKey) } }),
+                endorsement.map({ endorsement in { .endorsement(endorsement.build()) } }),
+            ].compacted()
+            if authMechanisms.isEmpty || self.options.contains(.allowIdentifiedFallback) {
+                authMechanisms.append({ nil })
+            }
         }
 
         var mostRecentError: (any Error)?

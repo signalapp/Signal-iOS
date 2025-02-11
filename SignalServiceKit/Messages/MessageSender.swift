@@ -77,7 +77,6 @@ public class MessageSender {
         deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
-        isStoryMessage: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws {
         let hasSession = try SSKEnvironment.shared.databaseStorageRef.read { tx in
@@ -93,7 +92,6 @@ public class MessageSender {
             deviceId: deviceId,
             isOnlineMessage: isOnlineMessage,
             isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
-            isStoryMessage: isStoryMessage,
             sealedSenderParameters: sealedSenderParameters
         )
 
@@ -114,7 +112,6 @@ public class MessageSender {
         deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
-        isStoryMessage: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> SignalServiceKit.PreKeyBundle {
         Logger.info("serviceId: \(serviceId).\(deviceId)")
@@ -138,15 +135,24 @@ public class MessageSender {
             throw MessageSenderNoSessionForTransientMessageError()
         }
 
+        var requestOptions: RequestMaker.Options = [.waitForWebSocketToOpen]
+
+        // If we're sending a story, we can use the identified connection to fetch
+        // pre keys and the unidentified connection to send the message. For other
+        // types of messages, we expect unidentified message sends to fail if we
+        // can't fetch pre keys via the unidentified connection.
+        if let sealedSenderParameters, sealedSenderParameters.message.isStorySend {
+            requestOptions.insert(.allowIdentifiedFallback)
+        }
+
         let requestMaker = RequestMaker(
             label: "Prekey Fetch",
             serviceId: serviceId,
-            // Don't use UD for story preKey fetches, we don't have a valid UD auth key
-            // TODO: (PreKey Cleanup)
-            accessKey: isStoryMessage ? nil : sealedSenderParameters?.accessKey,
-            endorsement: isStoryMessage ? nil : sealedSenderParameters?.endorsement,
+            canUseStoryAuth: false,
+            accessKey: sealedSenderParameters?.accessKey,
+            endorsement: sealedSenderParameters?.endorsement,
             authedAccount: .implicit(),
-            options: [.waitForWebSocketToOpen]
+            options: requestOptions
         )
 
         do {
@@ -970,9 +976,7 @@ public class MessageSender {
             if localIdentifiers.contains(serviceId: serviceId) {
                 continue
             }
-            result[serviceId] = (
-                message.isStorySend ? SSKEnvironment.shared.udManagerRef.storyUdAccess() : SSKEnvironment.shared.udManagerRef.udAccess(for: serviceId, tx: tx)
-            )
+            result[serviceId] = SSKEnvironment.shared.udManagerRef.udAccess(for: serviceId, tx: tx)
         }
         return result
     }
@@ -1359,7 +1363,6 @@ public class MessageSender {
                 deviceId: deviceId,
                 isOnlineMessage: messageSend.message.isOnline,
                 isTransientSenderKeyDistributionMessage: messageSend.message.isTransientSKDM,
-                isStoryMessage: messageSend.message.isStorySend,
                 isResendRequestMessage: messageSend.message.isResendRequest,
                 sealedSenderParameters: sealedSenderParameters
             )
@@ -1382,7 +1385,6 @@ public class MessageSender {
         deviceId: UInt32,
         isOnlineMessage: Bool,
         isTransientSenderKeyDistributionMessage: Bool,
-        isStoryMessage: Bool,
         isResendRequestMessage: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) async throws -> DeviceMessage? {
@@ -1395,7 +1397,6 @@ public class MessageSender {
                 deviceId: deviceId,
                 isOnlineMessage: isOnlineMessage,
                 isTransientSenderKeyDistributionMessage: isTransientSenderKeyDistributionMessage,
-                isStoryMessage: isStoryMessage,
                 sealedSenderParameters: sealedSenderParameters
             )
         } catch let error {
@@ -1499,11 +1500,14 @@ public class MessageSender {
         let requestMaker = RequestMaker(
             label: "Message Send",
             serviceId: messageSend.serviceId,
+            canUseStoryAuth: sealedSenderParameters?.message.isStorySend == true,
             accessKey: sealedSenderParameters?.accessKey,
             endorsement: sealedSenderParameters?.endorsement,
             authedAccount: .implicit(),
             options: [.waitForWebSocketToOpen]
         )
+
+        owsAssertDebug(!message.isStorySend || sealedSenderParameters != nil, "Story messages must use Sealed Sender.")
 
         do {
             let result = try await requestMaker.makeRequest {
@@ -1513,7 +1517,6 @@ public class MessageSender {
                     timestamp: message.timestamp,
                     isOnline: message.isOnline,
                     isUrgent: message.isUrgent,
-                    isStory: message.isStorySend,
                     auth: $0
                 )
             }

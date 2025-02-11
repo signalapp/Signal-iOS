@@ -86,8 +86,6 @@ public protocol OWSUDManager {
 
     func udAccess(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> OWSUDAccess?
 
-    func storyUdAccess() -> OWSUDAccess
-
     func fetchAllAciUakPairs(tx: SDSAnyReadTransaction) -> [Aci: SMKUDAccessKey]
 
     // MARK: Sender Certificate
@@ -256,10 +254,6 @@ public class OWSUDManagerImpl: OWSUDManager {
             return nil
         }
         return OWSUDAccess(udAccessKey: accessKey, udAccessMode: accessMode)
-    }
-
-    public func storyUdAccess() -> OWSUDAccess {
-        return OWSUDAccess(udAccessKey: .zeroedKey, udAccessMode: .unrestricted)
     }
 
     // MARK: - Sender Certificate

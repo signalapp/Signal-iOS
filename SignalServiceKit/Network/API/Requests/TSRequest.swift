@@ -98,14 +98,24 @@ public class TSRequest: NSMutableURLRequest {
     }
 
     enum SealedSenderAuth {
+        case story
         case accessKey(SMKUDAccessKey)
         case endorsement(GroupSendFullToken)
+
+        var isStory: Bool {
+            switch self {
+            case .story: true
+            case .accessKey, .endorsement: false
+            }
+        }
     }
 
     func setAuth(sealedSender: SealedSenderAuth) {
         self.isUDRequest = true
         self.shouldHaveAuthorizationHeaders = false
         switch sealedSender {
+        case .story:
+            break
         case .accessKey(let accessKey):
             setValue(accessKey.keyData.base64EncodedString(), forHTTPHeaderField: "Unidentified-Access-Key")
         case .endorsement(let fullToken):

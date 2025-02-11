@@ -21,7 +21,7 @@ final class SealedSenderParameters {
     ) {
         self.message = message
         self.senderCertificate = senderCertificate
-        guard accessKey != nil || endorsement != nil else {
+        guard message.isStorySend || accessKey != nil || endorsement != nil else {
             return nil
         }
         self.accessKey = accessKey
