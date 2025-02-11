@@ -627,14 +627,15 @@ public class AttachmentManagerImpl: AttachmentManager {
         } else {
             // Content type might not set if the sending client can't
             // infer a MIME type from the file extension.
-            Logger.warn("Invalid attachment content type.")
             if
                 let sourceFilename,
                 let fileExtension = sourceFilename.fileExtension?.lowercased().nilIfEmpty,
                 let inferredMimeType = MimeTypeUtil.mimeTypeForFileExtension(fileExtension)?.nilIfEmpty
             {
+                Logger.warn("Missing attachment content type! Inferred MIME type: \(inferredMimeType)")
                 return inferredMimeType
             } else {
+                Logger.warn("Missing attachment content type! Failed to infer MIME type, falling back to octet-stream.")
                 return MimeType.applicationOctetStream.rawValue
             }
         }
