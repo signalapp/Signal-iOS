@@ -26,17 +26,30 @@ public class ViewOnceMessages: NSObject {
     public static func startExpiringWhenNecessary() {
         // Find all view-once messages which are not yet complete.
         // Complete messages if necessary.
-        SSKEnvironment.shared.databaseStorageRef.write { (transaction) in
-            let messages = ViewOnceMessageFinder()
-                .allMessagesWithViewOnceMessage(transaction: transaction)
-            for message in messages {
-                completeIfNecessary(message: message, transaction: transaction)
-            }
-        }
+        Task {
+            while true {
+                let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+                while true {
+                    var afterRowId: Int64?
+                    await databaseStorage.awaitableWrite { tx in
+                        let messages: [TSMessage]
+                        (messages, afterRowId) = ViewOnceMessageFinder().fetchSomeIncompleteViewOnceMessages(after: afterRowId, limit: 100, tx: tx)
+                        if !messages.isEmpty {
+                            Logger.info("Checking \(messages.count) view once message(s) for auto-expiration.")
+                        }
+                        for message in messages {
+                            completeIfNecessary(message: message, transaction: tx)
+                        }
+                    }
+                    if afterRowId == nil {
+                        break
+                    }
+                }
 
-        // We need to "check for auto-completion" once per day.
-        DispatchQueue.global().asyncAfter(wallDeadline: .now() + .day) {
-            self.startExpiringWhenNecessary()
+                // We need to "check for auto-completion" once per day.
+                try await Task.sleep(nanoseconds: TimeInterval.day.clampedNanoseconds)
+                Logger.info("Checking for auto-expired view once messages again because it's been a day.")
+            }
         }
     }
 
@@ -238,47 +251,46 @@ public class ViewOnceMessages: NSObject {
 // MARK: -
 
 private class ViewOnceMessageFinder {
-    public func allMessagesWithViewOnceMessage(transaction: SDSAnyReadTransaction) -> [TSMessage] {
-        var result: [TSMessage] = []
-        self.enumerateAllIncompleteViewOnceMessages(transaction: transaction) { message in
-            result.append(message)
+    func fetchSomeIncompleteViewOnceMessages(after rowId: Int64?, limit: Int, tx: SDSAnyReadTransaction) -> ([TSMessage], mightHaveMoreAfter: Int64?) {
+        var results: [TSMessage] = []
+
+        let cursor: TSInteractionCursor
+        if let rowId {
+            cursor = TSInteraction.grdbFetchCursor(
+                sql: """
+                SELECT *
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .isViewOnceMessage) = 1
+                AND \(interactionColumn: .isViewOnceComplete) = 0
+                AND \(interactionColumn: .id) > ?
+                ORDER BY \(interactionColumn: .id)
+                """,
+                arguments: [rowId],
+                transaction: tx.unwrapGrdbRead
+            )
+        } else {
+            cursor = TSInteraction.grdbFetchCursor(
+                sql: """
+                SELECT *
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .isViewOnceMessage) = 1
+                AND \(interactionColumn: .isViewOnceComplete) = 0
+                ORDER BY \(interactionColumn: .id)
+                """,
+                transaction: tx.unwrapGrdbRead
+            )
         }
-        return result
-    }
 
-    private func enumerateAllIncompleteViewOnceMessages(
-        transaction: SDSAnyReadTransaction,
-        block: (TSMessage) -> Void
-    ) {
-        let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            WHERE \(interactionColumn: .isViewOnceMessage) IS NOT NULL
-            AND \(interactionColumn: .isViewOnceMessage) == TRUE
-            AND \(interactionColumn: .isViewOnceComplete) IS NOT NULL
-            AND \(interactionColumn: .isViewOnceComplete) == FALSE
-        """
-        let cursor = TSInteraction.grdbFetchCursor(
-            sql: sql,
-            transaction: transaction.unwrapGrdbRead
-        )
-
-        // GRDB TODO make cursor.next fail hard to remove this `try!`
         while let next = try! cursor.next() {
             guard let message = next as? TSMessage else {
                 owsFailDebug("expecting message but found: \(next)")
-                return
+                continue
             }
-
-            guard
-                message.isViewOnceMessage,
-                !message.isViewOnceComplete
-            else {
-                owsFailDebug("expecting incomplete view-once message but found: \(message)")
-                return
+            results.append(message)
+            if results.count >= limit {
+                return (results, mightHaveMoreAfter: message.sqliteRowId!)
             }
-
-            block(message)
         }
+        return (results, mightHaveMoreAfter: nil)
     }
 }
