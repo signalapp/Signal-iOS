@@ -22,9 +22,9 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingLocalAccountUpdates() {}
     func backupPendingChanges(authedDevice: AuthedDevice) {}
     func resetLocalData(transaction: DBWriteTransaction) {}
-    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void> { Promise<Void>(error: OWSGenericError("Not implemented.")) }
+    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice, masterKeySource: StorageService.MasterKeySource) -> Promise<Void> { Promise<Void>(error: OWSGenericError("Not implemented.")) }
     func rotateManifest(mode: ManifestRotationMode, authedDevice: AuthedDevice) async throws { throw OWSGenericError("Not implemented.") }
-    func waitForPendingRestores() -> Promise<Void> { Promise<Void>(error: OWSGenericError("Not implemented.")) }
+    func waitForPendingRestores() async throws { throw OWSGenericError("Not implemented.") }
 }
 
 private class TestDependencies {

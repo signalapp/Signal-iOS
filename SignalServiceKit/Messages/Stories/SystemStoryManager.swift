@@ -399,7 +399,11 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
 
     private func syncOnboardingStoryViewStatus() -> Promise<OnboardingStoryViewStatus> {
         messageProcessor.waitForFetchingAndProcessing()
-            .then(on: queue) { SSKEnvironment.shared.storageServiceManagerRef.waitForPendingRestores() }
+            .then(on: queue) {
+                Promise.wrapAsync {
+                    try await SSKEnvironment.shared.storageServiceManagerRef.waitForPendingRestores()
+                }
+            }
             .then(on: queue) { [weak self] _ -> Promise<OnboardingStoryViewStatus> in
                 guard let strongSelf = self else {
                     return .init(error: OWSAssertionError("SystemStoryManager unretained"))

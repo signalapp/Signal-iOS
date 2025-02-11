@@ -23,15 +23,15 @@ public class FakeStorageServiceManager: StorageServiceManager {
 
     public func backupPendingChanges(authedDevice: AuthedDevice) {}
 
-    public var restoreOrCreateManifestIfNecessaryMock: (AuthedDevice) -> Promise<Void> = { _ in .value(()) }
+    public var restoreOrCreateManifestIfNecessaryMock: (AuthedDevice, StorageService.MasterKeySource) -> Promise<Void> = { _, _ in .value(()) }
 
-    public func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void> {
-        return restoreOrCreateManifestIfNecessaryMock(authedDevice)
+    public func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice, masterKeySource: StorageService.MasterKeySource) -> Promise<Void> {
+        return restoreOrCreateManifestIfNecessaryMock(authedDevice, masterKeySource)
     }
 
     public func rotateManifest(mode: ManifestRotationMode, authedDevice: AuthedDevice) async throws {}
 
-    public func waitForPendingRestores() -> Promise<Void> { Promise.value(()) }
+    public func waitForPendingRestores() async throws { }
 
     public func resetLocalData(transaction: DBWriteTransaction) {}
 }

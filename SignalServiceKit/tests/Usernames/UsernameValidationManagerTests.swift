@@ -332,8 +332,8 @@ extension UsernameValidationManagerTest {
     private class MockStorageServiceManager: Usernames.Validation.Shims.StorageServiceManager {
         var pendingRestoreResult: ConsumableMockPromise<Void> = .unset
 
-        public func waitForPendingRestores() -> Promise<Void> {
-            return pendingRestoreResult.consumeIntoPromise()
+        func waitForPendingRestores() async throws {
+            return try await pendingRestoreResult.consumeIntoPromise().awaitable()
         }
     }
 

@@ -790,7 +790,7 @@ private class MockStorageServiceManager: StorageServiceManager {
     func setLocalIdentifiers(_ localIdentifiers: LocalIdentifiers) { owsFail("Not implemented!") }
     func currentManifestVersion(tx: DBReadTransaction) -> UInt64 { owsFail("Not implemented") }
     func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool { owsFail("Not implemented") }
-    func waitForPendingRestores() -> Promise<Void> { owsFail("Not implemented") }
+    func waitForPendingRestores() async throws { owsFail("Not implemented") }
     func resetLocalData(transaction: DBWriteTransaction) { owsFail("Not implemented!") }
     func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId]) { owsFail("Not implemented!") }
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) { owsFail("Not implemented!") }
@@ -799,6 +799,6 @@ private class MockStorageServiceManager: StorageServiceManager {
     func recordPendingUpdates(callLinkRootKeys: [CallLinkRootKey]) { owsFail("Not implemented!") }
     func recordPendingUpdates(groupModel: TSGroupModel) { owsFail("Not implemented!") }
     func backupPendingChanges(authedDevice: AuthedDevice) { owsFail("Not implemented!") }
-    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void> { owsFail("Not implemented!") }
+    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice, masterKeySource: StorageService.MasterKeySource) -> Promise<Void> { owsFail("Not implemented!") }
     func rotateManifest(mode: ManifestRotationMode, authedDevice: AuthedDevice) async throws { owsFail("Not implemented!") }
 }

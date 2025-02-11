@@ -28,6 +28,31 @@ public struct StorageService {
         case networkError
     }
 
+    public enum MasterKeySource: Equatable {
+        case implicit
+        case explicit(MasterKey)
+
+        public func orIfImplicitUse(_ other: Self) -> Self {
+            switch self {
+            case .explicit:
+                return self
+            case .implicit:
+                return other
+            }
+        }
+
+        public static func == (lhs: StorageService.MasterKeySource, rhs: StorageService.MasterKeySource) -> Bool {
+            switch (lhs, rhs) {
+            case (.implicit, .implicit):
+                return true
+            case (.explicit(let lhKey), .explicit(let rhKey)):
+                return lhKey.rawData == rhKey.rawData
+            default:
+                return false
+            }
+        }
+    }
+
     /// An identifier representing a given storage item.
     /// This can be used to fetch specific items from the service.
     public struct StorageIdentifier: Hashable, Codable {
@@ -182,6 +207,7 @@ public struct StorageService {
     /// Returns nil if a manifest has never been stored.
     public static func fetchLatestManifest(
         greaterThanVersion: UInt64? = nil,
+        masterKey: MasterKey,
         chatServiceAuth: ChatServiceAuth
     ) async -> FetchLatestManifestResponse {
         var endpoint = "v1/storage/manifest"
@@ -210,15 +236,10 @@ public struct StorageService {
                 return .error(.manifestContainerProtoDeserializationFailed)
             }
 
-            let decryptResult = DependenciesBridge.shared.db.read { tx -> SVR.ApplyDerivedKeyResult in
-                guard let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx) else {
-                    return .masterKeyMissing
-                }
-                return masterKey.decrypt(
-                    keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
-                    encryptedData: encryptedManifestContainer.value
-                )
-            }
+            let decryptResult = masterKey.decrypt(
+                keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
+                encryptedData: encryptedManifestContainer.value
+            )
             switch decryptResult {
             case .success(let manifestData):
                 do {
@@ -265,6 +286,7 @@ public struct StorageService {
         newItems: [StorageItem],
         deletedIdentifiers: [StorageIdentifier],
         deleteAllExistingRecords: Bool,
+        masterKey: MasterKey,
         chatServiceAuth: ChatServiceAuth
     ) async -> UpdateManifestResult {
         Logger.info("newItems: \(newItems.count), deletedIdentifiers: \(deletedIdentifiers.count), deleteAllExistingRecords: \(deleteAllExistingRecords)")
@@ -281,15 +303,10 @@ public struct StorageService {
         }
 
         let encryptedManifestData: Data
-        let encryptResult = DependenciesBridge.shared.db.read { tx -> SVR.ApplyDerivedKeyResult in
-            guard let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx) else {
-                return .masterKeyMissing
-            }
-            return masterKey.encrypt(
-                keyType: .storageServiceManifest(version: manifest.version),
-                data: manifestData
-            )
-        }
+        let encryptResult = masterKey.encrypt(
+            keyType: .storageServiceManifest(version: manifest.version),
+            data: manifestData
+        )
         switch encryptResult {
         case .success(let data):
             encryptedManifestData = data
@@ -325,15 +342,11 @@ public struct StorageService {
                 } else {
                     /// If we don't have a `recordIkm` yet, fall back to the
                     /// SVR-derived key.
-                    let itemEncryptionResult = DependenciesBridge.shared.db.read { tx -> SVR.ApplyDerivedKeyResult in
-                        guard let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx) else {
-                            return .masterKeyMissing
-                        }
-                        return masterKey.encrypt(
-                            keyType: .legacy_storageServiceRecord(identifier: item.identifier),
-                            data: plaintextRecordData
-                        )
-                    }
+                    ///
+                    let itemEncryptionResult = masterKey.encrypt(
+                        keyType: .legacy_storageServiceRecord(identifier: item.identifier),
+                        data: plaintextRecordData
+                    )
                     switch itemEncryptionResult {
                     case .success(let data):
                         return data
@@ -393,15 +406,11 @@ public struct StorageService {
                 return .error(.manifestContainerProtoDeserializationFailed)
             }
 
-            let decryptionResult = DependenciesBridge.shared.db.read { tx -> SVR.ApplyDerivedKeyResult in
-                guard let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx) else {
-                    return .masterKeyMissing
-                }
-                return masterKey.decrypt(
-                    keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
-                    encryptedData: encryptedManifestContainer.value
-                )
-            }
+            let decryptionResult = masterKey.decrypt(
+                keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
+                encryptedData: encryptedManifestContainer.value
+            )
+
             switch decryptionResult {
             case .success(let manifestData):
                 do {
@@ -434,6 +443,7 @@ public struct StorageService {
     public static func fetchItems(
         for identifiers: [StorageIdentifier],
         manifest: StorageServiceProtoManifestRecord,
+        masterKey: MasterKey,
         chatServiceAuth: ChatServiceAuth
     ) async -> FetchItemsResult {
         Logger.info("")
@@ -508,15 +518,10 @@ public struct StorageService {
             } else {
                 /// If we don't yet have a `recordIkm` set we should
                 /// continue using the SVR-derived record key.
-                let itemDecryptionResult = DependenciesBridge.shared.db.read { tx -> SVR.ApplyDerivedKeyResult in
-                    guard let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx) else {
-                        return .masterKeyMissing
-                    }
-                    return masterKey.decrypt(
-                        keyType: .legacy_storageServiceRecord(identifier: itemIdentifier),
-                        encryptedData: item.value
-                    )
-                }
+                let itemDecryptionResult = masterKey.decrypt(
+                    keyType: .legacy_storageServiceRecord(identifier: itemIdentifier),
+                    encryptedData: item.value
+                )
                 switch itemDecryptionResult {
                 case .success(let itemData):
                     decryptedItemData = itemData

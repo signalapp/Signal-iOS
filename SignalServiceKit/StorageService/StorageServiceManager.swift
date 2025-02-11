@@ -31,7 +31,7 @@ public protocol StorageServiceManager {
     func backupPendingChanges(authedDevice: AuthedDevice)
 
     @discardableResult
-    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void>
+    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice, masterKeySource: StorageService.MasterKeySource) -> Promise<Void>
 
     func rotateManifest(
         mode: ManifestRotationMode,
@@ -70,7 +70,7 @@ public protocol StorageServiceManager {
     /// described as: "if this device has knowledge that storage service has new
     /// state at the time this method is invoked, the returned Promise will be
     /// resolved after that state has been fetched".
-    func waitForPendingRestores() -> Promise<Void>
+    func waitForPendingRestores() async throws
 }
 
 extension StorageServiceManager {
@@ -157,7 +157,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
                 // Schedule a restore. This will do nothing unless we've never
                 // registered a manifest before.
-                self.restoreOrCreateManifestIfNecessary(authedDevice: .implicit)
+                self.restoreOrCreateManifestIfNecessary(authedDevice: .implicit, masterKeySource: .implicit)
 
                 // If we have any pending changes since we last launch, back them up now.
                 self.backupPendingChanges(authedDevice: .implicit)
@@ -208,6 +208,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
         struct PendingManifestRotation {
             var authedDevice: AuthedDevice
+            var masterKeySource: StorageService.MasterKeySource
             var continuations: [CheckedContinuation<Void, Error>]
             var mode: ManifestRotationMode
         }
@@ -221,12 +222,14 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             // This is a middle ground between the current world (implicit auth we grab
             // from tsAccountManager) and explicit auth management.
             var authedDevice: AuthedDevice
+            var masterKeySource: StorageService.MasterKeySource
         }
         var pendingBackup: PendingBackup?
         var pendingBackupTimer: Timer?
 
         struct PendingRestore {
             var authedDevice: AuthedDevice
+            var masterKeySource: StorageService.MasterKeySource
             var futures: [Future<Void>]
         }
         var pendingRestore: PendingRestore?
@@ -299,7 +302,8 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             if let rotateManifestOperation = buildOperation(
                 managerState: managerState,
                 mode: .rotateManifest(mode: pendingManifestRotation.mode),
-                authedDevice: pendingManifestRotation.authedDevice
+                authedDevice: pendingManifestRotation.authedDevice,
+                masterKeySource: pendingManifestRotation.masterKeySource
             ) {
                 let cleanupBlock: ((inout ManagerState, (any Error)?) -> Void) = { _, error in
                     resumeContinuations(error)
@@ -326,7 +330,8 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             let cleanUpOperation = buildOperation(
                 managerState: managerState,
                 mode: .cleanUpUnknownData,
-                authedDevice: .implicit
+                authedDevice: .implicit,
+                masterKeySource: .implicit
             )
             if let cleanUpOperation {
                 return (cleanUpOperation, nil)
@@ -340,7 +345,8 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             let restoreOperation = buildOperation(
                 managerState: managerState,
                 mode: .restoreOrCreate,
-                authedDevice: pendingRestore.authedDevice
+                authedDevice: pendingRestore.authedDevice,
+                masterKeySource: pendingRestore.masterKeySource
             )
             if let restoreOperation {
                 return ({
@@ -378,7 +384,8 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             let backupOperation = buildOperation(
                 managerState: managerState,
                 mode: .backup,
-                authedDevice: pendingBackup.authedDevice
+                authedDevice: pendingBackup.authedDevice,
+                masterKeySource: pendingBackup.masterKeySource
             )
             if let backupOperation {
                 return (backupOperation, nil)
@@ -391,7 +398,8 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
     private func buildOperation(
         managerState: ManagerState,
         mode: StorageServiceOperation.Mode,
-        authedDevice: AuthedDevice
+        authedDevice: AuthedDevice,
+        masterKeySource: StorageService.MasterKeySource
     ) -> (() async throws -> Void)? {
         let localIdentifiers: LocalIdentifiers
         let isPrimaryDevice: Bool
@@ -421,12 +429,14 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             }
             isPrimaryDevice = implicitIsPrimaryDevice
         }
+
         return {
             try await StorageServiceOperation(
                 mode: mode,
                 localIdentifiers: localIdentifiers,
                 isPrimaryDevice: isPrimaryDevice,
-                authedDevice: authedDevice
+                authedDevice: authedDevice,
+                masterKeySource: masterKeySource
             ).run()
         }
     }
@@ -497,12 +507,20 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
     // MARK: - Actions
 
     @discardableResult
-    public func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice) -> Promise<Void> {
+    public func restoreOrCreateManifestIfNecessary(
+        authedDevice: AuthedDevice,
+        masterKeySource: StorageService.MasterKeySource
+    ) -> Promise<Void> {
         let (promise, future) = Promise<Void>.pending()
         updateManagerState { managerState in
-            var pendingRestore = managerState.pendingRestore ?? .init(authedDevice: .implicit, futures: [])
+            var pendingRestore = managerState.pendingRestore ?? .init(
+                authedDevice: .implicit,
+                masterKeySource: .implicit,
+                futures: []
+            )
             pendingRestore.futures.append(future)
             pendingRestore.authedDevice = authedDevice.orIfImplicitUse(pendingRestore.authedDevice)
+            pendingRestore.masterKeySource = masterKeySource.orIfImplicitUse(pendingRestore.masterKeySource)
             managerState.pendingRestore = pendingRestore
         }
         return promise
@@ -516,6 +534,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             updateManagerState { managerState in
                 var pendingRotation = managerState.pendingManifestRotation ?? .init(
                     authedDevice: .implicit,
+                    masterKeySource: .implicit,
                     continuations: [],
                     mode: mode
                 )
@@ -530,7 +549,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
     public func backupPendingChanges(authedDevice: AuthedDevice) {
         updateManagerState { managerState in
-            var pendingBackup = managerState.pendingBackup ?? .init(authedDevice: .implicit)
+            var pendingBackup = managerState.pendingBackup ?? .init(authedDevice: .implicit, masterKeySource: .implicit)
             pendingBackup.authedDevice = authedDevice.orIfImplicitUse(pendingBackup.authedDevice)
             managerState.pendingBackup = pendingBackup
 
@@ -541,12 +560,12 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         }
     }
 
-    public func waitForPendingRestores() -> Promise<Void> {
+    public func waitForPendingRestores() async throws {
         let (promise, future) = Promise<Void>.pending()
         updateManagerState { managerState in
             managerState.pendingRestoreCompletionFutures.append(future)
         }
-        return promise
+        try await promise.awaitable()
     }
 
     public func resetLocalData(transaction: DBWriteTransaction) {
@@ -656,13 +675,22 @@ class StorageServiceOperation {
     private let localIdentifiers: LocalIdentifiers
     private let isPrimaryDevice: Bool
     private let authedDevice: AuthedDevice
+    private let masterKeySource: StorageService.MasterKeySource
+    private var masterKey: MasterKey!
     private var authedAccount: AuthedAccount { authedDevice.authedAccount }
 
-    fileprivate init(mode: Mode, localIdentifiers: LocalIdentifiers, isPrimaryDevice: Bool, authedDevice: AuthedDevice) {
+    fileprivate init(
+        mode: Mode,
+        localIdentifiers: LocalIdentifiers,
+        isPrimaryDevice: Bool,
+        authedDevice: AuthedDevice,
+        masterKeySource: StorageService.MasterKeySource
+    ) {
         self.mode = mode
         self.localIdentifiers = localIdentifiers
         self.isPrimaryDevice = isPrimaryDevice
         self.authedDevice = authedDevice
+        self.masterKeySource = masterKeySource
     }
 
     // MARK: - Run
@@ -675,28 +703,33 @@ class StorageServiceOperation {
 
     // Called every retry, this is where the bulk of the operation's work should go.
     private func _run() async throws {
-        let (
-            isKeyAvailable,
-            currentStateIfRotatingManifest
-        ): (
-            Bool,
-            State?
-        ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            let isKeyAvailable = DependenciesBridge.shared.svrLocalStorage.isKeyAvailable(.storageService, tx: tx.asV2Read)
-
+        let (currentStateIfRotatingManifest, masterKey) = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            let state: State?
             switch mode {
             case .rotateManifest:
-                return (isKeyAvailable, State.current(transaction: tx))
+                state = State.current(transaction: tx)
             case .backup, .restoreOrCreate, .cleanUpUnknownData:
-                return (isKeyAvailable, nil)
+                state = nil
             }
+
+            let masterKey: MasterKey?
+            switch masterKeySource {
+            case .explicit(let keyData):
+                masterKey = keyData
+            case .implicit:
+                masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx.asV2Read)
+            }
+
+            return (state, masterKey)
         }
 
-        // We don't have backup keys, do nothing. We'll try a
-        // fresh restore once the keys are set.
-        guard isKeyAvailable else {
+        guard let masterKey else {
+            // We don't have backup keys, do nothing. We'll try a
+            // fresh restore once the keys are set.
+            Logger.info("Skipping storage service operation due to missing master key.")
             return
         }
+        self.masterKey = masterKey
 
         switch mode {
         case .rotateManifest(let mode):
@@ -974,6 +1007,7 @@ class StorageServiceOperation {
             newItems: updatedItems,
             deletedIdentifiers: deletedIdentifiers + invalidIdentifiers,
             deleteAllExistingRecords: false,
+            masterKey: masterKey,
             chatServiceAuth: authedAccount.chatServiceAuth
         ) {
         case .success:
@@ -1040,6 +1074,7 @@ class StorageServiceOperation {
 
         switch await StorageService.fetchLatestManifest(
             greaterThanVersion: greaterThanVersion,
+            masterKey: masterKey,
             chatServiceAuth: authedAccount.chatServiceAuth
         ) {
         case .noExistingManifest:
@@ -1303,6 +1338,7 @@ class StorageServiceOperation {
             newItems: newItems,
             deletedIdentifiers: deletedIdentifiers,
             deleteAllExistingRecords: deleteAllExistingRecords,
+            masterKey: masterKey,
             chatServiceAuth: authedAccount.chatServiceAuth
         ) {
         case .success:
@@ -1426,6 +1462,7 @@ class StorageServiceOperation {
                 switch await StorageService.fetchItems(
                     for: [newLocalAccountIdentifier],
                     manifest: manifest,
+                    masterKey: masterKey,
                     chatServiceAuth: authedAccount.chatServiceAuth
                 ) {
                 case .success(let storageItems):
@@ -1646,6 +1683,7 @@ class StorageServiceOperation {
             switch await StorageService.fetchItems(
                 for: Array(identifierBatch),
                 manifest: manifest,
+                masterKey: masterKey,
                 chatServiceAuth: self.authedAccount.chatServiceAuth
             ) {
             case .success(let _fetchedItems):

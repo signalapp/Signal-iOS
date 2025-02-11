@@ -291,7 +291,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     private func _redeemSubscriptionIfNecessary() async throws {
         /// Wait on any in-progress restores, since there's a chance we're
         /// restoring subscriber data.
-        try? await storageServiceManager.waitForPendingRestores().awaitable()
+        try? await storageServiceManager.waitForPendingRestores()
 
         let persistedIAPSubscriberData: IAPSubscriberData? = db.read { tx in
             return store.getIAPSubscriberData(tx: tx)

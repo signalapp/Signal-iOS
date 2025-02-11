@@ -368,7 +368,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         // Trigger a re-fetch of the storage manifest if our keys have changed
         if oldMasterKey != data, updateStorageService {
-            storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedDevice)
+            storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedDevice, masterKeySource: .implicit)
         }
     }
 

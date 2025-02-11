@@ -141,7 +141,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
     /// username.
     private func ensureUsernameStateUpToDate() async throws {
         await self.context.messageProcessor.waitForFetchingAndProcessing().awaitable()
-        try await self.context.storageServiceManager.waitForPendingRestores().awaitable()
+        try await self.context.storageServiceManager.waitForPendingRestores()
     }
 
     /// Validate the local username against the value stored on the service.
@@ -285,7 +285,7 @@ internal class _UsernameValidationManager_MessageProcessorWrapper: Usernames.Val
 // MARK: StorageServiceManager
 
 public protocol _UsernameValidationManager_StorageServiceManagerShim {
-    func waitForPendingRestores() -> Promise<Void>
+    func waitForPendingRestores() async throws
 }
 
 internal class _UsernameValidationManager_StorageServiceManagerWrapper: Usernames.Validation.Shims.StorageServiceManager {
@@ -294,7 +294,7 @@ internal class _UsernameValidationManager_StorageServiceManagerWrapper: Username
         self.storageServiceManager = storageServiceManager
     }
 
-    public func waitForPendingRestores() -> Promise<Void> {
-        storageServiceManager.waitForPendingRestores()
+    public func waitForPendingRestores() async throws {
+        try await storageServiceManager.waitForPendingRestores()
     }
 }

@@ -341,8 +341,9 @@ public class RegistrationCoordinatorTest {
         }
 
         // Once we sync push tokens, we should restore from storage service.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
             #expect(auth.authedAccount == expectedAuthedAccount())
+            #expect(masterKey == .implicit)
             return .value(())
         }
 
@@ -492,8 +493,9 @@ public class RegistrationCoordinatorTest {
         }
 
         // Once we sync push tokens, we should restore from storage service.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
             #expect(auth.authedAccount == expectedAuthedAccount())
+            #expect(masterKey == .implicit)
             return .value(())
         }
 
@@ -992,9 +994,10 @@ public class RegistrationCoordinatorTest {
 
         // Once we back up to svr at t=7, we should restore from storage service.
         // Succeed at t=8.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
             #expect(self.scheduler.currentTime == 7)
             #expect(auth.authedAccount == expectedAuthedAccount())
+            #expect(masterKey == .implicit)
             return self.scheduler.promise(resolvingWith: (), atTime: 8)
         }
 
@@ -1218,9 +1221,10 @@ public class RegistrationCoordinatorTest {
         }
 
         // At t=5 once we back up to svr, we should restore from storage service.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
             #expect(self.scheduler.currentTime == 5)
             #expect(auth.authedAccount == expectedAuthedAccount())
+            #expect(masterKey == .implicit)
             return self.scheduler.promise(resolvingWith: (), atTime: 6)
         }
 
@@ -1612,9 +1616,10 @@ public class RegistrationCoordinatorTest {
         }
 
         // At t=1 once we sync push tokens, we should restore from storage service.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
             #expect(self.scheduler.currentTime == 1)
             #expect(auth.authedAccount == expectedAuthedAccount())
+            #expect(masterKey == .implicit)
             return self.scheduler.promise(resolvingWith: (), atTime: 2)
         }
 
@@ -3400,7 +3405,7 @@ public class RegistrationCoordinatorTest {
             return .value(())
 
         }
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { _ in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { _, _ in
             return .value(())
         }
 
@@ -3576,7 +3581,7 @@ public class RegistrationCoordinatorTest {
             return .value(())
 
         }
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { _ in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { _, _ in
             return .value(())
         }
 

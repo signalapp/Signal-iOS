@@ -95,7 +95,7 @@ final class LocalProfileChecker {
             // message (if necessary) and that the latest information is available on
             // Storage Service. Wait for both of those systems to stabilize.
             await messageProcessor.waitForFetchingAndProcessing().awaitable()
-            try await storageServiceManager.waitForPendingRestores().asVoid().awaitable()
+            try await storageServiceManager.waitForPendingRestores()
 
             // After waiting, ensure we're still considering the same profile. If we're
             // not, wait again since it's possible that our profile changed again.

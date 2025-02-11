@@ -3094,7 +3094,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         return deps
             .storageServiceManager.restoreOrCreateManifestIfNecessary(
-                authedDevice: accountIdentity.authedDevice
+                authedDevice: accountIdentity.authedDevice,
+                masterKeySource: .implicit
             )
             .timeout(seconds: 120)
             .then(on: schedulers.sync) { [weak self] in

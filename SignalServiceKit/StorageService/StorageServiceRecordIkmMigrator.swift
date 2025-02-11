@@ -48,7 +48,7 @@ struct StorageServiceRecordIkmMigratorImpl: StorageServiceRecordIkmMigrator {
         /// If we're currently restoring, allow that to finish. We may be
         /// restoring (or creating) a manifest that contains a `recordIkm`,
         /// in which case there's nothing for us to do!
-        try? await storageServiceManager.waitForPendingRestores().awaitable()
+        try? await storageServiceManager.waitForPendingRestores()
 
         let (
             isRecordIkmCapable,

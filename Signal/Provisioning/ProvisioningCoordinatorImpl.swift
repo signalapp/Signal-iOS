@@ -610,7 +610,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     ) async throws(CompleteProvisioningError) {
         do {
             try await self.storageServiceManager
-                .restoreOrCreateManifestIfNecessary(authedDevice: authedDevice)
+                .restoreOrCreateManifestIfNecessary(authedDevice: authedDevice, masterKeySource: .implicit)
                 .timeout(seconds: 60, substituteValue: ())
                 .awaitable()
         } catch {
