@@ -253,6 +253,7 @@ extension ConversationViewController: CVComponentDelegate {
             )
         )
         actionSheet.addAction(.okay)
+        actionSheet.isCancelable = true
         (conversationSplitViewController ?? self).present(actionSheet, animated: true)
     }
 
@@ -268,6 +269,39 @@ extension ConversationViewController: CVComponentDelegate {
             )
         )
         actionSheet.addAction(.okay)
+        actionSheet.isCancelable = true
+        (conversationSplitViewController ?? self).present(actionSheet, animated: true)
+    }
+
+    public func didTapUndownloadableAudio() {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "AUDIO_UNAVAILABLE_SHEET_TITLE",
+                comment: "Title for sheet shown when tapping a voice message that has expired and is unavailable for download"
+            ),
+            message: OWSLocalizedString(
+                "AUDIO_UNAVAILABLE_SHEET_MESSAGE",
+                comment: "Message for sheet shown when tapping a voice message that has expired and is unavailable for download"
+            )
+        )
+        actionSheet.addAction(.okay)
+        actionSheet.isCancelable = true
+        (conversationSplitViewController ?? self).present(actionSheet, animated: true)
+    }
+
+    public func didTapUndownloadableSticker() {
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "STICKER_UNAVAILABLE_SHEET_TITLE",
+                comment: "Title for sheet shown when tapping a sticker that has expired and is unavailable for download"
+            ),
+            message: OWSLocalizedString(
+                "STICKER_UNAVAILABLE_SHEET_MESSAGE",
+                comment: "Message for sheet shown when tapping a sticker that has expired and is unavailable for download"
+            )
+        )
+        actionSheet.addAction(.okay)
+        actionSheet.isCancelable = true
         (conversationSplitViewController ?? self).present(actionSheet, animated: true)
     }
 

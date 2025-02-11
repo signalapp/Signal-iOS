@@ -1066,6 +1066,10 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func didTapUndownloadableOversizeText() {}
 
+    func didTapUndownloadableAudio() {}
+
+    func didTapUndownloadableSticker() {}
+
     func didTapBrokenVideo() {}
 
     // MARK: - Messages

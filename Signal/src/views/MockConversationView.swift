@@ -339,6 +339,10 @@ extension MockConversationView: CVComponentDelegate {
 
     func didTapUndownloadableOversizeText() {}
 
+    func didTapUndownloadableAudio() {}
+
+    func didTapUndownloadableSticker() {}
+
     func didTapBrokenVideo() {}
 
     // MARK: - Messages

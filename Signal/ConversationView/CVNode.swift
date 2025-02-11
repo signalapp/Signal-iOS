@@ -15,6 +15,7 @@ public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
     case genericAttachment
     case paymentAttachment
     case archivedPaymentAttachment
+    case undownloadableAttachment
     case contactShare
     case bodyMedia
     case viewOnce
@@ -42,6 +43,7 @@ public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
         case .genericAttachment: return "genericAttachment"
         case .paymentAttachment: return "paymentAttachment"
         case .archivedPaymentAttachment: return "archivedPaymentAttachment"
+        case .undownloadableAttachment: return "undownloadableAttachment"
         case .contactShare: return "contactShare"
         case .bodyMedia: return "bodyMedia"
         case .viewOnce: return "viewOnce"

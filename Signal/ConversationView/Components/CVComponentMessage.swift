@@ -61,6 +61,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private var archivedPaymentAttachment: CVComponent?
 
+    private var undownloadableAttachment: CVComponent?
+
     private var contactShare: CVComponent?
 
     private var bottomButtons: CVComponent?
@@ -127,6 +129,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return self.paymentAttachment
         case .archivedPaymentAttachment:
             return self.archivedPaymentAttachment
+        case .undownloadableAttachment:
+            return self.undownloadableAttachment
         case .quotedReply:
             return self.quotedReply
         case .linkPreview:
@@ -168,7 +172,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private var isBubbleTransparent: Bool {
         if wasRemotelyDeleted {
             return false
-        } else if componentState.isSticker {
+        } else if componentState.shouldRenderAsSticker {
             return true
         } else if isBorderlessViewOnceMessage {
             return false
@@ -196,15 +200,44 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         standaloneFooter?.tapForMoreState ?? .none
     }
 
+    private func footerOverlayIfItShouldShow() -> CVComponentFooter? {
+        let footerShouldOverlay = (bodyText == nil && !itemViewState.shouldHideFooter && !tapForMoreState.shouldShowFooter)
+
+        guard footerShouldOverlay else { return nil }
+
+        if let footerState = itemViewState.footerState {
+            return CVComponentFooter(
+                itemModel: itemModel,
+                footerState: footerState,
+                isOverlayingMedia: false,
+                isOutsideBubble: false
+            )
+        } else {
+            owsFailDebug("Missing footerState.")
+        }
+
+        return nil
+    }
+
     private func buildComponentStates() {
 
         hasSendFailureBadge = componentState.sendFailureBadge != nil
+
+        var footerOverlay: CVComponentFooter?
 
         if let senderNameState = itemViewState.senderNameState {
             self.senderName = CVComponentSenderName(itemModel: itemModel, senderNameState: senderNameState)
         }
         if let senderAvatar = componentState.senderAvatar {
             self.senderAvatar = senderAvatar
+        }
+        if let undownloadableAttachment = componentState.undownloadableAttachment {
+            footerOverlay = self.footerOverlayIfItShouldShow()
+            self.undownloadableAttachment = CVComponentUndownloadableAttachment(
+                itemModel: itemModel,
+                attachmentType: undownloadableAttachment,
+                footerOverlay: footerOverlay
+            )
         }
         if let stickerState = componentState.sticker {
             self.sticker = CVComponentSticker(itemModel: itemModel, sticker: stickerState)
@@ -229,8 +262,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             bottomButtons = CVComponentBottomButtons(itemModel: itemModel,
                                                      bottomButtonsState: bottomButtonsState)
         }
-
-        var footerOverlay: CVComponentFooter?
 
         if let paymentAttachment = componentState.paymentAttachment {
             let paymentAmount: UInt64? = {
@@ -305,18 +336,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         if let audioAttachmentState = componentState.audioAttachment {
-            let shouldFooterOverlayAudio = (bodyText == nil && !itemViewState.shouldHideFooter && !tapForMoreState.shouldShowFooter)
-            if shouldFooterOverlayAudio {
-                if let footerState = itemViewState.footerState {
-                    footerOverlay = CVComponentFooter(itemModel: itemModel,
-                                                      footerState: footerState,
-                                                      isOverlayingMedia: false,
-                                                      isOutsideBubble: false)
-                } else {
-                    owsFailDebug("Missing footerState.")
-                }
-            }
-
+            footerOverlay = self.footerOverlayIfItShouldShow()
             self.audioAttachment = CVComponentAudioAttachment(
                 itemModel: itemModel,
                 audioAttachment: audioAttachmentState,
@@ -905,7 +925,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private static var topNestedCVComponentKeys: [CVComponentKey] { [.senderName] }
     private static var bottomFullWidthCVComponentKeys: [CVComponentKey] { [.quotedReply, .bodyMedia] }
     private static var bottomNestedShareCVComponentKeys: [CVComponentKey] { [.viewOnce, .audioAttachment, .genericAttachment, .paymentAttachment, .archivedPaymentAttachment, .contactShare, .giftBadge] }
-    private static var bottomNestedTextCVComponentKeys: [CVComponentKey] { [.bodyText, .footer] }
+    private static var bottomNestedTextCVComponentKeys: [CVComponentKey] { [.bodyText, .footer, .undownloadableAttachment] }
 
     // The "message" contents of this component for most messages are vertically
     // stacked in four sections.
@@ -1161,6 +1181,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return false
             case .bodyMedia, .sticker, .quotedReply, .linkPreview, .viewOnce, .audioAttachment, .genericAttachment, .paymentAttachment, .archivedPaymentAttachment, .contactShare:
                 return true
+            case .undownloadableAttachment:
+                return false
             case .giftBadge:
                 // TODO: (GB) Confirm that Gift Badges should use large component spacing.
                 return true
@@ -1961,6 +1983,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         var audioAttachmentView: CVComponentView?
         var genericAttachmentView: CVComponentView?
         var paymentAttachmentView: CVComponentView?
+        var undownloadableAttachmentView: CVComponentView?
         var archivedPaymentView: CVComponentView?
         var contactShareView: CVComponentView?
         var bottomButtonsView: CVComponentView?
@@ -1980,6 +2003,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 audioAttachmentView,
                 genericAttachmentView,
                 paymentAttachmentView,
+                undownloadableAttachmentView,
                 archivedPaymentView,
                 contactShareView,
                 bottomButtonsView
@@ -2016,6 +2040,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return paymentAttachmentView
             case .archivedPaymentAttachment:
                 return archivedPaymentView
+            case .undownloadableAttachment:
+                return undownloadableAttachmentView
             case .contactShare:
                 return contactShareView
             case .bottomButtons:
@@ -2061,6 +2087,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 paymentAttachmentView = subcomponentView
             case .archivedPaymentAttachment:
                 archivedPaymentView = subcomponentView
+            case .undownloadableAttachment:
+                undownloadableAttachmentView = subcomponentView
             case .contactShare:
                 contactShareView = subcomponentView
             case .bottomButtons:

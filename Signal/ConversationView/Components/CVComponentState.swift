@@ -250,15 +250,12 @@ public class CVComponentState: Equatable {
             attachmentPointer: ReferencedAttachmentPointer,
             downloadState: AttachmentDownloadState
         )
-        /// The attachment has no stream and cannot be downloaded because there is no cdn info.
-        /// Typically happens if we restore from a free-tier backup with old media expired from transit tier.
-        case undownloadable(ReferencedAttachment)
 
         public var stickerMetadata: (any StickerMetadata)? {
             switch self {
             case .available(let stickerMetadata, _):
                 return stickerMetadata
-            case .downloading, .failedOrPending, .undownloadable:
+            case .downloading, .failedOrPending:
                 return nil
             }
         }
@@ -270,8 +267,6 @@ public class CVComponentState: Equatable {
                 return nil
             case .failedOrPending:
                 return nil
-            case .undownloadable:
-                return nil
             }
         }
         public var attachmentPointer: ReferencedAttachmentPointer? {
@@ -282,8 +277,6 @@ public class CVComponentState: Equatable {
                 return attachmentPointer
             case .failedOrPending(let attachmentPointer, _):
                 return attachmentPointer
-            case .undownloadable:
-                return nil
             }
         }
 
@@ -300,15 +293,20 @@ public class CVComponentState: Equatable {
                 return lhsPointer.attachment.id == rhsPointer.attachment.id
                     && lhsPointer.reference.hasSameOwner(as: rhsPointer.reference)
                     && lhsState == rhsState
-            case let (.undownloadable(lhsAttachment), .undownloadable(rhsAttachment)):
-                return lhsAttachment.attachment.id == rhsAttachment.attachment.id
-                    && lhsAttachment.reference.hasSameOwner(as: rhsAttachment.reference)
-            case (.available, _), (.downloading, _), (.failedOrPending, _), (.undownloadable, _):
+            case (.available, _), (.downloading, _), (.failedOrPending, _):
                 return false
             }
         }
     }
     let sticker: Sticker?
+
+    /// The attachment has no stream and cannot be downloaded because there is no cdn info.
+    /// Typically happens if we restore from a free-tier backup with old media expired from transit tier.
+    enum UndownloadableAttachment: Equatable {
+        case audio
+        case sticker
+    }
+    let undownloadableAttachment: UndownloadableAttachment?
 
     struct ContactShare: Equatable {
         let state: CVContactShareView.State
@@ -452,34 +450,37 @@ public class CVComponentState: Equatable {
 
     let messageHasBodyAttachments: Bool
 
-    fileprivate init(messageCellType: CVMessageCellType,
-                     senderName: SenderName?,
-                     senderAvatar: SenderAvatar?,
-                     bodyText: BodyText?,
-                     bodyMedia: BodyMedia?,
-                     genericAttachment: GenericAttachment?,
-                     paymentAttachment: PaymentAttachment?,
-                     archivedPaymentAttachment: ArchivedPaymentAttachment?,
-                     audioAttachment: AudioAttachment?,
-                     viewOnce: ViewOnce?,
-                     quotedReply: QuotedReply?,
-                     sticker: Sticker?,
-                     contactShare: ContactShare?,
-                     linkPreview: LinkPreview?,
-                     giftBadge: GiftBadge?,
-                     systemMessage: SystemMessage?,
-                     dateHeader: DateHeader?,
-                     unreadIndicator: UnreadIndicator?,
-                     reactions: Reactions?,
-                     typingIndicator: TypingIndicator?,
-                     threadDetails: ThreadDetails?,
-                     unknownThreadWarning: UnknownThreadWarning?,
-                     defaultDisappearingMessageTimer: DefaultDisappearingMessageTimer?,
-                     bottomButtons: BottomButtons?,
-                     failedOrPendingDownloads: FailedOrPendingDownloads?,
-                     sendFailureBadge: SendFailureBadge?,
-                     messageHasBodyAttachments: Bool,
-                     hasRenderableContent: Bool) {
+    fileprivate init(
+        messageCellType: CVMessageCellType,
+        senderName: SenderName?,
+        senderAvatar: SenderAvatar?,
+        bodyText: BodyText?,
+        bodyMedia: BodyMedia?,
+        genericAttachment: GenericAttachment?,
+        paymentAttachment: PaymentAttachment?,
+        archivedPaymentAttachment: ArchivedPaymentAttachment?,
+        audioAttachment: AudioAttachment?,
+        viewOnce: ViewOnce?,
+        quotedReply: QuotedReply?,
+        sticker: Sticker?,
+        undownloadableAttachment: UndownloadableAttachment?,
+        contactShare: ContactShare?,
+        linkPreview: LinkPreview?,
+        giftBadge: GiftBadge?,
+        systemMessage: SystemMessage?,
+        dateHeader: DateHeader?,
+        unreadIndicator: UnreadIndicator?,
+        reactions: Reactions?,
+        typingIndicator: TypingIndicator?,
+        threadDetails: ThreadDetails?,
+        unknownThreadWarning: UnknownThreadWarning?,
+        defaultDisappearingMessageTimer: DefaultDisappearingMessageTimer?,
+        bottomButtons: BottomButtons?,
+        failedOrPendingDownloads: FailedOrPendingDownloads?,
+        sendFailureBadge: SendFailureBadge?,
+        messageHasBodyAttachments: Bool,
+        hasRenderableContent: Bool
+    ) {
 
         self.messageCellType = messageCellType
         self.senderName = senderName
@@ -493,6 +494,7 @@ public class CVComponentState: Equatable {
         self.viewOnce = viewOnce
         self.quotedReply = quotedReply
         self.sticker = sticker
+        self.undownloadableAttachment = undownloadableAttachment
         self.contactShare = contactShare
         self.linkPreview = linkPreview
         self.giftBadge = giftBadge
@@ -526,6 +528,7 @@ public class CVComponentState: Equatable {
                     lhs.viewOnce == rhs.viewOnce &&
                     lhs.quotedReply == rhs.quotedReply &&
                     lhs.sticker == rhs.sticker &&
+                    lhs.undownloadableAttachment == rhs.undownloadableAttachment &&
                     lhs.contactShare == rhs.contactShare &&
                     lhs.linkPreview == rhs.linkPreview &&
                     lhs.giftBadge == rhs.giftBadge &&
@@ -555,6 +558,7 @@ public class CVComponentState: Equatable {
         typealias ViewOnce = CVComponentState.ViewOnce
         typealias QuotedReply = CVComponentState.QuotedReply
         typealias Sticker = CVComponentState.Sticker
+        typealias UndownloadableAttachment = CVComponentState.UndownloadableAttachment
         typealias SystemMessage = CVComponentState.SystemMessage
         typealias ContactShare = CVComponentState.ContactShare
         typealias Reactions = CVComponentState.Reactions
@@ -588,6 +592,7 @@ public class CVComponentState: Equatable {
         var viewOnce: ViewOnce?
         var quotedReply: QuotedReply?
         var sticker: Sticker?
+        var undownloadableAttachment: UndownloadableAttachment?
         var systemMessage: SystemMessage?
         var contactShare: ContactShare?
         var linkPreview: LinkPreview?
@@ -619,34 +624,37 @@ public class CVComponentState: Equatable {
                 bottomButtons = BottomButtons(actions: bottomButtonsActions)
             }
 
-            return CVComponentState(messageCellType: messageCellType,
-                                    senderName: senderName,
-                                    senderAvatar: senderAvatar,
-                                    bodyText: bodyText,
-                                    bodyMedia: bodyMedia,
-                                    genericAttachment: genericAttachment,
-                                    paymentAttachment: paymentAttachment,
-                                    archivedPaymentAttachment: archivedPaymentAttachment,
-                                    audioAttachment: audioAttachment,
-                                    viewOnce: viewOnce,
-                                    quotedReply: quotedReply,
-                                    sticker: sticker,
-                                    contactShare: contactShare,
-                                    linkPreview: linkPreview,
-                                    giftBadge: giftBadge,
-                                    systemMessage: systemMessage,
-                                    dateHeader: dateHeader,
-                                    unreadIndicator: unreadIndicator,
-                                    reactions: reactions,
-                                    typingIndicator: typingIndicator,
-                                    threadDetails: threadDetails,
-                                    unknownThreadWarning: unknownThreadWarning,
-                                    defaultDisappearingMessageTimer: defaultDisappearingMessageTimer,
-                                    bottomButtons: bottomButtons,
-                                    failedOrPendingDownloads: failedOrPendingDownloads,
-                                    sendFailureBadge: sendFailureBadge,
-                                    messageHasBodyAttachments: messageHasBodyAttachments,
-                                    hasRenderableContent: hasRenderableContent)
+            return CVComponentState(
+                messageCellType: messageCellType,
+                senderName: senderName,
+                senderAvatar: senderAvatar,
+                bodyText: bodyText,
+                bodyMedia: bodyMedia,
+                genericAttachment: genericAttachment,
+                paymentAttachment: paymentAttachment,
+                archivedPaymentAttachment: archivedPaymentAttachment,
+                audioAttachment: audioAttachment,
+                viewOnce: viewOnce,
+                quotedReply: quotedReply,
+                sticker: sticker,
+                undownloadableAttachment: undownloadableAttachment,
+                contactShare: contactShare,
+                linkPreview: linkPreview,
+                giftBadge: giftBadge,
+                systemMessage: systemMessage,
+                dateHeader: dateHeader,
+                unreadIndicator: unreadIndicator,
+                reactions: reactions,
+                typingIndicator: typingIndicator,
+                threadDetails: threadDetails,
+                unknownThreadWarning: unknownThreadWarning,
+                defaultDisappearingMessageTimer: defaultDisappearingMessageTimer,
+                bottomButtons: bottomButtons,
+                failedOrPendingDownloads: failedOrPendingDownloads,
+                sendFailureBadge: sendFailureBadge,
+                messageHasBodyAttachments: messageHasBodyAttachments,
+                hasRenderableContent: hasRenderableContent
+            )
         }
 
         // MARK: -
@@ -681,8 +689,11 @@ public class CVComponentState: Equatable {
             if systemMessage != nil {
                 return .systemMessage
             }
-            if let sticker = self.sticker {
+            if self.sticker != nil {
                 return .stickerMessage
+            }
+            if self.undownloadableAttachment != nil {
+                return .undownloadableAttachment
             }
             if viewOnce != nil {
                 return .viewOnce
@@ -722,7 +733,7 @@ public class CVComponentState: Equatable {
 
     // MARK: - Convenience
 
-    lazy var isSticker: Bool = {
+    lazy var shouldRenderAsSticker: Bool = {
         sticker != nil
     }()
 
@@ -1330,10 +1341,7 @@ fileprivate extension CVComponentState.Builder {
             }
             return build()
         } else {
-            // TODO[AttachmentRendering]: represent state needed to render
-            // an undownloadable sticker attachment, which bears no visual
-            // relationship to other sticker attachment components.
-            self.sticker = .undownloadable(attachment)
+            self.undownloadableAttachment = .sticker
             return build()
         }
     }
@@ -1562,15 +1570,7 @@ fileprivate extension CVComponentState.Builder {
                 downloadState: attachmentPointer.attachmentPointer.downloadState(tx: transaction.asV2Read)
             )
         } else {
-            // TODO[AttachmentRendering]: represent state needed to render
-            // an undownloadable audio attachment, which bears no visual
-            // relationship to other audio attachment components.
-            self.audioAttachment = AudioAttachment(
-                undownloadableAttachment: attachment,
-                owningMessage: interaction as? TSMessage,
-                metadata: nil,
-                receivedAtDate: interaction.receivedAtDate
-            )
+            self.undownloadableAttachment = .audio
         }
     }
 
@@ -1810,6 +1810,8 @@ public extension CVComponentState {
                 break
             case .paymentAttachment, .archivedPaymentAttachment:
                 // Payments can't be forwarded.
+                break
+            case .undownloadableAttachment:
                 break
             }
         }

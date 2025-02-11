@@ -153,11 +153,6 @@ class AudioMessageView: ManualStackView {
                 isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
                 mediaCache: mediaCache
             )
-        case .undownloadable:
-            // TODO[AttachmentRendering]: render undownloadable audio attachments.
-            // Can either reuse this component or use a totally different component
-            // in which case this should owsFailDebug here.
-            return
         }
 
         let topInnerStack = ManualStackView(name: "playerStack")
@@ -518,7 +513,7 @@ extension AudioAttachment {
         switch state {
         case .attachmentStream(let stream, _):
             return ByteCountFormatter().string(for: stream.attachmentStream.unencryptedByteCount) ?? ""
-        case .attachmentPointer, .undownloadable:
+        case .attachmentPointer:
             owsFailDebug("Shouldn't get here - undownloaded media not implemented")
             return ""
         }
@@ -529,7 +524,7 @@ extension AudioAttachment {
             let dateFormatter = DateFormatter()
             dateFormatter.setLocalizedDateFormatFromTemplate("Mdyy")
             return dateFormatter.string(from: receivedAtDate)
-        case .attachmentPointer, .undownloadable:
+        case .attachmentPointer:
             owsFailDebug("Shouldn't get here - undownloaded media not implemented")
             return ""
         }

@@ -352,6 +352,57 @@ public class CVText {
 
         return measurement
     }
+
+    public static func measureBodyTextLabelInManualStackView(
+        config: CVTextLabel.Config,
+        footerSize: CGSize,
+        maxWidth: CGFloat,
+        measurementBuilder: CVCellMeasurement.Builder
+    ) -> [ManualStackSubviewInfo] {
+        let footerWidthWithSpacing = footerSize.width + 6
+        let maxTextWidthForAdjacentFooter = maxWidth - footerWidthWithSpacing
+
+        let measurementWithSpaceForAdjacentFooter = CVText.measureBodyTextLabel(
+            config: config,
+            maxWidth: maxTextWidthForAdjacentFooter
+        )
+
+        let canFitOnOneLineWithAdjacentFooter =
+        if let lastLineRect = measurementWithSpaceForAdjacentFooter.lastLineRect {
+            lastLineRect.height == measurementWithSpaceForAdjacentFooter.size.height
+        } else {
+            true
+        }
+
+        let info: [ManualStackSubviewInfo]
+        if canFitOnOneLineWithAdjacentFooter {
+            let textSize = measurementWithSpaceForAdjacentFooter.size
+            info = [CGSize(width: textSize.width + footerWidthWithSpacing, height: textSize.height).ceil.asManualSubviewInfo]
+        } else {
+            let measurementForFullWidth = CVText.measureBodyTextLabel(
+                config: config,
+                maxWidth: maxWidth
+            )
+            let textInfo = measurementForFullWidth.size.ceil.asManualSubviewInfo
+
+            let footerShouldOverlapWithLastLine = measurementForFullWidth
+                .lastLineRect.map { lastLineRect in
+                    lastLineRect.width <= maxTextWidthForAdjacentFooter
+                } ?? false
+
+            if footerShouldOverlapWithLastLine {
+                info = [textInfo]
+            } else {
+                let footerSpacerInfo = CGSize(
+                    width: footerSize.width,
+                    height: footerSize.height + 3
+                ).ceil.asManualSubviewInfo
+                info = [textInfo, footerSpacerInfo]
+            }
+        }
+
+        return info
+    }
 }
 
 // MARK: -

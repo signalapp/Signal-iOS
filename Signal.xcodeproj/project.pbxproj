@@ -1648,6 +1648,7 @@
 		B9A53B992D0250FC0000578B /* EditCallLinkNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A53B982D0250FC0000578B /* EditCallLinkNameViewController.swift */; };
 		B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */; };
 		B9A87A382A9E34BD009FCA13 /* Hatsuishi-UPM800.otf in Resources */ = {isa = PBXBuildFile; fileRef = B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */; };
+		B9AAC9512D5A6FA900E223C0 /* CVComponentUndownloadableAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9AAC9502D5A6FA900E223C0 /* CVComponentUndownloadableAttachment.swift */; };
 		B9B2AA942BC598B60060B56C /* ContactNoteSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */; };
 		B9B7BC652D41C61500C26E42 /* NewLinkedDeviceNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B7BC642D41C61500C26E42 /* NewLinkedDeviceNotificationMegaphone.swift */; };
 		B9B89EED2C064E760093A2FA /* notification_simple-01.caf in Resources */ = {isa = PBXBuildFile; fileRef = B9B89EEC2C064E700093A2FA /* notification_simple-01.caf */; };
@@ -5475,6 +5476,7 @@
 		B9A53B982D0250FC0000578B /* EditCallLinkNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCallLinkNameViewController.swift; sourceTree = "<group>"; };
 		B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSticker.swift; sourceTree = "<group>"; };
 		B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hatsuishi-UPM800.otf"; sourceTree = "<group>"; };
+		B9AAC9502D5A6FA900E223C0 /* CVComponentUndownloadableAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentUndownloadableAttachment.swift; sourceTree = "<group>"; };
 		B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactNoteSheet.swift; sourceTree = "<group>"; };
 		B9B7BC642D41C61500C26E42 /* NewLinkedDeviceNotificationMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLinkedDeviceNotificationMegaphone.swift; sourceTree = "<group>"; };
 		B9B89EEC2C064E700093A2FA /* notification_simple-01.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "notification_simple-01.caf"; sourceTree = "<group>"; };
@@ -7931,6 +7933,7 @@
 				348815BB2552E67900D4F4C4 /* CVComponentSystemMessage.swift */,
 				347C3856252E1E2300F3D941 /* CVComponentThreadDetails.swift */,
 				347C384C252D0FDC00F3D941 /* CVComponentTypingIndicator.swift */,
+				B9AAC9502D5A6FA900E223C0 /* CVComponentUndownloadableAttachment.swift */,
 				347C384A252D085900F3D941 /* CVComponentUnreadIndicator.swift */,
 				348815BF2553291200D4F4C4 /* CVComponentViewOnce.swift */,
 				667AF9DD2B4C5824008AEE5D /* PersistableGroupUpdateItem+CVComponentSystemMessageAction.swift */,
@@ -16482,6 +16485,7 @@
 				348815BC2552E67900D4F4C4 /* CVComponentSystemMessage.swift in Sources */,
 				347C3857252E1E2300F3D941 /* CVComponentThreadDetails.swift in Sources */,
 				347C384D252D0FDC00F3D941 /* CVComponentTypingIndicator.swift in Sources */,
+				B9AAC9512D5A6FA900E223C0 /* CVComponentUndownloadableAttachment.swift in Sources */,
 				347C384B252D085900F3D941 /* CVComponentUnreadIndicator.swift in Sources */,
 				348815C02553291300D4F4C4 /* CVComponentViewOnce.swift in Sources */,
 				3470C8802555F25200F5847C /* CVContactShareView.swift in Sources */,

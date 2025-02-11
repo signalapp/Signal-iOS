@@ -94,6 +94,10 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
 
     func didTapUndownloadableOversizeText()
 
+    func didTapUndownloadableAudio()
+
+    func didTapUndownloadableSticker()
+
     func didTapBrokenVideo()
 
     // MARK: - Messages

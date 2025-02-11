@@ -105,11 +105,6 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                 stackView: stackView,
                 cellMeasurement: cellMeasurement
             )
-        case .undownloadable(_):
-            // TODO[AttachmentRendering]: render undownloadable audio attachments.
-            // Can either reuse this component or use a totally different component
-            // in which case this should owsFailDebug here.
-            owsFailDebug("Unimplemented")
         }
     }
 

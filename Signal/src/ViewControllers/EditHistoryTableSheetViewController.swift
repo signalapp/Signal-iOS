@@ -361,6 +361,10 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
 
     func didTapUndownloadableOversizeText() {}
 
+    func didTapUndownloadableAudio() {}
+
+    func didTapUndownloadableSticker() {}
+
     func didTapBrokenVideo() {}
 
     func didTapBodyMedia(
