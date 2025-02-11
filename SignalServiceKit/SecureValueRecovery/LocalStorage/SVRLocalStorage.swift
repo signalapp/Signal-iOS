@@ -8,11 +8,13 @@ import Foundation
 public protocol SVRLocalStorage {
 
     func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool
+
+    func getMasterKey(_ transaction: DBReadTransaction) -> MasterKey?
+
+    func isKeyAvailable(_ key: SVR.DerivedKey, tx: DBReadTransaction) -> Bool
 }
 
 public protocol SVRLocalStorageInternal: SVRLocalStorage {
-
-    func getMasterKey(_ transaction: DBReadTransaction) -> Data?
 
     func getPinType(_ transaction: DBReadTransaction) -> SVR.PinType?
 
@@ -54,6 +56,10 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
 /// what type is our pin, etc.
 internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
 
+    public func isKeyAvailable(_ key: SVR.DerivedKey, tx: DBReadTransaction) -> Bool {
+        return getMasterKey(tx) != nil
+    }
+
     private let keyValueStore: KeyValueStore
 
     public init() {
@@ -67,8 +73,11 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         return keyValueStore.getBool(Keys.isMasterKeyBackedUp, defaultValue: false, transaction: transaction)
     }
 
-    public func getMasterKey(_ transaction: DBReadTransaction) -> Data? {
-        return keyValueStore.getData(Keys.masterKey, transaction: transaction)
+    public func getMasterKey(_ transaction: DBReadTransaction) -> MasterKey? {
+        guard let data = keyValueStore.getData(Keys.masterKey, transaction: transaction) else {
+            return nil
+        }
+        return MasterKeyImpl(masterKey: data)
     }
 
     public func getPinType(_ transaction: DBReadTransaction) -> SVR.PinType? {
@@ -171,3 +180,23 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         static let svr2MrEnclaveStringValue = "svr2_mrenclaveStringValue"
     }
 }
+
+#if TESTABLE_BUILD
+public class SVRLocalStorageMock: SVRLocalStorage {
+
+    var isMasterKeyBackedUp: Bool = false
+    var masterKey: MasterKeyMock?
+
+    public func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool {
+        return isMasterKeyBackedUp
+    }
+
+    public func getMasterKey(_ transaction: DBReadTransaction) -> MasterKey? {
+        return masterKey
+    }
+
+    public func isKeyAvailable(_ key: SVR.DerivedKey, tx: DBReadTransaction) -> Bool {
+        return masterKey != nil
+    }
+}
+#endif

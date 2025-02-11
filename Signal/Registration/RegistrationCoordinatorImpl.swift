@@ -1600,18 +1600,17 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func loadLocalMasterKeyAndUpdateState(_ tx: DBWriteTransaction) {
-        let regRecoveryPw = deps.svrKeyDeriver.data(
-            for: .registrationRecoveryPassword,
-            tx: tx
-        )?.canonicalStringRepresentation
+        let masterKey = deps.svrLocalStorage.getMasterKey(tx)
+        let regRecoveryPw = masterKey?.data(
+            for: .registrationRecoveryPassword
+        ).canonicalStringRepresentation
         inMemoryState.regRecoveryPw = regRecoveryPw
         if regRecoveryPw != nil {
             updatePersistedState(tx) { $0.shouldSkipRegistrationSplash = true }
         }
-        inMemoryState.reglockToken = deps.svrKeyDeriver.data(
-            for: .registrationLock,
-            tx: tx
-        )?.canonicalStringRepresentation
+        inMemoryState.reglockToken = masterKey?.data(
+            for: .registrationLock
+        ).canonicalStringRepresentation
         // If we have a local master key, theres no need to restore after registration.
         // (we will still back up though)
         inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = !deps.svr.hasMasterKey(transaction: tx)

@@ -318,10 +318,10 @@ extension OWS2FAManager {
 
     public func enableRegistrationLockV2() async throws {
         let token = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return DependenciesBridge.shared.svrKeyDeriver.data(
-                for: .registrationLock,
-                tx: tx.asV2Read
-            )?.canonicalStringRepresentation
+            let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx.asV2Read)
+            return masterKey?.data(
+                for: .registrationLock
+            ).canonicalStringRepresentation
         }
         guard let token else {
             throw OWSAssertionError("Cannot enable registration lock without an existing PIN")

@@ -210,13 +210,15 @@ public struct StorageService {
                 return .error(.manifestContainerProtoDeserializationFailed)
             }
 
-            let decryptResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                return DependenciesBridge.shared.svrKeyDeriver.decrypt(
+            let decryptResult = DependenciesBridge.shared.db.read { tx -> SVR.ApplyDerivedKeyResult in
+                guard let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx) else {
+                    return .masterKeyMissing
+                }
+                return masterKey.decrypt(
                     keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
-                    encryptedData: encryptedManifestContainer.value,
-                    tx: tx.asV2Read
+                    encryptedData: encryptedManifestContainer.value
                 )
-            })
+            }
             switch decryptResult {
             case .success(let manifestData):
                 do {
@@ -279,13 +281,15 @@ public struct StorageService {
         }
 
         let encryptedManifestData: Data
-        let encryptResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-            return DependenciesBridge.shared.svrKeyDeriver.encrypt(
+        let encryptResult = DependenciesBridge.shared.db.read { tx -> SVR.ApplyDerivedKeyResult in
+            guard let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx) else {
+                return .masterKeyMissing
+            }
+            return masterKey.encrypt(
                 keyType: .storageServiceManifest(version: manifest.version),
-                data: manifestData,
-                tx: tx.asV2Read
+                data: manifestData
             )
-        })
+        }
         switch encryptResult {
         case .success(let data):
             encryptedManifestData = data
@@ -321,13 +325,15 @@ public struct StorageService {
                 } else {
                     /// If we don't have a `recordIkm` yet, fall back to the
                     /// SVR-derived key.
-                    let itemEncryptionResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                        return DependenciesBridge.shared.svrKeyDeriver.encrypt(
+                    let itemEncryptionResult = DependenciesBridge.shared.db.read { tx -> SVR.ApplyDerivedKeyResult in
+                        guard let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx) else {
+                            return .masterKeyMissing
+                        }
+                        return masterKey.encrypt(
                             keyType: .legacy_storageServiceRecord(identifier: item.identifier),
-                            data: plaintextRecordData,
-                            tx: tx.asV2Read
+                            data: plaintextRecordData
                         )
-                    })
+                    }
                     switch itemEncryptionResult {
                     case .success(let data):
                         return data
@@ -387,13 +393,15 @@ public struct StorageService {
                 return .error(.manifestContainerProtoDeserializationFailed)
             }
 
-            let decryptionResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                return DependenciesBridge.shared.svrKeyDeriver.decrypt(
+            let decryptionResult = DependenciesBridge.shared.db.read { tx -> SVR.ApplyDerivedKeyResult in
+                guard let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx) else {
+                    return .masterKeyMissing
+                }
+                return masterKey.decrypt(
                     keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
-                    encryptedData: encryptedManifestContainer.value,
-                    tx: tx.asV2Read
+                    encryptedData: encryptedManifestContainer.value
                 )
-            })
+            }
             switch decryptionResult {
             case .success(let manifestData):
                 do {
@@ -500,13 +508,15 @@ public struct StorageService {
             } else {
                 /// If we don't yet have a `recordIkm` set we should
                 /// continue using the SVR-derived record key.
-                let itemDecryptionResult = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                    return DependenciesBridge.shared.svrKeyDeriver.decrypt(
+                let itemDecryptionResult = DependenciesBridge.shared.db.read { tx -> SVR.ApplyDerivedKeyResult in
+                    guard let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx) else {
+                        return .masterKeyMissing
+                    }
+                    return masterKey.decrypt(
                         keyType: .legacy_storageServiceRecord(identifier: itemIdentifier),
-                        encryptedData: item.value,
-                        tx: tx.asV2Read
+                        encryptedData: item.value
                     )
-                })
+                }
                 switch itemDecryptionResult {
                 case .success(let itemData):
                     decryptedItemData = itemData

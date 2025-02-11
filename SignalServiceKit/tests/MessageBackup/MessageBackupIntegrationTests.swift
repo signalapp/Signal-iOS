@@ -454,9 +454,10 @@ class MessageBackupIntegrationTests: XCTestCase {
             keychainStorage: MockKeychainStorage()
         )
 
-        let svrKeyDeriver = SVRKeyDeriverMock()
+        let svrLocalStorageMock = SVRLocalStorageMock()
         let backupKey = Data(repeating: 8, count: 32)
-        svrKeyDeriver.dataGenerator = { derivedKey in
+        svrLocalStorageMock.masterKey = MasterKeyMock()
+        svrLocalStorageMock.masterKey?.dataGenerator = { derivedKey in
             switch derivedKey {
             case .backupKey:
                 return backupKey
@@ -483,7 +484,7 @@ class MessageBackupIntegrationTests: XCTestCase {
                 backupAttachmentDownloadManager: BackupAttachmentDownloadManagerMock(),
                 dateProvider: dateProvider,
                 networkManager: CrashyMocks.MockNetworkManager(libsignalNet: nil),
-                svrKeyDeriver: svrKeyDeriver,
+                svrLocalStorage: svrLocalStorageMock,
                 webSocketFactory: CrashyMocks.MockWebSocketFactory()
             )
         ).prepareDatabase().awaitable()

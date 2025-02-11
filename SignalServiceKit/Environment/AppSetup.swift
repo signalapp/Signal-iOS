@@ -37,7 +37,7 @@ public class AppSetup {
         let remoteConfigManager: (any RemoteConfigManager)?
         let signalService: (any OWSSignalServiceProtocol)?
         let storageServiceManager: (any StorageServiceManager)?
-        let svrKeyDeriver: SVRKeyDeriver?
+        let svrLocalStorage: (any SVRLocalStorage)?
         let syncManager: (any SyncManagerProtocol)?
         let systemStoryManager: (any SystemStoryManagerProtocol)?
         let versionedProfiles: (any VersionedProfiles)?
@@ -60,7 +60,7 @@ public class AppSetup {
             remoteConfigManager: (any RemoteConfigManager)? = nil,
             signalService: (any OWSSignalServiceProtocol)? = nil,
             storageServiceManager: (any StorageServiceManager)? = nil,
-            svrKeyDeriver: SVRKeyDeriver? = nil,
+            svrLocalStorage: (any SVRLocalStorage)? = nil,
             syncManager: (any SyncManagerProtocol)? = nil,
             systemStoryManager: (any SystemStoryManagerProtocol)? = nil,
             versionedProfiles: (any VersionedProfiles)? = nil,
@@ -82,7 +82,7 @@ public class AppSetup {
             self.remoteConfigManager = remoteConfigManager
             self.signalService = signalService
             self.storageServiceManager = storageServiceManager
-            self.svrKeyDeriver = svrKeyDeriver
+            self.svrLocalStorage = svrLocalStorage
             self.syncManager = syncManager
             self.systemStoryManager = systemStoryManager
             self.versionedProfiles = versionedProfiles
@@ -295,15 +295,11 @@ public class AppSetup {
 
         let svrCredentialStorage = SVRAuthCredentialStorageImpl()
         let svrLocalStorage = SVRLocalStorageImpl()
-        let svrKeyDeriver = testDependencies.svrKeyDeriver ?? SVRKeyDeriverImpl(
-            localStorage: svrLocalStorage
-        )
 
         let accountAttributesUpdater = AccountAttributesUpdaterImpl(
             accountAttributesGenerator: AccountAttributesGenerator(
                 ows2FAManager: ows2FAManager,
                 profileManager: profileManager,
-                svrKeyDeriver: svrKeyDeriver,
                 svrLocalStorage: svrLocalStorage,
                 tsAccountManager: tsAccountManager,
                 udManager: udManager
@@ -337,7 +333,6 @@ public class AppSetup {
             db: db,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
-            svrKeyDeriver: svrKeyDeriver,
             svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
@@ -348,7 +343,7 @@ public class AppSetup {
         let mrbkStore = MediaRootBackupKeyStore()
         let messageBackupKeyMaterial = MessageBackupKeyMaterialImpl(
             mrbkStore: mrbkStore,
-            svrKeyDeriver: svrKeyDeriver
+            svrLocalStorage: svrLocalStorage
         )
         let messageBackupRequestManager = MessageBackupRequestManagerImpl(
             dateProvider: dateProvider,
@@ -1336,7 +1331,7 @@ public class AppSetup {
             storageServiceRecordIkmCapabilityStore: storageServiceRecordIkmCapabilityStore,
             svr: svr,
             svrCredentialStorage: svrCredentialStorage,
-            svrKeyDeriver: svrKeyDeriver,
+            svrLocalStorage: svrLocalStorage,
             threadAssociatedDataStore: threadAssociatedDataStore,
             threadRemover: threadRemover,
             threadReplyInfoStore: threadReplyInfoStore,

@@ -6,7 +6,6 @@
 public struct AccountAttributesGenerator {
     private let ows2FAManager: OWS2FAManager
     private let profileManager: ProfileManager
-    private let svrKeyDeriver: SVRKeyDeriver
     private let svrLocalStorage: SVRLocalStorage
     private let tsAccountManager: TSAccountManager
     private let udManager: OWSUDManager
@@ -14,14 +13,12 @@ public struct AccountAttributesGenerator {
     init(
         ows2FAManager: OWS2FAManager,
         profileManager: ProfileManager,
-        svrKeyDeriver: SVRKeyDeriver,
         svrLocalStorage: SVRLocalStorage,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager
     ) {
         self.ows2FAManager = ows2FAManager
         self.profileManager = profileManager
-        self.svrKeyDeriver = svrKeyDeriver
         self.svrLocalStorage = svrLocalStorage
         self.tsAccountManager = tsAccountManager
         self.udManager = udManager
@@ -49,7 +46,7 @@ public struct AccountAttributesGenerator {
 
         let twoFaMode: AccountAttributes.TwoFactorAuthMode
         if
-            let reglockToken = svrKeyDeriver.data(for: .registrationLock, tx: tx),
+            let reglockToken = svrLocalStorage.getMasterKey(tx)?.data(for: .registrationLock),
             ows2FAManager.isRegistrationLockV2Enabled(transaction: sdsTx)
         {
             twoFaMode = .v2(reglockToken: reglockToken.canonicalStringRepresentation)
@@ -63,10 +60,9 @@ public struct AccountAttributesGenerator {
             twoFaMode = .none
         }
 
-        let registrationRecoveryPassword = svrKeyDeriver.data(
-            for: .registrationRecoveryPassword,
-            tx: tx
-        )?.canonicalStringRepresentation
+        let registrationRecoveryPassword = svrLocalStorage.getMasterKey(tx)?.data(
+            for: .registrationRecoveryPassword
+        ).canonicalStringRepresentation
 
         let phoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: tx)
 

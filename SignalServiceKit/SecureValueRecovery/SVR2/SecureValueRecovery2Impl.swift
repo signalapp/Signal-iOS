@@ -17,7 +17,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let connectionFactory: SgxWebsocketConnectionFactory
     private let credentialStorage: SVRAuthCredentialStorage
     private let db: any DB
-    private let keyDeriver: SVRKeyDeriver
     private let localStorage: SVRLocalStorageInternal
     private let schedulers: Schedulers
     private let storageServiceManager: StorageServiceManager
@@ -36,7 +35,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         db: any DB,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
-        svrKeyDeriver: SVRKeyDeriver,
         svrLocalStorage: SVRLocalStorageInternal,
         syncManager: SyncManagerProtocolSwift,
         tsAccountManager: TSAccountManager,
@@ -54,7 +52,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             db: db,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
-            svrKeyDeriver: svrKeyDeriver,
             svrLocalStorage: svrLocalStorage,
             syncManager: syncManager,
             tsAccountManager: tsAccountManager,
@@ -76,7 +73,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         db: any DB,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
-        svrKeyDeriver: SVRKeyDeriver,
         svrLocalStorage: SVRLocalStorageInternal,
         syncManager: SyncManagerProtocolSwift,
         tsAccountManager: TSAccountManager,
@@ -92,7 +88,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         self.credentialStorage = credentialStorage
         self.db = db
         self.localStorage = svrLocalStorage
-        self.keyDeriver = svrKeyDeriver
         self.schedulers = schedulers
         self.storageServiceManager = storageServiceManager
         self.syncManager = syncManager
@@ -261,7 +256,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             let masterKey: Data = {
                 // We never change the master key once stored (on the primary).
                 if let masterKey = self.db.read(block: { tx in self.localStorage.getMasterKey(tx) }) {
-                    return masterKey
+                    return masterKey.rawData
                 }
                 return self.generateMasterKey()
             }()
@@ -365,7 +360,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         transaction: DBWriteTransaction
     ) {
         Logger.info("")
-        let oldMasterKey = localStorage.getMasterKey(transaction)
+        let oldMasterKey = localStorage.getMasterKey(transaction)?.rawData
         localStorage.setMasterKey(data, transaction)
 
         // Wipe the storage service key, we don't need it anymore.
@@ -378,7 +373,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     public func masterKeyDataForKeysSyncMessage(tx: DBReadTransaction) -> Data? {
-        return localStorage.getMasterKey(tx)
+        return localStorage.getMasterKey(tx)?.rawData
     }
 
     public func clearSyncedStorageServiceKey(transaction: DBWriteTransaction) {
@@ -1083,7 +1078,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 guard
                     let self,
                     self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
-                    let masterKey = self.localStorage.getMasterKey(tx),
+                    let masterKey = self.localStorage.getMasterKey(tx)?.rawData,
                     let pin = self.twoFAManager.pinCode(transaction: tx)
                 else {
                     // Need to be registered with a master key and PIN to migrate.
@@ -1438,7 +1433,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         transaction: DBWriteTransaction
     ) {
         localStorage.cleanupDeadKeys(transaction)
-        let masterKeyChanged = masterKey != localStorage.getMasterKey(transaction)
+        let masterKeyChanged = masterKey != localStorage.getMasterKey(transaction)?.rawData
         if masterKeyChanged {
             localStorage.setMasterKey(masterKey, transaction)
         }

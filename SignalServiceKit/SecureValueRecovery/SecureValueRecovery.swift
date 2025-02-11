@@ -100,14 +100,6 @@ public enum SVR {
         public let rawData: Data
         public let type: DerivedKey
 
-        internal init?(_ rawData: Data?, _ type: DerivedKey) {
-            guard let rawData, !rawData.isEmpty else {
-                return nil
-            }
-            self.rawData = rawData
-            self.type = type
-        }
-
         public var canonicalStringRepresentation: String {
             switch type {
             case .storageService, .storageServiceManifest, .legacy_storageServiceRecord, .registrationRecoveryPassword:
