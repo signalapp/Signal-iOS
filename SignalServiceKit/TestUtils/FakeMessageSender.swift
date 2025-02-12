@@ -18,8 +18,8 @@ class FakeMessageSender: MessageSender {
 
     override func sendMessage(_ preparedMessage: PreparedOutgoingMessage) async throws {
         try await preparedMessage.send { message in
-            sendMessageWasCalledBlock?(message)
             sentMessages.append(message)
+            sendMessageWasCalledBlock?(message)
         }
         if let stubbedFailingError = stubbedFailingErrors.removeFirst() { throw stubbedFailingError }
     }
