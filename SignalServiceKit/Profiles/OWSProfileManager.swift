@@ -459,23 +459,17 @@ extension OWSProfileManager: ProfileManager {
                 Logger.warn("Couldn't decrypt profile name: \(error)")
             }
             do {
-                if let bio = try decryptedProfile.bio.get() {
-                    bioChange = .setTo(bio)
-                }
+                bioChange = .setTo(try decryptedProfile.bio.get())
             } catch {
                 Logger.warn("Couldn't decrypt profile bio: \(error)")
             }
             do {
-                if let bioEmoji = try decryptedProfile.bioEmoji.get() {
-                    bioEmojiChange = .setTo(bioEmoji)
-                }
+                bioEmojiChange = .setTo(try decryptedProfile.bioEmoji.get())
             } catch {
                 Logger.warn("Couldn't decrypt profile bio emoji: \(error)")
             }
             do {
-                if let phoneNumberSharing = try decryptedProfile.phoneNumberSharing.get() {
-                    isPhoneNumberSharedChange = .setTo(phoneNumberSharing)
-                }
+                isPhoneNumberSharedChange = .setTo(try decryptedProfile.phoneNumberSharing.get())
             } catch {
                 Logger.warn("Couldn't decrypt phone number sharing: \(error)")
             }
