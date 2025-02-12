@@ -724,9 +724,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             let url: NSURL = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, cannotLoadError: .cannotLoadURLObject, failedLoadError: .loadURLObjectFailed)
             return try Self.createAttachment(withText: (url as URL).absoluteString)
         case .contact:
-            let contactData = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: UTType.contact.identifier)
-            let dataSource = DataSourceValue(contactData, utiType: UTType.contact.identifier)
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.contact.identifier)
+            let contactData = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
+            let dataSource = DataSourceValue(contactData, utiType: typedItemProvider.itemType.typeIdentifier)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: typedItemProvider.itemType.typeIdentifier)
             attachment.isConvertibleToContactShare = true
             if let attachmentError = attachment.error {
                 throw attachmentError
@@ -736,10 +736,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             let text: NSString = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, cannotLoadError: .cannotLoadStringObject, failedLoadError: .loadStringObjectFailed)
             return try Self.createAttachment(withText: text as String)
         case .pkPass:
-            let typeIdentifier = "com.apple.pkpass"
-            let pkPass = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: typeIdentifier)
-            let dataSource = DataSourceValue(pkPass, fileExtension: "pkpass")
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: typeIdentifier)
+            let pkPass = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier)
+            let dataSource = DataSourceValue(pkPass, utiType: typedItemProvider.itemType.typeIdentifier)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: typedItemProvider.itemType.typeIdentifier)
             if let attachmentError = attachment.error {
                 throw attachmentError
             }
