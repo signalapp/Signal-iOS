@@ -460,17 +460,16 @@ extension OWSProfileManager: ProfileManager {
             } catch {
                 Logger.warn("Couldn't decrypt profile name: \(error)")
             }
+            //Bio and BioEmoji are allowed to be nil
             do {
-                if let bio = try decryptedProfile.bio.get() {
-                    bioChange = .setTo(bio)
-                }
+                let bio = try decryptedProfile.bio.get()
+                bioChange = .setTo(bio)
             } catch {
                 Logger.warn("Couldn't decrypt profile bio: \(error)")
             }
             do {
-                if let bioEmoji = try decryptedProfile.bioEmoji.get() {
-                    bioEmojiChange = .setTo(bioEmoji)
-                }
+                let bioEmoji = try decryptedProfile.bioEmoji.get()
+                bioEmojiChange = .setTo(bioEmoji)
             } catch {
                 Logger.warn("Couldn't decrypt profile bio emoji: \(error)")
             }
