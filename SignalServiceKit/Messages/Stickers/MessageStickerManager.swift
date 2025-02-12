@@ -82,8 +82,9 @@ public class MessageStickerManagerImpl: MessageStickerManager {
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<Void> {
         do {
+            // If the content type is missing or generic, assume it's a webp.
             let proto: SSKProtoAttachmentPointer
-            if dataProto.contentType == MimeType.applicationOctetStream.rawValue {
+            if dataProto.contentType == nil || dataProto.contentType == MimeType.applicationOctetStream.rawValue {
                 let builder = dataProto.asBuilder()
                 builder.setContentType(MimeType.imageWebp.rawValue)
                 proto = builder.buildInfallibly()

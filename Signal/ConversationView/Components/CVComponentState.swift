@@ -1305,24 +1305,11 @@ fileprivate extension CVComponentState.Builder {
             throw OWSAssertionError("Missing sticker attachment.")
         }
         if let attachmentStream = attachment.asReferencedStream {
-            switch attachmentStream.attachmentStream.contentType {
-            case .image(let pixelSize), .animatedImage(let pixelSize):
-                guard pixelSize.isNonEmpty else {
-                    fallthrough
-                }
-            default:
-                throw OWSAssertionError("Invalid sticker.")
-            }
-            let stickerType = StickerManager.stickerType(forContentType: attachmentStream.attachment.mimeType)
-            guard
-                let stickerMetadata = attachmentStream.attachmentStream.asStickerMetadata(
-                    stickerInfo: messageSticker.info,
-                    stickerType: stickerType,
-                    emojiString: messageSticker.emoji
-                )
-            else {
-                throw OWSAssertionError("Invalid sticker.")
-            }
+            let stickerMetadata = attachmentStream.attachmentStream.asStickerMetadata(
+                stickerInfo: messageSticker.info,
+                stickerType: StickerManager.stickerType(forContentType: attachmentStream.attachment.mimeType),
+                emojiString: messageSticker.emoji
+            )
             self.sticker = .available(
                 stickerMetadata: stickerMetadata,
                 attachmentStream: attachmentStream

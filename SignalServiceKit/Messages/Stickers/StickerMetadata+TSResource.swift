@@ -11,7 +11,7 @@ extension AttachmentStream {
         stickerInfo: StickerInfo,
         stickerType: StickerType,
         emojiString: String?
-    ) -> (any StickerMetadata)? {
+    ) -> any StickerMetadata {
         return EncryptedStickerMetadata.from(
             attachment: self,
             stickerInfo: stickerInfo,

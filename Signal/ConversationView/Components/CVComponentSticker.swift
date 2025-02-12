@@ -20,9 +20,6 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     private var attachmentPointer: ReferencedAttachmentPointer? {
         sticker.attachmentPointer
     }
-    private var stickerInfo: StickerInfo? {
-        stickerMetadata?.stickerInfo
-    }
 
     init(itemModel: CVItemModel, sticker: CVComponentState.Sticker) {
         self.sticker = sticker

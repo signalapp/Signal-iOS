@@ -39,12 +39,6 @@ public class CVComponentStateWrapper: NSObject, CVItemViewModel {
         return componentState.stickerAttachment
     }
 
-    public var stickerInfo: StickerInfo? {
-        AssertIsOnMainThread()
-
-        return componentState.stickerInfo
-    }
-
     public var linkPreview: OWSLinkPreview? {
         AssertIsOnMainThread()
 
@@ -315,10 +309,6 @@ public extension CVComponentState {
 
     var stickerAttachment: AttachmentStream? {
         sticker?.attachmentStream?.attachmentStream
-    }
-
-    var stickerInfo: StickerInfo? {
-        sticker?.stickerMetadata?.stickerInfo
     }
 
     var linkPreviewModel: OWSLinkPreview? {
