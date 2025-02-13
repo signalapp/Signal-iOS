@@ -80,9 +80,9 @@ extension BadgeGiftingConfirmationViewController {
     }
 
     private func presentPaypal(with approvalUrl: URL, paymentId: String) -> Promise<PreparedGiftPayment> {
-        firstly(on: DispatchQueue.main) { () -> Promise<Paypal.OneTimePaymentWebAuthApprovalParams> in
+        Promise.wrapAsync {
             Logger.info("[Gifting] Presenting PayPal web UI for user approval of gift donation")
-            return Paypal.presentExpectingApprovalParams(
+            return try await Paypal.presentExpectingApprovalParams(
                 approvalUrl: approvalUrl,
                 withPresentationContext: self
             )

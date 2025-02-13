@@ -31,8 +31,8 @@ extension DonateViewController {
         }.then(on: DispatchQueue.main) { (subscriberId, authorizationParams) -> Promise<(Data, String)> in
             Logger.info("[Donations] Authorizing payment for new monthly subscription with PayPal")
 
-            return firstly { () -> Promise<Paypal.MonthlyPaymentWebAuthApprovalParams> in
-                return Paypal.presentExpectingApprovalParams(
+            return Promise.wrapAsync { () async throws -> Paypal.MonthlyPaymentWebAuthApprovalParams in
+                return try await Paypal.presentExpectingApprovalParams(
                     approvalUrl: authorizationParams.approvalUrl,
                     withPresentationContext: self
                 )

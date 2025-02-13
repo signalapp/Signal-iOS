@@ -11,52 +11,14 @@ import Foundation
 /// PayPal donations are authorized by a user via PayPal's web interface,
 /// presented in an ``ASWebAuthenticationSession``.
 public extension Paypal {
-    /// We are required to hold a strong reference to any
-    /// in-progress ``ASWebAuthenticationSession``s.
-    private static let _runningAuthSession: AtomicOptional<ASWebAuthenticationSession> = AtomicOptional(nil, lock: .sharedGlobal)
-
-    /// Creates and presents a new auth session. Only one auth session should
-    /// be able to exist at once.
+    /// Creates and presents a new auth session.
+    @MainActor
     static func presentExpectingApprovalParams<ApprovalParams: FromApprovedPaypalWebAuthFinalUrlQueryItems>(
         approvalUrl: URL,
         withPresentationContext presentationContext: ASWebAuthenticationPresentationContextProviding
-    ) -> Promise<ApprovalParams> {
-        let (session, promise): (AuthSession<ApprovalParams>, Promise<ApprovalParams>) = makeNewAuthSession(
-            approvalUrl: approvalUrl
-        )
-
-        session.presentationContextProvider = presentationContext
-        owsPrecondition(
-            session.start(),
-            "[Donations] Failed to start PayPal authentication session. Was it set up correctly?"
-        )
-
-        return promise
-    }
-
-    private static func makeNewAuthSession<ApprovalParams: FromApprovedPaypalWebAuthFinalUrlQueryItems>(
-        approvalUrl: URL
-    ) -> (AuthSession<ApprovalParams>, Promise<ApprovalParams>) {
-        let (promise, future) = Promise<ApprovalParams>.pending()
-
-        let newSession = AuthSession<ApprovalParams>(approvalUrl: approvalUrl) { approvalResult in
-            _runningAuthSession.set(nil)
-
-            switch approvalResult {
-            case let .approved(params):
-                future.resolve(params)
-            case .canceled:
-                future.reject(AuthError.userCanceled)
-            case let .error(error):
-                future.reject(error)
-            }
-        }
-
-        guard _runningAuthSession.tryToSetIfNil(newSession) else {
-            owsFail("Unexpectedly found existing auth session while creating a new one! This should be impossible.")
-        }
-
-        return (newSession, promise)
+    ) async throws -> ApprovalParams {
+        let authSession = AuthSession<ApprovalParams>(approvalUrl: approvalUrl)
+        return try await authSession.start(presentationContextProvider: presentationContext)
     }
 }
 
@@ -247,49 +209,48 @@ public extension Paypal {
 // MARK: - AuthSession
 
 private extension Paypal {
-    private class AuthSession<ApprovalParams: FromApprovedPaypalWebAuthFinalUrlQueryItems>: ASWebAuthenticationSession {
-        enum AuthResult {
-            case approved(ApprovalParams)
-            case canceled
-            case error(Error)
+    private class AuthSession<ApprovalParams: FromApprovedPaypalWebAuthFinalUrlQueryItems> {
+        private let approvalUrl: URL
+
+        /// Create a new auth session starting at the given URL.
+        init(approvalUrl: URL) {
+            self.approvalUrl = approvalUrl
         }
 
-        typealias CompletionHandler = (AuthResult) -> Void
-
-        /// Create a new auth session starting at the given URL, with the given
-        /// completion handler. A `nil` value passed to the completion handler
-        /// indicates that the user canceled the auth flow.
-        init(approvalUrl: URL, completion: @escaping CompletionHandler) {
-            super.init(
-                url: approvalUrl,
-                callbackURLScheme: Paypal.authSessionScheme
-            ) { finalUrl, error in
-                Self.onCompleted(finalUrl: finalUrl, error: error, completion: completion)
+        func start(presentationContextProvider: ASWebAuthenticationPresentationContextProviding) async throws -> ApprovalParams {
+            var authSession: ASWebAuthenticationSession!
+            defer {
+                // Stop retaining it once its completion handler is invoked.
+                authSession = nil
+            }
+            return try await withCheckedThrowingContinuation { continuation in
+                authSession = ASWebAuthenticationSession(
+                    url: approvalUrl,
+                    callbackURLScheme: Paypal.authSessionScheme
+                ) { finalUrl, error in
+                    /// Our auth session should only complete on its own if the user cancels
+                    /// it interactively, since it can only auto-complete if we are using a
+                    /// custom URL scheme, which our callback URLs do not.
+                    let result: Result<ApprovalParams, any Error>
+                    if let finalUrl {
+                        owsAssertDebug(error == nil)
+                        result = Result(catching: { try Self.complete(withFinalUrl: finalUrl) })
+                    } else if let error {
+                        result = .failure(Self.complete(withError: error))
+                    } else {
+                        owsFail("Unexpectedly had neither a final URL nor error!")
+                    }
+                    continuation.resume(with: result)
+                }
+                authSession.presentationContextProvider = presentationContextProvider
+                let result = authSession.start()
+                owsPrecondition(result, "[Donations] Failed to start PayPal authentication session.")
             }
         }
 
-        /// Our auth session should only complete on its own if the user cancels
-        /// it interactively, since it can only auto-complete if we are using a
-        /// custom URL scheme, which our callback URLs do not.
-        private static func onCompleted(
-            finalUrl: URL?,
-            error: Error?,
-            completion: CompletionHandler
-        ) {
-            if let finalUrl {
-                owsAssertDebug(error == nil)
-                complete(withFinalUrl: finalUrl, completion: completion)
-            } else if let error {
-                complete(withError: error, completion: completion)
-            } else {
-                owsFail("Unexpectedly had neither a final URL nor error!")
-            }
-        }
-
-        private static func complete(withFinalUrl finalUrl: URL, completion: CompletionHandler) {
+        private static func complete(withFinalUrl finalUrl: URL) throws -> ApprovalParams {
             guard let callbackUrlComponents = URLComponents(url: finalUrl, resolvingAgainstBaseURL: true) else {
-                completion(.error(OWSAssertionError("[Donations] Malformed callback URL!")))
-                return
+                throw OWSAssertionError("[Donations] Malformed callback URL!")
             }
 
             guard
@@ -299,48 +260,42 @@ private extension Paypal {
                 callbackUrlComponents.host == Paypal.authSessionHost,
                 callbackUrlComponents.port == nil
             else {
-                completion(.error(OWSAssertionError("[Donations] Callback URL did not match expected!")))
-                return
+                throw OWSAssertionError("[Donations] Callback URL did not match expected!")
             }
 
-            let authResult: AuthResult = {
-                switch callbackUrlComponents.path {
-                case Paypal.paymentApprovalPathComponent:
-                    if
-                        let queryItems = callbackUrlComponents.queryItems,
-                        let approvalParams = ApprovalParams(fromFinalUrlQueryItems: queryItems)
-                    {
-                        Logger.info("[Donations] Received PayPal approval params, moving forward.")
-                        return .approved(approvalParams)
-                    } else {
-                        return .error(OWSAssertionError("[Donations] Unexpectedly failed to extract approval params from approved callback URL!"))
-                    }
-                case Paypal.paymentCanceledPathComponent:
-                    Logger.info("[Donations] Received PayPal cancel.")
-                    return .canceled
-                default:
-                    return .error(OWSAssertionError("[Donations] Encountered URL that looked like a PayPal callback URL but had an unrecognized path!"))
+            switch callbackUrlComponents.path {
+            case Paypal.paymentApprovalPathComponent:
+                if
+                    let queryItems = callbackUrlComponents.queryItems,
+                    let approvalParams = ApprovalParams(fromFinalUrlQueryItems: queryItems)
+                {
+                    Logger.info("[Donations] Received PayPal approval params, moving forward.")
+                    return approvalParams
+                } else {
+                    throw OWSAssertionError("[Donations] Unexpectedly failed to extract approval params from approved callback URL!")
                 }
-            }()
-
-            completion(authResult)
+            case Paypal.paymentCanceledPathComponent:
+                Logger.info("[Donations] Received PayPal cancel.")
+                throw AuthError.userCanceled
+            default:
+                throw OWSAssertionError("[Donations] Encountered URL that looked like a PayPal callback URL but had an unrecognized path!")
+            }
         }
 
-        private static func complete(withError error: Error, completion: CompletionHandler) {
+        private static func complete(withError error: Error) -> any Error {
             guard let authSessionError = error as? ASWebAuthenticationSessionError else {
-                completion(.error(OWSAssertionError("Unexpected error from auth session: \(error)!")))
-                return
+                return OWSAssertionError("Unexpected error from auth session: \(error)!")
             }
 
             switch authSessionError.code {
             case .canceledLogin:
-                completion(.canceled)
+                return AuthError.userCanceled
             case
                     .presentationContextNotProvided,
                     .presentationContextInvalid:
                 owsFail("Unexpected issue with presentation context. Was the auth session set up correctly?")
             @unknown default:
-                completion(.error(OWSAssertionError("Unexpected auth sesion error code: \(authSessionError.code)")))
+                return OWSAssertionError("Unexpected auth sesion error code: \(authSessionError.code)")
             }
         }
     }
