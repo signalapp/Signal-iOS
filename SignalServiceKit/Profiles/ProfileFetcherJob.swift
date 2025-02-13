@@ -106,20 +106,16 @@ public class ProfileFetcherJob {
     }
 
     private func requestProfile(localIdentifiers: LocalIdentifiers) async throws -> FetchedProfile {
-        return try await requestProfileWithRetries(localIdentifiers: localIdentifiers)
-    }
-
-    private func requestProfileWithRetries(localIdentifiers: LocalIdentifiers, retryCount: Int = 0) async throws -> FetchedProfile {
         do {
-            return try await requestProfileAttempt(localIdentifiers: localIdentifiers)
+            return try await Retry.performWithBackoff(maxAttempts: 3) {
+                return try await requestProfileAttempt(localIdentifiers: localIdentifiers)
+            }
         } catch where error.httpStatusCode == 401 {
             throw ProfileRequestError.notAuthorized
         } catch where error.httpStatusCode == 404 {
             throw ProfileRequestError.notFound
         } catch where error.httpStatusCode == 429 {
             throw ProfileRequestError.rateLimit
-        } catch where error.isRetryable && retryCount < 3 {
-            return try await requestProfileWithRetries(localIdentifiers: localIdentifiers, retryCount: retryCount + 1)
         }
     }
 
