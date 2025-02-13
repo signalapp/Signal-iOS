@@ -1,1 +1,2 @@
-• Now when you link your primary Signal device to a new Desktop or iPad, you can bring your chat history and your last 45 days of media with you. The transfer process is end-to-end encrypted, and completely optional. When it comes to making the choice about whether or not to leave the past behind, you're left to your own devices.
+• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
+• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.

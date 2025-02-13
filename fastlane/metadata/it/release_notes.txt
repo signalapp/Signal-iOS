@@ -1,1 +1,2 @@
-• Da ora quando colleghi il tuo dispositivo principale di Signal a un nuovo Desktop o iPad, puoi importare la cronologia delle tue chat e gli ultimi 45 giorni di media inviati/ricevuti. Il trasferimento è crittografato e del tutto opzionale. Insomma, scegli tu se lasciarti il passato alle spalle o meno!
+• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
+• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.

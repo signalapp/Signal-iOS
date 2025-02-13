@@ -1,1 +1,2 @@
-• Тепер, зв'язуючи основний пристрій Signal з новим комп'ютером чи iPad, ви також можете переносити історію чатів і медіафайли за минулі 45 днів. Процес перенесення захищено наскрізним шифруванням. А ще воно необов'язкове, тож тільки вам вирішувати, чи зберегти минуле в пам'яті пристрою, чи тільки у своїй власній.
+• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
+• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.

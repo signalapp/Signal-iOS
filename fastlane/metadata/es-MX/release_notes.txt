@@ -1,1 +1,2 @@
-• Ahora, al vincular tu dispositivo Signal principal a un nuevo ordenador o iPad, podrás llevarte contigo tu historial de chats y tus últimos 45 días de archivos multimedia. El proceso de transferencia está cifrado de extremo a extremo y es completamente opcional. Así, la decisión de dejar tu pasado atrás solo dependerá de ti (¡y de tus dispositivos!).
+• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
+• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.

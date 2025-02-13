@@ -1,1 +1,2 @@
-• Når du forbinder din primære Signal-enhed til en ny computer eller iPad, kan du tage din chathistorik og medierne for de sidste 45 dage med dig. Overførselsprocessen er end-til-end-krypteret og helt valgfri. Når det kommer til at træffe valget om, hvorvidt du vil lade fortiden være fortid eller ej, er valget dit.
+• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
+• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.

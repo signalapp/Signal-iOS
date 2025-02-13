@@ -1,1 +1,2 @@
-• A partir d'ara, quan enllacis un nou dispositiu, tindràs l'opció de transferir-hi l'historial del xat i els teus darrers 45 dies d'arxius multimèdia. El procés de transferència és xifrat d'extrem a extrem (i totalment opcional).
+• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
+• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.

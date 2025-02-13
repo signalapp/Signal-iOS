@@ -1,1 +1,2 @@
-• Giờ đây bạn có thể chọn chuyển lịch sử trò chuyện và tập tin đa phương tiện trong 45 ngày vừa qua của mình đến thiết bị liên kết mới. Quá trình chuyển dữ liệu được mã hóa đầu cuối và hoàn toàn là tùy chọn.
+• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
+• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.

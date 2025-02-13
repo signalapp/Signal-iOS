@@ -1,1 +1,2 @@
-• 이제 대화 기록과 지난 45일간의 미디어를 새로운 연결 기기로 전송하도록 선택할 수 있습니다. 전송 프로세스는 종단 간 암호화로 보호되지만, 전적으로 선택 가능합니다.
+• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
+• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.

@@ -1,1 +1,2 @@
-• Wenn du jetzt dein Mobiltelefon mit einem neuen Desktop oder iPad koppelst, kannst du deinen gesamten Chat-Verlauf und die Medien der letzten 45 Tage mitnehmen. Der Übertragungsprozess ist Ende-zu Ende-verschlüsselt und natürlich optional. Jetzt kannst du also selbst entscheiden, ob du die Vergangenheit komplett hinter dir lassen willst.
+• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
+• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.

@@ -1,1 +1,2 @@
-• Od teraz, gdy połączysz w aplikacji Signal swoje główne urządzenie z nowym komputerem lub iPadem, możesz przenieść również historię czatów oraz multimedia z ostatnich 45 dni. Proces transferu danych jest szyfrowany metodą end-to-end i całkowicie opcjonalny. Wymazać przeszłość czy zachować ciągłość historii? Tę decyzję zostawiamy Tobie.
+• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
+• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.
