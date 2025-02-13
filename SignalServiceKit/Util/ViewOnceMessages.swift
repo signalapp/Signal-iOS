@@ -123,10 +123,8 @@ public class ViewOnceMessages: NSObject {
 
     // MARK: - Sync Messages
 
-    private class func sendSyncMessage(forMessage message: TSMessage,
-                                       transaction: SDSAnyWriteTransaction) {
-        guard let senderAddress = senderAddress(forMessage: message) else {
-            owsFailDebug("Could not send sync message; no local number.")
+    private class func sendSyncMessage(forMessage message: TSMessage, transaction: SDSAnyWriteTransaction) {
+        guard let senderAci = senderAci(forMessage: message, tx: transaction.asV2Read) else {
             return
         }
         guard let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
@@ -137,7 +135,7 @@ public class ViewOnceMessages: NSObject {
 
         let syncMessage = OWSViewOnceMessageReadSyncMessage(
             localThread: thread,
-            senderAddress: senderAddress,
+            senderAci: AciObjC(senderAci),
             message: message,
             readTimestamp: readTimestamp,
             transaction: transaction
@@ -191,11 +189,10 @@ public class ViewOnceMessages: NSObject {
             guard let message = interaction as? TSMessage else {
                 return false
             }
-            guard let senderAddress = senderAddress(forMessage: message) else {
-                owsFailDebug("Could not process sync message; no local number.")
+            guard let senderAci = senderAci(forMessage: message, tx: transaction.asV2Read) else {
                 return false
             }
-            guard senderAddress.serviceId == messageSender else {
+            guard messageSender == messageSender else {
                 return false
             }
             guard message.isViewOnceMessage else {
@@ -229,18 +226,18 @@ public class ViewOnceMessages: NSObject {
         return .success
     }
 
-    private class func senderAddress(forMessage message: TSMessage) -> SignalServiceAddress? {
-
+    private static func senderAci(forMessage message: TSMessage, tx: any DBReadTransaction) -> Aci? {
         if let incomingMessage = message as? TSIncomingMessage {
-            return incomingMessage.authorAddress
+            return incomingMessage.authorAddress.aci
         } else if message is TSOutgoingMessage {
-            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
                 owsFailDebug("Could not process sync message; no local number.")
                 return nil
             }
             // We also need to send and receive "per-message expiration read" sync
             // messages for outgoing messages, unlike normal read receipts.
-            return localAddress
+            return localIdentifiers.aci
         } else {
             owsFailDebug("Unexpected message type.")
             return nil
