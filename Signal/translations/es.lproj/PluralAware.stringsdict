@@ -280,9 +280,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Este color personalizado se usa en %1$d chat. ¿Quieres eliminarlo?</string>
+			<string>Tienes %1$d chat con este color personalizado. ¿Quieres eliminarlo?</string>
 			<key>other</key>
-			<string>Este color personalizado se usa en %1$d chats. ¿Quieres eliminarlo para todos los chats?</string>
+			<string>Tienes %1$d chats con este color personalizado. ¿Quieres eliminarlo para todos los chats?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -723,9 +723,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se encontró %1$d conflicto de nombre en este grupo.</string>
+			<string>Se ha encontrado %1$d conflicto de nombre en este grupo.</string>
 			<key>other</key>
-			<string>Se encontraron %1$d conflictos de nombre en este grupo.</string>
+			<string>Se han encontrado %1$d conflictos de nombre en este grupo.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -755,9 +755,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Hemos encontrado %1$d conflicto de nombre en este grupo. Revisa la lista de participantes a continuación y selecciona la opción que desees.</string>
+			<string>Se ha encontrado %1$d conflicto de nombre en este grupo. Revisa la lista de participantes a continuación y selecciona la opción que desees.</string>
 			<key>other</key>
-			<string>Hemos encontrado %1$d conflictos de nombre en este grupo. Revisa la lista de participantes a continuación y selecciona la opción que desees.</string>
+			<string>Se han encontrado %1$d conflictos de nombre en este grupo. Revisa la lista de participantes a continuación y selecciona la opción que desees.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>

@@ -463,6 +463,15 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "مُكبِّر الصوت";
 
+/* Message when trying to show a voice message that has expired and is unavailable for download */
+"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Voice message not available";
+
+/* Message for sheet shown when tapping a voice message that has expired and is unavailable for download */
+"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "This voice message was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+
+/* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
+"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
+
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "اختر لونا";
 
@@ -2015,13 +2024,16 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "هل تُريد إيقاف النقل؟";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "إذا كُنتَ تستخدم سيجنال مُسبقًا على جِهاز iPad مُرتَبِط، يمكنك نقل حسابك والرسائل بشكلٍ آمن إلى هذا الجهاز.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Choose how you’d like to transfer your message history and account data";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "استمرار دون نقل حسابك ورسائلك";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "أضِف جهاز iPad هذا كجهاز مُرتبِط جديد";
+
+/* The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available */
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "You’ll have the option to transfer messages and recent media from your phone";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "إضافة كجهاز جديد";
@@ -2036,16 +2048,13 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "انقل حسابك وسِجل الرسائل من جهازك الـ iOS القديم";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "انقل حسابك وسِجل الرسائل من جهاز الآي باد القديم.";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iOS device";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "انقل من جهاز آي باد آخر";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from Another iPad";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "انقل من جهاز iOS";
-
-/* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "الاستمرار سوف يُعطِّل سيجنال على الأجهزة الأُخرى المُسجَّلة بنفس رقم الهاتف.";
 
 /* Button shown to contract a QR code and exit the fullscreen view. */
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "عرض بحجم أصغر";
@@ -2597,7 +2606,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "مرحبًا،\n\nمؤخرًا، أصبحتُ أستخدِم سيجنال عَلى الـ iPhone الخاص بي لِجعل دردشاتي خصوصية. أرغبُ بتثبيته أيضًا، حتى نتأكَّد من قراءة رَسائلنا أو سَماع مُكالماتنا يقتصر علينا فقط.\n\nسيجنال مُتاحٌ على الآيفون والأندرويد. احصل عليه من هنا: %1$@\n\nيعمل سيجنال مثل تطبيق المراسلة الحالي لديك. يمكننا إرسال الصور والمقاطع المَرئية، وإجراء مكالمات وبدء دردشة جَماعية. أفضل شيء فيه هو أنَّ لا أحد آخر قادر على رؤية أي شيء من ذلك، بما في ذلك مُصَمِّمو سيجنال أنفسهم!\n\nتستطيع قراءة المزيد عن سيجنال هنا: %2$@";
+"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhone, Android, and Desktop. Get it here: %1$@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Signal here: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "لننتقل إلى سيجنال";
@@ -2810,13 +2819,13 @@
 "FEATURED_BADGE_SETTINGS_TITLE" = "شارة مُمَيَّزة";
 
 /* Footer for message cell for documents/files when they are expired and unavailable for download */
-"FILE_UNAVAILABLE_FOOTER" = "File not available";
+"FILE_UNAVAILABLE_FOOTER" = "الملف غير مُتوفِّر";
 
 /* Message for sheet shown when tapping a document/file that has expired and is unavailable for download */
-"FILE_UNAVAILABLE_SHEET_MESSAGE" = "This file was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+"FILE_UNAVAILABLE_SHEET_MESSAGE" = "لم يتم نقل هذا الملف من هاتفك عندما تمَّ ربط هذا الجهاز. لا يمكن مزامنة الملفات والوسائط التي مضى عليها أكثر من 45 يومًا من الوقت الذي تمَّ فيه ربط الجهاز.";
 
 /* Title for sheet shown when tapping a document/file that has expired and is unavailable for download */
-"FILE_UNAVAILABLE_SHEET_TITLE" = "File Not Available";
+"FILE_UNAVAILABLE_SHEET_TITLE" = "الملف غير مُتوفِّر";
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_BODY" = "ابحث عن رقم IBAN الخاص بك في الجزء العلوي من كشف حسابك المصرفي. يحتوي رقم IBAN على ما يصل إلى 34 رمزًا. يَجب أن يتطابق الاسم الذي تُدخله مع اسمك الكامل في حسابك المصرفي. تواصَل مع مصرفك للمزيد من المعلومات.";
@@ -4117,14 +4126,17 @@
 /* Body for system notification when a new device is linked. Embeds {{ time the device was linked }} */
 "LINKED_DEVICE_NOTIFICATION_BODY" = "تمَّ ربط جهاز جديد بِحسابك على %1$@. انقر للمشاهدة.";
 
+/* Body for megaphone notification when a new device is linked. Embeds {{ time the device was linked }} */
+"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "A new device was linked to your account at %1$@.";
+
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "قُمتَ بربط جهازٍ جديد";
 
 /* Message for an action sheet telling users how to link a device, when trying to open an external device-linking URL. */
-"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To link a desktop or iPad to this Signal account, go to Linked Devices and tap \"Link a New Device\" and scan the QR code again. Make sure you only scan QR codes that come directly from Signal.";
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "لِربط حاسوب أو جهاز آيباد بحساب سيجنال هذا، انتقل إلى \"الأجهزة المُرتبِطة\" وانقر على \"ربط جهاز جديد\" وامسح كود الـ QR من جديد. تأكَّد من مسح كودات الـ QR الصادرة مباشرةً عن سيجنال فقط.";
 
 /* Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera. */
-"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "It looks like you're trying to link a Signal device. Tap continue and then tap \"Link a New Device\" and scan the QR code again.";
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "يبدو أنك تحاول ربط جهاز يستخدم سيجنال. انقر على \"متابعة\" ثم انقر على \"ربط جهاز جديد\" وامسح كود الـ QR من جديد.";
 
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
 "LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "قُم بزيارة %1$@ لتثبيت تطبيق iPad أو %2$@ على جهازك لتثبيت نسخة التطبيق الخاصة بالحاسوب.";
@@ -4676,7 +4688,7 @@
 "MISSED_VOICE_CALL" = "مكالمة صوتية فائتة";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "يُمكنك إتاحة الوصول إلى الكاميرا من خلال إعدادات التطبيق على iOS للقيام بمكالمة فيديو في سيجنال.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "يحتاج سيجنال الوصول إلى الكاميرا الخاصة بك.";
@@ -4815,6 +4827,9 @@
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "اختيار مجموعة";
+
+/* Main button for megaphone notification when a new device is linked */
+"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "View device";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "إيجاد بحسب رقم الهاتف";
@@ -5159,13 +5174,13 @@
 "OUTGOING_VOICE_CALL" = "مكالمة صوتية صادرة";
 
 /* Footer for message cell for long text when it is expired and unavailable for download */
-"OVERSIZE_TEXT_UNAVAILABLE_FOOTER" = "This message is incomplete";
+"OVERSIZE_TEXT_UNAVAILABLE_FOOTER" = "هذه الرسالة غير مُكتمِلة";
 
 /* Message for sheet shown when tapping oversized text that has expired and is unavailable for download */
-"OVERSIZE_TEXT_UNAVAILABLE_SHEET_MESSAGE" = "The complete text in this message was not transferred from your phone when this device was linked. Long text messages older than 45 days at the time of device linking can not be synced.";
+"OVERSIZE_TEXT_UNAVAILABLE_SHEET_MESSAGE" = "لم يتم نقل النص الكامل في هذه الرسالة من هاتفك عند ربط هذا الجهاز. لا يُمكن مزامنة الرسائل النصية الطويلة التي مضى عليها أكثر من 45 يومًا من الوقت الذي تمَّ فيه ربط الجهاز.";
 
 /* Title for sheet shown when tapping oversized text that has expired and is unavailable for download */
-"OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE" = "Complete Message Not Available";
+"OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE" = "الرسالة الكاملة غير مُتوفِّرة";
 
 /* Header title for bank payment details screen */
 "PAYMENT_DETAILS_BANK_TITLE" = "تحويل مصرفي";
@@ -5516,7 +5531,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "المدعوون من قبلك";
 
 /* Label for view-once messages indicating that the message's contents are expired and unavailable to download. */
-"PER_MESSAGE_EXPIRATION_EXPIRED" = "Expired";
+"PER_MESSAGE_EXPIRATION_EXPIRED" = "منتهية الصلاحية";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "خطأ في مُعاملة الرسالة الواردة";
@@ -5723,7 +5738,7 @@
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "يُمكِّنك رقم التعريف الشخصي (PIN) من حفظ معلوماتك بشكلٍ مُشفَّر في سيجنال بحيث يمكنك الوصول إليها وحدك. اختر رقم تعريف شخصي (PIN) أقوى لحماية حسابك.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "تعذَّر تعطيل رقم التعريف الشخصي (PIN) الخاص بك. سنذكِّرك به مرّة أُخرى لاحقًا.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "فشل تعطيل رقم التعريف الشخصي (PIN)";
@@ -6032,10 +6047,10 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "فيديو";
 
 /* Label for a button to lower your raised hand in a call. */
-"RAISED_HANDS_LOWER_HAND_BUTTON" = "اخفض";
+"RAISED_HANDS_LOWER_HAND_BUTTON" = "خفض اليد";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
-"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ رفع يده";
+"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ رفعَ يده";
 
 /* A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}} */
 "RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "أنت +%1$d";
@@ -6266,13 +6281,13 @@
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "مكالمة صوتية";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "تعذّر إرسال رمز التحقق عبر رسالة SMS. حاول الحصول على رمزك عبر مكالمة نصية بدلاً من ذلك.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "تعذّر إرسال كود التحقُّق عبر رسالة SMS. حاوِل الحصول على الكود الخاص بك عبر مكالمة صوتية بدلًا من ذلك.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "لقد قمت بمحاولات كثيرة لإدخال الرمز. يُرجى إعادة إرسال الرمز والمحاولة من جديد.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "قُمتَ بمحاولاتٍ كثيرة لإدخال الكود. يُرجى إعادة إرسال الكود والمحاولة من جديد.";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "لقد قمت بمحاولات كثيرة لإدخال الرمز. حاول مجددًا في %1$@";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "قُمتَ بمحاولاتٍ كثيرة لإدخال الكود. حاوِل مُجدَّدًا في %1$@";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "الكود الذي أدخلته غير صحيح. يُرجى إعادة إرسال الكود والمحاولة من جديد.";
@@ -6296,22 +6311,22 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "جارٍ التَّحَقُّق مِن %1$@…";
 
 /* Button when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "أرسل رسالة";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "أرسِل رسالة قصيرة";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "تعذّر إرسال رمز التحقق عبر مكالمة صوتية. حاول الحصول على رمزك عبر مكالمة نصية بدلاً من ذلك.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "تعذَّر إرسال كود التحقُّق عبر مكالمة صوتية. حاوِل الحصول على الكود الخاص بك عبر رسالة نصية بدلًا من ذلك.";
 
 /* Button below the warning to fix a corrupted username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "إصلاح الآن";
+"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "الإصلاح الآن";
 
 /* Label warning the user that something is wrong with their username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "حدثت مشكلة مع اسم المُستخدم الخاص بك ولم يعُد مخصصًا لحسابك. يمكنك محاولة تعيينه من جديد أو اختيار اسم مُستخدم جديد.";
+"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "حدثت مشكلة مع اسم المُستخدم الخاص بك ولم يعُد مُخصَّصًا لحسابك. يمكنك محاولة تعيينه من جديد أو اختيار اسم مُستخدِم جديد.";
 
 /* Button below the warning to fix a username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "إصلاح الآن";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "الإصلاح الآن";
 
 /* Label warning the user that something is wrong with their username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "حدثت مشكلة مع رمز الاستجابة السريع ورابط اسم المُستخدم الخاص بك، ولم يعد صالحًا. أنشئ رابطًا جديدًا للمشاركة مع الآخرين.";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "حدثت مشكلة مع كود الـ QR ورابط اسم المُستخدم الخاص بك، ولم يعد صالحًا. أنشِئ رابطًا جديدًا للمشاركة مع الآخرين.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "إزالة المعاينة";
@@ -6323,10 +6338,10 @@
 "REREGISTER_FOR_PUSH" = "إعادة الاشتراك في الإشعارات داخل التطبيق";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "لديك %1$@ محاولة/محاولات متبقية. إذا استنفذتَ جميع المُحاولات، يُمكنك إنشاء رمز PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك لكِنَك ستفقِد بعض الإعدادات المحفوظة مِثل معلومات حسابك الشخصي.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "لديك %1$@ محاولة/محاولات متبقية. إذا استنفدتَ جميع المُحاولات، يُمكنك إنشاء رقم PIN جديد. يُمكنك التسجيل واستخدام الحساب الخاص بك، لكِنَك ستفقِد بعض الإعدادات المحفوظة مِثل معلومات حسابك الشخصي.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "لديك %1$@ محاولة/محاولات متبقية. إذا استنفذتَ جميع المُحاولات، سَيُقفل حسابك لمدة سبعة أيام. بعد سبعة أيام من الخمول، سَتتمكن من إعادة التسجيل دون إدخال رمز PIN الخاص بك. ستُحذَف جميع محتويات حسابك.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "لديك %1$@ محاولة/محاولات متبقية. إذا استنفدتَ جميع المُحاولات، سَيُقفل حسابك لمدة سبعة أيام. بعد سبعة أيام من عدم الاستخدام، سَتتمكَّن من إعادة التسجيل دون إدخال رقم PIN الخاص بك. ستُحذَف جميع محتويات حسابك.";
 
 /* Configure reactions reset button text */
 "RESET" = "إعادة التعيين";
@@ -6338,10 +6353,10 @@
 "RETURN_CALL_PILL_BUTTON" = "العودة";
 
 /* Text for a toast confirming that ringing has been turned off for a call. */
-"RING_OFF_CONFIRMATION_TOAST_LABEL" = "تم إيقاف الرنين";
+"RING_OFF_CONFIRMATION_TOAST_LABEL" = "تمَّ إيقاف الرنين";
 
 /* Text for a toast confirming that ringing has been turned on for a call. */
-"RING_ON_CONFIRMATION_TOAST_LABEL" = "تم تفعيل الرنين";
+"RING_ON_CONFIRMATION_TOAST_LABEL" = "تمَّ تفعيل الرنين";
 
 /* button title to confirm adding a recipient when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "أضِف على أي حال";
@@ -6377,25 +6392,25 @@
 "SAFETY_TIPS_BUTTON_ACTION_TITLE" = "نصائح السلامة";
 
 /* Message contents for the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_BODY" = "إذا راسلك شخص لا تعرفُه بخصوص العملات المشفرة (مثل بيتكوين) أو فرصة مالية، احذر—إنها حتمًا رسالة غير مرغوب فيها.";
+"SAFETY_TIPS_CRYPTO_BODY" = "إذا راسلك شخص لا تعرفُه بخصوص العملات المشفرة (مثل بيتكوين) أو فرصة مالية، احذر—هي حتمًا رسالة غير مرغوب فيها.";
 
 /* Message title describing the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_TITLE" = "عمليات الاحتيال المالية أو من خلال العملات المشفرة";
+"SAFETY_TIPS_CRYPTO_TITLE" = "عمليات الاحتيال المالية أو من خلال العملات المُشفَّرة";
 
 /* Message contents for the safety tip concerning fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "احذر من الشركات أو الوكالات الحكومية التي تتواصل معك. قد تكون الرسائل التي تتعلق بوكالات الضرائب وشركات التوصيل والمزيد رسائل غير مرغوب فيها.";
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "احذر من الشركات أو الوكالات الحكومية التي تتواصل معك. قد تكون الرسائل التي تتعلَّق بوكالات الضرائب وشركات التوصيل والمزيد رسائل غير مرغوب فيها.";
 
 /* Message title describing the safety tip about unknown or fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "الشركات والمُؤسسات الوهمية";
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "الشركات والمُؤسَّسات الوهمية";
 
 /* Message describing safety tips for group conversations. */
-"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "مراجعة هذا الطلب بعناية. لا توجد أية جهات اتصال أو أشخاص تُدردش معهم في هذه المجموعة. إليك بعض الأمور التي عليك الانتباه إليها:";
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "راجِع هذا الطلب بعناية. لا توجد أية جهات اتصال أو أشخاص تُدردش معهم في هذه المجموعة. إليك بعض الأمور التي عليك الانتباه إليها:";
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "نصائح السلامة";
 
 /* Message describing safety tips for 1:1 conversations. */
-"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "احذر عند قبول طلب مراسلة من أشخاص لا تعرفهم. احذر من:";
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "احذر عند قبول طلبات مراسلة من أشخاص لا تعرفهم. احذر من:";
 
 /* Message contents for the unknown links in messages safety tip. */
 "SAFETY_TIPS_MESSAGE_LINKS_BODY" = "احذر من الرسائل الواردة من الأشخاص الذين لا تعرفهم والتي تتضمّن روابط تقودك إلى مواقع. لا تزر أبدًا روابط من الأشخاص الذين لا تثق بهم.";
@@ -6410,7 +6425,7 @@
 "SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "السابق";
 
 /* Message contents for the vague message safety tip. */
-"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "يبدأ مُرسلو الرسائل غير المرغوب فيها برسالة بسيطة مثل \"مرحبًا\" لجذبك. إذا قُمت بالرد، فسيُواصلون التفاعل معك.";
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "يبدأ مُرسِلو الرسائل غير المرغوب فيها برسالة بسيطة مثل \"مرحبًا\" لجذبك. إذا قُمتَ بالرد، فسيُواصلون التفاعل معك.";
 
 /* Message title describing the safety tip about vague messages. */
 "SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "الرسائل الغامضة أو غير ذات الصلة";
@@ -6602,28 +6617,28 @@
 "SEPA_DONATION_EMAIL_PLACEHOLDER" = "عنوان البريد الإلكتروني";
 
 /* SEPA bank account donation error for insufficient funds. */
-"SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS" = "لا يتوفر الحساب البنكي الذي أدخلته على مبالغ كافية لإتمام عملية الشراء هذه. يُرجى المحاولة مرة أخرى أو الاتصال بمصرفك للمزيد من المعلومات.";
+"SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS" = "لا يتضمن الحساب البنكي الذي أدخلته مبالغ كافية لإتمام عملية الشراء هذه. يُرجى المحاولة مرّة أخرى أو الاتصال بمصرفك للمزيد من المعلومات.";
 
 /* SEPA bank account donation error for missing or incorrect mandate information. */
-"SEPA_DONATION_ERROR_NOT_AUTHORIZED" = "حدث خطأ أثناء معالجة عملية الدفع هذه، يُرجى إعادة المُحاولة لاحقًا.";
+"SEPA_DONATION_ERROR_NOT_AUTHORIZED" = "حدث خطأ أثناء معالجة عملية الدفع هذه. يُرجى إعادة المُحاولة لاحقًا.";
 
 /* SEPA bank account donation error for the account details not being able to be processed. */
-"SEPA_DONATION_ERROR_NOT_PROCESSED" = "تعذّر معالجة المعلومات المصرفية المُدلى بها، يُرجى الاتصال بمصرفك للمزيد من المعلومات.";
+"SEPA_DONATION_ERROR_NOT_PROCESSED" = "تعذَّرت معالجة المعلومات المصرفية المُقدَّمة. يُرجى الاتصال بمصرفك للمزيد من المعلومات.";
 
 /* SEPA bank account donation error for unspecified decline failures. */
-"SEPA_DONATION_ERROR_OTHER" = "تأكد من صحة تفاصيل بطاقتك وأعد المحاولة مرة أخرى. إذا استمر المُشكل، يُرجى الاتصال بالمصرف الذي تتعامل معه.";
+"SEPA_DONATION_ERROR_OTHER" = "تأكَّد من صحة تفاصيل بطاقتك البنكية وحاوِل مرة أخرى. إذا استمرت المُشكلة، تواصَل مع المصرف الذي تتعامل معه.";
 
 /* SEPA bank account donation error for the payment not being authorizing by the account holder. */
-"SEPA_DONATION_ERROR_PAYMENT_NOT_AUTHORIZED" = "لقد أُلغيت هذه العملية من قبل صاحب الحساب وتعذّر معالجتها. لم تُحصّل أي رسوم منك.";
+"SEPA_DONATION_ERROR_PAYMENT_NOT_AUTHORIZED" = "أُلغيَت هذه العملية من قبل صاحب الحساب وتعذَّرت معالجتها. لم تُحصَّل أي رسوم منك.";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) contains characters other than letters and numbers, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_INVALID_CHARACTERS_ERROR" = "لا يُمكن أن يحتوي IBAN إلا على الحروف ما بين A-Z والأرقام 0-9";
+"SEPA_DONATION_IBAN_INVALID_CHARACTERS_ERROR" = "لا يُمكن أن يحتوي رقم IBAN إلّا على الحروف ما بين A-Z والأرقام 0-9.";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) does not pass validation, this error will be shown. Try to use a short string to make space in the UI. */
 "SEPA_DONATION_IBAN_INVALID_CHECK_ERROR" = "رقم IBAN غير صحيح";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) has an unsupported country code, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_INVALID_COUNTRY_ERROR" = "رقم IBAN الخاص ببلدك غير مدعوم";
+"SEPA_DONATION_IBAN_INVALID_COUNTRY_ERROR" = "كود البلد الخاص بـ IBAN غير مدعوم";
 
 /* Users can donate to Signal with a bank account. This is the label for IBAN (internation bank account number) field on that screen. */
 "SEPA_DONATION_IBAN_LABEL" = "IBAN";
@@ -6635,7 +6650,7 @@
 "SEPA_DONATION_IBAN_TOO_SHORT_ERROR" = "رقم IBAN قصير جدًا";
 
 /* Users can donate to Signal with a bank account. This is the label for name field on that screen. */
-"SEPA_DONATION_NAME_LABEL" = "اِسم";
+"SEPA_DONATION_NAME_LABEL" = "اسم";
 
 /* Users can donate to Signal with a bank account. This is placeholder text for the name field before the user starts typing. */
 "SEPA_DONATION_NAME_PLACEHOLDER" = "الاسم كما يظهر في الحساب المصرفي";
@@ -6797,7 +6812,7 @@
 "SETTINGS_CLEAR_HISTORY" = "مسح سجل الدردشات";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "حقوق النشر محفوظة لسيجنال Messenger\nمُرخص بموجب AGPLv3";
+"SETTINGS_COPYRIGHT" = "حقوق النشر محفوظة لتطبيق سيجنال للدردشة\nمُرخَّص بموجب AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "استخدام البيانات";
@@ -6812,19 +6827,19 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "المُكالمات";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "يتمُّ دائمًا تنزيل الرَّسائل الصَّوتيَّة، وسائط-العرض-لمرة-واحدة، والمُلصقات (الأقل من 100 كيلوبايت) بشكل تلقائيًا.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "يتمُّ دائمًا تنزيل الرَّسائل الصَّوتيَّة، ملفات الوسائط للعرض لمرّة واحدة، والمُلصقات (الأقل من 100 كيلوبايت) بشكلٍ تلقائيًا.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "التَّنزِيلُ-التِّلقائِيّ";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "التنزيل التلقائي";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "إعادة تعيين إعدادات التنزيل-التلقائي";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "إعادة تعيين إعدادات التنزيل التلقائي";
 
 /* Item title for the sent media quality setting */
 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "جودة الوسائط المُرسَلة";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "اختيار جودة الصور والفيديوهات المرسلة.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "اختر جودة الصور والفيديوهات المُرسَلة.";
 
 /* Section header for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "الوسائط المُرسَلة";
@@ -6839,31 +6854,31 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "لا تنقلْ";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "رصيدك هو %1$@. إذا حذفت حسابك قبل إرسال مبالغك إلى عنوان محفظة أخرى، سوف تضيع كلها إلى الأبد.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "رصيدك هو %1$@. إذا حذفتَ حسابك قبل إرسال مبالغك إلى عنوان محفظة أخرى، سوف تضيع كلها إلى الأبد.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "إرسال مبالغ الرصيد ؟";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "هل ترغبُ بإرسال رصيد المدفوعات؟";
 
 /* Button for transferring the user's payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "إرسال الرصيد";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "حذف كافة البيانات";
+"SETTINGS_DELETE_DATA_BUTTON" = "حذف جميع البيانات";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "هل أنت متأكد من أنك تريد حذف كل المحفوظات (رسائل ومرفقات ومكالمات، إلخ.)؟ لا يمكن التراجع عن هذا الإجراء.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "هل أنت متأكِّد من أنك تريد حذف كل السجلات (الرسائل والملفات المُرفقة والمكالمات، إلخ.)؟ لا يمكن التراجع عن هذا الإجراء.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "حذف كل شيء";
 
 /* Label for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES" = "الرسائل المُختفية";
+"SETTINGS_DISAPPEARING_MESSAGES" = "ميزة إخفاء الرسائل";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "تحديد مدة افتراضية لمؤقت اختفاء الرسائل، لجميع الدردشات الجديدة التي قمت ببدئها.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "تحديد مدة افتراضية لمؤقِّت إخفاء الرسائل، لجميع الدردشات الجديدة التي قُمتَ ببدئها.";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "تبرَّع لسيجنال";
+"SETTINGS_DONATE" = "التبرُّع لسيجنال";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "المُساعدة";
@@ -6884,22 +6899,22 @@
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "إبقاء الدردشات المكتومة مُؤرشفة";
 
 /* No comment provided by engineer. */
-"SETTINGS_LEGAL_TERMS_CELL" = "الشُروط وَسياسة الخُصُوصِية";
+"SETTINGS_LEGAL_TERMS_CELL" = "الشروط وسياسة الخصوصية";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "توليد مُعايَنات للرَوابط";
+"SETTINGS_LINK_PREVIEWS" = "توليد معاينات الروابط";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "جلب مُعايَنات للرَوابط مُباشرة مِن موقع الويب للرسائل التي تُرسِلَها.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "استرداد مُعايَنات للرَوابط مُباشرة مِن مواقع الويب للرسائل التي تُرسِلَها.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "أبداً";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "أبدًا";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "شبكة Wi-Fi والشبكة الخلوية";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "شبكة الواي فاي والجوال";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "الـWi-Fi";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "الواي فاي";
 
 /* Label for the 'audio' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_AUDIO" = "الصوت";
@@ -6914,28 +6929,28 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "الفيديوهات";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "المُشَاهَدَةُ وَالمُشَارَكَةُ مَتَى مَا تُكتَب الرَّسَائِل أو تُقرَأُ. إذَا كَانَت مُعَطَّلَة، أَنتَ لَن تُرى إيصالاتُ القِرائة أو مُؤشِر الكِتَابَة مِنَ الآخَرين.";
+"SETTINGS_MESSAGING_FOOTER" = "مشاهدة ومشاركة متى تُكتَب الرسائل وتُقرَأ. إذا كانت مُعَطَّلَة، أنت لن ترى إيصالات القراءة أو مُؤشِر الكتابة من الآخرين.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "الإعدادات";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "تَضمين الدردشاتِ المَكتومة";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "تضمين الدردشات المكتومة";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "شارة التعداد";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "يُمكن أن تظهر إشعارات المُكالمات والرسائل أثناء قفل الهاتف.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "يمكن أن تظهر إشعارات المُكالمات والرسائل والهاتف مقفول.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "مُحتوى الإشعارات";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "جِهَةُ اِتِّصالٍ اِنضَمَّت إلى سيجنال";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "جهة اتصال انضَمَّت إلى سيجنال";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "اخطِرني مَتَى مَا…";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "أخبرني عندما…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "الإشعارات";
@@ -6944,7 +6959,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "تفعيل";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "يُمكنك استخدام سيجنال لإرسال عملة MobileCoin والتوصل بها. تخضع كل عمليات الدفع لشروط استخدام MobileCoin ومحفظة MobileCoin. قد تُواجه بعض المشاكل وقد تُصبح الدفوعات أو حسابك عرضة للضياع فلن يكون بإمكانك استرجاعها.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoin and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "تفعيل";
@@ -6956,7 +6971,7 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "إضافة رصيد";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "لإضافة مبالغ، يٌرجى إرسال MobileCoin إلى عنوان محفظتك. يجب البدء بالمعاملة انطلاقا من حسابك في منصة تداول تدعم MobileCoin، بعدها يجب مسح الرمز المربع أو نسخ عنوان محفظتك.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "لإضافة مبالغ، يُرجى إرسال MobileCoin إلى عنوان محفظتك. ابدأ المعاملة انطلاقًا من حسابك في منصة تداول تدعم MobileCoin، بعدها قُم بمسح كود الـ QR أو انسخ عنوان محفظتك.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "تمَّ نسخ عنوان المحفظة";
@@ -6968,25 +6983,25 @@
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ بتاريخ %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "لم تعد الدفوعات متاحة في سيجنال. يمكنك دوما إرسال الدفوعات إلى منصة للتداول لكن لم يعد بإمكانك إرسال أو استلام الدفوعات أو إضافة المبالغ.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "لم تعد المدفوعات متاحة في سيجنال. يمكنك دومًا إرسال المدفوعات إلى منصة للتداول، لكن لم يعد بإمكانك إرسال أو استلام المدفوعات أو إضافة المبالغ.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "لقد تعذر إلغاء تفعيل الدفوعات لأن رصيدك غير متاح. يُرجى التحقق من اتصالك بالانترنت ثم المحاولة مرة أخرى.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "تعذَّر إلغاء تفعيل المدفوعات لأن رصيدك غير مُتاح. يُرجى التحقُّق من اتصالك بالإنترنت ثم المحاولة مرّة أخرى.";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "تعذر إتمام الدفع لأن رصيدك غير متاح. يُرجى التحقق من اتصالك بالانترنت ثم المحاولة مرة أخرى.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "تعذَّر إتمام الدفع لأن رصيدك غير متاح. يُرجى التحقُّق من اتصالك بالإنترنت ثم المحاولة مرّة أخرى.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "لم تعد الدفوعات متاحة في سيجنال. يمكنك دوما إرسال الدفوعات إلى منصة للتداول لكن لم يعد بإمكانك إرسال أو استلام الدفوعات أو إضافة مبالغ.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "لم تعد المدفوعات متاحة في سيجنال. يمكنك دومًا إرسال المدفوعات إلى منصة للتداول لكن لم يعد بإمكانك إرسال أو استلام المدفوعات أو إضافة مبالغ.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "لم تعد الدفوعات متاحة في سيجنال. يمكنك دوما إرسال الدفوعات إلى منصة للتداول لكن لم يعد بإمكانك إرسال أو استلام الدفوعات أو إضافة مبالغ.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "لم تعد المدفوعات متاحة في سيجنال. يمكنك دومًا إرسال المدفوعات إلى منصة للتداول لكن لم يعد بإمكانك إرسال أو استلام المدفوعات أو إضافة مبالغ.";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "إن التحويلات هي تقديرات فقط، وقد لا تكون دقيقة.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "التحويلات هي تقديرات فقط، وقد لا تكون دقيقة.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
-"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "جَميع العُمَلات";
+"SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "جميع العملات";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "إرسال الرصيد المتبقي";
@@ -6998,28 +7013,28 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "تعطيل المدفوعات";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "لن يصبح بإمكانك إرسال أو استلام Mobilecoin في سيجنال إذا عطلت الدفوعات.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "لن يصبح بإمكانك إرسال أو استلام Mobilecoin في سيجنال إذا عطلت المدفوعات.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "تعطيل المدفوعات؟";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "هل ترغبُ بتعطيل المدفوعات؟";
 
 /* Label for the 'de-activate payments' view of the app settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "تعطيل المدفوعات";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "يوصَى بإرسال رصيدك المالي إلى عنوان محفظة أخرى قبل تعطيل عمليات الدفع. إذا اخترت عدم إرسال رصيدك المالي الآن، سَتبقى في محفظتك مرتبطة بسيجنال إذا أعدت تفعيل الدفوعات.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "يُوصَى بإرسال رصيدك المالي إلى عنوان محفظة أخرى قبل تعطيل عمليات الدفع. إذا اخترتَ عدم إرسال أموالك الآن، سَتبقى في محفظتك مرتبطة بسيجنال إذا أعدت تفعيل المدفوعات.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "سَيبقى رصيدك في محفظتك مرتبطًا بسيجنال إذا اخترت إعادة تفعيل عمليات الدفع.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "سَيبقى رصيدك في محفظتك مُرتبطًا بسيجنال إذا اخترتَ إعادة تفعيل المدفوعات.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "تعطيل بدون أي إرسال ؟";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "هل ترغبُ بالتعطيل بدون أي إرسال؟";
 
 /* Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "تعطيل بدون أي إرسال";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
-"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "تعذر تعطيل الدفوعات";
+"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "تعذَّر تعطيل المدفوعات";
 
 /* Label for the 'payments details' view of the app settings. */
 "SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "التفاصيل";
@@ -7031,7 +7046,7 @@
 "SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "قفل عمليات الدفع";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "إن MobileCoin عملة رقمية جديدة ترتكز على الخصوصية.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin هي عملة رقمية جديدة تُركِّز على الخصوصية.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "حَول MobileCoin";
@@ -7040,7 +7055,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "يمكنك إضافة مبالغ لاستخدامها في سيجنال عبر إرسال MobileCoin إلى عنوان محفظتك.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "إضافة الرصيد";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "إضافة الأموال";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "يمكنك صرف Mobilecoin في أي وقت في منصة التداول التي تدعم Mobilecoin. يكفي فقط الإرسال إلى حسابك في تلك المنصة.";
@@ -7049,22 +7064,22 @@
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "صرف المبالغ";
 
 /* Label for button in the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "حفظ جملتك";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "حفظ عبارتك";
 
 /* Description for the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "توفر لك جملة الاستعادة وسيلة أخرى لاستعادة رصيدك.";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "توفر لك عبارة الاستعادة وسيلة أخرى لاستعادة رصيدك.";
 
 /* Title for the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "حفظ جملتك";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "حفظ عبارتك";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "تحديث الرقم التعريفي الشخصي";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "تحديث رقم PIN";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "قد تكون لديك الحاجة إلى زيادة حماية حسابك عبر تحديث رقمك التعريفي الشخصي ليكون أبجَدرَقميا، بالذات عند توفرك على رصيد كبير من العملة الرقمية.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "عندما يرتفع الرصيد إلى مبلغٍ كبير، قد تكون لديك الحاجة إلى زيادة حماية حسابك عبر تحديث رقم التعريفي الشخصي (PIN) الخاص بك ليكون مُكوَّنًا من أرقام وحروف.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "حدِّث الـPIN الخاص بك";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "تحديث رقم PIN الخاص بك";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "عنوان المحفظة غير صحيح";
@@ -7076,25 +7091,25 @@
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "لا توجد نشاطات حديثة بعد.";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "أ أقوم بتفعيل الدفوعات لك ؟";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "هل ترغبُ بتفعيل المدفوعات؟";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "الدفوعات مُعطَّلة";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "المدفوعات مُعطَّلة";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "يُرجى إعادة التسجيل لإرسال المبالغ.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "أعِد التسجيل لإرسال المبالغ.";
 
 /* Title for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "غير مُسجِل";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "غير مُسجَّلة";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "تفعيل الدفوعات";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "تفعيل المدفوعات";
 
 /* Message shown when payments are activated in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "لقد فُعلت الدفوعات.";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "تمَّ تفعيل المدفوعات.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "استخدم سيجنال لإرسال واستلام MobileCoin، العملة الرقمية الجديدة التي تركز على الخصوصي. عليك بتفعيلها للبدء بالاستخدام.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "استخدِم سيجنال لإرسال واستلام MobileCoin، العملة الرقمية الجديدة التي تُركِّز على الخصوصية. عليك بتفعيلها للبدء بالاستخدام.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "إعادة تفعيل عمليات الدفع";
@@ -7103,25 +7118,25 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "نقدم لكم عمليات الدفع";
 
 /* Button when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "تَخَطَّ جملة الاستعادة";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "تَخَطَّ عبارة الاستعادة";
 
 /* Message of confirmation alert when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "تُتيح لك عبارة الاستعادة الخاصة بك اِسترجاع رصيدك في حالة حدوث أمر ما. نوصي بشدة بحفظها.";
 
 /* Title of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "متابعة بدون حفظ؟";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "هل ترغبُ بالمتابعة بدون حفظ؟";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "سوف يُستعاد رصيدك تلقائيا فور الانتهاء من إعادة تثبيت سيجنال، وذلك إذا قمت بتأكيد ‫رقم سيجنال التعريفي الشخصي‬. يمكنك أيضا استعادة حسابك باستخدام جملة الاستعادة، والتي تتكون من 24 كلمة فريدة خاصك بك فقط. يٌرجى كتابتها ثم حفظها في مكان آمن.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "سوف يُستعَاد رصيدك تلقائيًا فور الانتهاء من إعادة تثبيت سيجنال، وذلك إذا قُمتَ بتأكيد ‫رقم التعريف الشخصي‬ (PIN) على سيجنال الخاص بك. يمكنك أيضًا استعادة حسابك باستخدام عبارة الاستعادة، والتي تتكوَّن من 24 كلمة فريدة خاصك بك فقط. يُرجى كتابتها ثم حفظها في مكانٍ آمن.";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "لديك رصيد! حان وقت حفظ جملة الاستعادة الخاصة بك—مفتاح من 24 كلمة يُمكنك استخدامه لاستعادة رصيدك.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "لديك رصيد! حان وقت حفظ عبارة الاستعادة الخاصة بك—مفتاح من 24 كلمة يُمكنك استخدامه لاستعادة رصيدك.";
 
 /* Explanation of the 'payments passphrase' when from the help card. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "حان وقت حفظ جملة الاستعادة الخاصة بك—مفتاح من 24 كلمة يُمكنك استخدامه لاستعادة رصيدك.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "حان وقت حفظ عبارة الاستعادة الخاصة بك—مفتاح من 24 كلمة يُمكنك استخدامه لاستعادة رصيدك.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
-"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "إضافة رصيد";
+"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "إضافة مبالغ";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "حظر الرقم";
@@ -7133,10 +7148,10 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "تمَّ الاستلام";
 
 /* Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "مُستلَم من %1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "مُستلَمة من %1$@";
 
 /* Label for the sender in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "مُرسَلَة بِواسِطَة";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "مُرسَلَة بواسطة";
 
 /* Label for the sender in the payment details view in the app settings when the status is 'Failed'. Followed by sender name. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "محاولة من طرف";
@@ -7151,22 +7166,22 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "تمّ الارسال";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "مُرسَلَة إلَى %1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "مُرسَلَة إلى %1$@";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "الحالة";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "تتضمن تفاصيل المعاملات في دفتر حسابات MobileCoin، مبالغ الدفوعات وتاريخ المعاملات.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "تفاصيل المعاملة التي تشتمل على مبالغ المدفوعات وتاريخ المعاملات هي جزء من دفتر حسابات MobileCoin.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "يتم فرض ”رسوم تنظيف العملة“ عندما يتعذر دمج العملات التي بحوزتك لإتمام معاملة. سيسمح لك التنظيف بمواصلة إرسال الدفوعات.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "يتم فرض ”رسوم تنظيف العملة“ عندما يتعذَّر دمج العملات التي بحوزتك لإتمام معاملة. سيسمح لك التنظيف بمواصلة إرسال المدفوعات.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "ليس لديك ما يكفي من عملة MOB لإتمام هذا الدفع. رصيدك الحالي هو %1$@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "رصيد غير كاف";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "رصيد غير كافٍ";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
 "SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "مِن %1$@";
@@ -7175,7 +7190,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "إلى %1$@";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "عُطلَت الدفوعات";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "عُطِّلَت المدفوعات";
 
 /* Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "قد يُؤدي تخطِّي هذه الخطوة إلى السماح لأي شخص يستخدم هاتفك بتحويل الأموال أو الاطّللاع على عبارة الاسترداد الخاصة بك.";
@@ -7220,13 +7235,13 @@
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "‫تحديث سيجنال‬";
 
 /* Message for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "يَجب تحديث التطبيق لمتابعة إرسال عمليات الدفع واستلامها، ولعرض رصيد عمليات الدفع المُحدثة الخاصة بك.";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "يَجب تحديث التطبيق لمتابعة إرسال عمليات الدفع واستلامها، ولعرض رصيد عمليات الدفع المُحدَّثة الخاصة بك.";
 
 /* Title for payments outdated sheet saying cant send. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "تعذَّر إرسال الدفوعات";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "تعذَّر إرسال المدفوعات";
 
 /* Title for payments outdated sheet saying update required. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "يَجب تحديث التطبيق";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "التحديث مطلوب";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "الجميع";
@@ -7235,43 +7250,43 @@
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_INCOMING" = "تمَّ الاستلام";
 
 /* Label for the 'outgoing payments' mode of the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "تمّ الارسال";
+"SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "تمَّ الارسال";
 
 /* Label for the 'recent payments' section in the payment settings. */
-"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "الدفوعات السابقة";
+"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "المدفوعات السابقة";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "قبل تعطيل رقمك التعريفي الشخصي، يجب عليك تسجيل جملة استعادة الدفوعات للتأكد من إمكانية استعادة حساب دفوعاتك.";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "قبل تعطيل رقم التعريف الشخصي (PIN)، يجب عليك تسجيل عبارة استعادة المدفوعات للتأكُّد من إمكانية استعادة حساب المدفوعات الخاص بك.";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "تسجيل جملة الاستعادة";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "تسجيل عبارة الاستعادة";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "تسجيل جملة استعادة الدفوعات";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "تسجيل عبارة استعادة المدفوعات";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "الرصيد المتبقي";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "استعادة حساب الدفوعات";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "استعادة حساب المدفوعات";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "يٌرجى التأكد من إدخالك جملتك بشكل صحيح.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "يُرجى التأكُّد من إدخالك العبارة بشكلٍ صحيح.";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "تأكيد جملة الاستعادة";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "تأكيد عبارة الاستعادة";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "استُعيد حساب الدفوعات.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "تمَّت استعادة حساب المدفوعات.";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "إدخال يدويا";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "إدخال يدويًا";
 
 /* Error indicating that 'restore payments wallet failed' in the app payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "فشلت الاستعادة";
 
 /* Message for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "جملة الاستعادة هذه غير صالحة.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "عبارة الاستعادة هذه غير صالحة.";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "جملة غير صالحة";
@@ -7280,43 +7295,43 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "لصق من الحافظة";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "جملة الاستعادة";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "عبارة الاستعادة";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "لصق جملة الاستعادة";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "لصق عبارة الاستعادة";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "جملة الاستعادة هي جملة مكونة من 24 كلمة فريدة خاصة بك فقط. استخدمها لاستعادة حساب مدفوعاتك.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "عبارة الاستعادة هي عبارة مُكوَّنة من 24 كلمة فريدة خاصة بك فقط. استخدمها لاستعادة حساب مدفوعاتك.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "إدخال جملة الاستعادة";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "إدخال عبارة الاستعادة";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "جملة الاستعادة";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "عبارة الاستعادة";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "يُرجى إدخال الكلمة %1$@";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "أدخِل الكلمة %1$@";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "جملة الاستعادة باطلة";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "عبارة الاستعادة غير صالحة";
 
 /* Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "هناك خطأ إملائي في الكلمة.";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "إدخال جملة الاستعادة";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "إدخال عبارة الاستعادة";
 
 /* Title for the first step of the 'save payments passphrase' views. */
 "SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "حفظ جملة الاستعادة";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "يُرجى تصوير الرمز المربع للمُستلِم المراد الإرسال إليه.";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "قُم بمسح كود الـ QR للمُستلِم المراد الإرسال إليه.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "عنوان غير صالح";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "مَسح رَمز الاِستِجابَة السَّريعَة";
+"SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "امسح ضوئيًا كود الـ QR";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL" = "اِشترط رمز المرور الخاص بك أو بصمة الإصبع (Touch ID) لإرسال المبالغ.";
@@ -7349,19 +7364,19 @@
 "SETTINGS_PAYMENTS_TITLE" = "المدفوعات";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "لا يمكنك الإرسال إلى عنوان محفظتك بسيجنال. يُرجى إدخال عنوان المحفظة انطلاقا من حسابك في منصة تداول تدعم ذلك.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "لا يمكنك الإرسال إلى عنوان محفظتك بسيجنال. قُم بإدخال عنوان المحفظة انطلاقًا من حسابك في منصة تداول تدعم ذلك.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "يمكنك إتمام إرسال Mobilecoin إلى محفظة حساب متوفرة في منصة التداول. إن عنوان المحفظة عبارة عن سلسلة من الحروف والأرقام، والتي غالبا ما تكون ظاهرة تحت الرمز المربع.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "يمكنك إتمام إرسال Mobilecoin إلى محفظة حساب متوفرة في منصة التداول. عنوان المحفظة عبارة عن سلسلة من الحروف والأرقام، والتي غالبًا ما تكون ظاهرة تحت كود الـ QR.";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "يُرجى التحقق من عنوان المحفظة عند محاولة إرسال مبالغ إلى أحد ما، ثم المحاولة مرة أخرى.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "تحقَّق من عنوان المحفظة الذي تحاول الإرسال إليه، ثم حاوِل مرّة أخرى.";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "عنوان غير صحيح";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "إلى : يُرجى تصوير أو إدخال عنوان المحفظة";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "إلى : قُم بالمسح الضوئي لعنوان المحفظة أو قُم بإدخاله";
 
 /* Label for 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "إرسال إلى منصة التداول";
@@ -7370,49 +7385,49 @@
 "SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "إرسال إلى منصة التداول";
 
 /* Message indicating that 'payments passphrase review' is complete. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "انتهى من إعداد جملة الاستعادة.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "اكتمَلَ إعداد عبارة الاستعادة.";
 
 /* Label for 'confirm' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "تأكيد";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "يُرجى إدخال الكلمة %1$@ والكلمة %2$@ من جملة الاستعادة التي تخصك.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "يُرجى إدخال الكلمة %1$@ والكلمة %2$@ من عبارة الاستعادة الخاصة بك.";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "هناك كلمة غير صحيحة. يُرجى المحاولة مرة أخرى.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "هناك كلمة غير صحيحة. حاوِل مرّة أخرى.";
 
 /* Error indicating that all words of the payments passphrase are not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "كلا الكلمتين غير صحيحتين. يُرجى المحاولة مرة أخرى.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "كلا الكلمتين غير صحيحتين. حاوِل مرّة أخرى.";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "الكلمة %1$@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "تأكيد جملة الاستعادة";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "تأكيد عبارة الاستعادة";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "لقد نُقلَت جملة الاستعادة";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "تمَّ نسخ عبارة الاستعادة";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "نسخ إلى الحافظة";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "إذا اخترت حفظ جملة الاستعادة رقميا، يٌرجى التأكد من حفظها في مكان آمن وموثوق به.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "إذا اخترتَ حفظ عبارة الاستعادة رقميًا، تأكَّد من حفظها في مكانٍ آمن وموثوق به.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "نسخ إلى الحافظة؟";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "هل ترغبُ بالنسخ إلى الحافظة؟";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "الاطلاع مجددا على الجملة";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "اطَّلِع مُجدَّدًا على العبارة";
 
 /* Title for the first step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "إظهار جملة الاستعادة";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "عرض عبارة الاستعادة";
 
 /* Title for the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "جملة الاستعادة";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "عبارة الاستعادة";
 
 /* Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "يٌرجى كتابة الكلمات الأربع والعشرين التالية بالترتيب. كما يُوصَى بحفظها في مكان آمن.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "اكتب الكلمات الأربع والعشرين التالية بالترتيب. احتفِظ بقائمتك في مكانٍ آمن.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "يُرجى عدم مشاركة هذه القائمة";
@@ -7421,7 +7436,7 @@
 "SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "طبقة أخرى من الحماية";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "جملة الاستعادة";
+"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "عبارة الاستعادة";
 
 /* Title for the 'payments settings' view in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_TITLE" = "عمليات الدفع";
@@ -7451,43 +7466,43 @@
 "SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "من يمكنه رؤية رقمي";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "تعطيل التذكيرات";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "إيقاف التذكيرات";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "تأكد من حفظ الـPIN الخاص بك أو تخزينه بشكل آمن لأنه لا يُمكن استعادته. إذا نسيت الـPIN الخاص بك، قد تفقد البيانات عند إعادة تسجيل حساب سيجنال الخاص بك.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "تأكَّد من حفظ رقم التعريف الشخصي (PIN) الخاص بك أو تخزينه بشكلٍ آمن لأنه لا يُمكن استعادته. إذا نسيت رقم التعريف الشخصي (PIN) الخاص بك، قد تفقد البيانات عند إعادة تسجيل حساب سيجنال الخاص بك.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "تأكيد الـPIN الخاص بك لسيجنال";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "تأكيد رقم PIN الخاص بسيجنال";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "تذكيرات الـPIN";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "تذكيرات رقم التعريف الشخصي (PIN)";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "الـPIN يُبقي المعلومات المحفوظة مع سيجنال مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. لا يمكن استرداد الـPIN الخاص بك. سيتم استرجاع حسابك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد تثبيت سيجنال.";
+"SETTINGS_PINS_FOOTER" = "أرقام التعريف الشخصي (PIN) تُبقي المعلومات المحفوظة مع سيجنال مُشفَّرة، بحيث تستطيع أنت فقط الوصول إليها. لا يمكن استرداد رقم التعريف الشخصي (PIN) الخاص بك. سيتم استرجاع حسابك الشخصي، والإعدادات وجهات الاتصال عندما تُعيد تثبيت سيجنال.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
-"SETTINGS_PINS_ITEM" = "تغيير الـPIN الخاص بك";
+"SETTINGS_PINS_ITEM" = "تغيير رقم التعريف الشخصي (PIN)";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "إنشاء PIN";
+"SETTINGS_PINS_ITEM_CREATE" = "إنشاء رقم تعريف شخصي (PIN)";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "الـPIN الخاص بسيجنال";
+"SETTINGS_PINS_TITLE" = "رقم PIN الخاص بسيجنال";
 
 /* Footer for table section */
 "SETTINGS_PRIVACY_ADVANCED_FOOTER" = "تجاوز الرقابة، الوكيل، إعادَة توجيه المُكالَمات، وإعدَادَاتُ المُرسِل المَخفي.";
 
 /* Title for the advanced privacy settings */
-"SETTINGS_PRIVACY_ADVANCED_TITLE" = "مُتقدِم";
+"SETTINGS_PRIVACY_ADVANCED_TITLE" = "مُتقدِّمة";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "إظهار المُكالمات في الحديثة";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "إظهار المُكالمات في قائمة الأحدث";
 
 /* The title for the privacy settings. */
 "SETTINGS_PRIVACY_TITLE" = "الخصوصية";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "تقارير القِراءة";
+"SETTINGS_READ_RECEIPT" = "إيصالات تأكيد القراءة";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "تعطيل";
@@ -7683,6 +7698,15 @@
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "رسالة مُلصق";
+
+/* Message when trying to show a sticker that has expired and is unavailable for download */
+"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker not available";
+
+/* Message for sheet shown when tapping a sticker that has expired and is unavailable for download */
+"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "This sticker was not transferred from your phone when this device was linked. Media and files older than 45 days at the time of device linking can not be synced.";
+
+/* Title for sheet shown when tapping a sticker that has expired and is unavailable for download */
+"STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker Not Available";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "تثبيت";
@@ -8270,7 +8294,7 @@
 "UNARCHIVE_ACTION" = "إخراج من اﻷرشيف";
 
 /* Toast shown when tapping older media that can no longer be downloaded */
-"UNAVAILABLE_MEDIA_TAP_TOAST" = "This media is no longer available";
+"UNAVAILABLE_MEDIA_TAP_TOAST" = "لم يعد ملف الوسائط هذا متوفِّرًا.";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "إن المُستخدم ليس ضمن جهات اتصالك. هل تود حظر هذا المُستخدم؟";

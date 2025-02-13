@@ -463,6 +463,15 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "سپیکر";
 
+/* Message when trying to show a voice message that has expired and is unavailable for download */
+"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Voice message not available";
+
+/* Message for sheet shown when tapping a voice message that has expired and is unavailable for download */
+"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "This voice message was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+
+/* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
+"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
+
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "رنگ منتخب کریں";
 
@@ -2015,13 +2024,16 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "منتقلی بند کرو؟";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "اگر آپ پہلے کسی منسلک iPad پر Signal استعمال کر رہے تھے تو ، آپ اپنے اکاؤنٹ اور پیغامات کو محفوظ طریقے سے اس device پر منتقل کرسکتے ہیں۔";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Choose how you’d like to transfer your message history and account data";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "اپنے اکاؤنٹ اور پیغامات کی منتقلی کے بغیر جاری رکھیں";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "اس iPad کو ایک نئی لنک کردہ ڈیوائس کے طور پر شامل کریں";
+
+/* The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available */
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "You’ll have the option to transfer messages and recent media from your phone";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "بطور نیا device شامل کریں";
@@ -2036,16 +2048,13 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "اپنی پرانی iOS ڈیوائس سے اپنے اکاؤنٹ اور میسج کی ہسٹری منتقل کریں";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "اپنے پرانے iPad سے اپنا اکاؤنٹ اور میسج کی ہسٹری منتقل کریں";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iOS device";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "کسی دوسرے iPad سے منتقل کریں";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from Another iPad";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "iOS device سے منتقل کریں";
-
-/* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "جاری رکھنے سے اسی فون نمبر کے ساتھ فی الحال رجسٹرڈ دیگر آلات پر Signal کو غیر فعال کردے گا۔";
 
 /* Button shown to contract a QR code and exit the fullscreen view. */
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "چھوٹا کر کے دیکھیں";
@@ -2597,7 +2606,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "ہائے، \n\nحال ہی میں، میں اپنے iPhone پر چیٹس کو نجی رکھنے کے لیے Signal کا استعمال کر رہا ہوں۔ میں چاہوں گا کہ آپ بھی اسے انسٹال کریں، تاکہ ہم اس حوالے سے پُر یقین ہو سکیں کہ صرف آپ اور میں ہی ہمارے میسجز پڑھ سکتے ہیں یا اپنی کالز سن سکتے ہیں۔\n\nSignal، iPhones اور Android کے لیے دستیاب ہے۔ اسے یہاں سے حاصل کریں: %1$@\n\n Signal آپ کی موجودہ میسجنگ ایپ کی طرح ہی کام کرتا ہے۔ ہم تصویریں اور ویڈیو بھیج سکتے ہیں، کالز کر سکتے ہیں، اور گروپ چیٹس کا آغاز کر سکتے ہیں۔ بہترین بات یہ ہے کہ، کوئی اور یہ چیزیں نہیں دیکھ سکتا، حتیٰ کہ Signal کو بنانے والے لوگ بھی نہیں!\n\nآپ Signal کے بارے میں مزید یہاں پڑھ سکتے ہیں:%2$@";
+"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhone, Android, and Desktop. Get it here: %1$@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Signal here: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Signal میں سو ئچ کریں";
@@ -2810,13 +2819,13 @@
 "FEATURED_BADGE_SETTINGS_TITLE" = "خصوصی بیج";
 
 /* Footer for message cell for documents/files when they are expired and unavailable for download */
-"FILE_UNAVAILABLE_FOOTER" = "File not available";
+"FILE_UNAVAILABLE_FOOTER" = "فائل دستیاب نہیں ہے";
 
 /* Message for sheet shown when tapping a document/file that has expired and is unavailable for download */
-"FILE_UNAVAILABLE_SHEET_MESSAGE" = "This file was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+"FILE_UNAVAILABLE_SHEET_MESSAGE" = "جب اس ڈیوائس کو لنک کیا گیا تھا تو یہ فائل آپ کے فون سے ٹرانسفر نہیں ہوئی تھی۔ ڈیوائس لنک کرنے کے وقت 45 دن سے پرانی فائلز اور میڈیا سنک نہیں ہو سکتے۔";
 
 /* Title for sheet shown when tapping a document/file that has expired and is unavailable for download */
-"FILE_UNAVAILABLE_SHEET_TITLE" = "File Not Available";
+"FILE_UNAVAILABLE_SHEET_TITLE" = "فائل دستیاب نہیں ہے";
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_BODY" = "اپنی بینک اسٹیٹمنٹ کی بالائی سطح پر اپنا IBAN تلاش کریں۔ IBAN نمبرز زیادہ سے زیادہ 34 حروف پر مشتمل ہوتے ہیں۔ آپ جو نام درج کرتے ہیں وہ بینک اکاؤنٹ پر موجود آپ کے مکمل نام سے مماثل ہونا چاہیئے۔ مزید معلومات کے لیے اپنے بینک سے رابطہ کریں۔";
@@ -4117,14 +4126,17 @@
 /* Body for system notification when a new device is linked. Embeds {{ time the device was linked }} */
 "LINKED_DEVICE_NOTIFICATION_BODY" = "آپ کے اکاؤنٹ کے ساتھ %1$@ کو ایک نئی ڈیوائس منسلک کی گئی تھی۔ دیکھنے کے لیے ٹیپ کریں۔";
 
+/* Body for megaphone notification when a new device is linked. Embeds {{ time the device was linked }} */
+"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "A new device was linked to your account at %1$@.";
+
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "آپ نے ایک نئی ڈیوائس کو منسلک کیا";
 
 /* Message for an action sheet telling users how to link a device, when trying to open an external device-linking URL. */
-"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To link a desktop or iPad to this Signal account, go to Linked Devices and tap \"Link a New Device\" and scan the QR code again. Make sure you only scan QR codes that come directly from Signal.";
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "ڈیسک ٹاپ یا iPad کو اس Signal اکاؤنٹ کے ساتھ لنک کرنے کے لیے، لنک کردہ ڈیوائسز پر جائیں اور \"نئی ڈیوائس لنک کریں\" پر ٹیپ کریں اور QR کوڈ کو دوبارہ اسکین کریں۔ یقینی بنائیں کہ آپ صرف وہ QR کوڈز اسکین کریں جو براہ راست Signal سے آتے ہیں۔";
 
 /* Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera. */
-"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "It looks like you're trying to link a Signal device. Tap continue and then tap \"Link a New Device\" and scan the QR code again.";
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "ایسا لگتا ہے کہ آپ Signal ڈیوائس کو لنک کرنے کی کوشش کر رہے ہیں۔ جاری رکھیں پر ٹیپ کریں اور پھر \"نئی ڈیوائس لنک کریں\" پر ٹیپ کریں اور QR کوڈ کو دوبارہ اسکین کریں۔";
 
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
 "LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "اپنی دوسری ڈیوائس پر، iPad ایپ انسٹال کرنے کے لیے %1$@ یا ڈیسک ٹاپ ایپ انسٹال کرنے کے لیے %2$@ پر جائیں۔";
@@ -4676,7 +4688,7 @@
 "MISSED_VOICE_CALL" = "مسڈ وائس کال";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "آپ کو Signal میں ویڈیو کال کرنے کیلئے iOS ایپ ترتیبات رسائی کرکے کیمرہ فعال کر سکتے ہیں۔";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal کو آپ کے کیمرہ تک رسائی کی ضرورت ہے۔";
@@ -4815,6 +4827,9 @@
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "گروپ منتخب کریں";
+
+/* Main button for megaphone notification when a new device is linked */
+"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "View device";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "فون نمبر کے ذریعے تلاش کریں";
@@ -5159,13 +5174,13 @@
 "OUTGOING_VOICE_CALL" = "جانے والی وائس کال";
 
 /* Footer for message cell for long text when it is expired and unavailable for download */
-"OVERSIZE_TEXT_UNAVAILABLE_FOOTER" = "This message is incomplete";
+"OVERSIZE_TEXT_UNAVAILABLE_FOOTER" = "یہ میسج نامکمل ہے";
 
 /* Message for sheet shown when tapping oversized text that has expired and is unavailable for download */
-"OVERSIZE_TEXT_UNAVAILABLE_SHEET_MESSAGE" = "The complete text in this message was not transferred from your phone when this device was linked. Long text messages older than 45 days at the time of device linking can not be synced.";
+"OVERSIZE_TEXT_UNAVAILABLE_SHEET_MESSAGE" = "جب اس ڈیوائس کو لنک کیا گیا تھا تو اس وقت اس میسج کا مکمل ٹیکسٹ آپ کے فون سے ٹرانسفر نہیں ہوا تھا۔ ڈیوائس لنک کرنے کے وقت 45 دن سے پرانے طویل ٹیکسٹ میسجز سنک نہیں ہو سکتے۔";
 
 /* Title for sheet shown when tapping oversized text that has expired and is unavailable for download */
-"OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE" = "Complete Message Not Available";
+"OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE" = "مکمل میسج دستیاب نہیں ہے";
 
 /* Header title for bank payment details screen */
 "PAYMENT_DETAILS_BANK_TITLE" = "بینک ٹرانسفر";
@@ -5516,7 +5531,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "آپ کے ذریعہ مدعو کیا گیا";
 
 /* Label for view-once messages indicating that the message's contents are expired and unavailable to download. */
-"PER_MESSAGE_EXPIRATION_EXPIRED" = "Expired";
+"PER_MESSAGE_EXPIRATION_EXPIRED" = "زائد المیعاد";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "آنے والے پیغام کو ہینڈل کرنے میں خرابی ہو رہی ہے";
@@ -5723,7 +5738,7 @@
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "پِنز آپ کی معلومات کو انکرپٹ کردہ Signal کے ساتھ اسٹور رکھتے ہیں تاکہ ان تک صرف آپ رسائی حاصل کر سکیں۔ اپنے اکاؤنٹ کی حفاظت کو یقینی بنانے کے لیے ایک مضبوط پِن منتخب کریں۔";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "آپ کا PIN غیر فعال نہیں تھا۔ ہم آپ کو بعد میں ایک بار پھر اشارہ کریں گے۔";
+"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "PIN ناکارہ ہو گیا";
@@ -5750,7 +5765,7 @@
 "PIN_REMINDER_MEGAPHONE_BODY" = "ہم کبھی کبھار آپ سے اپنے پن کی تصدیق کرنے کے لئے کہیں گے تاکہ آپ اسے یاد رکھیں۔";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_SUCCESSFUL_TOAST" = "PIN correct. We’ll remind you again in a few days.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_SUCCESSFUL_TOAST" = "پِن درست ہے۔ ہم آپ کو چند دنوں میں دوبارہ یاد دلائیں گے۔";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "ہم آپ کو کچھ ہی دنوں میں ایک بار پھر یاد دلائیں گے۔";
@@ -5759,19 +5774,19 @@
 "PIN_REMINDER_MEGAPHONE_TITLE" = "اپنے Signal پن کی تصدیق کریں";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_SUCCESSFUL_TOAST" = "PIN correct. We’ll remind you again tomorrow.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_SUCCESSFUL_TOAST" = "پِن درست ہے۔ ہم کل آپ کو دوبارہ یاد دلائیں گے۔";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "ہم کل آپ کو دوبارہ یاد دلائیں گے۔";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_SUCCESSFUL_TOAST" = "PIN correct. We’ll remind you again in a couple of weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_SUCCESSFUL_TOAST" = "پِن درست ہے۔ ہم آپ کو چند ہفتوں میں دوبارہ یاد دلائیں گے۔";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "ہم آپ کو چند ہفتوں میں ایک بار پھر یاد دلائیں گے۔";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_WEEK_SUCCESSFUL_TOAST" = "PIN correct. We’ll remind you again in a week.";
+"PIN_REMINDER_MEGAPHONE_WEEK_SUCCESSFUL_TOAST" = "پِن درست ہے۔ ہم آپ کو ایک ہفتے میں دوبارہ یاد دلائیں گے۔";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "ہم ایک ہفتے میں ایک بار پھر آپ کو یاد دلائیں گے۔";
@@ -6944,7 +6959,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "فعال";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "آپ MobileCoin بھیجنے اور وصول کرنے کے لیے Signal استعمال کر سکتے ہیں۔ تمام پیمنٹس MobileCoins اور MobileCoin والیٹ کی استعمال کی شرائط سے مشروط ہیں۔ آپ کو کچھ مسائل کا سامنا ہو سکتا ہے اور جن پیمنٹس یا بیلنسز سے آپ محروم ہو سکتے ہیں انہیں بحال نہیں کیا جا سکتا۔";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoin and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "فعال";
@@ -7684,6 +7699,15 @@
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "اسٹیکر پیغام";
 
+/* Message when trying to show a sticker that has expired and is unavailable for download */
+"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker not available";
+
+/* Message for sheet shown when tapping a sticker that has expired and is unavailable for download */
+"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "This sticker was not transferred from your phone when this device was linked. Media and files older than 45 days at the time of device linking can not be synced.";
+
+/* Title for sheet shown when tapping a sticker that has expired and is unavailable for download */
+"STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker Not Available";
+
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "انسٹال";
 
@@ -8270,7 +8294,7 @@
 "UNARCHIVE_ACTION" = "غیر پس پردہ";
 
 /* Toast shown when tapping older media that can no longer be downloaded */
-"UNAVAILABLE_MEDIA_TAP_TOAST" = "This media is no longer available";
+"UNAVAILABLE_MEDIA_TAP_TOAST" = "یہ میڈیا مزید دستیاب نہیں ہے";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "یوزر آپ کے رابطوں میں موجود نہیں ہے۔ کیا آپ اس یوزر کو بلاک کرنا چاہتے ہیں؟";

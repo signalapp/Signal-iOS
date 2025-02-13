@@ -463,6 +463,15 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Вонкавы дынамік";
 
+/* Message when trying to show a voice message that has expired and is unavailable for download */
+"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Voice message not available";
+
+/* Message for sheet shown when tapping a voice message that has expired and is unavailable for download */
+"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "This voice message was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+
+/* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
+"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
+
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Выбраць колер";
 
@@ -2015,13 +2024,16 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Спыніць перанос?";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Калі вы раней выкарыстоўвалі Signal на звязаным iPad, вы можаце бяспечна перанесці свой уліковы запіс і паведамленні на гэту прыладу.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Choose how you’d like to transfer your message history and account data";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Працягнуць без пераносу ўліковага запісу і паведамленняў";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Дадайце гэты iPad як вашу новую звязаную прыладу";
+
+/* The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available */
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "You’ll have the option to transfer messages and recent media from your phone";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Дадаць як новую прыладу";
@@ -2036,16 +2048,13 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Перанесці ўліковы запіс і гісторыю паведамленняў са сваёй старой прылады iOS";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Перанесці ўліковы запіс і гісторыю паведамленняў са свайго старога iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iOS device";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Перанесці з іншага iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from Another iPad";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Перанесці з прылады iOS";
-
-/* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Калі вы працягнеце, Signal адключыцца на іншых прыладах, што зарэгістраваны на сённяшні час з такім жа нумарам тэлефона.";
 
 /* Button shown to contract a QR code and exit the fullscreen view. */
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Паменшыць";
@@ -2597,7 +2606,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Прывітанне!\n\nАпошнім часам я выкарыстоўваю Signal, каб быць упэўненым у канфідэнцыйнасці чатаў на сваім iPhone. Прапаную ўсталяваць гэту праграму і табе, каб мы маглі дакладна ведаць, што ніхто, акрамя нас з табой, не чытае нашы паведамленні і не чуе нашы размовы.\n\nSignal даступны для iPhone і Android. Запампуй яго тут: %1$@\n\nSignal працуе так, як і мэсанджар, што ты ўжо выкарыстоўваеш. Мы зможам адпраўляць фота і відэа, рабіць званкі і ствараць групавыя чаты. І самае галоўнае – ніхто, акрамя нас, не можа бачыць нічога з гэтага, нават распрацоўнікі Signal!\n\nБольш падрабязна аб Signal можна даведацца тут: %2$@";
+"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhone, Android, and Desktop. Get it here: %1$@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Signal here: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Давайце пяройдзем на Signal";
@@ -2810,13 +2819,13 @@
 "FEATURED_BADGE_SETTINGS_TITLE" = "Асаблівы значок";
 
 /* Footer for message cell for documents/files when they are expired and unavailable for download */
-"FILE_UNAVAILABLE_FOOTER" = "File not available";
+"FILE_UNAVAILABLE_FOOTER" = "Файл недаступны";
 
 /* Message for sheet shown when tapping a document/file that has expired and is unavailable for download */
-"FILE_UNAVAILABLE_SHEET_MESSAGE" = "This file was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+"FILE_UNAVAILABLE_SHEET_MESSAGE" = "Гэты файл не быў перанесены з вашага тэлефона, калі была звязана гэта прылада. Немагчыма сінхранізаваць файлы і медыяфайлы, старэйшыя за 45 дзён на той момант, калі была звязана прылада.";
 
 /* Title for sheet shown when tapping a document/file that has expired and is unavailable for download */
-"FILE_UNAVAILABLE_SHEET_TITLE" = "File Not Available";
+"FILE_UNAVAILABLE_SHEET_TITLE" = "Файл недаступны";
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet. */
 "FIND_ACCOUNT_INFO_SHEET_BODY" = "Ваш IBAN знаходзіцца ў верхняй частцы выпіскі з вашага банкаўскага рахунку. IBAN мае да 34 сімвалаў. Імя, што вы ўводзіце, павінна супадаць з вашым поўным імем на вашым банкаўскім рахунку. За дадатковай інфармацыяй звярніцеся да свайго банка.";
@@ -4117,14 +4126,17 @@
 /* Body for system notification when a new device is linked. Embeds {{ time the device was linked }} */
 "LINKED_DEVICE_NOTIFICATION_BODY" = "Новая прылада была звязана з вашым уліковым запісам у %1$@. Націснуць, каб прагледзець.";
 
+/* Body for megaphone notification when a new device is linked. Embeds {{ time the device was linked }} */
+"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "A new device was linked to your account at %1$@.";
+
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "Вы звязалі новую прыладу";
 
 /* Message for an action sheet telling users how to link a device, when trying to open an external device-linking URL. */
-"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To link a desktop or iPad to this Signal account, go to Linked Devices and tap \"Link a New Device\" and scan the QR code again. Make sure you only scan QR codes that come directly from Signal.";
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "Каб звязаць ПК або iPad з гэтым уліковым запісам Signal, перайдзіце ў раздзел «Звязаныя прылады», націсніце «Звязаць новую прыладу» і зноў праскануйце QR-код. Абавязкова правярайце, што вы скануеце менавіта QR-коды, якія вы атрымліваеце непасрэдна ад Signal.";
 
 /* Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera. */
-"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "It looks like you're trying to link a Signal device. Tap continue and then tap \"Link a New Device\" and scan the QR code again.";
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "Здаецца, вы спрабуеце звязаць прыладу Signal. Націсніце «Працягнуць» і потым націсніце «Звязаць новую прыладу», пасля чаго нанова праскануйце QR-код.";
 
 /* Bullet point about downloads on the linked devices education sheet. Embeds {{ %1$@ iPad download link, %2$@ desktop download link }} */
 "LINKED_DEVICES_EDUCATION_POINT_DOWNLOADS" = "Зайдзіце на %1$@ на вашай іншай прыладзе, каб усталяваць праграму для iPad, або на %2$@, каб усталяваць версію для ПК.";
@@ -4676,7 +4688,7 @@
 "MISSED_VOICE_CALL" = "Прапушчаны галасавы званок";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Уключыце доступ да камеры ў наладах iOS, каб рабіць відэазванкі ў Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal патрабуе доступу да вашай камеры.";
@@ -4815,6 +4827,9 @@
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Выбраць групу";
+
+/* Main button for megaphone notification when a new device is linked */
+"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "View device";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Знайсці па нумары тэлефона";
@@ -5159,13 +5174,13 @@
 "OUTGOING_VOICE_CALL" = "Выходны галасавы званок";
 
 /* Footer for message cell for long text when it is expired and unavailable for download */
-"OVERSIZE_TEXT_UNAVAILABLE_FOOTER" = "This message is incomplete";
+"OVERSIZE_TEXT_UNAVAILABLE_FOOTER" = "Гэта паведамленне няпоўнае";
 
 /* Message for sheet shown when tapping oversized text that has expired and is unavailable for download */
-"OVERSIZE_TEXT_UNAVAILABLE_SHEET_MESSAGE" = "The complete text in this message was not transferred from your phone when this device was linked. Long text messages older than 45 days at the time of device linking can not be synced.";
+"OVERSIZE_TEXT_UNAVAILABLE_SHEET_MESSAGE" = "Поўны тэкст у гэтым паведамленні не быў перанесены з вашага тэлефона, калі была звязана гэта прылада. Немагчыма сінхранізаваць доўгія тэкставыя паведамленні, старэйшыя за 45 дзён на той момант, калі была звязана прылада.";
 
 /* Title for sheet shown when tapping oversized text that has expired and is unavailable for download */
-"OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE" = "Complete Message Not Available";
+"OVERSIZE_TEXT_UNAVAILABLE_SHEET_TITLE" = "Поўнае паведамленне недаступнае";
 
 /* Header title for bank payment details screen */
 "PAYMENT_DETAILS_BANK_TITLE" = "Банкаўскі перавод";
@@ -5516,7 +5531,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Запрошаныя вамі";
 
 /* Label for view-once messages indicating that the message's contents are expired and unavailable to download. */
-"PER_MESSAGE_EXPIRATION_EXPIRED" = "Expired";
+"PER_MESSAGE_EXPIRATION_EXPIRED" = "Тэрмін дзеяння скончыўся";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Памылка ўваходнага паведамлення";
@@ -5723,7 +5738,7 @@
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "PIN-коды трымаюць вашу інфармацыю, што захоўваецца ў Signal, зашыфраванай, таму толькі вы можаце атрымаць да яе доступ. Выберыце больш надзейны PIN-код, каб абараніць свой уліковы запіс.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Не атрымалася адключыць ваш PIN-код. Мы нагадаем вам пазней.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "Не атрымалася адключыць PIN-код";
@@ -5750,7 +5765,7 @@
 "PIN_REMINDER_MEGAPHONE_BODY" = "Час ад часу мы будзем прасіць вас правяраць свой PIN-код, каб вы яго памяталі.";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_SUCCESSFUL_TOAST" = "PIN correct. We’ll remind you again in a few days.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_SUCCESSFUL_TOAST" = "PIN-код правільны. Мы нагадаем вам яшчэ раз праз некалькі дзён.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Мы нагадаем вам яшчэ раз праз некалькі дзён.";
@@ -5759,19 +5774,19 @@
 "PIN_REMINDER_MEGAPHONE_TITLE" = "Праверце свой PIN-код Signal";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_SUCCESSFUL_TOAST" = "PIN correct. We’ll remind you again tomorrow.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_SUCCESSFUL_TOAST" = "PIN-код правільны. Мы нагадаем вам яшчэ раз заўтра.";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Заўтра мы зноў нагадаем.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_SUCCESSFUL_TOAST" = "PIN correct. We’ll remind you again in a couple of weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_SUCCESSFUL_TOAST" = "PIN-код правільны. Мы нагадаем вам яшчэ раз праз пару тыдняў.";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Мы нагадаем вам яшчэ раз праз пару тыдняў.";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow, after successfully entering it. */
-"PIN_REMINDER_MEGAPHONE_WEEK_SUCCESSFUL_TOAST" = "PIN correct. We’ll remind you again in a week.";
+"PIN_REMINDER_MEGAPHONE_WEEK_SUCCESSFUL_TOAST" = "PIN-код правільны. Мы нагадаем вам яшчэ раз праз тыдзень.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Праз тыдзень мы зноў нагадаем.";
@@ -6944,7 +6959,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Актываваць";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Вы можаце выкарыстоўваць Signal, каб адпраўляць і атрымліваць MobileCoin. Усе плацяжы рэгламентаваны Умовамі выкарыстання MobileCoins і MobileCoin Wallet. Вы можаце сутыкнуцца з некаторымі праблемамі, і плацяжы або сродкі, якія вы можаце страціць, будзе немагчыма вярнуць.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoin and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Актываваць";
@@ -7684,6 +7699,15 @@
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Стыкер-паведамленне";
 
+/* Message when trying to show a sticker that has expired and is unavailable for download */
+"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker not available";
+
+/* Message for sheet shown when tapping a sticker that has expired and is unavailable for download */
+"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "This sticker was not transferred from your phone when this device was linked. Media and files older than 45 days at the time of device linking can not be synced.";
+
+/* Title for sheet shown when tapping a sticker that has expired and is unavailable for download */
+"STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker Not Available";
+
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Усталяваць";
 
@@ -8270,7 +8294,7 @@
 "UNARCHIVE_ACTION" = "Разархіваваць";
 
 /* Toast shown when tapping older media that can no longer be downloaded */
-"UNAVAILABLE_MEDIA_TAP_TOAST" = "This media is no longer available";
+"UNAVAILABLE_MEDIA_TAP_TOAST" = "Гэты медыяфайл больш недаступны";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Карыстальніка няма ў вашых кантактах. Жадаеце заблакаваць гэтага карыстальніка?";
