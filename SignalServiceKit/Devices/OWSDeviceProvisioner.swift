@@ -62,23 +62,15 @@ public final class OWSDeviceProvisioner {
         self.schedulers = schedulers
     }
 
-    public func provision() -> Promise<DeviceProvisioningTokenId> {
-        firstly {
-            provisioningService.requestDeviceProvisioningCode()
-        }.then(on: schedulers.sharedUserInitiated) { provisioningCode in
-            return self.provisionDevice(provisioningCode: provisioningCode)
-        }
+    public func provision() async throws -> DeviceProvisioningTokenId {
+        let provisioningCode = try await provisioningService.requestDeviceProvisioningCode()
+        try await provisionDevice(provisioningCode: provisioningCode)
+        return provisioningCode.tokenId
     }
 
-    private func provisionDevice(provisioningCode: DeviceProvisioningCodeResponse) -> Promise<DeviceProvisioningTokenId> {
-        let messageBody: Data
-        do {
-            messageBody = try self.buildEncryptedMessageBody(withCode: provisioningCode)
-        } catch {
-            return Promise(error: error)
-        }
-        return provisioningService.provisionDevice(messageBody: messageBody, ephemeralDeviceId: ephemeralDeviceId)
-            .map(on: SyncScheduler()) { provisioningCode.tokenId }
+    private func provisionDevice(provisioningCode: DeviceProvisioningCodeResponse) async throws {
+        let messageBody = try buildEncryptedMessageBody(withCode: provisioningCode)
+        try await provisioningService.provisionDevice(messageBody: messageBody, ephemeralDeviceId: ephemeralDeviceId)
     }
 
     private func buildEncryptedMessageBody(withCode provisioningCode: DeviceProvisioningCodeResponse) throws -> Data {

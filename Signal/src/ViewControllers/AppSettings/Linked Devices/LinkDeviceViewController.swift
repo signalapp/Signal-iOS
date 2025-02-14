@@ -245,19 +245,22 @@ class LinkDeviceViewController: OWSViewController {
             schedulers: DependenciesBridge.shared.schedulers
         )
 
-        deviceProvisioner.provision().map(on: DispatchQueue.main) { tokenId in
-            Logger.info("Successfully provisioned device.")
+        Task {
+            do {
+                let tokenId = try await deviceProvisioner.provision()
+                Logger.info("Successfully provisioned device.")
 
-            self.delegate?.didFinishLinking(
-                ephemeralBackupKey.map { ($0, tokenId) },
-                from: self
-            )
-        }.catch(on: DispatchQueue.main) { error in
-            Logger.error("Failed to provision device with error: \(error)")
-            let actionSheet = self.retryActionSheetController(error: error, retryBlock: { [weak self] in
-                self?.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: shouldLinkNSync)
-            })
-            self.safePresent(actionSheet)
+                self.delegate?.didFinishLinking(
+                    ephemeralBackupKey.map { ($0, tokenId) },
+                    from: self
+                )
+            } catch {
+                Logger.error("Failed to provision device with error: \(error)")
+                let actionSheet = self.retryActionSheetController(error: error, retryBlock: { [weak self] in
+                    self?.provisionWithUrl(deviceProvisioningUrl, shouldLinkNSync: shouldLinkNSync)
+                })
+                self.safePresent(actionSheet)
+            }
         }
     }
 

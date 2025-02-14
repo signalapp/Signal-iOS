@@ -25,8 +25,8 @@ public struct DeviceProvisioningCodeResponse: Decodable {
 }
 
 public protocol DeviceProvisioningService {
-    func requestDeviceProvisioningCode() -> Promise<DeviceProvisioningCodeResponse>
-    func provisionDevice(messageBody: Data, ephemeralDeviceId: String) -> Promise<Void>
+    func requestDeviceProvisioningCode() async throws -> DeviceProvisioningCodeResponse
+    func provisionDevice(messageBody: Data, ephemeralDeviceId: String) async throws
 }
 
 public class DeviceProvisioningServiceImpl: DeviceProvisioningService {
@@ -38,11 +38,10 @@ public class DeviceProvisioningServiceImpl: DeviceProvisioningService {
         self.schedulers = schedulers
     }
 
-    public func requestDeviceProvisioningCode() -> Promise<DeviceProvisioningCodeResponse> {
-        let request = OWSRequestFactory.deviceProvisioningCode()
-        return firstly(on: schedulers.sharedUserInitiated) {
-            self.networkManager.makePromise(request: request)
-        }.map(on: schedulers.sharedUserInitiated) { (httpResponse: HTTPResponse) -> DeviceProvisioningCodeResponse in
+    public func requestDeviceProvisioningCode() async throws -> DeviceProvisioningCodeResponse {
+        do {
+            let request = OWSRequestFactory.deviceProvisioningCode()
+            let httpResponse = try await networkManager.asyncRequest(request)
             guard let httpResponseData = httpResponse.responseBodyData else {
                 throw OWSAssertionError("Missing responseBodyData.")
             }
@@ -51,20 +50,19 @@ public class DeviceProvisioningServiceImpl: DeviceProvisioningService {
                 throw OWSAssertionError("Empty verificationCode.")
             }
             return response
-        }.recover(on: schedulers.sharedUserInitiated) { (error: Error) -> Promise<DeviceProvisioningCodeResponse> in
+        } catch {
             throw DeviceLimitExceededError(error) ?? error
         }
     }
 
-    public func provisionDevice(messageBody: Data, ephemeralDeviceId: String) -> Promise<Void> {
+    public func provisionDevice(messageBody: Data, ephemeralDeviceId: String) async throws {
         let request = OWSRequestFactory.provisionDevice(
             withMessageBody: messageBody,
             ephemeralDeviceId: ephemeralDeviceId
         )
-        return firstly(on: schedulers.sharedUserInitiated) {
-            self.networkManager.makePromise(request: request)
-                .asVoid(on: self.schedulers.sync)
-        }.recover(on: schedulers.sharedUserInitiated) { (error: Error) -> Promise<Void> in
+        do {
+            _ = try await networkManager.asyncRequest(request)
+        } catch {
             owsFailDebugUnlessNetworkFailure(error)
             throw error
         }
