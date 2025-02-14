@@ -39,6 +39,7 @@ public struct AccountAttributesRequestFactory {
             method: "PUT",
             parameters: parameters
         )
+        result.addValue("OWI", forHTTPHeaderField: "X-Signal-Agent")
         result.setAuth(auth)
         return result
     }
