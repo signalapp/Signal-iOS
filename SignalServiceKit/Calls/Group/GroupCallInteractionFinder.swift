@@ -55,7 +55,7 @@ public final class GroupCallInteractionFinder {
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.groupCallMessage.rawValue)
-            AND \(interactionColumn: .hasEnded) IS FALSE
+            AND \(interactionColumn: .hasEnded) = 0
             AND \(interactionColumn: .threadUniqueId) = ?
         """
 
