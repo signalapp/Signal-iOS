@@ -31,6 +31,11 @@ public class FindByUsernameViewController: OWSTableViewController2 {
         }
     )
 
+    private var usernameValue: String {
+        let textValue = usernameTextField.text ?? ""
+        return textValue.starts(with: "@") ? String(textValue.dropFirst()) : textValue
+    }
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         updateTableContents()
@@ -117,7 +122,7 @@ public class FindByUsernameViewController: OWSTableViewController2 {
     @objc
     private func textFieldDidChange() {
         do {
-            _ = try Usernames.HashedUsername(forUsername: usernameTextField.text ?? "")
+            _ = try Usernames.HashedUsername(forUsername: self.usernameValue)
             navigationItem.rightBarButtonItem?.isEnabled = true
         } catch {
             navigationItem.rightBarButtonItem?.isEnabled = false
@@ -126,11 +131,11 @@ public class FindByUsernameViewController: OWSTableViewController2 {
 
     @objc
     private func didTapNext() {
-        guard let username = usernameTextField.text else { return }
+        let usernameValue = self.usernameValue
         usernameTextField.resignFirstResponder()
         SSKEnvironment.shared.databaseStorageRef.read { tx in
             UsernameQuerier().queryForUsername(
-                username: username,
+                username: usernameValue,
                 fromViewController: self,
                 tx: tx,
                 failureSheetDismissalDelegate: self,
