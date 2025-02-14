@@ -46,6 +46,7 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
     }
 
     fileprivate enum SafetyTips: CaseIterable {
+        case fakeNames
         case crypto
         case vagueMessages
         case messagesWithLinks
@@ -53,6 +54,8 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
 
         var image: UIImage? {
             switch self {
+            case .fakeNames:
+                return UIImage(named: "safety-tip-5")
             case .crypto:
                 return UIImage(named: "safety-tip-1")
             case .vagueMessages:
@@ -66,6 +69,11 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
 
         var title: String {
             switch self {
+            case .fakeNames:
+                return OWSLocalizedString(
+                    "SAFETY_TIPS_FAKE_NAMES_TITLE",
+                    comment: "Message title describing the fake names safety tip."
+                )
             case .crypto:
                 return OWSLocalizedString(
                     "SAFETY_TIPS_CRYPTO_TITLE",
@@ -91,6 +99,11 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
 
         var body: String {
             switch self {
+            case .fakeNames:
+                return OWSLocalizedString(
+                    "SAFETY_TIPS_FAKE_NAMES_BODY",
+                    comment: "Message contents for the fake names safety tip."
+                )
             case .crypto:
                 return OWSLocalizedString(
                     "SAFETY_TIPS_CRYPTO_BODY",
