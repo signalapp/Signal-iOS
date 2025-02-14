@@ -1660,39 +1660,19 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if isShowingSelectionUI {
             // By default, use primarySelectionView to handle .allContent...
             let primarySelectionView = componentView.primarySelectionView
-            var selectionView = primarySelectionView
-            var selectionType: CVSelectionType = .allContent
-
-            // ...but we might have separate "primary" and "secondary" selections.
-            // "Primary" is "everything but body text" and "secondary" is "just body text".
-            if hasSecondaryContentForSelection {
-                let secondarySelectionView = componentView.secondarySelectionView
-                func distanceToViewCenter(_ view: UIView) -> CGFloat {
-                    let tapLocation = sender.location(in: view)
-                    let viewCenter = view.bounds.center
-                    return tapLocation.distance(viewCenter)
-                }
-                let primaryDistance = distanceToViewCenter(primarySelectionView)
-                let secondaryDistance = distanceToViewCenter(secondarySelectionView)
-                if primaryDistance < secondaryDistance {
-                    selectionView = primarySelectionView
-                    selectionType = .primaryContent
-                } else {
-                    selectionView = secondarySelectionView
-                    selectionType = .secondaryContent
-                }
-            }
-
+            let secondarySelectionView = componentView.secondarySelectionView
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
             let selectionState = componentDelegate.selectionState
-            if selectionState.isSelected(interaction.uniqueId, selectionType: selectionType) {
-                selectionView.isSelected = false
+            if selectionState.isSelected(interaction.uniqueId, selectionType: .allContent) {
+                primarySelectionView.isSelected = false
+                secondarySelectionView.isSelected = false
                 componentDelegate.selectionState.remove(itemViewModel: itemViewModel,
-                                                        selectionType: selectionType)
+                                                        selectionType: .allContent)
             } else {
-                selectionView.isSelected = true
+                primarySelectionView.isSelected = true
+                secondarySelectionView.isSelected = true
                 componentDelegate.selectionState.add(itemViewModel: itemViewModel,
-                                                     selectionType: selectionType)
+                                                     selectionType: .allContent)
             }
 
             // Suppress other tap handling during selection mode.
