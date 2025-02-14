@@ -1154,10 +1154,18 @@ public class InteractionFinder: NSObject {
             limit: limit
         )
 
+        let indexedBy: String
+        if FeatureFlags.useNewConversationLoadIndex {
+            indexedBy = "INDEXED BY index_interactions_on_threadUniqueId_and_id"
+        } else {
+            indexedBy = ""
+        }
+
         let uniqueIds = try String.fetchAll(
             tx.unwrapGrdbRead.database,
             sql: """
                 SELECT "uniqueId" FROM \(InteractionRecord.databaseTableName)
+                \(indexedBy)
                 \(rowIdClause)
                 """,
             arguments: arguments
@@ -1300,9 +1308,24 @@ public class InteractionFinder: NSObject {
             limit: limit
         )
 
+        let indexedBy: String
+        switch additionalFiltering {
+        case .filterForConversationView where FeatureFlags.useNewConversationLoadIndex:
+            indexedBy = "INDEXED BY index_interactions_on_threadUniqueId_and_id"
+        case .filterForConversationView:
+            indexedBy = ""
+        case .filterForIncomingMessages:
+            indexedBy = ""
+        case .filterForOutgoingMessages:
+            indexedBy = ""
+        case .noFiltering:
+            indexedBy = ""
+        }
+
         return TSInteraction.grdbFetchCursor(
             sql: """
                 SELECT * FROM \(InteractionRecord.databaseTableName)
+                \(indexedBy)
                 \(rowIdClause)
                 """,
             arguments: arguments,
