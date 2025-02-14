@@ -60,9 +60,23 @@ extension UnidentifiedAccessMode: CustomStringConvertible {
 
 // MARK: -
 
+/// Represents an Unidentified Access Key that we believe may be valid.
+///
+/// "we believe may be valid": Our local state may be outdated, so the UAK
+/// may be unauthorized when we use it. But we think it's worth trying.
+///
+/// If we're not sure (`.unknown`), or if we've previously confirmed it's
+/// valid (`.enabled` & `.unrestricted`), we can create this type. If we've
+/// previously confirmed it's not valid, we can't create this type.
 public struct OWSUDAccess {
-    let udAccessKey: SMKUDAccessKey
-    let udAccessMode: UnidentifiedAccessMode
+    let key: SMKUDAccessKey
+    let mode: Mode
+
+    enum Mode {
+        case unknown
+        case enabled
+        case unrestricted
+    }
 }
 
 // MARK: -
@@ -235,14 +249,16 @@ public class OWSUDManagerImpl: OWSUDManager {
     // Returns the UD access key for sending to a given recipient or fetching a profile
     public func udAccess(for serviceId: ServiceId, tx: SDSAnyReadTransaction) -> OWSUDAccess? {
         let accessKey: SMKUDAccessKey
-        let accessMode = unidentifiedAccessMode(for: serviceId, tx: tx)
+        let accessMode: OWSUDAccess.Mode
 
-        switch accessMode {
+        switch unidentifiedAccessMode(for: serviceId, tx: tx) {
         case .unrestricted:
             accessKey = .zeroedKey
+            accessMode = .unrestricted
         case .unknown:
             // If we're not sure, try our best to use the right key.
             accessKey = udAccessKey(for: serviceId, tx: tx) ?? .zeroedKey
+            accessMode = .unknown
         case .enabled:
             guard let knownAccessKey = udAccessKey(for: serviceId, tx: tx) else {
                 // Shouldn't happen because we need a profile key to enable it.
@@ -250,10 +266,11 @@ public class OWSUDManagerImpl: OWSUDManager {
                 return nil
             }
             accessKey = knownAccessKey
+            accessMode = .enabled
         case .disabled:
             return nil
         }
-        return OWSUDAccess(udAccessKey: accessKey, udAccessMode: accessMode)
+        return OWSUDAccess(key: accessKey, mode: accessMode)
     }
 
     // MARK: - Sender Certificate

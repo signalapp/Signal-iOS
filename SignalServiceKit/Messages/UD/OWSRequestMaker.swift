@@ -95,7 +95,7 @@ final class RequestMaker {
         func toRequestAuth() -> TSRequest.SealedSenderAuth {
             switch self {
             case .story: .story
-            case .accessKey(let udAccess): .accessKey(udAccess.udAccessKey)
+            case .accessKey(let udAccess): .accessKey(udAccess.key)
             case .endorsement(let endorsement): .endorsement(endorsement)
             }
         }
@@ -179,11 +179,11 @@ final class RequestMaker {
             // assume the Access Key is wrong.
             if case .accessKey(let udAccess) = sealedSenderAuth {
                 await updateUdAccessMode({
-                    switch udAccess.udAccessMode {
+                    switch udAccess.mode {
                     case .unrestricted:
                         // If it was unrestricted, we *might* have the right profile key.
                         return .unknown
-                    case .unknown, .enabled, .disabled:
+                    case .unknown, .enabled:
                         // If it was unknown, we may have tried the real key (if we had it) or a
                         // random key. In either of these cases, we don't want to try again because
                         // it won't work.
@@ -199,7 +199,7 @@ final class RequestMaker {
 
     private func requestSucceeded(sealedSenderAuth: SealedSenderAuth?) async {
         // If this was an Access Key-authed request for an "unknown" user...
-        if case .accessKey(let udAccess) = sealedSenderAuth, udAccess.udAccessMode == .unknown {
+        if case .accessKey(let udAccess) = sealedSenderAuth, udAccess.mode == .unknown {
             // ...fetch their profile since we know udAccessMode is out of date.
             fetchProfileIfNeeded()
         }
