@@ -1408,21 +1408,6 @@ public class InteractionFinder: NSObject {
 
         return mostRecentRowId
     }
-
-    public static func maxRowId(transaction: SDSAnyReadTransaction) -> Int {
-        do {
-            return try Int.fetchOne(
-                transaction.unwrapGrdbRead.database,
-                sql: "SELECT MAX(id) FROM model_TSInteraction"
-            ) ?? 0
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Failed to find max row id")
-        }
-    }
 }
 
 private extension TSInteractionCursor {

@@ -321,6 +321,7 @@ public class GRDBSchemaMigrator {
         case addGroupSendEndorsement
         case deleteLegacyMessageDecryptJobRecords
         case dropMessageContentJobTable
+        case deleteMessageRequestInteractionEpoch
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -3931,6 +3932,16 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.deleteMessageRequestInteractionEpoch) { tx in
+            try tx.database.execute(
+                sql: """
+                    DELETE FROM "keyvalue" WHERE "collection" = ? AND "key" = ?
+                    """,
+                arguments: ["SSKPreferences", "messageRequestInteractionIdEpoch"]
+            )
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -3973,14 +3984,7 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.dataMigration_recordMessageRequestInteractionIdEpoch) { transaction in
-            // Set the epoch only if we haven't already, this lets us track and grandfather
-            // conversations that existed before the message request feature was launched.
-            guard SSKPreferences.messageRequestInteractionIdEpoch(transaction: transaction) == nil else {
-                return .success(())
-            }
-
-            let maxId = InteractionFinder.maxRowId(transaction: transaction.asAnyRead)
-            SSKPreferences.setMessageRequestInteractionIdEpoch(maxId, transaction: transaction)
+            // Obsolete.
             return .success(())
         }
 

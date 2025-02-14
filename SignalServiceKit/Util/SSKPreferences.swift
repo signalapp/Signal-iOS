@@ -85,30 +85,6 @@ public class SSKPreferences: NSObject {
         userDefaults.removeObject(forKey: didEverUseYdbKey)
     }
 
-    // MARK: - messageRequestInteractionIdEpoch
-
-    private static var messageRequestInteractionIdEpochKey: String { "messageRequestInteractionIdEpoch" }
-    private static var messageRequestInteractionIdEpochCached: Int?
-    public static func messageRequestInteractionIdEpoch(transaction: GRDBReadTransaction) -> Int? {
-        if let value = messageRequestInteractionIdEpochCached {
-            return value
-        }
-        let value = store.getInt(messageRequestInteractionIdEpochKey, transaction: transaction.asAnyRead.asV2Read)
-        messageRequestInteractionIdEpochCached = value
-        return value
-    }
-
-    public static func setMessageRequestInteractionIdEpoch(_ value: Int?, transaction: GRDBWriteTransaction) {
-        guard let value = value else {
-            store.removeValue(forKey: messageRequestInteractionIdEpochKey, transaction: transaction.asAnyWrite.asV2Write)
-            messageRequestInteractionIdEpochCached = nil
-            return
-        }
-
-        store.setInt(value, key: messageRequestInteractionIdEpochKey, transaction: transaction.asAnyWrite.asV2Write)
-        messageRequestInteractionIdEpochCached = value
-    }
-
     // MARK: - Badge Count
 
     private static let includeMutedThreadsInBadgeCount = "includeMutedThreadsInBadgeCount"
