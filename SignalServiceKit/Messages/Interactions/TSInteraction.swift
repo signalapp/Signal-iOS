@@ -41,30 +41,30 @@ extension TSInteraction {
         from sender: SignalServiceAddress,
         transaction: SDSAnyWriteTransaction
     ) -> Bool {
-        let placeholders: [TSInteraction]
+        let placeholders: [OWSRecoverableDecryptionPlaceholder]
         do {
-            placeholders = try InteractionFinder.interactions(
-                withTimestamp: timestamp,
-                filter: { candidate in
-                    guard let placeholder = candidate as? OWSRecoverableDecryptionPlaceholder else { return false }
-                    return placeholder.sender == sender && placeholder.timestamp == self.timestamp
-                },
+            placeholders = try InteractionFinder.fetchInteractions(
+                timestamp: timestamp,
                 transaction: transaction
-            )
+            ).compactMap { candidate -> OWSRecoverableDecryptionPlaceholder? in
+                guard let placeholder = candidate as? OWSRecoverableDecryptionPlaceholder else {
+                    return nil
+                }
+                guard placeholder.sender == sender && placeholder.timestamp == self.timestamp else {
+                    return nil
+                }
+                return placeholder
+            }
         } catch {
             owsFailDebug("Failed to fetch placeholder interaction: \(error)")
             return false
         }
 
-        guard !placeholders.isEmpty else {
+        guard let placeholder = placeholders.first else {
             return false
         }
 
         Logger.info("Fetched placeholder with timestamp: \(timestamp) from sender: \(sender). Performing replacement...")
-        guard let placeholder = (placeholders.first as? OWSRecoverableDecryptionPlaceholder) else {
-            owsFailDebug("Unexpected interaction type")
-            return false
-        }
 
         if placeholder.supportsReplacement {
             placeholder.replaceWithInteraction(self, writeTx: transaction)

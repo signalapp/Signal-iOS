@@ -21,18 +21,16 @@ private struct Update {
 }
 
 fileprivate extension TSOutgoingMessage {
-    static func fetch(_ timestamp: UInt64,
-                      transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage] {
-        var messages = [TSOutgoingMessage]()
+    static func fetch(_ timestamp: UInt64, transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage] {
         do {
-            let fetched = try InteractionFinder.interactions(withTimestamp: timestamp,
-                                                             filter: { _ in true },
-                                                             transaction: transaction).compactMap { $0 as? TSOutgoingMessage }
-            messages.append(contentsOf: fetched)
+            return try InteractionFinder.fetchInteractions(
+                timestamp: timestamp,
+                transaction: transaction
+            ).compactMap { $0 as? TSOutgoingMessage }
         } catch {
             owsFailDebug("Error loading interactions: \(error)")
+            return []
         }
-        return messages
     }
 }
 

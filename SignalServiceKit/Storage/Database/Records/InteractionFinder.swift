@@ -85,9 +85,8 @@ public class InteractionFinder: NSObject {
     }
 
     @objc
-    public class func interactions(
-        withTimestamp timestamp: UInt64,
-        filter: (TSInteraction) -> Bool,
+    public class func fetchInteractions(
+        timestamp: UInt64,
         transaction: SDSAnyReadTransaction
     ) throws -> [TSInteraction] {
         let sql = """
@@ -95,14 +94,12 @@ public class InteractionFinder: NSObject {
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .timestamp) = ?
         """
-        let arguments: StatementArguments = [timestamp]
 
-        let unfiltered = try TSInteraction.grdbFetchCursor(
+        return try TSInteraction.grdbFetchCursor(
             sql: sql,
-            arguments: arguments,
+            arguments: [timestamp],
             transaction: transaction.unwrapGrdbRead
         ).all()
-        return unfiltered.filter(filter)
     }
 
     public class func incompleteCallIds(transaction: SDSAnyReadTransaction) -> [String] {
@@ -461,25 +458,19 @@ public class InteractionFinder: NSObject {
             return nil
         }
 
-        let interactions: [TSInteraction]
+        let messages: [TSMessage]
 
         do {
-            interactions = try InteractionFinder.interactions(
-                withTimestamp: timestamp,
-                filter: { $0 is TSMessage },
+            messages = try InteractionFinder.fetchInteractions(
+                timestamp: timestamp,
                 transaction: transaction
-            )
+            ).compactMap { $0 as? TSMessage }
         } catch {
             owsFailDebug("Error loading interactions \(error.userErrorDescription)")
             return nil
         }
 
-        for interaction in interactions {
-            guard let message = interaction as? TSMessage else {
-                owsFailDebug("received unexpected non-message interaction")
-                continue
-            }
-
+        for message in messages {
             guard message.uniqueThreadId == threadId else { continue }
 
             if let incomingMessage = message as? TSIncomingMessage,

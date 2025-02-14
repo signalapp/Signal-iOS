@@ -284,20 +284,20 @@ extension ConversationViewController {
 
     func buildDraftQuotedReply(_ draftReply: ThreadReplyInfo) -> DraftQuotedReplyModel? {
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            guard let interaction = try? InteractionFinder.interactions(
-                withTimestamp: draftReply.timestamp,
-                filter: { candidate in
-                    if let incoming = candidate as? TSIncomingMessage {
-                        return incoming.authorAddress.aci == draftReply.author
-                    }
-                    if candidate is TSOutgoingMessage {
-                        return DependenciesBridge.shared.tsAccountManager
-                            .localIdentifiers(tx: transaction.asV2Read)?.aci == draftReply.author
-                    }
-                    return false
-                },
+            let interaction = try? InteractionFinder.fetchInteractions(
+                timestamp: draftReply.timestamp,
                 transaction: transaction
-            ).first as? TSMessage else {
+            ).filter { candidate in
+                if let incoming = candidate as? TSIncomingMessage {
+                    return incoming.authorAddress.aci == draftReply.author
+                }
+                if candidate is TSOutgoingMessage {
+                    return DependenciesBridge.shared.tsAccountManager
+                        .localIdentifiers(tx: transaction.asV2Read)?.aci == draftReply.author
+                }
+                return false
+            }.first as? TSMessage
+            guard let interaction else {
                 return nil
             }
             if interaction is OWSPaymentMessage {

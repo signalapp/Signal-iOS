@@ -181,43 +181,38 @@ public class ViewOnceMessages: NSObject {
             return .invalidSyncMessage
         }
 
-        let filter = { (interaction: TSInteraction) -> Bool in
-            guard interaction.timestamp == messageIdTimestamp else {
-                owsFailDebug("Timestamps don't match: \(interaction.timestamp) != \(messageIdTimestamp)")
-                return false
-            }
+        let filter = { (interaction: TSInteraction) -> TSMessage? in
             guard let message = interaction as? TSMessage else {
-                return false
+                return nil
             }
             guard let senderAci = senderAci(forMessage: message, tx: transaction.asV2Read) else {
-                return false
+                return nil
             }
             guard senderAci == messageSender else {
-                return false
+                return nil
             }
             guard message.isViewOnceMessage else {
-                return false
+                return nil
             }
-            return true
+            return message
         }
-        let interactions: [TSInteraction]
+        let messages: [TSMessage]
         do {
-            interactions = try InteractionFinder.interactions(withTimestamp: messageIdTimestamp, filter: filter, transaction: transaction)
+            messages = try InteractionFinder.fetchInteractions(
+                timestamp: messageIdTimestamp,
+                transaction: transaction
+            ).compactMap(filter)
         } catch {
             owsFailDebug("Couldn't find interactions: \(error)")
             return .invalidSyncMessage
         }
-        guard interactions.count > 0 else {
+        guard messages.count > 0 else {
             return .associatedMessageMissing(senderAci: messageSender, associatedMessageTimestamp: messageIdTimestamp)
         }
-        if interactions.count > 1 {
+        if messages.count > 1 {
             owsFailDebug("More than one message from the same sender with the same timestamp found.")
         }
-        for interaction in interactions {
-            guard let message = interaction as? TSMessage else {
-                owsFailDebug("Invalid interaction: \(type(of: interaction))")
-                continue
-            }
+        for message in messages {
             // Mark as complete.
             markAsComplete(message: message,
                            sendSyncMessages: false,

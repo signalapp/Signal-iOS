@@ -442,7 +442,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         let messages: [TSOutgoingMessage]
         do {
             messages = try interactionStore
-                .interactions(withTimestamp: timestamp, tx: tx)
+                .fetchInteractions(timestamp: timestamp, tx: tx)
                 .compactMap { $0 as? TSOutgoingMessage }
         } catch {
             return .failure(OWSAssertionError("Error loading interactions: \(error)"))

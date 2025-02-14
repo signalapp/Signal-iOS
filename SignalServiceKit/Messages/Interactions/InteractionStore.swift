@@ -35,8 +35,8 @@ public protocol InteractionStore {
         tx: DBReadTransaction
     ) -> TSMessage?
 
-    func interactions(
-        withTimestamp timestamp: UInt64,
+    func fetchInteractions(
+        timestamp: UInt64,
         tx: DBReadTransaction
     ) throws -> [TSInteraction]
 
@@ -152,13 +152,12 @@ public class InteractionStoreImpl: InteractionStore {
         )
     }
 
-    public func interactions(
-        withTimestamp timestamp: UInt64,
+    public func fetchInteractions(
+        timestamp: UInt64,
         tx: DBReadTransaction
     ) throws -> [TSInteraction] {
-        return try InteractionFinder.interactions(
-            withTimestamp: timestamp,
-            filter: { _ in true },
+        return try InteractionFinder.fetchInteractions(
+            timestamp: timestamp,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
@@ -338,8 +337,8 @@ open class MockInteractionStore: InteractionStore {
             .first
     }
 
-    public func interactions(
-        withTimestamp timestamp: UInt64,
+    public func fetchInteractions(
+        timestamp: UInt64,
         tx: DBReadTransaction
     ) throws -> [TSInteraction] {
         return insertedInteractions.filter { $0.timestamp == timestamp }

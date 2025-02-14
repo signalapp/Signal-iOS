@@ -511,9 +511,8 @@ extension OWSReceiptManager {
 
             let interactions: [TSInteraction]
             do {
-                interactions = try InteractionFinder.interactions(
-                    withTimestamp: messageTimestamp,
-                    filter: { _ in true },
+                interactions = try InteractionFinder.fetchInteractions(
+                    timestamp: messageTimestamp,
                     transaction: tx
                 )
             } catch {
@@ -853,7 +852,7 @@ extension OWSReceiptManager {
     private func outgoingMessages(sentAt timestamp: UInt64, tx: SDSAnyReadTransaction) -> [TSOutgoingMessage] {
         let interactions: [TSInteraction]
         do {
-            interactions = try InteractionFinder.interactions(withTimestamp: timestamp, filter: { _ in true }, transaction: tx)
+            interactions = try InteractionFinder.fetchInteractions(timestamp: timestamp, transaction: tx)
         } catch {
             owsFailDebug("Error loading interactions: \(error)")
             interactions = []

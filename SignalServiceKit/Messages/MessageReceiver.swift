@@ -325,11 +325,10 @@ public final class MessageReceiver {
     /// just clear the placeholder.
     private func clearLeftoverPlaceholders(for envelope: DecryptedIncomingEnvelope, tx: SDSAnyWriteTransaction) {
         do {
-            let placeholders = try InteractionFinder.interactions(
-                withTimestamp: envelope.timestamp,
-                filter: { ($0 as? OWSRecoverableDecryptionPlaceholder)?.sender?.serviceId == envelope.sourceAci },
+            let placeholders = try InteractionFinder.fetchInteractions(
+                timestamp: envelope.timestamp,
                 transaction: tx
-            )
+            ).filter { ($0 as? OWSRecoverableDecryptionPlaceholder)?.sender?.serviceId == envelope.sourceAci }
             owsAssertDebug(placeholders.count <= 1)
             for placeholder in placeholders {
                 DependenciesBridge.shared.interactionDeleteManager

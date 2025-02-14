@@ -289,9 +289,8 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         }
         try SSKEnvironment.shared.databaseStorageRef.read { transaction in
             // Now make sure the status is delivered.
-            let fetched = try InteractionFinder.interactions(
-                withTimestamp: timestamp,
-                filter: { _ in true },
+            let fetched = try InteractionFinder.fetchInteractions(
+                timestamp: timestamp,
                 transaction: transaction
             ).compactMap { $0 as? TSOutgoingMessage }
             XCTAssertNotNil(fetched.first)
@@ -394,9 +393,8 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
             }
             self.read { transaction in
                 // Now make sure the status is delivered.
-                let fetched = try! InteractionFinder.interactions(
-                    withTimestamp: timestamp,
-                    filter: { _ in true },
+                let fetched = try! InteractionFinder.fetchInteractions(
+                    timestamp: timestamp,
                     transaction: transaction
                 ).compactMap { $0 as? TSOutgoingMessage }
                 XCTAssertNotNil(fetched.first)
