@@ -40,8 +40,9 @@ extension TSInfoMessage {
 
         public required init?(coder aDecoder: NSCoder) {
             guard let updateItemsData = aDecoder.decodeObject(
+                of: NSData.self,
                 forKey: Self.messagesKey
-            ) as? Data else {
+            ) else {
                 owsFailDebug("Failed to decode updateItems data")
                 return nil
             }
@@ -50,7 +51,7 @@ extension TSInfoMessage {
             do {
                 updateItems = try jsonDecoder.decode(
                     [LegacyPersistableGroupUpdateItem].self,
-                    from: updateItemsData
+                    from: updateItemsData as Data
                 )
             } catch let error {
                 owsFailDebug("Failed to decode updateItems data: \(error)")
@@ -94,8 +95,9 @@ extension TSInfoMessage {
 
         public required init?(coder aDecoder: NSCoder) {
             guard let updateItemsData = aDecoder.decodeObject(
+                of: NSData.self,
                 forKey: Self.messagesKey
-            ) as? Data else {
+            ) else {
                 owsFailDebug("Failed to decode updateItems data")
                 return nil
             }
@@ -104,7 +106,7 @@ extension TSInfoMessage {
             do {
                 updateItems = try jsonDecoder.decode(
                     [PersistableGroupUpdateItem].self,
-                    from: updateItemsData
+                    from: updateItemsData as Data
                 )
             } catch let error {
                 owsFailDebug("Failed to decode updateItems data: \(error)")
