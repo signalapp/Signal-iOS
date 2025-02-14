@@ -94,7 +94,7 @@ public class EditMessageStoreImpl: EditMessageStore {
             WHERE \(interactionColumn: .timestamp) = ?
             AND \(interactionColumn: .authorUUID) IS ?
             LIMIT 1
-        """
+            """
         let interaction = TSInteraction.grdbFetchOne(
             sql: sql,
             arguments: [timestamp, authorAci?.serviceIdUppercaseString],

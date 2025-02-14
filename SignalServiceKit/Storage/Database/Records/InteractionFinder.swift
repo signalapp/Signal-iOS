@@ -34,7 +34,7 @@ public class InteractionFinder: NSObject {
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .id) = ?
-            """,
+                """,
             arguments: [ rowId ],
             transaction: transaction.unwrapGrdbRead
         ) else {
@@ -51,19 +51,18 @@ public class InteractionFinder: NSObject {
         transaction: SDSAnyReadTransaction
     ) -> Bool {
         let sql = """
-            SELECT EXISTS(
-                SELECT 1
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .timestamp) = ?
-                AND (
-                    \(interactionColumn: .authorUUID) = ?
-                    OR (
-                        \(interactionColumn: .authorUUID) IS NULL
-                        AND \(interactionColumn: .authorPhoneNumber) = ?
-                    )
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .timestamp) = ?
+            AND (
+                \(interactionColumn: .authorUUID) = ?
+                OR (
+                    \(interactionColumn: .authorUUID) IS NULL
+                    AND \(interactionColumn: .authorPhoneNumber) = ?
                 )
             )
-        """
+            LIMIT 1
+            """
         let arguments: StatementArguments = [
             timestamp,
             sourceAci.serviceIdUppercaseString,
@@ -111,7 +110,7 @@ public class InteractionFinder: NSObject {
                 \(interactionColumn: .callType) = ?
                 OR \(interactionColumn: .callType) = ?
             )
-        """
+            """
         let statementArguments: StatementArguments = [
             SDSRecordType.call.rawValue,
             RPRecentCallType.outgoingIncomplete.rawValue,
@@ -137,7 +136,7 @@ public class InteractionFinder: NSObject {
             SELECT \(interactionColumn: .uniqueId)
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .storedMessageState) = ?
-        """
+            """
         var result = [String]()
         do {
             result = try String.fetchAll(
@@ -158,7 +157,7 @@ public class InteractionFinder: NSObject {
             SELECT \(interactionColumn: .uniqueId)
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .storedMessageState) = ?
-        """
+            """
         var result = [String]()
         do {
             result = try String.fetchAll(
@@ -182,7 +181,7 @@ public class InteractionFinder: NSObject {
                 INNER JOIN \(ThreadAssociatedData.databaseTableName) AS associatedData
                     ON associatedData.threadUniqueId = \(interactionColumn: .threadUniqueId)
                 WHERE associatedData.isArchived = "0"
-            """
+                """
 
             if !includeMutedThreads {
                 unreadInteractionQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread(threadAssociatedDataAlias: "associatedData")) "
@@ -201,7 +200,7 @@ public class InteractionFinder: NSObject {
                 WHERE associatedData.isMarkedUnread = 1
                 AND associatedData.isArchived = "0"
                 AND \(threadColumn: .shouldThreadBeVisible) = 1
-            """
+                """
 
             if !includeMutedThreads {
                 markedUnreadThreadQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread(threadAssociatedDataAlias: "associatedData")) "
@@ -228,7 +227,7 @@ public class InteractionFinder: NSObject {
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .expiresAt) > 0
             ORDER BY \(interactionColumn: .expiresAt)
-        """
+            """
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
             transaction: transaction.unwrapGrdbRead
@@ -256,7 +255,7 @@ public class InteractionFinder: NSObject {
             WHERE \(interactionColumn: .expiresAt) > 0
             AND \(interactionColumn: .expiresAt) <= ?
             LIMIT \(limit)
-        """
+            """
         do {
             return try Int64.fetchAll(tx.unwrapGrdbRead.database, sql: sql, arguments: [now])
         } catch {
@@ -277,7 +276,7 @@ public class InteractionFinder: NSObject {
                 \(interactionColumn: .expiresAt) IS 0 OR
                 \(interactionColumn: .expireStartedAt) IS 0
             )
-        """
+            """
         do {
             return try String.fetchAll(
                 transaction.unwrapGrdbRead.database,
@@ -300,7 +299,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT * FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .uniqueId) IN (\(interactionIds.map { "\'\($0)'" }.joined(separator: ",")))
-        """
+            """
         let arguments: StatementArguments = []
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
@@ -329,7 +328,7 @@ public class InteractionFinder: NSObject {
             WHERE \(interactionColumn: .storyTimestamp) = ?
             AND \(interactionColumn: .storyAuthorUuidString) = ?
             AND \(interactionColumn: .isGroupStoryReply) = 1
-        """
+            """
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: [storyMessage.timestamp, storyMessage.authorAci.serviceIdUppercaseString],
@@ -358,16 +357,14 @@ public class InteractionFinder: NSObject {
         transaction: SDSAnyReadTransaction
     ) -> Bool {
         let sql = """
-            SELECT EXISTS(
-                SELECT 1
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .storyTimestamp) = ?
-                AND \(interactionColumn: .storyAuthorUuidString) = ?
-                AND \(interactionColumn: .recordType) = \(SDSRecordType.outgoingMessage.rawValue)
-                AND \(interactionColumn: .isGroupStoryReply) = 1
-                LIMIT 1
-            )
-        """
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .storyTimestamp) = ?
+            AND \(interactionColumn: .storyAuthorUuidString) = ?
+            AND \(interactionColumn: .recordType) = \(SDSRecordType.outgoingMessage.rawValue)
+            AND \(interactionColumn: .isGroupStoryReply) = 1
+            LIMIT 1
+            """
         do {
             return try Bool.fetchOne(
                 transaction.unwrapGrdbRead.database,
@@ -399,7 +396,7 @@ public class InteractionFinder: NSObject {
                 AND \(interactionColumn: .storyAuthorUuidString) = ?
                 AND \(interactionColumn: .isGroupStoryReply) = 1
                 ORDER BY \(interactionColumn: .id) ASC
-            """
+                """
             return try Row.fetchAll(
                 transaction.unwrapGrdbRead.database,
                 sql: sql,
@@ -418,7 +415,7 @@ public class InteractionFinder: NSObject {
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)
-        """
+            """
         do {
             let cursor = TSInteraction.grdbFetchCursor(
                 sql: sql,
@@ -498,7 +495,7 @@ public class InteractionFinder: NSObject {
             AND \(interactionColumn: .callType) IS NULL
             ORDER BY \(interactionColumn: .id) DESC
             LIMIT 1
-        """
+            """
         let arguments: StatementArguments = [
             SDSRecordType.incomingMessage.rawValue
         ]
@@ -530,7 +527,7 @@ public class InteractionFinder: NSObject {
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 AND \(interactionColumn: .messageType) = ?
                 AND \(interactionColumn: .id) > ?
-            """,
+                """,
             arguments: [threadUniqueId, TSInfoMessageType.profileUpdate.rawValue, sortId],
             transaction: transaction.unwrapGrdbRead
         )
@@ -562,7 +559,7 @@ public class InteractionFinder: NSObject {
             )
             ORDER BY \(interactionColumn: .id) DESC
             LIMIT 1
-        """
+            """
         let arguments: StatementArguments = [threadUniqueId, address.serviceIdUppercaseString, address.phoneNumber]
         return TSInteraction.grdbFetchOne(
             sql: sql,
@@ -583,7 +580,7 @@ public class InteractionFinder: NSObject {
                 AND \(interactionColumn: .messageType) IS NOT ?
                 AND \(interactionColumn: .messageType) IS NOT ?
                 ORDER BY \(interactionColumn: .id) DESC
-            """,
+                """,
             [
                 threadUniqueId,
                 TSErrorMessageType.nonBlockingIdentityChange.rawValue,
@@ -646,7 +643,7 @@ public class InteractionFinder: NSObject {
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 AND \(InteractionFinder.sqlClauseForUnreadInteractionCounts())
-            """
+                """
             let arguments: StatementArguments = [threadUniqueId]
 
             guard let count = try UInt.fetchOne(
@@ -674,7 +671,7 @@ public class InteractionFinder: NSObject {
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(Self.sqlClauseForAllUnreadInteractions(excludeReadEdits: true))
             ORDER BY \(interactionColumn: .id)
-        """
+            """
 
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
@@ -704,15 +701,13 @@ public class InteractionFinder: NSObject {
         let hasUnreadMessages = (try? Bool.fetchOne(
             transaction.unwrapGrdbRead.database,
             sql: """
-            SELECT EXISTS (
                 SELECT 1
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 AND \(interactionColumn: .id) <= ?
                 AND \(Self.sqlClauseForAllUnreadInteractions())
                 LIMIT 1
-            )
-            """,
+                """,
             arguments: [threadUniqueId, beforeSortId]
         )) ?? false
 
@@ -723,7 +718,6 @@ public class InteractionFinder: NSObject {
         let hasOutgoingMessagesWithUnreadReactions = (try? Bool.fetchOne(
             transaction.unwrapGrdbRead.database,
             sql: """
-            SELECT EXISTS (
                 SELECT 1
                 FROM \(InteractionRecord.databaseTableName) AS interaction
                 INNER JOIN \(OWSReaction.databaseTableName) AS reaction
@@ -733,8 +727,7 @@ public class InteractionFinder: NSObject {
                 AND interaction.\(interactionColumn: .threadUniqueId) = ?
                 AND interaction.\(interactionColumn: .id) <= ?
                 LIMIT 1
-            )
-            """,
+                """,
             arguments: [threadUniqueId, beforeSortId]
         )) ?? false
 
@@ -756,7 +749,7 @@ public class InteractionFinder: NSObject {
             AND \(interactionColumn: .id) <= ?
             AND \(Self.sqlClauseForAllUnreadInteractions())
             ORDER BY \(interactionColumn: .id)
-        """
+            """
 
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
@@ -795,7 +788,7 @@ public class InteractionFinder: NSObject {
             AND interaction.\(interactionColumn: .id) <= ?
             GROUP BY interaction.\(interactionColumn: .id)
             ORDER BY interaction.\(interactionColumn: .id)
-        """
+            """
 
         let cursor = TSOutgoingMessage.grdbFetchCursor(
             sql: sql,
@@ -812,7 +805,7 @@ public class InteractionFinder: NSObject {
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(Self.sqlClauseForAllUnreadInteractions(excludeReadEdits: true))
             ORDER BY \(interactionColumn: .id)
-        """
+            """
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: [threadUniqueId],
@@ -838,7 +831,7 @@ public class InteractionFinder: NSObject {
             \(Self.filterEditHistoryClause())
             ORDER BY \(interactionColumn: .id) DESC
             LIMIT 1
-        """
+            """
         let arguments: StatementArguments = [threadUniqueId, sortId]
 
         if let interactionAtOrBeforeSortId = TSInteraction.grdbFetchOne(
@@ -860,7 +853,7 @@ public class InteractionFinder: NSObject {
             \(Self.filterEditHistoryClause())
             ORDER BY \(interactionColumn: .id) ASC
             LIMIT 1
-        """
+            """
 
         return TSInteraction.grdbFetchOne(
             sql: afterQuery,
@@ -871,14 +864,12 @@ public class InteractionFinder: NSObject {
 
     public func existsOutgoingMessage(transaction: SDSAnyReadTransaction) -> Bool {
         let sql = """
-            SELECT EXISTS(
-                SELECT 1
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .recordType) = ?
-                LIMIT 1
-            )
-        """
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .recordType) = ?
+            LIMIT 1
+            """
         let arguments: StatementArguments = [
             threadUniqueId,
             SDSRecordType.outgoingMessage.rawValue
@@ -900,15 +891,13 @@ public class InteractionFinder: NSObject {
 
     func hasGroupUpdateInfoMessage(transaction: SDSAnyReadTransaction) -> Bool {
         let sql = """
-            SELECT EXISTS(
-                SELECT 1
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
-                AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
-                LIMIT 1
-            )
-        """
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+            AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
+            LIMIT 1
+            """
 
         let arguments: StatementArguments = [threadUniqueId]
         do {
@@ -916,7 +905,7 @@ public class InteractionFinder: NSObject {
                 transaction.unwrapGrdbRead.database,
                 sql: sql,
                 arguments: arguments
-            )!
+            ) ?? false
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
                 userDefaults: CurrentAppContext().appUserDefaults(),
@@ -946,7 +935,7 @@ public class InteractionFinder: NSObject {
             AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
             AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
             ORDER BY \(interactionColumn: .id) DESC
-        """
+            """
 
         let cursor = TSInfoMessage.grdbFetchCursor(
             sql: sql,
@@ -974,16 +963,14 @@ public class InteractionFinder: NSObject {
         #endif
 
         let sql = """
-            SELECT EXISTS(
-                SELECT 1
-                FROM \(InteractionRecord.databaseTableName)
-                \(indexedBy)
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
-                AND \(interactionColumn: .messageType) = \(TSInfoMessageType.reportedSpam.rawValue)
-                LIMIT 1
-            )
-        """
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            \(indexedBy)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+            AND \(interactionColumn: .messageType) = \(TSInfoMessageType.reportedSpam.rawValue)
+            LIMIT 1
+            """
 
         let arguments: StatementArguments = [threadUniqueId]
         do {
@@ -991,7 +978,7 @@ public class InteractionFinder: NSObject {
                 transaction.unwrapGrdbRead.database,
                 sql: sql,
                 arguments: arguments
-            )!
+            ) ?? false
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
                 userDefaults: CurrentAppContext().appUserDefaults(),
@@ -1038,24 +1025,22 @@ public class InteractionFinder: NSObject {
         ]
 
         let sql = """
-            SELECT EXISTS(
-                SELECT 1
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND (
-                    (
-                        \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
-                        AND \(interactionColumn: .messageType) IN (\(infoMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
-                    ) OR (
-                        \(interactionColumn: .recordType) IN (\(errorMessageInteractions.map { "\($0.rawValue)" }.joined(separator: ",")))
-                        AND \(interactionColumn: .errorType) IN (\(errorMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
-                    ) OR \(interactionColumn: .recordType) IN (\(interactionTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
-                )
-                \(Self.filterGroupStoryRepliesClause())
-                \(Self.filterEditHistoryClause())
-                LIMIT 1
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND (
+                (
+                    \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+                    AND \(interactionColumn: .messageType) IN (\(infoMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
+                ) OR (
+                    \(interactionColumn: .recordType) IN (\(errorMessageInteractions.map { "\($0.rawValue)" }.joined(separator: ",")))
+                    AND \(interactionColumn: .errorType) IN (\(errorMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
+                ) OR \(interactionColumn: .recordType) IN (\(interactionTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
             )
-        """
+            \(Self.filterGroupStoryRepliesClause())
+            \(Self.filterEditHistoryClause())
+            LIMIT 1
+            """
         let arguments: StatementArguments = [threadUniqueId]
 
         do {
@@ -1063,7 +1048,7 @@ public class InteractionFinder: NSObject {
                 transaction.unwrapGrdbRead.database,
                 sql: sql,
                 arguments: arguments
-            )!
+            ) ?? false
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
                 userDefaults: CurrentAppContext().appUserDefaults(),
@@ -1096,14 +1081,12 @@ public class InteractionFinder: NSObject {
         let sqlInteractionTypes = interactionTypes.map { "\($0.rawValue)" }.joined(separator: ",")
 
         let sql = """
-            SELECT EXISTS(
-                SELECT 1
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .recordType) IN (\(sqlInteractionTypes))
-                LIMIT 1
-            )
-        """
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .recordType) IN (\(sqlInteractionTypes))
+            LIMIT 1
+            """
         let arguments: StatementArguments = [threadUniqueId]
 
         do {
@@ -1111,7 +1094,7 @@ public class InteractionFinder: NSObject {
                 transaction.unwrapGrdbRead.database,
                 sql: sql,
                 arguments: arguments
-            )!
+            ) ?? false
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
                 userDefaults: CurrentAppContext().appUserDefaults(),
@@ -1127,7 +1110,7 @@ public class InteractionFinder: NSObject {
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .recordType) = ?
-        """
+            """
         let arguments: StatementArguments = [
             threadUniqueId,
             SDSRecordType.outgoingMessage.rawValue
@@ -1176,7 +1159,7 @@ public class InteractionFinder: NSObject {
             sql: """
                 SELECT "uniqueId" FROM \(InteractionRecord.databaseTableName)
                 \(rowIdClause)
-            """,
+                """,
             arguments: arguments
         )
 
@@ -1321,7 +1304,7 @@ public class InteractionFinder: NSObject {
             sql: """
                 SELECT * FROM \(InteractionRecord.databaseTableName)
                 \(rowIdClause)
-            """,
+                """,
             arguments: arguments,
             transaction: tx.unwrapGrdbRead
         )
@@ -1379,7 +1362,7 @@ public class InteractionFinder: NSObject {
                 \(rowIdFilterClause)
                 \(additionalFilterClause)
             ORDER BY \(interactionColumn: .id) \(isAscending ? "ASC" : "DESC")
-        """
+            """
         if let limit {
             sql += " LIMIT \(limit)"
         }
@@ -1484,7 +1467,7 @@ extension InteractionFinder {
                 \(threadAssociatedDataAlias).mutedUntilTimestamp <= strftime('%s','now') * 1000
                 OR \(threadAssociatedDataAlias).mutedUntilTimestamp = 0
             )
-        """
+            """
     }
 
     // From: https://www.sqlite.org/optoverview.html

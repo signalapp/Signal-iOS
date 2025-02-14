@@ -21,15 +21,13 @@ public final class GroupCallInteractionFinder {
         transaction: SDSAnyReadTransaction
     ) -> Bool {
         let sql = """
-        SELECT EXISTS(
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.groupCallMessage.rawValue)
             AND \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .eraId) = ?
             LIMIT 1
-        )
-        """
+            """
 
         let arguments: StatementArguments = [thread.uniqueId, eraId]
         do {
@@ -57,7 +55,7 @@ public final class GroupCallInteractionFinder {
             WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.groupCallMessage.rawValue)
             AND \(interactionColumn: .hasEnded) = 0
             AND \(interactionColumn: .threadUniqueId) = ?
-        """
+            """
 
         var groupCalls: [OWSGroupCallMessage] = []
         let cursor = OWSGroupCallMessage.grdbFetchCursor(

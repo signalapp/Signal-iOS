@@ -616,7 +616,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 WHERE \(interactionColumn: .storyTimestamp) = ?
                 AND \(interactionColumn: .storyAuthorUuidString) = ?
                 AND \(interactionColumn: .isGroupStoryReply) = ?
-            """
+                """
             guard let count = try UInt64.fetchOne(
                 tx.unwrapGrdbRead.database,
                 sql: sql,
