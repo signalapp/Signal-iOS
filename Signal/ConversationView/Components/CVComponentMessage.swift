@@ -165,10 +165,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         return componentState.bodyText != nil
     }
 
-    private var hasSecondaryContentForSelection: Bool {
-        componentState.hasPrimaryAndSecondaryContentForSelection
-    }
-
     private var isBubbleTransparent: Bool {
         if wasRemotelyDeleted {
             return false
@@ -542,85 +538,16 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                               measurementKey: Self.measurementKey_hInnerStack,
                               subviews: hInnerStackSubviews)
 
-        // hOuterStack
-
         var hOuterStackSubviews = [UIView]()
         if isShowingSelectionUI || wasShowingSelectionUI {
-            let primarySelectionView = componentView.primarySelectionView
+            let primarySelectionView = componentView.selectionView
             primarySelectionView.isSelected = componentDelegate.selectionState.isSelected(interaction.uniqueId,
                                                                                           selectionType: .primaryContent)
             primarySelectionView.updateStyle(conversationStyle: conversationStyle)
 
             let selectionWrapper = componentView.selectionWrapper
-            if hasSecondaryContentForSelection,
-               let bodyTextRootView = CVComponentBodyText.findBodyTextRootView(outerContentView) {
-
-                struct SelectionLayoutHelper {
-                    let outerContentView: UIView
-                    let bodyTextRootView: UIView
-
-                    func applyLayout(bottomSelectionView: UIView, topSelectionView: UIView?) {
-                        let size = MessageSelectionView.totalSize
-                        guard let superview = bottomSelectionView.superview else {
-                            owsFailDebug("Missing superview.")
-                            return
-                        }
-
-                        // Determine the frame of the body text view in the local
-                        // coordinate system.
-                        let bodyTextFrame = superview.convert(bodyTextRootView.bounds, from: bodyTextRootView)
-                        let outerContentFrame = superview.convert(outerContentView.bounds, from: outerContentView)
-
-                        if let topSelectionView = topSelectionView {
-                            // "Top" should center-align with the area above the body text.
-                            let topY = bodyTextFrame.y * 0.5 - size.height * 0.5
-                            topSelectionView.frame = CGRect(origin: CGPoint(x: 0, y: topY), size: size)
-                        }
-
-                        // "Bottom" should center-align with the body text and the content below it.
-                        //
-                        // This bakes in the assumption that the group sender avatar will
-                        // be bottom-aligned with the bottom of the message bubble.
-                        //let bottomMidY = bodyTextFrame.minY.average(outerContentFrame.maxY)
-                        //let bottomY = bottomMidY - size.height * 0.5
-                        //bottomSelectionView.frame = CGRect(origin: CGPoint(x: 0, y: bottomY), size: size)
-                        let originY = superview.center.y - (size.height / 2)
-                        bottomSelectionView.frame = CGRect(origin: CGPoint(x: 0, y: originY), size: size)
-                    }
-                }
-                let selectionLayoutHelper = SelectionLayoutHelper(outerContentView: outerContentView,
-                                                                  bodyTextRootView: bodyTextRootView)
-
-                let selectionLayoutBlock = { (_: UIView) -> Void in
-                    selectionLayoutHelper.applyLayout(bottomSelectionView: primarySelectionView,
-                                                      topSelectionView: nil)
-                }
-
-                // When doing "partial" selection, the selection UI needs to
-                // align with the corresponding content views.
-                //
-                // Coordinating layout of "distant cousin" views in a view hierarchy
-                // is trivial with iOS Auto Layout, but hard with manual layout, since
-                // changes to any "intermediary" relative can affect the coordination,
-                // and for a rich view hierarchy it's not practical to observe all of
-                // the "intermediaries".  It's also impractical to calculate their
-                // relative positions using the "measurement/layout" state.
-                //
-                // Therefore, we coordinate their layouts by:
-                //
-                // * Using layout blocks that use the actual final layouts.
-                // * Adding the layout block (selectionLayoutBlock) to both
-                //   the immediate parent (as usual) and to the "oldest common
-                //   ancestor" (unusual).  The latter ensures that we re-layout
-                //   whenever the cell changes size, for example.
-                selectionWrapper.addSubview(primarySelectionView, withLayoutBlock: { _ in })
-                selectionWrapper.addLayoutBlock(selectionLayoutBlock)
-                outerContentView.addLayoutBlock(selectionLayoutBlock)
-                outerContentView.setNeedsLayout()
-            } else {
-                selectionWrapper.addSubviewToCenterOnSuperview(primarySelectionView,
-                                                               size: MessageSelectionView.totalSize)
-            }
+            selectionWrapper.addSubviewToCenterOnSuperview(primarySelectionView,
+                                                           size: MessageSelectionView.totalSize)
             hOuterStackSubviews.append(selectionWrapper)
         }
 
@@ -747,7 +674,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         componentView.hInnerStack.accessibilityLabel = buildAccessibilityLabel(componentView: componentView)
         componentView.hInnerStack.isAccessibilityElement = true
 
-        let selectionViews: [ManualLayoutView] = [ componentView.primarySelectionView ]
+        let selectionViews: [ManualLayoutView] = [ componentView.selectionView ]
 
         // Configure hOuterStack/hInnerStack animations
         if isShowingSelectionUI || wasShowingSelectionUI {
@@ -1651,8 +1578,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         if isShowingSelectionUI {
-            // By default, use primarySelectionView to handle .allContent...
-            let primarySelectionView = componentView.primarySelectionView
+            let primarySelectionView = componentView.selectionView
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
             let selectionState = componentDelegate.selectionState
             if selectionState.isSelected(interaction.uniqueId, selectionType: .allContent) {
@@ -1896,7 +1822,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         fileprivate let bottomNestedShareStackView = ManualStackView(name: "message.bottomNestedShareStackView")
         fileprivate let bottomNestedTextStackView = ManualStackView(name: "message.bottomNestedTextStackView")
 
-        fileprivate lazy var primarySelectionView = MessageSelectionView()
+        fileprivate lazy var selectionView = MessageSelectionView()
         fileprivate let selectionWrapper = ManualLayoutView(name: "message.selectionWrapper")
 
         fileprivate let swipeToReplyIconView = CVImageView.circleView()
