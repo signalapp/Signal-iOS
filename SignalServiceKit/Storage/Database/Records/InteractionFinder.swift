@@ -716,7 +716,11 @@ public class InteractionFinder: NSObject {
             arguments: [threadUniqueId, beforeSortId]
         )) ?? false
 
-        lazy var hasOutgoingMessagesWithUnreadReactions = (try? Bool.fetchOne(
+        if hasUnreadMessages {
+            return true
+        }
+
+        let hasOutgoingMessagesWithUnreadReactions = (try? Bool.fetchOne(
             transaction.unwrapGrdbRead.database,
             sql: """
             SELECT EXISTS (
@@ -734,7 +738,7 @@ public class InteractionFinder: NSObject {
             arguments: [threadUniqueId, beforeSortId]
         )) ?? false
 
-        return hasUnreadMessages || hasOutgoingMessagesWithUnreadReactions
+        return hasOutgoingMessagesWithUnreadReactions
     }
 
     /// Enumerates all the unread interactions in this thread before a given sort id,
