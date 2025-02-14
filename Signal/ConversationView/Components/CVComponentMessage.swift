@@ -581,9 +581,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                         //
                         // This bakes in the assumption that the group sender avatar will
                         // be bottom-aligned with the bottom of the message bubble.
-                        let bottomMidY = bodyTextFrame.minY.average(outerContentFrame.maxY)
-                        let bottomY = bottomMidY - size.height * 0.5
-                        bottomSelectionView.frame = CGRect(origin: CGPoint(x: 0, y: bottomY), size: size)
+                        //let bottomMidY = bodyTextFrame.minY.average(outerContentFrame.maxY)
+                        //let bottomY = bottomMidY - size.height * 0.5
+                        //bottomSelectionView.frame = CGRect(origin: CGPoint(x: 0, y: bottomY), size: size)
+                        let originY = superview.center.y - (size.height / 2)
+                        bottomSelectionView.frame = CGRect(origin: CGPoint(x: 0, y: originY), size: size)
                     }
                 }
                 let selectionLayoutHelper = SelectionLayoutHelper(outerContentView: outerContentView,
