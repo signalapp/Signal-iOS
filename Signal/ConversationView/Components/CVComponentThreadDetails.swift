@@ -173,6 +173,15 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
             let groupInfoWrapper = ManualLayoutViewWithLayer(name: "groupWrapper")
             var groupInfoSubviewInfos = [ManualStackSubviewInfo]()
+            var groupInfoSubviews: [UIView] = []
+
+            if self.shouldShowSafetyTip {
+                let reviewCarefullyLabel = componentView.reviewCarefullyLabel
+                groupInfoSubviews.append(reviewCarefullyLabel)
+                let config = self.reviewCarefullyConfig()
+                config.applyForRendering(label: reviewCarefullyLabel)
+                groupInfoSubviewInfos.append(reviewCarefullyLabel.sizeThatFitsMaxSize.asManualSubviewInfo)
+            }
 
             innerViews.append(UIView.spacer(withHeight: vSpacingMutualGroups))
 
@@ -210,8 +219,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             mutualGroupsLabelConfig.applyForRendering(label: mutualGroupsLabel)
             let mutualGroupsLabelSize = CVText.measureLabel(config: mutualGroupsLabelConfig, maxWidth: maxWidth)
             groupInfoSubviewInfos.append(mutualGroupsLabelSize.asManualSubviewInfo)
+            groupInfoSubviews.append(mutualGroupsLabel)
 
-            var groupInfoSubviews: [UIView] = [ mutualGroupsLabel ]
             if self.shouldShowSafetyTip {
                 groupInfoSubviews.append(showTipsButton)
                 let safetyButtonLabelConfig = safetyTipsConfig()
@@ -348,6 +357,36 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     private static var mutualGroupsFont: UIFont { .dynamicTypeSubheadline }
     private static var mutualGroupsTextColor: UIColor { Theme.primaryTextColor }
+
+    private static var reviewCarefullyFont: UIFont { .dynamicTypeSubheadline.semibold() }
+    private static var reviewCarefullyTextColor: UIColor { UIColor(rgbHex: 0xA88746) }
+
+    private func reviewCarefullyConfig() -> CVLabelConfig {
+        CVLabelConfig.init(
+            text: .attributedText(
+                .composed(of: [
+                    NSAttributedString.with(
+                        image: UIImage(named: "error-triangle-fill-compact")!,
+                        font: .dynamicTypeCallout,
+                        centerVerticallyRelativeTo: Self.reviewCarefullyFont,
+                        heightReference: .pointSize
+                    ),
+                    SignalSymbol.LeadingCharacter.nonBreakingSpace.rawValue,
+                    OWSLocalizedString(
+                        "SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING",
+                        comment: "Indicator warning about an unknown contact thread"
+                    ),
+                ])
+            ),
+            displayConfig: .forUnstyledText(
+                font: Self.reviewCarefullyFont,
+                textColor: Self.reviewCarefullyTextColor
+            ),
+            font: Self.reviewCarefullyFont,
+            textColor: Self.reviewCarefullyTextColor
+        )
+    }
+
     private func mutualGroupsLabelConfig(attributedText: NSAttributedString) -> CVLabelConfig {
         CVLabelConfig(
             text: .attributedText(attributedText),
@@ -610,16 +649,23 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         }
 
         if let mutualGroupsText = self.mutualGroupsText {
+            let maxGroupWidth = maxContentWidth - mutualGroupsPadding * 2
+            var groupInfoSubviewInfos = [ManualStackSubviewInfo]()
 
             innerSubviewInfos.append(CGSize(square: vSpacingMutualGroups).asManualSubviewInfo)
+
+            if self.shouldShowSafetyTip {
+                let reviewCarefullySize = CVText.measureLabel(
+                    config: self.reviewCarefullyConfig(),
+                    maxWidth: maxGroupWidth
+                )
+                groupInfoSubviewInfos.append(reviewCarefullySize.asManualSubviewInfo)
+            }
 
             let mutualGroupsSize: CGSize
             if conversationStyle.hasWallpaper {
                 innerSubviewInfos.append(CGSize(width: maxContentWidth - 16, height: 1).asManualSubviewInfo)
             }
-
-            let maxGroupWidth = maxContentWidth - mutualGroupsPadding * 2
-            var groupInfoSubviewInfos = [ManualStackSubviewInfo]()
 
             let groupLabelSize = CVText.measureLabel(
                 config: mutualGroupsLabelConfig(attributedText: mutualGroupsText),
@@ -723,6 +769,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate let bioLabel = CVLabel()
         fileprivate let detailsLabel = CVLabel()
 
+        fileprivate let reviewCarefullyLabel = CVLabel()
         fileprivate let mutualGroupsLabel = CVLabel()
         fileprivate let showTipsButton = OWSRoundedButton()
         fileprivate let groupDescriptionPreviewView = GroupDescriptionPreviewView(
