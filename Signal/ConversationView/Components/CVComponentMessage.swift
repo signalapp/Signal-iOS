@@ -589,14 +589,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 let selectionLayoutHelper = SelectionLayoutHelper(outerContentView: outerContentView,
                                                                   bodyTextRootView: bodyTextRootView)
 
-                let secondarySelectionView = componentView.secondarySelectionView
-                secondarySelectionView.isSelected = componentDelegate.selectionState.isSelected(interaction.uniqueId,
-                                                                                                selectionType: .secondaryContent)
-                secondarySelectionView.updateStyle(conversationStyle: conversationStyle)
-
                 let selectionLayoutBlock = { (_: UIView) -> Void in
-                    selectionLayoutHelper.applyLayout(bottomSelectionView: secondarySelectionView,
-                                                      topSelectionView: primarySelectionView)
+                    selectionLayoutHelper.applyLayout(bottomSelectionView: primarySelectionView,
+                                                      topSelectionView: nil)
                 }
 
                 // When doing "partial" selection, the selection UI needs to
@@ -617,7 +612,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 //   ancestor" (unusual).  The latter ensures that we re-layout
                 //   whenever the cell changes size, for example.
                 selectionWrapper.addSubview(primarySelectionView, withLayoutBlock: { _ in })
-                selectionWrapper.addSubview(secondarySelectionView, withLayoutBlock: { _ in })
                 selectionWrapper.addLayoutBlock(selectionLayoutBlock)
                 outerContentView.addLayoutBlock(selectionLayoutBlock)
                 outerContentView.setNeedsLayout()
@@ -751,10 +745,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         componentView.hInnerStack.accessibilityLabel = buildAccessibilityLabel(componentView: componentView)
         componentView.hInnerStack.isAccessibilityElement = true
 
-        var selectionViews: [ManualLayoutView] = [ componentView.primarySelectionView ]
-        if hasSecondaryContentForSelection {
-            selectionViews.append(componentView.secondarySelectionView)
-        }
+        let selectionViews: [ManualLayoutView] = [ componentView.primarySelectionView ]
 
         // Configure hOuterStack/hInnerStack animations
         if isShowingSelectionUI || wasShowingSelectionUI {
@@ -1660,17 +1651,14 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if isShowingSelectionUI {
             // By default, use primarySelectionView to handle .allContent...
             let primarySelectionView = componentView.primarySelectionView
-            let secondarySelectionView = componentView.secondarySelectionView
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
             let selectionState = componentDelegate.selectionState
             if selectionState.isSelected(interaction.uniqueId, selectionType: .allContent) {
                 primarySelectionView.isSelected = false
-                secondarySelectionView.isSelected = false
                 componentDelegate.selectionState.remove(itemViewModel: itemViewModel,
                                                         selectionType: .allContent)
             } else {
                 primarySelectionView.isSelected = true
-                secondarySelectionView.isSelected = true
                 componentDelegate.selectionState.add(itemViewModel: itemViewModel,
                                                      selectionType: .allContent)
             }
@@ -1906,15 +1894,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         fileprivate let bottomNestedShareStackView = ManualStackView(name: "message.bottomNestedShareStackView")
         fileprivate let bottomNestedTextStackView = ManualStackView(name: "message.bottomNestedTextStackView")
 
-        // If hasSecondaryContentForSelection is false, this is used to select
-        // all content.
-        //
-        // If hasSecondaryContentForSelection is true, this is used to select
-        // everything except the body text, e.g. the body media or generic attachment.
         fileprivate lazy var primarySelectionView = MessageSelectionView()
-        // If hasSecondaryContentForSelection is true, this is used to select
-        // just the body text.
-        fileprivate lazy var secondarySelectionView = MessageSelectionView()
         fileprivate let selectionWrapper = ManualLayoutView(name: "message.selectionWrapper")
 
         fileprivate let swipeToReplyIconView = CVImageView.circleView()
