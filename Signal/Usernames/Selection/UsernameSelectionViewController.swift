@@ -644,11 +644,8 @@ private extension UsernameSelectionViewController {
             UsernameLogger.shared.info("Changing username case.")
 
             firstly(on: self.context.schedulers.sync) { () -> Guarantee<Usernames.RemoteMutationResult<Void>> in
-                return self.context.databaseStorage.write { tx in
-                    self.context.localUsernameManager.updateVisibleCaseOfExistingUsername(
-                        newUsername: newUsername.reassembled,
-                        tx: tx.asV2Write
-                    )
+                Guarantee.wrapAsync {
+                    await self.context.localUsernameManager.updateVisibleCaseOfExistingUsername(newUsername: newUsername.reassembled)
                 }
             }.map(on: self.context.schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Void> in
                 let newState = self.context.databaseStorage.read { tx in
@@ -709,11 +706,8 @@ private extension UsernameSelectionViewController {
             UsernameLogger.shared.info("Confirming username.")
 
             firstly(on: self.context.schedulers.sync) { () -> Guarantee<Usernames.RemoteMutationResult<Usernames.ConfirmationResult>> in
-                return self.context.databaseStorage.write { tx in
-                    return self.context.localUsernameManager.confirmUsername(
-                        reservedUsername: reservedUsername,
-                        tx: tx.asV2Write
-                    )
+                return Guarantee.wrapAsync {
+                    await self.context.localUsernameManager.confirmUsername(reservedUsername: reservedUsername)
                 }
             }.map(on: self.context.schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Usernames.ConfirmationResult> in
                 let newState = self.context.databaseStorage.read { tx in
@@ -928,9 +922,9 @@ private extension UsernameSelectionViewController {
 
             logger.info("Attempting to reserve username.")
 
-            return self.context.localUsernameManager.reserveUsername(
-                usernameCandidates: usernameCandidates
-            ).map(on: self.context.schedulers.sync) { remoteMutationResult -> ReservationResult in
+            return Guarantee.wrapAsync {
+                await self.context.localUsernameManager.reserveUsername(usernameCandidates: usernameCandidates)
+            }.map(on: self.context.schedulers.sync) { remoteMutationResult -> ReservationResult in
                 switch remoteMutationResult {
                 case .success(let reservationResult):
                     return .success(reservationResult)

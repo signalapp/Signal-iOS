@@ -610,9 +610,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
         }
 
         firstly(on: schedulers.global()) { () -> Guarantee<Usernames.RemoteMutationResult<Usernames.UsernameLink>> in
-            return self.db.write { tx in
-                self.localUsernameManager.rotateUsernameLink(tx: tx)
-            }
+            Guarantee.wrapAsync { await self.localUsernameManager.rotateUsernameLink() }
         }.map(on: schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Usernames.UsernameLink> in
             let latestUsernameState: Usernames.LocalUsernameState = self.db.read { tx in
                 self.localUsernameManager.usernameState(tx: tx)

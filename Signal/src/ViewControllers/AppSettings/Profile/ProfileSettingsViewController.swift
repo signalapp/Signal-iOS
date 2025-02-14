@@ -571,10 +571,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             canCancel: false
         ) { modal in
             firstly(on: self.context.schedulers.global()) { () -> Guarantee<Usernames.RemoteMutationResult<Void>> in
-                self.context.db.write { tx in
-                    return self.context.localUsernameManager
-                        .deleteUsername(tx: tx)
-                }
+                return Guarantee.wrapAsync { await self.context.localUsernameManager.deleteUsername() }
             }
             .map(on: self.context.schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Void> in
                 let newState = self.context.db.read { tx in

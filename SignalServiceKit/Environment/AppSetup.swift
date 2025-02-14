@@ -834,7 +834,6 @@ public class AppSetup {
         let localUsernameManager = LocalUsernameManagerImpl(
             db: db,
             reachabilityManager: reachabilityManager,
-            schedulers: schedulers,
             storageServiceManager: storageServiceManager,
             usernameApiClient: usernameApiClient,
             usernameLinkManager: usernameLinkManager

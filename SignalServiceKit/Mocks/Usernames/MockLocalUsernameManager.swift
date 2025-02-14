@@ -27,11 +27,11 @@ public class MockLocalUsernameManager: LocalUsernameManager {
     public func clearLocalUsername(tx: DBWriteTransaction) { owsFail("Not implemented!") }
     public func usernameLinkQRCodeColor(tx: DBReadTransaction) -> QRCodeColor { owsFail("Not implemented!") }
     public func setUsernameLinkQRCodeColor(color: QRCodeColor, tx: DBWriteTransaction) { owsFail("Not implemented!") }
-    public func reserveUsername(usernameCandidates: Usernames.HashedUsername.GeneratedCandidates) -> Guarantee<Usernames.RemoteMutationResult<Usernames.ReservationResult>> { owsFail("Not implemented!") }
-    public func confirmUsername(reservedUsername: Usernames.HashedUsername, tx: DBWriteTransaction) -> Guarantee<Usernames.RemoteMutationResult<Usernames.ConfirmationResult>> { owsFail("Not implemented!") }
-    public func deleteUsername(tx: DBWriteTransaction) -> Guarantee<Usernames.RemoteMutationResult<Void>> { owsFail("Not implemented!") }
-    public func rotateUsernameLink(tx: DBWriteTransaction) -> Guarantee<Usernames.RemoteMutationResult<Usernames.UsernameLink>> { owsFail("Not implemented!") }
-    public func updateVisibleCaseOfExistingUsername(newUsername: String, tx: DBWriteTransaction) -> Guarantee<Usernames.RemoteMutationResult<Void>> { owsFail("Not implemented!") }
+    public func reserveUsername(usernameCandidates: Usernames.HashedUsername.GeneratedCandidates) async -> Usernames.RemoteMutationResult<Usernames.ReservationResult> { owsFail("Not implemented!") }
+    public func confirmUsername(reservedUsername: Usernames.HashedUsername) async -> Usernames.RemoteMutationResult<Usernames.ConfirmationResult> { owsFail("Not implemented!") }
+    public func deleteUsername() async -> Usernames.RemoteMutationResult<Void> { owsFail("Not implemented!") }
+    public func rotateUsernameLink() async -> Usernames.RemoteMutationResult<Usernames.UsernameLink> { owsFail("Not implemented!") }
+    public func updateVisibleCaseOfExistingUsername(newUsername: String) async -> Usernames.RemoteMutationResult<Void> { owsFail("Not implemented!") }
 }
 
 #endif
