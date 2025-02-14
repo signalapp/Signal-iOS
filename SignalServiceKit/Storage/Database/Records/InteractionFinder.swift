@@ -673,31 +673,6 @@ public class InteractionFinder: NSObject {
         }
     }
 
-    @objc
-    public func enumerateInteractionIds(
-        transaction: SDSAnyReadTransaction,
-        block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) throws {
-        let cursor = try String.fetchCursor(
-            transaction.unwrapGrdbRead.database,
-            sql: """
-                SELECT \(interactionColumn: .uniqueId)
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                ORDER BY \(interactionColumn: .id) DESC
-            """,
-            arguments: [threadUniqueId]
-        )
-
-        while let uniqueId = try cursor.next() {
-            var stop: ObjCBool = false
-            block(uniqueId, &stop)
-            if stop.boolValue {
-                return
-            }
-        }
-    }
-
     /// Enumerates all the unread interactions in this thread, sorted by sort id.
     public func fetchAllUnreadMessages(
         transaction: SDSAnyReadTransaction

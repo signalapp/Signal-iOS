@@ -17,13 +17,8 @@ final class TSMessageStorageTest: SSKBaseTest {
     var otherAci: Aci { return Aci.parseFrom(aciString: "00000000-0000-4000-8000-000000000001")! }
     var otherAddress: SignalServiceAddress { return SignalServiceAddress(otherAci) }
 
-    private func numberOfInteractions(thread: TSThread, tx: SDSAnyReadTransaction) -> UInt {
-        var count: UInt = 0
-        try! InteractionFinder(threadUniqueId: thread.uniqueId)
-            .enumerateInteractionIds(transaction: tx) { _, _ in
-                count += 1
-            }
-        return count
+    private func numberOfInteractions(thread: TSThread, tx: SDSAnyReadTransaction) -> Int {
+        return try! InteractionFinder(threadUniqueId: thread.uniqueId).fetchAllInteractions(rowIdFilter: .newest, limit: Int.max, tx: tx).count
     }
 
     override func setUp() {
