@@ -192,7 +192,7 @@ public class ViewOnceMessages: NSObject {
             guard let senderAci = senderAci(forMessage: message, tx: transaction.asV2Read) else {
                 return false
             }
-            guard messageSender == messageSender else {
+            guard senderAci == messageSender else {
                 return false
             }
             guard message.isViewOnceMessage else {
