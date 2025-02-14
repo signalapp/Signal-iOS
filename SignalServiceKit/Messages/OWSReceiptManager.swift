@@ -821,27 +821,19 @@ extension OWSReceiptManager {
         thread: TSThread,
         transaction: SDSAnyWriteTransaction
     ) {
-        // At time of writing, the column is always null for call interactions.
-        // But lets not rely on that. These queries use an index as long as
-        // the where clauses are single value matches and not ORs or anything,
-        // so two queries each with an index is better than one non-index query.
-        let possibleIsGroupStoryReplyValues: [Bool?] = [nil, false]
-        for isGroupStoryReply in possibleIsGroupStoryReplyValues {
-            var sql = """
-                UPDATE \(InteractionRecord.databaseTableName)
-                SET read = 1
-                WHERE \(interactionColumn: .read) = 0
-                AND \(interactionColumn: .isGroupStoryReply) IS ?
-                AND \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .recordType) = ?
+        var sql = """
+            UPDATE \(InteractionRecord.databaseTableName)
+            SET read = 1
+            WHERE \(interactionColumn: .read) = 0
+            AND \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .recordType) = ?
             """
-            var arguments: StatementArguments = [isGroupStoryReply, thread.uniqueId, SDSRecordType.call.rawValue]
-            if let sqlId = sqlId {
-                sql += " AND \(interactionColumn: .id) <= ?"
-                arguments += [sqlId]
-            }
-            transaction.unwrapGrdbWrite.execute(sql: sql, arguments: arguments)
+        var arguments: StatementArguments = [thread.uniqueId, SDSRecordType.call.rawValue]
+        if let sqlId = sqlId {
+            sql += " AND \(interactionColumn: .id) <= ?"
+            arguments += [sqlId]
         }
+        transaction.unwrapGrdbWrite.execute(sql: sql, arguments: arguments)
     }
 }
 
