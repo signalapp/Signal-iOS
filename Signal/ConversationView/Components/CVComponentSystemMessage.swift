@@ -240,27 +240,27 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 bubbleView = backgroundView
             }
 
-//            if isFirstInCluster && isLastInCluster {
-//                innerVStack.addSubviewToFillSuperviewEdges(bubbleView)
-//                innerVStack.sendSubviewToBack(bubbleView)
-//
-//                bubbleView.layer.cornerRadius = 8
-//                bubbleView.layer.maskedCorners = .all
-//                bubbleView.clipsToBounds = true
-//            } else {
-//                outerVStack.addSubviewToFillSuperviewEdges(bubbleView)
-//                outerVStack.sendSubviewToBack(bubbleView)
-//
-//                if isFirstInCluster {
-//                    bubbleView.layer.cornerRadius = 12
-//                    bubbleView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
-//                    bubbleView.clipsToBounds = true
-//                } else if isLastInCluster {
-//                    bubbleView.layer.cornerRadius = 12
-//                    bubbleView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
-//                    bubbleView.clipsToBounds = true
-//                }
-//            }
+            if isFirstInCluster && isLastInCluster {
+                innerVStack.addSubviewToFillSuperviewEdges(bubbleView)
+                innerVStack.sendSubviewToBack(bubbleView)
+
+                bubbleView.layer.cornerRadius = 8
+                bubbleView.layer.maskedCorners = .all
+                bubbleView.clipsToBounds = true
+            } else {
+                outerVStack.addSubviewToFillSuperviewEdges(bubbleView)
+                outerVStack.sendSubviewToBack(bubbleView)
+
+                if isFirstInCluster {
+                    bubbleView.layer.cornerRadius = 12
+                    bubbleView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
+                    bubbleView.clipsToBounds = true
+                } else if isLastInCluster {
+                    bubbleView.layer.cornerRadius = 12
+                    bubbleView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+                    bubbleView.clipsToBounds = true
+                }
+            }
         }
 
         // Configure hOuterStack/hInnerStack animations animations
