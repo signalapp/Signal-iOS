@@ -251,9 +251,19 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
     }
 
     private func ensureManualCensorshipCircumventionCountry() -> OWSCountryMetadata {
-        let countryCode = SSKEnvironment.shared.signalServiceRef.manualCensorshipCircumventionCountryCode ?? PhoneNumberUtil.defaultCountryCode()
-        SSKEnvironment.shared.signalServiceRef.manualCensorshipCircumventionCountryCode = countryCode
-        return OWSCountryMetadata.countryMetadata(countryCode: countryCode)!
+        let preferredCountryCode = SSKEnvironment.shared.signalServiceRef.manualCensorshipCircumventionCountryCode ?? Locale.current.regionCode
+
+        if
+            let preferredCountryCode,
+            let countryMetadata = OWSCountryMetadata.countryMetadata(countryCode: preferredCountryCode)
+        {
+            SSKEnvironment.shared.signalServiceRef.manualCensorshipCircumventionCountryCode = preferredCountryCode
+            return countryMetadata
+        } else {
+            let fallbackCountryCode = "US"
+            SSKEnvironment.shared.signalServiceRef.manualCensorshipCircumventionCountryCode = fallbackCountryCode
+            return OWSCountryMetadata.countryMetadata(countryCode: fallbackCountryCode)!
+        }
     }
 
     @objc
