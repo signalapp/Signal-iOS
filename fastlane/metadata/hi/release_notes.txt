@@ -1,2 +1,2 @@
-• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
-• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.
+• इस अपडेट से वह गड़बड़ी ठीक होती है, जिसकी वजह से गहरी थीम चुने जाने पर भी लॉन्च स्क्रीन हल्के रंग वाले बैकग्राउंड में दिखती है। अगर आप पर वैलेंटाइंस डे का जादू अब तक छाया है और रोशनी और कम करना चाहते हैं , तो हम कैंडललाइट का सुझाव देंगे।
+• अब जब आप Signal नोटिफ़िकेशन को लंबे समय तक दबाकर किसी संदेश का तुरंत जवाब भेजते हैं, तो आपके जवाब को क्वोटेड जवाब के तौर पर भेजा जाएगा।

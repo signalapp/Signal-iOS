@@ -1,2 +1,2 @@
-• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
-• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.
+• يقوم هذا التحديث بإصلاح خطأ تقني تسبَّبَ باختصار بإظهار شاشة البدء مع خلفية ساطعة حتى عندما تمَّ تحديد النمط الداكن. إذا كان عيد الحب يُلهِمك وأردتَ تخفيف الإضاءة أكثر من ذلك، نوصيك بالاعتماد على ضوء الشموع.
+• الآن عندما تقوم بإرسال رد سريع على رسالة مُحدَّدة من خلال النقر المُطوَّل على إشعار سيجنال، سيتمُّ إرسال تجاوبك على شكل ردٍ مُقتبَس.

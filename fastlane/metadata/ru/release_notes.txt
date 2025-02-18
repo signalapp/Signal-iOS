@@ -1,2 +1,2 @@
-• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
-• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.
+• В этом обновлении исправлена ошибка, из-за которой экран запуска на короткое время появлялся с ярким фоном даже при включённой тёмной теме. Если вы празднуете День святого Валентина и хотите ещё больше приглушить свет, мы советуем зажечь свечи.
+• Теперь, когда вы отправляете быстрый ответ на конкретное сообщение, нажав и удерживая уведомление Signal, ваш ответ будет отправлен в виде цитаты.

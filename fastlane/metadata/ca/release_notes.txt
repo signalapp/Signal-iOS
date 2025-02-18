@@ -1,2 +1,2 @@
-• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
-• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.
+• Aquesta actualització corregeix un error que provocava que la pantalla d'inici aparegués amb un fons brillant, fins i tot quan estava seleccionat el Tema fosc.
+• Ara, quan mantinguis premuda una notificació de Signal per enviar una resposta ràpida a un missatge concret, la teva resposta s'enviarà com una resposta citada.

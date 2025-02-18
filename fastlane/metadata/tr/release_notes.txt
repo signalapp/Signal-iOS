@@ -1,2 +1,2 @@
-• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
-• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.
+• Bu güncelleme, Koyu tema seçildiğinde bile başlatma ekranının kısa süreliğine parlak bir arka planla görünmesine neden olan bir hatayı düzeltir. Koyu tema severler bu düzeltmeye sevinecek!
+• Bundan sonra bir Signal bildirimine uzun basarak belirli bir mesaja hızlı yanıt gönderdiğinde, yanıtın alıntılanmış bir yanıt olarak gönderilecektir.

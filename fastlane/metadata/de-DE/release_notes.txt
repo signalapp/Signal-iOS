@@ -1,2 +1,2 @@
-• This update fixes a bug that briefly caused the launch screen to appear with a bright background even when the Dark theme was selected. If you were inspired by Valentine’s Day and want to turn the lights down even more, we recommend candlelight.
-• Now when you send a quick reply to a specific message by long-pressing on a Signal notification, your response will be sent as a quoted reply.
+• Dieses Update behebt einen Fehler, der dazu führte, dass der Startbildschirm kurzzeitig mit hellem Hintergrund angezeigt wurde, selbst wenn das dunkle Design ausgewählt worden war. Falls du dich vom Valentinstag hast inspirieren lassen und das Licht noch weiter dimmen möchtest: wir empfehlen Kerzenlicht.
+• Wenn du jetzt schnell auf eine bestimmte Nachricht antworten möchtest, indem du länger auf die entsprechende Signal-Mitteilung drückst, wird deine Antwort als zitierte Antwort gesendet.
