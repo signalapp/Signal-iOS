@@ -24,7 +24,7 @@ extension MessageBackup {
             dbFileSizeProvider: DBFileSizeProvider
         ) {
             self.dateProvider = dateProviderMonotonic
-            self.dbFileSizeBencher = if FeatureFlags.verboseBackupBenchLogging {
+            self.dbFileSizeBencher = if FeatureFlags.messageBackupDetailedBenchLogging {
                 DBFileSizeBencher(dateProvider: dateProviderMonotonic, dbFileSizeProvider: dbFileSizeProvider)
             } else {
                 nil
@@ -39,7 +39,7 @@ extension MessageBackup {
         /// ``BackupProto_Frame``; this is done so the return type doesn't have to be a frame.
         func processFrame<T>(_ block: (FrameBencher) throws -> T) rethrows -> T {
             defer {
-                dbFileSizeBencher?.logDBFileSizeIfNecessary(totalFramesProcessed: totalFramesProcessed)
+                dbFileSizeBencher?.logIfNecessary(totalFramesProcessed: totalFramesProcessed)
             }
 
             let frameBencher = FrameBencher(
@@ -105,9 +105,16 @@ extension MessageBackup {
         class DBFileSizeBencher {
             private let dateProvider: DateProviderMonotonic
             private let dbFileSizeProvider: DBFileSizeProvider
+#if DEBUG
+            private let secondsBetweenLogs: UInt64 = 2
+#else
+            private let secondsBetweenLogs: UInt64 = 15
+#endif
 
-            /// The last time we logged the sizes of database files.
-            private var lastDBFileSizeLogDate: MonotonicDate?
+            /// The last time we logged.
+            private var lastLogDate: MonotonicDate?
+            /// The number of total frames the last time we logged.
+            private var lastTotalFramesProcessed: UInt64?
 
             init(
                 dateProvider: @escaping DateProviderMonotonic,
@@ -117,10 +124,10 @@ extension MessageBackup {
                 self.dbFileSizeProvider = dbFileSizeProvider
             }
 
-            func logDBFileSizeIfNecessary(totalFramesProcessed: UInt64) {
+            func logIfNecessary(totalFramesProcessed: UInt64) {
                 if
-                    let lastDBFileSizeLogDate,
-                    dateProvider().millisSince(lastDBFileSizeLogDate) < 15 * MSEC_PER_SEC
+                    let lastLogDate,
+                    dateProvider().millisSince(lastLogDate) < secondsBetweenLogs * MSEC_PER_SEC
                 {
                     // Bail if we logged recently.
                     return
@@ -128,9 +135,10 @@ extension MessageBackup {
 
                 let dbFileSize = dbFileSizeProvider.getDatabaseFileSize()
                 let walFileSize = dbFileSizeProvider.getDatabaseWALFileSize()
-                Logger.info("DB file size: \(dbFileSize), WAL file size: \(walFileSize), frames processed: \(totalFramesProcessed)")
+                Logger.info("{DB:\(dbFileSize), WAL:\(walFileSize), frames:\(totalFramesProcessed), framesDelta:\(totalFramesProcessed - (lastTotalFramesProcessed ?? 0))}")
 
-                lastDBFileSizeLogDate = dateProvider()
+                lastLogDate = dateProvider()
+                lastTotalFramesProcessed = totalFramesProcessed
             }
         }
 
@@ -165,13 +173,9 @@ extension MessageBackup {
                 if durationMs > Metrics.durationWarningThresholdMs {
                     metrics.frameCountAboveDurationWarningThreshold += 1
 
-                    if FeatureFlags.verboseBackupBenchLogging {
+                    if FeatureFlags.messageBackupDetailedBenchLogging {
                         metrics.universalFrameCountWhenAboveWarningThreshold.append(bencher.totalFramesProcessed)
                     }
-                }
-
-                if FeatureFlags.verboseBackupBenchLogging {
-                    metrics.allFrameDurationsMs.append(durationMs)
                 }
 
                 if let beforeEnumerationStartDate {
@@ -190,10 +194,7 @@ extension MessageBackup {
                 guard metrics.frameCount > 0 else { return }
                 var logString = "\(loggableCountString(metrics.frameCount)) \(typeString)(s) in \(metrics.totalDurationMs)ms."
                 if metrics.frameCount > 1 {
-                    if FeatureFlags.verboseBackupBenchLogging {
-                        let avgMs = metrics.totalDurationMs / metrics.frameCount
-                        logString += " Avg:\(avgMs)ms"
-                    }
+                    logString += " Avg:\(metrics.totalDurationMs / metrics.frameCount)ms"
                     logString += " Max:\(metrics.maxDurationMs)ms"
                 }
                 if metrics.totalEnumerationDurationMs > 0 {
@@ -201,12 +202,6 @@ extension MessageBackup {
                 }
                 if metrics.frameCountAboveDurationWarningThreshold > 0 {
                     logString += " AboveThreshold:\(metrics.frameCountAboveDurationWarningThreshold)"
-                }
-                if metrics.allFrameDurationsMs.count > 0 {
-                    let percentileStrings = Percentile.computePercentiles(values: metrics.allFrameDurationsMs)
-                        .map { (percentile, duration) in "p\(percentile.rawValue):\(duration)ms" }
-
-                    logString += " FrameDurations:{\(percentileStrings.joined(separator: ","))}"
                 }
                 if metrics.universalFrameCountWhenAboveWarningThreshold.count > 0 {
                     let percentileStrings = Percentile.computePercentiles(values: metrics.universalFrameCountWhenAboveWarningThreshold)
@@ -226,17 +221,20 @@ extension MessageBackup {
         }
 
         private func loggableCountString(_ number: UInt64) -> String {
-            if FeatureFlags.verboseBackupBenchLogging {
+            if FeatureFlags.messageBackupDetailedBenchLogging {
                 return "\(number)"
             }
 
-            // Only log the order of magnitude
+            // Only log the order of magnitude and most significant digit, e.g.
+            // "~50000" instead of "54321".
             var magnitude: UInt64 = 1
             while magnitude <= number {
                 magnitude *= 10
             }
             let nearestOrderOfMagnitude = magnitude / 10
-            return "~\(nearestOrderOfMagnitude)"
+            let mostSignificantDigit = number / nearestOrderOfMagnitude
+
+            return "~\(mostSignificantDigit * nearestOrderOfMagnitude)"
         }
 
         private struct Metrics {
@@ -247,10 +245,6 @@ extension MessageBackup {
             var totalDurationMs: UInt64 = 0
             var maxDurationMs: UInt64 = 0
             var totalEnumerationDurationMs: UInt64 = 0
-
-            /// - Important
-            /// Only set if verbose bench logging is enabled!
-            var allFrameDurationsMs: [UInt64] = []
 
             /// The total frame count, across all frame types, when we processed
             /// a frame for this metric that was above the duration-warning

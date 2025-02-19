@@ -222,50 +222,20 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let progress = try await MessageBackupExportProgress.prepare(sink: progress, db: db)
 
-        let currentAppVersion = appVersion.currentAppVersion
-        let firstAppVersion = appVersion.firstBackupAppVersion ?? appVersion.firstAppVersion
-
-        let result: Result<Upload.EncryptedBackupUploadMetadata, Error>
-        result = await db.awaitableWriteWithTxCompletion { tx in
-            do {
-                return try Bench(
-                    title: "Export encryped backup",
-                    memorySamplerRatio: FeatureFlags.backupsMemorySamplerRatio,
-                    logInProduction: false
-                ) { memorySampler in
-                    let outputStream: MessageBackupProtoOutputStream
-                    let metadataProvider: MessageBackup.ProtoStream.EncryptionMetadataProvider
-                    switch self.encryptedStreamProvider.openEncryptedOutputFileStream(
-                        localAci: localIdentifiers.aci,
-                        backupKey: backupKey,
-                        progress: progress,
-                        memorySampler: memorySampler,
-                        tx: tx
-                    ) {
-                    case let .success(_outputStream, _metadataProvider):
-                        outputStream = _outputStream
-                        metadataProvider = _metadataProvider
-                    case .unableToOpenFileStream:
-                        throw OWSAssertionError("Unable to open output stream")
-                    }
-
-                    try self._exportBackup(
-                        outputStream: outputStream,
-                        localIdentifiers: localIdentifiers,
-                        backupPurpose: backupPurpose,
-                        currentAppVersion: currentAppVersion,
-                        firstAppVersion: firstAppVersion,
-                        tx: tx
-                    )
-
-                    let metadata = try metadataProvider()
-                    return .commit(Result.success(metadata))
-                }
-            } catch let error {
-                return .rollback(Result.failure(error))
+        return try await _exportBackup<Upload.EncryptedBackupUploadMetadata>(
+            benchTitle: "Export encrypted Backup",
+            backupPurpose: backupPurpose,
+            localIdentifiers: localIdentifiers,
+            openOutputStreamBlock: { memorySampler, tx in
+                return encryptedStreamProvider.openEncryptedOutputFileStream(
+                    localAci: localIdentifiers.aci,
+                    backupKey: backupKey,
+                    progress: progress,
+                    memorySampler: memorySampler,
+                    tx: tx
+                )
             }
-        }
-        return try result.get()
+        )
     }
 
     public func exportPlaintextBackup(
@@ -287,27 +257,42 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let progress = try await MessageBackupExportProgress.prepare(sink: progress, db: db)
 
+        return try await _exportBackup<URL>(
+            benchTitle: "Export plaintext Backup",
+            backupPurpose: backupPurpose,
+            localIdentifiers: localIdentifiers,
+            openOutputStreamBlock: { memorySampler, tx in
+                return plaintextStreamProvider.openPlaintextOutputFileStream(
+                    progress: progress,
+                    memorySampler: memorySampler
+                )
+            }
+        )
+    }
+
+    private func _exportBackup<OutputStreamMetadata>(
+        benchTitle: String,
+        backupPurpose: MessageBackupPurpose,
+        localIdentifiers: LocalIdentifiers,
+        openOutputStreamBlock: (MemorySampler, DBReadTransaction) -> MessageBackup.ProtoStream.OpenOutputStreamResult<OutputStreamMetadata>
+    ) async throws -> OutputStreamMetadata {
         let currentAppVersion = appVersion.currentAppVersion
         let firstAppVersion = appVersion.firstBackupAppVersion ?? appVersion.firstAppVersion
 
-        let result: Result<URL, Error>
-        result = await db.awaitableWriteWithTxCompletion { tx in
+        let result: Result<OutputStreamMetadata, Error> = await db.awaitableWriteWithTxCompletion { tx in
             do {
-                return try Bench(
-                    title: "Export plaintext backup",
-                    memorySamplerRatio: FeatureFlags.backupsMemorySamplerRatio,
+                let outputStreamMetadata = try Bench(
+                    title: benchTitle,
+                    memorySamplerRatio: FeatureFlags.messageBackupMemorySamplerRatio,
                     logInProduction: false
-                ) { memorySampler in
-                    let url = try self.databaseChangeObserver.disable(tx: tx) { tx in
+                ) { memorySampler -> OutputStreamMetadata in
+                    return try self.databaseChangeObserver.disable(tx: tx) { tx in
                         let outputStream: MessageBackupProtoOutputStream
-                        let fileUrl: URL
-                        switch self.plaintextStreamProvider.openPlaintextOutputFileStream(
-                            progress: progress,
-                            memorySampler: memorySampler
-                        ) {
-                        case .success(let _outputStream, let _fileUrl):
+                        let outputStreamMetadataProvider: () throws -> OutputStreamMetadata
+                        switch openOutputStreamBlock(memorySampler, tx) {
+                        case .success(let _outputStream, let _outputStreamMetadataProvider):
                             outputStream = _outputStream
-                            fileUrl = _fileUrl
+                            outputStreamMetadataProvider = _outputStreamMetadataProvider
                         case .unableToOpenFileStream:
                             throw OWSAssertionError("Unable to open output file stream!")
                         }
@@ -321,14 +306,16 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                             tx: tx
                         )
 
-                        return fileUrl
+                        return try outputStreamMetadataProvider()
                     }
-                    return .commit(.success(url))
                 }
+
+                return .commit(.success(outputStreamMetadata))
             } catch let error {
                 return .rollback(.failure(error))
             }
         }
+
         return try result.get()
     }
 
@@ -632,51 +619,19 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let progress = try await MessageBackupImportProgress.prepare(sink: progress, fileUrl: fileUrl)
 
-        let result: Result<BackupProto_BackupInfo, Error>
-        result = await db.awaitableWriteWithTxCompletion { tx in
-            do {
-                return try Bench(
-                    title: "Import encrypted backup",
-                    memorySamplerRatio: FeatureFlags.backupsMemorySamplerRatio,
-                    logInProduction: false
-                ) { memorySampler in
-                    let backupInfo = try self.databaseChangeObserver.disable(tx: tx) { tx in
-                        let inputStream: MessageBackupProtoInputStream
-                        switch self.encryptedStreamProvider.openEncryptedInputFileStream(
-                            fileUrl: fileUrl,
-                            localAci: localIdentifiers.aci,
-                            backupKey: backupKey,
-                            progress: progress,
-                            memorySampler: memorySampler,
-                            tx: tx
-                        ) {
-                        case .success(let protoStream, _):
-                            inputStream = protoStream
-                        case .fileNotFound:
-                            throw OWSAssertionError("File not found!")
-                        case .unableToOpenFileStream:
-                            throw OWSAssertionError("Unable to open input stream!")
-                        case .hmacValidationFailedOnEncryptedFile:
-                            throw OWSAssertionError("HMAC validation failed on encrypted file!")
-                        }
-
-                        return try self._importBackup(
-                            inputStream: inputStream,
-                            localIdentifiers: localIdentifiers,
-                            tx: tx
-                        )
-                    }
-                    return .commit(.success(backupInfo))
-                }
-            } catch let error {
-                return .rollback(.failure(error))
+        try await _importBackup(
+            benchTitle: "Import encrypted Backup",
+            localIdentifiers: localIdentifiers,
+            openInputStreamBlock: { memorySampler, tx in
+                return encryptedStreamProvider.openEncryptedInputFileStream(
+                    fileUrl: fileUrl,
+                    localAci: localIdentifiers.aci,
+                    backupKey: backupKey,
+                    progress: progress,
+                    memorySampler: memorySampler,
+                    tx: tx
+                )
             }
-        }
-        let backupInfo = try result.get()
-
-        appVersion.didRestoreFromBackup(
-            backupCurrentAppVersion: backupInfo.currentAppVersion.nilIfEmpty,
-            backupFirstAppVersion: backupInfo.firstAppVersion.nilIfEmpty
         )
     }
 
@@ -699,21 +654,34 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         let progress = try await MessageBackupImportProgress.prepare(sink: progress, fileUrl: fileUrl)
 
-        let result: Result<BackupProto_BackupInfo, Error>
-        result = await db.awaitableWriteWithTxCompletion { tx in
+        try await _importBackup(
+            benchTitle: "Import plaintext Backup",
+            localIdentifiers: localIdentifiers,
+            openInputStreamBlock: { memorySampler, tx in
+                return plaintextStreamProvider.openPlaintextInputFileStream(
+                    fileUrl: fileUrl,
+                    progress: progress,
+                    memorySampler: memorySampler
+                )
+            }
+        )
+    }
+
+    private func _importBackup(
+        benchTitle: String,
+        localIdentifiers: LocalIdentifiers,
+        openInputStreamBlock: (MemorySampler, DBReadTransaction) -> MessageBackup.ProtoStream.OpenInputStreamResult
+    ) async throws {
+        let result: Result<BackupProto_BackupInfo, Error> = await db.awaitableWriteWithTxCompletion { tx in
             do {
-                return try Bench(
-                    title: "Import plaintext backup",
-                    memorySamplerRatio: FeatureFlags.backupsMemorySamplerRatio,
+                let backupInfo = try Bench(
+                    title: benchTitle,
+                    memorySamplerRatio: FeatureFlags.messageBackupMemorySamplerRatio,
                     logInProduction: false
-                ) { memorySampler in
-                    let backupInfo = try self.databaseChangeObserver.disable(tx: tx) { tx in
+                ) { memorySampler -> BackupProto_BackupInfo in
+                    return try self.databaseChangeObserver.disable(tx: tx) { tx in
                         let inputStream: MessageBackupProtoInputStream
-                        switch self.plaintextStreamProvider.openPlaintextInputFileStream(
-                            fileUrl: fileUrl,
-                            progress: progress,
-                            memorySampler: memorySampler
-                        ) {
+                        switch openInputStreamBlock(memorySampler, tx) {
                         case .success(let protoStream, _):
                             inputStream = protoStream
                         case .fileNotFound:
@@ -721,7 +689,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         case .unableToOpenFileStream:
                             throw OWSAssertionError("Unable to open input stream!")
                         case .hmacValidationFailedOnEncryptedFile:
-                            throw OWSAssertionError("HMAC validation failed: how did this happen for a plaintext backup?")
+                            throw OWSAssertionError("HMAC validation failed!")
                         }
 
                         return try self._importBackup(
@@ -730,12 +698,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                             tx: tx
                         )
                     }
-                    return .commit(.success(backupInfo))
                 }
+
+                return .commit(.success(backupInfo))
             } catch let error {
                 return .rollback(.failure(error))
             }
         }
+
         let backupInfo = try result.get()
 
         appVersion.didRestoreFromBackup(
@@ -857,7 +827,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     case .protoDeserializationError(let error):
                         // fail the whole thing if we fail to deserialize one frame
                         owsFailDebug("Failed to deserialize proto frame!")
-                        if FeatureFlags.backupRestoreFailOnAnyError {
+                        if FeatureFlags.messageBackupRestoreFailOnAnyError {
                             throw error
                         } else {
                             return
@@ -927,7 +897,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: recipient) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: recipient) })
-                                if FeatureFlags.backupRestoreFailOnAnyError {
+                                if FeatureFlags.messageBackupRestoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }
@@ -946,7 +916,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: chat) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: chat) })
-                                if FeatureFlags.backupRestoreFailOnAnyError {
+                                if FeatureFlags.messageBackupRestoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }
@@ -965,7 +935,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: chatItem) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: chatItem) })
-                                if FeatureFlags.backupRestoreFailOnAnyError {
+                                if FeatureFlags.messageBackupRestoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }
@@ -1003,7 +973,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: backupProtoStickerPack) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: backupProtoStickerPack) })
-                                if FeatureFlags.backupRestoreFailOnAnyError {
+                                if FeatureFlags.messageBackupRestoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }
@@ -1022,7 +992,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: false, protoFrame: backupProtoAdHocCall) })
                             case .failure(let errors):
                                 frameErrors.append(contentsOf: errors.map { LoggableErrorAndProto(error: $0, wasFrameDropped: true, protoFrame: backupProtoAdHocCall) })
-                                if FeatureFlags.backupRestoreFailOnAnyError {
+                                if FeatureFlags.messageBackupRestoreFailOnAnyError {
                                     throw BackupError()
                                 }
                             }

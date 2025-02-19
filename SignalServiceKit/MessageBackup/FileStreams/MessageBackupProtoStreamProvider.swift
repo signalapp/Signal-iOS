@@ -8,11 +8,13 @@ public import LibSignalClient
 
 extension MessageBackup {
     public enum ProtoStream {
-        public typealias EncryptionMetadataProvider = () throws -> Upload.EncryptedBackupUploadMetadata
-
-        public enum OpenOutputStreamResult<T> {
-            /// A stream was opened successfully.
-            case success(MessageBackupProtoOutputStream, T)
+        public enum OpenOutputStreamResult<StreamMetadata> {
+            /// The contained stream was opened successfully.
+            /// - Note
+            /// Calling the contained `metadataProvider` provides point-in-time
+            /// metadata for the stream; consequently, callers likely want to
+            /// invoke it after finishing writing to the stream.
+            case success(MessageBackupProtoOutputStream, metadataProvider: () throws -> StreamMetadata)
             /// Unable to open a file stream due to I/O errors.
             case unableToOpenFileStream
         }
@@ -83,7 +85,7 @@ public protocol MessageBackupEncryptedProtoStreamProvider {
         progress: MessageBackupExportProgress,
         memorySampler: MemorySampler,
         tx: DBReadTransaction
-    ) -> ProtoStream.OpenOutputStreamResult<ProtoStream.EncryptionMetadataProvider>
+    ) -> ProtoStream.OpenOutputStreamResult<Upload.EncryptedBackupUploadMetadata>
 
     /// Open an input stream to read an encrypted backup from a file on disk.
     /// The caller becomes the owner of the stream, and is responsible for
@@ -115,7 +117,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
         progress: MessageBackupExportProgress,
         memorySampler: MemorySampler,
         tx: any DBReadTransaction
-    ) -> ProtoStream.OpenOutputStreamResult<ProtoStream.EncryptionMetadataProvider> {
+    ) -> ProtoStream.OpenOutputStreamResult<Upload.EncryptedBackupUploadMetadata> {
         do {
             let messageBackupKey = try backupKey.asMessageBackupKey(for: localAci)
             let inputTrackingTransform = MetadataStreamTransform(calculateDigest: false)
@@ -140,16 +142,16 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
                 transforms: transforms,
                 progress: progress
             ) {
-            case .success(let _outputStream, let _fileUrl):
+            case .success(let _outputStream, let _fileUrlProvider):
                 outputStream = _outputStream
-                fileUrl = _fileUrl
+                fileUrl = try! _fileUrlProvider()
             case .unableToOpenFileStream:
                 return .unableToOpenFileStream
             }
 
             return .success(
                 outputStream,
-                {
+                metadataProvider: {
                     return Upload.EncryptedBackupUploadMetadata(
                         fileUrl: fileUrl,
                         digest: try outputTrackingTransform.digest(),
@@ -303,7 +305,10 @@ private class GenericStreamProvider {
             progress: progress
         )
 
-        return .success(messageBackupOutputStream, fileUrl)
+        return .success(
+            messageBackupOutputStream,
+            metadataProvider: { fileUrl }
+        )
     }
 
     func openInputFileStream(
