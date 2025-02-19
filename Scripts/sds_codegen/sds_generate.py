@@ -1760,8 +1760,8 @@ extension %sRecord {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    internal func asArguments() -> StatementArguments {
-        let databaseValues: [DatabaseValueConvertible?] = [
+    internal func asValues() -> [DatabaseValueConvertible?] {
+        return [
 """ % str(
             remove_prefix_from_class_name(clazz.name)
         )
@@ -1784,7 +1784,10 @@ extension %sRecord {
 
         swift_body += """
         ]
-        return StatementArguments(databaseValues)
+    }
+
+    internal func asArguments() -> StatementArguments {
+        return StatementArguments(asValues())
     }
 }
 """

@@ -15,16 +15,13 @@ final class MessageBackupGroupUpdateMessageArchiver {
     private typealias PersistableGroupUpdateItem = TSInfoMessage.PersistableGroupUpdateItem
 
     private let groupUpdateBuilder: GroupUpdateItemBuilder
-    private let groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper
     private let interactionStore: MessageBackupInteractionStore
 
     public init(
         groupUpdateBuilder: GroupUpdateItemBuilder,
-        groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper,
         interactionStore: MessageBackupInteractionStore
     ) {
         self.groupUpdateBuilder = groupUpdateBuilder
-        self.groupUpdateHelper = groupUpdateHelper
         self.interactionStore = interactionStore
     }
 
@@ -223,16 +220,6 @@ final class MessageBackupGroupUpdateMessageArchiver {
                 chatItem.id
             )])
         }
-
-        // FIRST, try and do any collapsing. This might collapse
-        // the passed in array of updates (modifying it), or
-        // may update the most recent TSInfoMessage on disk, or both.
-        groupUpdateHelper.collapseIfNeeded(
-            updates: &persistableUpdates,
-            localIdentifiers: context.recipientContext.localIdentifiers,
-            groupThread: groupThread,
-            tx: context.tx
-        )
 
         guard persistableUpdates.isEmpty.negated else {
             // If we got an empty array, that means it got collapsed!

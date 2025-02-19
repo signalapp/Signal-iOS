@@ -813,7 +813,6 @@
 		66232AD92CB9D00400AE6A76 /* MessageBackupThreadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66232AD82CB9D00000AE6A76 /* MessageBackupThreadStore.swift */; };
 		66232ADB2CB9E33600AE6A76 /* MessageBackupStoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66232ADA2CB9E32F00AE6A76 /* MessageBackupStoryStore.swift */; };
 		66232AE12CC0272900AE6A76 /* MessageBackupFullTextSearchIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66232AE02CC0271F00AE6A76 /* MessageBackupFullTextSearchIndexer.swift */; };
-		662590BB2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */; };
 		662590BF2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590BE2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift */; };
 		662590CB2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */; };
 		662590CD2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CC2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift */; };
@@ -2452,6 +2451,8 @@
 		D93EDC042AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */; };
 		D941863C2ACE252D002FE2D3 /* CallRecordLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D941863B2ACE252D002FE2D3 /* CallRecordLogger.swift */; };
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
+		D94441312D55956B005B2A54 /* UUIDv7.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94441302D559567005B2A54 /* UUIDv7.swift */; };
+		D94441332D559C6F005B2A54 /* UUIDv7Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94441322D559C6B005B2A54 /* UUIDv7Test.swift */; };
 		D945319E2CE53CEB004DAB30 /* SubscriptionRedemptionNecessityChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D945319D2CE53CC8004DAB30 /* SubscriptionRedemptionNecessityChecker.swift */; };
 		D9495A6D2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */; };
 		D9495A702C76965600843BC1 /* TSOutgoingMessageRecipientStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9495A6E2C76963F00843BC1 /* TSOutgoingMessageRecipientStateTest.swift */; };
@@ -4634,7 +4635,6 @@
 		66232AD82CB9D00000AE6A76 /* MessageBackupThreadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupThreadStore.swift; sourceTree = "<group>"; };
 		66232ADA2CB9E32F00AE6A76 /* MessageBackupStoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupStoryStore.swift; sourceTree = "<group>"; };
 		66232AE02CC0271F00AE6A76 /* MessageBackupFullTextSearchIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupFullTextSearchIndexer.swift; sourceTree = "<group>"; };
-		662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupUpdateInfoMessageInserterBackupHelper.swift; sourceTree = "<group>"; };
 		662590BE2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateMessageArchiver.swift; sourceTree = "<group>"; };
 		662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateProtoToSwiftConverter.swift; sourceTree = "<group>"; };
 		662590CC2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateSwiftToProtoConverter.swift; sourceTree = "<group>"; };
@@ -6281,6 +6281,8 @@
 		D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationSettingsViewController+MySupport.swift"; sourceTree = "<group>"; };
 		D941863B2ACE252D002FE2D3 /* CallRecordLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordLogger.swift; sourceTree = "<group>"; };
 		D943F3EE2892F89B008C0C8B /* NSELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSELogger.swift; sourceTree = "<group>"; };
+		D94441302D559567005B2A54 /* UUIDv7.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDv7.swift; sourceTree = "<group>"; };
+		D94441322D559C6B005B2A54 /* UUIDv7Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDv7Test.swift; sourceTree = "<group>"; };
 		D945319D2CE53CC8004DAB30 /* SubscriptionRedemptionNecessityChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionRedemptionNecessityChecker.swift; sourceTree = "<group>"; };
 		D9495A6C2C7683D100843BC1 /* TSOutgoingMessageRecipientState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageRecipientState.swift; sourceTree = "<group>"; };
 		D9495A6E2C76963F00843BC1 /* TSOutgoingMessageRecipientStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageRecipientStateTest.swift; sourceTree = "<group>"; };
@@ -12801,6 +12803,7 @@
 				F94261E8289B1B5400460798 /* UnfairLockTest.swift */,
 				6600F34D298C81E300B1EDB7 /* UnknownEnumCodableTest.swift */,
 				F9D5BFD02979B027001737E5 /* URLPathComponentsTest.swift */,
+				D94441322D559C6B005B2A54 /* UUIDv7Test.swift */,
 				F94261FD289B1B5400460798 /* ViewOnceMessagesTest.swift */,
 			);
 			name = Util;
@@ -14067,6 +14070,7 @@
 				6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */,
 				F9D5BFCE2979AFF4001737E5 /* URLPathComponents.swift */,
 				F9C5CB54289453B200548EEE /* UserProfileFinder.swift */,
+				D94441302D559567005B2A54 /* UUIDv7.swift */,
 				F9C5CB03289453B200548EEE /* ViewOnceMessages.swift */,
 				F9C5CB7F289453B200548EEE /* Weak.swift */,
 				F9C5CB29289453B200548EEE /* WeakTimer.swift */,
@@ -14132,7 +14136,6 @@
 				34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */,
 				D99A0F6129F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift */,
 				D99A0F5F29F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift */,
-				662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */,
 				34BB3C5B23C6644B001651FC /* GroupV2Params.swift */,
 				34BB3C5A23C6644B001651FC /* GroupV2Snapshot.swift */,
 				340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */,
@@ -17358,7 +17361,6 @@
 				724D47BD2B97C5B9001BE973 /* GroupsV2Utils.swift in Sources */,
 				D99A0F6229F35CE1002E02E3 /* GroupUpdateInfoMessageInserter+FoldIntoExistingMessage.swift in Sources */,
 				D99A0F6029F34FDA002E02E3 /* GroupUpdateInfoMessageInserter.swift in Sources */,
-				662590BB2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift in Sources */,
 				667AF9E22B4DC5EE008AEE5D /* GroupUpdateSource.swift in Sources */,
 				724D47BB2B97C558001BE973 /* GroupV2Params.swift in Sources */,
 				724D47BC2B97C57C001BE973 /* GroupV2Snapshot.swift in Sources */,
@@ -18186,6 +18188,7 @@
 				5037F1942A43A6A300C372AD /* UserProfileMerger.swift in Sources */,
 				506ABE6B2A43AECA008844D1 /* UserProfileStore.swift in Sources */,
 				72901D2B2C9B11A3000406DC /* UserProfileWriter.swift in Sources */,
+				D94441312D55956B005B2A54 /* UUIDv7.swift in Sources */,
 				504F397C29D23B1700E849A6 /* ValidatedIncomingEnvelope.swift in Sources */,
 				66F6D69C2C73F01900EFAF75 /* VersionedDisappearingMessageToken.swift in Sources */,
 				F9C5CE3B289453B400548EEE /* VersionedProfiles.swift in Sources */,
@@ -18427,6 +18430,7 @@
 				D9A3E2322A0DBDFC00E2A8B5 /* Usernames+UsernameLinkTests.swift in Sources */,
 				D93830812A7065C7006CDCDE /* UsernameValidationManagerTests.swift in Sources */,
 				506ABE6E2A43B2FE008844D1 /* UserProfileMergerTest.swift in Sources */,
+				D94441332D559C6F005B2A54 /* UUIDv7Test.swift in Sources */,
 				D9B95A9D29E894A600D7CB95 /* ValidatableModel.swift in Sources */,
 				F942626A289B1B5500460798 /* ViewOnceMessagesTest.swift in Sources */,
 				D9C964092BE44D700058F143 /* XCTest+Thenable.swift in Sources */,

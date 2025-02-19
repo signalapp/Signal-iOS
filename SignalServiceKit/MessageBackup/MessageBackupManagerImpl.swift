@@ -4,6 +4,7 @@
 //
 
 public import LibSignalClient
+import GRDB
 
 public enum BackupValidationError: Error {
     case unknownFields([String])
@@ -674,6 +675,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     ) async throws {
         let result: Result<BackupProto_BackupInfo, Error> = await db.awaitableWriteWithTxCompletion { tx in
             do {
+                /// Drops all indexes on the `TSInteraction` table before doing
+                /// the import, which dramatically speeds up the import. We'll
+                /// then recreate all these indexes in bulk afterwards.
+                let interactionIndexes = try dropAllIndexes(
+                    forTable: InteractionRecord.databaseTableName,
+                    tx: tx
+                )
+
                 let backupInfo = try Bench(
                     title: benchTitle,
                     memorySamplerRatio: FeatureFlags.messageBackupMemorySamplerRatio,
@@ -699,6 +708,19 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         )
                     }
                 }
+
+                let timeBeforeCreatingIndexes = dateProviderMonotonic()
+
+                /// Now that we've imported successfully, we want to recreate
+                /// the indexes we temporarily dropped.
+                try createIndexes(
+                    interactionIndexes,
+                    onTable: InteractionRecord.databaseTableName,
+                    tx: tx
+                )
+
+                let timeAfterCreatingIndexes = dateProviderMonotonic()
+                Logger.info("Created indexes in \(timeAfterCreatingIndexes.millisSince(timeBeforeCreatingIndexes))ms")
 
                 return .commit(.success(backupInfo))
             } catch let error {
@@ -1055,6 +1077,62 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         })
         processErrors(errors: frameErrors, didFail: result.isSuccess.negated, tx: tx)
         return try result.get()
+    }
+
+    // MARK: -
+
+    private struct SQLiteIndexInfo {
+        let tableName: String
+        let sqlThatCreatedIndex: String
+    }
+
+    private func dropAllIndexes(
+        forTable tableName: String,
+        tx: DBWriteTransaction
+    ) throws -> [SQLiteIndexInfo] {
+        let allIndexesOnTable: [GRDB.IndexInfo] = try tx.databaseConnection.indexes(on: tableName)
+
+        var sqliteIndexInfos = [SQLiteIndexInfo]()
+
+        for index in allIndexesOnTable {
+            if index.name.contains("autoindex") {
+                // Skip indexes automatically created by SQLite, such as on
+                // primary keys.
+                continue
+            }
+
+            guard let sqlThatCreatedIndex = try String.fetchOne(
+                tx.databaseConnection,
+                sql: """
+                    SELECT sql FROM sqlite_master
+                    WHERE type = 'index'
+                    AND name = '\(index.name)'
+                """
+            ) else {
+                throw OWSAssertionError("Failed to get SQL for creating index \(index.name)!")
+            }
+
+            sqliteIndexInfos.append(SQLiteIndexInfo(
+                tableName: tableName,
+                sqlThatCreatedIndex: sqlThatCreatedIndex
+            ))
+
+            try tx.databaseConnection.drop(index: index.name)
+        }
+
+        return sqliteIndexInfos
+    }
+
+    private func createIndexes(
+        _ indexInfos: [SQLiteIndexInfo],
+        onTable tableName: String,
+        tx: DBWriteTransaction
+    ) throws {
+        owsPrecondition(indexInfos.allSatisfy { $0.tableName == tableName })
+
+        for indexInfo in indexInfos {
+            try tx.databaseConnection.execute(sql: indexInfo.sqlThatCreatedIndex)
+        }
     }
 
     // MARK: -

@@ -17,7 +17,6 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private let dateProvider: DateProvider
     private let editMessageStore: EditMessageStore
     private let groupCallRecordManager: GroupCallRecordManager
-    private let groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper
     private let groupUpdateItemBuilder: GroupUpdateItemBuilder
     private let individualCallRecordManager: IndividualCallRecordManager
     private let interactionStore: MessageBackupInteractionStore
@@ -34,7 +33,6 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         dateProvider: @escaping DateProvider,
         editMessageStore: EditMessageStore,
         groupCallRecordManager: GroupCallRecordManager,
-        groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper,
         groupUpdateItemBuilder: GroupUpdateItemBuilder,
         individualCallRecordManager: IndividualCallRecordManager,
         interactionStore: MessageBackupInteractionStore,
@@ -50,7 +48,6 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         self.dateProvider = dateProvider
         self.editMessageStore = editMessageStore
         self.groupCallRecordManager = groupCallRecordManager
-        self.groupUpdateHelper = groupUpdateHelper
         self.groupUpdateItemBuilder = groupUpdateItemBuilder
         self.individualCallRecordManager = individualCallRecordManager
         self.interactionStore = interactionStore
@@ -92,7 +89,6 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             callRecordStore: callRecordStore,
             contactManager: contactManager,
             groupCallRecordManager: groupCallRecordManager,
-            groupUpdateHelper: groupUpdateHelper,
             groupUpdateItemBuilder: groupUpdateItemBuilder,
             individualCallRecordManager: individualCallRecordManager,
             interactionStore: interactionStore

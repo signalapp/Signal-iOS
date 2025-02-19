@@ -75,7 +75,10 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
               receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                            thread:(TSThread *)thread
 {
-    NSString *uniqueId = [[self class] generateUniqueId];
+    // Use a sequential UUID for interaction inserts, as an optimization for the
+    // corresponding insert into the index on `uniqueId`. See comments about
+    // UUIDv7 for more.
+    NSString *uniqueId = [[NSUUID sequential] UUIDString];
     self = [super initWithUniqueId:uniqueId];
 
     if (!self) {

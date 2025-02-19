@@ -4950,8 +4950,8 @@ extension InteractionRecord {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    internal func asArguments() -> StatementArguments {
-        let databaseValues: [DatabaseValueConvertible?] = [
+    internal func asValues() -> [DatabaseValueConvertible?] {
+        return [
                 recordType,
                             uniqueId,
                             receivedAtTimestamp,
@@ -5029,7 +5029,10 @@ extension InteractionRecord {
                             isSmsMessageRestoredFromBackup,
 
         ]
-        return StatementArguments(databaseValues)
+    }
+
+    internal func asArguments() -> StatementArguments {
+        return StatementArguments(asValues())
     }
 }
 

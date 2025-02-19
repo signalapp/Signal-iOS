@@ -1104,7 +1104,6 @@ public class AppSetup {
                 dateProvider: dateProvider,
                 editMessageStore: editMessageStore,
                 groupCallRecordManager: groupCallRecordManager,
-                groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelperImpl(),
                 groupUpdateItemBuilder: groupUpdateItemBuilder,
                 individualCallRecordManager: individualCallRecordManager,
                 interactionStore: backupInteractionStore,

@@ -22,14 +22,12 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
         callRecordStore: any CallRecordStore,
         contactManager: any MessageBackup.Shims.ContactManager,
         groupCallRecordManager: any GroupCallRecordManager,
-        groupUpdateHelper: any GroupUpdateInfoMessageInserterBackupHelper,
         groupUpdateItemBuilder: any GroupUpdateItemBuilder,
         individualCallRecordManager: any IndividualCallRecordManager,
         interactionStore: MessageBackupInteractionStore
     ) {
         groupUpdateMessageArchiver = MessageBackupGroupUpdateMessageArchiver(
             groupUpdateBuilder: groupUpdateItemBuilder,
-            groupUpdateHelper: groupUpdateHelper,
             interactionStore: interactionStore
         )
         expirationTimerChatUpdateArchiver = MessageBackupExpirationTimerChatUpdateArchiver(
