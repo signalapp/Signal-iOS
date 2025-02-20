@@ -1,19 +1,19 @@
-Signal to aplikacja do przesyłania wiadomości, której główną ideą jest prywatność. Jest darmowa i łatwa w użyciu, a dzięki wysokiemu poziomowi szyfrowania end-to-end zapewnia pełną prywatność komunikacji.
+Signal to komunikator, w którym liczy się przede wszystkim prywatność. Aplikacja jest darmowa i prosta w użyciu, a dzięki szyfrowaniu end-to-end zapewnia pełną poufność komunikacji.
 
-• Wysyłaj bezpłatnie wiadomości, wiadomości głosowe, zdjęcia, wideo, GIF-y i pliki. Signal korzysta z przesyłu danych telefonii komórkowej, dzięki czemu unikasz opłat za SMS-y oraz MMS-y.
+• Bezpłatnie wysyłaj wiadomości tekstowe i głosowe, zdjęcia, wideo, GIF-y czy też pliki. Signal korzysta z połączenia z internetem, dzięki czemu unikasz opłat za SMS-y oraz MMS-y.
 
-• Prowadź najwyższej jakości zaszyfrowane rozmowy audio i wideo. Obsługujemy połączenia grupowe do maksimum 40 osób.
+• Prowadź szyfrowane rozmowy z dźwiękiem i obrazem wysokiej jakości. Obsługujemy połączenia grupowe z maksymalnie 40 osobami naraz.
 
-• Pozostań w kontakcie z nawet tysiącem użytkowników dzięki czatom grupowym. Kontroluj, kto może publikować i zarządzać listą członków grupy, za pomocą uprawnień administratora.
+•  Korzystaj z czatów gruppwych, w których może uczestniczyć nawet tysiąc osób. Jako administrator kontroluj, kto może wysyłać wiadomości, i zarządzaj listą członków grupy.
 
-• Udostępniaj znikające po 24 godzinach relacje ze zdjęciami, wideo i tekstem. Dzięki ustawieniom prywatności masz pełną kontrolę nad tym, kto może wyświetlić każdą relację.
+• Udostępniaj relacje ze zdjęciami, wideo i tekstem znikającymi po 24 godzinach. Dzięki ustawieniom prywatności masz pełną kontrolę nad tym, kto może wyświetlić każdą z relacji.
 
-• Stworzyliśmy Signal z myślą o ochronie prywatności. Nie wiemy nic o Tobie ani o tym, z kim rozmawiasz. Nasz otwarty protokół Signal oznacza, że nie możemy czytać Twoich wiadomości ani słuchać Twoich rozmów. Ani my, ani nikt inny. Bez ściemy, bez zbierania danych, bez kompromisów. 
+• Stworzyliśmy Signal z myślą o ochronie prywatności. Nie wiemy nic o Tobie ani o tym, z kim się kontaktujesz. Zgodnie z protokołem Signal, udostępnianym na zasadach open source, nie możemy czytać Twoich wiadomości ani słuchać Twoich rozmów. Ani my, ani nikt inny. Bez ściemy, bez zbierania danych, bez kompromisów. 
 
-• Signal to niezależna organizacja non profit, działająca na zupełnie innych zasadach niż wielkie korporacje z branży technologicznej. Jako organizacja non profit typu 501c3 polegamy na darowiznach użytkowników, a nie na reklamodawcach czy inwestorach. 
+• Signal to niezależna organizacja non profit, działająca na zupełnie innych zasadach niż wielkie korporacje z branży technologicznej. Zgodnie z zapisem 501c3 amerykańskiego prawa podatkowego polegamy na darowiznach użytkowników, a nie na reklamodawcach czy inwestorach. 
 
-• Aby zadać pytania, uzyskać pomoc lub otrzymać więcej informacji, odwiedź stronę: https://support.signal.org/
+• Aby zadać pytanie, otrzymać pomoc lub więcej informacji, odwiedź https://support.signal.org/
 
 Aby sprawdzić nasz kod źródłowy, odwiedź https://github.com/signalapp 
 
-Śledź nas na Twitterze (@signalapp) i Instagramie (@signal_app)
+Obserwuj nas na Twitterze (@signalapp) i Instagramie (@signal_app)
