@@ -464,13 +464,13 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "ลำโพง";
 
 /* Message when trying to show a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Voice message not available";
+"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "ไม่พบข้อความเสียง";
 
 /* Message for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "This voice message was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "ข้อความเสียงนี้ไม่ได้ถูกถ่ายโอนจากโทรศัพท์ของคุณในขั้นตอนการเชื่อมโยงอุปกรณ์ ระบบไม่สามารถซิงค์ไฟล์และสื่อที่เก่ากว่า 45 วันนับจากวันที่เชื่อมโยงอุปกรณ์ได้";
 
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
+"AUDIO_UNAVAILABLE_SHEET_TITLE" = "ไม่พบข้อความเสียง";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "เลือกสี";
@@ -2024,7 +2024,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "หยุดการถ่ายโอนหรือไม่?";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Choose how you’d like to transfer your message history and account data";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "เลือกวิธีถ่ายโอนประวัติการส่งข้อความและข้อมูลบัญชีของคุณ";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "ทำต่อโดยไม่ถ่ายโอนบัญชีและข้อความของคุณ";
@@ -2033,7 +2033,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "เพิ่ม iPad เครื่องนี้เป็นอุปกรณ์ที่เชื่อมโยงเครื่องใหม่";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "You’ll have the option to transfer messages and recent media from your phone";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "คุณจะสามารถเลือกถ่ายโอนข้อความและไฟล์สื่อล่าสุดจากโทรศัพท์";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "เพิ่มเป็นอุปกรณ์ใหม่";
@@ -2048,10 +2048,10 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "ถ่ายโอนบัญชีและประวัติการส่งข้อความจากอุปกรณ์ iOS เครื่องเก่าของคุณ";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "ถ่ายโอนบัญชีและประวัติการส่งข้อความจากอุปกรณ์ iOS เครื่องเก่าของคุณ";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from Another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "ถ่ายโอนจาก iPad อีกเครื่อง";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "ถ่ายโอนจากอุปกรณ์ iOS";
@@ -2606,7 +2606,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhone, Android, and Desktop. Get it here: %1$@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Signal here: %2$@";
+"EMAIL_INVITE_BODY" = "สวัสดี!\n\nหลังจากที่ฉันได้เริ่มใช้ Signal เพื่อรักษาความเป็นส่วนตัวของแชทบน iPhone ฉันอยากแนะนำให้คุณติดตั้งแอปนี้เช่นกัน เพื่อให้มั่นใจได้ว่ามีแค่เราสองคนเท่านั้นที่สามารถอ่านข้อความหรือได้ยินเสียงพูดคุยของเรา\n\nSignal ใช้งานได้ทั้งบน iPhone, Android และเดสก์ท็อป ดาวน์โหลดเลยที่นี่: %1$@\n\nSignal ทำงานเหมือนแอปส่งข้อความที่คุณใช้อยู่ เราสามารถส่งรูปและวิดีโอ โทรออก และเริ่มแชทกลุ่ม แต่ที่มากไปกว่านั้นก็คือจะไม่มีใครเห็นข้อมูลเหล่านี้ แม้แต่ทีมงานที่สร้าง Signal ก็ตาม!\n\nอ่านเพิ่มเติมเกี่ยวกับ Signal ได้ที่นี่: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "เปลี่ยนมาใช้ Signal กันเถอะ";
@@ -4127,7 +4127,7 @@
 "LINKED_DEVICE_NOTIFICATION_BODY" = "คุณเชื่อมโยงอุปกรณ์เครื่องใหม่ไปยังบัญชีแล้วตอน %1$@ แตะเพื่อดู";
 
 /* Body for megaphone notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "A new device was linked to your account at %1$@.";
+"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "คุณเชื่อมโยงอุปกรณ์เครื่องใหม่ไปยังบัญชีแล้วตอน %1$@";
 
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "เชื่อมโยงอุปกรณ์เครื่องใหม่แล้ว";
@@ -4688,7 +4688,7 @@
 "MISSED_VOICE_CALL" = "การโทรด้วยเสียงที่ไม่ได้รับ";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "คุณสามารถอนุญาตสิทธิ์การเข้าถึงกล้องได้ในแอปการตั้งค่า iOS";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal จำเป็นต้องเข้าถึงกล้องของคุณ";
@@ -4829,7 +4829,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "เลือกกลุ่ม";
 
 /* Main button for megaphone notification when a new device is linked */
-"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "View device";
+"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "ดูอุปกรณ์";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ค้นหาด้วยหมายเลขโทรศัพท์";
@@ -5738,7 +5738,7 @@
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "PIN ช่วยรักษาข้อมูลของคุณที่เก็บอยู่ใน Signal ให้เข้ารหัสอยู่เสมอ เพื่อที่ข้อมูลดังกล่าวจะมีคุณเพียงคนเดียวเท่านั้นที่สามารถเข้าถึงได้ เลือก PIN ที่ยากกว่านี้เพื่อปกป้องบัญชีของคุณ";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled.";
+"PIN_DISABLE_ERROR_MESSAGE" = "ไม่สามารถปิดใช้งาน PIN ของคุณได้";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "การปิดใช้งาน PIN ล้มเหลว";
@@ -6403,6 +6403,12 @@
 /* Message title describing the safety tip about unknown or fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "ธุรกิจและหน่วยงานปลอม";
 
+/* Message contents for the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+
+/* Message title describing the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "โปรดพิจารณาคำขอนี้อย่างถี่ถ้วน กลุ่มนี้ไม่มีสมาชิกที่เป็นผู้ติดต่อของคุณหรือผู้ใช้ที่คุณแชทด้วย ใช้ความระมัดระวังและลองตรวจสอบตามข้อสังเกตนี้:";
 
@@ -6959,7 +6965,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "เปิดใช้";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoin and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "คุณสามารถใช้ Signal เพื่อส่งและรับ MobileCoin การชำระเงินทั้งหมดอยู่ภายใต้เงื่อนไขการใช้งานสำหรับ MobileCoin และ MobileCoin Wallet คุณอาจพบปัญหาบางประการ และการชำระเงินหรือยอดคงเหลืออาจสูญหายไปโดยกู้คืนมาไม่ได้";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "เปิดใช้";
@@ -7700,13 +7706,13 @@
 "STICKER_MESSAGE_PREVIEW" = "ข้อความสติกเกอร์";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker not available";
+"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "ไม่พบสติกเกอร์";
 
 /* Message for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "This sticker was not transferred from your phone when this device was linked. Media and files older than 45 days at the time of device linking can not be synced.";
+"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "สติกเกอร์นี้ไม่ได้ถูกถ่ายโอนจากโทรศัพท์ของคุณในขั้นตอนการเชื่อมโยงอุปกรณ์ ระบบไม่สามารถซิงค์ไฟล์และสื่อที่เก่ากว่า 45 วันนับจากวันที่เชื่อมโยงอุปกรณ์ได้";
 
 /* Title for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker Not Available";
+"STICKER_UNAVAILABLE_SHEET_TITLE" = "ไม่พบสติกเกอร์";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "ติดตั้ง";
@@ -8157,6 +8163,9 @@
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "เวลาข้อความหายไปจะตั้งค่าเป็น %1$@ เมื่อคุณส่งข้อความให้พวกเขา";
+
+/* Indicator warning about an unknown contact thread */
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "ไม่มีกลุ่มที่เหมือนกันเลย โปรดพิจารณาคำขออย่างระวัง";

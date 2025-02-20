@@ -464,13 +464,13 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Hangszóró";
 
 /* Message when trying to show a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Voice message not available";
+"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Hangüzenet nem érhető el";
 
 /* Message for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "This voice message was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "Ez a hangüzenet nem lett átmásolva a telefonodról az eszköz összekapcsolásakor. Az eszköz összekapcsolásakor 45 napnál régebbi fájlok és médiafájlok nem szinkronizálhatók.";
 
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
+"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Hangüzenet nem érhető el";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Szín kiválasztása";
@@ -2024,7 +2024,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Megszakítod az átvitelt?";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Choose how you’d like to transfer your message history and account data";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Válaszd ki, hogyan szeretnéd átvinni az üzenetelőzményeket és a fiókadatokat";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Folytatás az azonosító és régi üzenetek átmozgatása nélkül";
@@ -2033,7 +2033,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add hozzá ezt az iPadet új kapcsolt eszközként";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "You’ll have the option to transfer messages and recent media from your phone";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "Lehetőséged lesz az üzenetek és a legutóbbi médiafájlok átvitelére a telefonodról";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Hozzáadás új eszközként";
@@ -2048,10 +2048,10 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Fiókod és üzenet-előzményeid áthelyezése régi iOS-eszközödről";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Fiókod és üzenet-előzményeid áthelyezése régi iOS-eszközödről";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from Another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Átmozgatás másik iPad-ről";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Átmozgatás iOS eszközről";
@@ -2606,7 +2606,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhone, Android, and Desktop. Get it here: %1$@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Signal here: %2$@";
+"EMAIL_INVITE_BODY" = "Szia!\n\nÚjabban privát csevegéseimet a Signal üzenetküldő alkalmazással bonyolítom iPhone-on. Örülnék, ha te is telepítenéd, így biztosak lehetünk benne, hogy amit írunk, vagy mondunk a telefonba, az köztünk marad.\n\nA Signal elérhető iPhone és Android telefonokra, valamint asztali számítógépre. Itt szerezheted meg: %1$@\n\nA Signal az ismert csevegőprogramokhoz hasonlóan működik: küldhetünk képeket, videókat, hívhatjuk egymást, csoportos csevegést indíthatunk. A legjobb, hogy a fentiekbe senkinek, még a Signal fejlesztőinek sincs semmilyen betekintési, belehallgatási lehetősége.\n\nA Signalról itt olvashatsz bővebben: %2$@.";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Váltsunk Signalra!";
@@ -4127,7 +4127,7 @@
 "LINKED_DEVICE_NOTIFICATION_BODY" = "Új eszközt kapcsoltak a fiókodhoz ekkor: %1$@. Koppints a megtekintéshez.";
 
 /* Body for megaphone notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "A new device was linked to your account at %1$@.";
+"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "Új eszközt kapcsoltak a fiókodhoz ekkor: %1$@.";
 
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "Összekapcsoltál egy új eszközt";
@@ -4688,7 +4688,7 @@
 "MISSED_VOICE_CALL" = "Nem fogadott hanghívás";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "A kamerához való hozzáférés az iOS Beállításokban engedélyezhető.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "A Signal szeretne hozzáférni a kamerádhoz.";
@@ -4829,7 +4829,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Csoport kiválasztása";
 
 /* Main button for megaphone notification when a new device is linked */
-"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "View device";
+"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "Eszköz megtekintése";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Keresés telefonszám alapján";
@@ -5738,7 +5738,7 @@
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "A PIN-kód titkosítja a Signalban tárolt adataidat, így csak te férhetsz hozzá. Válassz erősebb PIN-kódot a fiókod védelme érdekében.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled.";
+"PIN_DISABLE_ERROR_MESSAGE" = "A PIN-kódod letiltása nem sikerült.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "PIN letiltása sikertelen";
@@ -6403,6 +6403,12 @@
 /* Message title describing the safety tip about unknown or fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Hamis vállalkozások és intézmények";
 
+/* Message contents for the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+
+/* Message title describing the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Gondosan nézd át ezt a felkérést. Egyetlen ismerősöd vagy csevegőpartnered sincs ebben a csoportban. Íme néhány dolog, amire érdemes odafigyelni:";
 
@@ -6959,7 +6965,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Aktiválás";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoin and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "A Signal segítségével küldhetsz és fogadhatsz MobileCoint. Minden fizetésre a MobileCoin és a MobileCoin Wallet felhasználási feltételei vonatkoznak. Előfordulhat, hogy hibákba futsz bele, és az elveszett fizetéseket és egyenlegeket nem lehet helyreállítani.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Aktiválás";
@@ -7700,13 +7706,13 @@
 "STICKER_MESSAGE_PREVIEW" = "Matrica üzenet";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker not available";
+"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Matrica nem elérhető";
 
 /* Message for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "This sticker was not transferred from your phone when this device was linked. Media and files older than 45 days at the time of device linking can not be synced.";
+"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "Ez a matrica nem lett átmásolva a telefonodról az eszköz összekapcsolásakor. Az eszköz összekapcsolásakor 45 napnál régebbi médiafájlok és fájlok nem szinkronizálhatók.";
 
 /* Title for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker Not Available";
+"STICKER_UNAVAILABLE_SHEET_TITLE" = "Matrica nem elérhető";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Telepítés";
@@ -8157,6 +8163,9 @@
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Az eltűnő üzenetek időzítője %1$@ értékre lesz állítva mikor csevegést indítasz feléjük.";
+
+/* Indicator warning about an unknown contact thread */
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Nincs közös csoportotok. A kérelmeket óvatosan tekintsd át.";

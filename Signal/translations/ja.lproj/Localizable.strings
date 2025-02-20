@@ -464,13 +464,13 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "スピーカー";
 
 /* Message when trying to show a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Voice message not available";
+"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "ボイスメッセージはご利用になれません";
 
 /* Message for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "This voice message was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "この端末をリンクしたときに、このボイスメッセージはスマートフォンから移行されませんでした。端末をリンクした時点で45日以上経過したファイルとメディアは同期できません。";
 
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
+"AUDIO_UNAVAILABLE_SHEET_TITLE" = "ボイスメッセージを移行できません";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "色を選択してください";
@@ -2024,7 +2024,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "移行を中止しますか？";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Choose how you’d like to transfer your message history and account data";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "メッセージ履歴とアカウントデータを移行する方法を選択してください";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "アカウントやメッセージを移行せずに続行する";
@@ -2033,7 +2033,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "このiPadを新しいリンク済み端末として追加する";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "You’ll have the option to transfer messages and recent media from your phone";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "スマートフォンからメッセージや最近のメディアを移行することができます";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "新しい端末として設定";
@@ -2048,10 +2048,10 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "以前のiOS端末からアカウントとメッセージ履歴を移行します";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "以前のiOS端末からアカウントとメッセージ履歴を移行します";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from Another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "他のiPadから移行する";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "iOS端末から移行する";
@@ -2606,7 +2606,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhone, Android, and Desktop. Get it here: %1$@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Signal here: %2$@";
+"EMAIL_INVITE_BODY" = "こんにちは\n\n最近、私はiPhoneでのチャットのプライベートを保つためにSignalを使っています。よかったら、あなたにもインストールしませんか？そうすれば、他の人が私たちのメッセージを読んだり聞いたりできないので安心です。\n\nSignalは、iPhone、Android、Desktopのどれでも使えます。ここからインストールできます： %1$@\n\nSignalの使い方は、今使っているメッセージアプリと同じです。写真や動画も送れるし、通話やグループチャットもできます。一番すごいところは、Signalの開発者であってもユーザーのやりとりを見られないところです！\n\nSignalの詳細についてはこちらをご覧ください：%2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "メッセージアプリをSignalにしましょう";
@@ -4127,7 +4127,7 @@
 "LINKED_DEVICE_NOTIFICATION_BODY" = "%1$@に、新しい端末があなたのアカウントにリンクされました。タップしてご確認ください。";
 
 /* Body for megaphone notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "A new device was linked to your account at %1$@.";
+"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "%1$@に、新しい端末があなたのアカウントにリンクされました。";
 
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "新しい端末をリンクしました";
@@ -4688,7 +4688,7 @@
 "MISSED_VOICE_CALL" = "音声通話着信あり";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "iOSの設定アプリでカメラアクセスを有効にできます。";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signalにカメラへのアクセス権限が必要です。";
@@ -4829,7 +4829,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "グループを選択";
 
 /* Main button for megaphone notification when a new device is linked */
-"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "View device";
+"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "端末を表示する";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "電話番号で検索";
@@ -5738,7 +5738,7 @@
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "Signal内に保存された情報は、PINにより暗号化を保持されるため、あなたのみアクセスできます。アカウント保護のために、より強力なPINを選択しましょう。";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled.";
+"PIN_DISABLE_ERROR_MESSAGE" = "PINを無効にできませんでした。";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "PINの無効化に失敗";
@@ -6403,6 +6403,12 @@
 /* Message title describing the safety tip about unknown or fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "偽の企業や団体";
 
+/* Message contents for the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+
+/* Message title describing the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "慎重にこの申請を確認してください。このグループには、あなたの連絡先やチャット相手は誰もいません。以下は注意すべき点です。";
 
@@ -6959,7 +6965,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "有効にする";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoin and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "MobileCoinの送受信にはSignalをご利用ください。すべての決済は、MobileCoinsとMobileCoin Walletの利用規約に準じます。おこなった決済が取り消されたり、残高の回復ができないといった問題などが発生する可能性があります。";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "決済確認の有効化";
@@ -7700,13 +7706,13 @@
 "STICKER_MESSAGE_PREVIEW" = "ステッカーメッセージ";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker not available";
+"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "ステッカーはご利用になれません";
 
 /* Message for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "This sticker was not transferred from your phone when this device was linked. Media and files older than 45 days at the time of device linking can not be synced.";
+"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "この端末をリンクしたとき、このファイルはスマートフォンから移行されませんでした。端末をリンクした時点で45日以上経過したメディアやファイルは同期できません。";
 
 /* Title for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker Not Available";
+"STICKER_UNAVAILABLE_SHEET_TITLE" = "ステッカーはご利用になれません";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "インストール";
@@ -8157,6 +8163,9 @@
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "メッセージの送信時に、消えるメッセージのタイマーが%1$@に設定されます。";
+
+/* Indicator warning about an unknown contact thread */
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "共通のグループはありません。慎重に申請を確認してください。";

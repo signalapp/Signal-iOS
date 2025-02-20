@@ -464,13 +464,13 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Caixa de som";
 
 /* Message when trying to show a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Voice message not available";
+"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Mensagem de voz indisponível";
 
 /* Message for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "This voice message was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "Esta mensagem de voz não foi transferida do seu telefone quando este aparelho foi vinculado. Arquivos e mídias com mais de 45 dias no momento da vinculação não podem ser sincronizados.";
 
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
+"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Mensagem de voz indisponível";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Escolher uma cor";
@@ -2024,7 +2024,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Interromper a transferência?";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Choose how you’d like to transfer your message history and account data";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Escolha como você gostaria de transferir seu histórico de mensagens e dados da conta";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Continuar sem transferir sua conta e suas mensagens";
@@ -2033,7 +2033,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Adicione este iPad como um novo dispositivo vinculado";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "You’ll have the option to transfer messages and recent media from your phone";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "Você terá a opção de transferir mensagens e mídias recentes do seu telefone";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Adicionar como novo aparelho";
@@ -2048,10 +2048,10 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transferir sua conta e seu histórico de mensagens a partir do seu antigo aparelho iOS";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transferir sua conta e seu histórico de mensagens a partir do seu antigo aparelho iOS";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from Another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transferir a partir de um outro iPad";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Transferir a partir de um aparelho iOS";
@@ -2606,7 +2606,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhone, Android, and Desktop. Get it here: %1$@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Signal here: %2$@";
+"EMAIL_INVITE_BODY" = "Olá,\n\nTenho usado o Signal ultimamente para manter minhas conversas no iPhone privadas. Gostaria que você instalasse também, assim garantimos que só nós podemos ler nossas mensagens ou ouvir nossas chamadas.\n\nO Signal está disponível para iPhone, Android e desktop. Baixe aqui: %1$@\n\nO Signal funciona como qualquer outro app de mensagens. Podemos trocar fotos, vídeos, fazer chamadas e até criar grupos. A diferença? Ninguém mais pode ver o que falamos – nem mesmo os desenvolvedores do Signal!\n\n Saiba mais sobre o Signal aqui: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Vamos mudar para o Signal!";
@@ -4127,7 +4127,7 @@
 "LINKED_DEVICE_NOTIFICATION_BODY" = "Um novo dispositivo foi vinculado à sua conta em %1$@. Toque para ver.";
 
 /* Body for megaphone notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "A new device was linked to your account at %1$@.";
+"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "Um novo dispositivo foi vinculado à sua conta. Horário: %1$@.";
 
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "Você vinculou um novo dispositivo";
@@ -4688,7 +4688,7 @@
 "MISSED_VOICE_CALL" = "Chamada de voz perdida";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Você pode ativar o acesso à câmera nos Ajustes do iOS.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "O Signal precisa acessar sua câmera.";
@@ -4829,7 +4829,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Escolher grupo";
 
 /* Main button for megaphone notification when a new device is linked */
-"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "View device";
+"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "Ver dispositivo";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Encontrar pelo número de telefone";
@@ -5738,7 +5738,7 @@
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "Os PINs mantêm suas informações armazenadas com criptografia do Signal, assim, só você pode acessar. Escolha um PIN forte para proteger sua conta.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Não foi possível desabilitar o seu PIN.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "Falha ao Desabilitar PIN";
@@ -6403,6 +6403,12 @@
 /* Message title describing the safety tip about unknown or fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Empresas e instituições falsas";
 
+/* Message contents for the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+
+/* Message title describing the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Analise esta solicitação com cuidado. Nenhum dos seus contatos ou pessoas com as quais você conversa estão neste grupo. Veja aqui alguns aspectos para prestar atenção:";
 
@@ -6959,7 +6965,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Ativar";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoin and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Você pode usar o Signal para enviar e receber MobileCoin. Todos os pagamentos estão sujeitos aos Termos de Uso do MobileCoin e da MobileCoin Wallet. Podem ocorrer problemas, e valores perdidos, como pagamentos ou saldos, talvez não possam ser recuperados. ";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Ativar";
@@ -7700,13 +7706,13 @@
 "STICKER_MESSAGE_PREVIEW" = "Mensagem - Figurinha";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker not available";
+"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Figurinha indisponível";
 
 /* Message for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "This sticker was not transferred from your phone when this device was linked. Media and files older than 45 days at the time of device linking can not be synced.";
+"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "Essa figurinha não foi transferida do seu telefone quando este dispositivo foi vinculado. Arquivos e mídias que tinham mais de 45 dias no momento da vinculação não podem ser sincronizados. ";
 
 /* Title for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker Not Available";
+"STICKER_UNAVAILABLE_SHEET_TITLE" = "Figurinha indisponível";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Instalar";
@@ -8157,6 +8163,9 @@
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "O tempo de desaparecimento das mensagens que você enviar será definido como %1$@.";
+
+/* Indicator warning about an unknown contact thread */
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Nenhum grupo em comum. Analise o pedido com atenção.";

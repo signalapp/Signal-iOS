@@ -68,13 +68,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Dodaj członka</string>
+			<string>Dodaj osobę</string>
 			<key>few</key>
-			<string>Dodaj członków</string>
+			<string>Dodaj osoby</string>
 			<key>many</key>
-			<string>Dodaj członków</string>
+			<string>Dodaj osoby</string>
 			<key>other</key>
-			<string>Dodaj członków</string>
+			<string>Dodaj osoby</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -108,13 +108,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Dodaj nowego członka</string>
+			<string>Dodaj nową osobę</string>
 			<key>few</key>
-			<string>Dodaj nowych członków</string>
+			<string>Dodaj nowe osoby</string>
 			<key>many</key>
-			<string>Dodaj nowych członków</string>
+			<string>Dodaj nowe osoby</string>
 			<key>other</key>
-			<string>Dodaj nowych członków</string>
+			<string>Dodaj nowe osoby</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
@@ -334,7 +334,7 @@
 			<key>many</key>
 			<string>%1$d elementów</string>
 			<key>other</key>
-			<string>%1$d elementów</string>
+			<string>%1$d elementu</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -1183,13 +1183,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nie można udostępnić więcej niż 1 obraz.</string>
+			<string>Nie można udostępnić więcej niż %1$d element.</string>
 			<key>few</key>
-			<string>Nie można udostępnić więcej niż %1$d obrazy.</string>
+			<string>Nie można udostępnić więcej niż %1$d elementy.</string>
 			<key>many</key>
-			<string>Nie można udostępnić więcej niż %1$d obrazów.</string>
+			<string>Nie można udostępnić więcej niż %1$d elementów.</string>
 			<key>other</key>
-			<string>Nie można udostępnić więcej niż %1$d obrazów.</string>
+			<string>Nie można udostępnić więcej niż %1$d elementu.</string>
 		</dict>
 	</dict>
 	<key>INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_BODY_%d</key>

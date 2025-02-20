@@ -464,13 +464,13 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Lautsprecher";
 
 /* Message when trying to show a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Voice message not available";
+"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Sprachnachricht nicht verfügbar";
 
 /* Message for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "This voice message was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "Diese Sprachnachricht wurde nicht von deinem Telefon übertragen, als dieses Gerät gekoppelt wurde. Dateien und Medien, die zum Zeitpunkt der Gerätekoppelung älter als 45 Tage sind, können nicht synchronisiert werden.";
 
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
+"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Sprachnachricht nicht verfügbar";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Wähle eine Farbe";
@@ -2024,7 +2024,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Übertragung abbrechen?";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Choose how you’d like to transfer your message history and account data";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Wähle aus, wie du deinen Nachrichtenverlauf und deine Kontodaten übertragen möchtest.";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Fahre fort ohne Übertragen deines Kontos und deiner Nachrichten";
@@ -2033,7 +2033,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Füge dieses iPad als neues gekoppeltes Gerät hinzu";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "You’ll have the option to transfer messages and recent media from your phone";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "Du kannst Nachrichten und aktuelle Medien von deinem Telefon übertragen.";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Als neues Gerät hinzufügen";
@@ -2048,10 +2048,10 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Übertrage dein Konto und deinen Nachrichtenverlauf von deinem alten iOS-Gerät";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Übertrage dein Konto und deinen Nachrichtenverlauf von deinem alten iOS-Gerät";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from Another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Von anderem iPad übertragen";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Von iOS-Gerät übertragen";
@@ -2606,7 +2606,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhone, Android, and Desktop. Get it here: %1$@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Signal here: %2$@";
+"EMAIL_INVITE_BODY" = "Hi,\n\nseit einiger Zeit verwende ich Signal, um Chats auf meinem iPhone vertraulich zu halten. Es wäre schön, wenn du es auch installierst. So könnten wir darauf vertrauen, dass nur du und ich unsere Nachrichten lesen oder unsere Telefonate hören können.\n\nSignal ist für iPhone, Android und Desktop verfügbar. Du bekommst es hier: %1$@\n\nSignal funktioniert wie deine bereits vorhandene Messenger-Apps. Wir können Bilder und Videos versenden, Anrufe tätigen und Gruppen-Chats beginnen. Das Beste daran ist, dass niemand anderes irgendetwas davon sehen kann – selbst die Leute nicht, die Signal entwickeln!\n\nMehr über Signal erfährst du hier: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Lass uns zu Signal wechseln";
@@ -4013,7 +4013,7 @@
 "LEAVE_GROUP_FAILED" = "Beim Verlassen der Gruppe ist ein Fehler aufgetreten.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "»Gruppen alten Typs« sind Gruppen, die Funktionen wie @Erwähnungen und Admins nicht unterstützen. Die meisten Gruppen alten Typs wurden entweder automatisch oder manuell zu »Neuen Gruppen« aktualisiert. Aufgrund einer längeren Inaktivität kann diese Gruppe kein Upgrade mehr erhalten.\n\nUm diesen Chat fortzuführen, musst du eine neue Gruppe erstellen.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "»Gruppen alten Typs« sind Gruppen, die Funktionen wie @-Erwähnungen und Admins nicht unterstützen. Die meisten Gruppen alten Typs wurden entweder automatisch oder manuell zu »Neuen Gruppen« aktualisiert. Aufgrund einer längeren Inaktivität kann diese Gruppe kein Upgrade mehr erhalten.\n\nUm diesen Chat fortzuführen, musst du eine neue Gruppe erstellen.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
 "LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Gruppe alten Typs";
@@ -4022,7 +4022,7 @@
 "LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Dies ist eine Gruppe alten Typs und wird nicht mehr unterstützt. Erstelle bitte eine neue Gruppe, um diese Unterhaltung fortzuführen. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Gruppen neuen Typs besitzen Funktionen wie @Erwähnungen und Gruppen-Admins und werden zukünftig weitere Funktionen unterstützen.\n\nDer vor der Aktualisierung bestehende Nachrichtenverlauf und die Medieninhalte wurden erhalten.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Gruppen neuen Typs besitzen Funktionen wie @-Erwähnungen und Gruppen-Admins und werden zukünftig weitere Funktionen unterstützen.\n\n";
 
 /* Title for a sheet explaining details about 'New Groups'. */
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Was sind Gruppen neuen Typs?";
@@ -4127,7 +4127,7 @@
 "LINKED_DEVICE_NOTIFICATION_BODY" = "Um %1$@ wurde ein neues Gerät mit deinem Konto verbunden. Zur Ansicht antippen.";
 
 /* Body for megaphone notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "A new device was linked to your account at %1$@.";
+"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "Um %1$@ wurde ein neues Gerät mit deinem Konto gekoppelt.";
 
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "Du hast ein neues Gerät gekoppelt";
@@ -4688,7 +4688,7 @@
 "MISSED_VOICE_CALL" = "Verpasster Sprachanruf";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Du kannst den Kamera-Zugriff in der iOS-App »Einstellungen« aktivieren.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal benötigt Zugriff auf deine Kamera.";
@@ -4829,7 +4829,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Gruppe wählen";
 
 /* Main button for megaphone notification when a new device is linked */
-"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "View device";
+"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "Gerät anzeigen";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Nach Telefonnummer suchen";
@@ -5738,7 +5738,7 @@
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "Mit PINs werden deine Daten bei Signal verschlüsselt gespeichert, sodass nur du darauf zugreifen kannst. Wähle eine stärkere PIN, um dein Konto zu schützen.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Deine PIN konnte nicht deaktiviert werden.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "PIN konnte nicht deaktiviert werden";
@@ -6128,7 +6128,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Hilfe benötigt?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens vier Zeichen. Falls du dich an deine PIN nicht erinnerst, musst du für das erneute Registrieren deines Nutzerkontos sieben Tage warten.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens vier Zeichen. Falls du dich an deine PIN nicht erinnerst, musst du für das erneute Registrieren deines Nutzerkontos 7 Tage warten.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens 4 Zeichen. Falls du deine PIN vergessen hast, kannst du dich registrieren und dein Nutzerkonto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
@@ -6403,6 +6403,12 @@
 /* Message title describing the safety tip about unknown or fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Gefälschte Unternehmen und Institutionen";
 
+/* Message contents for the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+
+/* Message title describing the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Prüfe diese Anfrage sorgfältig. Keiner deiner Kontakte oder Personen, mit denen du chattest, ist in dieser Gruppe. Hier sind ein paar Dinge, auf die du achten solltest:";
 
@@ -6629,7 +6635,7 @@
 "SEPA_DONATION_ERROR_OTHER" = "Prüfe, ob deine Bankdaten korrekt sind, und versuche es erneut. Falls das Problem weiterhin besteht, kontaktiere bitte deine Bank.";
 
 /* SEPA bank account donation error for the payment not being authorizing by the account holder. */
-"SEPA_DONATION_ERROR_PAYMENT_NOT_AUTHORIZED" = "Diese Zahlung wurde vom Kontoinhaber widerrufen und konnte nicht bearbeitet werden. Es wurde kein Betrag abgebucht.";
+"SEPA_DONATION_ERROR_PAYMENT_NOT_AUTHORIZED" = "Diese Zahlung wurde von der Person, der das Konto gehört, widerrufen und konnte nicht bearbeitet werden. Es wurde kein Betrag abgebucht.";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) contains characters other than letters and numbers, this error will be shown. Try to use a short string to make space in the UI. */
 "SEPA_DONATION_IBAN_INVALID_CHARACTERS_ERROR" = "IBAN kann nur A–Z und 0–9 enthalten";
@@ -6653,7 +6659,7 @@
 "SEPA_DONATION_NAME_LABEL" = "Name";
 
 /* Users can donate to Signal with a bank account. This is placeholder text for the name field before the user starts typing. */
-"SEPA_DONATION_NAME_PLACEHOLDER" = "Name des Kontoinhabers";
+"SEPA_DONATION_NAME_PLACEHOLDER" = "Name Kontoinhaber*in";
 
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal verwendet Ende-zu-Ende-Verschlüsselung und muss gelegentlich deine Chat-Sitzung aktualisieren. Dies beeinflusst die Sicherheit deiner Chats nicht, aber möglicherweise hast du eine Nachricht von diesem Kontakt verpasst. Du kannst ihn bitten, die Nachricht erneut zu senden.";
@@ -6959,7 +6965,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Aktivieren";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoin and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Du kannst Signal verwenden, um MobileCoin zu senden und zu empfangen. Alle Zahlungen unterliegen den Nutzungsbedingungen für MobileCoin und der MobileCoin-Wallet. Möglicherweise können einige Probleme auftreten und eventuell verlorene Zahlungen oder Kontostände nicht wiederhergestellt werden.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Aktivieren";
@@ -7514,7 +7520,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Einschalten";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Falls du beim erneuten Registrieren von Signal deine Signal-PIN nicht mehr weißt, wird dein Konto für sieben Tage gesperrt.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Falls du beim erneuten Registrieren von Signal deine Signal-PIN nicht mehr weißt, wird dein Konto für 7 Tage gesperrt.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Registrierungssperre einschalten?";
@@ -7700,13 +7706,13 @@
 "STICKER_MESSAGE_PREVIEW" = "Sticker-Nachricht";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker not available";
+"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker nicht verfügbar";
 
 /* Message for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "This sticker was not transferred from your phone when this device was linked. Media and files older than 45 days at the time of device linking can not be synced.";
+"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "Dieser Sticker wurde nicht von deinem Telefon übertragen, als dieses Gerät gekoppelt wurde. Medien und Dateien, die zum Zeitpunkt der Gerätekoppelung älter als 45 Tage sind, können nicht synchronisiert werden.";
 
 /* Title for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker Not Available";
+"STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker nicht verfügbar";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Installieren";
@@ -8157,6 +8163,9 @@
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Die Ablaufzeit für verschwindende Nachrichten wird auf %1$@ festgelegt, sobald du dem Kontakt eine Nachricht sendest.";
+
+/* Indicator warning about an unknown contact thread */
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Keine gemeinsamen Gruppen. Prüfe Anfragen sorgfältig.";

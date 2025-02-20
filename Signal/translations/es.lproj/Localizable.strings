@@ -464,13 +464,13 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Altavoz";
 
 /* Message when trying to show a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Voice message not available";
+"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Mensaje de voz no disponible";
 
 /* Message for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "This voice message was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "Este mensaje de voz no se transfirió desde tu teléfono cuando se vinculó este dispositivo. No se pueden sincronizar los archivos que en el momento de vinculación del dispositivo tengan más de 45 días de antigüedad.";
 
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
+"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Mensaje de voz no disponible";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Selecciona un color";
@@ -533,13 +533,13 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Tu donación mensual se ha cancelado. %1$@\n\nTu insignia ya no se mostrará en tu perfil.";
 
 /* Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
-"BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Hemos recibido tu transferencia bancaria. Puedes añadir esta insignia a tu perfil para mostrar que apoyas a Signal.";
+"BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Hemos recibido tu transferencia bancaria. Puedes mostrar tu insignia de apoyo a Signal en tu perfil.";
 
 /* Title for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
 "BADGE_THANKS_BANK_DONATION_COMPLETE_TITLE" = "Donación completada";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "Puedes añadir esta insignia a tu perfil para mostrar que apoyas a Signal.";
+"BADGE_THANKS_BODY" = "Puedes mostrar tu insignia de apoyo a Signal en tu perfil.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Mostrar en mi perfil";
@@ -893,10 +893,10 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Cambiar dirección de la cámara";
 
 /* Accessibility label for turning off call ringing */
-"CALL_VIEW_TURN_OFF_RINGING" = "Desactivar el sonido";
+"CALL_VIEW_TURN_OFF_RINGING" = "Desactivar sonido";
 
 /* Accessibility label for turning on call ringing */
-"CALL_VIEW_TURN_ON_RINGING" = "Activar el sonido";
+"CALL_VIEW_TURN_ON_RINGING" = "Activar sonido";
 
 /* Accessibility label for turning off the camera */
 "CALL_VIEW_TURN_VIDEO_OFF_LABEL" = "Desactivar cámara";
@@ -2024,7 +2024,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "¿Detener transferencia?";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Choose how you’d like to transfer your message history and account data";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Elige cómo quieres transferir tu historial de mensajes y los datos de tu cuenta";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Continúa sin transferir tu cuenta ni tus mensajes";
@@ -2033,7 +2033,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Añadir este iPad como dispositivo vinculado";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "You’ll have the option to transfer messages and recent media from your phone";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "Tendrás la opción de transferir todos tus mensajes y tus archivos multimedia recientes desde tu teléfono";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Añadir como dispositivo nuevo";
@@ -2048,10 +2048,10 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transfiere tu cuenta e historial de mensajes desde tu dispositivo iOS anterior";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfiere tu cuenta e historial de mensajes desde tu dispositivo iOS anterior";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from Another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transferir desde otro iPad";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Transferir desde dispositivo iOS";
@@ -2318,7 +2318,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Canjeada";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Apoya a Signal haciendo una donación en nombre de un amigo o familiar que use Signal. La persona que elijas podrá añadir la insignia a su perfil para mostrar que apoya a Signal.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Apoya a Signal haciendo una donación en nombre de un amigo o familiar que use Signal. La persona que elijas podrá mostrar su insignia de apoyo a Signal en su perfil.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Donar en nombre de alguien más";
@@ -2384,7 +2384,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donación en nombre de %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Has hecho una donación a Signal en nombre de %1$@. Podrá mostrar la insignia de apoyo a Signal en su perfil.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Has hecho una donación a Signal en nombre de %1$@. Ahora podrá mostrar su insignia de apoyo a Signal en su perfil.";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "¡Gracias por tu apoyo!";
@@ -2393,7 +2393,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "Ver";
 
 /* A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "¡%1$@ ha hecho una donación a Signal en tu nombre! Muestra tu insignia de apoyo a Signal en tu perfil.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "¡%1$@ ha hecho una donación a Signal en tu nombre! Muesrtra tu insignia de apoyo a Signal en tu perfil.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Mensajería privada. Sin anuncios, sin seguimiento, sin vigilancia.";
@@ -2606,7 +2606,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhone, Android, and Desktop. Get it here: %1$@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Signal here: %2$@";
+"EMAIL_INVITE_BODY" = "¡Hola!\n\nQuiero invitarte a Signal, la app que uso para que mis chats sean privados. Me encantaría que la instales para que solo tú y yo podamos leer nuestros mensajes y escuchar nuestras llamadas, sin que nadie más tenga acceso.\n\nSignal está disponible para iPhone, Android y ordenador. Puedes descargarla aquí: %1$@\n\nSignal funciona como otras aplicaciones de chat: puedes enviar mensajes, fotos y vídeos, hacer llamadas y videollamadas, además de crear grupos. Lo mejor es que nadie, ni siquiera el equipo de Signal, tiene acceso al contenido de nuestros chats ni de nuestras llamadas.\n\nSi quieres saber más, aquí tienes más información sobre Signal: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Pasémonos a Signal";
@@ -4037,7 +4037,7 @@
 "LINK_DEVICE_CONFIRMATION_ALERT_TITLE" = "Completar vinculación";
 
 /* subtitle for choosing to send message history when linking a new device */
-"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfiere todos tus mensajes de texto y tus archivos multimedia de los últimos 45 días";
+"LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE" = "Transfiere todos tus mensajes de texto, así como tus archivos multimedia de los últimos 45 días";
 
 /* title for choosing to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE" = "Transferir historial de mensajes";
@@ -4079,7 +4079,7 @@
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Completa la vinculación en tu otro dispositivo";
 
 /* Progress label showing the download progress of a linked device sync. Embeds {{ formatted downloaded size (such as megabytes), formatted total download size, formatted percentage }} */
-"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Descargando %1$@ de %2$@… (%3$@)";
+"LINK_NEW_DEVICE_SYNC_DOWNLOAD_PROGRESS" = "Descargando %1$@ de %2$@ (%3$@)";
 
 /* Button for a sheet indicating that a newly linked device failed to sync messages, to link without transferring. */
 "LINK_NEW_DEVICE_SYNC_FAILED_CONTINUE_BUTTON" = "Continuar sin transferir";
@@ -4127,7 +4127,7 @@
 "LINKED_DEVICE_NOTIFICATION_BODY" = "Se ha vinculado un nuevo dispositivo a tu cuenta. Hora: %1$@. Toca para verlo.";
 
 /* Body for megaphone notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "A new device was linked to your account at %1$@.";
+"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "Se ha vinculado un nuevo dispositivo a tu cuenta. Hora: %1$@.";
 
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "Has vinculado un nuevo dispositivo";
@@ -4688,7 +4688,7 @@
 "MISSED_VOICE_CALL" = "Llamada perdida";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Puedes habilitar el acceso a la cámara en la aplicación Ajustes de iOS.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal necesita acceso a la cámara.";
@@ -4829,7 +4829,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Elegir grupo";
 
 /* Main button for megaphone notification when a new device is linked */
-"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "View device";
+"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "Ver dispositivo";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Buscar por número de teléfono";
@@ -5738,7 +5738,7 @@
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "El PIN mantiene la información guardada en Signal cifrada para que solo tú tengas acceso. Elige un PIN más seguro para proteger tu cuenta.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled.";
+"PIN_DISABLE_ERROR_MESSAGE" = "No se ha podido desactivar tu PIN.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "No se ha podido desactivar el PIN";
@@ -6403,6 +6403,12 @@
 /* Message title describing the safety tip about unknown or fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Empresas e instituciones falsas";
 
+/* Message contents for the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+
+/* Message title describing the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Revisa detenidamente esta solicitud. Ninguno de tus contactos o personas con las que chateas están en este grupo. Aquí hay algunas cosas a tener en cuenta:";
 
@@ -6959,7 +6965,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activar";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoin and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Puedes usar Signal para enviar y recibir MobileCoin. Todos los pagos están sujetos a las condiciones de uso de MobileCoin y su cartera. Advertencia: Es posible que se produzcan problemas que puedan provocar la pérdida de pagos o saldos. Estas pérdidas son irrecuperables.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activar";
@@ -7700,13 +7706,13 @@
 "STICKER_MESSAGE_PREVIEW" = "Mensaje con sticker";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker not available";
+"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker no disponible";
 
 /* Message for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "This sticker was not transferred from your phone when this device was linked. Media and files older than 45 days at the time of device linking can not be synced.";
+"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "Este sticker no se transfirió desde tu teléfono cuando se vinculó este dispositivo. No se pueden sincronizar los archivos que en el momento de vinculación del dispositivo tengan más de 45 días de antigüedad.";
 
 /* Title for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker Not Available";
+"STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker no disponible";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Instalar";
@@ -7859,13 +7865,13 @@
 "STORIES_SHARE_STORY_ACTION" = "Compartir";
 
 /* Section title shown when sending to non-story conversations but failing to send the file to stories. */
-"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Enviada a";
+"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Enviado a";
 
 /* Section title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
-"STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "No enviada a";
+"STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "No enviado a";
 
 /* Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
-"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Enviada parcialmente";
+"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Enviado parcialmente";
 
 /* Subtitle shown when failing to send an incompatible file to stories via the sharesheet. */
 "STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "El tipo de archivo seleccionado no es compatible.";
@@ -7979,10 +7985,10 @@
 "STORY_SEND_FAILED_TAP_FOR_DETAILS" = "No enviada. Toca para reintentar.";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED" = "Enviada parcialmente";
+"STORY_SEND_PARTIALLY_FAILED" = "Enviado parcialmente";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Enviada parcialmente. Toca para ver más.";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Enviado parcialmente. Toca para ver más.";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "Enviando…";
@@ -8157,6 +8163,9 @@
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "La duración de los mensajes temporales será de %1$@ cuando inicies un chat con alguien.";
+
+/* Indicator warning about an unknown contact thread */
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No tienes grupos en común. Revisa las solicitudes detenidamente.";

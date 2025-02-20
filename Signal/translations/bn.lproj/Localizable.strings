@@ -464,13 +464,13 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "স্পিকার";
 
 /* Message when trying to show a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Voice message not available";
+"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "ভয়েস মেসেজ নেই";
 
 /* Message for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "This voice message was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "এই ডিভাইসটি লিংক করার সময় আপনার ফোন থেকে এই ভয়েস মেসেজটি ট্রান্সফার করা হয়নি। ডিভাইস লিংক করার সময় 45 দিনের বেশি পুরনো ফাইল ও মিডিয়া সিঙ্ক করা যাবে না।";
 
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
+"AUDIO_UNAVAILABLE_SHEET_TITLE" = "ভয়েস মেসেজ নেই";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "একটি রং বেছে নিন";
@@ -2024,7 +2024,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "স্থানান্তর বন্ধ করবেন?";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Choose how you’d like to transfer your message history and account data";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "আপনার মেসেজের ইতিহাস ও অ্যাকাউন্টের ডেটা কীভাবে ট্রান্সফার করতে চান তা বেছে নিন";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "আপনার অ্যাকাউন্ট এবং মেসেজ স্থানান্তর না করেই চালিয়ে যান";
@@ -2033,7 +2033,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "এই iPad-টিকে একটি নতুন লিংককৃত ডিভাইস হিসাবে যোগ করুন";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "You’ll have the option to transfer messages and recent media from your phone";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "আপনার ফোন থেকে মেসেজ ও সাম্প্রতিক মিডিয়া ট্রান্সফার করার সুযোগ থাকবে";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "নতুন ডিভাইস হিসাবে যোগ করুন";
@@ -2048,10 +2048,10 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "আপনার পুরোনো iOS ডিভাইস থেকে আপনার অ্যাকাউন্ট এবং ম্যাসেজের ইতিহাস স্থানান্তর করুন";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "আপনার পুরোনো iOS ডিভাইস থেকে আপনার অ্যাকাউন্ট এবং ম্যাসেজের ইতিহাস স্থানান্তর করুন";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from Another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "অন্য iPad থেকে স্থানান্তর করুন";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "iOS ডিভাইস থেকে স্থানান্তর করুন";
@@ -2606,7 +2606,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhone, Android, and Desktop. Get it here: %1$@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Signal here: %2$@";
+"EMAIL_INVITE_BODY" = "হাই,\n\nআমার iPhone-এর চ্যাট গোপন রাখতে সম্প্রতি আমি Signal ব্যবহার করছি। আমি চাই আপনিও এটি ইনস্টল করুন, যাতে আমরা সুনিশ্চিত হতে পারি যে কেবলমাত্র আপনি ও আমি আমাদের মেসেজগুলো পড়তে পারি এবং আমাদের কথা শুনতে পারি।\n\niPhone, Android এবং Desktop-এর জন্য Signal পাওয়া যাচ্ছে। এটি এখান থেকে নিন: %1$@\n\nSignal আপনার বিদ্যমান মেসেজিং অ্যাপের মতোই কাজ করে। আমরা ছবি ও ভিডিও পাঠাতে পারি, কল করতে পারি এবং গ্রুপ চ্যাট শুরু করতে পারি। এর সেরা দিকটি হচ্ছে অন্য কেউ এসবের কিছুই দেখতে পারবেন না, এমনকি Signal যারা তৈরি করেছেন তারাও না!\n\nআপনি Signal সম্পর্কে আরো জানতে পারবেন, এখানে: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Signal এ স্যুইচ করা যাক";
@@ -4127,7 +4127,7 @@
 "LINKED_DEVICE_NOTIFICATION_BODY" = "একটি নতুন ডিভাইস %1$@-এ আপনার অ্যাকাউন্টের সাথে লিংক করা হয়েছে। দেখতে ট্যাপ করুন।";
 
 /* Body for megaphone notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "A new device was linked to your account at %1$@.";
+"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "একটি নতুন ডিভাইস %1$@-এ আপনার অ্যাকাউন্টের সাথে লিংক করা হয়েছে।";
 
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "আপনি একটি নতুন ডিভাইস লিংক করেছেন";
@@ -4688,7 +4688,7 @@
 "MISSED_VOICE_CALL" = "মিসড ভয়েস কল";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "আপনি iOS সেটিংস অ্যাপ থেকে অ্যাক্সেস সক্রিয় করতে পারবেন।";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal এর আপনার ক্যামেরা অ্যাক্সেস করা প্রয়োজন।";
@@ -4829,7 +4829,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "গ্ৰুপ বেছে নিন";
 
 /* Main button for megaphone notification when a new device is linked */
-"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "View device";
+"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "ডিভাইস দেখুন";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ফোন নাম্বার দিয়ে খুজুন";
@@ -5738,7 +5738,7 @@
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "পিন সিগন্যাল এনক্রিপ্টেড অবস্থায় আপনার তথ্য সংরক্ষিত রাখে, যাতে শুধুমাত্র আপনিই এতে অ্যাক্সেস করতে পারবেন। আপনার অ্যাকাউন্ট সুরক্ষিত রাখতে একটি শক্তিশালী পিন বেছে নিন।";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled.";
+"PIN_DISABLE_ERROR_MESSAGE" = "আপনার পিনটি নিষ্ক্রিয় করা যায়নি।";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "পিন নিষ্ক্রিয়করণ ব্যর্থ হয়েছে";
@@ -6403,6 +6403,12 @@
 /* Message title describing the safety tip about unknown or fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "ভুয়া ব্যবসা ও প্রতিষ্ঠান";
 
+/* Message contents for the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+
+/* Message title describing the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "সতর্কতার সাথে এই অনুরোধটি পর্যালোচনা করুন। আপনার কন্টাক্টদের কেউই বা আপনি যাদের সাথে চ্যাট করেন তাদের কেউই এই গ্রুপে নেই। খেয়াল রাখার মতো কিছু বিষয় এখানে দেওয়া হলো:";
 
@@ -6959,7 +6965,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "সক্রিয় করুন";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoin and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "আপনি MobileCoin পাঠাতে ও গ্রহণ করতে Signal ব্যবহার করতে পারবেন। সকল পেমেন্ট MobileCoin ও MobileCoin ওয়ালেট ব্যবহারের শর্তাবলী মেনে সম্পাদিত হয়। আপনি কিছু কিছু সমস্যার সম্মুখীন হতে পারেন এবং আপনার হারানো পেমেন্ট বা ব্যালেন্স পুনরুদ্ধার করা যাবে না।";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "সক্রিয় করুন";
@@ -7700,13 +7706,13 @@
 "STICKER_MESSAGE_PREVIEW" = "স্টিকার বার্তা";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker not available";
+"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "স্টিকার নেই";
 
 /* Message for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "This sticker was not transferred from your phone when this device was linked. Media and files older than 45 days at the time of device linking can not be synced.";
+"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "এই ডিভাইসটি লিংক করার সময় আপনার ফোন থেকে এই স্টিকারটি ট্রান্সফার করা হয়নি। ডিভাইস লিংক করার সময় 45 দিনের বেশি পুরনো মিডিয়া এবং ফাইল সমন্বয় করা যাবে না।";
 
 /* Title for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker Not Available";
+"STICKER_UNAVAILABLE_SHEET_TITLE" = "স্টিকার নেই";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "ইনস্টল করুন";
@@ -8157,6 +8163,9 @@
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "আপনি যখন তাদের মেসেজ পাঠাবেন, মেসেজ অদৃশ্য হওয়ার সময়টি %1$@-এ সেট করা হবে।";
+
+/* Indicator warning about an unknown contact thread */
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "একইরকম কোনও গ্রুপ নেই। সতর্কতার সাথে অনুরোধগুলি পর্যালোচনা করুন।";

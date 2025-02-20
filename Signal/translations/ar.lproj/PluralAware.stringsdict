@@ -819,17 +819,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>جارٍ الاتصال بـ %2$@ و %3$@ و %1$d آخر…</string>
+			<string>جارٍ الاتصال بـ %2$@ و%3$@ و%1$d آخر…</string>
 			<key>one</key>
-			<string>جارٍ الاتصال بـ %2$@ و %3$@ و%1$d آخر…</string>
+			<string>جارٍ الاتصال بـ %2$@ و%3$@ و%1$d آخر…</string>
 			<key>two</key>
-			<string>جارٍ الاتصال بـ %2$@ و %3$@ و %1$d آخرين…</string>
+			<string>جارٍ الاتصال بـ %2$@ و%3$@ و%1$d آخرين…</string>
 			<key>few</key>
-			<string>جارٍ الاتصال بـ %2$@ و %3$@ و %1$d آخرين…</string>
+			<string>جارٍ الاتصال بـ %2$@ و%3$@ و%1$d آخرين…</string>
 			<key>many</key>
-			<string>جارٍ الاتصال بـ %2$@ و %3$@ و %1$d آخرين…</string>
+			<string>جارٍ الاتصال بـ %2$@ و%3$@ و%1$d آخرين…</string>
 			<key>other</key>
-			<string>جارٍ الاتصال بـ %2$@ و %3$@ و %1$d آخرين…</string>
+			<string>جارٍ الاتصال بـ %2$@ و%3$@ و%1$d آخرين…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_OTHERS_HERE</key>

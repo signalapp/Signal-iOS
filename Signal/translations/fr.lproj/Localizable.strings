@@ -464,13 +464,13 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Haut-parleur";
 
 /* Message when trying to show a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Voice message not available";
+"AUDIO_UNAVAILABLE_MESSAGE_LABEL" = "Message vocal indisponible";
 
 /* Message for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "This voice message was not transferred from your phone when this device was linked. Files and media older than 45 days at the time of device linking can not be synced.";
+"AUDIO_UNAVAILABLE_SHEET_MESSAGE" = "Ce message vocal n'a pas été transféré depuis votre téléphone lorsque vous avez associé cet appareil. Les fichiers et médias datant de plus de 45 jours au moment de l'association ne sont pas synchronisés.";
 
 /* Title for sheet shown when tapping a voice message that has expired and is unavailable for download */
-"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Voice Message Not Available";
+"AUDIO_UNAVAILABLE_SHEET_TITLE" = "Message vocal indisponible";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choisissez une couleur";
@@ -563,7 +563,7 @@
 "BANK_MANDATE_AGREE" = "Accepter";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a label for a button that shows more of the mandate if it is not all visible. */
-"BANK_MANDATE_READ_MORE" = "Lire la suite";
+"BANK_MANDATE_READ_MORE" = "En savoir plus";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a subtitle about the payment processor Stripe above that mandate. */
 "BANK_MANDATE_SUBTITLE" = "Stripe traite les dons effectués pour soutenir Signal. Signal ne collecte ni ne sauvegarde vos informations personnelles.";
@@ -2024,7 +2024,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Arrêter le transfert ?";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Choose how you’d like to transfer your message history and account data";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Choisissez comment transférer vos messages et les données de votre compte";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Continuer sans transférer le compte ni les messages";
@@ -2033,7 +2033,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Ajouter cet iPad comme nouvel appareil associé";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "You’ll have the option to transfer messages and recent media from your phone";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC" = "Vous pourrez transférer vos médias récents et tous vos messages depuis votre téléphone";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Ajouter en tant que nouvel appareil";
@@ -2048,10 +2048,10 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transférer votre compte et votre historique de messages de votre ancien appareil iOS";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transférez votre compte et tous vos messages depuis votre ancien appareil iOS";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from Another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transférer depuis un autre iPad";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Transférer depuis un appareil iOS";
@@ -2459,7 +2459,7 @@
 "DONATION_SCREENS_HEADER_DESCRIPTION" = "Une messagerie privée, financée par des personnes comme vous. Aucune publicité, aucun cookie de suivi, zéro compromis. Faites un don pour soutenir Signal.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
-"DONATION_SCREENS_HEADER_READ_MORE" = "Lire la suite";
+"DONATION_SCREENS_HEADER_READ_MORE" = "En savoir plus";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
 "DONATION_SCREENS_HEADER_TITLE" = "La vie privée avant le profit";
@@ -2606,7 +2606,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhone, Android, and Desktop. Get it here: %1$@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Signal here: %2$@";
+"EMAIL_INVITE_BODY" = "Bonjour,\n\nJ'ai installé Signal sur mon iPhone pour assurer la confidentialité de mes conversations. Et si vous l'installiez aussi ? Nous serions ainsi sûrs que nos messages et nos appels restent privés.\n\nL'application Signal est disponible sur iPhone, sur Android et sur ordinateur. Vous pouvez la télécharger ici : %1$@\n\nComme toutes les applications de messagerie, Signal permet d'envoyer des photos et des vidéos, de passer des appels et de lancer des conversations de groupe. Ce qui la différencie des autres ? C'est qu'absolument personne ne peut accéder aux contenus que vous partagez avec vos amis. Pas même les créateurs de Signal.\n\nPour en savoir plus sur Signal, c'est par ici : %2$@.";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Et si on passait à Signal ?";
@@ -3572,10 +3572,10 @@
 "GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ a changé la photo du groupe.";
 
 /* Info message indicating that the group was updated by the local user. */
-"GROUP_UPDATED_BY_LOCAL_USER" = "Vous avez mis à jour le groupe.";
+"GROUP_UPDATED_BY_LOCAL_USER" = "Vous avez apporté des modifications au groupe.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ a mis le groupe à jour.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ a apporté des modifications au groupe.";
 
 /* Message indicating that the group's description was removed. */
 "GROUP_UPDATED_DESCRIPTION_REMOVED" = "La présentation du groupe a été supprimée.";
@@ -3677,7 +3677,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Désigner un nouvel admin";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Le groupe a atteint le nombre maximal de membres recommandé";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Votre groupe a atteint la taille maximale recommandée";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
 "GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Ajouter ce membre quand même ?";
@@ -4127,7 +4127,7 @@
 "LINKED_DEVICE_NOTIFICATION_BODY" = "Un nouvel appareil a été associé à votre compte à %1$@. Touchez l'écran pour l'afficher.";
 
 /* Body for megaphone notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "A new device was linked to your account at %1$@.";
+"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "Un nouvel appareil a été associé à votre compte à %1$@.";
 
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "Vous avez associé un nouvel appareil";
@@ -4688,7 +4688,7 @@
 "MISSED_VOICE_CALL" = "Appel vocal manqué";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Vous pouvez autoriser l'accès à l'appareil photo dans les réglages iOS.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal doit accéder à votre appareil photo";
@@ -4829,7 +4829,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choisir un groupe";
 
 /* Main button for megaphone notification when a new device is linked */
-"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "View device";
+"NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "Afficher l'appareil";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Rechercher par no de téléphone";
@@ -5738,7 +5738,7 @@
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "Les PIN permettent de garantir que les informations stockées dans Signal sont chiffrées afin que vous soyez la seule personne à pouvoir y accéder. Choisissez un PIN plus fort pour protéger votre compte.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Impossible de désactiver le code PIN.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "Impossible de désactiver le code PIN";
@@ -6403,6 +6403,12 @@
 /* Message title describing the safety tip about unknown or fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Fausses entreprises et institutions";
 
+/* Message contents for the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+
+/* Message title describing the fake names safety tip. */
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Examinez attentivement cette invitation. Aucun de vos contacts ni aucune des personnes avec lesquelles vous discutez ne fait partie de ce groupe. Certains contenus doivent éveiller vos soupçons. Notamment :";
 
@@ -6959,7 +6965,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activer";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoin and the MobileCoin Wallet. You may encounter some issues and payments or balances you may lose can't be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Vous pouvez utiliser Signal pour envoyer et recevoir des MobileCoins. Tous les paiements sont soumis aux conditions d'utilisation de MobileCoin et de MobileCoin Wallet. Avertissement : des problèmes peuvent se produire et entraîner la perte de paiements et de soldes. De telles pertes sont irrécupérables.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activer";
@@ -7700,13 +7706,13 @@
 "STICKER_MESSAGE_PREVIEW" = "Message – Sticker";
 
 /* Message when trying to show a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker not available";
+"STICKER_UNAVAILABLE_MESSAGE_LABEL" = "Sticker indisponible";
 
 /* Message for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "This sticker was not transferred from your phone when this device was linked. Media and files older than 45 days at the time of device linking can not be synced.";
+"STICKER_UNAVAILABLE_SHEET_MESSAGE" = "Ce sticker n'a pas été transféré depuis votre téléphone lorsque vous avez associé cet appareil. Les fichiers et médias datant de plus de 45 jours au moment de l'association ne sont pas synchronisés.";
 
 /* Title for sheet shown when tapping a sticker that has expired and is unavailable for download */
-"STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker Not Available";
+"STICKER_UNAVAILABLE_SHEET_TITLE" = "Sticker indisponible";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Installer";
@@ -8158,6 +8164,9 @@
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Lorsque vous enverrez des messages à ce contact, le délai avant disparition des messages éphémères sera défini sur %1$@.";
 
+/* Indicator warning about an unknown contact thread */
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
+
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Aucun groupe en commun. Examinez attentivement les demandes avant de les accepter.";
 
@@ -8315,10 +8324,10 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "La dernière version de Signal a bien été installée. Vous pouvez maintenant recevoir ce type de messages sur votre appareil.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Maintenant que vous utilisez la dernière version de Signal, vous pouvez demander à %1$@ de vous renvoyer ce message.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Maintenant que vous avez mis Signal à jour, vous pouvez demander à %1$@ de vous renvoyer ce message.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Maintenant que vous utilisez la dernière version de Signal, vous pouvez demander à l'expéditeur de vous renvoyer ce message.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Maintenant que vous avez mis Signal à jour, vous pouvez demander à l'expéditeur de vous renvoyer ce message.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "Inconnu";
