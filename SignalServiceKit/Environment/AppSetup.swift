@@ -1081,6 +1081,7 @@ public class AppSetup {
             appVersion: appVersion,
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
+            avatarFetcher: messageBackupAvatarFetcher,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             backupRequestManager: messageBackupRequestManager,

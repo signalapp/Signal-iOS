@@ -8,6 +8,7 @@ excluded:
 - Signal/Emoji/EmojiWithSkinTones+String.swift
 disabled_rules:
 - block_based_kvo
+- closure_parameter_position
 - compiler_protocol_init
 - control_statement
 - cyclomatic_complexity

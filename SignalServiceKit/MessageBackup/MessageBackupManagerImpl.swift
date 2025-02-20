@@ -36,6 +36,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let appVersion: AppVersion
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentUploadManager: AttachmentUploadManager
+    private let avatarFetcher: MessageBackupAvatarFetcher
     private let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     private let backupAttachmentUploadManager: BackupAttachmentUploadManager
     private let backupRequestManager: MessageBackupRequestManager
@@ -72,6 +73,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         appVersion: AppVersion,
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadManager: AttachmentUploadManager,
+        avatarFetcher: MessageBackupAvatarFetcher,
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         backupAttachmentUploadManager: BackupAttachmentUploadManager,
         backupRequestManager: MessageBackupRequestManager,
@@ -105,6 +107,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.appVersion = appVersion
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentUploadManager = attachmentUploadManager
+        self.avatarFetcher = avatarFetcher
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.backupAttachmentUploadManager = backupAttachmentUploadManager
         self.backupRequestManager = backupRequestManager
@@ -675,14 +678,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     ) async throws {
         let result: Result<BackupProto_BackupInfo, Error> = await db.awaitableWriteWithTxCompletion { tx in
             do {
-                /// Drops all indexes on the `TSInteraction` table before doing
-                /// the import, which dramatically speeds up the import. We'll
-                /// then recreate all these indexes in bulk afterwards.
-                let interactionIndexes = try dropAllIndexes(
-                    forTable: InteractionRecord.databaseTableName,
-                    tx: tx
-                )
-
                 let backupInfo = try Bench(
                     title: benchTitle,
                     memorySamplerRatio: FeatureFlags.messageBackupMemorySamplerRatio,
@@ -708,19 +703,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         )
                     }
                 }
-
-                let timeBeforeCreatingIndexes = dateProviderMonotonic()
-
-                /// Now that we've imported successfully, we want to recreate
-                /// the indexes we temporarily dropped.
-                try createIndexes(
-                    interactionIndexes,
-                    onTable: InteractionRecord.databaseTableName,
-                    tx: tx
-                )
-
-                let timeAfterCreatingIndexes = dateProviderMonotonic()
-                Logger.info("Created indexes in \(timeAfterCreatingIndexes.millisSince(timeBeforeCreatingIndexes))ms")
 
                 return .commit(.success(backupInfo))
             } catch let error {
@@ -748,6 +730,16 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         guard !hasRestoredFromBackup(tx: tx) else {
             throw OWSAssertionError("Restoring from backup twice!")
+        }
+
+        // Drops all indexes on the `TSInteraction` table before doing the
+        // import, which dramatically speeds up the import. We'll then recreate
+        // all these indexes in bulk afterwards.
+        let interactionIndexes = try bencher.benchPreFrameAction(.DropInteractionIndexes) {
+            try dropAllIndexes(
+                forTable: InteractionRecord.databaseTableName,
+                tx: tx
+            )
         }
 
         var frameErrors = [LoggableErrorAndProto]()
@@ -1042,7 +1034,17 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
             stream.closeFileStream()
 
-            /// Take any necessary post-frame-restore actions.
+            // Now that we've imported successfully, we want to recreate the
+            // the indexes we temporarily dropped.
+            try bencher.benchPostFrameAction(.RecreateInteractionIndexes) {
+                try createIndexes(
+                    interactionIndexes,
+                    onTable: InteractionRecord.databaseTableName,
+                    tx: tx
+                )
+            }
+
+            // Take any necessary post-frame-restore actions.
             try postFrameRestoreActionManager.performPostFrameRestoreActions(
                 recipientActions: contexts.recipient.postFrameRestoreActions,
                 chatActions: contexts.chat.postFrameRestoreActions,
@@ -1050,18 +1052,32 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 chatItemContext: contexts.chatItem
             )
 
-            // Index threads synchronously
+            // Index threads synchronously, since that should be fast.
             bencher.benchPostFrameAction(.IndexThreads) {
                 fullTextSearchIndexer.indexThreads(tx: tx)
             }
-            // Schedule message indexing asynchronously
+
+            // Schedule background message indexing, since that'll be slow.
             try fullTextSearchIndexer.scheduleMessagesJob(tx: tx)
 
-            tx.addAsyncCompletion(on: DispatchQueue.global()) { [backupAttachmentDownloadManager, disappearingMessagesJob] in
+            // Record that we've restored a Backup!
+            kvStore.setBool(true, key: Constants.keyValueStoreHasRestoredBackupKey, transaction: tx)
+
+            tx.addAsyncCompletion(on: DispatchQueue.global()) { [
+                avatarFetcher,
+                backupAttachmentDownloadManager,
+                disappearingMessagesJob
+            ] in
                 Task {
-                    // Enqueue downloads for all the attachments.
+                    // Kick off avatar fetches enqueued during restore.
+                    try await avatarFetcher.runIfNeeded()
+                }
+
+                Task {
+                    // Kick off attachment downloads enqueued during restore.
                     try await backupAttachmentDownloadManager.restoreAttachmentsIfNeeded()
                 }
+
                 // Start ticking down for disappearing messages.
                 disappearingMessagesJob.startIfNecessary()
             }
@@ -1071,10 +1087,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             Logger.info("Backup first app version: \(backupInfo.firstAppVersion.nilIfEmpty ?? "Missing!")")
             bencher.logResults()
 
-            kvStore.setBool(true, key: Constants.keyValueStoreHasRestoredBackupKey, transaction: tx)
-
             return backupInfo
         })
+
         processErrors(errors: frameErrors, didFail: result.isSuccess.negated, tx: tx)
         return try result.get()
     }

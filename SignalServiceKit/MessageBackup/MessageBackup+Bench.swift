@@ -16,7 +16,8 @@ extension MessageBackup {
         private let startDate: MonotonicDate
 
         private var totalFramesProcessed: UInt64 = 0
-        private var metrics = [FrameType: Metrics]()
+        private var preFrameMetrics = [PreFrameRestoreAction: Metrics]()
+        private var frameMetrics = [FrameType: Metrics]()
         private var postFrameMetrics = [PostFrameRestoreAction: Metrics]()
 
         init(
@@ -48,18 +49,6 @@ extension MessageBackup {
                 startDate: dateProvider()
             )
             return try block(frameBencher)
-        }
-
-        /// Measures the clock time spent in the provided block.
-        func benchPostFrameAction(_ action: PostFrameRestoreAction, _ block: () throws -> Void) rethrows -> Void {
-            let startDate = dateProvider()
-            try block()
-            let durationMs = dateProvider().millisSince(startDate)
-            var metrics = postFrameMetrics[action] ?? Metrics()
-            metrics.frameCount += 1
-            metrics.totalDurationMs += durationMs
-            metrics.maxDurationMs = max(durationMs, metrics.maxDurationMs)
-            postFrameMetrics[action] = metrics
         }
 
         /// Given a block that does an enumeration over db objects, wraps that enumeration to instead take
@@ -100,6 +89,33 @@ extension MessageBackup {
                 beforeEnumerationStartDate = self.dateProvider()
                 return output
             }
+        }
+
+        func benchPreFrameAction<T>(_ action: PreFrameRestoreAction, _ block: () throws -> T) rethrows -> T {
+            return try benchAction(action, actionMetricsKeyPath: \.preFrameMetrics, block: block)
+        }
+
+        func benchPostFrameAction<T>(_ action: PostFrameRestoreAction, _ block: () throws -> T) rethrows -> T {
+            return try benchAction(action, actionMetricsKeyPath: \.postFrameMetrics, block: block)
+        }
+
+        /// Measures the clock time spent in the provided block.
+        private func benchAction<Action: Hashable, T>(
+            _ action: Action,
+            actionMetricsKeyPath: ReferenceWritableKeyPath<Bencher, [Action: Metrics]>,
+            block: () throws -> T
+        ) rethrows -> T {
+            let startDate = dateProvider()
+            let result = try block()
+            let durationMs = dateProvider().millisSince(startDate)
+
+            var metrics = self[keyPath: actionMetricsKeyPath][action] ?? Metrics()
+            metrics.frameCount += 1
+            metrics.totalDurationMs += durationMs
+            metrics.maxDurationMs = max(durationMs, metrics.maxDurationMs)
+            self[keyPath: actionMetricsKeyPath][action] = metrics
+
+            return result
         }
 
         class DBFileSizeBencher {
@@ -165,7 +181,7 @@ extension MessageBackup {
                 let durationMs = bencher.dateProvider().millisSince(startDate)
                 bencher.totalFramesProcessed += 1
 
-                var metrics = bencher.metrics[frameType] ?? Metrics()
+                var metrics = bencher.frameMetrics[frameType] ?? Metrics()
                 metrics.frameCount += 1
                 metrics.totalDurationMs += durationMs
                 metrics.maxDurationMs = max(durationMs, metrics.maxDurationMs)
@@ -182,12 +198,12 @@ extension MessageBackup {
                     metrics.totalEnumerationDurationMs += startDate.millisSince(beforeEnumerationStartDate)
                 }
 
-                bencher.metrics[frameType] = metrics
+                bencher.frameMetrics[frameType] = metrics
             }
         }
 
         func logResults() {
-            let totalFrameCount = metrics.reduce(0, { $0 + $1.value.frameCount })
+            let totalFrameCount = frameMetrics.reduce(0, { $0 + $1.value.frameCount })
             Logger.info("Processed \(loggableCountString(totalFrameCount)) frames in \(dateProvider().millisSince(startDate))ms")
 
             func logMetrics(_ metrics: Metrics, typeString: String) {
@@ -212,9 +228,17 @@ extension MessageBackup {
                 Logger.info(logString)
             }
 
-            for (frameType, metrics) in self.metrics.sorted(by: { $0.value.totalDurationMs > $1.value.totalDurationMs }) {
+            Logger.info("Pre-Frame Metrics:")
+            for (action, metrics) in self.preFrameMetrics.sorted(by: { $0.value.totalDurationMs > $1.value.totalDurationMs }) {
+                logMetrics(metrics, typeString: action.rawValue)
+            }
+
+            Logger.info("Frame Metrics:")
+            for (frameType, metrics) in self.frameMetrics.sorted(by: { $0.value.totalDurationMs > $1.value.totalDurationMs }) {
                 logMetrics(metrics, typeString: frameType.rawValue)
             }
+
+            Logger.info("Post-Frame Metrics:")
             for (action, metrics) in self.postFrameMetrics.sorted(by: { $0.value.totalDurationMs > $1.value.totalDurationMs }) {
                 logMetrics(metrics, typeString: action.rawValue)
             }
@@ -280,7 +304,7 @@ extension MessageBackup {
             }
         }
 
-        private enum FrameType: String, CaseIterable {
+        private enum FrameType: String {
             case AccountData
 
             case Recipient_Contact
@@ -414,12 +438,17 @@ extension MessageBackup {
             }
         }
 
-        enum PostFrameRestoreAction: String, CaseIterable {
+        enum PreFrameRestoreAction: String {
+            case DropInteractionIndexes
+        }
+
+        enum PostFrameRestoreAction: String {
             case InsertContactHiddenInfoMessage
             case InsertPhoneNumberMissingAci
             case UpdateThreadMetadata
             case EnqueueAvatarFetch
             case IndexThreads
+            case RecreateInteractionIndexes
         }
     }
 }
