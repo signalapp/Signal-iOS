@@ -314,9 +314,9 @@ public extension TSGroupModel {
         init(avatarData: Data?) {
             if let avatarData {
                 self = .available(avatarData)
+            } else {
+                self = .missing
             }
-
-            self = .missing
         }
 
         public var dataIfPresent: Data? {
