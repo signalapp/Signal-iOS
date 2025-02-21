@@ -252,15 +252,6 @@ extension MessageBackup {
             metrics.totalDurationMs += durationMs
             metrics.maxDurationMs = max(durationMs, metrics.maxDurationMs)
             metrics.totalEnumerationDurationMs += enumerationStepDurationMs ?? 0
-
-            if durationMs > Metrics.durationWarningThresholdMs {
-                metrics.frameCountAboveDurationWarningThreshold += 1
-
-                if FeatureFlags.messageBackupDetailedBenchLogging {
-                    metrics.universalFrameCountWhenAboveWarningThreshold.append(totalFramesProcessed)
-                }
-            }
-
             frameProcessingMetrics[frameType] = metrics
         }
 
@@ -340,15 +331,6 @@ extension MessageBackup {
             if metrics.totalEnumerationDurationMs > 0 {
                 logString += " Enum:\(metrics.totalEnumerationDurationMs)ms"
             }
-            if metrics.frameCountAboveDurationWarningThreshold > 0 {
-                logString += " AboveThreshold:\(metrics.frameCountAboveDurationWarningThreshold)"
-            }
-            if metrics.universalFrameCountWhenAboveWarningThreshold.count > 0 {
-                let percentileStrings = Percentile.computePercentiles(values: metrics.universalFrameCountWhenAboveWarningThreshold)
-                    .map { (percentile, totalFrameCount) in "p\(percentile.rawValue):\(totalFrameCount)" }
-
-                logString += " UnivFrameCountWhenAboveThreshold:{\(percentileStrings.joined(separator: ","))}"
-            }
             Logger.info(logString)
         }
 
@@ -370,46 +352,10 @@ extension MessageBackup {
         }
 
         fileprivate struct Metrics {
-            static let durationWarningThresholdMs: UInt64 = 30
-
             var frameCount: UInt64 = 0
-            var frameCountAboveDurationWarningThreshold: UInt64 = 0
             var totalDurationMs: UInt64 = 0
             var maxDurationMs: UInt64 = 0
             var totalEnumerationDurationMs: UInt64 = 0
-
-            /// The total frame count, across all frame types, when we processed
-            /// a frame for this metric that was above the duration-warning
-            /// threshold.
-            /// - Important
-            /// Only set if verbose bench logging is enabled!
-            var universalFrameCountWhenAboveWarningThreshold: [UInt64] = []
-        }
-
-        private enum Percentile: Int, CaseIterable {
-            case p25 = 25
-            case p50 = 50
-            case p75 = 75
-            case p90 = 90
-            case p95 = 95
-            case p99 = 99
-
-            static func computePercentiles<T: Comparable>(
-                values: [T],
-                percentiles: [Percentile] = Percentile.allCases
-            ) -> [(Percentile, T)] {
-                var percentileValues = [(Percentile, T)]()
-                let sortedValues = values.sorted()
-
-                for percentile in percentiles {
-                    let index = Int(Double(sortedValues.count) * Double(percentile.rawValue) / 100)
-                    let clampedIndex = min(sortedValues.count - 1, index)
-
-                    percentileValues.append((percentile, sortedValues[clampedIndex]))
-                }
-
-                return percentileValues
-            }
         }
 
         fileprivate enum FrameType: String {
