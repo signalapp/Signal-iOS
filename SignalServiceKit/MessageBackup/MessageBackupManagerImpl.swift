@@ -334,9 +334,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         memorySampler: MemorySampler,
         tx: DBWriteTransaction
     ) throws {
-        let bencher = MessageBackup.Bencher(
+        let bencher = MessageBackup.ArchiveBencher(
             dateProviderMonotonic: dateProviderMonotonic,
-            dbFileSizeProvider: dbFileSizeProvider,
             memorySampler: memorySampler
         )
 
@@ -727,7 +726,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         memorySampler: MemorySampler,
         tx: DBWriteTransaction
     ) throws -> BackupProto_BackupInfo {
-        let bencher = MessageBackup.Bencher(
+        let bencher = MessageBackup.RestoreBencher(
             dateProviderMonotonic: dateProviderMonotonic,
             dbFileSizeProvider: dbFileSizeProvider,
             memorySampler: memorySampler
@@ -740,7 +739,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         // Drops all indexes on the `TSInteraction` table before doing the
         // import, which dramatically speeds up the import. We'll then recreate
         // all these indexes in bulk afterwards.
-        let interactionIndexes = try bencher.benchPreFrameAction(.DropInteractionIndexes) {
+        let interactionIndexes = try bencher.benchPreFrameRestoreAction(.DropInteractionIndexes) {
             try dropAllIndexes(
                 forTable: InteractionRecord.databaseTableName,
                 tx: tx
@@ -1045,7 +1044,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
             // Now that we've imported successfully, we want to recreate the
             // the indexes we temporarily dropped.
-            try bencher.benchPostFrameAction(.RecreateInteractionIndexes) {
+            try bencher.benchPostFrameRestoreAction(.RecreateInteractionIndexes) {
                 try createIndexes(
                     interactionIndexes,
                     onTable: InteractionRecord.databaseTableName,
@@ -1062,7 +1061,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             )
 
             // Index threads synchronously, since that should be fast.
-            bencher.benchPostFrameAction(.IndexThreads) {
+            bencher.benchPostFrameRestoreAction(.IndexThreads) {
                 fullTextSearchIndexer.indexThreads(tx: tx)
             }
 

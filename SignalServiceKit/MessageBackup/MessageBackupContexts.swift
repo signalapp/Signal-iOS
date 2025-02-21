@@ -26,7 +26,7 @@ extension MessageBackup {
         /// whether we include expiring messages or not.
         public let backupPurpose: MessageBackupPurpose
 
-        let bencher: MessageBackup.Bencher
+        let bencher: MessageBackup.ArchiveBencher
 
         /// Nil if not a paid backups account.
         private let currentBackupAttachmentUploadEra: String?
@@ -34,7 +34,7 @@ extension MessageBackup {
 
         init(
             backupPurpose: MessageBackupPurpose,
-            bencher: MessageBackup.Bencher,
+            bencher: MessageBackup.ArchiveBencher,
             currentBackupAttachmentUploadEra: String?,
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             tx: DBWriteTransaction

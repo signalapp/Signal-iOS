@@ -105,7 +105,7 @@ extension MessageBackup {
 
         internal init(
             backupPurpose: MessageBackupPurpose,
-            bencher: MessageBackup.Bencher,
+            bencher: MessageBackup.ArchiveBencher,
             currentBackupAttachmentUploadEra: String?,
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             customChatColorContext: CustomChatColorArchivingContext,
@@ -327,7 +327,7 @@ extension MessageBackup {
 
         internal override init(
             backupPurpose: MessageBackupPurpose,
-            bencher: MessageBackup.Bencher,
+            bencher: MessageBackup.ArchiveBencher,
             currentBackupAttachmentUploadEra: String?,
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             tx: DBWriteTransaction
