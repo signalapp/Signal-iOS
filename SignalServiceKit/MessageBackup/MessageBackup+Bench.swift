@@ -12,6 +12,7 @@ extension MessageBackup {
 
         private let dateProvider: DateProviderMonotonic
         private let dbFileSizeBencher: DBFileSizeBencher?
+        private let memorySampler: MemorySampler
 
         private let startDate: MonotonicDate
 
@@ -22,7 +23,8 @@ extension MessageBackup {
 
         init(
             dateProviderMonotonic: @escaping DateProviderMonotonic,
-            dbFileSizeProvider: DBFileSizeProvider
+            dbFileSizeProvider: DBFileSizeProvider,
+            memorySampler: MemorySampler
         ) {
             self.dateProvider = dateProviderMonotonic
             self.dbFileSizeBencher = if FeatureFlags.messageBackupDetailedBenchLogging {
@@ -30,6 +32,7 @@ extension MessageBackup {
             } else {
                 nil
             }
+            self.memorySampler = memorySampler
 
             startDate = dateProviderMonotonic()
         }
@@ -39,10 +42,6 @@ extension MessageBackup {
         /// The provided block takes a ``FrameBencher`` which can itself be provided the
         /// ``BackupProto_Frame``; this is done so the return type doesn't have to be a frame.
         func processFrame<T>(_ block: (FrameBencher) throws -> T) rethrows -> T {
-            defer {
-                dbFileSizeBencher?.logIfNecessary(totalFramesProcessed: totalFramesProcessed)
-            }
-
             let frameBencher = FrameBencher(
                 bencher: self,
                 beforeEnumerationStartDate: nil,
@@ -174,6 +173,9 @@ extension MessageBackup {
             }
 
             func didProcessFrame(_ frame: BackupProto_Frame) {
+                bencher.memorySampler.sample()
+                bencher.dbFileSizeBencher?.logIfNecessary(totalFramesProcessed: bencher.totalFramesProcessed)
+
                 guard let frameType = FrameType(frame: frame) else {
                     return
                 }
@@ -312,6 +314,7 @@ extension MessageBackup {
             case Recipient_DistributionList
             case Recipient_Self
             case Recipient_CallLink
+            case Recipient_ReleaseNotes
 
             case Chat
 
@@ -345,6 +348,10 @@ extension MessageBackup {
 
             case AdHocCall
 
+            case NotificationProfile
+
+            case ChatFolder
+
             init?(frame: BackupProto_Frame) {
                 switch frame.item {
                 case .account:
@@ -355,8 +362,11 @@ extension MessageBackup {
                     self = .StickerPack
                 case .adHocCall:
                     self = .AdHocCall
-                case .notificationProfile, .chatFolder, .none:
-                    // We don't restore and therefore don't benchmark these.
+                case .notificationProfile:
+                    self = .NotificationProfile
+                case .chatFolder:
+                    self = .ChatFolder
+                case nil:
                     return nil
 
                 case .recipient(let recipient):
@@ -371,8 +381,9 @@ extension MessageBackup {
                         self = .Recipient_Self
                     case .callLink:
                         self = .Recipient_CallLink
-                    case .releaseNotes, .none:
-                        // We don't restore and therefore don't benchmark these.
+                    case .releaseNotes:
+                        self = .Recipient_ReleaseNotes
+                    case nil:
                         return nil
                     }
 
@@ -392,8 +403,7 @@ extension MessageBackup {
                         self = .ChatItem_ViewOnceMessage
                     case .directStoryReplyMessage:
                         self = .ChatItem_DirectStoryReplyMessage
-                    case .none:
-                        // We don't restore and therefore don't benchmark these.
+                    case nil:
                         return nil
 
                     case .standardMessage(let standardMessage):
@@ -429,8 +439,7 @@ extension MessageBackup {
                             self = .ChatItem_ChatUpdateMessage_GroupCall
                         case .individualCall:
                             self = .ChatItem_ChatUpdateMessage_IndividualCall
-                        case .none:
-                            // We don't restore and therefore don't benchmark these.
+                        case nil:
                             return nil
                         }
                     }

@@ -25,6 +25,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         static let keyValueStoreHasRestoredBackupKey = "HasRestoredBackup"
 
         static let supportedBackupVersion: UInt64 = 1
+
+        /// The ratio of frames processed for which to sample memory.
+        static let memorySamplerFrameRatio: Float = FeatureFlags.messageBackupDetailedBenchLogging ? 0.001 : 0
     }
 
     private class NotImplementedError: Error {}
@@ -230,12 +233,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             benchTitle: "Export encrypted Backup",
             backupPurpose: backupPurpose,
             localIdentifiers: localIdentifiers,
-            openOutputStreamBlock: { memorySampler, tx in
+            openOutputStreamBlock: { tx in
                 return encryptedStreamProvider.openEncryptedOutputFileStream(
                     localAci: localIdentifiers.aci,
                     backupKey: backupKey,
                     progress: progress,
-                    memorySampler: memorySampler,
                     tx: tx
                 )
             }
@@ -265,10 +267,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             benchTitle: "Export plaintext Backup",
             backupPurpose: backupPurpose,
             localIdentifiers: localIdentifiers,
-            openOutputStreamBlock: { memorySampler, tx in
+            openOutputStreamBlock: { tx in
                 return plaintextStreamProvider.openPlaintextOutputFileStream(
-                    progress: progress,
-                    memorySampler: memorySampler
+                    progress: progress
                 )
             }
         )
@@ -278,22 +279,22 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         benchTitle: String,
         backupPurpose: MessageBackupPurpose,
         localIdentifiers: LocalIdentifiers,
-        openOutputStreamBlock: (MemorySampler, DBReadTransaction) -> MessageBackup.ProtoStream.OpenOutputStreamResult<OutputStreamMetadata>
+        openOutputStreamBlock: (DBReadTransaction) -> MessageBackup.ProtoStream.OpenOutputStreamResult<OutputStreamMetadata>
     ) async throws -> OutputStreamMetadata {
         let currentAppVersion = appVersion.currentAppVersion
         let firstAppVersion = appVersion.firstBackupAppVersion ?? appVersion.firstAppVersion
 
         let result: Result<OutputStreamMetadata, Error> = await db.awaitableWriteWithTxCompletion { tx in
-            do {
-                let outputStreamMetadata = try Bench(
-                    title: benchTitle,
-                    memorySamplerRatio: FeatureFlags.messageBackupMemorySamplerRatio,
-                    logInProduction: false
-                ) { memorySampler -> OutputStreamMetadata in
-                    return try self.databaseChangeObserver.disable(tx: tx) { tx in
+            return self.databaseChangeObserver.disable(tx: tx, during: { tx in
+                do {
+                    let outputStreamMetadata = try BenchMemory(
+                        title: benchTitle,
+                        memorySamplerRatio: Constants.memorySamplerFrameRatio,
+                        logInProduction: true
+                    ) { memorySampler -> OutputStreamMetadata in
                         let outputStream: MessageBackupProtoOutputStream
                         let outputStreamMetadataProvider: () throws -> OutputStreamMetadata
-                        switch openOutputStreamBlock(memorySampler, tx) {
+                        switch openOutputStreamBlock(tx) {
                         case .success(let _outputStream, let _outputStreamMetadataProvider):
                             outputStream = _outputStream
                             outputStreamMetadataProvider = _outputStreamMetadataProvider
@@ -307,17 +308,18 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                             backupPurpose: backupPurpose,
                             currentAppVersion: currentAppVersion,
                             firstAppVersion: firstAppVersion,
+                            memorySampler: memorySampler,
                             tx: tx
                         )
 
                         return try outputStreamMetadataProvider()
                     }
-                }
 
-                return .commit(.success(outputStreamMetadata))
-            } catch let error {
-                return .rollback(.failure(error))
-            }
+                    return .commit(.success(outputStreamMetadata))
+                } catch let error {
+                    return .rollback(.failure(error))
+                }
+            })
         }
 
         return try result.get()
@@ -329,11 +331,13 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         backupPurpose: MessageBackupPurpose,
         currentAppVersion: String,
         firstAppVersion: String,
+        memorySampler: MemorySampler,
         tx: DBWriteTransaction
     ) throws {
         let bencher = MessageBackup.Bencher(
             dateProviderMonotonic: dateProviderMonotonic,
-            dbFileSizeProvider: dbFileSizeProvider
+            dbFileSizeProvider: dbFileSizeProvider,
+            memorySampler: memorySampler
         )
 
         let startTimestamp = dateProvider().ows_millisecondsSince1970
@@ -626,13 +630,12 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         try await _importBackup(
             benchTitle: "Import encrypted Backup",
             localIdentifiers: localIdentifiers,
-            openInputStreamBlock: { memorySampler, tx in
+            openInputStreamBlock: { tx in
                 return encryptedStreamProvider.openEncryptedInputFileStream(
                     fileUrl: fileUrl,
                     localAci: localIdentifiers.aci,
                     backupKey: backupKey,
                     progress: progress,
-                    memorySampler: memorySampler,
                     tx: tx
                 )
             }
@@ -661,11 +664,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         try await _importBackup(
             benchTitle: "Import plaintext Backup",
             localIdentifiers: localIdentifiers,
-            openInputStreamBlock: { memorySampler, tx in
+            openInputStreamBlock: { tx in
                 return plaintextStreamProvider.openPlaintextInputFileStream(
                     fileUrl: fileUrl,
-                    progress: progress,
-                    memorySampler: memorySampler
+                    progress: progress
                 )
             }
         )
@@ -674,18 +676,18 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private func _importBackup(
         benchTitle: String,
         localIdentifiers: LocalIdentifiers,
-        openInputStreamBlock: (MemorySampler, DBReadTransaction) -> MessageBackup.ProtoStream.OpenInputStreamResult
+        openInputStreamBlock: (DBReadTransaction) -> MessageBackup.ProtoStream.OpenInputStreamResult
     ) async throws {
         let result: Result<BackupProto_BackupInfo, Error> = await db.awaitableWriteWithTxCompletion { tx in
             do {
-                let backupInfo = try Bench(
+                let backupInfo = try BenchMemory(
                     title: benchTitle,
-                    memorySamplerRatio: FeatureFlags.messageBackupMemorySamplerRatio,
-                    logInProduction: false
+                    memorySamplerRatio: Constants.memorySamplerFrameRatio,
+                    logInProduction: true
                 ) { memorySampler -> BackupProto_BackupInfo in
                     return try self.databaseChangeObserver.disable(tx: tx) { tx in
                         let inputStream: MessageBackupProtoInputStream
-                        switch openInputStreamBlock(memorySampler, tx) {
+                        switch openInputStreamBlock(tx) {
                         case .success(let protoStream, _):
                             inputStream = protoStream
                         case .fileNotFound:
@@ -699,6 +701,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         return try self._importBackup(
                             inputStream: inputStream,
                             localIdentifiers: localIdentifiers,
+                            memorySampler: memorySampler,
                             tx: tx
                         )
                     }
@@ -721,11 +724,13 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private func _importBackup(
         inputStream stream: MessageBackupProtoInputStream,
         localIdentifiers: LocalIdentifiers,
+        memorySampler: MemorySampler,
         tx: DBWriteTransaction
     ) throws -> BackupProto_BackupInfo {
         let bencher = MessageBackup.Bencher(
             dateProviderMonotonic: dateProviderMonotonic,
-            dbFileSizeProvider: dbFileSizeProvider
+            dbFileSizeProvider: dbFileSizeProvider,
+            memorySampler: memorySampler
         )
 
         guard !hasRestoredFromBackup(tx: tx) else {
@@ -848,14 +853,27 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         }
                     }
 
+                    guard
+                        let frame,
+                        let frameItem = frame.item
+                    else {
+                        if hasMoreFrames {
+                            frameErrors.append(LoggableErrorAndProto(
+                                error: MessageBackup.UnrecognizedEnumError(
+                                    enumType: BackupProto_Frame.OneOf_Item.self
+                                ),
+                                wasFrameDropped: true
+                            ))
+                        }
+                        return
+                    }
+
                     try bencher.processFrame { frameBencher in
                         defer {
-                            if let frame {
-                                frameBencher.didProcessFrame(frame)
-                            }
+                            frameBencher.didProcessFrame(frame)
                         }
 
-                        switch frame?.item {
+                        switch frameItem {
                         case .recipient(let recipient):
                             let recipientResult: MessageBackup.RestoreFrameResult<MessageBackup.RecipientId>
                             switch recipient.destination {
@@ -1018,15 +1036,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                             // Chat folders are unsupported on iOS and
                             // we do not even round trip them per spec.
                             break
-                        case nil:
-                            if hasMoreFrames {
-                                frameErrors.append(LoggableErrorAndProto(
-                                    error: MessageBackup.UnrecognizedEnumError(
-                                        enumType: BackupProto_Frame.OneOf_Item.self
-                                    ),
-                                    wasFrameDropped: true
-                                ))
-                            }
                         }
                     }
                 }
