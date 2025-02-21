@@ -19,10 +19,10 @@ public class MessageBackupRecipientStore {
     // MARK: - Archiving
 
     func enumerateAllSignalRecipients(
-        _ context: MessageBackup.RecipientArchivingContext,
+        tx: DBReadTransaction,
         block: (SignalRecipient) -> Void
     ) throws {
-        let cursor = try SignalRecipient.fetchCursor(context.tx.databaseConnection)
+        let cursor = try SignalRecipient.fetchCursor(tx.databaseConnection)
         while let next = try cursor.next() {
             try Task.checkCancellation()
             block(next)
@@ -31,18 +31,18 @@ public class MessageBackupRecipientStore {
 
     func fetchRecipient(
         for address: MessageBackup.ContactAddress,
-        context: MessageBackup.RecipientArchivingContext
+        tx: DBReadTransaction
     ) -> SignalRecipient? {
-        return recipientTable.fetchRecipient(address: address.asInteropAddress(), tx: context.tx)
+        return recipientTable.fetchRecipient(address: address.asInteropAddress(), tx: tx)
     }
 
     // MARK: - Restoring
 
     func insertRecipient(
         _ recipient: SignalRecipient,
-        context: MessageBackup.RecipientRestoringContext
+        tx: DBWriteTransaction
     ) throws {
-        try recipient.insert(context.tx.databaseConnection)
+        try recipient.insert(tx.databaseConnection)
         // Unlike messages, whose indexing is deferred, we insert
         // into the index immediately within the backup write tx.
         // This is because:
@@ -51,6 +51,6 @@ public class MessageBackupRecipientStore {
         //    will do post-restore is search up a recipient.
         // If this ends up being a performance issue, we can
         // defer this indexing, too.
-        searchableNameIndexer.insert(recipient, tx: context.tx)
+        searchableNameIndexer.insert(recipient, tx: tx)
     }
 }

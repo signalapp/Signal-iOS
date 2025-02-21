@@ -52,13 +52,13 @@ extension MessageBackup {
 
         /// Given a block that does an enumeration over db objects, wraps that enumeration to instead take
         /// a closure with a FrameBencher that also measures the time spent enumerating.
-        func wrapEnumeration<Input, T, Output>(
-            _ enumerationFunc: (_ input: Input, (T) throws -> Output) throws -> Void,
-            _ input: Input,
-            block: @escaping (T, FrameBencher) throws -> Output
+        func wrapEnumeration<EnumeratedInput, Output>(
+            _ enumerationFunc: (DBReadTransaction, (EnumeratedInput) throws -> Output) throws -> Void,
+            tx: DBReadTransaction,
+            block: @escaping (EnumeratedInput, FrameBencher) throws -> Output
         ) rethrows {
             var beforeEnumerationStartDate = dateProvider()
-            try enumerationFunc(input) { t in
+            try enumerationFunc(tx) { t in
                 let frameBencher = FrameBencher(
                     bencher: self,
                     beforeEnumerationStartDate: beforeEnumerationStartDate,
@@ -72,13 +72,13 @@ extension MessageBackup {
 
         /// Variant of the above where the block doesn't throw; unfortunately `rethrows`
         /// can't cover two layers of throws variations.
-        func wrapEnumeration<Input, T, Output>(
-            _ enumerationFunc: (_ input: Input, (T) -> Output) throws -> Void,
-            _ input: Input,
-            block: @escaping (T, FrameBencher) -> Output
+        func wrapEnumeration<EnumeratedInput, Output>(
+            _ enumerationFunc: (DBReadTransaction, (EnumeratedInput) -> Output) throws -> Void,
+            tx: DBReadTransaction,
+            block: @escaping (EnumeratedInput, FrameBencher) -> Output
         ) rethrows {
             var beforeEnumerationStartDate = dateProvider()
-            try enumerationFunc(input) { t in
+            try enumerationFunc(tx) { t in
                 let frameBencher = FrameBencher(
                     bencher: self,
                     beforeEnumerationStartDate: beforeEnumerationStartDate,

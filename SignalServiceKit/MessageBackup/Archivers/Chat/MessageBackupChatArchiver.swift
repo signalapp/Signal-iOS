@@ -123,7 +123,10 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         }
 
         do {
-            try context.bencher.wrapEnumeration(threadStore.enumerateNonStoryThreads(context: block:), context) { thread, frameBencher in
+            try context.bencher.wrapEnumeration(
+                threadStore.enumerateNonStoryThreads(tx:block:),
+                tx: context.tx
+            ) { thread, frameBencher in
                 try Task.checkCancellation()
                 return archiveThread(thread, frameBencher)
             }
@@ -258,7 +261,10 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     ) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()
 
-        let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread.tsThread, context: context)
+        let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(
+            for: thread.tsThread,
+            tx: context.tx
+        )
 
         let thisThreadPinnedOrder: UInt32?
         let pinnedThreadIds = pinnedThreadStore.pinnedThreadIds(tx: context.tx)

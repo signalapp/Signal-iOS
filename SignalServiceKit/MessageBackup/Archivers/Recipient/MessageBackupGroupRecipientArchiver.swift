@@ -66,8 +66,8 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
         do {
             try context.bencher.wrapEnumeration(
-                threadStore.enumerateGroupThreads(context:block:),
-                context
+                threadStore.enumerateGroupThreads(tx:block:),
+                tx: context.tx
             ) { groupThread, frameBencher in
                 try Task.checkCancellation()
                 autoreleasepool {

@@ -50,8 +50,8 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
                 }
             }
             try context.bencher.wrapEnumeration(
-                threadStore.enumerateStoryThreads(context:block:),
-                context
+                threadStore.enumerateStoryThreads(tx:block:),
+                tx: context.tx
             ) { storyThread, frameBencher in
                 try Task.checkCancellation()
                 autoreleasepool {

@@ -209,7 +209,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                             hiddenRecipient: hiddenRecipient,
                             contactThread: self.threadStore.fetchContactThread(
                                 recipient: recipient,
-                                context: context
+                                tx: context.tx
                             ),
                             tx: context.tx
                         )
@@ -248,8 +248,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
 
         do {
             try context.bencher.wrapEnumeration(
-                recipientStore.enumerateAllSignalRecipients(_: block:),
-                context
+                recipientStore.enumerateAllSignalRecipients(tx:block:),
+                tx: context.tx
             ) { recipient, frameBencher in
                 autoreleasepool {
                     recipientBlock(recipient, frameBencher)
@@ -283,7 +283,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         /// remove this code.
         context.bencher.wrapEnumeration(
             profileManager.enumerateUserProfiles(tx:block:),
-            context.tx
+            tx: context.tx
         ) { userProfile, frameBencher in
             autoreleasepool {
                 if let serviceId = userProfile.serviceId {
@@ -384,7 +384,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     ) -> MessageBackup.ArchiveSingleFrameResult<RecipientId, MessageBackup.ThreadUniqueId> {
         let existingRecipient = recipientStore.fetchRecipient(
             for: address,
-            context: context.recipientContext
+            tx: context.tx
         )
         // If we have an existing recipient, this is an error. It means we
         // _should_ have found the recipient on the context, but did not.
@@ -624,7 +624,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             unregisteredAtTimestamp: unregisteredTimestamp
         )
         do {
-            try recipientStore.insertRecipient(recipient, context: context)
+            try recipientStore.insertRecipient(recipient, tx: context.tx)
         } catch {
             return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId)])
         }
