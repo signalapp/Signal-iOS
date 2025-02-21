@@ -53,7 +53,7 @@ public enum ContactAuthorizationForSharing {
 public class OWSContactsManager: NSObject, ContactsManagerProtocol {
     private let avatarBlurringCache = LowTrustCache()
     private let cnContactCache = LRUCache<String, CNContact>(maxSize: 50, shouldEvacuateInBackground: true)
-    private let isInWhitelistedGroupWithLocalUserCache = AtomicDictionary<ServiceId, Bool>([:], lock: .init())
+    private let isInMultipleWhitelistedGroupsWithLocalUserCache = AtomicDictionary<ServiceId, Bool>([:], lock: .init())
     private let hasWhitelistedGroupMemberCache = AtomicDictionary<Data, Bool>([:], lock: .init())
     private let systemContactsCache = SystemContactsCache()
     private let unknownThreadWarningCache = LowTrustCache()
@@ -309,7 +309,7 @@ extension OWSContactsManager: ContactManager {
             return false
         }
         // ...and not in a whitelisted group with the locar user.
-        if isInWhitelistedGroupWithLocalUser(otherAddress: address, tx: tx) {
+        if isInMultipleWhitelistedGroupsWithLocalUser(otherAddress: address, tx: tx) {
             lowTrustCache.add(address: address)
             return false
         }
@@ -341,8 +341,8 @@ extension OWSContactsManager: ContactManager {
         return true
     }
 
-    private func isInWhitelistedGroupWithLocalUser(otherAddress: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Bool {
-        let cache = isInWhitelistedGroupWithLocalUserCache
+    private func isInMultipleWhitelistedGroupsWithLocalUser(otherAddress: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Bool {
+        let cache = isInMultipleWhitelistedGroupsWithLocalUserCache
         if let cacheKey = otherAddress.serviceId, let cachedValue = cache[cacheKey] {
             return cachedValue
         }
@@ -357,13 +357,19 @@ extension OWSContactsManager: ContactManager {
             }
             let localGroupThreadIds = TSGroupThread.groupThreadIds(with: localAddress, transaction: tx)
             let groupThreadIds = Set(otherGroupThreadIds).intersection(localGroupThreadIds)
+
+            var isInOneWhitelistedGroup = false
+
             for groupThreadId in groupThreadIds {
                 guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: tx) else {
                     owsFailDebug("Missing group thread")
                     continue
                 }
                 if SSKEnvironment.shared.profileManagerRef.isGroupId(inProfileWhitelist: groupThread.groupId, transaction: tx) {
-                    return true
+                    if isInOneWhitelistedGroup {
+                        return true
+                    }
+                    isInOneWhitelistedGroup = true
                 }
             }
             return false
