@@ -451,6 +451,8 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
 
     func didTapViewGroupDescription(newGroupDescription: String) {}
 
+    func didTapNameEducation(type: SafetyTipsType) {}
+
     func didTapShowConversationSettings() {}
 
     func didTapShowConversationSettingsAndShowMemberRequests() {}

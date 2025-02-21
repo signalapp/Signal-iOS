@@ -1638,6 +1638,7 @@
 		B9921F882CC6FDB200AB667F /* HeroSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9921F872CC6FDB200AB667F /* HeroSheetViewController.swift */; };
 		B99287FB2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99287FA2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift */; };
 		B99288002CF124AC000D62C4 /* Text+Links.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99287FF2CF124AC000D62C4 /* Text+Links.swift */; };
+		B995C2362D669FA3001EE321 /* NameEducationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B995C2352D669FA3001EE321 /* NameEducationSheet.swift */; };
 		B99B155D2A71BA5200E26DAC /* StoryContextViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */; };
 		B9A0807A2B07D76A000FDB5B /* HomeTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */; };
 		B9A47ACE2D36DA6B0024DD9C /* circular_indeterminate.json in Resources */ = {isa = PBXBuildFile; fileRef = B9A47ACD2D36DA6B0024DD9C /* circular_indeterminate.json */; };
@@ -5462,6 +5463,7 @@
 		B9921F872CC6FDB200AB667F /* HeroSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroSheetViewController.swift; sourceTree = "<group>"; };
 		B99287FA2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedDevicesEducationSheet.swift; sourceTree = "<group>"; };
 		B99287FF2CF124AC000D62C4 /* Text+Links.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Text+Links.swift"; sourceTree = "<group>"; };
+		B995C2352D669FA3001EE321 /* NameEducationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameEducationSheet.swift; sourceTree = "<group>"; };
 		B99B155C2A71BA5200E26DAC /* StoryContextViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextViewState.swift; sourceTree = "<group>"; };
 		B9A080792B07D76A000FDB5B /* HomeTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabViewController.swift; sourceTree = "<group>"; };
 		B9A47ACD2D36DA6B0024DD9C /* circular_indeterminate.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = circular_indeterminate.json; sourceTree = "<group>"; };
@@ -8399,6 +8401,7 @@
 				34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */,
 				881218EF238CA51600E6F271 /* MessageReactionPicker.swift */,
 				D9E43BAC2CC194140001536E /* NameEditorViewController.swift */,
+				B995C2352D669FA3001EE321 /* NameEducationSheet.swift */,
 				34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */,
 				887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */,
 				881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */,
@@ -16707,6 +16710,7 @@
 				32CBF07D258C939800D56903 /* NameCollisionResolutionViewController.swift in Sources */,
 				3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */,
 				D9E43BFB2CC194140001536E /* NameEditorViewController.swift in Sources */,
+				B995C2362D669FA3001EE321 /* NameEducationSheet.swift in Sources */,
 				329D42A725AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift in Sources */,
 				D9E43C092CC194140001536E /* NewCallViewController.swift in Sources */,
 				3465947E2434CCC100E5C510 /* NewGroupConfirmViewController.swift in Sources */,

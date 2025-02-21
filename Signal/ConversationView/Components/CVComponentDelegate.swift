@@ -210,6 +210,8 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
 
     func didTapViewGroupDescription(newGroupDescription: String)
 
+    func didTapNameEducation(type: SafetyTipsType)
+
     func didTapShowConversationSettings()
 
     func didTapShowConversationSettingsAndShowMemberRequests()

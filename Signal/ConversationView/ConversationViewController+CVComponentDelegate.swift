@@ -914,6 +914,11 @@ extension ConversationViewController: CVComponentDelegate {
         self.presentFormSheet(navigationController, animated: true)
     }
 
+    public func didTapNameEducation(type: SafetyTipsType) {
+        AssertIsOnMainThread()
+        present(NameEducationSheet(type: type), animated: true)
+    }
+
     public func didTapShowConversationSettings() {
         AssertIsOnMainThread()
 

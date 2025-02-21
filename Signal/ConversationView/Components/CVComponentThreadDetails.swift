@@ -158,6 +158,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         }
 
         let safetySection = threadDetails.safetySection
+        let namesEducationLabel = componentView.profileNamesEducationLabel
         let detailsButton = componentView.detailsButton
         let mutualGroupsLabel = componentView.mutualGroupsLabel
         let showTipsButton = componentView.showTipsButton
@@ -206,6 +207,18 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         - innerStackConfig.layoutMargins.totalWidth
         - (mutualGroupsPadding * 2)
 
+        if safetySection.shouldShowProfileNamesEducation {
+            groupInfoSubviews.append(namesEducationLabel)
+            let config = namesEducationConfig(type: safetySection.threadType)
+            config.applyForRendering(button: namesEducationLabel)
+            namesEducationLabel.block = { [weak componentDelegate] in
+                componentDelegate?.didTapNameEducation(type: safetySection.threadType)
+            }
+
+            let size = CVText.measureLabel(config: config, maxWidth: maxWidth)
+            groupInfoSubviewInfos.append(size.asManualSubviewInfo)
+        }
+
         if let detailsText = safetySection.detailsText {
             groupInfoSubviews.append(detailsButton)
             let config = mutualGroupsLabelConfig(attributedText: detailsText)
@@ -216,7 +229,9 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                     componentDelegate?.didTapShowConversationSettings()
                 }
             }
-            groupInfoSubviewInfos.append(detailsButton.sizeThatFitsMaxSize.asManualSubviewInfo)
+
+            let size = CVText.measureLabel(config: config, maxWidth: maxWidth)
+            groupInfoSubviewInfos.append(size.asManualSubviewInfo)
         }
 
         if let mutualGroupsText = safetySection.mutualGroupsText {
@@ -352,6 +367,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     private static var mutualGroupsFont: UIFont { .dynamicTypeSubheadline }
     private static var mutualGroupsTextColor: UIColor { Theme.primaryTextColor }
 
+    private static var underlineColor: UIColor { UIColor.Signal.transparentSeparator }
+
     private static var reviewCarefullyFont: UIFont { .dynamicTypeSubheadline.semibold() }
     private static var reviewCarefullyTextColor: UIColor { UIColor(rgbHex: 0xA88746) }
 
@@ -378,6 +395,77 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             ),
             font: Self.reviewCarefullyFont,
             textColor: Self.reviewCarefullyTextColor
+        )
+    }
+
+    private func namesEducationIcon(type: SafetyTipsType) -> UIImage {
+        switch type {
+        case .contact:
+            return UIImage(named: "person-questionmark-compact")!
+        case .group:
+            return UIImage(named: "group-questionmark-compact")!
+        }
+    }
+
+    private func underlinedNamesEducationString(type: SafetyTipsType) -> NSAttributedString {
+        let (subject, predicate): (String, String) = switch type {
+        case .contact:
+            (
+                OWSLocalizedString(
+                    "THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT",
+                    comment: "Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE."
+                ),
+                OWSLocalizedString(
+                    "THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE",
+                    comment: "Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }}"
+                )
+            )
+        case .group:
+            (
+                OWSLocalizedString(
+                    "THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT",
+                    comment: "Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE."
+                ),
+                OWSLocalizedString(
+                    "THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE",
+                    comment: "Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }}"
+                )
+            )
+        }
+
+        let formattedString = String(format: predicate, subject)
+        let subjectRange = NSString(string: formattedString).range(of: subject)
+        let attributedString = NSMutableAttributedString(string: formattedString)
+        attributedString.addAttributes(
+            [
+                .underlineStyle: NSUnderlineStyle.single.rawValue,
+                .underlineColor: Self.underlineColor,
+            ],
+            range: subjectRange
+        )
+        return attributedString
+    }
+
+    private func namesEducationConfig(type: SafetyTipsType) -> CVLabelConfig {
+        CVLabelConfig(
+            text: .attributedText(
+                .composed(of: [
+                    NSAttributedString.with(
+                        image: self.namesEducationIcon(type: type),
+                        font: .dynamicTypeCallout,
+                        centerVerticallyRelativeTo: Self.mutualGroupsFont,
+                        heightReference: .pointSize
+                    ),
+                    SignalSymbol.LeadingCharacter.nonBreakingSpace.rawValue,
+                    self.underlinedNamesEducationString(type: type)
+                ])
+            ),
+            displayConfig: .forUnstyledText(
+                font: Self.mutualGroupsFont,
+                textColor: Self.mutualGroupsTextColor
+            ),
+            font: Self.mutualGroupsFont,
+            textColor: Self.mutualGroupsTextColor
         )
     }
 
@@ -447,6 +535,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 bioText: nil,
                 safetySection: .init(
                     shouldShowLowTrustWarning: false,
+                    shouldShowProfileNamesEducation: false,
                     detailsText: nil,
                     mutualGroupsText: nil,
                     threadType: .contact,
@@ -635,6 +724,14 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             innerSubviewInfos.append(CGSize(width: maxContentWidth - 16, height: 1).asManualSubviewInfo)
         }
 
+        if safetySection.shouldShowProfileNamesEducation {
+            let size = CVText.measureLabel(
+                config: self.namesEducationConfig(type: safetySection.threadType),
+                maxWidth: maxGroupWidth
+            )
+            groupInfoSubviewInfos.append(size.asManualSubviewInfo)
+        }
+
         if let detailsText = safetySection.detailsText {
             let size = CVText.measureLabel(
                 config: mutualGroupsLabelConfig(attributedText: detailsText),
@@ -717,6 +814,14 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             return true
         }
 
+        if
+            threadDetails.safetySection.shouldShowProfileNamesEducation,
+            componentView.profileNamesEducationLabel.bounds.contains(sender.location(in: componentView.profileNamesEducationLabel))
+        {
+            componentDelegate.didTapNameEducation(type: threadDetails.safetySection.threadType)
+            return true
+        }
+
         if threadDetails.isAvatarBlurred {
             guard let avatarView = componentView.avatarView else {
                 owsFailDebug("Missing avatarView.")
@@ -755,6 +860,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate let bioLabel = CVLabel()
 
         fileprivate let reviewCarefullyLabel = CVLabel()
+        fileprivate let profileNamesEducationLabel = CVButton()
         fileprivate let detailsButton = CVButton()
         fileprivate let mutualGroupsLabel = CVLabel()
         fileprivate let showTipsButton = OWSRoundedButton()
@@ -792,6 +898,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             titleLabel.text = nil
             titleButton.reset()
             bioLabel.text = nil
+            reviewCarefullyLabel.text = nil
+            profileNamesEducationLabel.reset()
             detailsButton.reset()
             mutualGroupsLabel.text = nil
             groupDescriptionPreviewView.descriptionText = nil
@@ -825,7 +933,7 @@ extension CVComponentThreadDetails {
             ),
             "  ",
             memberCountString.styled(
-                with: .underline(.single, Self.mutualGroupsTextColor)
+                with: .underline(.single, Self.underlineColor)
             ),
         ]).styled(
             with: .font(Self.mutualGroupsFont),
@@ -854,6 +962,7 @@ extension CVComponentThreadDetails {
 
             return .init(
                 shouldShowLowTrustWarning: true,
+                shouldShowProfileNamesEducation: true,
                 detailsText: memberCountAttributedText,
                 mutualGroupsText: text,
                 threadType: .group,
@@ -862,6 +971,7 @@ extension CVComponentThreadDetails {
         } else {
             return .init(
                 shouldShowLowTrustWarning: false,
+                shouldShowProfileNamesEducation: false,
                 detailsText: memberCountAttributedText,
                 mutualGroupsText: nil,
                 threadType: .group,
@@ -878,6 +988,7 @@ extension CVComponentThreadDetails {
         guard !contactThread.isNoteToSelf else {
             return .init(
                 shouldShowLowTrustWarning: false,
+                shouldShowProfileNamesEducation: false,
                 detailsText: nil,
                 mutualGroupsText: OWSLocalizedString(
                     "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION",
@@ -976,8 +1087,18 @@ extension CVComponentThreadDetails {
             ])
         }()
 
+        let isPhoneContact = phoneNumberString != nil
+        let shouldShowProfileNamesEducation = if isPhoneContact {
+            false
+        } else if case .nickname = displayName {
+            false
+        } else {
+            true
+        }
+
         return .init(
             shouldShowLowTrustWarning: shouldShowLowTrustWarning,
+            shouldShowProfileNamesEducation: shouldShowProfileNamesEducation,
             detailsText: phoneNumberString,
             mutualGroupsText: NSAttributedString.composed(of: [
                 NSAttributedString.with(
