@@ -3032,7 +3032,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 masterKey: masterKey,
                 authMethod: authMethod
             )
-            .then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep>  in
+            .then(on: schedulers.main) { [weak self] _ -> Guarantee<RegistrationStep>  in
                 guard let strongSelf = self else {
                     return unretainedSelfError()
                 }

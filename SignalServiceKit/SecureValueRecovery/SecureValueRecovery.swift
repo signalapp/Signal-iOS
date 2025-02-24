@@ -90,7 +90,7 @@ public enum SVR {
     }
 
     public enum RestoreKeysResult {
-        case success
+        case success(MasterKey)
         case invalidPin(remainingAttempts: UInt32)
         // This could mean there was never a backup, or it's been
         // deleted due to using up all pin attempts.
@@ -149,7 +149,7 @@ public protocol SecureValueRecovery {
     func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>
 
     /// Backs up the user's master key to SVR.
-    func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) -> Promise<Void>
+    func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) -> Promise<MasterKey>
 
     /// Remove the keys locally from the device and from the SVR,
     /// they will not be able to be restored.

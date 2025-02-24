@@ -291,7 +291,7 @@ extension OWS2FAManager {
         let masterKey = DependenciesBridge.shared.db.read {
             DependenciesBridge.shared.svrLocalStorage.getOrGenerateMasterKey($0)
         }
-        DependenciesBridge.shared.svr.backupMasterKey(pin: pin, masterKey: masterKey, authMethod: .implicit).done {
+        DependenciesBridge.shared.svr.backupMasterKey(pin: pin, masterKey: masterKey, authMethod: .implicit).done { _ in
             AssertIsOnMainThread()
             SSKEnvironment.shared.databaseStorageRef.write { self.markEnabled(pin: pin, transaction: $0) }
             success()

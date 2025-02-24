@@ -338,7 +338,7 @@ public class RegistrationCoordinatorTest {
             #expect(masterKey.rawData == self.svrLocalStorageMock.masterKey?.rawData)
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
-            return .value(())
+            return .value(masterKey)
         }
 
         // Once we sync push tokens, we should restore from storage service.
@@ -491,7 +491,7 @@ public class RegistrationCoordinatorTest {
             // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
-            return .value(())
+            return .value(masterKey)
         }
 
         // Once we sync push tokens, we should restore from storage service.
@@ -992,7 +992,7 @@ public class RegistrationCoordinatorTest {
             // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
-            return self.scheduler.promise(resolvingWith: (), atTime: 7)
+            return self.scheduler.promise(resolvingWith: masterKey, atTime: 7)
         }
 
         // Once we back up to svr at t=7, we should restore from storage service.
@@ -1118,17 +1118,9 @@ public class RegistrationCoordinatorTest {
         // Once we do that, it should follow the Reg Recovery Password Path.
         let nextStepPromise = coordinator.submitPINCode(Stubs.pinCode)
 
-        // At t=1, resolve the key restoration from SVR and have it start returning the key.
-        svr.restoreKeysMock = { pin, authMethod in
-            #expect(self.scheduler.currentTime == 0)
-            #expect(pin == Stubs.pinCode)
-            #expect(authMethod == .svrAuth(Stubs.svr2AuthCredential, backup: nil))
-            self.svr.hasMasterKey = true
-            return self.scheduler.guarantee(resolvingWith: .success, atTime: 1)
-        }
-
         // At t=1 it should get the latest credentials from SVR.
-        svrLocalStorageMock.masterKey = MasterKeyMock()
+        let masterKey = MasterKeyMock()
+        svrLocalStorageMock.masterKey = masterKey
         svrLocalStorageMock.masterKey?.dataGenerator = {
             #expect(self.scheduler.currentTime == 1)
             switch $0 {
@@ -1139,6 +1131,15 @@ public class RegistrationCoordinatorTest {
             default:
                 return Data()
             }
+        }
+
+        // At t=1, resolve the key restoration from SVR and have it start returning the key.
+        svr.restoreKeysMock = { pin, authMethod in
+            #expect(self.scheduler.currentTime == 0)
+            #expect(pin == Stubs.pinCode)
+            #expect(authMethod == .svrAuth(Stubs.svr2AuthCredential, backup: nil))
+            self.svr.hasMasterKey = true
+            return self.scheduler.guarantee(resolvingWith: .success(masterKey), atTime: 1)
         }
 
         // Before registering at t=1, it should ask for push tokens to give the registration.
@@ -1221,7 +1222,7 @@ public class RegistrationCoordinatorTest {
                 Stubs.svr2AuthCredential,
                 backup: .chatServerAuth(expectedAuthedAccount())
             ))
-            return self.scheduler.promise(resolvingWith: (), atTime: 5)
+            return self.scheduler.promise(resolvingWith: masterKey, atTime: 5)
         }
 
         // At t=5 once we back up to svr, we should restore from storage service.
@@ -1493,7 +1494,7 @@ public class RegistrationCoordinatorTest {
     func testSessionPath_happyPath(mode: RegistrationMode) {
         let coordinator = coordinatorFactory(mode)
 
-        svrLocalStorageMock.masterKeyIfMissing = MasterKeyMock(Stubs.masterKey)
+        svrLocalStorageMock.masterKeyIfMissing = MasterKeyMock(Stubs.masterKey.rawData)
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
         scheduler.tick()
@@ -1619,7 +1620,7 @@ public class RegistrationCoordinatorTest {
             #expect(masterKey.rawData == Stubs.masterKey.rawData)
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             #expect(masterKey.rawData == self.svrLocalStorageMock.masterKey!.rawData)
-            return self.scheduler.promise(resolvingWith: (), atTime: 1)
+            return self.scheduler.promise(resolvingWith: masterKey, atTime: 1)
         }
 
         // At t=1 once we sync push tokens, we should restore from storage service.
@@ -3407,9 +3408,9 @@ public class RegistrationCoordinatorTest {
         nextStep = coordinator.skipPINCode()
 
         // When we skip the pin, it should skip any SVR backups.
-        svr.backupMasterKeyMock = { _, _, _ in
+        svr.backupMasterKeyMock = { _, masterKey, _ in
             Issue.record("Shouldn't talk to SVR with skipped PIN!")
-            return .value(())
+            return .value(masterKey)
 
         }
         storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { _, _ in
@@ -3583,9 +3584,9 @@ public class RegistrationCoordinatorTest {
         nextStep = coordinator.skipPINCode()
 
         // When we skip the pin, it should skip any SVR backups.
-        svr.backupMasterKeyMock = { _, _, _ in
+        svr.backupMasterKeyMock = { _, masterKey, _ in
             Issue.record("Shouldn't talk to SVR with skipped PIN!")
-            return .value(())
+            return .value(masterKey)
 
         }
         storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { _, _ in

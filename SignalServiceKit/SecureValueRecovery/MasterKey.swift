@@ -6,7 +6,7 @@
 import CryptoKit
 import LibSignalClient
 
-public protocol MasterKey {
+public protocol MasterKey: Codable {
 
     var rawData: Data { get }
 

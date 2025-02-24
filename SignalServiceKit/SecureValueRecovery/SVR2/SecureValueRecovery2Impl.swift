@@ -251,10 +251,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: - Key Management
 
-    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) -> Promise<Void> {
+    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) -> Promise<MasterKey> {
         Logger.info("")
-        let promise: Promise<Data> = doBackupAndExpose(pin: pin, masterKey: masterKey.rawData, authMethod: authMethod)
-        return promise.asVoid(on: schedulers.sync)
+        return doBackupAndExpose(pin: pin, masterKey: masterKey.rawData, authMethod: authMethod)
     }
 
     public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
@@ -287,7 +286,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                             masterKey: masterKey,
                             authMethod: authMethod
                         )
-                        .map(on: self.schedulers.sync) { [weak self] _ in
+                        .map(on: self.schedulers.sync) { [weak self] masterKey in
                             // If the backup succeeds, and the restore was from some old enclave,
                             // delete from that older enclave.
                             if enclaveWeRestoredFrom.stringValue != self?.tsConstants.svr2Enclave.stringValue {
@@ -300,7 +299,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                                 }
                                 self?.wipeOldEnclavesIfNeeded(auth: authMethod)
                             }
-                            return .success
+                            return .success(masterKey)
                         }
                         .recover(on: self.schedulers.sync) { error in
                             if error.isNetworkFailureOrTimeout {
@@ -469,10 +468,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         pin: String,
         masterKey: Data,
         authMethod: SVR2.AuthMethod
-    ) -> Promise<Data> {
+    ) -> Promise<MasterKey> {
         let config = SVR2WebsocketConfigurator(mrenclave: tsConstants.svr2Enclave, authMethod: authMethod)
         return makeHandshakeAndOpenConnection(config)
-            .then(on: scheduler) { [weak self] connection -> Promise<Data> in
+            .then(on: scheduler) { [weak self] connection -> Promise<MasterKey> in
                 guard let self else {
                     return .init(error: SVR.SVRError.assertion)
                 }
@@ -480,7 +479,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 Logger.info("Connection open; beginning backup/expose")
                 let weakSelf = Weak(value: self)
                 let weakConnection = Weak(value: connection)
-                func continueWithExpose(backup: InProgressBackup) -> Promise<Data> {
+                func continueWithExpose(backup: InProgressBackup) -> Promise<MasterKey> {
                     guard let self = weakSelf.value, let connection = weakConnection.value else {
                         return .init(error: SVR.SVRError.assertion)
                     }
@@ -490,17 +489,17 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                             authedAccount: authMethod.authedAccount,
                             connection: connection
                         )
-                        .then(on: self.schedulers.sync) { result -> Promise<Data> in
+                        .then(on: self.schedulers.sync) { result -> Promise<MasterKey> in
                             switch result {
                             case .success:
-                                return .value(backup.masterKey)
+                                return .value(MasterKeyImpl(masterKey: backup.masterKey))
                             case .serverError, .networkError, .unretainedError, .localPersistenceError:
                                 return .init(error: SVR.SVRError.assertion)
                             }
                         }
                 }
 
-                func startFreshBackupExpose() -> Promise<Data> {
+                func startFreshBackupExpose() -> Promise<MasterKey> {
                     return self
                         .performBackupRequest(
                             pin: pin,
@@ -508,7 +507,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                             mrEnclave: config.mrenclave,
                             connection: connection
                         )
-                        .then(on: self.scheduler) { (backupResult: BackupResult) -> Promise<Data> in
+                        .then(on: self.scheduler) { (backupResult: BackupResult) -> Promise<MasterKey> in
                             switch backupResult {
                             case .serverError, .networkError, .localPersistenceError, .localEncryptionError, .unretainedError:
                                 return .init(error: SVR.SVRError.assertion)
@@ -758,7 +757,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         var asSVRResult: SVR.RestoreKeysResult {
             switch self {
-            case .success: return .success
+            case .success(let masterKey, _): return .success(MasterKeyImpl(masterKey: masterKey))
             case .backupMissing: return .backupMissing
             case .invalidPin(let remainingAttempts): return .invalidPin(remainingAttempts: remainingAttempts)
             case .networkError(let error): return .networkError(error)
