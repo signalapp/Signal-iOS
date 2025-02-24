@@ -196,14 +196,83 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         return localStorage.getIsMasterKeyBackedUp(transaction)
     }
 
+    /// This method will:
+    /// 1. Set the provided MasterKey
+    /// 2. Clear out any SVR state
+    /// 3. Initiate a Storage Service update
+    /// 4. Update the users AccountAttributes
+    /// 5. Depending on the value of `disablePIN`
+    ///     a. true: Disable 2FA and remove local SVR credentials
+    ///     b. false: Initiate a new backup of SVR credentials if a PIN is available
     public func useDeviceLocalMasterKey(
         _ masterKey: MasterKey,
+        disablePIN: Bool,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {
         Logger.info("")
-
         accountKeyStore.setMasterKey(masterKey, tx: transaction)
+        updateLocalStateWithNewMasterKey(
+            masterKey,
+            disablePIN: disablePIN,
+            authedAccount: authedAccount,
+            transaction: transaction
+        )
+    }
+
+    /// This method will:
+    /// 1. Set the provided AEP
+    /// 2. Clear out any SVR state
+    /// 3. Initiate a Storage Service update
+    /// 4. Update the users AccountAttributes
+    /// 5. Depending on the value of `disablePIN`
+    ///     a. true: Disable 2FA and remove local SVR credentials
+    ///     b. false: Initiate a new backup of SVR credentials if a PIN is available
+    public func useDeviceLocalAccountEntropyPool(
+        _ accountEntropyPool: AccountEntropyPool,
+        disablePIN: Bool,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    ) {
+        Logger.info("")
+        accountKeyStore.setAccountEntropyPool(accountEntropyPool, tx: transaction)
+        updateLocalStateWithNewMasterKey(
+            accountEntropyPool.getMasterKey(),
+            disablePIN: disablePIN,
+            authedAccount: authedAccount,
+            transaction: transaction
+        )
+    }
+
+    private func updateLocalStateWithNewMasterKey(
+        _ masterKey: MasterKey,
+        disablePIN: Bool,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    ) {
+        // clearKeys will remove any local state and clear any in progress backup state.
+        // This will prevent us continuing any in progress backups/exposes.
+        clearKeys(transaction: transaction)
+
+        updateLocalSVRState(
+            isMasterKeyBackedUp: false,
+            pinType: .alphanumeric,
+            encodedPINVerificationString: nil,
+            mrEnclaveStringValue: nil,
+            transaction: transaction
+        )
+
+        if disablePIN {
+            // Disable the PIN locally.
+            twoFAManager.markDisabled(transaction: transaction)
+            // Wipe credentials; they're now useless.
+            credentialStorage.removeSVR2CredentialsForCurrentUser(transaction)
+        } else {
+            // If the user has a current PIN, update SVR with the new key
+            if let currentPIN = twoFAManager.pinCode(transaction: transaction) {
+                _ = backupMasterKey(pin: currentPIN, masterKey: masterKey, authMethod: .implicit)
+            }
+        }
 
         syncStorageService(
             restoredMasterKey: masterKey,
@@ -211,67 +280,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             transaction: transaction
         )
 
-        updateLocalSVRState(
-            isMasterKeyBackedUp: false,
-            pinType: .alphanumeric,
-            encodedPINVerificationString: nil,
-            mrEnclaveStringValue: nil,
-            transaction: transaction
-        )
-
-        // Disable the PIN locally.
-        twoFAManager.markDisabled(transaction: transaction)
-
-        // Wipe credentials; they're now useless.
-        credentialStorage.removeSVR2CredentialsForCurrentUser(transaction)
-
-        // This will prevent us continuing any in progress backups/exposes.
-        // If either are in flight, they will no-op when they get a response
-        // and see no in progress backup state.
-        clearInProgressBackup(transaction)
-
         // We should update account attributes so we wipe the reglock and
         // reg recovery password.
-        accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: authedAccount, tx: transaction)
-    }
-
-    public func useDeviceLocalAccountEntropyPool(
-        _ accountEntropyPool: AccountEntropyPool,
-        authedAccount: AuthedAccount,
-        transaction: DBWriteTransaction
-    ) {
-        Logger.info("")
-
-        // clearKeys will remove any local state and clear any in progress backup state.
-        // This will prevent us continuing any in progress backups/exposes.
-        clearKeys(transaction: transaction)
-
-        // Persist AEP locally
-        accountKeyStore.setAccountEntropyPool(accountEntropyPool, tx: transaction)
-
-        updateLocalSVRState(
-            isMasterKeyBackedUp: false,
-            pinType: .alphanumeric,
-            encodedPINVerificationString: nil,
-            mrEnclaveStringValue: nil,
-            transaction: transaction
-        )
-
-        syncStorageService(
-            restoredMasterKey: accountEntropyPool.getMasterKey(),
+        accountAttributesUpdater.scheduleAccountAttributesUpdate(
             authedAccount: authedAccount,
-            transaction: transaction
+            tx: transaction
         )
-
-        // If the user has a current PIN, update SVR with the new key
-        if let currentPIN = twoFAManager.pinCode(transaction: transaction) {
-            let newMasterKey = accountEntropyPool.getMasterKey()
-            _ = doBackupAndExpose(pin: currentPIN, masterKey: newMasterKey.rawData, authMethod: .implicit)
-        }
-
-        // We should update account attributes so we wipe the reglock and
-        // reg recovery password.
-        accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: authedAccount, tx: transaction)
     }
 
     // MARK: - PIN Management
@@ -1170,15 +1184,21 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     // in the wild but have no idea how.
                     Logger.error("Have PIN but no master key")
                 }
-                self.useDeviceLocalMasterKey(newMasterKey, authedAccount: .implicit(), transaction: tx)
+                self.useDeviceLocalMasterKey(
+                    newMasterKey,
+                    disablePIN: pinCode == nil,
+                    authedAccount: .implicit(),
+                    transaction: tx
+                )
             }
         }
     }
 
     public func generateAccountEntropyPoolIfMissing() {
-        let (isRegisteredPrimary, accountEntropyPool) = db.read {(
+        let (isRegisteredPrimary, accountEntropyPool, pinCode) = db.read {(
             self.tsAccountManager.registrationState(tx: $0).isRegisteredPrimaryDevice,
-            self.accountKeyStore.getAccountEntropyPool(tx: $0)
+            self.accountKeyStore.getAccountEntropyPool(tx: $0),
+            self.twoFAManager.pinCode(transaction: $0)
         )}
         guard accountEntropyPool == nil else { return }
         if isRegisteredPrimary {
@@ -1186,6 +1206,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 let newAEP = self.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
                 self.useDeviceLocalAccountEntropyPool(
                     newAEP,
+                    disablePIN: pinCode == nil,
                     authedAccount: .implicit(),
                     transaction: tx
                 )

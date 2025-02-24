@@ -176,12 +176,14 @@ public protocol SecureValueRecovery {
     /// local-only master key and disabling PIN usage for backup restoration.
     func useDeviceLocalMasterKey(
         _ masterKey: MasterKey,
+        disablePIN: Bool,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     )
 
     func useDeviceLocalAccountEntropyPool(
         _ accountEntropyPool: AccountEntropyPool,
+        disablePIN: Bool,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction)
 }

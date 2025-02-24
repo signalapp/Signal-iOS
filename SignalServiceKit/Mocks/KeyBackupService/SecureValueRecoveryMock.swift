@@ -114,6 +114,7 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public func useDeviceLocalMasterKey(
         _ masterKey: MasterKey,
+        disablePIN: Bool,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {
@@ -124,6 +125,7 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
     public var useDeviceLocalAccountEntropyPoolMock: ((_ authedAccount: AuthedAccount) -> Void)?
     public func useDeviceLocalAccountEntropyPool(
         _ accountEntropyPool: AccountEntropyPool,
+        disablePIN: Bool,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {

@@ -816,6 +816,7 @@ extension PinSetupViewController {
                                 let (_, newEntropyPool) = ViewControllerContext.shared.accountKeyStore.rotateAccountEntropyPool(tx: $0)
                                 ViewControllerContext.shared.svr.useDeviceLocalAccountEntropyPool(
                                     newEntropyPool,
+                                    disablePIN: true,
                                     authedAccount: .implicit(),
                                     transaction: $0
                                 )
@@ -823,6 +824,7 @@ extension PinSetupViewController {
                                 let (_, newMasterKey) = ViewControllerContext.shared.accountKeyStore.rotateMasterKey(tx: $0)
                                 ViewControllerContext.shared.svr.useDeviceLocalMasterKey(
                                     newMasterKey,
+                                    disablePIN: true,
                                     authedAccount: .implicit(),
                                     transaction: $0
                                 )

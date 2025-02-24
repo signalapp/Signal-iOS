@@ -1028,18 +1028,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 deps.experienceManager.clearIntroducingPinsExperience(tx)
             }
 
+            let userHasPIN = (inMemoryState.pinFromUser ?? inMemoryState.pinFromDisk) != nil
             if
                 deps.featureFlags.enableAccountEntropyPool,
                 let accountEntropyPool = persistedState.accountEntropyPool
             {
                 deps.svr.useDeviceLocalAccountEntropyPool(
                     accountEntropyPool,
+                    disablePIN: !userHasPIN,
                     authedAccount: accountIdentity.authedAccount,
                     transaction: tx
                 )
-            } else if let masterKey = persistedState.recoveredSVRMasterKey {
+            } else {
+                    // While the AEP feature flag exists, we'll need to fall back to
+                    // generating a master key if one wasn't restored.
+                let masterKey = persistedState.recoveredSVRMasterKey ?? deps.accountKeyStore.getOrGenerateMasterKey(tx: tx)
                 deps.svr.useDeviceLocalMasterKey(
                     masterKey,
+                    disablePIN: !userHasPIN,
                     authedAccount: accountIdentity.authedAccount,
                     transaction: tx
                 )

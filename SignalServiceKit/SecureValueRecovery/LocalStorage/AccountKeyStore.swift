@@ -59,23 +59,12 @@ public class AccountKeyStore {
 
     public func rotateMasterKey(tx: any DBWriteTransaction) -> (old: MasterKey?, new: MasterKey) {
         let oldValue = getMasterKey(tx: tx)
-        if let aep = getAccountEntropyPool(tx: tx) {
-            owsFailDebug("Don't rotate master key if AEP is present")
-            // Silently no-op the call
-            return (oldValue, aep.getMasterKey())
-        }
-
         let newValue = masterKeyGenerator()
         setMasterKey(newValue, tx: tx)
         return (oldValue, newValue)
     }
 
     public func setMasterKey(_ masterKey: MasterKey?, tx: DBWriteTransaction) {
-        guard getAccountEntropyPool(tx: tx) == nil else {
-            owsFailDebug("Don't set master key if AEP is present")
-            // Silently no-op the call
-            return
-        }
         masterKeyKvStore.setData(masterKey?.rawData, key: Keys.masterKey, transaction: tx)
     }
 
@@ -137,8 +126,14 @@ public class AccountKeyStore {
         return getAccountEntropyPool(tx: tx) ?? accountEntropyPoolGenerator()
     }
 
-    public func setAccountEntropyPool(_ accountEntropyPool: AccountEntropyPool, tx: DBWriteTransaction) {
-        aepKvStore.setString(accountEntropyPool.rawData, key: Keys.aepKeyName, transaction: tx)
+    public func setAccountEntropyPool(_ accountEntropyPool: AccountEntropyPool?, tx: DBWriteTransaction) {
+        // Clear the old master key when setting the accountEntropyPool
+        masterKeyKvStore.removeValue(forKey: Keys.masterKey, transaction: tx)
+        if let accountEntropyPool {
+            aepKvStore.setString(accountEntropyPool.rawData, key: Keys.aepKeyName, transaction: tx)
+        } else {
+            aepKvStore.removeValue(forKey: Keys.aepKeyName, transaction: tx)
+        }
     }
 
     public func rotateAccountEntropyPool(tx: DBWriteTransaction) -> (old: AccountEntropyPool?, new: AccountEntropyPool) {
