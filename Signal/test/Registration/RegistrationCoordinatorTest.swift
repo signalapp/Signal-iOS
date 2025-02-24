@@ -126,7 +126,8 @@ public class RegistrationCoordinatorTest {
         )
         let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
         coordinatorFactory = { mode in
-            db.write {
+            self.featureFlags.enableAccountEntropyPool = true
+            return db.write {
                 return loader.coordinator(
                     forDesiredMode: mode,
                     transaction: $0
@@ -233,9 +234,25 @@ public class RegistrationCoordinatorTest {
         // Set a PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
+        // A different key than the restored SVR key
+        let newMasterKey = MasterKeyMock()
+        newMasterKey.dataGenerator = {
+            // TODO: Validate that only these values are used after AEP is generated
+            // TODO: Make these values different than the others
+            switch $0 {
+            case .registrationRecoveryPassword:
+                return Stubs.regRecoveryPwData
+            case .registrationLock:
+                return Stubs.reglockData
+            default:
+                fatalError("Unexpected key derivation")
+            }
+        }
+        svrLocalStorageMock.accountEntropyPoolIfMissing = AccountEntropyPoolMock(masterKey: newMasterKey)
+
         // Make SVR give us back a reg recovery password.
-        svrLocalStorageMock.masterKey = MasterKeyMock()
-        svrLocalStorageMock.masterKey?.dataGenerator = {
+        svrLocalStorageMock.localMasterKey = MasterKeyMock()
+        svrLocalStorageMock.localMasterKey?.dataGenerator = {
             switch $0 {
             case .registrationRecoveryPassword:
                 return Stubs.regRecoveryPwData
@@ -335,16 +352,21 @@ public class RegistrationCoordinatorTest {
         svr.backupMasterKeyMock = { pin, masterKey, authMethod in
             #expect(pin == Stubs.pinCode)
             // We don't have a SVR auth credential, it should use chat server creds.
-            #expect(masterKey.rawData == self.svrLocalStorageMock.masterKey?.rawData)
+            #expect(masterKey.rawData == newMasterKey.rawData)
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
             return .value(masterKey)
         }
 
         // Once we sync push tokens, we should restore from storage service.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
             #expect(auth.authedAccount == expectedAuthedAccount())
-            #expect(masterKey == .implicit)
+            switch masterKeySource {
+            case .explicit(let explicitMasterKey):
+                #expect(newMasterKey.rawData == explicitMasterKey.rawData)
+            default:
+                Issue.record("Unexpected master key used in storage service operation.")
+            }
             return .value(())
         }
 
@@ -391,14 +413,28 @@ public class RegistrationCoordinatorTest {
         // Set profile info so we skip those steps.
         setupDefaultAccountAttributes()
 
+        let newMasterKey = MasterKeyMock()
+        newMasterKey.dataGenerator = {
+            switch $0 {
+            case .registrationRecoveryPassword:
+                // TODO: Validate that this isn't reused after AEP is generated
+                return Stubs.regRecoveryPwData
+            case .registrationLock:
+                return Stubs.reglockData
+            default:
+                fatalError("Unexpected key derivation")
+            }
+        }
+        svrLocalStorageMock.accountEntropyPoolIfMissing = AccountEntropyPoolMock(masterKey: newMasterKey)
+
         let wrongPinCode = "ABCD"
 
         // Set a different PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make SVR give us back a reg recovery password.
-        svrLocalStorageMock.masterKey = MasterKeyMock()
-        svrLocalStorageMock.masterKey?.dataGenerator = {
+        svrLocalStorageMock.localMasterKey = MasterKeyMock()
+        svrLocalStorageMock.localMasterKey?.dataGenerator = {
             switch $0 {
             case .registrationRecoveryPassword:
                 return Stubs.regRecoveryPwData
@@ -487,7 +523,7 @@ public class RegistrationCoordinatorTest {
         // We haven't done a SVR backup; that should happen now.
         svr.backupMasterKeyMock = { pin, masterKey, authMethod in
             #expect(pin == Stubs.pinCode)
-            #expect(masterKey.rawData == self.svrLocalStorageMock.masterKey?.rawData)
+            #expect(masterKey.rawData == newMasterKey.rawData)
             // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
@@ -495,9 +531,14 @@ public class RegistrationCoordinatorTest {
         }
 
         // Once we sync push tokens, we should restore from storage service.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
             #expect(auth.authedAccount == expectedAuthedAccount())
-            #expect(masterKey == .implicit)
+            switch masterKeySource {
+            case .explicit(let explicitMasterKey):
+                #expect(newMasterKey.rawData == explicitMasterKey.rawData)
+            default:
+                Issue.record("Unexpected master key used in storage service operation.")
+            }
             return .value(())
         }
 
@@ -539,8 +580,8 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make SVR give us back a reg recovery password.
-        svrLocalStorageMock.masterKey = MasterKeyMock()
-        svrLocalStorageMock.masterKey?.dataGenerator = {
+        svrLocalStorageMock.localMasterKey = MasterKeyMock()
+        svrLocalStorageMock.localMasterKey?.dataGenerator = {
             switch $0 {
             case .registrationRecoveryPassword:
 
@@ -686,8 +727,8 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make SVR give us back a reg recovery password.
-        svrLocalStorageMock.masterKey = MasterKeyMock()
-        svrLocalStorageMock.masterKey?.dataGenerator = {
+        svrLocalStorageMock.localMasterKey = MasterKeyMock()
+        svrLocalStorageMock.localMasterKey?.dataGenerator = {
             switch $0 {
             case .registrationRecoveryPassword:
                 return Stubs.regRecoveryPwData
@@ -847,8 +888,8 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make SVR give us back a reg recovery password.
-        svrLocalStorageMock.masterKey = MasterKeyMock()
-        svrLocalStorageMock.masterKey?.dataGenerator = {
+        let newMasterKey = MasterKeyMock()
+        newMasterKey.dataGenerator = {
             switch $0 {
             case .registrationRecoveryPassword:
                 return Stubs.regRecoveryPwData
@@ -858,6 +899,21 @@ public class RegistrationCoordinatorTest {
                 return Data()
             }
         }
+        svrLocalStorageMock.accountEntropyPoolIfMissing = AccountEntropyPoolMock(masterKey: newMasterKey)
+
+        let oldMasterKey = MasterKeyMock()
+        oldMasterKey.dataGenerator = {
+            switch $0 {
+            case .registrationRecoveryPassword:
+                return Stubs.regRecoveryPwData
+            case .registrationLock:
+                return Stubs.reglockData
+            default:
+                return Data()
+            }
+        }
+        svrLocalStorageMock.localMasterKey = oldMasterKey
+
         svr.hasMasterKey = true
 
         // Run the scheduler for a bit; we don't care about timing these bits.
@@ -988,7 +1044,7 @@ public class RegistrationCoordinatorTest {
         svr.backupMasterKeyMock = { pin, masterKey, authMethod in
             #expect(self.scheduler.currentTime == 6)
             #expect(pin == Stubs.pinCode)
-            #expect(masterKey.rawData == self.svrLocalStorageMock.masterKey?.rawData)
+            #expect(masterKey.rawData == newMasterKey.rawData)
             // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
@@ -997,10 +1053,15 @@ public class RegistrationCoordinatorTest {
 
         // Once we back up to svr at t=7, we should restore from storage service.
         // Succeed at t=8.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
             #expect(self.scheduler.currentTime == 7)
             #expect(auth.authedAccount == expectedAuthedAccount())
-            #expect(masterKey == .implicit)
+            switch masterKeySource {
+            case .explicit(let explicitMasterKey):
+                #expect(newMasterKey.rawData == explicitMasterKey.rawData)
+            default:
+                Issue.record("Unexpected master key used in storage service operation.")
+            }
             return self.scheduler.promise(resolvingWith: (), atTime: 8)
         }
 
@@ -1057,6 +1118,20 @@ public class RegistrationCoordinatorTest {
 
         // Run the scheduler for a bit; we don't care about timing these bits.
         scheduler.start()
+
+        let newMasterKey = MasterKeyMock()
+        newMasterKey.dataGenerator = {
+            switch $0 {
+            case .registrationRecoveryPassword:
+                // TODO: Validate that this isn't reused after AEP is generated
+                return Stubs.regRecoveryPwData
+            case .registrationLock:
+                return Stubs.reglockData
+            default:
+                fatalError("Unexpected key derivation")
+            }
+        }
+        svrLocalStorageMock.accountEntropyPoolIfMissing = AccountEntropyPoolMock(masterKey: newMasterKey)
 
         // Don't care about timing, just start it.
         setupDefaultAccountAttributes()
@@ -1118,10 +1193,9 @@ public class RegistrationCoordinatorTest {
         // Once we do that, it should follow the Reg Recovery Password Path.
         let nextStepPromise = coordinator.submitPINCode(Stubs.pinCode)
 
+        let oldMasterKey = MasterKeyMock()
         // At t=1 it should get the latest credentials from SVR.
-        let masterKey = MasterKeyMock()
-        svrLocalStorageMock.masterKey = masterKey
-        svrLocalStorageMock.masterKey?.dataGenerator = {
+        oldMasterKey.dataGenerator = {
             #expect(self.scheduler.currentTime == 1)
             switch $0 {
             case .registrationRecoveryPassword:
@@ -1139,7 +1213,7 @@ public class RegistrationCoordinatorTest {
             #expect(pin == Stubs.pinCode)
             #expect(authMethod == .svrAuth(Stubs.svr2AuthCredential, backup: nil))
             self.svr.hasMasterKey = true
-            return self.scheduler.guarantee(resolvingWith: .success(masterKey), atTime: 1)
+            return self.scheduler.guarantee(resolvingWith: .success(oldMasterKey), atTime: 1)
         }
 
         // Before registering at t=1, it should ask for push tokens to give the registration.
@@ -1215,22 +1289,40 @@ public class RegistrationCoordinatorTest {
 
         // At t=4 once we create pre-keys, we should back up to svr.
         svr.backupMasterKeyMock = { pin, masterKey, authMethod in
-            #expect(self.scheduler.currentTime == 4)
+            #expect(self.scheduler.currentTime == 5)
             #expect(pin == Stubs.pinCode)
-            #expect(masterKey.rawData == self.svrLocalStorageMock.masterKey?.rawData)
+            #expect(masterKey.rawData == newMasterKey.rawData)
             #expect(authMethod == .svrAuth(
                 Stubs.svr2AuthCredential,
                 backup: .chatServerAuth(expectedAuthedAccount())
             ))
-            return self.scheduler.promise(resolvingWith: masterKey, atTime: 5)
+            return self.scheduler.promise(resolvingWith: masterKey, atTime: 6)
         }
 
         // At t=5 once we back up to svr, we should restore from storage service.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
-            #expect(self.scheduler.currentTime == 5)
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
             #expect(auth.authedAccount == expectedAuthedAccount())
-            #expect(masterKey == .implicit)
-            return self.scheduler.promise(resolvingWith: (), atTime: 6)
+            if self.scheduler.currentTime == 4 {
+                switch masterKeySource {
+                case .explicit(let explicitMasterKey):
+                    #expect(oldMasterKey.rawData == explicitMasterKey.rawData)
+                default:
+                    Issue.record("Unexpected master key used in storage service operation.")
+                }
+                return self.scheduler.promise(resolvingWith: (), atTime: 5)
+            } else if self.scheduler.currentTime == 6 {
+                switch masterKeySource {
+                case .explicit(let explicitMasterKey):
+                    #expect(newMasterKey.rawData == explicitMasterKey.rawData)
+                default:
+                    Issue.record("Unexpected master key used in storage service operation.")
+                }
+                return self.scheduler.promise(resolvingWith: (), atTime: 7)
+            } else {
+                Issue.record("Method called at unexpected time")
+                // Not the correct time, but moves things forward
+                return self.scheduler.promise(resolvingWith: (), atTime: 7)
+            }
         }
 
         // Once we restore from storage service at t=6, we should attempt to
@@ -1494,7 +1586,18 @@ public class RegistrationCoordinatorTest {
     func testSessionPath_happyPath(mode: RegistrationMode) {
         let coordinator = coordinatorFactory(mode)
 
-        svrLocalStorageMock.masterKeyIfMissing = MasterKeyMock(Stubs.masterKey.rawData)
+        let newMasterKey = MasterKeyMock()
+        newMasterKey.dataGenerator = {
+            switch $0 {
+            case .registrationRecoveryPassword:
+                return Stubs.regRecoveryPwData
+            case .registrationLock:
+                return Stubs.reglockData
+            default:
+                fatalError("Unexpected key derivation")
+            }
+        }
+        svrLocalStorageMock.accountEntropyPoolIfMissing = AccountEntropyPoolMock(masterKey: newMasterKey)
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
         scheduler.tick()
@@ -1617,17 +1720,21 @@ public class RegistrationCoordinatorTest {
         svr.backupMasterKeyMock = { pin, masterKey, authMethod in
             #expect(self.scheduler.currentTime == 0)
             #expect(pin == Stubs.pinCode)
-            #expect(masterKey.rawData == Stubs.masterKey.rawData)
+            #expect(masterKey.rawData == newMasterKey.rawData)
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
-            #expect(masterKey.rawData == self.svrLocalStorageMock.masterKey!.rawData)
             return self.scheduler.promise(resolvingWith: masterKey, atTime: 1)
         }
 
         // At t=1 once we sync push tokens, we should restore from storage service.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
             #expect(self.scheduler.currentTime == 1)
             #expect(auth.authedAccount == expectedAuthedAccount())
-            #expect(masterKey == .implicit)
+            switch masterKeySource {
+            case .explicit(let explicitMasterKey):
+                #expect(newMasterKey.rawData == explicitMasterKey.rawData)
+            default:
+                Issue.record("Unexpected master key used in storage service operation.")
+            }
             return self.scheduler.promise(resolvingWith: (), atTime: 2)
         }
 
@@ -3299,7 +3406,18 @@ public class RegistrationCoordinatorTest {
         let coordinator = coordinatorFactory(mode)
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
-        svrLocalStorageMock.masterKeyIfMissing = MasterKeyMock(Stubs.masterKey.rawData)
+        let newMasterKey = MasterKeyMock()
+        newMasterKey.dataGenerator = {
+            switch $0 {
+            case .registrationRecoveryPassword:
+                return Stubs.regRecoveryPwData
+            case .registrationLock:
+                return Stubs.reglockData
+            default:
+                fatalError("Unexpected key derivation")
+            }
+        }
+        svrLocalStorageMock.accountEntropyPoolIfMissing = AccountEntropyPoolMock(masterKey: newMasterKey)
 
         scheduler.tick()
 
@@ -3413,7 +3531,6 @@ public class RegistrationCoordinatorTest {
         svr.backupMasterKeyMock = { _, masterKey, _ in
             Issue.record("Shouldn't talk to SVR with skipped PIN!")
             return .value(masterKey)
-
         }
         storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { _, _ in
             return .value(())
@@ -3435,11 +3552,24 @@ public class RegistrationCoordinatorTest {
 
         // At this point we should have no master key.
         #expect(svr.hasMasterKey == false)
+        #expect(svr.hasAccountEntropyPool == false)
 
-        var didSetLocalMasterKey = false
-        svr.useDeviceLocalMasterKeyMock = { _ in
-            #expect(self.svr.hasMasterKey == false)
-            didSetLocalMasterKey = true
+        var didSetLocalAccountEntropyPool = false
+        svr.useDeviceLocalAccountEntropyPoolMock = { _ in
+            #expect(self.svr.hasAccountEntropyPool == false)
+            didSetLocalAccountEntropyPool = true
+        }
+
+        // Once we sync push tokens, we should restore from storage service.
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
+            #expect(auth.authedAccount == expectedAuthedAccount())
+            switch masterKeySource {
+            case .explicit(let explicitMasterKey):
+                #expect(newMasterKey.rawData == explicitMasterKey.rawData)
+            default:
+                Issue.record("Unexpected master key used in storage service operation.")
+            }
+            return .value(())
         }
 
         scheduler.runUntilIdle()
@@ -3447,7 +3577,7 @@ public class RegistrationCoordinatorTest {
 
         #expect(nextStep.value == .done)
 
-        #expect(didSetLocalMasterKey)
+        #expect(didSetLocalAccountEntropyPool)
 
         // Since we set profile info, we should have scheduled a reupload.
         #expect(profileManagerMock.didScheduleReuploadLocalProfile)
@@ -3465,9 +3595,20 @@ public class RegistrationCoordinatorTest {
             return
         }
 
-        svrLocalStorageMock.masterKeyIfMissing = MasterKeyMock(Stubs.masterKey.rawData)
-
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
+
+        let newMasterKey = MasterKeyMock()
+        newMasterKey.dataGenerator = {
+            switch $0 {
+            case .registrationRecoveryPassword:
+                return Stubs.regRecoveryPwData
+            case .registrationLock:
+                return Stubs.reglockData
+            default:
+                fatalError("Unexpected key derivation")
+            }
+        }
+        svrLocalStorageMock.accountEntropyPoolIfMissing = AccountEntropyPoolMock(masterKey: newMasterKey)
 
         scheduler.tick()
 
@@ -3593,7 +3734,15 @@ public class RegistrationCoordinatorTest {
             return .value(masterKey)
 
         }
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { _, _ in
+
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
+            #expect(auth.authedAccount == expectedAuthedAccount())
+            switch masterKeySource {
+            case .explicit(let explicitMasterKey):
+                #expect(newMasterKey.rawData == explicitMasterKey.rawData)
+            default:
+                Issue.record("Unexpected master key used in storage service operation.")
+            }
             return .value(())
         }
 
@@ -3614,10 +3763,10 @@ public class RegistrationCoordinatorTest {
         // At this point we should have no master key.
         #expect(svr.hasMasterKey.negated)
 
-        var didSetLocalMasterKey = false
-        svr.useDeviceLocalMasterKeyMock = { _ in
-            #expect(self.svr.hasMasterKey == false)
-            didSetLocalMasterKey = true
+        var didSetLocalAccountEntropyPool = false
+        svr.useDeviceLocalAccountEntropyPoolMock = { _ in
+            #expect(self.svr.hasAccountEntropyPool == false)
+            didSetLocalAccountEntropyPool = true
         }
 
         scheduler.runUntilIdle()
@@ -3625,7 +3774,7 @@ public class RegistrationCoordinatorTest {
 
         #expect(nextStep.value == .done)
 
-        #expect(didSetLocalMasterKey)
+        #expect(didSetLocalAccountEntropyPool)
 
         // Since we set profile info, we should have scheduled a reupload.
         #expect(profileManagerMock.didScheduleReuploadLocalProfile)
@@ -3877,8 +4026,6 @@ public class RegistrationCoordinatorTest {
 
         static let sessionId = UUID().uuidString
         static let verificationCode = "8888"
-
-        static let masterKey = MasterKeyImpl(masterKey: Data(repeating: 7, count: 8))
 
         var date: Date = Date()
 

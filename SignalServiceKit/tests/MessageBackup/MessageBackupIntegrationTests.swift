@@ -450,10 +450,11 @@ class MessageBackupIntegrationTests: XCTestCase {
 
         let svrLocalStorageMock = SVRLocalStorageMock()
         let backupKey = Data(repeating: 8, count: 32)
-        svrLocalStorageMock.masterKey = MasterKeyMock()
-        svrLocalStorageMock.masterKey?.dataGenerator = { derivedKey in
+        svrLocalStorageMock.localMasterKey = MasterKeyMock()
+        svrLocalStorageMock.localMasterKey?.dataGenerator = { derivedKey in
             switch derivedKey {
             case .backupKey:
+                // TODO: Migrate this to AEP
                 return backupKey
             default:
                 owsFail("Unexpected key request")

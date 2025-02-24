@@ -88,15 +88,16 @@ public class ProvisioningCoordinatorTest: XCTestCase {
     }
 
     public func testProvisioning() async throws {
+        let aep = AccountEntropyPool.generate()
         let provisioningMessage = ProvisionMessage(
-            accountEntropyPool: nil,
+            accountEntropyPool: aep,
             aci: .randomForTesting(),
             phoneNumber: "+17875550100",
             pni: .randomForTesting(),
             aciIdentityKeyPair: try keyPairForTesting(),
             pniIdentityKeyPair: try keyPairForTesting(),
             profileKey: .generateRandom(),
-            masterKey: Randomness.generateRandomBytes(SVR.masterKeyLengthBytes),
+            masterKey: Data(try! AccountEntropyPool.deriveSvrKey(aep)),
             mrbk: Randomness.generateRandomBytes(SVRLocalStorageImpl.mediaRootBackupKeyLength),
             ephemeralBackupKey: nil,
             areReadReceiptsEnabled: true,

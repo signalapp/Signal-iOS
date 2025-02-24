@@ -439,8 +439,8 @@ public class SVRLocalStorageMock: SVRLocalStorage {
     var accountEntropyPool: AccountEntropyPool?
     var accountEntropyPoolIfMissing: AccountEntropyPool?
     var isMasterKeyBackedUp: Bool = false
-    var masterKey: MasterKeyMock?
-    var masterKeyIfMissing: MasterKeyMock?
+    var localMasterKey: MasterKeyMock?
+    var localMasterKeyIfMissing: MasterKeyMock?
     var mediaRootBackupKey: Data?
 
     public func getMediaRootBackupKey(tx: any DBReadTransaction) -> BackupKey? {
@@ -506,7 +506,7 @@ public class SVRLocalStorageMock: SVRLocalStorage {
     }
 
     public func setMasterKey(_ value: Data?, _ transaction: any DBWriteTransaction) {
-        masterKey = MasterKeyMock(value)
+        localMasterKey = MasterKeyMock(value)
     }
 
     public func setMasterKey(fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys, tx: any DBWriteTransaction) throws {
@@ -526,20 +526,20 @@ public class SVRLocalStorageMock: SVRLocalStorage {
     }
 
     public func getMasterKey(_ transaction: DBReadTransaction) -> MasterKey? {
-        if let masterKey { return masterKey }
+        if let localMasterKey { return localMasterKey }
         return getAccountEntropyPool(tx: transaction)?.getMasterKey()
     }
 
     public func getOrGenerateMasterKey(_ transaction: DBReadTransaction) -> MasterKey {
-        if let masterKey {
-            return masterKey
+        if let localMasterKey {
+            return localMasterKey
         }
-        masterKey = masterKeyIfMissing
-        return masterKey!
+        localMasterKey = localMasterKeyIfMissing
+        return localMasterKey!
     }
 
     public func isKeyAvailable(_ key: SVR.DerivedKey, tx: DBReadTransaction) -> Bool {
-        return masterKey != nil
+        return localMasterKey != nil
     }
 }
 #endif

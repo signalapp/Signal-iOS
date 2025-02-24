@@ -740,6 +740,16 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         /// PIN guesses or decide to give up before exhausting them.
         var hasGivenUpTryingToRestoreWithSVR = false
 
+        /// Root key entered or generated during registration.  This value should be persisted at
+        /// the end of registration
+        var accountEntropyPool: SignalServiceKit.AccountEntropyPool?
+
+        /// Restored SVR master key. This value will be used to restore a session and allow the user
+        /// to register and recover storage service, but should never be persisted.  If this value is missing
+        /// and `accountEntropyPool` is present, it can be used to derive an SVR master key for
+        /// use in registration
+        var recoveredSVRMasterKey: MasterKey?
+
         struct SessionState: Codable {
             let sessionId: String
 
@@ -927,7 +937,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         self.loadProfileState()
 
         db.write { tx in
-            self.loadLocalMasterKeyAndUpdateState(tx)
+            self.updateMasterKeyAndLocalState(masterKey: persistedState.recoveredSVRMasterKey, tx: tx)
             inMemoryState.tsRegistrationState = deps.tsAccountManager.registrationState(tx: tx)
             inMemoryState.pinFromDisk = deps.ows2FAManager.pinCode(tx)
             if
@@ -1001,10 +1011,18 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 deps.experienceManager.clearIntroducingPinsExperience(tx)
             }
 
-            if !deps.svr.hasMasterKey(transaction: tx) {
-                // If we don't have a master key at this point, use a local master key.
+            if
+                deps.featureFlags.enableAccountEntropyPool,
+                let accountEntropyPool = persistedState.accountEntropyPool
+            {
+                deps.svr.useDeviceLocalAccountEntropyPool(
+                    accountEntropyPool,
+                    authedAccount: accountIdentity.authedAccount,
+                    transaction: tx
+                )
+            } else if let masterKey = persistedState.recoveredSVRMasterKey {
                 deps.svr.useDeviceLocalMasterKey(
-                    deps.svrLocalStorage.getOrGenerateMasterKey(tx),
+                    masterKey,
                     authedAccount: accountIdentity.authedAccount,
                     transaction: tx
                 )
@@ -1024,8 +1042,15 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             // Start syncing system contacts now that we have set up tsAccountManager.
             deps.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
-            // Update the account attributes once, now, at the end.
-            return updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
+            return deps.storageServiceManager.rotateManifest(
+                mode: .preservingRecordsIfPossible,
+                authedDevice: accountIdentity.authedDevice
+            )
+            .recover { _ in }
+            .then {
+                // Update the account attributes once, now, at the end.
+                return self.updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
+            }
         }
 
         switch mode {
@@ -1544,8 +1569,13 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return unretainedSelfError()
                 }
                 switch result {
-                case .success:
-                    self.db.write { self.loadLocalMasterKeyAndUpdateState($0) }
+                case .success(let masterKey):
+                    self.db.write {
+                        self.updatePersistedState($0) { state in
+                            state.recoveredSVRMasterKey = masterKey
+                        }
+                        self.updateMasterKeyAndLocalState(masterKey: masterKey, tx: $0)
+                    }
                     return self.nextStep()
                 case let .invalidPin(remainingAttempts):
                     return .value(.pinEntry(RegistrationPinState(
@@ -1600,21 +1630,26 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             }
     }
 
-    private func loadLocalMasterKeyAndUpdateState(_ tx: DBWriteTransaction) {
-        let masterKey = deps.svrLocalStorage.getMasterKey(tx)
-        let regRecoveryPw = masterKey?.data(
+    private func updateMasterKeyAndLocalState(masterKey: MasterKey?, tx: DBWriteTransaction) {
+        var localMasterKey: MasterKey?
+        if let masterKey {
+            localMasterKey = masterKey
+        } else {
+            localMasterKey = deps.svrLocalStorage.getMasterKey(tx)
+        }
+        let regRecoveryPw = localMasterKey?.data(
             for: .registrationRecoveryPassword
         ).canonicalStringRepresentation
         inMemoryState.regRecoveryPw = regRecoveryPw
         if regRecoveryPw != nil {
             updatePersistedState(tx) { $0.shouldSkipRegistrationSplash = true }
         }
-        inMemoryState.reglockToken = masterKey?.data(
+        inMemoryState.reglockToken = localMasterKey?.data(
             for: .registrationLock
         ).canonicalStringRepresentation
         // If we have a local master key, theres no need to restore after registration.
         // (we will still back up though)
-        inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = !deps.svr.hasMasterKey(transaction: tx)
+        inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = localMasterKey == nil
         inMemoryState.didHaveSVRBackupsPriorToReg = deps.svr.hasBackedUpMasterKey(transaction: tx)
     }
 
@@ -2689,9 +2724,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return unretainedSelfError()
                 }
                 switch result {
-                case .success:
+                case .success(let masterKey):
                     self.db.write { tx in
-                        self.loadLocalMasterKeyAndUpdateState(tx)
+                        self.updateMasterKeyAndLocalState(masterKey: masterKey, tx: tx)
+                        self.updatePersistedState(tx) {
+                            $0.recoveredSVRMasterKey = masterKey
+                        }
                         self.updatePersistedSessionState(session: session, tx) {
                             // Now we have the state we need to get past reglock.
                             $0.reglockState = .none
@@ -2792,6 +2830,42 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 }
         }
 
+        // If the AccountEntropyPool doesn't exist yet, create one.
+        if deps.featureFlags.enableAccountEntropyPool {
+            if persistedState.accountEntropyPool == nil {
+                db.write { tx in
+                    updatePersistedState(tx) {
+                        $0.accountEntropyPool = deps.svrLocalStorage.getOrGenerateAccountEntropyPool(tx: tx)
+                    }
+                    let newMasterKey = persistedState.accountEntropyPool?.getMasterKey()
+                    updateMasterKeyAndLocalState(masterKey: newMasterKey, tx: tx)
+                }
+            }
+        } else {
+            if persistedState.recoveredSVRMasterKey == nil {
+                // attempt to pull from local state
+                db.write { tx in
+                    let newMasterKey = deps.svrLocalStorage.getOrGenerateMasterKey(tx)
+                    updatePersistedState(tx) {
+                        $0.recoveredSVRMasterKey = newMasterKey
+                    }
+                    updateMasterKeyAndLocalState(masterKey: newMasterKey, tx: tx)
+                }
+            }
+        }
+
+        if
+            shouldRestoreFromStorageServiceBeforeUpdatingSVR(),
+            let restoredKey = persistedState.recoveredSVRMasterKey
+        {
+            // Need to preserve the key recovered by registartion and use this for storage service restore
+            // If already restored due to AEP change, this step will be skipped
+            return restoreFromStorageService(
+                accountIdentity: accountIdentity,
+                masterKeySource: .explicit(restoredKey)
+            )
+        }
+
         if let stepGuarantee = performSVRBackupStepsIfNeeded(accountIdentity: accountIdentity) {
             return stepGuarantee
         }
@@ -2800,8 +2874,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return chooseLocalMessageBackupToRestore()
         }
 
-        if shouldRestoreFromStorageService() {
-            return restoreFromStorageService(accountIdentity: accountIdentity)
+        // This will restore after backup, _or_ it will rotate to the new AEP derived key
+        let masterKey: MasterKey?
+        if deps.featureFlags.enableAccountEntropyPool {
+            masterKey = persistedState.accountEntropyPool?.getMasterKey()
+        } else {
+            masterKey = persistedState.recoveredSVRMasterKey
+        }
+
+        if
+            shouldRestoreFromStorageService(),
+            let masterKey
+        {
+            return restoreFromStorageService(
+                accountIdentity: accountIdentity,
+                masterKeySource: .explicit(masterKey)
+            )
         }
 
         if let localUsernameState = shouldAttemptToReclaimUsername() {
@@ -2953,9 +3041,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     return unretainedSelfError()
                 }
                 switch result {
-                case .success:
+                case .success(let masterKey):
                     self.inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration = false
                     self.inMemoryState.hasBackedUpToSVR = true
+                    self.db.write { tx in
+                        self.updatePersistedState(tx) { $0.recoveredSVRMasterKey = masterKey }
+                    }
                     return self.nextStep()
                 case let .invalidPin(remainingAttempts):
                     return .value(.pinEntry(RegistrationPinState(
@@ -3026,20 +3117,37 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         } else {
             authMethod = backupAuthMethod
         }
-        let masterKey = self.db.read { deps.svrLocalStorage.getOrGenerateMasterKey($0) }
+
+        let masterKey: MasterKey?
+        if deps.featureFlags.enableAccountEntropyPool {
+            masterKey = persistedState.accountEntropyPool?.getMasterKey()
+        } else {
+            masterKey = persistedState.recoveredSVRMasterKey
+        }
+
+        guard let masterKey else {
+            Logger.error("Failed to back up to SVR due to missing root key")
+            self.inMemoryState.didSkipSVRBackup = true
+            return .value(.showErrorSheet(.genericError))
+        }
+
         return deps.svr
             .backupMasterKey(
                 pin: pin,
                 masterKey: masterKey,
                 authMethod: authMethod
             )
-            .then(on: schedulers.main) { [weak self] _ -> Guarantee<RegistrationStep>  in
+            .then(on: schedulers.main) { [weak self] masterKey -> Guarantee<RegistrationStep>  in
                 guard let strongSelf = self else {
                     return unretainedSelfError()
                 }
                 strongSelf.inMemoryState.hasBackedUpToSVR = true
                 strongSelf.db.write { tx in
                     Logger.info("Setting pin code after SVR backup")
+                    strongSelf.updateMasterKeyAndLocalState(
+                        masterKey: masterKey,
+                        tx: tx
+                    )
                     strongSelf.deps.ows2FAManager.markPinEnabled(pin, tx)
                 }
                 return strongSelf.nextStep()
@@ -3071,7 +3179,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func restoreFromStorageService(
-        accountIdentity: AccountIdentity
+        accountIdentity: AccountIdentity,
+        masterKeySource: StorageService.MasterKeySource
     ) -> Guarantee<RegistrationStep> {
         if FeatureFlags.storageServiceRecordIkmMigration {
             db.write { tx in
@@ -3098,7 +3207,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return deps
             .storageServiceManager.restoreOrCreateManifestIfNecessary(
                 authedDevice: accountIdentity.authedDevice,
-                masterKeySource: .implicit
+                masterKeySource: masterKeySource
             )
             .timeout(seconds: 120)
             .then(on: schedulers.sync) { [weak self] in
@@ -4129,10 +4238,23 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         case .registering:
             return
                 deps.featureFlags.messageBackupFileAlphaRegistrationFlow
+                && persistedState.accountEntropyPool != nil
                 && inMemoryState.hasBackedUpToSVR
                 && !inMemoryState.hasRestoredFromLocalMessageBackup
                 && !inMemoryState.hasSkippedRestoreFromMessageBackup
         case .changingNumber, .reRegistering:
+            return false
+        }
+    }
+
+    private func shouldRestoreFromStorageServiceBeforeUpdatingSVR() -> Bool {
+        switch mode {
+        case .registering, .reRegistering:
+            return deps.featureFlags.enableAccountEntropyPool
+                && !inMemoryState.hasRestoredFromStorageService
+                && !inMemoryState.hasSkippedRestoreFromStorageService
+                && !inMemoryState.shouldRestoreSVRMasterKeyAfterRegistration
+        case .changingNumber:
             return false
         }
     }

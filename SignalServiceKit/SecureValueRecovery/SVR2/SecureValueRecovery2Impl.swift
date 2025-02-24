@@ -951,11 +951,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     do {
                         let masterKey = try pinHash.decryptMasterKey(encryptedMasterKey)
                         self.db.write { tx in
-                            let masterKeyChanged = masterKey != self.localStorage.getMasterKey(tx)?.rawData
-                            if masterKeyChanged {
-                                self.localStorage.setMasterKey(masterKey, tx)
-                            }
-
                             self.updateLocalSVRState(
                                 isMasterKeyBackedUp: true,
                                 pinType: .init(forPin: pin),
@@ -963,19 +958,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                                 mrEnclaveStringValue: mrEnclave.stringValue,
                                 transaction: tx
                             )
-
-                            // TODO[AEP]: In the AEP future, this will make more sense for
-                            // the caller to execute manually after doing the restore.
-                            if
-                                masterKeyChanged,
-                                let masterKey = self.localStorage.getMasterKey(tx)
-                            {
-                                self.syncStorageService(
-                                    restoredMasterKey: masterKey,
-                                    authedAccount: authedAccount,
-                                    transaction: tx
-                                )
-                            }
                         }
                         return .success(masterKey: masterKey, mrEnclave: mrEnclave)
                     } catch {
