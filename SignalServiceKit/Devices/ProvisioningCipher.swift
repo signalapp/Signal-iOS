@@ -9,6 +9,7 @@ import Foundation
 public import LibSignalClient
 
 public struct ProvisionMessage {
+    public let accountEntropyPool: String?
     public let aci: Aci?
     public let phoneNumber: String
     public let pni: Pni?
@@ -142,10 +143,12 @@ public class ProvisioningCipher {
             throw ProvisioningError.invalidProvisionMessage("missing master key from provisioning message")
         }
 
+        let accountEntropyPool = proto.accountEntropyPool?.nilIfEmpty
         let mediaRootBackupKey = proto.mediaRootBackupKey?.nilIfEmpty
         let ephemeralBackupKey = proto.ephemeralBackupKey
 
         return ProvisionMessage(
+            accountEntropyPool: accountEntropyPool,
             aci: aci,
             phoneNumber: phoneNumber,
             pni: pni,

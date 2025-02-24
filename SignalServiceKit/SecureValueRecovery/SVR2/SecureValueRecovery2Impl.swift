@@ -99,17 +99,15 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     public func warmCaches() {
-        setLocalMasterKeyIfMissing()
 
-        // Require migrations to succeed before we check for old stuff
-        // to wipe, because migrations add old stuff to be wiped.
-        // If a migration isn't needed, this returns a success immediately.
-        migrateEnclavesIfNecessary()?
-            .done(on: scheduler) { [weak self] in
-                self?.wipeOldEnclavesIfNeeded(auth: .implicit)
-                self?.periodicRefreshCredentialIfNecessary()
-            }
-            .cauterize()
+        if FeatureFlags.enableAccountEntropyPool {
+            // This is where the AEP migration happen for existing installs
+            generateAccountEntropyPoolIfMissing()
+        } else {
+            setLocalMasterKeyIfMissing()
+        }
+
+        performStartupMigrationsIfNecessary()
     }
 
     // MARK: - Periodic Backups
@@ -180,6 +178,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     // MARK: - Key Existence
 
     public func hasMasterKey(transaction: DBReadTransaction) -> Bool {
+        let value = localStorage.getAccountEntropyPool(tx: transaction)
+        if value != nil {
+            return true
+        }
         return localStorage.getMasterKey(transaction) != nil
     }
 
@@ -187,23 +189,26 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         return localStorage.getIsMasterKeyBackedUp(transaction)
     }
 
-    public func useDeviceLocalMasterKey(authedAccount: AuthedAccount, transaction: DBWriteTransaction) {
+    public func useDeviceLocalMasterKey(
+        _ masterKey: MasterKey,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    ) {
         Logger.info("")
 
-        let masterKey = localStorage.getOrGenerateMasterKey(transaction)
-        setMasterKeyIfChanged(masterKey.rawData, transaction: transaction)
+        localStorage.setMasterKey(masterKey.rawData, transaction)
+
+        syncStorageService(
+            restoredMasterKey: masterKey,
+            authedAccount: authedAccount,
+            transaction: transaction
+        )
 
         updateLocalSVRState(
             isMasterKeyBackedUp: false,
             pinType: .alphanumeric,
             encodedPINVerificationString: nil,
             mrEnclaveStringValue: nil,
-            transaction: transaction
-        )
-
-        syncStorageServiceIfNeeded(
-            restoredMasterKey: masterKey,
-            authedAccount: authedAccount,
             transaction: transaction
         )
 
@@ -217,6 +222,46 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         // If either are in flight, they will no-op when they get a response
         // and see no in progress backup state.
         clearInProgressBackup(transaction)
+
+        // We should update account attributes so we wipe the reglock and
+        // reg recovery password.
+        accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: authedAccount, tx: transaction)
+    }
+
+    public func useDeviceLocalAccountEntropyPool(
+        _ accountEntropyPool: AccountEntropyPool,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    ) {
+        Logger.info("")
+
+        // Persist AEP locally
+        do {
+            try localStorage.setAccountEntropyPool(accountEntropyPool, tx: transaction)
+        } catch {
+            owsFailDebug("Unable to set AccountEntropyPool")
+            return
+        }
+
+        updateLocalSVRState(
+            isMasterKeyBackedUp: false,
+            pinType: .alphanumeric,
+            encodedPINVerificationString: nil,
+            mrEnclaveStringValue: nil,
+            transaction: transaction
+        )
+
+        syncStorageService(
+            restoredMasterKey: accountEntropyPool.getMasterKey(),
+            authedAccount: authedAccount,
+            transaction: transaction
+        )
+
+        // If the user has a current PIN, update SVR with the new key
+        if let currentPIN = twoFAManager.pinCode(transaction: transaction) {
+            let newMasterKey = accountEntropyPool.getMasterKey()
+            _ = doBackupAndExpose(pin: currentPIN, masterKey: newMasterKey.rawData, authMethod: .implicit)
+        }
 
         // We should update account attributes so we wipe the reglock and
         // reg recovery password.
@@ -362,9 +407,13 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
 
         do {
-            try localStorage.setMasterKey(fromProvisioningMessage: provisioningMessage, tx: tx)
+            try localStorage.setAccountEntropyPool(fromProvisioningMessage: provisioningMessage, tx: tx)
         } catch {
-            throw .missingMasterKey
+            do {
+                try localStorage.setMasterKey(fromProvisioningMessage: provisioningMessage, tx: tx)
+            } catch {
+                throw .missingMasterKey
+            }
         }
 
         // Wipe the storage service key, we don't need it anymore.
@@ -384,20 +433,40 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             throw SVR.KeysError.missingMediaRootBackupKey
         }
 
-        let oldMasterKey = localStorage.getMasterKey(tx)?.rawData
-        do {
-            try localStorage.setMasterKey(fromKeysSyncMessage: syncMessage, tx: tx)
-        } catch {
-            throw SVR.KeysError.missingMasterKey
+        var keyChanged = false
+
+        var newAep: AccountEntropyPool?
+        if FeatureFlags.enableAccountEntropyPool {
+            let oldAep = localStorage.getAccountEntropyPool(tx: tx)
+            do {
+                try localStorage.setAccountEntropyPool(fromKeysSyncMessage: syncMessage, tx: tx)
+            } catch {
+                owsFailDebug("Error setting AEP")
+            }
+            newAep = localStorage.getAccountEntropyPool(tx: tx)
+            keyChanged = (oldAep?.rawData != newAep?.rawData)
         }
-        let newMasterKey = localStorage.getMasterKey(tx)?.rawData
+
+        if newAep == nil {
+            let oldMasterKey = localStorage.getMasterKey(tx)?.rawData
+            do {
+                try localStorage.setMasterKey(fromKeysSyncMessage: syncMessage, tx: tx)
+            } catch {
+                throw SVR.KeysError.missingMasterKey
+            }
+            let newMasterKey = localStorage.getMasterKey(tx)?.rawData
+            keyChanged = (oldMasterKey != newMasterKey)
+        }
 
         // Wipe the storage service key, we don't need it anymore.
         localStorage.setSyncedStorageServiceKey(nil, tx)
 
         // Trigger a re-fetch of the storage manifest if our keys have changed
-        if oldMasterKey != newMasterKey {
-            storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedDevice, masterKeySource: .implicit)
+        if keyChanged {
+            storageServiceManager.restoreOrCreateManifestIfNecessary(
+                authedDevice: authedDevice,
+                masterKeySource: .implicit
+            )
         }
     }
 
@@ -882,7 +951,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     do {
                         let masterKey = try pinHash.decryptMasterKey(encryptedMasterKey)
                         self.db.write { tx in
-                            self.setMasterKeyIfChanged(masterKey, transaction: tx)
+                            let masterKeyChanged = masterKey != self.localStorage.getMasterKey(tx)?.rawData
+                            if masterKeyChanged {
+                                self.localStorage.setMasterKey(masterKey, tx)
+                            }
 
                             self.updateLocalSVRState(
                                 isMasterKeyBackedUp: true,
@@ -894,8 +966,11 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
                             // TODO[AEP]: In the AEP future, this will make more sense for
                             // the caller to execute manually after doing the restore.
-                            if let masterKey = self.localStorage.getMasterKey(tx) {
-                                self.syncStorageServiceIfNeeded(
+                            if
+                                masterKeyChanged,
+                                let masterKey = self.localStorage.getMasterKey(tx)
+                            {
+                                self.syncStorageService(
                                     restoredMasterKey: masterKey,
                                     authedAccount: authedAccount,
                                     transaction: tx
@@ -1088,14 +1163,45 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
         if !hasMasterKey, isRegisteredPrimary {
             db.write { tx in
+                let newMasterKey = self.localStorage.getOrGenerateMasterKey(tx)
                 if pinCode != nil {
                     // We have a pin code but no master key? We know this has happened
                     // in the wild but have no idea how.
                     Logger.error("Have PIN but no master key")
                 }
-                self.useDeviceLocalMasterKey(authedAccount: .implicit(), transaction: tx)
+                self.useDeviceLocalMasterKey(newMasterKey, authedAccount: .implicit(), transaction: tx)
             }
         }
+    }
+
+    public func generateAccountEntropyPoolIfMissing() {
+        let (isRegisteredPrimary, accountEntropyPool) = db.read {(
+            self.tsAccountManager.registrationState(tx: $0).isRegisteredPrimaryDevice,
+            self.localStorage.getAccountEntropyPool(tx: $0)
+        )}
+        guard accountEntropyPool == nil else { return }
+        if isRegisteredPrimary {
+            db.write { tx in
+                let newAEP = self.localStorage.getOrGenerateAccountEntropyPool(tx: tx)
+                self.useDeviceLocalAccountEntropyPool(
+                    newAEP,
+                    authedAccount: .implicit(),
+                    transaction: tx
+                )
+            }
+        }
+    }
+
+    public func performStartupMigrationsIfNecessary() {
+        // Require migrations to succeed before we check for old stuff
+        // to wipe, because migrations add old stuff to be wiped.
+        // If a migration isn't needed, this returns a success immediately.
+        migrateEnclavesIfNecessary()?
+            .done(on: scheduler) { [weak self] in
+                self?.wipeOldEnclavesIfNeeded(auth: .implicit)
+                self?.periodicRefreshCredentialIfNecessary()
+            }
+            .cauterize()
     }
 
     /// If there is a newer enclave than the one we most recently backed up to, backs up known
@@ -1445,13 +1551,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: - Local key storage helpers
 
-    private func setMasterKeyIfChanged(_ masterKey: Data, transaction: DBWriteTransaction) {
-        let masterKeyChanged = masterKey != localStorage.getMasterKey(transaction)?.rawData
-        if masterKeyChanged {
-            localStorage.setMasterKey(masterKey, transaction)
-        }
-    }
-
     private func updateLocalSVRState(
         isMasterKeyBackedUp: Bool,
         pinType: SVR.PinType,
@@ -1474,16 +1573,13 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
     }
 
-    private func syncStorageServiceIfNeeded(
+    private func syncStorageService(
         restoredMasterKey: MasterKey,
         authedAccount: AuthedAccount,
         transaction: DBReadTransaction
     ) {
         // Only continue if we are on the primary device.
         guard tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice else {
-            return
-        }
-        guard localStorage.getMasterKey(transaction)?.rawData != restoredMasterKey.rawData else {
             return
         }
 

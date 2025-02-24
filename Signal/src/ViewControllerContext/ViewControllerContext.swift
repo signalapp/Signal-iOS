@@ -21,6 +21,7 @@ public class ViewControllerContext {
     public let editManager: EditManager
 
     public let svr: SecureValueRecovery
+    public let svrLocalStorage: SVRLocalStorage
     public let schedulers: Schedulers
 
     public let usernameApiClient: UsernameApiClient
@@ -33,6 +34,7 @@ public class ViewControllerContext {
         db: any DB,
         editManager: EditManager,
         svr: SecureValueRecovery,
+        svrLocalStorage: SVRLocalStorage,
         schedulers: Schedulers,
         usernameApiClient: UsernameApiClient,
         usernameEducationManager: UsernameEducationManager,
@@ -43,6 +45,7 @@ public class ViewControllerContext {
         self.db = db
         self.editManager = editManager
         self.svr = svr
+        self.svrLocalStorage = svrLocalStorage
         self.schedulers = schedulers
         self.usernameApiClient = usernameApiClient
         self.usernameEducationManager = usernameEducationManager
@@ -64,6 +67,7 @@ public class ViewControllerContext {
             db: bridge.db,
             editManager: bridge.editManager,
             svr: bridge.svr,
+            svrLocalStorage: bridge.svrLocalStorage,
             schedulers: bridge.schedulers,
             usernameApiClient: bridge.usernameApiClient,
             usernameEducationManager: bridge.usernameEducationManager,

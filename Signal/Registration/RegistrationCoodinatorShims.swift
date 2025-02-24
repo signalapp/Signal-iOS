@@ -22,6 +22,7 @@ extension RegistrationCoordinatorImpl {
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerShim
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerShim
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerShim
+        public typealias StorageServiceManager = _RegistrationCoordinator_StorageServiceManagerShim
         public typealias UDManager = _RegistrationCoordinator_UDManagerShim
     }
     public enum Wrappers {
@@ -36,6 +37,7 @@ extension RegistrationCoordinatorImpl {
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerWrapper
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerWrapper
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerWrapper
+        public typealias StorageServiceManager = _RegistrationCoordinator_StorageServiceManagerWrapper
         public typealias UDManager = _RegistrationCoordinator_UDManagerWrapper
     }
 }
@@ -415,6 +417,43 @@ public class _RegistrationCoordinator_ReceiptManagerWrapper: _RegistrationCoordi
 
     public func setAreStoryViewedReceiptsEnabled(_ areEnabled: Bool, _ tx: DBWriteTransaction) {
         StoryManager.setAreViewReceiptsEnabled(areEnabled, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+}
+
+// MARK: - StorageService
+public protocol _RegistrationCoordinator_StorageServiceManagerShim {
+    func rotateManifest(mode: StorageServiceManagerManifestRotationMode, authedDevice: AuthedDevice) -> Promise<Void>
+    func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice, masterKeySource: StorageService.MasterKeySource) -> Promise<Void>
+    func backupPendingChanges(authedDevice: AuthedDevice)
+    func recordPendingLocalAccountUpdates()
+}
+
+public class _RegistrationCoordinator_StorageServiceManagerWrapper: _RegistrationCoordinator_StorageServiceManagerShim {
+    private let manager: StorageServiceManager
+    public init(_ manager: StorageServiceManager) { self.manager = manager }
+
+    public func rotateManifest(
+        mode: StorageServiceManagerManifestRotationMode,
+        authedDevice: AuthedDevice
+    ) -> Promise<Void> {
+        Promise.wrapAsync {
+            try await self.manager.rotateManifest(mode: mode, authedDevice: authedDevice)
+        }
+    }
+
+    public func restoreOrCreateManifestIfNecessary(
+        authedDevice: AuthedDevice,
+        masterKeySource: StorageService.MasterKeySource
+    ) -> Promise<Void> {
+        manager.restoreOrCreateManifestIfNecessary(authedDevice: authedDevice, masterKeySource: masterKeySource)
+    }
+
+    public func backupPendingChanges(authedDevice: AuthedDevice) {
+        manager.backupPendingChanges(authedDevice: authedDevice)
+    }
+
+    public func recordPendingLocalAccountUpdates() {
+        manager.recordPendingLocalAccountUpdates()
     }
 }
 

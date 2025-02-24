@@ -59,6 +59,8 @@ public enum FeatureFlags {
     public static let runTSAttachmentMigrationBlockingOnLaunch = false
 
     public static let useNewConversationLoadIndex = build.includes(.beta)
+
+    public static let enableAccountEntropyPool = false
 }
 
 // MARK: -

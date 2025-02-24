@@ -45,7 +45,7 @@ message ProvisionMessage {
   optional uint32 provisioningVersion = 9;
   optional bytes masterKey = 13;
   optional bytes ephemeralBackupKey = 14; // 32 bytes
-  reserved /*accountEntropyPool*/ 15;
+  optional string accountEntropyPool = 15;
   optional bytes mediaRootBackupKey = 16;
   // NEXT ID: 17
 }

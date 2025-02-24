@@ -22,6 +22,7 @@ extension RegistrationCoordinatorImpl {
         public typealias ProfileManager = _RegistrationCoordinator_ProfileManagerMock
         public typealias PushRegistrationManager = _RegistrationCoordinator_PushRegistrationManagerMock
         public typealias ReceiptManager = _RegistrationCoordinator_ReceiptManagerMock
+        public typealias StorageServiceManager = _RegistrationCoordinator_StorageServiceManagerMock
         public typealias UDManager = _RegistrationCoordinator_UDManagerMock
     }
 }
@@ -270,6 +271,27 @@ public class _RegistrationCoordinator_ReceiptManagerMock: _RegistrationCoordinat
         didSetAreStoryViewedReceiptsEnabled = true
         setAreStoryViewedReceiptsEnabledMock?(areEnabled)
     }
+}
+
+// MARK: StorageService
+public class _RegistrationCoordinator_StorageServiceManagerMock: _RegistrationCoordinator_StorageServiceManagerShim {
+
+    public var rotateManifestMock: (StorageServiceManagerManifestRotationMode, AuthedDevice) -> Promise<Void> = { _, _ in
+        return .value(())
+    }
+    public func rotateManifest(mode: StorageServiceManagerManifestRotationMode, authedDevice: AuthedDevice) -> Promise<Void> {
+        return rotateManifestMock(mode, authedDevice)
+    }
+
+    public var restoreOrCreateManifestIfNecessaryMock: (AuthedDevice, StorageService.MasterKeySource) -> Promise<Void> = { _, _ in
+        return .value(())
+    }
+    public func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice, masterKeySource: StorageService.MasterKeySource) -> Promise<Void> {
+        return restoreOrCreateManifestIfNecessaryMock(authedDevice, masterKeySource)
+    }
+
+    public func backupPendingChanges(authedDevice: SignalServiceKit.AuthedDevice) {}
+    public func recordPendingLocalAccountUpdates() { }
 }
 
 // MARK: UDManager

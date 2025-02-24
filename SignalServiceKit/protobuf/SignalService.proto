@@ -551,9 +551,9 @@ message SyncMessage {
   }
 
   message Keys {
-    optional bytes storageService = 1;
+    reserved /* storageService */ 1;
     optional bytes master = 2;
-    reserved /*accountEntropyPool*/ 3;
+    optional string accountEntropyPool = 3;
     optional bytes mediaRootBackupKey = 4;
   }
 

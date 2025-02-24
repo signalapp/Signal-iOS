@@ -11403,18 +11403,6 @@ public class SSKProtoSyncMessageKeys: NSObject, Codable, NSSecureCoding {
     fileprivate let proto: SignalServiceProtos_SyncMessage.Keys
 
     @objc
-    public var storageService: Data? {
-        guard hasStorageService else {
-            return nil
-        }
-        return proto.storageService
-    }
-    @objc
-    public var hasStorageService: Bool {
-        return proto.hasStorageService
-    }
-
-    @objc
     public var master: Data? {
         guard hasMaster else {
             return nil
@@ -11424,6 +11412,18 @@ public class SSKProtoSyncMessageKeys: NSObject, Codable, NSSecureCoding {
     @objc
     public var hasMaster: Bool {
         return proto.hasMaster
+    }
+
+    @objc
+    public var accountEntropyPool: String? {
+        guard hasAccountEntropyPool else {
+            return nil
+        }
+        return proto.accountEntropyPool
+    }
+    @objc
+    public var hasAccountEntropyPool: Bool {
+        return proto.hasAccountEntropyPool
     }
 
     @objc
@@ -11511,11 +11511,11 @@ extension SSKProtoSyncMessageKeys {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageKeysBuilder {
         let builder = SSKProtoSyncMessageKeysBuilder()
-        if let _value = storageService {
-            builder.setStorageService(_value)
-        }
         if let _value = master {
             builder.setMaster(_value)
+        }
+        if let _value = accountEntropyPool {
+            builder.setAccountEntropyPool(_value)
         }
         if let _value = mediaRootBackupKey {
             builder.setMediaRootBackupKey(_value)
@@ -11537,17 +11537,6 @@ public class SSKProtoSyncMessageKeysBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setStorageService(_ valueParam: Data?) {
-        guard let valueParam = valueParam else { return }
-        proto.storageService = valueParam
-    }
-
-    public func setStorageService(_ valueParam: Data) {
-        proto.storageService = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
     public func setMaster(_ valueParam: Data?) {
         guard let valueParam = valueParam else { return }
         proto.master = valueParam
@@ -11555,6 +11544,17 @@ public class SSKProtoSyncMessageKeysBuilder: NSObject {
 
     public func setMaster(_ valueParam: Data) {
         proto.master = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAccountEntropyPool(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.accountEntropyPool = valueParam
+    }
+
+    public func setAccountEntropyPool(_ valueParam: String) {
+        proto.accountEntropyPool = valueParam
     }
 
     @objc

@@ -12,6 +12,11 @@ public final class OWSDeviceProvisionerConstant: NSObject {
 }
 
 public final class OWSDeviceProvisioner {
+    public enum RootKey {
+        case accountEntropyPool(SignalServiceKit.AccountEntropyPool)
+        case masterKey(MasterKey)
+    }
+
     internal static var userAgent: String { "OWI" }
 
     private let myAciIdentityKeyPair: IdentityKeyPair
@@ -22,8 +27,8 @@ public final class OWSDeviceProvisioner {
     private let myPhoneNumber: String
     private let myPni: Pni
     private let profileKey: Data
-    private let masterKey: Data
-    private let mrbk: Data
+    private let rootKey: RootKey
+    private let mrbk: BackupKey
     private let ephemeralBackupKey: BackupKey?
     private let readReceiptsEnabled: Bool
 
@@ -39,8 +44,8 @@ public final class OWSDeviceProvisioner {
         myPhoneNumber: String,
         myPni: Pni,
         profileKey: Data,
-        masterKey: Data,
-        mrbk: Data,
+        rootKey: RootKey,
+        mrbk: BackupKey,
         ephemeralBackupKey: BackupKey?,
         readReceiptsEnabled: Bool,
         provisioningService: DeviceProvisioningService,
@@ -54,7 +59,7 @@ public final class OWSDeviceProvisioner {
         self.myPhoneNumber = myPhoneNumber
         self.myPni = myPni
         self.profileKey = profileKey
-        self.masterKey = masterKey
+        self.rootKey = rootKey
         self.mrbk = mrbk
         self.ephemeralBackupKey = ephemeralBackupKey
         self.readReceiptsEnabled = readReceiptsEnabled
@@ -88,8 +93,14 @@ public final class OWSDeviceProvisioner {
         messageBuilder.setNumber(myPhoneNumber)
         messageBuilder.setAci(myAci.rawUUID.uuidString.lowercased())
         messageBuilder.setPni(myPni.rawUUID.uuidString.lowercased())
-        messageBuilder.setMasterKey(masterKey)
-        messageBuilder.setMediaRootBackupKey(mrbk)
+        switch rootKey {
+        case .accountEntropyPool(let accountEntropyPool):
+            messageBuilder.setAccountEntropyPool(accountEntropyPool.rawData)
+            messageBuilder.setMasterKey(accountEntropyPool.getMasterKey().rawData)
+        case .masterKey(let masterKey):
+            messageBuilder.setMasterKey(masterKey.rawData)
+        }
+        messageBuilder.setMediaRootBackupKey(mrbk.serialize().asData)
         if let ephemeralBackupKey {
             messageBuilder.setEphemeralBackupKey(ephemeralBackupKey.serialize().asData)
         }

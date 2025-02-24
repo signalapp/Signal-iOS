@@ -43,8 +43,8 @@ class OWSDeviceProvisionerTest: XCTestCase {
         let myPhoneNumber = "+16505550100"
         let myPni = Pni.randomForTesting()
         let profileKey = Randomness.generateRandomBytes(UInt(ProfileKey.SIZE))
-        let masterKey = Randomness.generateRandomBytes(SVR.masterKeyLengthBytes)
-        let mrbk = Randomness.generateRandomBytes(SVRLocalStorageImpl.mediaRootBackupKeyLength)
+        let masterKey = MasterKeyImpl(masterKey: Randomness.generateRandomBytes(SVR.masterKeyLengthBytes))
+        let mrbk = try! BackupKey(contents: Array(Randomness.generateRandomBytes(SVRLocalStorageImpl.mediaRootBackupKeyLength)))
         let readReceiptsEnabled = true
 
         let provisioner = OWSDeviceProvisioner(
@@ -56,7 +56,7 @@ class OWSDeviceProvisionerTest: XCTestCase {
             myPhoneNumber: myPhoneNumber,
             myPni: myPni,
             profileKey: profileKey,
-            masterKey: masterKey,
+            rootKey: .masterKey(masterKey),
             mrbk: mrbk,
             ephemeralBackupKey: nil,
             readReceiptsEnabled: readReceiptsEnabled,
@@ -79,7 +79,7 @@ class OWSDeviceProvisionerTest: XCTestCase {
         XCTAssertEqual(provisionMessage.aciIdentityKeyPair.publicKey, Data(myAciIdentityKeyPair.publicKey.keyBytes))
         XCTAssertEqual(provisionMessage.pniIdentityKeyPair.publicKey, Data(myPniIdentityKeyPair.publicKey.keyBytes))
         XCTAssertEqual(provisionMessage.profileKey.keyData, profileKey)
-        XCTAssertEqual(provisionMessage.masterKey, masterKey)
+        XCTAssertEqual(provisionMessage.masterKey, masterKey.rawData)
         XCTAssertEqual(provisionMessage.areReadReceiptsEnabled, readReceiptsEnabled)
         XCTAssertEqual(provisionMessage.provisioningCode, provisioningCode)
     }

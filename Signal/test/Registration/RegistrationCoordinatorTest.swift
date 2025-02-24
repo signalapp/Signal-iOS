@@ -34,7 +34,7 @@ public class RegistrationCoordinatorTest {
     private var receiptManagerMock: RegistrationCoordinatorImpl.TestMocks.ReceiptManager!
     private var registrationStateChangeManagerMock: MockRegistrationStateChangeManager!
     private var sessionManager: RegistrationSessionManagerMock!
-    private var storageServiceManagerMock: FakeStorageServiceManager!
+    private var storageServiceManagerMock: RegistrationCoordinatorImpl.TestMocks.StorageServiceManager!
     private var svr: SecureValueRecoveryMock!
     private var svrLocalStorageMock: SVRLocalStorageMock!
     private var svrAuthCredentialStore: SVRAuthCredentialStorageMock!
@@ -73,8 +73,8 @@ public class RegistrationCoordinatorTest {
         receiptManagerMock = RegistrationCoordinatorImpl.TestMocks.ReceiptManager()
         registrationStateChangeManagerMock = MockRegistrationStateChangeManager()
         sessionManager = RegistrationSessionManagerMock()
-        storageServiceManagerMock = FakeStorageServiceManager()
         svrLocalStorageMock = SVRLocalStorageMock()
+        storageServiceManagerMock = RegistrationCoordinatorImpl.TestMocks.StorageServiceManager()
         tsAccountManagerMock = MockTSAccountManager()
         usernameApiClientMock = MockUsernameApiClient()
         usernameLinkManagerMock = MockUsernameLinkManager()
@@ -3299,6 +3299,8 @@ public class RegistrationCoordinatorTest {
         let coordinator = coordinatorFactory(mode)
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
+        svrLocalStorageMock.masterKeyIfMissing = MasterKeyMock(Stubs.masterKey.rawData)
+
         scheduler.tick()
 
         var nextStep: Guarantee<RegistrationStep>!
@@ -3462,6 +3464,8 @@ public class RegistrationCoordinatorTest {
             // Test only applies to registering scenarios.
             return
         }
+
+        svrLocalStorageMock.masterKeyIfMissing = MasterKeyMock(Stubs.masterKey.rawData)
 
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 

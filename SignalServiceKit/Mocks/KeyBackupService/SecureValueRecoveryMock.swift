@@ -9,6 +9,11 @@ import Foundation
 
 public class SecureValueRecoveryMock: SecureValueRecovery {
 
+    public var hasAccountEntropyPool = false
+    public func hasAccountEntropyPool(transaction: any DBReadTransaction) -> Bool {
+        return hasAccountEntropyPool
+    }
+
     public init() {}
 
     public var hasMasterKey = false
@@ -112,10 +117,23 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
     public var useDeviceLocalMasterKeyMock: ((_ authedAccount: AuthedAccount) -> Void)?
 
     public func useDeviceLocalMasterKey(
+        _ masterKey: MasterKey,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {
         useDeviceLocalMasterKeyMock?(authedAccount)
+        hasMasterKey = true
+    }
+
+    public var useDeviceLocalAccountEntropyPoolMock: ((_ authedAccount: AuthedAccount) -> Void)?
+    public func useDeviceLocalAccountEntropyPool(
+        _ accountEntropyPool: AccountEntropyPool,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    ) {
+        useDeviceLocalAccountEntropyPoolMock?(authedAccount)
+        hasAccountEntropyPool = true
+        hasMasterKey = true
     }
 }
 

@@ -1004,6 +1004,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             if !deps.svr.hasMasterKey(transaction: tx) {
                 // If we don't have a master key at this point, use a local master key.
                 deps.svr.useDeviceLocalMasterKey(
+                    deps.svrLocalStorage.getOrGenerateMasterKey(tx),
                     authedAccount: accountIdentity.authedAccount,
                     transaction: tx
                 )

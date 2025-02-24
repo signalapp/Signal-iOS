@@ -171,8 +171,8 @@ class LinkDeviceViewController: OWSViewController {
             var aciIdentityKeyPair: ECKeyPair
             var pniIdentityKeyPair: ECKeyPair
             var areReadReceiptsEnabled: Bool
-            var masterKey: Data
-            var mediaRootBackupKey: Data
+            var rootKey: OWSDeviceProvisioner.RootKey
+            var mediaRootBackupKey: BackupKey
             var profileKey: Aes256Key
         }
 
@@ -199,10 +199,21 @@ class LinkDeviceViewController: OWSViewController {
                 owsFail("Can't provision without a pni identity.")
             }
             let areReadReceiptsEnabled = OWSReceiptManager.areReadReceiptsEnabled(transaction: tx)
-            guard let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx.asV2Read) else {
-                // This should be impossible; the only times you don't have
-                // a master key are during registration.
-                owsFail("Can't provision without a master key.")
+            let rootKey: OWSDeviceProvisioner.RootKey
+            if FeatureFlags.enableAccountEntropyPool {
+                guard let accountEntropyPool = DependenciesBridge.shared.svrLocalStorage.getAccountEntropyPool(tx: tx.asV2Read) else {
+                    // This should be impossible; the only times you don't have
+                    // a AEP are during registration.
+                    owsFail("Can't provision without account entropy pool.")
+                }
+                rootKey = .accountEntropyPool(accountEntropyPool)
+            } else {
+                guard let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx.asV2Read) else {
+                    // This should be impossible; the only times you don't have
+                    // a master key are during registration.
+                    owsFail("Can't provision without master key.")
+                }
+                rootKey = .masterKey(masterKey)
             }
             let mrbk = DependenciesBridge.shared.svrLocalStorage.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
             guard let profileKey = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: tx)?.profileKey else {
@@ -213,8 +224,8 @@ class LinkDeviceViewController: OWSViewController {
                 aciIdentityKeyPair: aciIdentityKeyPair,
                 pniIdentityKeyPair: pniIdentityKeyPair,
                 areReadReceiptsEnabled: areReadReceiptsEnabled,
-                masterKey: masterKey.rawData,
-                mediaRootBackupKey: mrbk.serialize().asData,
+                rootKey: rootKey,
+                mediaRootBackupKey: mrbk,
                 profileKey: profileKey
             )
         }
@@ -234,7 +245,7 @@ class LinkDeviceViewController: OWSViewController {
             myPhoneNumber: myPhoneNumber,
             myPni: myPni,
             profileKey: provisioningState.profileKey.keyData,
-            masterKey: provisioningState.masterKey,
+            rootKey: provisioningState.rootKey,
             mrbk: provisioningState.mediaRootBackupKey,
             ephemeralBackupKey: ephemeralBackupKey,
             readReceiptsEnabled: provisioningState.areReadReceiptsEnabled,

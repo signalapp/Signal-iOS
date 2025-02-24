@@ -288,8 +288,17 @@ extension OWS2FAManager {
 
         // Enabling V2 2FA doesn't inherently enable registration lock,
         // it's managed by a separate setting.
-        let masterKey = DependenciesBridge.shared.db.read {
-            DependenciesBridge.shared.svrLocalStorage.getOrGenerateMasterKey($0)
+        let masterKey: MasterKey
+        do {
+            guard let key = DependenciesBridge.shared.db.read(block: {
+                DependenciesBridge.shared.svrLocalStorage.getMasterKey($0)
+            }) else {
+                throw OWSAssertionError("Missing master key")
+            }
+            masterKey = key
+        } catch {
+            failure(error)
+            return
         }
         DependenciesBridge.shared.svr.backupMasterKey(pin: pin, masterKey: masterKey, authMethod: .implicit).done { _ in
             AssertIsOnMainThread()

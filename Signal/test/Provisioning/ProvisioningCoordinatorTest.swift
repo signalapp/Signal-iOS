@@ -89,6 +89,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
 
     public func testProvisioning() async throws {
         let provisioningMessage = ProvisionMessage(
+            accountEntropyPool: nil,
             aci: .randomForTesting(),
             phoneNumber: "+17875550100",
             pni: .randomForTesting(),
