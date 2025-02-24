@@ -448,9 +448,6 @@ class MessageBackupIntegrationTests: XCTestCase {
             keychainStorage: MockKeychainStorage()
         )
 
-        let svrLocalStorageMock = SVRLocalStorageMock()
-        svrLocalStorageMock.accountEntropyPool = AccountEntropyPool()
-
         /// We use crashy versions of dependencies that should never be called
         /// during backups, and no-op implementations of payments because those
         /// are bound to the SignalUI target.
@@ -469,7 +466,6 @@ class MessageBackupIntegrationTests: XCTestCase {
                 backupAttachmentDownloadManager: BackupAttachmentDownloadManagerMock(),
                 dateProvider: dateProvider,
                 networkManager: CrashyMocks.MockNetworkManager(libsignalNet: nil),
-                svrLocalStorage: svrLocalStorageMock,
                 webSocketFactory: CrashyMocks.MockWebSocketFactory()
             )
         ).prepareDatabase().awaitable()

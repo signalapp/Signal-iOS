@@ -61,7 +61,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let groupRecipientArchiver: MessageBackupGroupRecipientArchiver
     private let incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator
     private let kvStore: KeyValueStore
-    private let localStorage: SVRLocalStorage
+    private let localStorage: AccountKeyStore
     private let localRecipientArchiver: MessageBackupLocalRecipientArchiver
     private let messageBackupKeyMaterial: MessageBackupKeyMaterial
     private let messagePipelineSupervisor: MessagePipelineSupervisor
@@ -97,7 +97,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         fullTextSearchIndexer: MessageBackupFullTextSearchIndexer,
         groupRecipientArchiver: MessageBackupGroupRecipientArchiver,
         incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
-        localStorage: SVRLocalStorage,
+        localStorage: AccountKeyStore,
         localRecipientArchiver: MessageBackupLocalRecipientArchiver,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         messagePipelineSupervisor: MessagePipelineSupervisor,

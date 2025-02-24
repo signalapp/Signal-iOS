@@ -17,6 +17,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private let connectionFactory: SgxWebsocketConnectionFactory
     private let credentialStorage: SVRAuthCredentialStorage
     private let db: any DB
+    private let accountKeyStore: AccountKeyStore
     private let localStorage: SVRLocalStorageInternal
     private let schedulers: Schedulers
     private let storageServiceManager: StorageServiceManager
@@ -33,6 +34,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         connectionFactory: SgxWebsocketConnectionFactory,
         credentialStorage: SVRAuthCredentialStorage,
         db: any DB,
+        accountKeyStore: AccountKeyStore,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorageInternal,
@@ -50,6 +52,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             connectionFactory: connectionFactory,
             credentialStorage: credentialStorage,
             db: db,
+            accountKeyStore: accountKeyStore,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
             svrLocalStorage: svrLocalStorage,
@@ -71,6 +74,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         connectionFactory: SgxWebsocketConnectionFactory,
         credentialStorage: SVRAuthCredentialStorage,
         db: any DB,
+        accountKeyStore: AccountKeyStore,
         schedulers: Schedulers,
         storageServiceManager: StorageServiceManager,
         svrLocalStorage: SVRLocalStorageInternal,
@@ -87,6 +91,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         self.connectionFactory = connectionFactory
         self.credentialStorage = credentialStorage
         self.db = db
+        self.accountKeyStore = accountKeyStore
         self.localStorage = svrLocalStorage
         self.schedulers = schedulers
         self.storageServiceManager = storageServiceManager
@@ -178,11 +183,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     // MARK: - Key Existence
 
     public func hasMasterKey(transaction: DBReadTransaction) -> Bool {
-        let value = localStorage.getAccountEntropyPool(tx: transaction)
-        if value != nil {
-            return true
-        }
-        return localStorage.getMasterKey(transaction) != nil
+        return accountKeyStore.getMasterKey(tx: transaction) != nil
     }
 
     public func hasBackedUpMasterKey(transaction: DBReadTransaction) -> Bool {
@@ -196,7 +197,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     ) {
         Logger.info("")
 
-        localStorage.setMasterKey(masterKey, transaction)
+        accountKeyStore.setMasterKey(masterKey, tx: transaction)
 
         syncStorageService(
             restoredMasterKey: masterKey,
@@ -240,7 +241,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         clearKeys(transaction: transaction)
 
         // Persist AEP locally
-        localStorage.setAccountEntropyPool(accountEntropyPool, tx: transaction)
+        accountKeyStore.setAccountEntropyPool(accountEntropyPool, tx: transaction)
 
         updateLocalSVRState(
             isMasterKeyBackedUp: false,
@@ -397,7 +398,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         Logger.info("")
         do {
             if let mbrk = try provisioningMessage.mrbk.map({ try BackupKey(contents: Array($0)) }) {
-                localStorage.setMediaRootBackupKey(mbrk, tx: tx)
+                accountKeyStore.setMediaRootBackupKey(mbrk, tx: tx)
             }
         } catch {
             if FeatureFlags.linkAndSyncLinkedImport || FeatureFlags.messageBackupFileAlpha {
@@ -409,11 +410,11 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         do {
             if let aep = try provisioningMessage.accountEntropyPool.map({ try AccountEntropyPool(key: $0) }) {
-                localStorage.setAccountEntropyPool(aep, tx: tx)
+                accountKeyStore.setAccountEntropyPool(aep, tx: tx)
             }
         } catch {
             do {
-                localStorage.setMasterKey(try MasterKey(data: provisioningMessage.masterKey), tx)
+                accountKeyStore.setMasterKey(try MasterKey(data: provisioningMessage.masterKey), tx: tx)
             } catch {
                 throw .missingMasterKey
             }
@@ -432,7 +433,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         do {
             if let mbrk = try syncMessage.mediaRootBackupKey.map({ try BackupKey(contents: Array($0)) }) {
-                localStorage.setMediaRootBackupKey(mbrk, tx: tx)
+                accountKeyStore.setMediaRootBackupKey(mbrk, tx: tx)
             }
         } catch {
             throw SVR.KeysError.missingMediaRootBackupKey
@@ -442,28 +443,28 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         var newAep: AccountEntropyPool?
         if FeatureFlags.enableAccountEntropyPool {
-            let oldAep = localStorage.getAccountEntropyPool(tx: tx)
+            let oldAep = accountKeyStore.getAccountEntropyPool(tx: tx)
             do {
                 if let aep = try syncMessage.accountEntropyPool.map({ try AccountEntropyPool(key: $0) }) {
-                    localStorage.setAccountEntropyPool(aep, tx: tx)
+                    accountKeyStore.setAccountEntropyPool(aep, tx: tx)
                 }
             } catch {
                 owsFailDebug("Error setting AEP")
             }
-            newAep = localStorage.getAccountEntropyPool(tx: tx)
+            newAep = accountKeyStore.getAccountEntropyPool(tx: tx)
             keyChanged = (oldAep?.rawData != newAep?.rawData)
         }
 
         if newAep == nil {
-            let oldMasterKey = localStorage.getMasterKey(tx)?.rawData
+            let oldMasterKey = accountKeyStore.getMasterKey(tx: tx)?.rawData
             do {
                 if let masterKey = try syncMessage.master.map({ try MasterKey(data: $0) }) {
-                    localStorage.setMasterKey(masterKey, tx)
+                    accountKeyStore.setMasterKey(masterKey, tx: tx)
                 }
             } catch {
                 throw SVR.KeysError.missingMasterKey
             }
-            let newMasterKey = localStorage.getMasterKey(tx)?.rawData
+            let newMasterKey = accountKeyStore.getMasterKey(tx: tx)?.rawData
             keyChanged = (oldMasterKey != newMasterKey)
         }
 
@@ -1157,7 +1158,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
         if !hasMasterKey, isRegisteredPrimary {
             db.write { tx in
-                let newMasterKey = self.localStorage.getOrGenerateMasterKey(tx)
+                let newMasterKey = self.accountKeyStore.getOrGenerateMasterKey(tx: tx)
                 if pinCode != nil {
                     // We have a pin code but no master key? We know this has happened
                     // in the wild but have no idea how.
@@ -1171,12 +1172,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     public func generateAccountEntropyPoolIfMissing() {
         let (isRegisteredPrimary, accountEntropyPool) = db.read {(
             self.tsAccountManager.registrationState(tx: $0).isRegisteredPrimaryDevice,
-            self.localStorage.getAccountEntropyPool(tx: $0)
+            self.accountKeyStore.getAccountEntropyPool(tx: $0)
         )}
         guard accountEntropyPool == nil else { return }
         if isRegisteredPrimary {
             db.write { tx in
-                let newAEP = self.localStorage.getOrGenerateAccountEntropyPool(tx: tx)
+                let newAEP = self.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
                 self.useDeviceLocalAccountEntropyPool(
                     newAEP,
                     authedAccount: .implicit(),
@@ -1211,7 +1212,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 guard
                     let self,
                     self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
-                    let masterKey = self.localStorage.getMasterKey(tx)?.rawData,
+                    let masterKey = self.accountKeyStore.getMasterKey(tx: tx)?.rawData,
                     let pin = self.twoFAManager.pinCode(transaction: tx)
                 else {
                     // Need to be registered with a master key and PIN to migrate.

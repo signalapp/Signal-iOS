@@ -14,6 +14,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let deviceService: OWSDeviceService
     private let identityManager: OWSIdentityManager
     private let linkAndSyncManager: LinkAndSyncManager
+    private let accountKeyStore: AccountKeyStore
     private let messageFactory: Shims.MessageFactory
     private let preKeyManager: PreKeyManager
     private let profileManager: Shims.ProfileManager
@@ -24,7 +25,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let signalService: OWSSignalServiceProtocol
     private let storageServiceManager: StorageServiceManager
     private let svr: SecureValueRecovery
-    private let svrLocalStorage: SVRLocalStorage
     private let syncManager: Shims.SyncManager
     private let threadStore: ThreadStore
     private let tsAccountManager: TSAccountManager
@@ -36,6 +36,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         deviceService: OWSDeviceService,
         identityManager: OWSIdentityManager,
         linkAndSyncManager: LinkAndSyncManager,
+        accountKeyStore: AccountKeyStore,
         messageFactory: Shims.MessageFactory,
         preKeyManager: PreKeyManager,
         profileManager: Shims.ProfileManager,
@@ -46,7 +47,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         signalService: OWSSignalServiceProtocol,
         storageServiceManager: StorageServiceManager,
         svr: SecureValueRecovery,
-        svrLocalStorage: SVRLocalStorage,
         syncManager: Shims.SyncManager,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
@@ -57,6 +57,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         self.deviceService = deviceService
         self.identityManager = identityManager
         self.linkAndSyncManager = linkAndSyncManager
+        self.accountKeyStore = accountKeyStore
         self.messageFactory = messageFactory
         self.preKeyManager = preKeyManager
         self.profileManager = profileManager
@@ -67,7 +68,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         self.signalService = signalService
         self.storageServiceManager = storageServiceManager
         self.svr = svr
-        self.svrLocalStorage = svrLocalStorage
         self.syncManager = syncManager
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
@@ -454,7 +454,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                     tx: tx
                 )
 
-                self.svrLocalStorage.wipeMediaRootBackupKeyFromFailedProvisioning(tx: tx)
+                self.accountKeyStore.wipeMediaRootBackupKeyFromFailedProvisioning(tx: tx)
             }
         }
     }
@@ -779,7 +779,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         // Don't bother with this field at all; just put explicit none.
         let twoFaMode: AccountAttributes.TwoFactorAuthMode = .none
 
-        let registrationRecoveryPassword = svrLocalStorage.getMasterKey(tx)?.data(
+        let registrationRecoveryPassword = accountKeyStore.getMasterKey(tx: tx)?.data(
             for: .registrationRecoveryPassword
         ).canonicalStringRepresentation
 

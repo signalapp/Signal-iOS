@@ -8,12 +8,12 @@ public import LibSignalClient
 
 public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
 
-    private let svrLocalStorage: SVRLocalStorage
+    private let accountKeyStore: AccountKeyStore
 
     public init(
-        svrLocalStorage: SVRLocalStorage
+        accountKeyStore: AccountKeyStore
     ) {
-        self.svrLocalStorage = svrLocalStorage
+        self.accountKeyStore = accountKeyStore
     }
 
     /// Get the root backup key used by the encryption mode. The key may be derived
@@ -24,13 +24,13 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
     ) throws(MessageBackupKeyMaterialError) -> BackupKey {
         switch type {
         case .media:
-            guard let backupKey = svrLocalStorage.getMediaRootBackupKey(tx: tx) else {
+            guard let backupKey = accountKeyStore.getMediaRootBackupKey(tx: tx) else {
                 throw MessageBackupKeyMaterialError.missingMediaRootBackupKey
             }
             return backupKey
         case .messages:
             do {
-                guard let backupKey = try svrLocalStorage.getMessageRootBackupKey(tx: tx) else {
+                guard let backupKey = accountKeyStore.getMessageRootBackupKey(tx: tx) else {
                     throw MessageBackupKeyMaterialError.missingMessageBackupKey
                 }
                 return backupKey

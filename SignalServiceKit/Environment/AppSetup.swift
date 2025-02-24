@@ -37,7 +37,6 @@ public class AppSetup {
         let remoteConfigManager: (any RemoteConfigManager)?
         let signalService: (any OWSSignalServiceProtocol)?
         let storageServiceManager: (any StorageServiceManager)?
-        let svrLocalStorage: (any SVRLocalStorage)?
         let syncManager: (any SyncManagerProtocol)?
         let systemStoryManager: (any SystemStoryManagerProtocol)?
         let versionedProfiles: (any VersionedProfiles)?
@@ -60,7 +59,6 @@ public class AppSetup {
             remoteConfigManager: (any RemoteConfigManager)? = nil,
             signalService: (any OWSSignalServiceProtocol)? = nil,
             storageServiceManager: (any StorageServiceManager)? = nil,
-            svrLocalStorage: (any SVRLocalStorage)? = nil,
             syncManager: (any SyncManagerProtocol)? = nil,
             systemStoryManager: (any SystemStoryManagerProtocol)? = nil,
             versionedProfiles: (any VersionedProfiles)? = nil,
@@ -82,7 +80,6 @@ public class AppSetup {
             self.remoteConfigManager = remoteConfigManager
             self.signalService = signalService
             self.storageServiceManager = storageServiceManager
-            self.svrLocalStorage = svrLocalStorage
             self.syncManager = syncManager
             self.systemStoryManager = systemStoryManager
             self.versionedProfiles = versionedProfiles
@@ -293,11 +290,13 @@ public class AppSetup {
             orphanedAttachmentCleaner: orphanedAttachmentCleaner
         )
 
+        let accountKeyStore = AccountKeyStore()
         let svrCredentialStorage = SVRAuthCredentialStorageImpl()
         let svrLocalStorage = SVRLocalStorageImpl()
 
         let accountAttributesUpdater = AccountAttributesUpdaterImpl(
             accountAttributesGenerator: AccountAttributesGenerator(
+                accountKeyStore: accountKeyStore,
                 ows2FAManager: ows2FAManager,
                 profileManager: profileManager,
                 svrLocalStorage: svrLocalStorage,
@@ -331,6 +330,7 @@ public class AppSetup {
             connectionFactory: SgxWebsocketConnectionFactoryImpl(websocketFactory: webSocketFactory),
             credentialStorage: svrCredentialStorage,
             db: db,
+            accountKeyStore: accountKeyStore,
             schedulers: schedulers,
             storageServiceManager: storageServiceManager,
             svrLocalStorage: svrLocalStorage,
@@ -341,7 +341,7 @@ public class AppSetup {
         )
 
         let messageBackupKeyMaterial = MessageBackupKeyMaterialImpl(
-            svrLocalStorage: svrLocalStorage
+            accountKeyStore: accountKeyStore
         )
         let messageBackupRequestManager = MessageBackupRequestManagerImpl(
             dateProvider: dateProvider,
@@ -1144,7 +1144,7 @@ public class AppSetup {
                 threadStore: backupThreadStore
             ),
             incrementalTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator,
-            localStorage: svrLocalStorage,
+            localStorage: accountKeyStore,
             localRecipientArchiver: MessageBackupLocalRecipientArchiver(
                 profileManager: MessageBackup.Wrappers.ProfileManager(profileManager)
             ),
@@ -1287,6 +1287,7 @@ public class AppSetup {
             linkPreviewManager: linkPreviewManager,
             linkPreviewSettingStore: linkPreviewSettingStore,
             linkPreviewSettingManager: linkPreviewSettingManager,
+            accountKeyStore: accountKeyStore,
             localProfileChecker: localProfileChecker,
             localUsernameManager: localUsernameManager,
             masterKeySyncManager: masterKeySyncManager,

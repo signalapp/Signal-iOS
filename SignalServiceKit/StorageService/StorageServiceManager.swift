@@ -717,7 +717,7 @@ class StorageServiceOperation {
             case .explicit(let keyData):
                 masterKey = keyData
             case .implicit:
-                masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx.asV2Read)
+                masterKey = DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: tx.asV2Read)
             }
 
             return (state, masterKey)
@@ -1104,7 +1104,7 @@ class StorageServiceOperation {
                     // Clear out the key, it's no longer valid. This will prevent us
                     // from trying to backup again until the sync response is received.
                     DependenciesBridge.shared.svrLocalStorage.clearStorageServiceKeys(transaction.asV2Write)
-                    DependenciesBridge.shared.svrLocalStorage.clearMasterKey(transaction.asV2Write)
+                    DependenciesBridge.shared.accountKeyStore.setMasterKey(nil, tx: transaction.asV2Write)
                     SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
                 }
             }
@@ -1655,7 +1655,7 @@ class StorageServiceOperation {
                     // Clear out the key, it's no longer valid. This will prevent us
                     // from trying to backup again until the sync response is received.
                     DependenciesBridge.shared.svrLocalStorage.clearStorageServiceKeys(transaction.asV2Write)
-                    DependenciesBridge.shared.svrLocalStorage.clearMasterKey(transaction.asV2Write)
+                    DependenciesBridge.shared.accountKeyStore.setMasterKey(nil, tx: transaction.asV2Write)
                     SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
                 }
             } else if

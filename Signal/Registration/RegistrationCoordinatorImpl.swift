@@ -937,7 +937,24 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         self.loadProfileState()
 
         db.write { tx in
-            self.updateMasterKeyAndLocalState(masterKey: persistedState.recoveredSVRMasterKey, tx: tx)
+
+            var initialMasterKey: MasterKey?
+            if
+                deps.featureFlags.enableAccountEntropyPool,
+                let aep = deps.accountKeyStore.getAccountEntropyPool(tx: tx)
+            {
+                updatePersistedState(tx) {
+                    $0.accountEntropyPool = aep
+                }
+                initialMasterKey = aep.getMasterKey()
+            } else if let masterKey = deps.accountKeyStore.getMasterKey(tx: tx) {
+                updatePersistedState(tx) {
+                    $0.recoveredSVRMasterKey = masterKey
+                }
+                initialMasterKey = masterKey
+            }
+
+            self.updateMasterKeyAndLocalState(masterKey: initialMasterKey, tx: tx)
             inMemoryState.tsRegistrationState = deps.tsAccountManager.registrationState(tx: tx)
             inMemoryState.pinFromDisk = deps.ows2FAManager.pinCode(tx)
             if
@@ -1631,12 +1648,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     }
 
     private func updateMasterKeyAndLocalState(masterKey: MasterKey?, tx: DBWriteTransaction) {
-        var localMasterKey: MasterKey?
-        if let masterKey {
-            localMasterKey = masterKey
-        } else {
-            localMasterKey = deps.svrLocalStorage.getMasterKey(tx)
-        }
+        let localMasterKey = masterKey
         let regRecoveryPw = localMasterKey?.data(
             for: .registrationRecoveryPassword
         ).canonicalStringRepresentation
@@ -2835,7 +2847,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             if persistedState.accountEntropyPool == nil {
                 db.write { tx in
                     updatePersistedState(tx) {
-                        $0.accountEntropyPool = deps.svrLocalStorage.getOrGenerateAccountEntropyPool(tx: tx)
+                        $0.accountEntropyPool = deps.accountKeyStore.getOrGenerateAccountEntropyPool(tx: tx)
                     }
                     let newMasterKey = persistedState.accountEntropyPool?.getMasterKey()
                     updateMasterKeyAndLocalState(masterKey: newMasterKey, tx: tx)
@@ -2845,7 +2857,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             if persistedState.recoveredSVRMasterKey == nil {
                 // attempt to pull from local state
                 db.write { tx in
-                    let newMasterKey = deps.svrLocalStorage.getOrGenerateMasterKey(tx)
+                    let newMasterKey = deps.accountKeyStore.getOrGenerateMasterKey(tx: tx)
                     updatePersistedState(tx) {
                         $0.recoveredSVRMasterKey = newMasterKey
                     }

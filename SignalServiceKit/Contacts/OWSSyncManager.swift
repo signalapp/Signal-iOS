@@ -197,19 +197,19 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return owsFailDebug("Missing thread")
         }
 
-        let accountEntropyPool = DependenciesBridge.shared.svrLocalStorage.getAccountEntropyPool(tx: tx.asV2Read)
+        let accountEntropyPool = DependenciesBridge.shared.accountKeyStore.getAccountEntropyPool(tx: tx.asV2Read)
         if FeatureFlags.enableAccountEntropyPool,
            accountEntropyPool == nil
         {
             Logger.warn("Expecting AEP present for sync message")
         }
-        let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx.asV2Read)
+        let masterKey = DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: tx.asV2Read)
 
         guard accountEntropyPool != nil || masterKey != nil else {
             return owsFailDebug("Missing root key")
         }
 
-        let mrbk = DependenciesBridge.shared.svrLocalStorage.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
+        let mrbk = DependenciesBridge.shared.accountKeyStore.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
 
         let syncKeysMessage = OWSSyncKeysMessage(
             localThread: thread,

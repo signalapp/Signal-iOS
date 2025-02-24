@@ -291,7 +291,7 @@ extension OWS2FAManager {
         let masterKey: MasterKey
         do {
             guard let key = DependenciesBridge.shared.db.read(block: {
-                DependenciesBridge.shared.svrLocalStorage.getMasterKey($0)
+                DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: $0)
             }) else {
                 throw OWSAssertionError("Missing master key")
             }
@@ -330,7 +330,7 @@ extension OWS2FAManager {
 
     public func enableRegistrationLockV2() async throws {
         let token = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx.asV2Read)
+            let masterKey = DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: tx.asV2Read)
             return masterKey?.data(
                 for: .registrationLock
             ).canonicalStringRepresentation

@@ -15,6 +15,7 @@ public struct RegistrationCoordinatorDependencies {
     public let db: any DB
     public let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
     public let featureFlags: RegistrationCoordinatorImpl.Shims.FeatureFlags
+    public let accountKeyStore: AccountKeyStore
     public let localUsernameManager: LocalUsernameManager
     public let messageBackupKeyMaterial: MessageBackupKeyMaterial
     public let messageBackupErrorPresenter: MessageBackupErrorPresenter
@@ -35,7 +36,6 @@ public struct RegistrationCoordinatorDependencies {
     public let storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStore
     public let storageServiceManager: RegistrationCoordinatorImpl.Shims.StorageServiceManager
     public let svr: SecureValueRecovery
-    public let svrLocalStorage: SVRLocalStorage
     public let svrAuthCredentialStore: SVRAuthCredentialStorage
     public let tsAccountManager: TSAccountManager
     public let udManager: RegistrationCoordinatorImpl.Shims.UDManager
@@ -52,6 +52,7 @@ public struct RegistrationCoordinatorDependencies {
             db: DependenciesBridge.shared.db,
             experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
             featureFlags: RegistrationCoordinatorImpl.Wrappers.FeatureFlags(),
+            accountKeyStore: DependenciesBridge.shared.accountKeyStore,
             localUsernameManager: DependenciesBridge.shared.localUsernameManager,
             messageBackupKeyMaterial: DependenciesBridge.shared.messageBackupKeyMaterial,
             messageBackupErrorPresenter: DependenciesBridge.shared.messageBackupErrorPresenter,
@@ -74,7 +75,6 @@ public struct RegistrationCoordinatorDependencies {
             storageServiceRecordIkmCapabilityStore: DependenciesBridge.shared.storageServiceRecordIkmCapabilityStore,
             storageServiceManager: RegistrationCoordinatorImpl.Wrappers.StorageServiceManager(SSKEnvironment.shared.storageServiceManagerRef),
             svr: DependenciesBridge.shared.svr,
-            svrLocalStorage: DependenciesBridge.shared.svrLocalStorage,
             svrAuthCredentialStore: DependenciesBridge.shared.svrCredentialStorage,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(SSKEnvironment.shared.udManagerRef),

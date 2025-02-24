@@ -201,21 +201,21 @@ class LinkDeviceViewController: OWSViewController {
             let areReadReceiptsEnabled = OWSReceiptManager.areReadReceiptsEnabled(transaction: tx)
             let rootKey: OWSDeviceProvisioner.RootKey
             if FeatureFlags.enableAccountEntropyPool {
-                guard let accountEntropyPool = DependenciesBridge.shared.svrLocalStorage.getAccountEntropyPool(tx: tx.asV2Read) else {
+                guard let accountEntropyPool = DependenciesBridge.shared.accountKeyStore.getAccountEntropyPool(tx: tx.asV2Read) else {
                     // This should be impossible; the only times you don't have
                     // a AEP are during registration.
                     owsFail("Can't provision without account entropy pool.")
                 }
                 rootKey = .accountEntropyPool(accountEntropyPool)
             } else {
-                guard let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx.asV2Read) else {
+                guard let masterKey = DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: tx.asV2Read) else {
                     // This should be impossible; the only times you don't have
                     // a master key are during registration.
                     owsFail("Can't provision without master key.")
                 }
                 rootKey = .masterKey(masterKey)
             }
-            let mrbk = DependenciesBridge.shared.svrLocalStorage.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
+            let mrbk = DependenciesBridge.shared.accountKeyStore.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
             guard let profileKey = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: tx)?.profileKey else {
                 owsFail("Can't provision without a profile key.")
             }

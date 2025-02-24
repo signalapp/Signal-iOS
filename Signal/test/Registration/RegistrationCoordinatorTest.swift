@@ -23,6 +23,7 @@ public class RegistrationCoordinatorTest {
     private var db: (any DB)!
     private var experienceManager: RegistrationCoordinatorImpl.TestMocks.ExperienceManager!
     private var featureFlags: RegistrationCoordinatorImpl.TestMocks.FeatureFlags!
+    private var accountKeyStore: AccountKeyStore!
     private var localUsernameManagerMock: MockLocalUsernameManager!
     private var mockMessagePipelineSupervisor: RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor!
     private var mockMessageProcessor: RegistrationCoordinatorImpl.TestMocks.MessageProcessor!
@@ -43,10 +44,18 @@ public class RegistrationCoordinatorTest {
     private var tsAccountManagerMock: MockTSAccountManager!
     private var usernameApiClientMock: MockUsernameApiClient!
     private var usernameLinkManagerMock: MockUsernameLinkManager!
+    private var missingKeyGenerator: MissingKeyGenerator!
+
+    private class MissingKeyGenerator {
+        var masterKey: () -> MasterKey = { fatalError("Default MasterKey not provided") }
+        var accountEntropyPool: () -> SignalServiceKit.AccountEntropyPool = { fatalError("Default AccountEntropyPool not provided")  }
+    }
 
     init() {
         dateProvider = { self.date }
         db = InMemoryDB()
+
+        missingKeyGenerator = .init()
 
         appExpiryMock = MockAppExpiry()
         changeNumberPniManager = ChangePhoneNumberPniManagerMock(
@@ -55,6 +64,10 @@ public class RegistrationCoordinatorTest {
         contactsStore = RegistrationCoordinatorImpl.TestMocks.ContactsStore()
         experienceManager = RegistrationCoordinatorImpl.TestMocks.ExperienceManager()
         featureFlags = RegistrationCoordinatorImpl.TestMocks.FeatureFlags()
+        accountKeyStore = AccountKeyStore(
+            masterKeyGenerator: { self.missingKeyGenerator.masterKey() },
+            accountEntropyPoolGenerator: { self.missingKeyGenerator.accountEntropyPool() }
+        )
         localUsernameManagerMock = {
             let mock = MockLocalUsernameManager()
             // This should result in no username reclamation. Tests that want to
@@ -98,6 +111,7 @@ public class RegistrationCoordinatorTest {
             db: db,
             experienceManager: experienceManager,
             featureFlags: featureFlags,
+            accountKeyStore: accountKeyStore,
             localUsernameManager: localUsernameManagerMock,
             messageBackupKeyMaterial: MessageBackupKeyMaterialMock(),
             messageBackupErrorPresenter: NoOpMessageBackupErrorPresenter(),
@@ -118,7 +132,6 @@ public class RegistrationCoordinatorTest {
             storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStoreImpl(),
             storageServiceManager: storageServiceManagerMock,
             svr: svr,
-            svrLocalStorage: svrLocalStorageMock,
             svrAuthCredentialStore: svrAuthCredentialStore,
             tsAccountManager: tsAccountManagerMock,
             udManager: RegistrationCoordinatorImpl.TestMocks.UDManager(),
@@ -182,6 +195,38 @@ public class RegistrationCoordinatorTest {
                 forDesiredMode: testCase.mode,
                 transaction: $0
             ) as! RegistrationCoordinatorImpl
+        }
+    }
+
+    enum TestStep: String, Equatable, CustomDebugStringConvertible {
+        case restoreKeys
+        case requestPushToken
+        case createPreKeys
+        case createAccount
+        case finalizePreKeys
+        case rotateOneTimePreKeys
+        case restoreStorageService
+        case backupMasterKey
+        case confirmReservedUsername
+        case rotateManifest
+        case updateAccountAttribute
+        case failedRequest
+
+        var debugDescription: String {
+            switch self {
+            case .restoreKeys: return "restoreKeys"
+            case .requestPushToken: return "requestPushToken"
+            case .createPreKeys: return "createPreKeys"
+            case .createAccount: return "createAccount"
+            case .finalizePreKeys: return "finalizePreKeys"
+            case .rotateOneTimePreKeys: return "rotateOneTimePreKeys"
+            case .restoreStorageService: return "restoreStorageService"
+            case .backupMasterKey: return "backupMasterKey"
+            case .confirmReservedUsername: return "confirmReservedUsername"
+            case .rotateManifest: return "rotateManifest"
+            case .updateAccountAttribute: return "updateAccountAttribute"
+            case .failedRequest: return "failedRequest"
+            }
         }
     }
 
@@ -387,7 +432,7 @@ public class RegistrationCoordinatorTest {
             #expect(auth.authedAccount == expectedAuthedAccount())
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
-                #expect(finalMasterKey.rawData == explicitMasterKey.rawData)
+                #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
             default:
                 Issue.record("Unexpected master key used in storage service operation.")
             }
@@ -540,7 +585,7 @@ public class RegistrationCoordinatorTest {
             #expect(auth.authedAccount == expectedAuthedAccount())
             switch masterKeySource {
             case .explicit(let explicitMasterKey):
-                #expect(finalMasterKey.rawData == explicitMasterKey.rawData)
+                #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
             default:
                 Issue.record("Unexpected master key used in storage service operation.")
             }
@@ -588,7 +633,7 @@ public class RegistrationCoordinatorTest {
 
         // Make SVR give us back a reg recovery password.
         let masterKey = AccountEntropyPool().getMasterKey()
-        svrLocalStorageMock.localMasterKey = masterKey
+        db.write { accountKeyStore.setMasterKey(masterKey, tx: $0) }
         svr.hasMasterKey = true
 
         // Run the scheduler for a bit; we don't care about timing these bits.
@@ -726,7 +771,7 @@ public class RegistrationCoordinatorTest {
 
         // Make SVR give us back a reg recovery password.
         let masterKey = AccountEntropyPool().getMasterKey()
-        svrLocalStorageMock.localMasterKey = masterKey
+        db.write { accountKeyStore.setMasterKey(masterKey, tx: $0) }
         svr.hasMasterKey = true
 
         // Run the scheduler for a bit; we don't care about timing these bits.
@@ -871,6 +916,7 @@ public class RegistrationCoordinatorTest {
     func testRegRecoveryPwPath_retryNetworkError(testCase: TestCase) throws {
         let coordinator = setupTest(testCase)
         let mode = testCase.mode
+        var actualSteps = [TestStep]()
 
         // Set profile info so we skip those steps.
         setupDefaultAccountAttributes()
@@ -908,8 +954,10 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.requestPushTokenMock = {
             switch self.scheduler.currentTime {
             case 0:
+                actualSteps.append(.requestPushToken)
                 return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 1)
             case 3:
+                actualSteps.append(.requestPushToken)
                 return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 4)
             default:
                 Issue.record("Got unexpected push tokens request")
@@ -920,6 +968,7 @@ public class RegistrationCoordinatorTest {
         preKeyManagerMock.createPreKeysMock = {
             switch self.scheduler.currentTime {
             case 1, 4:
+                actualSteps.append(.createPreKeys)
                 return .value(Stubs.prekeyBundles())
             default:
                 Issue.record("Got unexpected push tokens request")
@@ -930,9 +979,11 @@ public class RegistrationCoordinatorTest {
         preKeyManagerMock.finalizePreKeysMock = { didSucceed in
             switch self.scheduler.currentTime {
             case 3:
+                actualSteps.append(.finalizePreKeys)
                 #expect(didSucceed.negated)
                 return .value(())
             case 5:
+                actualSteps.append(.finalizePreKeys)
                 #expect(didSucceed)
                 return .value(())
             default:
@@ -952,7 +1003,13 @@ public class RegistrationCoordinatorTest {
         )
 
         // Fail the request at t=3 with a network error.
-        let failResponse = TSRequestOWSURLSessionMock.Response.networkError(url: expectedRecoveryPwRequest.url!)
+        let failResponse = TSRequestOWSURLSessionMock.Response.networkError(
+            matcher: { _ in
+                actualSteps.append(.failedRequest)
+                return true
+            },
+            url: expectedRecoveryPwRequest.url!
+        )
         mockURLSession.addResponse(failResponse, atTime: 3, on: scheduler)
 
         let identityResponse = Stubs.accountIdentityResponse()
@@ -974,11 +1031,15 @@ public class RegistrationCoordinatorTest {
             self.mockURLSession.addResponse(
                 TSRequestOWSURLSessionMock.Response(
                     matcher: { request in
-                        // The password is generated internally by RegistrationCoordinator.
-                        // Extract it so we can check that the same password sent to the server
-                        // to register is used later for other requests.
-                        authPassword = request.authPassword
-                        return request.url == expectedRequest.url
+                        if request.url == expectedRequest.url {
+                            actualSteps.append(.createAccount)
+                            // The password is generated internally by RegistrationCoordinator.
+                            // Extract it so we can check that the same password sent to the server
+                            // to register is used later for other requests.
+                            authPassword = request.authPassword
+                            return true
+                        }
+                        return false
                     },
                     statusCode: 200,
                     bodyData: try! JSONEncoder().encode(identityResponse)
@@ -1000,6 +1061,7 @@ public class RegistrationCoordinatorTest {
 
         // When registered at t=5, it should try and sync pre-keys. Succeed at t=6.
         preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
+            actualSteps.append(.rotateOneTimePreKeys)
             #expect(self.scheduler.currentTime == 5)
             #expect(auth == expectedAuthedAccount().chatServiceAuth)
             return self.scheduler.promise(resolvingWith: (), atTime: 6)
@@ -1007,27 +1069,42 @@ public class RegistrationCoordinatorTest {
 
         // We haven't done a SVR backup; that should happen at t=6. Succeed at t=7.
         svr.backupMasterKeyMock = { pin, masterKey, authMethod in
-            #expect(self.scheduler.currentTime == 6)
+            actualSteps.append(.backupMasterKey)
             #expect(pin == Stubs.pinCode)
             #expect(masterKey.rawData == finalMasterKey.rawData)
             // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
-            return self.scheduler.promise(resolvingWith: masterKey, atTime: 7)
+            return self.scheduler.promise(resolvingWith: masterKey, atTime: 8)
         }
 
         // Once we back up to svr at t=7, we should restore from storage service.
         // Succeed at t=8.
         storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
-            #expect(self.scheduler.currentTime == 7)
+            actualSteps.append(.restoreStorageService)
             #expect(auth.authedAccount == expectedAuthedAccount())
-            switch masterKeySource {
-            case .explicit(let explicitMasterKey):
-                #expect(finalMasterKey.rawData == explicitMasterKey.rawData)
-            default:
-                Issue.record("Unexpected master key used in storage service operation.")
+
+            if self.scheduler.currentTime == 6 {
+                switch masterKeySource {
+                case .explicit(let explicitMasterKey):
+                    #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
+                default:
+                    Issue.record("Unexpected master key used in storage service operation.")
+                }
+                return self.scheduler.promise(resolvingWith: (), atTime: 7)
+            } else if self.scheduler.currentTime == 8 {
+                switch masterKeySource {
+                case .explicit(let explicitMasterKey):
+                    #expect(finalMasterKey.rawData == explicitMasterKey.rawData)
+                default:
+                    Issue.record("Unexpected master key used in storage service operation.")
+                }
+                return self.scheduler.promise(resolvingWith: (), atTime: 9)
+            } else {
+                Issue.record("Method called at unexpected time")
+                // Not the correct time, but moves things forward
+                return self.scheduler.promise(resolvingWith: (), atTime: 9)
             }
-            return self.scheduler.promise(resolvingWith: (), atTime: 8)
         }
 
         // Once we restore from storage service at t=8, we should attempt to
@@ -1035,7 +1112,7 @@ public class RegistrationCoordinatorTest {
         let mockUsernameLink: Usernames.UsernameLink = .mocked
         localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
         usernameApiClientMock.confirmReservedUsernameMock = { _, _, chatServiceAuth in
-            #expect(self.scheduler.currentTime == 8)
+            actualSteps.append(.confirmReservedUsername)
             #expect(chatServiceAuth == .explicit(
                 aci: identityResponse.aci,
                 deviceId: .primary,
@@ -1043,7 +1120,7 @@ public class RegistrationCoordinatorTest {
             ))
             return self.scheduler.promise(
                 resolvingWith: .success(usernameLinkHandle: mockUsernameLink.handle),
-                atTime: 9
+                atTime: 10
             )
         }
 
@@ -1056,17 +1133,45 @@ public class RegistrationCoordinatorTest {
         self.mockURLSession.addResponse(
             TSRequestOWSURLSessionMock.Response(
                 matcher: { request in
-                    return request.url == expectedAttributesRequest.url
+                    if request.url == expectedAttributesRequest.url {
+                        actualSteps.append(.updateAccountAttribute)
+                        return true
+                    }
+                    return false
                 },
                 statusCode: 200,
                 bodyData: nil
             ),
-            atTime: 10,
+            atTime: 11,
             on: scheduler
         )
 
         scheduler.runUntilIdle()
-        #expect(scheduler.currentTime == 10)
+
+        var expectedSteps: [TestStep] = [
+            .requestPushToken,
+            .createPreKeys,
+            .failedRequest,
+            .finalizePreKeys,
+            .requestPushToken,
+            .createPreKeys,
+            .createAccount,
+            .finalizePreKeys,
+            .rotateOneTimePreKeys,
+            // .restoreStorageService, // If going from MasterKey -> AEP
+            .backupMasterKey,
+            // .restoreStorageService,
+            .confirmReservedUsername,
+            .updateAccountAttribute
+        ]
+
+        if testCase.newKey == .accountEntropyPool && testCase.oldKey != .accountEntropyPool {
+            expectedSteps.insert(.restoreStorageService, at: 9)
+        } else {
+            expectedSteps.insert(.restoreStorageService, at: 10)
+        }
+
+        #expect(actualSteps == expectedSteps)
 
         #expect(nextStep.value == .done)
 
@@ -1574,9 +1679,9 @@ public class RegistrationCoordinatorTest {
         let accountEntropyPool = AccountEntropyPool()
         let newMasterKey = accountEntropyPool.getMasterKey()
         if testCase.newKey == .accountEntropyPool {
-            svrLocalStorageMock.accountEntropyPoolIfMissing = accountEntropyPool
+            missingKeyGenerator.accountEntropyPool = { accountEntropyPool }
         } else {
-            svrLocalStorageMock.localMasterKeyIfMissing = newMasterKey
+            missingKeyGenerator.masterKey = { newMasterKey }
         }
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
@@ -3433,10 +3538,9 @@ public class RegistrationCoordinatorTest {
         let accountEntropyPool = AccountEntropyPool()
         let newMasterKey = accountEntropyPool.getMasterKey()
         if testCase.newKey == .accountEntropyPool {
-            svrLocalStorageMock.accountEntropyPoolIfMissing = accountEntropyPool
+            missingKeyGenerator.accountEntropyPool = { accountEntropyPool }
         } else {
-            svrLocalStorageMock.localMasterKeyIfMissing = newMasterKey
-
+            missingKeyGenerator.masterKey = { newMasterKey }
         }
 
         scheduler.tick()
@@ -3636,9 +3740,9 @@ public class RegistrationCoordinatorTest {
         let accountEntropyPool = AccountEntropyPool()
         let newMasterKey = accountEntropyPool.getMasterKey()
         if testCase.newKey == .accountEntropyPool {
-            svrLocalStorageMock.accountEntropyPoolIfMissing = accountEntropyPool
+            missingKeyGenerator.accountEntropyPool = { accountEntropyPool }
         } else {
-            svrLocalStorageMock.localMasterKeyIfMissing = newMasterKey
+            missingKeyGenerator.masterKey = { newMasterKey }
         }
 
         scheduler.tick()
@@ -4052,22 +4156,26 @@ public class RegistrationCoordinatorTest {
         switch (testCase.oldKey, testCase.newKey) {
         case (.accountEntropyPool, .accountEntropyPool):
             // on re-registration, make the AEP be present
-            svrLocalStorageMock.accountEntropyPool = oldAccountEntropyPool
+            db.write { accountKeyStore.setAccountEntropyPool(oldAccountEntropyPool, tx: $0) }
             return (oldMasterKey, oldMasterKey)
         case (.masterKey, .masterKey):
-            svrLocalStorageMock.localMasterKey = oldMasterKey
+            db.write { accountKeyStore.setMasterKey(oldMasterKey, tx: $0) }
             return (oldMasterKey, oldMasterKey)
         case (.masterKey, .accountEntropyPool):
             // If this is a reregistration from an non-AEP client,
             // AEP is only available after calling getOrGenerateAEP()
-            svrLocalStorageMock.localMasterKey = oldMasterKey
-            svrLocalStorageMock.accountEntropyPoolIfMissing = newAccountEntropyPool
+            db.write { accountKeyStore.setMasterKey(oldMasterKey, tx: $0) }
+            missingKeyGenerator.accountEntropyPool = {
+                return newAccountEntropyPool
+            }
             return (oldMasterKey, newMasterKey)
         case (.none, .masterKey):
-            svrLocalStorageMock.localMasterKeyIfMissing = newMasterKey
+            missingKeyGenerator.masterKey = { newMasterKey }
             return (newMasterKey, newMasterKey)
         case (.none, .accountEntropyPool):
-            svrLocalStorageMock.accountEntropyPoolIfMissing = newAccountEntropyPool
+            missingKeyGenerator.accountEntropyPool = {
+                newAccountEntropyPool
+            }
             return (newMasterKey, newMasterKey)
         case (.accountEntropyPool, .masterKey):
             fatalError("Migrating to masterkey from AEP not supported")

@@ -18,6 +18,7 @@ class SecureValueRecovery2Tests: XCTestCase {
 
     private var mockAccountAttributesUpdater: MockAccountAttributesUpdater!
     private var mock2FAManager: SVR2.TestMocks.OWS2FAManager!
+    private var accountKeyStore: AccountKeyStore!
     private var localStorage: SVRLocalStorageImpl!
     private var mockConnectionFactory: MockSgxWebsocketConnectionFactory!
     private var mockConnection: MockSgxWebsocketConnection<SVR2WebsocketConfigurator>!
@@ -32,6 +33,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         self.scheduler.start()
 
         mock2FAManager = SVR2.TestMocks.OWS2FAManager()
+        accountKeyStore = AccountKeyStore()
         localStorage = SVRLocalStorageImpl()
 
         let mockConnection = MockSgxWebsocketConnection<SVR2WebsocketConfigurator>()
@@ -52,6 +54,7 @@ class SecureValueRecovery2Tests: XCTestCase {
             connectionFactory: mockConnectionFactory,
             credentialStorage: credentialStorage,
             db: db,
+            accountKeyStore: accountKeyStore,
             schedulers: TestSchedulers(scheduler: scheduler),
             storageServiceManager: FakeStorageServiceManager(),
             svrLocalStorage: localStorage,
@@ -89,7 +92,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         // Set up the local data needed.
         db.write { tx in
             localStorage.setIsMasterKeyBackedUp(true, tx)
-            localStorage.setMasterKey(masterKey, tx)
+            accountKeyStore.setMasterKey(masterKey, tx: tx)
             localStorage.setSVR2MrEnclaveStringValue(oldEnclave.stringValue, tx)
         }
         mockTSAccountManager.registrationStateMock = { .registered }
@@ -190,7 +193,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         // Set up the local data needed.
         db.write { tx in
             localStorage.setIsMasterKeyBackedUp(true, tx)
-            localStorage.setMasterKey(masterKey, tx)
+            accountKeyStore.setMasterKey(masterKey, tx: tx)
             localStorage.setSVR2MrEnclaveStringValue(oldEnclave.stringValue, tx)
         }
         mockTSAccountManager.registrationStateMock = { .registered }

@@ -29,6 +29,7 @@ class SVR2ConcurrencyTests: XCTestCase {
 
         let mockClientWrapper = MockSVR2ClientWrapper()
 
+        let accountKeyStore = AccountKeyStore()
         let localStorage = SVRLocalStorageImpl()
 
         self.svr = SecureValueRecovery2Impl(
@@ -40,6 +41,7 @@ class SVR2ConcurrencyTests: XCTestCase {
             connectionFactory: mockConnectionFactory,
             credentialStorage: credentialStorage,
             db: db,
+            accountKeyStore: accountKeyStore,
             schedulers: Schedulers(queue),
             storageServiceManager: FakeStorageServiceManager(),
             svrLocalStorage: localStorage,
@@ -333,6 +335,7 @@ class SVR2ConcurrencyTests: XCTestCase {
                 return requestPromise
             }
 
+            let accountKeyStore = AccountKeyStore()
             let localStorage = SVRLocalStorageImpl()
 
             let svr = SecureValueRecovery2Impl(
@@ -344,6 +347,7 @@ class SVR2ConcurrencyTests: XCTestCase {
                 connectionFactory: mockConnectionFactory,
                 credentialStorage: credentialStorage,
                 db: db,
+                accountKeyStore: accountKeyStore,
                 schedulers: Schedulers(queue),
                 storageServiceManager: FakeStorageServiceManager(),
                 svrLocalStorage: localStorage,

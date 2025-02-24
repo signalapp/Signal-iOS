@@ -102,6 +102,7 @@ public class DependenciesBridge {
     public let linkPreviewManager: LinkPreviewManager
     public let linkPreviewSettingStore: LinkPreviewSettingStore
     public let linkPreviewSettingManager: any LinkPreviewSettingManager
+    public let accountKeyStore: AccountKeyStore
     let localProfileChecker: LocalProfileChecker
     public let localUsernameManager: LocalUsernameManager
     public let masterKeySyncManager: MasterKeySyncManager
@@ -218,6 +219,7 @@ public class DependenciesBridge {
         linkPreviewManager: LinkPreviewManager,
         linkPreviewSettingStore: LinkPreviewSettingStore,
         linkPreviewSettingManager: any LinkPreviewSettingManager,
+        accountKeyStore: AccountKeyStore,
         localProfileChecker: LocalProfileChecker,
         localUsernameManager: LocalUsernameManager,
         masterKeySyncManager: MasterKeySyncManager,
@@ -333,6 +335,7 @@ public class DependenciesBridge {
         self.linkPreviewManager = linkPreviewManager
         self.linkPreviewSettingStore = linkPreviewSettingStore
         self.linkPreviewSettingManager = linkPreviewSettingManager
+        self.accountKeyStore = accountKeyStore
         self.localProfileChecker = localProfileChecker
         self.localUsernameManager = localUsernameManager
         self.masterKeySyncManager = masterKeySyncManager

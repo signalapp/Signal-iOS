@@ -44,7 +44,7 @@ class OWSDeviceProvisionerTest: XCTestCase {
         let myPni = Pni.randomForTesting()
         let profileKey = Randomness.generateRandomBytes(UInt(ProfileKey.SIZE))
         let masterKey = MasterKey()
-        let mrbk = try! BackupKey(contents: Array(Randomness.generateRandomBytes(SVRLocalStorageImpl.mediaRootBackupKeyLength)))
+        let mrbk = try! BackupKey(contents: Array(Randomness.generateRandomBytes(AccountKeyStore.Constants.mediaRootBackupKeyLength)))
         let readReceiptsEnabled = true
 
         let provisioner = OWSDeviceProvisioner(
@@ -95,7 +95,7 @@ class OWSDeviceProvisionerTest: XCTestCase {
         let myPni = Pni.randomForTesting()
         let profileKey = Randomness.generateRandomBytes(UInt(ProfileKey.SIZE))
         let aep = AccountEntropyPool()
-        let mrbk = try! BackupKey(contents: Array(Randomness.generateRandomBytes(SVRLocalStorageImpl.mediaRootBackupKeyLength)))
+        let mrbk = try! BackupKey(contents: Array(Randomness.generateRandomBytes(AccountKeyStore.Constants.mediaRootBackupKeyLength)))
         let readReceiptsEnabled = true
 
         let provisioner = OWSDeviceProvisioner(

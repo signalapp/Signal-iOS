@@ -18,6 +18,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
 
     private var chatConnectionManagerMock: ChatConnectionManagerMock!
     private var identityManagerMock: MockIdentityManager!
+    private var accountKeyStore: AccountKeyStore!
     private var messageFactoryMock: Mocks.MessageFactory!
     private var prekeyManagerMock: MockPreKeyManager!
     private var profileManagerMock: Mocks.ProfileManager!
@@ -27,7 +28,6 @@ public class ProvisioningCoordinatorTest: XCTestCase {
     private var signalServiceMock: OWSSignalServiceMock!
     private var storageServiceManagerMock: FakeStorageServiceManager!
     private var svrMock: SecureValueRecoveryMock!
-    private var svrLocalStorageMock: SVRLocalStorageMock!
     private var syncManagerMock: Mocks.SyncManager!
     private var threadStoreMock: MockThreadStore!
     private var tsAccountManagerMock: MockTSAccountManager!
@@ -46,6 +46,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         self.identityManagerMock = .init(recipientIdFinder: recipientIdFinder)
 
         self.chatConnectionManagerMock = .init()
+        self.accountKeyStore = .init()
         self.messageFactoryMock = .init()
         self.prekeyManagerMock = .init()
         self.profileManagerMock = .init()
@@ -55,7 +56,6 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         self.signalServiceMock = .init()
         self.storageServiceManagerMock = .init()
         self.svrMock = .init()
-        self.svrLocalStorageMock = .init()
         self.syncManagerMock = .init()
         self.threadStoreMock = .init()
         self.tsAccountManagerMock = .init()
@@ -67,6 +67,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             deviceService: MockOWSDeviceService(),
             identityManager: identityManagerMock,
             linkAndSyncManager: MockLinkAndSyncManager(),
+            accountKeyStore: accountKeyStore,
             messageFactory: messageFactoryMock,
             preKeyManager: prekeyManagerMock,
             profileManager: profileManagerMock,
@@ -77,7 +78,6 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             signalService: signalServiceMock,
             storageServiceManager: storageServiceManagerMock,
             svr: svrMock,
-            svrLocalStorage: svrLocalStorageMock,
             syncManager: syncManagerMock,
             threadStore: threadStoreMock,
             tsAccountManager: tsAccountManagerMock,
@@ -98,7 +98,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             pniIdentityKeyPair: try keyPairForTesting(),
             profileKey: .generateRandom(),
             masterKey: Data(try! AccountEntropyPool.deriveSvrKey(aep)),
-            mrbk: Randomness.generateRandomBytes(SVRLocalStorageImpl.mediaRootBackupKeyLength),
+            mrbk: Randomness.generateRandomBytes(AccountKeyStore.Constants.mediaRootBackupKeyLength),
             ephemeralBackupKey: nil,
             areReadReceiptsEnabled: true,
             primaryUserAgent: nil,
