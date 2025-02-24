@@ -675,8 +675,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
 
         // only 1 attachment is supported unless it's visual media so select just the first or just the visual media elements with a preference for visual media
-        let visualMediaCandidates = candidates.filter { $0.isVisualMedia }
-        return visualMediaCandidates.isEmpty ? Array(candidates.prefix(1)) : visualMediaCandidates
+//        let visualMediaCandidates = candidates.filter { $0.isVisualMedia }
+//        return visualMediaCandidates.isEmpty ? Array(candidates.prefix(1)) : visualMediaCandidates
+        return candidates
     }
 
     nonisolated private func buildAttachments(for typedItemProviders: [TypedItemProvider]) async throws -> [SignalAttachment] {
