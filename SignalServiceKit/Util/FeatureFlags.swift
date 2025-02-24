@@ -60,7 +60,7 @@ public enum FeatureFlags {
 
     public static let useNewConversationLoadIndex = build.includes(.beta)
 
-    public static let enableAccountEntropyPool = false
+    public static let enableAccountEntropyPool = build.includes(.dev)
 }
 
 // MARK: -
