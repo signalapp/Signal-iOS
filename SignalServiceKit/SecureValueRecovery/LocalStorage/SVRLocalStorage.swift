@@ -9,9 +9,6 @@ public import LibSignalClient
 public protocol SVRLocalStorage: LocalKeyStorage {
     func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool
 
-    // TODO: Temporary
-    func getOrGenerateMasterKey(_ transaction: DBReadTransaction) -> MasterKey
-
     func clearStorageServiceKeys(_ transaction: DBWriteTransaction)
 
     func clearMasterKey(_ transaction: DBWriteTransaction)
@@ -20,59 +17,24 @@ public protocol SVRLocalStorage: LocalKeyStorage {
 public protocol LocalKeyStorage {
 
     /// Media Root Backup Key
-    ///
     func getMediaRootBackupKey(tx: DBReadTransaction) -> BackupKey?
     func getOrGenerateMediaRootBackupKey(tx: DBWriteTransaction) -> BackupKey
-
-    func setMediaRootBackupKey(
-        fromRestoredBackup backupProto: BackupProto_BackupInfo,
-        tx: DBWriteTransaction
-    ) throws
-    /// Set the MRBK found in a provisioning message.
-    func setMediaRootBackupKey(
-        fromProvisioningMessage provisioningMessage: ProvisionMessage,
-        tx: DBWriteTransaction
-    ) throws
-    func setMediaRootBackupKey(
-        fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
-        tx: DBWriteTransaction
-    ) throws
-
-    /// Account Entropy Pool
-    func getAccountEntropyPool(tx: DBReadTransaction) -> AccountEntropyPool?
-    func getOrGenerateAccountEntropyPool(tx: DBWriteTransaction) -> AccountEntropyPool
-    func rotateAccountEntropyPool(tx: DBWriteTransaction) -> (old: AccountEntropyPool?, new: AccountEntropyPool)
-
-    func setAccountEntropyPool(
-        _ accountEntropyPool: AccountEntropyPool,
-        tx: DBWriteTransaction
-    ) throws
-
-    func setAccountEntropyPool(
-        fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
-        tx: DBWriteTransaction
-    ) throws
-
-    func setAccountEntropyPool(
-        fromProvisioningMessage provisioningMessage: ProvisionMessage,
-        tx: DBWriteTransaction
-    ) throws
-
+    func setMediaRootBackupKey(_ backupKey: BackupKey, tx: DBWriteTransaction)
     // Generic 'wipe key type' method
     func wipeMediaRootBackupKeyFromFailedProvisioning(tx: DBWriteTransaction)
 
+    /// Account Entropy Pool
+    func getAccountEntropyPool(tx: DBReadTransaction) -> AccountEntropyPool?
+    func getOrGenerateAccountEntropyPool(tx: DBReadTransaction) -> AccountEntropyPool
+    func setAccountEntropyPool(_ accountEntropyPool: AccountEntropyPool, tx: DBWriteTransaction)
+    func rotateAccountEntropyPool(tx: DBWriteTransaction) -> (old: AccountEntropyPool?, new: AccountEntropyPool)
+
     /// Master Key
     func getMasterKey(_ transaction: DBReadTransaction) -> MasterKey?
+    // TODO: Temporary during migration to AEP
+    func getOrGenerateMasterKey(_ transaction: DBReadTransaction) -> MasterKey
+    func setMasterKey(_ masterKey: MasterKey?, _ transaction: DBWriteTransaction)
     func rotateMasterKey(tx: any DBWriteTransaction) -> (old: MasterKey?, new: MasterKey)
-    func setMasterKey(_ value: Data?, _ transaction: DBWriteTransaction)
-    func setMasterKey(
-        fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
-        tx: DBWriteTransaction
-    ) throws
-    func setMasterKey(
-        fromProvisioningMessage provisioningMessage: ProvisionMessage,
-        tx: DBWriteTransaction
-    ) throws
 
     /// Message Backup Key
     func getMessageRootBackupKey(tx: DBReadTransaction) throws -> BackupKey?
@@ -225,7 +187,7 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         return nil
     }
 
-    func getOrGenerateAccountEntropyPool(tx: any DBWriteTransaction) -> AccountEntropyPool {
+    func getOrGenerateAccountEntropyPool(tx: any DBReadTransaction) -> AccountEntropyPool {
         if let value = getAccountEntropyPool(tx: tx) {
             return value
         }
@@ -240,44 +202,24 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
 
     public func rotateMasterKey(tx: any DBWriteTransaction) -> (old: MasterKey?, new: MasterKey) {
         let oldValue = getMasterKey(tx)
+        if let aep = getAccountEntropyPool(tx: tx) {
+            owsFailDebug("Don't rotate master key if AEP is present")
+            // Silently no-op the call
+            return (oldValue, aep.getMasterKey())
+        }
+
         let newValue = MasterKey()
-        setMasterKey(newValue.rawData, tx)
+        setMasterKey(newValue, tx)
         return (oldValue, newValue)
     }
 
-    public func setMasterKey(_ value: Data?, _ transaction: DBWriteTransaction) {
-        masterKeyKvStore.setData(value, key: Keys.masterKey, transaction: transaction)
-    }
-
-    func setMasterKey(
-        fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
-        tx: DBWriteTransaction
-    ) throws {
-        let accountEntropyPool = getAccountEntropyPool(tx: tx)
-        guard accountEntropyPool == nil else {
+    public func setMasterKey(_ masterKey: MasterKey?, _ transaction: DBWriteTransaction) {
+        guard getAccountEntropyPool(tx: transaction) == nil else {
             owsFailDebug("Don't set master key if AEP is present")
             // Silently no-op the call
             return
         }
-        guard let masterKey = syncMessage.master?.nilIfEmpty else {
-            return
-        }
-        masterKeyKvStore.setData(masterKey, key: Keys.masterKey, transaction: tx)
-    }
-
-    func setMasterKey(
-        fromProvisioningMessage provisioningMessage: ProvisionMessage,
-        tx: DBWriteTransaction
-    ) throws {
-        guard getAccountEntropyPool(tx: tx) == nil else {
-            owsFailDebug("Don't set master key if AEP is present")
-            // Silently no-op the call
-            return
-        }
-        guard let masterKey = provisioningMessage.masterKey.nilIfEmpty else {
-            return
-        }
-        masterKeyKvStore.setData(masterKey, key: Keys.masterKey, transaction: tx)
+        masterKeyKvStore.setData(masterKey?.rawData, key: Keys.masterKey, transaction: transaction)
     }
 
     public func setPinType(_ value: SVR.PinType, _ transaction: DBWriteTransaction) {
@@ -292,65 +234,16 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         masterKeyKvStore.setString(value, key: Keys.svr2MrEnclaveStringValue, transaction: transaction)
     }
 
-    /// Set the MRBK found in a backup at restore time.
-    public func setMediaRootBackupKey(
-        fromRestoredBackup backupProto: BackupProto_BackupInfo,
-        tx: DBWriteTransaction
-    ) throws {
-        guard let mrbk = backupProto.mediaRootBackupKey.nilIfEmpty else {
-            // TODO: [Backups] fail if MRBK unset
-            return
-        }
-        try setMediaRootBackupKey(mrbk, tx: tx)
-    }
-
-    /// Set the MRBK found in a provisioning message.
-    public func setMediaRootBackupKey(
-        fromProvisioningMessage provisioningMessage: ProvisionMessage,
-        tx: DBWriteTransaction
-    ) throws {
-        guard let mrbk = provisioningMessage.mrbk else { return }
-        try setMediaRootBackupKey(mrbk, tx: tx)
-    }
-
-    public func setMediaRootBackupKey(
-        fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
-        tx: DBWriteTransaction
-    ) throws {
-        guard let mrbk = syncMessage.mediaRootBackupKey?.nilIfEmpty else {
-            return
-        }
-        try setMediaRootBackupKey(mrbk, tx: tx)
-    }
-
     public func wipeMediaRootBackupKeyFromFailedProvisioning(tx: DBWriteTransaction) {
         mbrkKvStore.removeValue(forKey: Self.keyName, transaction: tx)
     }
 
-    private func setMediaRootBackupKey(
-        _ mrbk: Data,
-        tx: DBWriteTransaction
-    ) throws {
-        guard mrbk.byteLength == Self.mediaRootBackupKeyLength else {
-            throw OWSAssertionError("Invalid MRBK length!")
-        }
-        mbrkKvStore.setData(mrbk, key: Self.keyName, transaction: tx)
+    public func setMediaRootBackupKey(_ mrbk: BackupKey, tx: DBWriteTransaction) {
+        mbrkKvStore.setData(mrbk.serialize().asData, key: Self.keyName, transaction: tx)
     }
 
     public func setAccountEntropyPool(_ accountEntropyPool: AccountEntropyPool, tx: DBWriteTransaction) {
         aepKvStore.setString(accountEntropyPool.rawData, key: Self.aepKeyName, transaction: tx)
-    }
-
-    public func setAccountEntropyPool(fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys, tx: DBWriteTransaction) throws {
-        try setAccountEntropyPool(syncMessage.accountEntropyPool?.nilIfEmpty, tx: tx)
-    }
-
-    /// Set the AEP found in a provisioning message.
-    public func setAccountEntropyPool(
-        fromProvisioningMessage provisioningMessage: ProvisionMessage,
-        tx: DBWriteTransaction
-    ) throws {
-        try setAccountEntropyPool(provisioningMessage.accountEntropyPool?.nilIfEmpty, tx: tx)
     }
 
     func rotateAccountEntropyPool(tx: DBWriteTransaction) -> (old: AccountEntropyPool?, new: AccountEntropyPool) {
@@ -358,17 +251,6 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         let newValue = AccountEntropyPool()
         setAccountEntropyPool(newValue, tx: tx)
         return (oldValue, newValue)
-    }
-
-    public func setAccountEntropyPool(_ newAEP: String?, tx: DBWriteTransaction) throws {
-        guard let accountEntropyPool = newAEP else {
-            aepKvStore.removeValue(forKey: Self.aepKeyName, transaction: tx)
-            return
-        }
-        guard accountEntropyPool.count == AccountEntropyPool.Constants.byteLength else {
-            throw OWSAssertionError("Invalid AEP length!")
-        }
-        aepKvStore.setString(accountEntropyPool, key: Self.aepKeyName, transaction: tx)
     }
 
     // MARK: - Clearing Keys
@@ -432,11 +314,10 @@ public class SVRLocalStorageMock: SVRLocalStorage {
     var isMasterKeyBackedUp: Bool = false
     var localMasterKey: MasterKey?
     var localMasterKeyIfMissing: MasterKey?
-    var mediaRootBackupKey: Data?
+    var mediaRootBackupKey: BackupKey?
 
     public func getMediaRootBackupKey(tx: any DBReadTransaction) -> BackupKey? {
-        guard let mediaRootBackupKey else { return nil }
-        return try! BackupKey(contents: Array(mediaRootBackupKey))
+        return mediaRootBackupKey
     }
 
     public func getOrGenerateMediaRootBackupKey(tx: any DBWriteTransaction) -> BackupKey {
@@ -446,16 +327,8 @@ public class SVRLocalStorageMock: SVRLocalStorage {
         return mediaRootBackupKey
     }
 
-    public func setMediaRootBackupKey(fromRestoredBackup backupProto: BackupProto_BackupInfo, tx: any DBWriteTransaction) throws {
-        mediaRootBackupKey = backupProto.mediaRootBackupKey
-    }
-
-    public func setMediaRootBackupKey(fromProvisioningMessage provisioningMessage: ProvisionMessage, tx: any DBWriteTransaction) throws {
-        mediaRootBackupKey = provisioningMessage.mrbk
-    }
-
-    public func setMediaRootBackupKey(fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys, tx: any DBWriteTransaction) throws {
-        mediaRootBackupKey = syncMessage.mediaRootBackupKey
+    public func setMediaRootBackupKey(_ mbrk: BackupKey, tx: any DBWriteTransaction) {
+        mediaRootBackupKey = mbrk
     }
 
     public func wipeMediaRootBackupKeyFromFailedProvisioning(tx: any DBWriteTransaction) {
@@ -474,7 +347,7 @@ public class SVRLocalStorageMock: SVRLocalStorage {
         return accountEntropyPool
     }
 
-    public func getOrGenerateAccountEntropyPool(tx: any DBWriteTransaction) -> AccountEntropyPool {
+    public func getOrGenerateAccountEntropyPool(tx: any DBReadTransaction) -> AccountEntropyPool {
         if let accountEntropyPool {
             return accountEntropyPool
         }
@@ -482,34 +355,16 @@ public class SVRLocalStorageMock: SVRLocalStorage {
         return accountEntropyPool!
     }
 
-    public func setAccountEntropyPool(fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys, tx: any DBWriteTransaction) {
-        guard let aep = syncMessage.accountEntropyPool else { return }
-        accountEntropyPool = try! AccountEntropyPool(key: aep)
-    }
-
-    public func setAccountEntropyPool(fromProvisioningMessage provisioningMessage: ProvisionMessage, tx: any DBWriteTransaction) throws {
-        guard let aep = provisioningMessage.accountEntropyPool else { return }
-        accountEntropyPool = try! AccountEntropyPool(key: aep)
-    }
-
     public func rotateMasterKey(tx: any DBWriteTransaction) -> (old: MasterKey?, new: MasterKey) {
         fatalError("not implemented")
     }
 
-    public func setMasterKey(_ value: Data?, _ transaction: any DBWriteTransaction) {
-        guard let value else { return }
-        localMasterKey = try! MasterKey(data: value)
+    public func setMasterKey(_ masterKey: MasterKey?, _ transaction: any DBWriteTransaction) {
+        guard let masterKey else { return }
+        localMasterKey = masterKey
     }
 
     public func clearStorageServiceKeys(_ transaction: any DBWriteTransaction) {
-        fatalError("not implemented")
-    }
-
-    public func setMasterKey(fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys, tx: any DBWriteTransaction) throws {
-        fatalError("not implemented")
-    }
-
-    public func setMasterKey(fromProvisioningMessage provisioningMessage: ProvisionMessage, tx: any DBWriteTransaction) throws {
         fatalError("not implemented")
     }
 

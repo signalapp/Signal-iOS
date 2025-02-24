@@ -196,7 +196,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     ) {
         Logger.info("")
 
-        localStorage.setMasterKey(masterKey.rawData, transaction)
+        localStorage.setMasterKey(masterKey, transaction)
 
         syncStorageService(
             restoredMasterKey: masterKey,
@@ -240,12 +240,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         clearKeys(transaction: transaction)
 
         // Persist AEP locally
-        do {
-            try localStorage.setAccountEntropyPool(accountEntropyPool, tx: transaction)
-        } catch {
-            owsFailDebug("Unable to set AccountEntropyPool")
-            return
-        }
+        localStorage.setAccountEntropyPool(accountEntropyPool, tx: transaction)
 
         updateLocalSVRState(
             isMasterKeyBackedUp: false,
@@ -401,7 +396,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     ) throws(SVR.KeysError) {
         Logger.info("")
         do {
-            try localStorage.setMediaRootBackupKey(fromProvisioningMessage: provisioningMessage, tx: tx)
+            if let mbrk = try provisioningMessage.mrbk.map({ try BackupKey(contents: Array($0)) }) {
+                localStorage.setMediaRootBackupKey(mbrk, tx: tx)
+            }
         } catch {
             if FeatureFlags.linkAndSyncLinkedImport || FeatureFlags.messageBackupFileAlpha {
                 throw .missingMediaRootBackupKey
@@ -411,10 +408,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
 
         do {
-            try localStorage.setAccountEntropyPool(fromProvisioningMessage: provisioningMessage, tx: tx)
+            if let aep = try provisioningMessage.accountEntropyPool.map({ try AccountEntropyPool(key: $0) }) {
+                localStorage.setAccountEntropyPool(aep, tx: tx)
+            }
         } catch {
             do {
-                try localStorage.setMasterKey(fromProvisioningMessage: provisioningMessage, tx: tx)
+                localStorage.setMasterKey(try MasterKey(data: provisioningMessage.masterKey), tx)
             } catch {
                 throw .missingMasterKey
             }
@@ -432,7 +431,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         Logger.info("")
 
         do {
-            try localStorage.setMediaRootBackupKey(fromKeysSyncMessage: syncMessage, tx: tx)
+            if let mbrk = try syncMessage.mediaRootBackupKey.map({ try BackupKey(contents: Array($0)) }) {
+                localStorage.setMediaRootBackupKey(mbrk, tx: tx)
+            }
         } catch {
             throw SVR.KeysError.missingMediaRootBackupKey
         }
@@ -443,7 +444,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         if FeatureFlags.enableAccountEntropyPool {
             let oldAep = localStorage.getAccountEntropyPool(tx: tx)
             do {
-                try localStorage.setAccountEntropyPool(fromKeysSyncMessage: syncMessage, tx: tx)
+                if let aep = try syncMessage.accountEntropyPool.map({ try AccountEntropyPool(key: $0) }) {
+                    localStorage.setAccountEntropyPool(aep, tx: tx)
+                }
             } catch {
                 owsFailDebug("Error setting AEP")
             }
@@ -454,7 +457,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         if newAep == nil {
             let oldMasterKey = localStorage.getMasterKey(tx)?.rawData
             do {
-                try localStorage.setMasterKey(fromKeysSyncMessage: syncMessage, tx: tx)
+                if let masterKey = try syncMessage.master.map({ try MasterKey(data: $0) }) {
+                    localStorage.setMasterKey(masterKey, tx)
+                }
             } catch {
                 throw SVR.KeysError.missingMasterKey
             }

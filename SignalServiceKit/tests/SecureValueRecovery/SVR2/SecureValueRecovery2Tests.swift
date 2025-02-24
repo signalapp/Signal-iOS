@@ -89,7 +89,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         // Set up the local data needed.
         db.write { tx in
             localStorage.setIsMasterKeyBackedUp(true, tx)
-            localStorage.setMasterKey(masterKey.rawData, tx)
+            localStorage.setMasterKey(masterKey, tx)
             localStorage.setSVR2MrEnclaveStringValue(oldEnclave.stringValue, tx)
         }
         mockTSAccountManager.registrationStateMock = { .registered }
@@ -190,7 +190,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         // Set up the local data needed.
         db.write { tx in
             localStorage.setIsMasterKeyBackedUp(true, tx)
-            localStorage.setMasterKey(masterKey.rawData, tx)
+            localStorage.setMasterKey(masterKey, tx)
             localStorage.setSVR2MrEnclaveStringValue(oldEnclave.stringValue, tx)
         }
         mockTSAccountManager.registrationStateMock = { .registered }
