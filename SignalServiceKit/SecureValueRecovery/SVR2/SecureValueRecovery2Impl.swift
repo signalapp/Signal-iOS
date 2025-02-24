@@ -189,15 +189,24 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     public func useDeviceLocalMasterKey(authedAccount: AuthedAccount, transaction: DBWriteTransaction) {
         Logger.info("")
-        setLocalDataAndSyncStorageServiceIfNeeded(
-            masterKey: Randomness.generateRandomBytes(SVR.masterKeyLengthBytes),
+
+        let masterKey = localStorage.getOrGenerateMasterKey(transaction)
+        setMasterKeyIfChanged(masterKey.rawData, transaction: transaction)
+
+        updateLocalSVRState(
             isMasterKeyBackedUp: false,
             pinType: .alphanumeric,
             encodedPINVerificationString: nil,
             mrEnclaveStringValue: nil,
-            mode: .syncStorageService(authedAccount),
             transaction: transaction
         )
+
+        syncStorageServiceIfNeeded(
+            restoredMasterKey: masterKey,
+            authedAccount: authedAccount,
+            transaction: transaction
+        )
+
         // Disable the PIN locally.
         twoFAManager.markDisabled(transaction: transaction)
 
@@ -667,13 +676,11 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                                 return
                             }
                             self.clearInProgressBackup(tx)
-                            self.setLocalDataAndSyncStorageServiceIfNeeded(
-                                masterKey: backup.masterKey,
+                            self.updateLocalSVRState(
                                 isMasterKeyBackedUp: true,
                                 pinType: backup.pinType,
                                 encodedPINVerificationString: backup.encodedPINVerificationString,
                                 mrEnclaveStringValue: backup.mrEnclaveStringValue,
-                                mode: .syncStorageService(authedAccount),
                                 transaction: tx
                             )
                         }
@@ -859,15 +866,25 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     do {
                         let masterKey = try pinHash.decryptMasterKey(encryptedMasterKey)
                         self.db.write { tx in
-                            self.setLocalDataAndSyncStorageServiceIfNeeded(
-                                masterKey: masterKey,
+                            self.setMasterKeyIfChanged(masterKey, transaction: tx)
+
+                            self.updateLocalSVRState(
                                 isMasterKeyBackedUp: true,
                                 pinType: .init(forPin: pin),
                                 encodedPINVerificationString: encodedPINVerificationString,
                                 mrEnclaveStringValue: mrEnclave.stringValue,
-                                mode: .syncStorageService(authedAccount),
                                 transaction: tx
                             )
+
+                            // TODO[AEP]: In the AEP future, this will make more sense for
+                            // the caller to execute manually after doing the restore.
+                            if let masterKey = self.localStorage.getMasterKey(tx) {
+                                self.syncStorageServiceIfNeeded(
+                                    restoredMasterKey: masterKey,
+                                    authedAccount: authedAccount,
+                                    transaction: tx
+                                )
+                            }
                         }
                         return .success(masterKey: masterKey, mrEnclave: mrEnclave)
                     } catch {
@@ -1418,25 +1435,21 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: - Local key storage helpers
 
-    private enum LocalDataUpdateMode {
-        case dontSyncStorageService
-        case syncStorageService(AuthedAccount)
-    }
-
-    private func setLocalDataAndSyncStorageServiceIfNeeded(
-        masterKey: Data,
-        isMasterKeyBackedUp: Bool,
-        pinType: SVR.PinType,
-        encodedPINVerificationString: String?,
-        mrEnclaveStringValue: String?,
-        mode: LocalDataUpdateMode,
-        transaction: DBWriteTransaction
-    ) {
-        localStorage.cleanupDeadKeys(transaction)
+    private func setMasterKeyIfChanged(_ masterKey: Data, transaction: DBWriteTransaction) {
         let masterKeyChanged = masterKey != localStorage.getMasterKey(transaction)?.rawData
         if masterKeyChanged {
             localStorage.setMasterKey(masterKey, transaction)
         }
+    }
+
+    private func updateLocalSVRState(
+        isMasterKeyBackedUp: Bool,
+        pinType: SVR.PinType,
+        encodedPINVerificationString: String?,
+        mrEnclaveStringValue: String?,
+        transaction: DBWriteTransaction
+    ) {
+        localStorage.cleanupDeadKeys(transaction)
         if isMasterKeyBackedUp != localStorage.getIsMasterKeyBackedUp(transaction) {
             localStorage.setIsMasterKeyBackedUp(isMasterKeyBackedUp, transaction)
         }
@@ -1449,23 +1462,22 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         if mrEnclaveStringValue != localStorage.getSVR2MrEnclaveStringValue(transaction) {
             localStorage.setSVR2MrEnclaveStringValue(mrEnclaveStringValue, transaction)
         }
+    }
 
-        // Only continue if we didn't previously have a master key or our master key has changed
-        // and we are on the primary device.
-        guard
-            masterKeyChanged,
-            tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice
-        else {
+    private func syncStorageServiceIfNeeded(
+        restoredMasterKey: MasterKey,
+        authedAccount: AuthedAccount,
+        transaction: DBReadTransaction
+    ) {
+        // Only continue if we are on the primary device.
+        guard tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice else {
+            return
+        }
+        guard localStorage.getMasterKey(transaction)?.rawData != restoredMasterKey.rawData else {
             return
         }
 
-        let authedDeviceForStorageServiceSync: AuthedDevice
-        switch mode {
-        case .dontSyncStorageService:
-            return
-        case .syncStorageService(let authedAccount):
-            authedDeviceForStorageServiceSync = authedAccount.authedDevice(isPrimaryDevice: true)
-        }
+        let authedDeviceForStorageServiceSync = authedAccount.authedDevice(isPrimaryDevice: true)
 
         /// When the app is ready, trigger a rotation of the Storage Service
         /// manifest since our SVR master key, which is used to encrypt Storage

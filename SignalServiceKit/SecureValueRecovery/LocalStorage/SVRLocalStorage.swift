@@ -11,6 +11,9 @@ public protocol SVRLocalStorage {
 
     func getMasterKey(_ transaction: DBReadTransaction) -> MasterKey?
 
+    // TODO: Temporary
+    func getOrGenerateMasterKey(_ transaction: DBReadTransaction) -> MasterKey
+
     func isKeyAvailable(_ key: SVR.DerivedKey, tx: DBReadTransaction) -> Bool
 }
 
@@ -78,6 +81,13 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
             return nil
         }
         return MasterKeyImpl(masterKey: data)
+    }
+
+    func getOrGenerateMasterKey(_ transaction: DBReadTransaction) -> MasterKey {
+        if let masterKey = getMasterKey(transaction) {
+            return masterKey
+        }
+        return MasterKeyImpl(masterKey: Randomness.generateRandomBytes(SVR.masterKeyLengthBytes))
     }
 
     public func getPinType(_ transaction: DBReadTransaction) -> SVR.PinType? {
@@ -193,6 +203,10 @@ public class SVRLocalStorageMock: SVRLocalStorage {
 
     public func getMasterKey(_ transaction: DBReadTransaction) -> MasterKey? {
         return masterKey
+    }
+
+    public func getOrGenerateMasterKey(_ transaction: DBReadTransaction) -> MasterKey {
+        return masterKey!
     }
 
     public func isKeyAvailable(_ key: SVR.DerivedKey, tx: DBReadTransaction) -> Bool {
