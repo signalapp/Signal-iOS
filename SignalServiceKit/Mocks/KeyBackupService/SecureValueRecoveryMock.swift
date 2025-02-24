@@ -69,17 +69,20 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public var syncedMasterKey: Data?
 
-    public func storeSyncedMasterKey(
-        data: Data,
+    public func storeKeys(
+        fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
         authedDevice: AuthedDevice,
-        updateStorageService: Bool,
-        transaction: DBWriteTransaction
-    ) {
-        syncedMasterKey = data
+        tx: any DBWriteTransaction
+    ) throws(SVR.KeysError) {
+        syncedMasterKey = syncMessage.master
     }
 
-    public func masterKeyDataForKeysSyncMessage(tx: DBReadTransaction) -> Data? {
-        return nil
+    public func storeKeys(
+        fromProvisioningMessage provisioningMessage: ProvisionMessage,
+        authedDevice: AuthedDevice,
+        tx: DBWriteTransaction
+    ) throws(SVR.KeysError) {
+        syncedMasterKey = provisioningMessage.masterKey
     }
 
     public func clearSyncedStorageServiceKey(transaction: DBWriteTransaction) {

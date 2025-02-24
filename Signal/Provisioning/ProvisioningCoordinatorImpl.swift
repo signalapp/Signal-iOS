@@ -395,12 +395,29 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 userProfileWriter: .linking,
                 tx: tx
             )
-            self.svr.storeSyncedMasterKey(
-                data: provisionMessage.masterKey,
-                authedDevice: .explicit(authedDevice),
-                updateStorageService: false,
-                transaction: tx
-            )
+
+            do {
+                try svr.storeKeys(
+                    fromProvisioningMessage: provisionMessage,
+                    authedDevice: .explicit(authedDevice),
+                    tx: tx
+                )
+            } catch {
+                switch error {
+                case SVR.KeysError.missingMasterKey:
+                    owsFailDebug("Failed to store master key from provisioning message")
+                    return .obsoleteLinkedDeviceError
+                case SVR.KeysError.missingMediaRootBackupKey:
+                    if FeatureFlags.linkAndSyncLinkedImport || FeatureFlags.messageBackupFileAlpha {
+                        return .obsoleteLinkedDeviceError
+                    } else {
+                        Logger.warn("Invalid MRBK; ignoring")
+                        owsFailDebug("Failed to store MBRK from provisioning message")
+                    }
+                default:
+                    owsFailDebug("Unexpected Error")
+                }
+            }
 
             if let areReadReceiptsEnabled = provisionMessage.areReadReceiptsEnabled {
                 self.receiptManager.setAreReadReceiptsEnabled(
@@ -409,15 +426,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 )
             }
 
-            do {
-                try self.svrLocalStorage.setMediaRootBackupKey(fromProvisioningMessage: provisionMessage, tx: tx)
-            } catch {
-                if FeatureFlags.linkAndSyncLinkedImport || FeatureFlags.messageBackupFileAlpha {
-                    return .obsoleteLinkedDeviceError
-                } else {
-                    Logger.warn("Invalid MRBK; ignoring")
-                }
-            }
             return nil
         }
         if let error {

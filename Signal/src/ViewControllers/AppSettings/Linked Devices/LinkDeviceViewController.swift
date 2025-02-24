@@ -199,7 +199,7 @@ class LinkDeviceViewController: OWSViewController {
                 owsFail("Can't provision without a pni identity.")
             }
             let areReadReceiptsEnabled = OWSReceiptManager.areReadReceiptsEnabled(transaction: tx)
-            guard let masterKey = DependenciesBridge.shared.svr.masterKeyDataForKeysSyncMessage(tx: tx.asV2Read) else {
+            guard let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx.asV2Read) else {
                 // This should be impossible; the only times you don't have
                 // a master key are during registration.
                 owsFail("Can't provision without a master key.")
@@ -213,7 +213,7 @@ class LinkDeviceViewController: OWSViewController {
                 aciIdentityKeyPair: aciIdentityKeyPair,
                 pniIdentityKeyPair: pniIdentityKeyPair,
                 areReadReceiptsEnabled: areReadReceiptsEnabled,
-                masterKey: masterKey,
+                masterKey: masterKey.rawData,
                 mediaRootBackupKey: mrbk.serialize().asData,
                 profileKey: profileKey
             )

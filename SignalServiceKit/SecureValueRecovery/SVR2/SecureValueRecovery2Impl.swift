@@ -362,27 +362,60 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         localStorage.clearKeys(transaction)
     }
 
-    public func storeSyncedMasterKey(
-        data: Data,
+    public func storeKeys(
+        fromProvisioningMessage provisioningMessage: ProvisionMessage,
         authedDevice: AuthedDevice,
-        updateStorageService: Bool,
-        transaction: DBWriteTransaction
-    ) {
+        tx: DBWriteTransaction
+    ) throws(SVR.KeysError) {
         Logger.info("")
-        let oldMasterKey = localStorage.getMasterKey(transaction)?.rawData
-        localStorage.setMasterKey(data, transaction)
+        do {
+            try localStorage.setMediaRootBackupKey(fromProvisioningMessage: provisioningMessage, tx: tx)
+        } catch {
+            if FeatureFlags.linkAndSyncLinkedImport || FeatureFlags.messageBackupFileAlpha {
+                throw .missingMediaRootBackupKey
+            } else {
+                Logger.warn("Invalid MRBK; ignoring")
+            }
+        }
+
+        do {
+            try localStorage.setMasterKey(fromProvisioningMessage: provisioningMessage, tx: tx)
+        } catch {
+            throw .missingMasterKey
+        }
 
         // Wipe the storage service key, we don't need it anymore.
-        localStorage.setSyncedStorageServiceKey(nil, transaction)
-
-        // Trigger a re-fetch of the storage manifest if our keys have changed
-        if oldMasterKey != data, updateStorageService {
-            storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedDevice, masterKeySource: .implicit)
-        }
+        localStorage.setSyncedStorageServiceKey(nil, tx)
     }
 
-    public func masterKeyDataForKeysSyncMessage(tx: DBReadTransaction) -> Data? {
-        return localStorage.getMasterKey(tx)?.rawData
+    public func storeKeys(
+        fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
+        authedDevice: AuthedDevice,
+        tx: DBWriteTransaction
+    ) throws(SVR.KeysError) {
+        Logger.info("")
+
+        do {
+            try localStorage.setMediaRootBackupKey(fromKeysSyncMessage: syncMessage, tx: tx)
+        } catch {
+            throw SVR.KeysError.missingMediaRootBackupKey
+        }
+
+        let oldMasterKey = localStorage.getMasterKey(tx)?.rawData
+        do {
+            try localStorage.setMasterKey(fromKeysSyncMessage: syncMessage, tx: tx)
+        } catch {
+            throw SVR.KeysError.missingMasterKey
+        }
+        let newMasterKey = localStorage.getMasterKey(tx)?.rawData
+
+        // Wipe the storage service key, we don't need it anymore.
+        localStorage.setSyncedStorageServiceKey(nil, tx)
+
+        // Trigger a re-fetch of the storage manifest if our keys have changed
+        if oldMasterKey != newMasterKey {
+            storageServiceManager.restoreOrCreateManifestIfNecessary(authedDevice: authedDevice, masterKeySource: .implicit)
+        }
     }
 
     public func clearSyncedStorageServiceKey(transaction: DBWriteTransaction) {

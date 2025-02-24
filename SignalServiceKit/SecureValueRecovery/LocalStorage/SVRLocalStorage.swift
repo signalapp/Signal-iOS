@@ -9,8 +9,6 @@ public import LibSignalClient
 public protocol SVRLocalStorage: LocalKeyStorage {
     func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool
 
-    func getMasterKey(_ transaction: DBReadTransaction) -> MasterKey?
-
     // TODO: Temporary
     func getOrGenerateMasterKey(_ transaction: DBReadTransaction) -> MasterKey
 
@@ -40,6 +38,17 @@ public protocol LocalKeyStorage {
 
     // Generic 'wipe key type' method
     func wipeMediaRootBackupKeyFromFailedProvisioning(tx: DBWriteTransaction)
+
+    /// Master Key
+    func getMasterKey(_ transaction: DBReadTransaction) -> MasterKey?
+    func setMasterKey(
+        fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
+        tx: DBWriteTransaction
+    ) throws
+    func setMasterKey(
+        fromProvisioningMessage provisioningMessage: ProvisionMessage,
+        tx: DBWriteTransaction
+    ) throws
 }
 
 public protocol SVRLocalStorageInternal: SVRLocalStorage {
@@ -181,6 +190,26 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
 
     public func setMasterKey(_ value: Data?, _ transaction: DBWriteTransaction) {
         masterKeyKvStore.setData(value, key: Keys.masterKey, transaction: transaction)
+    }
+
+    func setMasterKey(
+        fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
+        tx: DBWriteTransaction
+    ) throws {
+        guard let masterKey = syncMessage.master?.nilIfEmpty else {
+            return
+        }
+        masterKeyKvStore.setData(masterKey, key: Keys.masterKey, transaction: tx)
+    }
+
+    func setMasterKey(
+        fromProvisioningMessage provisioningMessage: ProvisionMessage,
+        tx: DBWriteTransaction
+    ) throws {
+        guard let masterKey = provisioningMessage.masterKey.nilIfEmpty else {
+            return
+        }
+        masterKeyKvStore.setData(masterKey, key: Keys.masterKey, transaction: tx)
     }
 
     public func setPinType(_ value: SVR.PinType, _ transaction: DBWriteTransaction) {
@@ -329,6 +358,14 @@ public class SVRLocalStorageMock: SVRLocalStorage {
     }
 
     public func wipeMediaRootBackupKeyFromFailedProvisioning(tx: any DBWriteTransaction) {
+        fatalError("not implemented")
+    }
+
+    public func setMasterKey(fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys, tx: any DBWriteTransaction) throws {
+        fatalError("not implemented")
+    }
+
+    public func setMasterKey(fromProvisioningMessage provisioningMessage: ProvisionMessage, tx: any DBWriteTransaction) throws {
         fatalError("not implemented")
     }
 

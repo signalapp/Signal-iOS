@@ -18,6 +18,11 @@ public enum SVR {
         case backupMissing
     }
 
+    public enum KeysError: Error {
+        case missingMasterKey
+        case missingMediaRootBackupKey
+    }
+
     public enum PinType: Int {
         case numeric = 1
         case alphanumeric = 2
@@ -157,14 +162,17 @@ public protocol SecureValueRecovery {
     /// restored from the server if you know the pin.
     func clearKeys(transaction: DBWriteTransaction)
 
-    func storeSyncedMasterKey(
-        data: Data,
+    func storeKeys(
+        fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
         authedDevice: AuthedDevice,
-        updateStorageService: Bool,
-        transaction: DBWriteTransaction
-    )
+        tx: DBWriteTransaction
+    ) throws(SVR.KeysError)
 
-    func masterKeyDataForKeysSyncMessage(tx: DBReadTransaction) -> Data?
+    func storeKeys(
+        fromProvisioningMessage provisioningMessage: ProvisionMessage,
+        authedDevice: AuthedDevice,
+        tx: DBWriteTransaction
+    ) throws(SVR.KeysError)
 
     /// When we fail to decrypt information on storage service on a linked device, we assume the storage
     /// service key (or master key it is derived from) we have synced from the primary is wrong/out-of-date, and wipe it.

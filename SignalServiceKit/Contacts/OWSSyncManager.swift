@@ -198,12 +198,12 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         }
 
         let storageServiceKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx.asV2Read)?.data(for: .storageService)
-        let masterKey = DependenciesBridge.shared.svr.masterKeyDataForKeysSyncMessage(tx: tx.asV2Read)
+        let masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx.asV2Read)
         let mrbk = DependenciesBridge.shared.svrLocalStorage.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
         let syncKeysMessage = OWSSyncKeysMessage(
             localThread: thread,
             storageServiceKey: storageServiceKey?.rawData,
-            masterKey: masterKey,
+            masterKey: masterKey?.rawData,
             mediaRootBackupKey: mrbk.serialize().asData,
             transaction: tx
         )
@@ -218,19 +218,20 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return owsFailDebug("Key sync messages should only be processed on linked devices")
         }
 
-        if let masterKey = syncMessage.master {
-            DependenciesBridge.shared.svr.storeSyncedMasterKey(
-                data: masterKey,
+        do {
+            try DependenciesBridge.shared.svr.storeKeys(
+                fromKeysSyncMessage: syncMessage,
                 authedDevice: .implicit,
-                updateStorageService: true,
-                transaction: transaction.asV2Write
+                tx: transaction.asV2Write
             )
+        } catch {
+            switch error {
+            case .missingMasterKey:
+                Logger.warn("Key sync messages missing master key")
+            case .missingMediaRootBackupKey:
+                Logger.warn("Key sync messages missing media root backup key")
+            }
         }
-
-        try? DependenciesBridge.shared.svrLocalStorage.setMediaRootBackupKey(
-            fromKeysSyncMessage: syncMessage,
-            tx: transaction.asV2Write
-        )
 
         transaction.addAsyncCompletionOffMain {
             NotificationCenter.default.postNotificationNameAsync(.syncManagerKeysSyncDidComplete, object: nil)
