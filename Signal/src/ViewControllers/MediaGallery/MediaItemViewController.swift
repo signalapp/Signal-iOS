@@ -206,7 +206,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         guard mediaView == nil else { return }
 
         let view: UIView
-        if attachmentStream.contentType.isVideo, galleryItem.renderingFlag == .shouldLoop {
+        if attachmentStream.contentType.isVideo, galleryItem.renderingFlag == .shouldLoop, !UIAccessibility.isReduceMotionEnabled {
             if attachmentStream.contentType.isVideo, let loopingVideoPlayerView = buildLoopingVideoPlayerView() {
                 loopingVideoPlayerView.delegate = self
                 view = loopingVideoPlayerView
@@ -331,7 +331,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
     private var hasAutoPlayedVideo = false
 
     private var isVideo: Bool {
-        galleryItem.isVideo
+        galleryItem.isVideo || galleryItem.isAnimated
     }
 
     private func playVideo() {

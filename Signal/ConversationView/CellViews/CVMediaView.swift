@@ -155,7 +155,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         mediaView.backgroundColor = isBorderless ? .clear : Theme.washColor
 
         if !addProgressIfNecessary() {
-            if reusableMediaView.isVideo {
+            if reusableMediaView.needsPlayButton {
                 addVideoPlayButton()
             }
         }

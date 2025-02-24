@@ -158,6 +158,18 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
     // MARK: - Events
 
+    private func toggleStickerAnimation(_ view: CVComponentView) {
+        if let stickerView = view as? CVComponentViewSticker, let rmv = stickerView.reusableMediaView, let yyView = rmv.mediaView as? CVAnimatedImageView {
+            if yyView.isAnimating {
+                yyView.stopAnimating()
+                stickerView.togglePlayButton()
+            } else {
+                stickerView.togglePlayButton()
+                yyView.startAnimating()
+            }
+        }
+    }
+
     public override func handleTap(sender: UIGestureRecognizer,
                                    componentDelegate: CVComponentDelegate,
                                    componentView: CVComponentView,
@@ -168,7 +180,15 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             // Not yet downloaded.
             return false
         }
-        componentDelegate.didTapStickerPack(stickerMetadata.packInfo)
+        var isAnimated = false
+        if let stickerComponent = componentView as? CVComponentViewSticker {
+            isAnimated = stickerComponent.isAnimated
+        }
+        if UIAccessibility.isReduceMotionEnabled && isAnimated {
+            toggleStickerAnimation(componentView)
+        } else {
+            componentDelegate.didTapStickerPack(stickerMetadata.packInfo)
+        }
         return true
     }
 
@@ -179,6 +199,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     public class CVComponentViewSticker: NSObject, CVComponentView {
 
         fileprivate let stackView = ManualStackView(name: "sticker.container")
+        fileprivate var playButtonView: UIView? = nil
 
         fileprivate var reusableMediaView: ReusableMediaView?
 
@@ -188,17 +209,57 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             stackView
         }
 
+        public var isAnimated: Bool {
+            get {
+                reusableMediaView?.needsPlayButton != nil && (reusableMediaView?.needsPlayButton)! || false
+            }
+        }
+
         public func setIsCellVisible(_ isCellVisible: Bool) {
             if isCellVisible {
-                if let reusableMediaView = reusableMediaView,
-                   reusableMediaView.owner == self {
-                    reusableMediaView.load()
+                if let reusableMediaView = reusableMediaView {
+                    if reusableMediaView.owner == self {
+                        reusableMediaView.load()
+                    }
+                    if reusableMediaView.needsPlayButton {
+                        addPlayButton()
+                    }
                 }
             } else {
                 if let reusableMediaView = reusableMediaView,
                    reusableMediaView.owner == self {
                     reusableMediaView.unload()
                 }
+            }
+        }
+
+        private func addPlayButton() {
+            if playButtonView != nil {
+                return
+            }
+            let playButtonWidth: CGFloat = 44
+            let playIconWidth: CGFloat = 20
+
+            let playButton = UIView.transparentContainer()
+            playButtonView = playButton
+            stackView.addSubviewToCenterOnSuperview(playButton, size: CGSize(square: playButtonWidth))
+
+            let playCircleView = OWSLayerView.circleView()
+            playCircleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
+            playCircleView.isUserInteractionEnabled = false
+            playButton.addSubview(playCircleView)
+            stackView.layoutSubviewToFillSuperviewEdges(playCircleView)
+
+            let playIconView = CVImageView()
+            playIconView.setTemplateImageName("play-fill-32", tintColor: UIColor.ows_white)
+            playIconView.isUserInteractionEnabled = false
+            stackView.addSubviewToCenterOnSuperview(playIconView,
+                                                    size: CGSize(square: playIconWidth))
+        }
+
+        fileprivate func togglePlayButton() {
+            if let playButton = playButtonView {
+                playButton.isHidden = !playButton.isHidden
             }
         }
 

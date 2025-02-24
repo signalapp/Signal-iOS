@@ -122,6 +122,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
                     .showPaymentDetails,
                     .speak,
                     .stopSpeaking,
+                    .showStickerPack,
                     .info,
                     .delete
                 ]
