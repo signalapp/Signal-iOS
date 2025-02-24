@@ -1469,6 +1469,9 @@
 "CONTEXT_MENU_SHARE_MEDIA" = "Share";
 
 /* Context menu button title */
+"CONTEXT_MENU_SHOW_STICKER_PACK" = "Show Sticker Pack";
+
+/* Context menu button title */
 "CONTEXT_MENU_SPEAK_MESSAGE" = "Speak";
 
 /* Context menu button title */
@@ -4398,6 +4401,9 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+
+/* Aciton sheet button title */
+"MESSAGE_ACTION_SHOW_STICKER_PACK" = "Show Sticker Pack";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SPEAK_MESSAGE" = "Speak Message";

@@ -236,6 +236,10 @@ extension CVItemViewModelImpl {
         AttachmentSharing.showShareUI(for: attachments, sender: sender)
     }
 
+    var isSticker: Bool {
+        return messageCellType == .stickerMessage
+    }
+
     var canForwardMessage: Bool {
         guard !isViewOnce else {
             return false

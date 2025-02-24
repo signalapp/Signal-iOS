@@ -65,6 +65,21 @@ public class ReusableMediaView: NSObject {
         mediaViewAdapter is MediaViewAdapterVideo
     }
 
+    var needsPlayButton: Bool {
+        mediaViewAdapter is MediaViewAdapterVideo
+        || (
+            UIAccessibility.isReduceMotionEnabled
+            && (
+                mediaViewAdapter is MediaViewAdapterLoopingVideo
+                || (
+                    mediaViewAdapter is MediaViewAdapterSticker
+                    && mediaViewAdapter.shouldBeRenderedByYY
+                )
+                || mediaViewAdapter is MediaViewAdapterAnimated
+            )
+        )
+    }
+
     // MARK: - LoadState
 
     // Thread-safe access to load state.
@@ -332,6 +347,7 @@ class MediaViewAdapterAnimated: MediaViewAdapterSwift {
             return
         }
         imageView.image = image
+        imageView.autoPlayAnimatedImage = !UIAccessibility.isReduceMotionEnabled
     }
 
     func unloadMedia() {
@@ -567,6 +583,9 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
             guard let image = media as? YYImage else {
                 owsFailDebug("Media has unexpected type: \(type(of: media))")
                 return
+            }
+            if let yyView = imageView as? CVAnimatedImageView {
+                yyView.autoPlayAnimatedImage = !UIAccessibility.isReduceMotionEnabled
             }
             imageView.image = image
         } else {

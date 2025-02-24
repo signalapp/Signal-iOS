@@ -278,4 +278,10 @@ extension ConversationViewController: MessageActionsDelegate {
         let paymentsDetailViewController = PaymentsDetailViewController(paymentItem: paymentHistoryItem)
         navigationController?.pushViewController(paymentsDetailViewController, animated: true)
     }
+
+    func messageActionsShowStickerPack(_ itemViewModel: CVItemViewModelImpl) {
+        if let stickerMetadata = itemViewModel.stickerMetadata {
+            didTapStickerPack(stickerMetadata.packInfo)
+        }
+    }
 }

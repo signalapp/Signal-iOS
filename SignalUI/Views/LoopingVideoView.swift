@@ -146,7 +146,9 @@ public class LoopingVideoView: UIView {
                     }
                     let playerItem = AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: ["tracks"])
                     self.player.replaceCurrentItem(with: playerItem)
-                    self.player.play()
+                    if !UIAccessibility.isReduceMotionEnabled {
+                        self.player.play()
+                    }
                 }.done(on: DispatchQueue.main) { [weak self] in
                     guard let self = self else {
                         return
