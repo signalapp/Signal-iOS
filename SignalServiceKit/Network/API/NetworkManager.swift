@@ -51,18 +51,28 @@ public class NetworkManager {
 
     private static func resetLibsignalNetProxySettings(_ libsignalNet: Net) {
         if let systemProxy = ProxyConfig.fromCFNetwork() {
-            Logger.info("System '\(systemProxy.scheme)' proxy detected")
-            do {
-                try libsignalNet.setProxy(scheme: systemProxy.scheme, host: systemProxy.host, port: systemProxy.port, username: systemProxy.username, password: systemProxy.password)
-            } catch {
-                Logger.error("invalid proxy: \(error)")
-                // When setProxy(...) fails, it refuses to connect in case your proxy was load-bearing.
-                // That makes sense for in-app settings, but less so for system-level proxies, given that we are already ignoring system-level proxies we don't understand.
-                libsignalNet.clearProxy()
+            // Note: This is a workaround for libsignal's CDS implementation not supporting system proxies.
+            // In the short term, this check will change to directly reference a RemoteConfig controlling that;
+            // in the long run, everything in libsignal will support system proxies and this can go away.
+            if ChatConnectionManagerImpl.shouldUseLibsignalForIdentifiedWebsocket {
+                Logger.info("System '\(systemProxy.scheme)' proxy detected")
+                do {
+                    try libsignalNet.setProxy(scheme: systemProxy.scheme, host: systemProxy.host, port: systemProxy.port, username: systemProxy.username, password: systemProxy.password)
+                    return
+                } catch {
+                    Logger.error("invalid proxy: \(error)")
+                    // When setProxy(...) fails, it refuses to connect in case your proxy was load-bearing.
+                    // That makes sense for in-app settings, but less so for system-level proxies, given that we are already ignoring system-level proxies we don't understand.
+                    // Fall through to the reset call.
+                }
+            } else {
+                Logger.info("System '\(systemProxy.scheme)' proxy detected; not passing to libsignal for compatibility with older CDS implementation")
+                // Fall through to the reset call.
             }
-        } else {
-            libsignalNet.clearProxy()
         }
+
+        // This may be clearing a system proxy, or a previously set in-app proxy that is no longer in use.
+        libsignalNet.clearProxy()
     }
 
     public func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool = true) async throws -> HTTPResponse {

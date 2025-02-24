@@ -183,6 +183,10 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
 
     private static var shouldUseLibsignalForIdentifiedDefaultsKey: String = "UseLibsignalForIdentifiedWebsocket"
 
+    static var shouldUseLibsignalForIdentifiedWebsocket: Bool {
+        CurrentAppContext().appUserDefaults().bool(forKey: shouldUseLibsignalForIdentifiedDefaultsKey)
+    }
+
     /// We cache this in UserDefaults because it's used too early to access the RemoteConfig object.
     ///
     /// It also makes it possible to override the setting in Xcode via the Scheme settings:
