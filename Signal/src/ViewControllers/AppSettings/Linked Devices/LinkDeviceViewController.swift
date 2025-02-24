@@ -204,7 +204,7 @@ class LinkDeviceViewController: OWSViewController {
                 // a master key are during registration.
                 owsFail("Can't provision without a master key.")
             }
-            let mrbk = DependenciesBridge.shared.mrbkStore.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
+            let mrbk = DependenciesBridge.shared.svrLocalStorage.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
             guard let profileKey = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: tx)?.profileKey else {
                 owsFail("Can't provision without a profile key.")
             }
@@ -214,7 +214,7 @@ class LinkDeviceViewController: OWSViewController {
                 pniIdentityKeyPair: pniIdentityKeyPair,
                 areReadReceiptsEnabled: areReadReceiptsEnabled,
                 masterKey: masterKey,
-                mediaRootBackupKey: mrbk,
+                mediaRootBackupKey: mrbk.serialize().asData,
                 profileKey: profileKey
             )
         }

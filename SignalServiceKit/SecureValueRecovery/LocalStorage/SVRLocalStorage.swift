@@ -4,9 +4,9 @@
 //
 
 import Foundation
+public import LibSignalClient
 
-public protocol SVRLocalStorage {
-
+public protocol SVRLocalStorage: LocalKeyStorage {
     func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool
 
     func getMasterKey(_ transaction: DBReadTransaction) -> MasterKey?
@@ -15,6 +15,31 @@ public protocol SVRLocalStorage {
     func getOrGenerateMasterKey(_ transaction: DBReadTransaction) -> MasterKey
 
     func isKeyAvailable(_ key: SVR.DerivedKey, tx: DBReadTransaction) -> Bool
+}
+
+public protocol LocalKeyStorage {
+
+    /// Media Root Backup Key
+    ///
+    func getMediaRootBackupKey(tx: DBReadTransaction) -> BackupKey?
+    func getOrGenerateMediaRootBackupKey(tx: DBWriteTransaction) -> BackupKey
+
+    func setMediaRootBackupKey(
+        fromRestoredBackup backupProto: BackupProto_BackupInfo,
+        tx: DBWriteTransaction
+    ) throws
+    /// Set the MRBK found in a provisioning message.
+    func setMediaRootBackupKey(
+        fromProvisioningMessage provisioningMessage: ProvisionMessage,
+        tx: DBWriteTransaction
+    ) throws
+    func setMediaRootBackupKey(
+        fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
+        tx: DBWriteTransaction
+    ) throws
+
+    // Generic 'wipe key type' method
+    func wipeMediaRootBackupKeyFromFailedProvisioning(tx: DBWriteTransaction)
 }
 
 public protocol SVRLocalStorageInternal: SVRLocalStorage {
@@ -58,26 +83,30 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
 /// Stores state related to SVR independent of enclave; e.g. do we have backups at all,
 /// what type is our pin, etc.
 internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
+    private let masterKeyKvStore: KeyValueStore
+
+    public static let mediaRootBackupKeyLength: UInt = 32 /* bytes */
+    private static let keyName = "mrbk"
+    private let mbrkKvStore: KeyValueStore
+
+    public init() {
+        // Collection name must not be changed; matches that historically kept in KeyBackupServiceImpl.
+        self.masterKeyKvStore = KeyValueStore(collection: "kOWSKeyBackupService_Keys")
+        self.mbrkKvStore = KeyValueStore(collection: "MediaRootBackupKey")
+    }
+
+    // MARK: - Getters
 
     public func isKeyAvailable(_ key: SVR.DerivedKey, tx: DBReadTransaction) -> Bool {
         return getMasterKey(tx) != nil
     }
 
-    private let keyValueStore: KeyValueStore
-
-    public init() {
-        // Collection name must not be changed; matches that historically kept in KeyBackupServiceImpl.
-        self.keyValueStore = KeyValueStore(collection: "kOWSKeyBackupService_Keys")
-    }
-
-    // MARK: - Getters
-
     public func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool {
-        return keyValueStore.getBool(Keys.isMasterKeyBackedUp, defaultValue: false, transaction: transaction)
+        return masterKeyKvStore.getBool(Keys.isMasterKeyBackedUp, defaultValue: false, transaction: transaction)
     }
 
     public func getMasterKey(_ transaction: DBReadTransaction) -> MasterKey? {
-        guard let data = keyValueStore.getData(Keys.masterKey, transaction: transaction) else {
+        guard let data = masterKeyKvStore.getData(Keys.masterKey, transaction: transaction) else {
             return nil
         }
         return MasterKeyImpl(masterKey: data)
@@ -91,14 +120,14 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
     }
 
     public func getPinType(_ transaction: DBReadTransaction) -> SVR.PinType? {
-        guard let raw = keyValueStore.getInt(Keys.pinType, transaction: transaction) else {
+        guard let raw = masterKeyKvStore.getInt(Keys.pinType, transaction: transaction) else {
             return nil
         }
         return SVR.PinType(rawValue: raw)
     }
 
     public func getEncodedPINVerificationString(_ transaction: DBReadTransaction) -> String? {
-        return keyValueStore.getString(Keys.encodedPINVerificationString, transaction: transaction)
+        return masterKeyKvStore.getString(Keys.encodedPINVerificationString, transaction: transaction)
     }
 
     // Linked devices get the storage service key and store it locally. The primary doesn't do this.
@@ -107,49 +136,124 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
     // key must not have launched and is therefore deregistered; we are ok to ignore the
     // storage service key and take the master key or bust.
     public func getSyncedStorageServiceKey(_ transaction: DBReadTransaction) -> Data? {
-        return keyValueStore.getData(Keys.syncedStorageServiceKey, transaction: transaction)
+        return masterKeyKvStore.getData(Keys.syncedStorageServiceKey, transaction: transaction)
     }
 
     public func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String? {
-        return keyValueStore.getString(Keys.svr2MrEnclaveStringValue, transaction: transaction)
+        return masterKeyKvStore.getString(Keys.svr2MrEnclaveStringValue, transaction: transaction)
+    }
+
+    /// Manages the "Media Root Backup Key" a.k.a. "MRBK" a.k.a. "Mr Burger King".
+    /// This is a key we generate once and use forever that is used to derive encryption keys
+    /// for all backed-up media.
+    /// The MRBK is _not_ derived from the AccountEntropyPool any of its derivatives;
+    /// instead we store the MRBK in the backup proto itself. This avoids needing to rotate
+    /// media uploads if the AEP or backup key/id ever changes (at time of writing, it never does);
+    /// the MRBK can be left the same and put into the new backup generated with the new backups keys.
+
+    /// Get the already-generated MRBK. Returns nil if none has been set. If you require an MRBK
+    /// (e.g. you are creating a backup), use ``getOrGenerateMediaRootBackupKey``.
+    public func getMediaRootBackupKey(tx: DBReadTransaction) -> BackupKey? {
+        guard let data = mbrkKvStore.getData(Self.keyName, transaction: tx) else {
+            return nil
+        }
+        // TODO: Log error?
+        return try! BackupKey(contents: Array(data))
+    }
+
+    /// Get the already-generated MRBK or, if one has not been generated, generate one.
+    /// WARNING: this method should only be called _after_ restoring or choosing not to restore
+    /// from an existing backup; calling this generates a new key and invalidates all media backups.
+    public func getOrGenerateMediaRootBackupKey(tx: DBWriteTransaction) -> BackupKey {
+        if let value = getMediaRootBackupKey(tx: tx) {
+            return value
+        }
+        let newValue = Randomness.generateRandomBytes(Self.mediaRootBackupKeyLength)
+        mbrkKvStore.setData(newValue, key: Self.keyName, transaction: tx)
+        return try! BackupKey(contents: Array(newValue))
     }
 
     // MARK: - Setters
 
     public func setIsMasterKeyBackedUp(_ value: Bool, _ transaction: DBWriteTransaction) {
-        keyValueStore.setBool(value, key: Keys.isMasterKeyBackedUp, transaction: transaction)
+        masterKeyKvStore.setBool(value, key: Keys.isMasterKeyBackedUp, transaction: transaction)
     }
 
     public func setMasterKey(_ value: Data?, _ transaction: DBWriteTransaction) {
-        keyValueStore.setData(value, key: Keys.masterKey, transaction: transaction)
+        masterKeyKvStore.setData(value, key: Keys.masterKey, transaction: transaction)
     }
 
     public func setPinType(_ value: SVR.PinType, _ transaction: DBWriteTransaction) {
-        keyValueStore.setInt(value.rawValue, key: Keys.pinType, transaction: transaction)
+        masterKeyKvStore.setInt(value.rawValue, key: Keys.pinType, transaction: transaction)
     }
 
     public func setEncodedPINVerificationString(_ value: String?, _ transaction: DBWriteTransaction) {
-        keyValueStore.setString(value, key: Keys.encodedPINVerificationString, transaction: transaction)
+        masterKeyKvStore.setString(value, key: Keys.encodedPINVerificationString, transaction: transaction)
     }
 
     // Linked devices get the storage service key and store it locally. The primary doesn't do this.
     public func setSyncedStorageServiceKey(_ value: Data?, _ transaction: DBWriteTransaction) {
-        keyValueStore.setData(value, key: Keys.syncedStorageServiceKey, transaction: transaction)
+        masterKeyKvStore.setData(value, key: Keys.syncedStorageServiceKey, transaction: transaction)
     }
 
     // Linked devices get the backup key and store it locally. The primary doesn't do this.
     public func setSyncedBackupKey(_ value: Data?, _ transaction: DBWriteTransaction) {
-        keyValueStore.setData(value, key: Keys.syncedBackupKey, transaction: transaction)
+        masterKeyKvStore.setData(value, key: Keys.syncedBackupKey, transaction: transaction)
     }
 
     public func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction) {
-        keyValueStore.setString(value, key: Keys.svr2MrEnclaveStringValue, transaction: transaction)
+        masterKeyKvStore.setString(value, key: Keys.svr2MrEnclaveStringValue, transaction: transaction)
+    }
+
+    /// Set the MRBK found in a backup at restore time.
+    public func setMediaRootBackupKey(
+        fromRestoredBackup backupProto: BackupProto_BackupInfo,
+        tx: DBWriteTransaction
+    ) throws {
+        guard let mrbk = backupProto.mediaRootBackupKey.nilIfEmpty else {
+            // TODO: [Backups] fail if MRBK unset
+            return
+        }
+        try setMediaRootBackupKey(mrbk, tx: tx)
+    }
+
+    /// Set the MRBK found in a provisioning message.
+    public func setMediaRootBackupKey(
+        fromProvisioningMessage provisioningMessage: ProvisionMessage,
+        tx: DBWriteTransaction
+    ) throws {
+        guard let mrbk = provisioningMessage.mrbk else { return }
+        try setMediaRootBackupKey(mrbk, tx: tx)
+    }
+
+    public func setMediaRootBackupKey(
+        fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
+        tx: DBWriteTransaction
+    ) throws {
+        guard let mrbk = syncMessage.mediaRootBackupKey?.nilIfEmpty else {
+            return
+        }
+        try setMediaRootBackupKey(mrbk, tx: tx)
+    }
+
+    public func wipeMediaRootBackupKeyFromFailedProvisioning(tx: DBWriteTransaction) {
+        mbrkKvStore.removeValue(forKey: Self.keyName, transaction: tx)
+    }
+
+    private func setMediaRootBackupKey(
+        _ mrbk: Data,
+        tx: DBWriteTransaction
+    ) throws {
+        guard mrbk.byteLength == Self.mediaRootBackupKeyLength else {
+            throw OWSAssertionError("Invalid MRBK length!")
+        }
+        mbrkKvStore.setData(mrbk, key: Self.keyName, transaction: tx)
     }
 
     // MARK: - Clearing Keys
 
     public func clearKeys(_ transaction: DBWriteTransaction) {
-        keyValueStore.removeValues(
+        masterKeyKvStore.removeValues(
             forKeys: [
                 Keys.masterKey,
                 Keys.pinType,
@@ -161,12 +265,14 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
             ],
             transaction: transaction
         )
+
+        mbrkKvStore.removeValue(forKey: Self.keyName, transaction: transaction)
     }
 
     // MARK: - Cleanup
 
     func cleanupDeadKeys(_ transaction: any DBWriteTransaction) {
-        keyValueStore.removeValues(
+        masterKeyKvStore.removeValues(
             forKeys: [
                 Keys.legacy_svr1EnclaveName,
             ],
@@ -196,6 +302,35 @@ public class SVRLocalStorageMock: SVRLocalStorage {
 
     var isMasterKeyBackedUp: Bool = false
     var masterKey: MasterKeyMock?
+    var mediaRootBackupKey: Data?
+
+    public func getMediaRootBackupKey(tx: any DBReadTransaction) -> BackupKey? {
+        guard let mediaRootBackupKey else { return nil }
+        return try! BackupKey(contents: Array(mediaRootBackupKey))
+    }
+
+    public func getOrGenerateMediaRootBackupKey(tx: any DBWriteTransaction) -> BackupKey {
+        guard let mediaRootBackupKey = getMediaRootBackupKey(tx: tx) else {
+            fatalError("not implemented")
+        }
+        return mediaRootBackupKey
+    }
+
+    public func setMediaRootBackupKey(fromRestoredBackup backupProto: BackupProto_BackupInfo, tx: any DBWriteTransaction) throws {
+        mediaRootBackupKey = backupProto.mediaRootBackupKey
+    }
+
+    public func setMediaRootBackupKey(fromProvisioningMessage provisioningMessage: ProvisionMessage, tx: any DBWriteTransaction) throws {
+        mediaRootBackupKey = provisioningMessage.mrbk
+    }
+
+    public func setMediaRootBackupKey(fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys, tx: any DBWriteTransaction) throws {
+        mediaRootBackupKey = syncMessage.mediaRootBackupKey
+    }
+
+    public func wipeMediaRootBackupKeyFromFailedProvisioning(tx: any DBWriteTransaction) {
+        fatalError("not implemented")
+    }
 
     public func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool {
         return isMasterKeyBackedUp

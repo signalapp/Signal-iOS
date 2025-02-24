@@ -199,12 +199,12 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
         let storageServiceKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx.asV2Read)?.data(for: .storageService)
         let masterKey = DependenciesBridge.shared.svr.masterKeyDataForKeysSyncMessage(tx: tx.asV2Read)
-        let mrbk = DependenciesBridge.shared.mrbkStore.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
+        let mrbk = DependenciesBridge.shared.svrLocalStorage.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
         let syncKeysMessage = OWSSyncKeysMessage(
             localThread: thread,
             storageServiceKey: storageServiceKey?.rawData,
             masterKey: masterKey,
-            mediaRootBackupKey: mrbk,
+            mediaRootBackupKey: mrbk.serialize().asData,
             transaction: tx
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(
@@ -227,7 +227,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             )
         }
 
-        try? DependenciesBridge.shared.mrbkStore.setMediaRootBackupKey(
+        try? DependenciesBridge.shared.svrLocalStorage.setMediaRootBackupKey(
             fromKeysSyncMessage: syncMessage,
             tx: transaction.asV2Write
         )

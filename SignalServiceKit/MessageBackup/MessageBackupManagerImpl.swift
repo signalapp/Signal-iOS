@@ -61,10 +61,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let groupRecipientArchiver: MessageBackupGroupRecipientArchiver
     private let incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator
     private let kvStore: KeyValueStore
+    private let localStorage: SVRLocalStorage
     private let localRecipientArchiver: MessageBackupLocalRecipientArchiver
     private let messageBackupKeyMaterial: MessageBackupKeyMaterial
     private let messagePipelineSupervisor: MessagePipelineSupervisor
-    private let mrbkStore: MediaRootBackupKeyStore
     private let plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider
     private let postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager
     private let releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver
@@ -97,10 +97,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         fullTextSearchIndexer: MessageBackupFullTextSearchIndexer,
         groupRecipientArchiver: MessageBackupGroupRecipientArchiver,
         incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
+        localStorage: SVRLocalStorage,
         localRecipientArchiver: MessageBackupLocalRecipientArchiver,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         messagePipelineSupervisor: MessagePipelineSupervisor,
-        mrbkStore: MediaRootBackupKeyStore,
         plaintextStreamProvider: MessageBackupPlaintextProtoStreamProvider,
         postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager,
         releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver,
@@ -132,10 +132,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.groupRecipientArchiver = groupRecipientArchiver
         self.incrementalTSAttachmentMigrator = incrementalTSAttachmentMigrator
         self.kvStore = KeyValueStore(collection: Constants.keyValueStoreCollectionName)
+        self.localStorage = localStorage
         self.localRecipientArchiver = localRecipientArchiver
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
         self.messagePipelineSupervisor = messagePipelineSupervisor
-        self.mrbkStore = mrbkStore
         self.plaintextStreamProvider = plaintextStreamProvider
         self.postFrameRestoreActionManager = postFrameRestoreActionManager
         self.releaseNotesRecipientArchiver = releaseNotesRecipientArchiver
@@ -586,7 +586,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         backupInfo.currentAppVersion = currentAppVersion
         backupInfo.firstAppVersion = firstAppVersion
 
-        backupInfo.mediaRootBackupKey = mrbkStore.getOrGenerateMediaRootBackupKey(tx: tx)
+        backupInfo.mediaRootBackupKey = localStorage.getOrGenerateMediaRootBackupKey(tx: tx).serialize().asData
 
         switch stream.writeHeader(backupInfo) {
         case .success:
@@ -785,7 +785,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 throw BackupImportError.unsupportedVersion
             }
             do {
-                try mrbkStore.setMediaRootBackupKey(fromRestoredBackup: backupInfo, tx: tx)
+                try localStorage.setMediaRootBackupKey(fromRestoredBackup: backupInfo, tx: tx)
             } catch {
                 frameErrors.append(LoggableErrorAndProto(
                     error: MessageBackup.RestoreFrameError.restoreFrameError(

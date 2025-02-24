@@ -340,9 +340,7 @@ public class AppSetup {
             twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager)
         )
 
-        let mrbkStore = MediaRootBackupKeyStore()
         let messageBackupKeyMaterial = MessageBackupKeyMaterialImpl(
-            mrbkStore: mrbkStore,
             svrLocalStorage: svrLocalStorage
         )
         let messageBackupRequestManager = MessageBackupRequestManagerImpl(
@@ -1146,12 +1144,12 @@ public class AppSetup {
                 threadStore: backupThreadStore
             ),
             incrementalTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator,
+            localStorage: svrLocalStorage,
             localRecipientArchiver: MessageBackupLocalRecipientArchiver(
                 profileManager: MessageBackup.Wrappers.ProfileManager(profileManager)
             ),
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             messagePipelineSupervisor: messagePipelineSupervisor,
-            mrbkStore: mrbkStore,
             plaintextStreamProvider: MessageBackupPlaintextProtoStreamProviderImpl(),
             postFrameRestoreActionManager: MessageBackupPostFrameRestoreActionManager(
                 avatarFetcher: messageBackupAvatarFetcher,
@@ -1297,7 +1295,6 @@ public class AppSetup {
             messageBackupKeyMaterial: messageBackupKeyMaterial,
             messageBackupManager: messageBackupManager,
             messageStickerManager: messageStickerManager,
-            mrbkStore: mrbkStore,
             nicknameManager: nicknameManager,
             orphanedBackupAttachmentManager: orphanedBackupAttachmentManager,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,

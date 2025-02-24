@@ -110,7 +110,6 @@ public class DependenciesBridge {
     public let messageBackupKeyMaterial: MessageBackupKeyMaterial
     public let messageBackupManager: MessageBackupManager
     public let messageStickerManager: MessageStickerManager
-    public let mrbkStore: MediaRootBackupKeyStore
     public let nicknameManager: any NicknameManager
     public let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
     public let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
@@ -227,7 +226,6 @@ public class DependenciesBridge {
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         messageBackupManager: MessageBackupManager,
         messageStickerManager: MessageStickerManager,
-        mrbkStore: MediaRootBackupKeyStore,
         nicknameManager: any NicknameManager,
         orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
@@ -343,7 +341,6 @@ public class DependenciesBridge {
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
         self.messageBackupManager = messageBackupManager
         self.messageStickerManager = messageStickerManager
-        self.mrbkStore = mrbkStore
         self.nicknameManager = nicknameManager
         self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner

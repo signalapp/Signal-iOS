@@ -66,7 +66,6 @@ class ProvisioningController: NSObject {
             identityManager: DependenciesBridge.shared.identityManager,
             linkAndSyncManager: DependenciesBridge.shared.linkAndSyncManager,
             messageFactory: ProvisioningCoordinatorImpl.Wrappers.MessageFactory(),
-            mrbkStore: DependenciesBridge.shared.mrbkStore,
             preKeyManager: DependenciesBridge.shared.preKeyManager,
             profileManager: ProvisioningCoordinatorImpl.Wrappers.ProfileManager(SSKEnvironment.shared.profileManagerImplRef),
             pushRegistrationManager: ProvisioningCoordinatorImpl.Wrappers.PushRegistrationManager(AppEnvironment.shared.pushRegistrationManagerRef),

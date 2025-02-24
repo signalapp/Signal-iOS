@@ -8,14 +8,11 @@ public import LibSignalClient
 
 public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
 
-    private let mrbkStore: MediaRootBackupKeyStore
     private let svrLocalStorage: SVRLocalStorage
 
     public init(
-        mrbkStore: MediaRootBackupKeyStore,
         svrLocalStorage: SVRLocalStorage
     ) {
-        self.mrbkStore = mrbkStore
         self.svrLocalStorage = svrLocalStorage
     }
 
@@ -28,10 +25,10 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         let resultData: Data
         switch type {
         case .media:
-            guard let backupKey = mrbkStore.getMediaRootBackupKey(tx: tx) else {
+            guard let backupKey = svrLocalStorage.getMediaRootBackupKey(tx: tx) else {
                 throw MessageBackupKeyMaterialError.missingMediaRootBackupKey
             }
-            resultData = backupKey
+            resultData = backupKey.serialize().asData
         case .messages:
             guard let backupKey = svrLocalStorage.getMasterKey(tx)?.data(for: .backupKey) else {
                 throw MessageBackupKeyMaterialError.missingMasterKey

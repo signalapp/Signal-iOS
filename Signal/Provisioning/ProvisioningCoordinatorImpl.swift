@@ -15,7 +15,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let identityManager: OWSIdentityManager
     private let linkAndSyncManager: LinkAndSyncManager
     private let messageFactory: Shims.MessageFactory
-    private let mrbkStore: MediaRootBackupKeyStore
     private let preKeyManager: PreKeyManager
     private let profileManager: Shims.ProfileManager
     private let pushRegistrationManager: Shims.PushRegistrationManager
@@ -38,7 +37,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         identityManager: OWSIdentityManager,
         linkAndSyncManager: LinkAndSyncManager,
         messageFactory: Shims.MessageFactory,
-        mrbkStore: MediaRootBackupKeyStore,
         preKeyManager: PreKeyManager,
         profileManager: Shims.ProfileManager,
         pushRegistrationManager: Shims.PushRegistrationManager,
@@ -60,7 +58,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         self.identityManager = identityManager
         self.linkAndSyncManager = linkAndSyncManager
         self.messageFactory = messageFactory
-        self.mrbkStore = mrbkStore
         self.preKeyManager = preKeyManager
         self.profileManager = profileManager
         self.pushRegistrationManager = pushRegistrationManager
@@ -413,7 +410,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             }
 
             do {
-                try self.mrbkStore.setMediaRootBackupKey(fromProvisioningMessage: provisionMessage, tx: tx)
+                try self.svrLocalStorage.setMediaRootBackupKey(fromProvisioningMessage: provisionMessage, tx: tx)
             } catch {
                 if FeatureFlags.linkAndSyncLinkedImport || FeatureFlags.messageBackupFileAlpha {
                     return .obsoleteLinkedDeviceError
@@ -449,7 +446,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                     tx: tx
                 )
 
-                self.mrbkStore.wipeMediaRootBackupKeyFromFailedProvisioning(tx: tx)
+                self.svrLocalStorage.wipeMediaRootBackupKeyFromFailedProvisioning(tx: tx)
             }
         }
     }
