@@ -251,26 +251,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     // MARK: - Key Management
 
-    public func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod) -> Promise<Void> {
-        let promise: Promise<Data> = self.generateAndBackupKeys(pin: pin, authMethod: authMethod)
+    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) -> Promise<Void> {
+        Logger.info("")
+        let promise: Promise<Data> = doBackupAndExpose(pin: pin, masterKey: masterKey.rawData, authMethod: authMethod)
         return promise.asVoid(on: schedulers.sync)
-    }
-
-    internal func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod) -> Promise<Data> {
-        Logger.info("backing up")
-        return firstly(on: scheduler) { [weak self] () -> Promise<Data> in
-            guard let self else {
-                return .init(error: SVR.SVRError.assertion)
-            }
-            let masterKey: Data = {
-                // We never change the master key once stored (on the primary).
-                if let masterKey = self.db.read(block: { tx in self.localStorage.getMasterKey(tx) }) {
-                    return masterKey.rawData
-                }
-                return self.generateMasterKey()
-            }()
-            return self.doBackupAndExpose(pin: pin, masterKey: masterKey, authMethod: authMethod)
-        }
     }
 
     public func restoreKeys(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult> {
@@ -1458,12 +1442,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 return .init(error: innerError)
             }
         }
-    }
-
-    // MARK: - Master key generation
-
-    func generateMasterKey() -> Data {
-        return Randomness.generateRandomBytes(SVR.masterKeyLengthBytes)
     }
 
     // MARK: - Local key storage helpers

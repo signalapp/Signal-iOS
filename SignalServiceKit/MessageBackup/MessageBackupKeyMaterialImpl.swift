@@ -22,27 +22,21 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         type: MessageBackupAuthCredentialType,
         tx: DBReadTransaction
     ) throws(MessageBackupKeyMaterialError) -> BackupKey {
-        let resultData: Data
         switch type {
         case .media:
             guard let backupKey = svrLocalStorage.getMediaRootBackupKey(tx: tx) else {
                 throw MessageBackupKeyMaterialError.missingMediaRootBackupKey
             }
-            resultData = backupKey.serialize().asData
+            return backupKey
         case .messages:
-            guard let backupKey = svrLocalStorage.getMasterKey(tx)?.data(for: .backupKey) else {
-                throw MessageBackupKeyMaterialError.missingMasterKey
+            do {
+                guard let backupKey = try svrLocalStorage.getMessageRootBackupKey(tx: tx) else {
+                    throw MessageBackupKeyMaterialError.missingMessageBackupKey
+                }
+                return backupKey
+            } catch {
+                throw MessageBackupKeyMaterialError.derivationError(error)
             }
-            guard backupKey.type == .backupKey else {
-                owsFailDebug("Wrong key provided")
-                throw MessageBackupKeyMaterialError.missingMasterKey
-            }
-            resultData = backupKey.rawData
-        }
-        do {
-            return try resultData.withUnsafeBytes { try BackupKey(contents: Array($0)) }
-        } catch {
-            throw MessageBackupKeyMaterialError.derivationError(error)
         }
     }
 

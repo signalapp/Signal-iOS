@@ -332,9 +332,10 @@ public class RegistrationCoordinatorTest {
         }
 
         // We haven't done a SVR backup; that should happen now.
-        svr.generateAndBackupKeysMock = { pin, authMethod in
+        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
             #expect(pin == Stubs.pinCode)
             // We don't have a SVR auth credential, it should use chat server creds.
+            #expect(masterKey.rawData == self.svrLocalStorageMock.masterKey?.rawData)
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
             return .value(())
@@ -484,8 +485,9 @@ public class RegistrationCoordinatorTest {
         }
 
         // We haven't done a SVR backup; that should happen now.
-        svr.generateAndBackupKeysMock = { pin, authMethod in
+        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
             #expect(pin == Stubs.pinCode)
+            #expect(masterKey.rawData == self.svrLocalStorageMock.masterKey?.rawData)
             // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
@@ -983,9 +985,10 @@ public class RegistrationCoordinatorTest {
         }
 
         // We haven't done a SVR backup; that should happen at t=6. Succeed at t=7.
-        svr.generateAndBackupKeysMock = { pin, authMethod in
+        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
             #expect(self.scheduler.currentTime == 6)
             #expect(pin == Stubs.pinCode)
+            #expect(masterKey.rawData == self.svrLocalStorageMock.masterKey?.rawData)
             // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
@@ -1210,9 +1213,10 @@ public class RegistrationCoordinatorTest {
         }
 
         // At t=4 once we create pre-keys, we should back up to svr.
-        svr.generateAndBackupKeysMock = { (pin: String, authMethod: SVR.AuthMethod) in
+        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
             #expect(self.scheduler.currentTime == 4)
             #expect(pin == Stubs.pinCode)
+            #expect(masterKey.rawData == self.svrLocalStorageMock.masterKey?.rawData)
             #expect(authMethod == .svrAuth(
                 Stubs.svr2AuthCredential,
                 backup: .chatServerAuth(expectedAuthedAccount())
@@ -1489,6 +1493,7 @@ public class RegistrationCoordinatorTest {
     func testSessionPath_happyPath(mode: RegistrationMode) {
         let coordinator = coordinatorFactory(mode)
 
+        svrLocalStorageMock.masterKeyIfMissing = MasterKeyMock(Stubs.masterKey)
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
         scheduler.tick()
@@ -1608,10 +1613,12 @@ public class RegistrationCoordinatorTest {
         nextStep = coordinator.submitPINCode(Stubs.pinCode)
 
         // Finish the validation at t=1.
-        svr.generateAndBackupKeysMock = { pin, authMethod in
+        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
             #expect(self.scheduler.currentTime == 0)
             #expect(pin == Stubs.pinCode)
+            #expect(masterKey.rawData == Stubs.masterKey.rawData)
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
+            #expect(masterKey.rawData == self.svrLocalStorageMock.masterKey!.rawData)
             return self.scheduler.promise(resolvingWith: (), atTime: 1)
         }
 
@@ -3400,7 +3407,7 @@ public class RegistrationCoordinatorTest {
         nextStep = coordinator.skipPINCode()
 
         // When we skip the pin, it should skip any SVR backups.
-        svr.generateAndBackupKeysMock = { _, _ in
+        svr.backupMasterKeyMock = { _, _, _ in
             Issue.record("Shouldn't talk to SVR with skipped PIN!")
             return .value(())
 
@@ -3576,7 +3583,7 @@ public class RegistrationCoordinatorTest {
         nextStep = coordinator.skipPINCode()
 
         // When we skip the pin, it should skip any SVR backups.
-        svr.generateAndBackupKeysMock = { _, _ in
+        svr.backupMasterKeyMock = { _, _, _ in
             Issue.record("Shouldn't talk to SVR with skipped PIN!")
             return .value(())
 
@@ -3865,6 +3872,8 @@ public class RegistrationCoordinatorTest {
 
         static let sessionId = UUID().uuidString
         static let verificationCode = "8888"
+
+        static let masterKey = MasterKeyImpl(masterKey: Data(repeating: 7, count: 8))
 
         var date: Date = Date()
 

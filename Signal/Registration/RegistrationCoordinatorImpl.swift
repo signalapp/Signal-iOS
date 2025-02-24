@@ -3025,9 +3025,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         } else {
             authMethod = backupAuthMethod
         }
+        let masterKey = self.db.read { deps.svrLocalStorage.getOrGenerateMasterKey($0) }
         return deps.svr
-            .generateAndBackupKeys(
+            .backupMasterKey(
                 pin: pin,
+                masterKey: masterKey,
                 authMethod: authMethod
             )
             .then(on: schedulers.main) { [weak self] () -> Guarantee<RegistrationStep>  in

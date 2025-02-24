@@ -7,9 +7,12 @@
 
 open class MasterKeyMock: MasterKey {
 
-    public var rawData: Data { Data() }
+    private let masterKey: MasterKey?
+    public var rawData: Data { return masterKey?.rawData ?? Data() }
 
-    public init() {}
+    public init(_ masterKey: MasterKey? = nil) {
+        self.masterKey = masterKey
+    }
 
     public func encrypt(
         keyType: SVR.DerivedKey,

@@ -175,7 +175,7 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
                         params: backupServerPublicParams
                     )
                     return ReceivedBackupAuthCredentials(redemptionTime: $0.redemptionTime, credential: credential)
-                } catch MessageBackupKeyMaterialError.missingMasterKey where type != credentialType {
+                } catch MessageBackupKeyMaterialError.missingMessageBackupKey where type != credentialType {
                     return nil
                 } catch {
                     owsFailDebug("Error creating credential")

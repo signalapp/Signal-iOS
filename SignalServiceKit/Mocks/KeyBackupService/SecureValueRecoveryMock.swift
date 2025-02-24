@@ -37,10 +37,10 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public var reglockToken: String?
 
-    public var generateAndBackupKeysMock: ((_ pin: String, _ authMethod: SVR.AuthMethod) -> Promise<Void>)?
+    public var backupMasterKeyMock: ((_ pin: String, _ masterKey: MasterKey, _ authMethod: SVR.AuthMethod) -> Promise<Void>)?
 
-    public func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod) -> Promise<Void> {
-        return generateAndBackupKeysMock!(pin, authMethod)
+    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) -> Promise<Void> {
+        return backupMasterKeyMock!(pin, masterKey, authMethod)
     }
 
     public var restoreKeysMock: ((_ pin: String, _ authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>)?

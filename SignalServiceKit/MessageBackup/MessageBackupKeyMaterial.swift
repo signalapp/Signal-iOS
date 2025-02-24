@@ -7,7 +7,7 @@ import Foundation
 public import LibSignalClient
 
 public enum MessageBackupKeyMaterialError: Error {
-    case missingMasterKey
+    case missingMessageBackupKey
     case missingMediaRootBackupKey
     /// Encountered an error using libsignal methods to derive keys.
     case derivationError(Error)

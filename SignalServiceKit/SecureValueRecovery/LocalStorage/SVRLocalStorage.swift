@@ -49,6 +49,9 @@ public protocol LocalKeyStorage {
         fromProvisioningMessage provisioningMessage: ProvisionMessage,
         tx: DBWriteTransaction
     ) throws
+
+    /// Message Backup Key
+    func getMessageRootBackupKey(tx: DBReadTransaction) throws -> BackupKey?
 }
 
 public protocol SVRLocalStorageInternal: SVRLocalStorage {
@@ -180,6 +183,12 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         let newValue = Randomness.generateRandomBytes(Self.mediaRootBackupKeyLength)
         mbrkKvStore.setData(newValue, key: Self.keyName, transaction: tx)
         return try! BackupKey(contents: Array(newValue))
+    }
+
+    public func getMessageRootBackupKey(tx: DBReadTransaction) -> BackupKey? {
+        // TODO: Add back with AEP
+        // return getAccountEntropyPool(tx: tx)?.getBackupKey()
+        return nil
     }
 
     // MARK: - Setters
@@ -331,6 +340,7 @@ public class SVRLocalStorageMock: SVRLocalStorage {
 
     var isMasterKeyBackedUp: Bool = false
     var masterKey: MasterKeyMock?
+    var masterKeyIfMissing: MasterKeyMock?
     var mediaRootBackupKey: Data?
 
     public func getMediaRootBackupKey(tx: any DBReadTransaction) -> BackupKey? {
@@ -369,6 +379,10 @@ public class SVRLocalStorageMock: SVRLocalStorage {
         fatalError("not implemented")
     }
 
+    public func getMessageRootBackupKey(tx: any DBReadTransaction) throws -> BackupKey? {
+        fatalError("not implemented")
+    }
+
     public func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool {
         return isMasterKeyBackedUp
     }
@@ -378,7 +392,11 @@ public class SVRLocalStorageMock: SVRLocalStorage {
     }
 
     public func getOrGenerateMasterKey(_ transaction: DBReadTransaction) -> MasterKey {
-        return masterKey!
+        if let masterKey {
+            return masterKey
+        }
+        masterKey = masterKeyIfMissing
+        return masterKeyIfMissing!
     }
 
     public func isKeyAvailable(_ key: SVR.DerivedKey, tx: DBReadTransaction) -> Bool {
