@@ -292,7 +292,11 @@ public class _RegistrationCoordinator_StorageServiceManagerMock: _RegistrationCo
         return restoreOrCreateManifestIfNecessaryMock(authedDevice, masterKeySource)
     }
 
-    public func backupPendingChanges(authedDevice: SignalServiceKit.AuthedDevice) {}
+    public var backupPendingChangesMock: ((SignalServiceKit.AuthedDevice) -> Void) = { _ in }
+    public func backupPendingChanges(authedDevice: SignalServiceKit.AuthedDevice) {
+        return backupPendingChangesMock(authedDevice)
+    }
+
     public func recordPendingLocalAccountUpdates() { }
 }
 
