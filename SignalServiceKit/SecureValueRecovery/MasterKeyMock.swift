@@ -38,10 +38,6 @@ open class MasterKeyMock: MasterKey {
     public func data(for key: SVR.DerivedKey) -> SVR.DerivedKeyData {
         return SVR.DerivedKeyData(rawData: dataGenerator!(key), type: key)
     }
-
-    public func isKeyAvailable(_ key: SVR.DerivedKey, tx: DBReadTransaction) -> Bool {
-        return true
-    }
 }
 
 #endif

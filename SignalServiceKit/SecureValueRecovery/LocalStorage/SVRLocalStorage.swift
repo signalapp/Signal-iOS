@@ -12,7 +12,9 @@ public protocol SVRLocalStorage: LocalKeyStorage {
     // TODO: Temporary
     func getOrGenerateMasterKey(_ transaction: DBReadTransaction) -> MasterKey
 
-    func isKeyAvailable(_ key: SVR.DerivedKey, tx: DBReadTransaction) -> Bool
+    func clearStorageServiceKeys(_ transaction: DBWriteTransaction)
+
+    func clearMasterKey(_ transaction: DBWriteTransaction)
 }
 
 public protocol LocalKeyStorage {
@@ -82,9 +84,6 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
 
     func getEncodedPINVerificationString(_ transaction: DBReadTransaction) -> String?
 
-    // Linked devices get the storage service key and store it locally. The primary doesn't do this.
-    func getSyncedStorageServiceKey(_ transaction: DBReadTransaction) -> Data?
-
     func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String?
 
     // MARK: - Setters
@@ -95,17 +94,11 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
 
     func setEncodedPINVerificationString(_ value: String?, _ transaction: DBWriteTransaction)
 
-    // Linked devices get the storage service key and store it locally. The primary doesn't do this.
-    func setSyncedStorageServiceKey(_ value: Data?, _ transaction: DBWriteTransaction)
-
-    // Linked devices get the backup key and store it locally. The primary doesn't do this.
-    func setSyncedBackupKey(_ value: Data?, _ transaction: DBWriteTransaction)
-
     func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction)
 
     // MARK: - Clearing Keys
 
-    func clearKeys(_ transaction: DBWriteTransaction)
+    func clearSVRKeys(_ transaction: DBWriteTransaction)
 
     // MARK: - Cleanup
 
@@ -172,15 +165,6 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
 
     public func getEncodedPINVerificationString(_ transaction: DBReadTransaction) -> String? {
         return masterKeyKvStore.getString(Keys.encodedPINVerificationString, transaction: transaction)
-    }
-
-    // Linked devices get the storage service key and store it locally. The primary doesn't do this.
-    // TODO: By 10/2024, we can remove this method. Starting in 10/2023, we started sending
-    // master keys in syncs. A year later, any primary that has not yet delivered a master
-    // key must not have launched and is therefore deregistered; we are ok to ignore the
-    // storage service key and take the master key or bust.
-    public func getSyncedStorageServiceKey(_ transaction: DBReadTransaction) -> Data? {
-        return masterKeyKvStore.getData(Keys.syncedStorageServiceKey, transaction: transaction)
     }
 
     public func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String? {
@@ -292,16 +276,6 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         masterKeyKvStore.setString(value, key: Keys.encodedPINVerificationString, transaction: transaction)
     }
 
-    // Linked devices get the storage service key and store it locally. The primary doesn't do this.
-    public func setSyncedStorageServiceKey(_ value: Data?, _ transaction: DBWriteTransaction) {
-        masterKeyKvStore.setData(value, key: Keys.syncedStorageServiceKey, transaction: transaction)
-    }
-
-    // Linked devices get the backup key and store it locally. The primary doesn't do this.
-    public func setSyncedBackupKey(_ value: Data?, _ transaction: DBWriteTransaction) {
-        masterKeyKvStore.setData(value, key: Keys.syncedBackupKey, transaction: transaction)
-    }
-
     public func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction) {
         masterKeyKvStore.setString(value, key: Keys.svr2MrEnclaveStringValue, transaction: transaction)
     }
@@ -387,7 +361,7 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
 
     // MARK: - Clearing Keys
 
-    public func clearKeys(_ transaction: DBWriteTransaction) {
+    public func clearSVRKeys(_ transaction: DBWriteTransaction) {
         masterKeyKvStore.removeValues(
             forKeys: [
                 Keys.masterKey,
@@ -400,9 +374,14 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
             ],
             transaction: transaction
         )
+    }
 
-        mbrkKvStore.removeValue(forKey: Self.keyName, transaction: transaction)
-        aepKvStore.removeValue(forKey: Self.aepKeyName, transaction: transaction)
+    public func clearStorageServiceKeys(_ transaction: any DBWriteTransaction) {
+        masterKeyKvStore.removeValue(forKey: Keys.syncedStorageServiceKey, transaction: transaction)
+    }
+
+    public func clearMasterKey(_ transaction: any DBWriteTransaction) {
+        masterKeyKvStore.removeValue(forKey: Keys.masterKey, transaction: transaction)
     }
 
     // MARK: - Cleanup
@@ -509,6 +488,10 @@ public class SVRLocalStorageMock: SVRLocalStorage {
         localMasterKey = MasterKeyMock(value)
     }
 
+    public func clearStorageServiceKeys(_ transaction: any DBWriteTransaction) {
+        fatalError("not implemented")
+    }
+
     public func setMasterKey(fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys, tx: any DBWriteTransaction) throws {
         fatalError("not implemented")
     }
@@ -538,8 +521,6 @@ public class SVRLocalStorageMock: SVRLocalStorage {
         return localMasterKey!
     }
 
-    public func isKeyAvailable(_ key: SVR.DerivedKey, tx: DBReadTransaction) -> Bool {
-        return localMasterKey != nil
-    }
+    public func clearMasterKey(_ transaction: any DBWriteTransaction) { }
 }
 #endif

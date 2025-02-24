@@ -173,10 +173,6 @@ public protocol SecureValueRecovery {
         tx: DBWriteTransaction
     ) throws(SVR.KeysError)
 
-    /// When we fail to decrypt information on storage service on a linked device, we assume the storage
-    /// service key (or master key it is derived from) we have synced from the primary is wrong/out-of-date, and wipe it.
-    func clearSyncedStorageServiceKey(transaction: DBWriteTransaction)
-
     /// Rotate the master key and _don't_ back it up to the SVR server, in effect switching to a
     /// local-only master key and disabling PIN usage for backup restoration.
     func useDeviceLocalMasterKey(

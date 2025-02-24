@@ -235,6 +235,10 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     ) {
         Logger.info("")
 
+        // clearKeys will remove any local state and clear any in progress backup state.
+        // This will prevent us continuing any in progress backups/exposes.
+        clearKeys(transaction: transaction)
+
         // Persist AEP locally
         do {
             try localStorage.setAccountEntropyPool(accountEntropyPool, tx: transaction)
@@ -387,7 +391,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         // If either are in flight, they will no-op when they get a response
         // and see no in progress backup state.
         clearInProgressBackup(transaction)
-        localStorage.clearKeys(transaction)
+        localStorage.clearSVRKeys(transaction)
     }
 
     public func storeKeys(
@@ -417,7 +421,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
 
         // Wipe the storage service key, we don't need it anymore.
-        localStorage.setSyncedStorageServiceKey(nil, tx)
+        localStorage.clearStorageServiceKeys(tx)
     }
 
     public func storeKeys(
@@ -459,7 +463,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
 
         // Wipe the storage service key, we don't need it anymore.
-        localStorage.setSyncedStorageServiceKey(nil, tx)
+        localStorage.clearStorageServiceKeys(tx)
 
         // Trigger a re-fetch of the storage manifest if our keys have changed
         if keyChanged {
@@ -468,12 +472,6 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 masterKeySource: .implicit
             )
         }
-    }
-
-    public func clearSyncedStorageServiceKey(transaction: DBWriteTransaction) {
-        Logger.info("")
-        localStorage.setSyncedStorageServiceKey(nil, transaction)
-        localStorage.setMasterKey(nil, transaction)
     }
 
     // MARK: - Backup/Expose Request
