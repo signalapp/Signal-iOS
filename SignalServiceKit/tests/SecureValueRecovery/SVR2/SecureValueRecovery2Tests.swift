@@ -153,7 +153,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         }
 
         // Kick off the migration.
-        svr.performStartupMigrationsIfNecessary()
+        _ = svr.performStartupMigrationsIfNecessary()
 
         XCTAssertEqual(newEnclaveRequestCount, 2)
         XCTAssertEqual(oldEnclaveRequestCount, 1)
@@ -163,7 +163,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         }
 
         // If we try to migrate again, it does nothing because we are at the newest enclave.
-        svr.performStartupMigrationsIfNecessary()
+        _ = svr.performStartupMigrationsIfNecessary()
         XCTAssertEqual(newEnclaveRequestCount, 2)
         XCTAssertEqual(oldEnclaveRequestCount, 1)
     }
@@ -238,7 +238,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         // NOTE: the old enclave should get no requests, its considered dead.
 
         // Kick off the migration.
-        svr.performStartupMigrationsIfNecessary()
+        _ = svr.performStartupMigrationsIfNecessary()
 
         XCTAssertEqual(newEnclaveRequestCount, 2)
 
@@ -247,7 +247,7 @@ class SecureValueRecovery2Tests: XCTestCase {
         }
 
         // If we try to migrate again, it does nothing because we are at the newest enclave.
-        svr.performStartupMigrationsIfNecessary()
+        _ = svr.performStartupMigrationsIfNecessary()
         XCTAssertEqual(newEnclaveRequestCount, 2)
     }
 

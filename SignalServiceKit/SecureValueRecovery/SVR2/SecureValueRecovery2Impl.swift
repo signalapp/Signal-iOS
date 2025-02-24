@@ -112,7 +112,13 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             setLocalMasterKeyIfMissing()
         }
 
-        performStartupMigrationsIfNecessary()
+        // Never migrate in the NSE or extensions.
+        if self.appContext.isMainApp {
+            _ = performStartupMigrationsIfNecessary()
+                .then {
+                    self.backupMasterKeyIfNecessary()
+                }
+        }
     }
 
     // MARK: - Periodic Backups
@@ -1187,26 +1193,43 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         }
     }
 
-    public func performStartupMigrationsIfNecessary() {
+    public func performStartupMigrationsIfNecessary() -> Promise<Void> {
         // Require migrations to succeed before we check for old stuff
         // to wipe, because migrations add old stuff to be wiped.
         // If a migration isn't needed, this returns a success immediately.
-        migrateEnclavesIfNecessary()?
+        migrateEnclavesIfNecessary()
             .done(on: scheduler) { [weak self] in
                 self?.wipeOldEnclavesIfNeeded(auth: .implicit)
                 self?.periodicRefreshCredentialIfNecessary()
             }
-            .cauterize()
+    }
+
+    private func backupMasterKeyIfNecessary() -> Promise<Void> {
+        let (
+            currentPIN,
+            isBackedUp,
+            masterKey
+        ) = db.read { tx in
+            (
+                twoFAManager.pinCode(transaction: tx),
+                localStorage.getIsMasterKeyBackedUp(tx),
+                accountKeyStore.getMasterKey(tx: tx)
+            )
+        }
+        if
+            let currentPIN,
+            let masterKey,
+            !isBackedUp
+        {
+            return backupMasterKey(pin: currentPIN, masterKey: masterKey, authMethod: .implicit).asVoid()
+        }
+        return .value(())
     }
 
     /// If there is a newer enclave than the one we most recently backed up to, backs up known
     /// master key data to it instead, marking the old enclave for deletion.
     /// If there is no migration needed, returns a success promise immediately.
-    private func migrateEnclavesIfNecessary() -> Promise<Void>? {
-        // Never migrate in the NSE or extensions.
-        guard self.appContext.isMainApp else {
-            return nil
-        }
+    private func migrateEnclavesIfNecessary() -> Promise<Void> {
         return firstly(on: scheduler) { [weak self] () -> (String, String, Data)? in
             return self?.db.read { tx -> (String, String, Data)? in
                 guard
