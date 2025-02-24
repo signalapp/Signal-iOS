@@ -315,7 +315,7 @@ public class RegistrationCoordinatorTest {
             verificationMethod: .recoveryPassword(initialMasterKey.regRecoveryPw),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(.old),
+            accountAttributes: Stubs.accountAttributes(initialMasterKey),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles()
@@ -410,7 +410,7 @@ public class RegistrationCoordinatorTest {
         // Once we do the username reclamation,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(.new),
+            Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
@@ -487,7 +487,7 @@ public class RegistrationCoordinatorTest {
             verificationMethod: .recoveryPassword(initialMasterKey.regRecoveryPw),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(.old),
+            accountAttributes: Stubs.accountAttributes(initialMasterKey),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles()
@@ -556,7 +556,7 @@ public class RegistrationCoordinatorTest {
         // Once we do the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(.new),
+            Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
@@ -587,7 +587,8 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make SVR give us back a reg recovery password.
-        svrLocalStorageMock.localMasterKey = Stubs.buildMasterKeyMock(.old)
+        let masterKey = AccountEntropyPool().getMasterKey()
+        svrLocalStorageMock.localMasterKey = masterKey
         svr.hasMasterKey = true
 
         // Run the scheduler for a bit; we don't care about timing these bits.
@@ -652,10 +653,10 @@ public class RegistrationCoordinatorTest {
         }
 
         let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(Stubs.recoveryData(.old).regRecoveryPw),
+            verificationMethod: .recoveryPassword(masterKey.regRecoveryPw),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(.old),
+            accountAttributes: Stubs.accountAttributes(masterKey),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles()
@@ -724,7 +725,8 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make SVR give us back a reg recovery password.
-        svrLocalStorageMock.localMasterKey = Stubs.buildMasterKeyMock(.old)
+        let masterKey = AccountEntropyPool().getMasterKey()
+        svrLocalStorageMock.localMasterKey = masterKey
         svr.hasMasterKey = true
 
         // Run the scheduler for a bit; we don't care about timing these bits.
@@ -802,10 +804,10 @@ public class RegistrationCoordinatorTest {
         }
 
         let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(Stubs.recoveryData(.old).regRecoveryPw),
+            verificationMethod: .recoveryPassword(masterKey.regRecoveryPw),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(.old),
+            accountAttributes: Stubs.accountAttributes(masterKey),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles()
@@ -943,7 +945,7 @@ public class RegistrationCoordinatorTest {
             verificationMethod: .recoveryPassword(initialMasterKey.regRecoveryPw),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(.old),
+            accountAttributes: Stubs.accountAttributes(initialMasterKey),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles()
@@ -963,7 +965,7 @@ public class RegistrationCoordinatorTest {
                 verificationMethod: .recoveryPassword(initialMasterKey.regRecoveryPw),
                 e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
-                accountAttributes: Stubs.accountAttributes(.old),
+                accountAttributes: Stubs.accountAttributes(initialMasterKey),
                 skipDeviceTransfer: true,
                 apnRegistrationId: Stubs.apnsRegistrationId,
                 prekeyBundles: Stubs.prekeyBundles()
@@ -1048,7 +1050,7 @@ public class RegistrationCoordinatorTest {
         // Once we do the storage service restore at t=9,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(.new),
+            Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
@@ -1194,7 +1196,7 @@ public class RegistrationCoordinatorTest {
             verificationMethod: .recoveryPassword(initialMasterKey.regRecoveryPw),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(.old),
+            accountAttributes: Stubs.accountAttributes(initialMasterKey),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles()
@@ -1302,13 +1304,12 @@ public class RegistrationCoordinatorTest {
         // And at t=7 once we do the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(.new),
+            Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
             matcher: { request in
                 actualSteps.append("updateAccountAttributes")
-//                #expect(self.scheduler.currentTime == 7)
                 return request.url == expectedAttributesRequest.url
             },
             statusCode: 200
@@ -1343,7 +1344,6 @@ public class RegistrationCoordinatorTest {
             expectedSteps.insert("restoreStorageService", at: 7)
         }
 
-//        #expect(scheduler.currentTime == 7)
         #expect(actualSteps == expectedSteps)
 
         #expect(nextStepPromise.value == .done)
@@ -1571,7 +1571,8 @@ public class RegistrationCoordinatorTest {
         let coordinator = setupTest(testCase)
         let mode = testCase.mode
 
-        let (newMasterKey, accountEntropyPool) = Stubs.buildKeyDataMocks(.new)
+        let accountEntropyPool = AccountEntropyPool()
+        let newMasterKey = accountEntropyPool.getMasterKey()
         if testCase.newKey == .accountEntropyPool {
             svrLocalStorageMock.accountEntropyPoolIfMissing = accountEntropyPool
         } else {
@@ -1628,7 +1629,7 @@ public class RegistrationCoordinatorTest {
                 verificationMethod: .sessionId(Stubs.sessionId),
                 e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
-                accountAttributes: Stubs.accountAttributes(.new),
+                accountAttributes: Stubs.accountAttributes(newMasterKey),
                 skipDeviceTransfer: true,
                 apnRegistrationId: Stubs.apnsRegistrationId,
                 prekeyBundles: Stubs.prekeyBundles()
@@ -1738,7 +1739,7 @@ public class RegistrationCoordinatorTest {
         // And at t=3 once we do the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(.new),
+            Stubs.accountAttributes(newMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
@@ -3429,7 +3430,8 @@ public class RegistrationCoordinatorTest {
 
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
-        let (newMasterKey, accountEntropyPool) = Stubs.buildKeyDataMocks(.new)
+        let accountEntropyPool = AccountEntropyPool()
+        let newMasterKey = accountEntropyPool.getMasterKey()
         if testCase.newKey == .accountEntropyPool {
             svrLocalStorageMock.accountEntropyPoolIfMissing = accountEntropyPool
         } else {
@@ -3486,7 +3488,7 @@ public class RegistrationCoordinatorTest {
                 verificationMethod: .sessionId(Stubs.sessionId),
                 e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
-                accountAttributes: Stubs.accountAttributes(.new),
+                accountAttributes: Stubs.accountAttributes(newMasterKey),
                 skipDeviceTransfer: true,
                 apnRegistrationId: Stubs.apnsRegistrationId,
                 prekeyBundles: Stubs.prekeyBundles()
@@ -3561,7 +3563,7 @@ public class RegistrationCoordinatorTest {
         // And at t=0 once we skip the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(.new),
+            Stubs.accountAttributes(newMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
@@ -3631,7 +3633,8 @@ public class RegistrationCoordinatorTest {
 
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
-        let (newMasterKey, accountEntropyPool) = Stubs.buildKeyDataMocks(.new)
+        let accountEntropyPool = AccountEntropyPool()
+        let newMasterKey = accountEntropyPool.getMasterKey()
         if testCase.newKey == .accountEntropyPool {
             svrLocalStorageMock.accountEntropyPoolIfMissing = accountEntropyPool
         } else {
@@ -3688,7 +3691,7 @@ public class RegistrationCoordinatorTest {
                 verificationMethod: .sessionId(Stubs.sessionId),
                 e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
-                accountAttributes: Stubs.accountAttributes(.new),
+                accountAttributes: Stubs.accountAttributes(newMasterKey),
                 skipDeviceTransfer: true,
                 apnRegistrationId: Stubs.apnsRegistrationId,
                 prekeyBundles: Stubs.prekeyBundles()
@@ -3777,7 +3780,7 @@ public class RegistrationCoordinatorTest {
         // And at t=0 once we skip the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(.new),
+            Stubs.accountAttributes(newMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
@@ -4041,9 +4044,11 @@ public class RegistrationCoordinatorTest {
 
     // MARK: - Helpers
 
-    func buildKeyDataMocks(_ testCase: TestCase) -> (MasterKeyMock, MasterKeyMock) {
-        let (newMasterKey, newAccountEntropyPool) = Stubs.buildKeyDataMocks(.new)
-        let (oldMasterKey, oldAccountEntropyPool) = Stubs.buildKeyDataMocks(.old)
+    func buildKeyDataMocks(_ testCase: TestCase) -> (MasterKey, MasterKey) {
+        let newAccountEntropyPool = AccountEntropyPool()
+        let newMasterKey = newAccountEntropyPool.getMasterKey()
+        let oldAccountEntropyPool = AccountEntropyPool()
+        let oldMasterKey = oldAccountEntropyPool.getMasterKey()
         switch (testCase.oldKey, testCase.newKey) {
         case (.accountEntropyPool, .accountEntropyPool):
             // on re-registration, make the AEP be present
@@ -4093,33 +4098,7 @@ public class RegistrationCoordinatorTest {
 
         var date: Date = Date()
 
-        struct RegistrationRecoveryData {
-            enum DataType {
-                case old
-                case new
-            }
-
-            let regRecoveryPwData: Data
-            let reglockData: Data
-
-            var regRecoveryPw: String { regRecoveryPwData.base64EncodedString() }
-            var reglockToken: String { reglockData.hexadecimalString }
-
-            init(type: DataType) {
-                let digit: UInt8 = switch type {
-                case .old: 2
-                case .new: 4
-                }
-                regRecoveryPwData = Data(repeating: digit, count: 8)
-                reglockData = Data(repeating: digit-1, count: 8)
-            }
-        }
-
-        static func recoveryData(_ type: RegistrationRecoveryData.DataType) -> RegistrationRecoveryData {
-            return RegistrationRecoveryData(type: type)
-        }
-
-        static func accountAttributes(_ type: RegistrationRecoveryData.DataType) -> AccountAttributes {
+        static func accountAttributes(_ masterKey: MasterKey? = nil) -> AccountAttributes {
             return AccountAttributes(
                 isManualMessageFetchEnabled: false,
                 registrationId: 0,
@@ -4127,7 +4106,7 @@ public class RegistrationCoordinatorTest {
                 unidentifiedAccessKey: "",
                 unrestrictedUnidentifiedAccess: false,
                 twofaMode: .none,
-                registrationRecoveryPassword: recoveryData(type).regRecoveryPw,
+                registrationRecoveryPassword: masterKey?.regRecoveryPw,
                 encryptedDeviceName: nil,
                 discoverableByPhoneNumber: .nobody,
                 hasSVRBackups: true
@@ -4377,28 +4356,6 @@ public class RegistrationCoordinatorTest {
                 exitConfiguration: exitConfigOverride ?? mode.pinExitConfig
             )
         }
-
-        static func buildMasterKeyMock(_ type: RegistrationRecoveryData.DataType) -> MasterKeyMock {
-            let masterKey = MasterKeyMock()
-            masterKey.dataGenerator = {
-                let recoveryData = recoveryData(type)
-                switch $0 {
-                case .registrationRecoveryPassword:
-                    return recoveryData.regRecoveryPwData
-                case .registrationLock:
-                    return recoveryData.reglockData
-                default:
-                    fatalError("Unexpected key derivation")
-                }
-            }
-            return masterKey
-        }
-
-        static func buildKeyDataMocks(_ type: RegistrationRecoveryData.DataType) -> (MasterKeyMock, AccountEntropyPoolMock) {
-            let masterKey = Self.buildMasterKeyMock(type)
-            let accountEntropyPool = AccountEntropyPoolMock(masterKey: masterKey)
-            return (masterKey, accountEntropyPool)
-        }
     }
 }
 
@@ -4440,7 +4397,7 @@ extension RegistrationMode {
     }
 }
 
-private extension MasterKeyMock {
+private extension MasterKey {
     var regRecoveryPw: String { data(for: .registrationRecoveryPassword).rawData.base64EncodedString() }
     var reglockToken: String { data(for: .registrationLock).rawData.hexadecimalString }
 }

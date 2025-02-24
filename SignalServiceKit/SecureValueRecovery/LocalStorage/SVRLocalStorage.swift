@@ -110,7 +110,6 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
 internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
     private let masterKeyKvStore: KeyValueStore
 
-    public static let accountEntropyPoolLength: UInt = 64 /* bytes */
     private static let aepKeyName = "aep"
     private let aepKvStore: KeyValueStore
 
@@ -146,14 +145,19 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         guard let data = masterKeyKvStore.getData(Keys.masterKey, transaction: transaction) else {
             return nil
         }
-        return MasterKeyImpl(masterKey: data)
+        do {
+            return try MasterKey(data: data)
+        } catch {
+            owsFailDebug("Failed to instantiate MasterKey")
+        }
+        return nil
     }
 
     func getOrGenerateMasterKey(_ transaction: DBReadTransaction) -> MasterKey {
         if let masterKey = getMasterKey(transaction) {
             return masterKey
         }
-        return MasterKeyImpl(masterKey: Randomness.generateRandomBytes(SVR.masterKeyLengthBytes))
+        return MasterKey()
     }
 
     public func getPinType(_ transaction: DBReadTransaction) -> SVR.PinType? {
@@ -185,8 +189,12 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         guard let data = mbrkKvStore.getData(Self.keyName, transaction: tx) else {
             return nil
         }
-        // TODO: Log error?
-        return try! BackupKey(contents: Array(data))
+        do {
+            return try BackupKey(contents: Array(data))
+        } catch {
+            owsFailDebug("Failed to instantiate MediaRootBackupKey")
+        }
+        return nil
     }
 
     /// Get the already-generated MRBK or, if one has not been generated, generate one.
@@ -209,15 +217,19 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         guard let accountEntropyPool = aepKvStore.getString(Self.aepKeyName, transaction: tx) else {
             return nil
         }
-        return AccountEntropyPoolImpl(key: accountEntropyPool)
+        do {
+            return try AccountEntropyPool(key: accountEntropyPool)
+        } catch {
+            owsFailDebug("Failed to instantiate AccountEntropyPool")
+        }
+        return nil
     }
 
     func getOrGenerateAccountEntropyPool(tx: any DBWriteTransaction) -> AccountEntropyPool {
         if let value = getAccountEntropyPool(tx: tx) {
             return value
         }
-        let newValue = LibSignalClient.AccountEntropyPool.generate()
-        return AccountEntropyPoolImpl(key: newValue)
+        return AccountEntropyPool()
     }
 
     // MARK: - Setters
@@ -228,7 +240,7 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
 
     public func rotateMasterKey(tx: any DBWriteTransaction) -> (old: MasterKey?, new: MasterKey) {
         let oldValue = getMasterKey(tx)
-        let newValue = MasterKeyImpl(masterKey: Randomness.generateRandomBytes(SVR.masterKeyLengthBytes))
+        let newValue = MasterKey()
         setMasterKey(newValue.rawData, tx)
         return (oldValue, newValue)
     }
@@ -343,7 +355,7 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
 
     func rotateAccountEntropyPool(tx: DBWriteTransaction) -> (old: AccountEntropyPool?, new: AccountEntropyPool) {
         let oldValue = getAccountEntropyPool(tx: tx)
-        let newValue = AccountEntropyPoolImpl(key: LibSignalClient.AccountEntropyPool.generate())
+        let newValue = AccountEntropyPool()
         setAccountEntropyPool(newValue, tx: tx)
         return (oldValue, newValue)
     }
@@ -353,7 +365,7 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
             aepKvStore.removeValue(forKey: Self.aepKeyName, transaction: tx)
             return
         }
-        guard accountEntropyPool.count == Self.accountEntropyPoolLength else {
+        guard accountEntropyPool.count == AccountEntropyPool.Constants.byteLength else {
             throw OWSAssertionError("Invalid AEP length!")
         }
         aepKvStore.setString(accountEntropyPool, key: Self.aepKeyName, transaction: tx)
@@ -418,8 +430,8 @@ public class SVRLocalStorageMock: SVRLocalStorage {
     var accountEntropyPool: AccountEntropyPool?
     var accountEntropyPoolIfMissing: AccountEntropyPool?
     var isMasterKeyBackedUp: Bool = false
-    var localMasterKey: MasterKeyMock?
-    var localMasterKeyIfMissing: MasterKeyMock?
+    var localMasterKey: MasterKey?
+    var localMasterKeyIfMissing: MasterKey?
     var mediaRootBackupKey: Data?
 
     public func getMediaRootBackupKey(tx: any DBReadTransaction) -> BackupKey? {
@@ -472,12 +484,12 @@ public class SVRLocalStorageMock: SVRLocalStorage {
 
     public func setAccountEntropyPool(fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys, tx: any DBWriteTransaction) {
         guard let aep = syncMessage.accountEntropyPool else { return }
-        accountEntropyPool = AccountEntropyPoolImpl(key: aep)
+        accountEntropyPool = try! AccountEntropyPool(key: aep)
     }
 
     public func setAccountEntropyPool(fromProvisioningMessage provisioningMessage: ProvisionMessage, tx: any DBWriteTransaction) throws {
         guard let aep = provisioningMessage.accountEntropyPool else { return }
-        accountEntropyPool = AccountEntropyPoolImpl(key: aep)
+        accountEntropyPool = try! AccountEntropyPool(key: aep)
     }
 
     public func rotateMasterKey(tx: any DBWriteTransaction) -> (old: MasterKey?, new: MasterKey) {
@@ -485,7 +497,8 @@ public class SVRLocalStorageMock: SVRLocalStorage {
     }
 
     public func setMasterKey(_ value: Data?, _ transaction: any DBWriteTransaction) {
-        localMasterKey = MasterKeyMock(value)
+        guard let value else { return }
+        localMasterKey = try! MasterKey(data: value)
     }
 
     public func clearStorageServiceKeys(_ transaction: any DBWriteTransaction) {

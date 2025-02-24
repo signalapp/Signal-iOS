@@ -559,7 +559,11 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                         .then(on: self.schedulers.sync) { result -> Promise<MasterKey> in
                             switch result {
                             case .success:
-                                return .value(MasterKeyImpl(masterKey: backup.masterKey))
+                                do {
+                                    return .value(try MasterKey(data: backup.masterKey))
+                                } catch {
+                                    return .init(error: SVR.SVRError.assertion)
+                                }
                             case .serverError, .networkError, .unretainedError, .localPersistenceError:
                                 return .init(error: SVR.SVRError.assertion)
                             }
@@ -824,7 +828,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         var asSVRResult: SVR.RestoreKeysResult {
             switch self {
-            case .success(let masterKey, _): return .success(MasterKeyImpl(masterKey: masterKey))
+            case .success(let masterKey, _):
+                do {
+                    return .success(try MasterKey(data: masterKey))
+                } catch {
+                    return .genericError(SVR.SVRError.assertion)
+                }
             case .backupMissing: return .backupMissing
             case .invalidPin(let remainingAttempts): return .invalidPin(remainingAttempts: remainingAttempts)
             case .networkError(let error): return .networkError(error)

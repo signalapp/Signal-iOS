@@ -83,13 +83,13 @@ class SecureValueRecovery2Tests: XCTestCase {
             }
         }
 
-        let masterKey = Data(repeating: 8, count: Int(SVR.masterKeyLengthBytes))
+        let masterKey = MasterKey()
         let pin = "0000"
 
         // Set up the local data needed.
         db.write { tx in
             localStorage.setIsMasterKeyBackedUp(true, tx)
-            localStorage.setMasterKey(masterKey, tx)
+            localStorage.setMasterKey(masterKey.rawData, tx)
             localStorage.setSVR2MrEnclaveStringValue(oldEnclave.stringValue, tx)
         }
         mockTSAccountManager.registrationStateMock = { .registered }
@@ -108,7 +108,7 @@ class SecureValueRecovery2Tests: XCTestCase {
                 // First it should issue a backup to the new enclave.
                 XCTAssert(request.hasBackup)
                 // Test mock encruption just passes along the unmodified master key and pin.
-                XCTAssertEqual(request.backup.data, masterKey)
+                XCTAssertEqual(request.backup.data, masterKey.rawData)
                 XCTAssertEqual(request.backup.pin, pin.data(using: .utf8))
 
                 var backupResponse = SVR2Proto_BackupResponse()
@@ -118,7 +118,7 @@ class SecureValueRecovery2Tests: XCTestCase {
                 // Then an expose
                 XCTAssert(request.hasExpose)
                 // Test mock encruption just passes along the unmodified master key.
-                XCTAssertEqual(request.expose.data, masterKey)
+                XCTAssertEqual(request.expose.data, masterKey.rawData)
 
                 var exposeResponse = SVR2Proto_ExposeResponse()
                 exposeResponse.status = .ok
@@ -184,13 +184,13 @@ class SecureValueRecovery2Tests: XCTestCase {
             }
         }
 
-        let masterKey = Data(repeating: 8, count: Int(SVR.masterKeyLengthBytes))
+        let masterKey = MasterKey()
         let pin = "0000"
 
         // Set up the local data needed.
         db.write { tx in
             localStorage.setIsMasterKeyBackedUp(true, tx)
-            localStorage.setMasterKey(masterKey, tx)
+            localStorage.setMasterKey(masterKey.rawData, tx)
             localStorage.setSVR2MrEnclaveStringValue(oldEnclave.stringValue, tx)
         }
         mockTSAccountManager.registrationStateMock = { .registered }
@@ -210,7 +210,7 @@ class SecureValueRecovery2Tests: XCTestCase {
                 // First it should issue a backup to the new enclave.
                 XCTAssert(request.hasBackup)
                 // Test mock encruption just passes along the unmodified master key and pin.
-                XCTAssertEqual(request.backup.data, masterKey)
+                XCTAssertEqual(request.backup.data, masterKey.rawData)
                 XCTAssertEqual(request.backup.pin, pin.data(using: .utf8))
 
                 var backupResponse = SVR2Proto_BackupResponse()
@@ -220,7 +220,7 @@ class SecureValueRecovery2Tests: XCTestCase {
                 // Then an expose
                 XCTAssert(request.hasExpose)
                 // Test mock encruption just passes along the unmodified master key.
-                XCTAssertEqual(request.expose.data, masterKey)
+                XCTAssertEqual(request.expose.data, masterKey.rawData)
 
                 var exposeResponse = SVR2Proto_ExposeResponse()
                 exposeResponse.status = .ok

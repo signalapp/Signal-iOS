@@ -449,17 +449,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         )
 
         let svrLocalStorageMock = SVRLocalStorageMock()
-        let backupKey = Data(repeating: 8, count: 32)
-        svrLocalStorageMock.localMasterKey = MasterKeyMock()
-        svrLocalStorageMock.localMasterKey?.dataGenerator = { derivedKey in
-            switch derivedKey {
-            case .backupKey:
-                // TODO: Migrate this to AEP
-                return backupKey
-            default:
-                owsFail("Unexpected key request")
-            }
-        }
+        svrLocalStorageMock.accountEntropyPool = AccountEntropyPool()
 
         /// We use crashy versions of dependencies that should never be called
         /// during backups, and no-op implementations of payments because those

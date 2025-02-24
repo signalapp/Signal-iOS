@@ -10,7 +10,6 @@ import LibSignalClient
 public enum SVR {
 
     static let maximumKeyAttempts: UInt32 = 10
-    static let masterKeyLengthBytes: UInt = 32
 
     public enum SVRError: Error, Equatable {
         case assertion

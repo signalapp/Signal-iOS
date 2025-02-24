@@ -109,7 +109,7 @@ internal class SVR2ClientWrapperImpl: SVR2ClientWrapper {
                 key: encryptionKey
             )
 
-            guard masterKey.count == SVR.masterKeyLengthBytes else { throw SVR.SVRError.assertion }
+            guard masterKey.count == MasterKey.Constants.byteLength else { throw SVR.SVRError.assertion }
 
             return masterKey
         }
