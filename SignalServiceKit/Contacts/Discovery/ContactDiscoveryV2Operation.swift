@@ -216,10 +216,12 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
             // will get a new, valid token, at the cost of consuming additional quota.
             await persistentState?.reset()
             return ContactDiscoveryError.invalidToken
-        case .networkProtocolError(let message):
-            return ContactDiscoveryError.retryableError("protocol error: \(message)")
-        case .webSocketError(let message):
-            return ContactDiscoveryError.retryableError("web socket error: \(message)")
+        case .networkProtocolError(let message),
+                .webSocketError(let message),
+                .connectionTimeoutError(let message),
+                .requestTimeoutError(let message),
+                .connectionFailed(let message):
+            return ContactDiscoveryError.retryableError("connection error: \(message)")
         default:
             return ContactDiscoveryError.terminalError("libsignal-net error: \(libSignalError)")
         }
