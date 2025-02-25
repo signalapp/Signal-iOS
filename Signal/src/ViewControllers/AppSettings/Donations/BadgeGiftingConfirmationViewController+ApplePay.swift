@@ -41,7 +41,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
         firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             try SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 try DonationViewsUtil.Gifts.throwIfAlreadySendingGift(
-                    to: self.thread,
+                    threadId: self.thread.uniqueId,
                     transaction: transaction
                 )
             }

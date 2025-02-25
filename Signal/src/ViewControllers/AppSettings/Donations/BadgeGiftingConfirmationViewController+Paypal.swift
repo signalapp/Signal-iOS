@@ -18,91 +18,66 @@ extension BadgeGiftingConfirmationViewController {
         // things that come after it.
         var mightHaveBeenCharged = false
 
-        firstly(on: DispatchQueue.sharedUserInitiated) { () -> Void in
-            try SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                try DonationViewsUtil.Gifts.throwIfAlreadySendingGift(
-                    to: self.thread,
-                    transaction: transaction
-                )
-            }
-        }.then(on: DispatchQueue.main) { () -> Promise<(URL, String)> in
-            Promise.wrapAsync {
-                try await DonationViewsUtil.Paypal.createPaypalPaymentBehindActivityIndicator(
+        let threadId = self.thread.uniqueId
+        Task.detached(priority: .userInitiated) {
+            do {
+                try SSKEnvironment.shared.databaseStorageRef.read { transaction in
+                    try DonationViewsUtil.Gifts.throwIfAlreadySendingGift(threadId: threadId, transaction: transaction)
+                }
+                let (approvalUrl, paymentId) = try await DonationViewsUtil.Paypal.createPaypalPaymentBehindActivityIndicator(
                     amount: self.price,
                     level: .giftBadge(.signalGift),
                     fromViewController: self
                 )
-            }
-        }.then(on: DispatchQueue.main) { [weak self] (approvalUrl, paymentId) -> Promise<PreparedGiftPayment> in
-            guard let self else {
-                throw SendGiftError.userCanceledBeforeChargeCompleted
-            }
-            return self.presentPaypal(with: approvalUrl, paymentId: paymentId)
-        }.then(on: DispatchQueue.main) { [weak self] preparedPayment -> Promise<PreparedGiftPayment> in
-            guard let self else { throw SendGiftError.userCanceledBeforeChargeCompleted }
-            return DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: self.thread)
-                .promise
-                .map { safetyNumberConfirmationResult in
-                    switch safetyNumberConfirmationResult {
-                    case .userDidNotConfirmSafetyNumberChange:
-                        throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
-                    case .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded:
-                        return preparedPayment
-                    }
+                let preparedPayment = try await self.presentPaypal(with: approvalUrl, paymentId: paymentId)
+                let safetyNumberConfirmationResult = try await DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: self.thread).promise.awaitable()
+                switch safetyNumberConfirmationResult {
+                case .userDidNotConfirmSafetyNumberChange:
+                    throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
+                case .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded:
+                    break
                 }
-        }.then(on: DispatchQueue.main) { [weak self] preparedPayment -> Promise<Void> in
-            guard let self else { throw SendGiftError.userCanceledBeforeChargeCompleted }
-            mightHaveBeenCharged = true
-            return DonationViewsUtil.wrapPromiseInProgressView(
-                from: self,
-                promise: DonationViewsUtil.Gifts.startJob(
-                    amount: self.price,
-                    preparedPayment: preparedPayment,
-                    thread: self.thread,
-                    messageText: self.messageText,
-                    databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-                    blockingManager: SSKEnvironment.shared.blockingManagerRef
-                )
-            )
-        }.done(on: DispatchQueue.main) { [weak self] in
-            Logger.info("[Gifting] Gifting PayPal donation finished")
-            self?.didCompleteDonation()
-        }.catch { error in
-            let sendGiftError: SendGiftError
-            if let error = error as? SendGiftError {
-                sendGiftError = error
-            } else {
+                mightHaveBeenCharged = true
+                try await DonationViewsUtil.wrapPromiseInProgressView(
+                    from: self,
+                    promise: DonationViewsUtil.Gifts.startJob(
+                        amount: self.price,
+                        preparedPayment: preparedPayment,
+                        thread: self.thread,
+                        messageText: self.messageText,
+                        databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+                        blockingManager: SSKEnvironment.shared.blockingManagerRef
+                    )
+                ).awaitable()
+
+                Logger.info("[Gifting] Gifting PayPal donation finished")
+                await self.didCompleteDonation()
+            } catch let error as SendGiftError {
+                DonationViewsUtil.Gifts.presentErrorSheetIfApplicable(for: error)
+            } catch {
                 owsFailDebug("[Gifting] Expected a SendGiftError but got \(error)")
-                sendGiftError = mightHaveBeenCharged ? .failedAndUserMaybeCharged : .failedAndUserNotCharged
+                DonationViewsUtil.Gifts.presentErrorSheetIfApplicable(for: mightHaveBeenCharged ? .failedAndUserMaybeCharged : .failedAndUserNotCharged)
             }
-            DonationViewsUtil.Gifts.presentErrorSheetIfApplicable(for: sendGiftError)
         }
     }
 
-    private func presentPaypal(with approvalUrl: URL, paymentId: String) -> Promise<PreparedGiftPayment> {
-        Promise.wrapAsync {
-            Logger.info("[Gifting] Presenting PayPal web UI for user approval of gift donation")
-            return try await Paypal.presentExpectingApprovalParams(
+    private func presentPaypal(with approvalUrl: URL, paymentId: String) async throws -> PreparedGiftPayment {
+        Logger.info("[Gifting] Presenting PayPal web UI for user approval of gift donation")
+        do {
+            let approvalParams: Paypal.OneTimePaymentWebAuthApprovalParams = try await Paypal.presentExpectingApprovalParams(
                 approvalUrl: approvalUrl,
                 withPresentationContext: self
             )
-        }.map(on: DispatchQueue.sharedUserInitiated) { approvalParams -> PreparedGiftPayment in
-            .forPaypal(approvalParams: approvalParams, paymentId: paymentId)
-        }.recover(on: DispatchQueue.sharedUserInitiated) { error -> Promise<PreparedGiftPayment> in
-            let errorToThrow: Error
-
-            if let paypalAuthError = error as? Paypal.AuthError {
-                switch paypalAuthError {
-                case .userCanceled:
-                    Logger.info("[Gifting] User canceled PayPal")
-                    errorToThrow = DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
-                }
-            } else {
-                owsFailDebug("[Gifting] PayPal failed with error \(error)")
-                errorToThrow = error
+            return .forPaypal(approvalParams: approvalParams, paymentId: paymentId)
+        } catch let paypalAuthError as Paypal.AuthError {
+            switch paypalAuthError {
+            case .userCanceled:
+                Logger.info("[Gifting] User canceled PayPal")
+                throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
             }
-
-            return Promise<PreparedGiftPayment>(error: errorToThrow)
+        } catch {
+            owsFailDebug("[Gifting] PayPal failed with error \(error)")
+            throw error
         }
     }
 }
