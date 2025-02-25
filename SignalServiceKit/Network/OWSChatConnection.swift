@@ -1876,7 +1876,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
 
         }.catch(on: self.serialQueue) { error in
             switch error as? SignalError {
-            case .connectionTimeoutError(_):
+            case .connectionTimeoutError(_), .requestTimeoutError(_):
                 if requestInfo.timeoutIfNecessary() {
                     self.cycleSocket()
                 }
@@ -2024,8 +2024,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
                     _ = try await chat.send(request)
 
                 } catch is CancellationError,
-                        SignalError.chatServiceInactive(_),
-                        SignalError.chatServiceIntentionallyDisconnected(_) {
+                        SignalError.chatServiceInactive(_) {
                     // No action necessary, we're done with this service.
                     return
                 } catch SignalError.rateLimitedError(retryAfter: let delay, message: _) {
@@ -2045,7 +2044,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         }
     }
 
-    func chatConnection(_ chat: AuthenticatedChatConnection, didReceiveIncomingMessage envelope: Data, serverDeliveryTimestamp: UInt64, sendAck: @escaping () async throws -> Void) {
+    func chatConnection(_ chat: AuthenticatedChatConnection, didReceiveIncomingMessage envelope: Data, serverDeliveryTimestamp: UInt64, sendAck: @escaping () throws -> Void) {
         ensureBackgroundKeepAlive(.receiveMessage)
         let backgroundTask = OWSBackgroundTask(label: "handleIncomingMessage")
 
@@ -2055,20 +2054,19 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 envelopeSource: .websocketIdentified
             ) { error in
-                _ = Task {
-                    defer { backgroundTask.end() }
+                defer { backgroundTask.end() }
 
-                    let ackBehavior = MessageProcessor.handleMessageProcessingOutcome(error: error)
-                    switch ackBehavior {
-                    case .shouldAck:
-                        do {
-                            try await sendAck()
-                        } catch {
-                            Logger.warn("Failed to ack message with serverTimestamp \(serverDeliveryTimestamp): \(error)")
-                        }
-                    case .shouldNotAck(let error):
-                        Logger.info("Skipping ack of message with serverTimestamp \(serverDeliveryTimestamp) because of error: \(error)")
+                let ackBehavior = MessageProcessor.handleMessageProcessingOutcome(error: error)
+                switch ackBehavior {
+                case .shouldAck:
+                    do {
+                        // Note that this does not wait for a response.
+                        try sendAck()
+                    } catch {
+                        Logger.warn("Failed to ack message with serverTimestamp \(serverDeliveryTimestamp): \(error)")
                     }
+                case .shouldNotAck(let error):
+                    Logger.info("Skipping ack of message with serverTimestamp \(serverDeliveryTimestamp) because of error: \(error)")
                 }
             }
         }
