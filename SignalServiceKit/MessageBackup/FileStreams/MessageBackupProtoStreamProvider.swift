@@ -50,7 +50,7 @@ public protocol MessageBackupPlaintextProtoStreamProvider {
     /// caller owns the returned stream, and is responsible for closing it once
     /// finished.
     func openPlaintextOutputFileStream(
-        progress: MessageBackupExportProgress
+        exportProgress: MessageBackupExportProgress?
     ) -> ProtoStream.OpenOutputStreamResult<URL>
 
     /// Open an input stream to read a plaintext backup from a file on disk. The
@@ -58,7 +58,7 @@ public protocol MessageBackupPlaintextProtoStreamProvider {
     /// it once finished.
     func openPlaintextInputFileStream(
         fileUrl: URL,
-        progress: MessageBackupImportProgress
+        importFrameProgress: MessageBackupImportFrameProgress?
     ) -> ProtoStream.OpenInputStreamResult
 }
 
@@ -80,7 +80,7 @@ public protocol MessageBackupEncryptedProtoStreamProvider {
     func openEncryptedOutputFileStream(
         localAci: Aci,
         backupKey: BackupKey,
-        progress: MessageBackupExportProgress,
+        exportProgress: MessageBackupExportProgress?,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenOutputStreamResult<Upload.EncryptedBackupUploadMetadata>
 
@@ -91,7 +91,7 @@ public protocol MessageBackupEncryptedProtoStreamProvider {
         fileUrl: URL,
         localAci: Aci,
         backupKey: BackupKey,
-        progress: MessageBackupImportProgress,
+        importFrameProgress: MessageBackupImportFrameProgress?,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenInputStreamResult
 }
@@ -110,7 +110,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
     public func openEncryptedOutputFileStream(
         localAci: Aci,
         backupKey: BackupKey,
-        progress: MessageBackupExportProgress,
+        exportProgress: MessageBackupExportProgress?,
         tx: any DBReadTransaction
     ) -> ProtoStream.OpenOutputStreamResult<Upload.EncryptedBackupUploadMetadata> {
         do {
@@ -134,7 +134,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
             let fileUrl: URL
             switch genericStreamProvider.openOutputFileStream(
                 transforms: transforms,
-                progress: progress
+                exportProgress: exportProgress
             ) {
             case .success(let _outputStream, let _fileUrlProvider):
                 outputStream = _outputStream
@@ -163,7 +163,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
         fileUrl: URL,
         localAci: Aci,
         backupKey: BackupKey,
-        progress: MessageBackupImportProgress,
+        importFrameProgress: MessageBackupImportFrameProgress?,
         tx: any DBReadTransaction
     ) -> ProtoStream.OpenInputStreamResult {
         guard validateBackupHMAC(localAci: localAci, backupKey: backupKey, fileUrl: fileUrl, tx: tx) else {
@@ -173,12 +173,12 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
         do {
             let messageBackupKey = try backupKey.asMessageBackupKey(for: localAci)
             let transforms: [any StreamTransform] = [
-                InputProgressStreamTransform(progress: progress),
+                importFrameProgress.map { InputProgressStreamTransform(importFrameProgress: $0) },
                 try HmacStreamTransform(hmacKey: Data(messageBackupKey.hmacKey), operation: .validate),
                 try DecryptingStreamTransform(encryptionKey: Data(messageBackupKey.aesKey)),
                 try GzipStreamTransform(.decompress),
                 ChunkedInputStreamTransform(),
-            ]
+            ].compacted()
 
             return genericStreamProvider.openInputFileStream(
                 fileUrl: fileUrl,
@@ -230,7 +230,7 @@ public class MessageBackupPlaintextProtoStreamProviderImpl: MessageBackupPlainte
     }
 
     public func openPlaintextOutputFileStream(
-        progress: MessageBackupExportProgress
+        exportProgress: MessageBackupExportProgress?
     ) -> ProtoStream.OpenOutputStreamResult<URL> {
         let transforms: [any StreamTransform] = [
             ChunkedOutputStreamTransform(),
@@ -238,18 +238,18 @@ public class MessageBackupPlaintextProtoStreamProviderImpl: MessageBackupPlainte
 
         return genericStreamProvider.openOutputFileStream(
             transforms: transforms,
-            progress: progress
+            exportProgress: exportProgress
         )
     }
 
     public func openPlaintextInputFileStream(
         fileUrl: URL,
-        progress: MessageBackupImportProgress
+        importFrameProgress: MessageBackupImportFrameProgress?
     ) -> ProtoStream.OpenInputStreamResult {
         let transforms: [any StreamTransform] = [
-            InputProgressStreamTransform(progress: progress),
+            importFrameProgress.map { InputProgressStreamTransform(importFrameProgress: $0) },
             ChunkedInputStreamTransform(),
-        ]
+        ].compacted()
 
         return genericStreamProvider.openInputFileStream(
             fileUrl: fileUrl,
@@ -267,7 +267,7 @@ private class GenericStreamProvider {
 
     func openOutputFileStream(
         transforms: [any StreamTransform],
-        progress: MessageBackupExportProgress
+        exportProgress: MessageBackupExportProgress?
     ) -> ProtoStream.OpenOutputStreamResult<URL> {
         let fileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         guard let outputStream = OutputStream(url: fileUrl, append: false) else {
@@ -290,7 +290,7 @@ private class GenericStreamProvider {
 
         let messageBackupOutputStream = MessageBackupProtoOutputStreamImpl(
             outputStream: transformingOutputStream,
-            progress: progress
+            exportProgress: exportProgress
         )
 
         return .success(
@@ -345,16 +345,23 @@ private class GenericStreamProvider {
     }
 }
 
+// MARK: -
+
+/// Reports bytes read to a progress sink.
+///
+/// - Important
+/// This transform tracks the size of data it receives; consequently, if it is
+/// applied after transforms that affect the size of read data, such as
+/// decompression or decryption, it may report an unexpected size.
 private class InputProgressStreamTransform: StreamTransform {
+    private let importFrameProgress: MessageBackupImportFrameProgress
 
-    private let progress: MessageBackupImportProgress
-
-    init(progress: MessageBackupImportProgress) {
-        self.progress = progress
+    init(importFrameProgress: MessageBackupImportFrameProgress) {
+        self.importFrameProgress = importFrameProgress
     }
 
     func transform(data: Data) throws -> Data {
-        progress.didReadBytes(byteLength: Int64(data.byteLength))
+        importFrameProgress.didReadBytes(count: data.count)
         return data
     }
 }

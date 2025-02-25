@@ -210,7 +210,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         localIdentifiers: LocalIdentifiers,
         backupKey: BackupKey,
         backupPurpose: MessageBackupPurpose,
-        progress: OWSProgressSink?
+        progress progressSink: OWSProgressSink?
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
         guard
             FeatureFlags.messageBackupFileAlpha
@@ -220,14 +220,19 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
-        await migrateAttachmentsBeforeBackup(progress: progress)
+        let exportProgress: MessageBackupExportProgress?
+        if let progressSink {
+            exportProgress = try await .prepare(sink: progressSink, db: db)
+        } else {
+            exportProgress = nil
+        }
+
+        await migrateAttachmentsBeforeBackup(progress: progressSink)
 
         let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
         defer {
             handle.invalidate()
         }
-
-        let progress = try await MessageBackupExportProgress.prepare(sink: progress, db: db)
 
         return try await _exportBackup<Upload.EncryptedBackupUploadMetadata>(
             benchTitle: "Export encrypted Backup",
@@ -237,7 +242,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 return encryptedStreamProvider.openEncryptedOutputFileStream(
                     localAci: localIdentifiers.aci,
                     backupKey: backupKey,
-                    progress: progress,
+                    exportProgress: exportProgress,
                     tx: tx
                 )
             }
@@ -247,21 +252,26 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     public func exportPlaintextBackup(
         localIdentifiers: LocalIdentifiers,
         backupPurpose: MessageBackupPurpose,
-        progress: OWSProgressSink?
+        progress progressSink: OWSProgressSink?
     ) async throws -> URL {
         guard FeatureFlags.messageBackupFileAlpha else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
 
-        await migrateAttachmentsBeforeBackup(progress: progress)
+        let exportProgress: MessageBackupExportProgress?
+        if let progressSink {
+            exportProgress = try await .prepare(sink: progressSink, db: db)
+        } else {
+            exportProgress = nil
+        }
+
+        await migrateAttachmentsBeforeBackup(progress: progressSink)
 
         let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
         defer {
             handle.invalidate()
         }
-
-        let progress = try await MessageBackupExportProgress.prepare(sink: progress, db: db)
 
         return try await _exportBackup<URL>(
             benchTitle: "Export plaintext Backup",
@@ -269,7 +279,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             localIdentifiers: localIdentifiers,
             openOutputStreamBlock: { tx in
                 return plaintextStreamProvider.openPlaintextOutputFileStream(
-                    progress: progress
+                    exportProgress: exportProgress
                 )
             }
         )
@@ -610,21 +620,29 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
         backupKey: BackupKey,
-        progress: OWSProgressSink?
+        progress progressSink: OWSProgressSink?
     ) async throws {
         guard FeatureFlags.messageBackupFileAlpha || FeatureFlags.linkAndSyncLinkedImport else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
 
-        await migrateAttachmentsBeforeBackup(progress: progress)
+        let importFrameProgress: MessageBackupImportFrameProgress?
+        if let progressSink {
+            importFrameProgress = try await .prepare(
+                sink: progressSink,
+                fileUrl: fileUrl
+            )
+        } else {
+            importFrameProgress = nil
+        }
+
+        await migrateAttachmentsBeforeBackup(progress: progressSink)
 
         let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
         defer {
             handle.invalidate()
         }
-
-        let progress = try await MessageBackupImportProgress.prepare(sink: progress, fileUrl: fileUrl)
 
         try await _importBackup(
             benchTitle: "Import encrypted Backup",
@@ -634,7 +652,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     fileUrl: fileUrl,
                     localAci: localIdentifiers.aci,
                     backupKey: backupKey,
-                    progress: progress,
+                    importFrameProgress: importFrameProgress,
                     tx: tx
                 )
             }
@@ -644,21 +662,29 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     public func importPlaintextBackup(
         fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        progress: OWSProgressSink?
+        progress progressSink: OWSProgressSink?
     ) async throws {
         guard FeatureFlags.messageBackupFileAlpha else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
 
-        await migrateAttachmentsBeforeBackup(progress: progress)
+        let importFrameProgress: MessageBackupImportFrameProgress?
+        if let progressSink {
+            importFrameProgress = try await .prepare(
+                sink: progressSink,
+                fileUrl: fileUrl
+            )
+        } else {
+            importFrameProgress = nil
+        }
+
+        await migrateAttachmentsBeforeBackup(progress: progressSink)
 
         let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
         defer {
             handle.invalidate()
         }
-
-        let progress = try await MessageBackupImportProgress.prepare(sink: progress, fileUrl: fileUrl)
 
         try await _importBackup(
             benchTitle: "Import plaintext Backup",
@@ -666,7 +692,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             openInputStreamBlock: { tx in
                 return plaintextStreamProvider.openPlaintextInputFileStream(
                     fileUrl: fileUrl,
-                    progress: progress
+                    importFrameProgress: importFrameProgress
                 )
             }
         )

@@ -38,22 +38,21 @@ public protocol MessageBackupProtoOutputStream {
     func closeFileStream() throws
 }
 
-internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStream {
-
+class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStream {
     private let outputStream: OutputStreamable
-    private let progress: MessageBackupExportProgress
+    private let exportProgress: MessageBackupExportProgress?
 
     internal init(
         outputStream: OutputStreamable,
-        progress: MessageBackupExportProgress
+        exportProgress: MessageBackupExportProgress?
     ) {
         self.outputStream = outputStream
-        self.progress = progress
+        self.exportProgress = exportProgress
     }
 
     public private(set) var numberOfWrittenFrames: UInt64 = 0
 
-    internal func writeHeader(_ header: BackupProto_BackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult {
+    func writeHeader(_ header: BackupProto_BackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult {
         let bytes: Data
         do {
             bytes = try header.serializedData()
@@ -65,11 +64,11 @@ internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStrea
         } catch {
             return .fileIOError(error)
         }
-        progress.didExportFrame()
+        exportProgress?.didExportFrame()
         return .success
     }
 
-    internal func writeFrame(_ frame: BackupProto_Frame) -> MessageBackup.ProtoOutputStreamWriteResult {
+    func writeFrame(_ frame: BackupProto_Frame) -> MessageBackup.ProtoOutputStreamWriteResult {
         let bytes: Data
         do {
             bytes = try frame.serializedData()
@@ -82,11 +81,11 @@ internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStrea
             return .fileIOError(error)
         }
         numberOfWrittenFrames += 1
-        progress.didExportFrame()
+        exportProgress?.didExportFrame()
         return .success
     }
 
-    public func closeFileStream() throws {
+    func closeFileStream() throws {
         try? outputStream.close()
     }
 }

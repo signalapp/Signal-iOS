@@ -3,25 +3,22 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-/// Used to track progress of a backup export, which we measure as a fraction of the total
-/// number of database rows we've exported so far.
-/// Note that this even weighting by row does NOT reflect time spent; some rows require
-/// more work and time to process. But this is just an estimate for UX display.
+/// Tracks progress of a Backup export, as a fraction of the number of database
+/// rows we've exported so far over the approximate number we expect to.
+/// - Note
+/// Number of exported database rows is not a perfect metric for time spent, as
+/// some rows require more time and work than others.
 public struct MessageBackupExportProgress {
+    private let progressSource: OWSProgressSource
 
-    public let progressSource: OWSProgressSource?
-
-    private init(progressSource: OWSProgressSource?) {
+    private init(progressSource: OWSProgressSource) {
         self.progressSource = progressSource
     }
 
     public static func prepare(
-        sink: OWSProgressSink?,
+        sink: OWSProgressSink,
         db: any DB
     ) async throws -> Self {
-        guard let sink else {
-            return .init(progressSource: nil)
-        }
         var estimatedFrameCount = try db.read { tx in
             // Get all the major things we iterate over. It doesn't have
             // to be perfect; we'll skip some of these and besides they're
@@ -45,34 +42,28 @@ public struct MessageBackupExportProgress {
     }
 
     public func didExportFrame() {
-        progressSource?.incrementCompletedUnitCount(by: 1)
-    }
-
-    public func didFinishExport() {
-        guard let progressSource else { return }
-        progressSource.incrementCompletedUnitCount(by: progressSource.totalUnitCount)
+        progressSource.incrementCompletedUnitCount(by: 1)
     }
 }
 
-/// Used to track progress of a backup import, which we measure as a fraction of the total
-/// number of bytes in the input file that we've processed so far.
-/// Note that this even weighting by byte does NOT reflect time spent; some frames require
-/// more work and time to process. But this is just an estimate for UX display.
-public struct MessageBackupImportProgress {
+// MARK: -
 
-    public let progressSource: OWSProgressSource?
+/// Tracks the progress of importing frames from a Backup, as a fraction of the
+/// total number of bytes read from the Backup file so far.
+/// - Note
+/// Number of bytes read is not a perfect metric for time spent, as some frames
+/// require more time and work than others.
+public struct MessageBackupImportFrameProgress {
+    private let progressSource: OWSProgressSource
 
-    private init(progressSource: OWSProgressSource?) {
+    private init(progressSource: OWSProgressSource) {
         self.progressSource = progressSource
     }
 
     public static func prepare(
-        sink: OWSProgressSink?,
+        sink: OWSProgressSink,
         fileUrl: URL
     ) async throws -> Self {
-        guard let sink else {
-            return .init(progressSource: nil)
-        }
         guard let totalByteCount = OWSFileSystem.fileSize(of: fileUrl)?.uint64Value else {
             throw OWSAssertionError("Unable to read file size")
         }
@@ -80,8 +71,7 @@ public struct MessageBackupImportProgress {
         return .init(progressSource: progressSource)
     }
 
-    public func didReadBytes(byteLength: Int64) {
-        guard let progressSource else { return }
+    public func didReadBytes(count byteLength: Int) {
         guard let byteLength = UInt64(exactly: byteLength) else {
             owsFailDebug("How did we get such a huge byte length?")
             return
@@ -89,10 +79,5 @@ public struct MessageBackupImportProgress {
         if byteLength > 0 {
             progressSource.incrementCompletedUnitCount(by: byteLength)
         }
-    }
-
-    public func didFinishImport() {
-        guard let progressSource else { return }
-        progressSource.incrementCompletedUnitCount(by: progressSource.totalUnitCount)
     }
 }

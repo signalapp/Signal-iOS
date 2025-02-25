@@ -395,12 +395,10 @@ class MessageBackupIntegrationTests: XCTestCase {
     private func readBackupTimeMs(testCaseFileUrl: URL) async throws -> UInt64 {
         let plaintextStreamProvider = MessageBackupPlaintextProtoStreamProviderImpl()
 
-        let progress = try await MessageBackupImportProgress.prepare(sink: nil, fileUrl: testCaseFileUrl)
-
         let stream: MessageBackupProtoInputStream
         switch plaintextStreamProvider.openPlaintextInputFileStream(
             fileUrl: testCaseFileUrl,
-            progress: progress
+            importFrameProgress: nil
         ) {
         case .success(let _stream, _):
             stream = _stream
