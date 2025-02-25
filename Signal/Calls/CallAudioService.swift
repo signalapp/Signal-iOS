@@ -168,6 +168,9 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         }
 
         if !call.ringRtcCall.isOutgoingVideoMuted || self.isSpeakerEnabled {
+            if self.isSpeakerEnabled {
+                Logger.info("Configure speaker output for group audio call.")
+            }
             // The user is capturing video or wants to use the speaker for an
             // audio call, so choose the VideoChat mode, which enables the speaker
             // with the proximity sensor disabled.
@@ -200,6 +203,9 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
                 // speaker with the proximity sensor disabled.
                 setAudioSession(category: .playback, mode: .default)
             } else {
+                if self.isSpeakerEnabled {
+                    Logger.info("Configure speaker output for audio call.")
+                }
                 // The user is capturing video or wants to use the speaker for an
                 // audio call, so choose the VideoChat mode, which enables the speaker
                 // with the proximity sensor disabled.
@@ -217,7 +223,7 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
 
     @MainActor
     private func handleState(call: IndividualCall) {
-        Logger.verbose("new state: \(call.state)")
+        Logger.info("new state: \(call.state)")
 
         // Stop playing sounds while switching audio session so we don't 
         // get any blips across a temporary unintended route.
@@ -303,7 +309,9 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
     private var currentPlayer: AudioPlayer?
 
     private func stopPlayingAnySounds() {
+        Logger.info("Stop playing sound [\(String(describing: currentPlayer))]")
         currentPlayer?.stop()
+        currentPlayer = nil
     }
 
     private func prepareToPlay(sound: StandardSound) -> AudioPlayer? {
@@ -311,13 +319,15 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
             owsFailDebug("unable to build player for sound: \(sound.displayName)")
             return nil
         }
-        Logger.info("playing sound: \(sound.displayName)")
 
+        Logger.info("Start playing sound: \(sound.displayName)")
         // It's important to stop the current player **before** starting the new player. In the case that
         // we're playing the same sound, since the player is memoized on the sound instance, we'd otherwise
         // stop the sound we just started.
         self.currentPlayer?.stop()
         self.currentPlayer = newPlayer
+
+        Logger.info("playing sound: \(sound.displayName) [\(String(describing: newPlayer))]")
 
         return newPlayer
     }
@@ -345,7 +355,7 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
             return [AudioSource.builtInSpeaker]
         }
 
-        Logger.info("availableInputs: \(availableInputs.map(\.logSafeDescription))")
+        Logger.info("\(availableInputs.map(\.logSafeDescription))")
         return [AudioSource.builtInSpeaker] + availableInputs.map { portDescription in
             return AudioSource(portDescription: portDescription)
         }
@@ -383,6 +393,9 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
     private func setAudioSession(category: AVAudioSession.Category,
                                  mode: AVAudioSession.Mode,
                                  options: AVAudioSession.CategoryOptions = AVAudioSession.CategoryOptions.mixWithOthers) {
+        if let currentPlayer {
+            Logger.info("changing audio session while playing sound [\(String(describing: currentPlayer))]")
+        }
         var audioSessionChanged = false
         do {
             let oldCategory = avAudioSession.category
@@ -396,13 +409,13 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
             audioSessionChanged = true
 
             if oldCategory != category {
-                Logger.debug("audio session changed category: \(oldCategory) -> \(category) ")
+                Logger.info("audio session changed category: \(oldCategory.rawValue) -> \(category.rawValue) ")
             }
             if oldMode != mode {
-                Logger.debug("audio session changed mode: \(oldMode) -> \(mode) ")
+                Logger.info("audio session changed mode: \(oldMode.rawValue) -> \(mode.rawValue) ")
             }
             if oldOptions != options {
-                Logger.debug("audio session changed options: \(oldOptions) -> \(options) ")
+                Logger.info("audio session changed options: \(oldOptions) -> \(options) ")
             }
             try avAudioSession.setCategory(category, mode: mode, options: options)
         } catch {
@@ -411,7 +424,7 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         }
 
         if audioSessionChanged {
-            Logger.info("audio session changed category: \(category), mode: \(mode), options: \(options)")
+            Logger.info("audio session changed category: \(category.rawValue), mode: \(mode.rawValue), options: \(options)")
             self.delegate?.callAudioServiceDidChangeAudioSession(self)
         }
     }

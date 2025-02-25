@@ -679,6 +679,7 @@ extension CallControlsViewModel {
     func didPressMute() {
         let shouldMute = !muteButtonIsSelected
         callService.updateIsLocalAudioMuted(isLocalAudioMuted: shouldMute)
+        callService.callUIAdapter.setIsMuted(call: call, isMuted: shouldMute)
         confirmationToastManager.toastInducingCallControlChangeDidOccur(state: .mute(isOn: shouldMute))
         didOverrideDefaultMuteState = true
         refreshView?()
