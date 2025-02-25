@@ -1114,8 +1114,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     switch result {
                     case .success:
                         return self.updateAccountAttributesAndFinish(accountIdentity: accountIdentity)
-                    case .unretainedSelf:
-                        return unretainedSelfError()
                     case .genericError:
                         return .value(.showErrorSheet(.genericError))
                     }
@@ -3445,7 +3443,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
     private enum FinalizeChangeNumberResult {
         case success
-        case unretainedSelf
         case genericError
     }
 
@@ -3458,17 +3455,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         // Creating a high strust signal recipient for oneself
         // must happen in a transaction initiated off the main thread.
-        return firstly(on: schedulers.global()) { [weak self] () -> FinalizeChangeNumberResult in
-            guard let strongSelf = self else {
-                return .unretainedSelf
-            }
+        return Guarantee.wrapAsync {
             do {
-                try strongSelf.db.write { tx in
-                    try strongSelf.deps.changeNumberPniManager.finalizePniIdentity(
+                try await self.db.awaitableWrite { tx in
+                    try self.deps.changeNumberPniManager.finalizePniIdentity(
                         withPendingState: pniState.asPniState(),
                         transaction: tx
                     )
-                    strongSelf._unsafeToModify_mode = .changingNumber(try strongSelf.loader.savePendingChangeNumber(
+                    self._unsafeToModify_mode = .changingNumber(try self.loader.savePendingChangeNumber(
                         oldState: changeNumberState,
                         pniState: nil,
                         transaction: tx
@@ -3487,14 +3481,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
                     // We do these here, and not in export state, so that we don't risk
                     // syncing out-of-date state to storage service.
-                    strongSelf.deps.registrationStateChangeManager.didUpdateLocalPhoneNumber(
+                    self.deps.registrationStateChangeManager.didUpdateLocalPhoneNumber(
                         accountIdentity.e164,
                         aci: accountIdentity.aci,
                         pni: accountIdentity.pni,
                         tx: tx
                     )
                     // Make sure we update our local account.
-                    strongSelf.deps.storageServiceManager.recordPendingLocalAccountUpdates()
+                    self.deps.storageServiceManager.recordPendingLocalAccountUpdates()
                 }
                 return .success
             } catch {
