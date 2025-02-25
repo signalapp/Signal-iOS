@@ -1,1 +1,1 @@
-• Now when you attempt to start a chat with someone's Signal username, it will work even if you accidentally type the “@” symbol first. Some h@bits @re h@rd to bre@k.
+• Da ora quando provi a iniziare una chat cercando il nome utente Signal di una persona, il nome apparirà anche se digiti per sbaglio la chiocciola prima del nome. Eh sì, perdere certe @bitudini non è f@cile, vero?

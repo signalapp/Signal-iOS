@@ -6404,10 +6404,10 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Gnólachtaí agus institiúidí bréagacha";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Ní iarrfaidh Signal do chód clárúcháin ná UAP ort choíche. Bí ar d'fhaichill ar iarratais a dhéanann daoine eile a phearsanú. Roghnaíonn sealbhóir an chuntais ainm na próifíle agus níl an t-ainm fíoraithe.";
 
 /* Message title describing the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Ainmneacha bréige agus cuntais bhréige";
 
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Déan athbhreithniú cúramach ar an iarratas seo. Níl aon teagmhálaithe nó daoine a mbíonn tú ag comhrá leo sa ghrúpa seo. Seo roinnt rudaí ar cheart a bheith ag faire amach dóibh:";
@@ -8165,7 +8165,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %1$@ when you message them.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Déan athbhreithniú go Cúramach";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Níl aon ghrúpaí i bpáirt ann. Athbhreithnigh iarratais go cúramach.";

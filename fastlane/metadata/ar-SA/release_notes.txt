@@ -1,1 +1,1 @@
-• Now when you attempt to start a chat with someone's Signal username, it will work even if you accidentally type the “@” symbol first. Some h@bits @re h@rd to bre@k.
+• يُمكنك الآن بدء محادثة مع شخصٍ ما باستخدام اسم المُستخدِم الخاص به على سيجنال حتى لو كتبت "@" أولًا عن طريق الخطأ. بعض @العادات @يصعب @علينا@ تركها.

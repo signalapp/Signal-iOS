@@ -6404,10 +6404,10 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "નકલી બિઝનેસ અને સંસ્થાઓ";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal ક્યારેય તમારા રજીસ્ટ્રેશન કોડ અથવા પિન માટે તમારો સંપર્ક કરશે નહીં. કોઈ અન્ય હોવાનો ઢોંગ કરતી વિનંતીઓથી સાવધ રહો. પ્રોફાઇલ નેમ તેમના એકાઉન્ટ ધારક દ્વારા પસંદ કરવામાં આવે છે અને તે ચકાસવામાં આવતા નથી.";
 
 /* Message title describing the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "નકલી નામો અને એકાઉન્ટ";
 
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "આ વિનંતીને કાળજીપૂર્વક રિવ્યૂ કરો. તમારા કોઈ પણ સંપર્કો અથવા તમે જેની સાથે ચેટ કરો છો તે લોકો આ ગ્રૂપમાં નથી. અહીં ધ્યાન રાખવા જેવી કેટલીક બાબતો છે:";
@@ -8165,7 +8165,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "%1$@જ્યારે તમે તેમને મેસેજ આપો ત્યારે અદૃશ્ય થતા મેસેજનો સમય નક્કી કરવામાં આવશે.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "કાળજીપૂર્વક રિવ્યૂ કરો";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "કોમનમાં કોઈ ગ્રુપ નથી. વિનંતીઓની કાળજીપૂર્વક સમીક્ષા કરો.";

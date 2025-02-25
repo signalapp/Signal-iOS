@@ -6404,10 +6404,10 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Väärennetyt yritykset ja organisaatiot";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal ei koskaan ota sinuun yhteyttä pyytääkseen rekisteröintikoodia tai PIN-koodia. Varo pyyntöjä, joissa esitetään toista käyttäjää. Profiilin nimi on tilin haltijan valittavissa eikä sitä vahvisteta.";
 
 /* Message title describing the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Väärennetyt nimet ja tilit";
 
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Tarkista pyyntö huolellisesti. Yksikään kontakteistasi tai ihmisistä, joiden kanssa keskustelet, ei ole tässä ryhmässä. Tässä muutamia asioita, joita kiinnittää varoa:";
@@ -8165,7 +8165,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Viestien katoamisaika on asetettu arvoon %1$@, kun lähetät viestin.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Tarkista huolellisesti";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Ei yhteisiä ryhmiä. Tarkista pyynnöt huolellisesti.";

@@ -1,1 +1,1 @@
-• Now when you attempt to start a chat with someone's Signal username, it will work even if you accidentally type the “@” symbol first. Some h@bits @re h@rd to bre@k.
+• 이제 다른 사용자의 Signal 사용자 이름을 사용하여 대화를 시작하려는 경우 실수로 '@' 기호를 먼저 입력하는 경우에도 해당 기능이 작동합니다.

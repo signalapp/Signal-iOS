@@ -602,7 +602,7 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Débloquer";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Vous pourrez échanger des messages et des appels.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Vous pourrez échanger des messages et des appels avec ce contact.";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Les membres existants pourront vous réintégrer au groupe.";
@@ -2972,7 +2972,7 @@
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ est bloqué";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Seuls les administrateurs de ce groupe peuvent démarrer un appel.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Seuls les admins de ce groupe peuvent démarrer un appel.";
 
 /* Title for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Vous ne pouvez pas démarrer cet appel de groupe";
@@ -6404,10 +6404,10 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Fausses entreprises et institutions";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal ne vous demande jamais de communiquer votre code d'inscription ni votre PIN. Attention aux usurpations d'identité lorsque vous recevez des invitations par message ! Les utilisateurs choisissent librement leur nom de profil et leur identité n'est pas vérifiée.";
 
 /* Message title describing the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Faux noms et faux comptes";
 
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Examinez attentivement cette invitation. Aucun de vos contacts ni aucune des personnes avec lesquelles vous discutez ne fait partie de ce groupe. Certains contenus doivent éveiller vos soupçons. Notamment :";
@@ -8165,7 +8165,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Lorsque vous enverrez des messages à ce contact, le délai avant disparition des messages éphémères sera défini sur %1$@.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Faites attention";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Aucun groupe en commun. Examinez attentivement les demandes avant de les accepter.";

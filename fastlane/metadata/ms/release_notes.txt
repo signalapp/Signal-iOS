@@ -1,1 +1,1 @@
-• Now when you attempt to start a chat with someone's Signal username, it will work even if you accidentally type the “@” symbol first. Some h@bits @re h@rd to bre@k.
+• Kini, apabila anda cuba memulakan sembang dengan nama pengguna Signal seseorang, ia akan tetap berfungsi walaupun anda tersilap menaip simbol “@” terlebih dahulu. Sesetengah t@biat sukar untuk diub@h.

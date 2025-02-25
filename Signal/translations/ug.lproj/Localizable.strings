@@ -6404,10 +6404,10 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "ساختا كارخانا ۋە ئورگانلار";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal ھەرگىز سىزنىڭ تىزىملاش كودىڭىز ياكى PIN نومۇرىڭىز ئۈچۈن سىز بىلەن ئالاقىلاشمايدۇ. باشقىلارنىڭ قىياپىتىگە كىرىۋالغانلارنىڭ تەلەپلىرىدىن ئېھتىيات قىلىڭ. ئارخىپ ناملىرى ئۇلارنىڭ ھېسابات ئىگىسى تەرىپىدىن تاللانغان بولۇپ ، ئۇلار دەلىللەنمىگەن.";
 
 /* Message title describing the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "ساختا ئىسىملار ۋە ھېساباتلار";
 
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "بۇ تەلەپنى ئەستايىدىل كۆرۈپ چىقىڭ. بۇ گۇرۇپپىدا ھېچقانداق سىزنىڭ ئالاقىداشلىرىڭىز ياكى پاراڭلىشىپ باققان كىشىلەر يوق. تۆۋەندىكى بىر قانچە ئىشلارغا دىققەت قىلىڭ:";
@@ -8165,7 +8165,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "سىز ئۇلارغا ئۇچۇر يوللىغاندا غايىب ئۇچۇر ۋاقتى %1$@ غا تەڭشەلدى.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "ئەستايىدىللىق بىلەن تەكشۈرۈڭ";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "ھېچقانداق ئورتاق گۇرۇپپا يوق. تەلەپلەرنى ئەستايىدىللىق بىلەن تەكشۈرۈڭ.";

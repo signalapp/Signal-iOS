@@ -40,9 +40,9 @@
 			<key>few</key>
 			<string>%2$d ثوانٍ</string>
 			<key>many</key>
-			<string>%2$d ثانية</string>
+			<string>%2$d ثانيةً</string>
 			<key>other</key>
-			<string>%2$d ثانية</string>
+			<string>%2$d ثانيةٍ</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_SHORT_VOICE_MEMO_%d</key>
@@ -64,9 +64,9 @@
 			<key>few</key>
 			<string>رسالة صوتية مدتها %1$d ثوانٍ</string>
 			<key>many</key>
-			<string>رسالة صوتية مدتها %1$d ثانية</string>
+			<string>رسالة صوتية مدتها %1$d ثانيةً</string>
 			<key>other</key>
-			<string>رسالة صوتية مدتها %1$d ثانية</string>
+			<string>رسالة صوتية مدتها %1$d ثانيةٍ</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
@@ -80,17 +80,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>إضافة أعضاء جُدد</string>
+			<string>إضافة أعضاء</string>
 			<key>one</key>
-			<string>إضافة ١ عضو جديد</string>
+			<string>إضافة عضو</string>
 			<key>two</key>
-			<string>إضافة أعضاء جُدد</string>
+			<string>إضافة عضوين</string>
 			<key>few</key>
-			<string>إضافة أعضاء جُدد</string>
+			<string>إضافة أعضاء</string>
 			<key>many</key>
-			<string>إضافة أعضاء جُدد</string>
+			<string>إضافة أعضاء</string>
 			<key>other</key>
-			<string>إضافة أعضاء جُدد</string>
+			<string>إضافة أعضاء</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -104,17 +104,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>إضافة %1$d عضو إلى &quot;%2$@&quot;؟</string>
+			<string>هل ترغبُ بإضافة %1$d عضو إلى &quot;%2$@&quot;؟</string>
 			<key>one</key>
-			<string>إضافة عضو إلى &quot;%2$@&quot;؟</string>
+			<string>هل ترغبُ بإضافة عضو إلى &quot;%2$@&quot;؟</string>
 			<key>two</key>
-			<string>إضافة %1$d عضوين إلى &quot;%2$@&quot;؟</string>
+			<string>هل ترغبُ بإضافة %1$d عضوين إلى &quot;%2$@&quot;؟</string>
 			<key>few</key>
-			<string>إضافة %1$d أعضاء إلى &quot;%2$@&quot;؟</string>
+			<string>هل ترغبُ بإضافة %1$d أعضاء إلى &quot;%2$@&quot;؟</string>
 			<key>many</key>
-			<string>إضافة %1$d عضوًا إلى &quot;%2$@&quot;؟</string>
+			<string>هل ترغبُ بإضافة %1$d عضوًا إلى &quot;%2$@&quot;؟</string>
 			<key>other</key>
-			<string>إضافة %1$d عضو إلى &quot;%2$@&quot;؟</string>
+			<string>هل ترغبُ بإضافة %1$d عضوٍ إلى &quot;%2$@&quot;؟</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -128,17 +128,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>إضافة أعضاء جُدد</string>
+			<string>إضافة أعضاء جُدُد</string>
 			<key>one</key>
-			<string>إضافة ١ عضو جديد</string>
+			<string>إضافة عضو جديد</string>
 			<key>two</key>
-			<string>إضافة أعضاء جُدد</string>
+			<string>إضافة عضوين جديدن</string>
 			<key>few</key>
-			<string>إضافة أعضاء جُدد</string>
+			<string>إضافة أعضاء جُدُد</string>
 			<key>many</key>
-			<string>إضافة أعضاء جُدد</string>
+			<string>إضافة أعضاء جُدُد</string>
 			<key>other</key>
-			<string>إضافة أعضاء جُدد</string>
+			<string>إضافة أعضاء جُدُد</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>
@@ -152,17 +152,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>أترغبُ بحذف %1$ld مكالمات؟</string>
+			<string>هل ترغبُ بحذف %1$ld مكالمات؟</string>
 			<key>one</key>
-			<string>أترغبُ بحذف %1$ld مكالمة؟</string>
+			<string>هل ترغبُ بحذف %1$ld مكالمة؟</string>
 			<key>two</key>
-			<string>أترغبُ بحذف %1$ld مكالمتين؟</string>
+			<string>هل ترغبُ بحذف %1$ld مكالمتين؟</string>
 			<key>few</key>
-			<string>أترغبُ بحذف %1$ld مكالمات؟</string>
+			<string>هل ترغبُ بحذف %1$ld مكالمات؟</string>
 			<key>many</key>
-			<string>أترغبُ بحذف %1$ld مكالمة؟</string>
+			<string>هل ترغبُ بحذف %1$ld مكالمةً؟</string>
 			<key>other</key>
-			<string>أترغبُ بحذف %1$ld مكالمة؟</string>
+			<string>هل ترغبُ بحذف %1$ld مكالمةٍ؟</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -210,7 +210,7 @@
 			<key>many</key>
 			<string>هل توافق على %1$ld طلبًا؟</string>
 			<key>other</key>
-			<string>هل توافق على %1$ld طلب؟</string>
+			<string>هل توافق على %1$ld طلبٍ؟</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_BODY_%ld</key>
@@ -230,11 +230,11 @@
 			<key>two</key>
 			<string>لن يتم إضافة %1$ld شخصين إلى المكالمة.</string>
 			<key>few</key>
-			<string>لن يتم إضافة %1$ld أشخاص إلى المكالمة.</string>
+			<string>لن يتم إضافة %1$ld أشخاصٍ إلى المكالمة.</string>
 			<key>many</key>
 			<string>لن يتم إضافة %1$ld شخصًا إلى المكالمة.</string>
 			<key>other</key>
-			<string>لن يتم إضافة %1$ld شخص إلى المكالمة.</string>
+			<string>لن يتم إضافة %1$ld شخصٍ إلى المكالمة.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld</key>
@@ -254,11 +254,11 @@
 			<key>two</key>
 			<string>هل ترغبُ برفض %1$ld طلبين؟</string>
 			<key>few</key>
-			<string>هل ترغبُ برفض %1$ld طلبات؟</string>
+			<string>هل ترغبُ برفض %1$ld طلباتٍ؟</string>
 			<key>many</key>
 			<string>هل ترغبُ برفض %1$ld طلبًا؟</string>
 			<key>other</key>
-			<string>هل ترغبُ برفض %1$ld طلب؟</string>
+			<string>هل ترغبُ برفض %1$ld طلبٍ؟</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_JOIN_REQUEST_AMOUNT_MORE_BUTTON_%ld</key>
@@ -304,9 +304,9 @@
 			<key>few</key>
 			<string>تمّ حذف %1$ld سجلّات مكالمات.</string>
 			<key>many</key>
-			<string>تمّ حذف %1$ld سجلّات مكالمات.</string>
+			<string>تمّ حذف %1$ld سجلّ مكالمات.</string>
 			<key>other</key>
-			<string>تمّ حذف %1$ld سجلّ مكالمة.</string>
+			<string>تمّ حذف %1$ld سجلّ مكالمات.</string>
 		</dict>
 	</dict>
 	<key>CALL_LINK_REQUEST_HEADER_COUNT_%d</key>
@@ -330,7 +330,7 @@
 			<key>many</key>
 			<string>%1$ld شخصًا ينتظر</string>
 			<key>other</key>
-			<string>%1$ld شخص ينتظر</string>
+			<string>%1$ld شخصٍ ينتظر</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_HERE</key>
@@ -352,9 +352,9 @@
 			<key>few</key>
 			<string>%1$ld أفراد</string>
 			<key>many</key>
-			<string>%1$ld فردا</string>
+			<string>%1$ld فردًا</string>
 			<key>other</key>
-			<string>%1$ld فرد</string>
+			<string>%1$ld فردٍ</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_WAITING</key>
@@ -374,11 +374,11 @@
 			<key>two</key>
 			<string>%1$ld شخصان ينتظران</string>
 			<key>few</key>
-			<string>%1$ld أشخاص ينتظرون</string>
+			<string>%1$ld أشخاصٍ ينتظرون</string>
 			<key>many</key>
 			<string>%1$ld شخصًا ينتظر</string>
 			<key>other</key>
-			<string>%1$ld شخص ينتظر</string>
+			<string>%1$ld شخصٍ ينتظر</string>
 		</dict>
 	</dict>
 	<key>CAMERA_VO_N_ITEMS</key>
@@ -396,13 +396,13 @@
 			<key>one</key>
 			<string>%1$d عنصر</string>
 			<key>two</key>
-			<string>%1$dعناصر</string>
+			<string>%1$dعنصران</string>
 			<key>few</key>
-			<string>%1$dعناصر</string>
-			<key>many</key>
-			<string>%1$dعناصر</string>
-			<key>other</key>
 			<string>%1$d عناصر</string>
+			<key>many</key>
+			<string>%1$d عنصرًا</string>
+			<key>other</key>
+			<string>%1$d عنصرٍ</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -416,17 +416,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>يُستخدم هذا اللون المخصص في %1$d دردشات. هل تريد حذفه لجميع الدردشات؟</string>
+			<string>يُستخدَم هذا اللون المُخصَّص في %1$d دردشات. هل تريد حذفه لجميع الدردشات؟</string>
 			<key>one</key>
-			<string>يُستخدم هذا اللون المخصص في %1$d دردشة. هل تريد حذفه؟</string>
+			<string>يُستخدَم هذا اللون المُخصَّص في %1$d دردشة. هل تريد حذفه لجميع الدردشات؟</string>
 			<key>two</key>
-			<string>يُستخدم هذا اللون المخصص في %1$d دردشتيْن. هل تريد حذفه لجميع الدردشات؟</string>
+			<string>يُستخدَم هذا اللون المُخصَّص في %1$d دردشتيْن. هل تريد حذفه لجميع الدردشات؟</string>
 			<key>few</key>
-			<string>يُستخدم هذا اللون المخصص في %1$d دردشات. هل تريد حذفه لجميع الدردشات؟</string>
+			<string>يُستخدَم هذا اللون المُخصَّص في %1$d دردشات. هل تريد حذفه لجميع الدردشات؟</string>
 			<key>many</key>
-			<string>يُستخدم هذا اللون المخصص في %1$d دردشة. هل تريد حذفه لجميع الدردشات؟</string>
+			<string>يُستخدَم هذا اللون المُخصَّص في %1$d دردشةً. هل تريد حذفه لجميع الدردشات؟</string>
 			<key>other</key>
-			<string>يُستخدم هذا اللون المُخصص في %1$d دردشة. هل تريد حذفه لجميع الدردشات؟</string>
+			<string>يُستخدَم هذا اللون المُخصَّص في %1$d دردشةٍ. هل تريد حذفه لجميع الدردشات؟</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -440,17 +440,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>يُستخدم هذا اللون في %1$d دردشات. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
+			<string>يُستخدَم هذا اللون في %1$d دردشات. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
 			<key>one</key>
-			<string>يُستخدم هذا اللون في %1$d دردشة. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
+			<string>يُستخدَم هذا اللون في %1$d دردشة. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
 			<key>two</key>
-			<string>يُستخدم هذا اللون في %1$d دردشتين. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
+			<string>يُستخدَم هذا اللون في %1$d دردشتين. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
 			<key>few</key>
-			<string>يُستخدم هذا اللون في %1$d دردشات. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
+			<string>يُستخدَم هذا اللون في %1$d دردشات. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
 			<key>many</key>
-			<string>يُستخدم هذا اللون في %1$d دردشة. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
+			<string>يُستخدَم هذا اللون في %1$d دردشةً. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
 			<key>other</key>
-			<string>يُستخدم هذا اللون في %1$d دردشة. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
+			<string>يُستخدَم هذا اللون في %1$d دردشةٍ. هل تريد حفظ التغييرات لجميع الدردشات؟</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -464,17 +464,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>حذف %1$d دردشة؟</string>
+			<string>هل ترغبُ بحذف %1$d دردشة؟</string>
 			<key>one</key>
-			<string>حذف دردشة واحدة؟</string>
+			<string>هل ترغبُ بحذف دردشة واحدة؟</string>
 			<key>two</key>
-			<string>حذف %1$d دردشتيْن؟</string>
+			<string>هل ترغبُ بحذف %1$d دردشتيْن؟</string>
 			<key>few</key>
-			<string>حذف %1$d دردشات؟</string>
+			<string>هل ترغبُ بحذف %1$d دردشات؟</string>
 			<key>many</key>
-			<string>حذف %1$d دردشة؟</string>
+			<string>هل ترغبُ بحذف %1$d دردشةً؟</string>
 			<key>other</key>
-			<string>حذف %1$d دردشة؟</string>
+			<string>هل ترغبُ بحذف %1$d دردشةٍ؟</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -520,9 +520,9 @@
 			<key>few</key>
 			<string>لا يُمكنك تحديد أكثر من %1$d دردشات.</string>
 			<key>many</key>
-			<string>لا يُمكنك تحديد أكثر من %1$d دردشة.</string>
+			<string>لا يُمكنك تحديد أكثر من %1$d دردشةً.</string>
 			<key>other</key>
-			<string>لا يُمكنك تحديد أكثر من %1$d دردشة.</string>
+			<string>لا يُمكنك تحديد أكثر من %1$d دردشةٍ.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -555,17 +555,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>من %2$d معجب</string>
+			<string>من %2$d النتائح</string>
 			<key>one</key>
-			<string>معجب</string>
+			<string>نتيجة واحدة</string>
 			<key>two</key>
-			<string>من %2$d معجبين</string>
+			<string>من %2$d نتيجتين</string>
 			<key>few</key>
-			<string>من %2$d معجبين</string>
+			<string>من %2$d نتائج</string>
 			<key>many</key>
-			<string>من %2$d معجبًا</string>
+			<string>من %2$d نتيجةً</string>
 			<key>other</key>
-			<string>من %2$d معجبٍ</string>
+			<string>من %2$d نتيجةٍ</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -583,13 +583,13 @@
 			<key>one</key>
 			<string>%1$d عضو</string>
 			<key>two</key>
-			<string>%1$d عضويْن</string>
+			<string>%1$d عضوان</string>
 			<key>few</key>
 			<string>%1$d أعضاء</string>
 			<key>many</key>
 			<string>%1$d عضوًا</string>
 			<key>other</key>
-			<string>%1$d عضو</string>
+			<string>%1$d عضوٍ</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -631,13 +631,13 @@
 			<key>one</key>
 			<string>%1$d دقيقة</string>
 			<key>two</key>
-			<string>%1$d دقائق</string>
+			<string>%1$d دقيقتين</string>
 			<key>few</key>
 			<string>%1$d دقائق</string>
 			<key>many</key>
-			<string>%1$d دقائق</string>
+			<string>%1$d دقيقةً</string>
 			<key>other</key>
-			<string>%1$d دقائق</string>
+			<string>%1$d دقيقةٍ</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -659,9 +659,9 @@
 			<key>few</key>
 			<string>مُنذ %1$d دقائق</string>
 			<key>many</key>
-			<string>مُنذ %1$d دقيقة</string>
+			<string>مُنذ %1$d دقيقةً</string>
 			<key>other</key>
-			<string>مُنذ %1$d دقيقة</string>
+			<string>مُنذ %1$d دقيقةٍ</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -675,17 +675,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>حذف %1$d رسالة؟</string>
+			<string>هل ترغبُ بحذف %1$d رسالة؟</string>
 			<key>one</key>
-			<string>حذف رسالة واحدة؟</string>
+			<string>هل ترغبُ بحذف رسالة واحدة؟</string>
 			<key>two</key>
-			<string>حذف %1$d رسالتين؟</string>
+			<string>هل ترغبُ بحذف %1$d رسالتين؟</string>
 			<key>few</key>
-			<string>حذف %1$d رسائل؟</string>
+			<string>هل ترغبُ بحذف %1$d رسائل؟</string>
 			<key>many</key>
-			<string>حذف %1$d رسالة؟</string>
+			<string>هل ترغبُ بحذف %1$d رسالةً؟</string>
 			<key>other</key>
-			<string>حذف %1$d رسالة؟</string>
+			<string>هل ترغبُ بحذف %1$d رسالةٍ؟</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -699,17 +699,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>وصلت المجموعة إلى الحد الأقصى لـ %1$d أعضاء.</string>
+			<string>وصلت المجموعة إلى الحد الأقصى البالغ %1$d أعضاء.</string>
 			<key>one</key>
-			<string>وصلت المجموعة إلى الحد الأقصى لـ %1$d عضو.</string>
+			<string>وصلت المجموعة إلى الحد الأقصى البالغ %1$d عضو.</string>
 			<key>two</key>
-			<string>وصلت المجموعة إلى الحد الأقصى لـ %1$d عضوين.</string>
+			<string>وصلت المجموعة إلى الحد الأقصى البالغ %1$d عضوين.</string>
 			<key>few</key>
-			<string>وصلت المجموعة إلى الحد الأقصى لـ %1$d أعضاء.</string>
+			<string>وصلت المجموعة إلى الحد الأقصى البالغ %1$d أعضاء.</string>
 			<key>many</key>
-			<string>وصلت المجموعة إلى الحد الأقصى لـ %1$d عضوًا.</string>
+			<string>وصلت المجموعة إلى الحد الأقصى البالغ %1$d عضوًا.</string>
 			<key>other</key>
-			<string>وصلت المجموعة إلى الحد الأقصى لـ %1$d عضو.</string>
+			<string>وصلت المجموعة إلى الحد الأقصى البالغ %1$d عضوٍ.</string>
 		</dict>
 	</dict>
 	<key>EDIT_MESSAGE_SEND_TOO_MANY_EDITS_ERROR</key>
@@ -2091,17 +2091,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>لا يمكن إرسال جميع العناصر إلى القِصص التي حددتها لأن نوع الملف غير مدعوم.</string>
+			<string>لا يمكن إرسال جميع العناصر إلى القِصص التي حدَّدتها لأن نوع الملف غير مدعوم.</string>
 			<key>one</key>
-			<string>لا يمكن إرسال جميع العناصر إلى القِصة التي حددتها لأن نوع الملف غير مدعوم.</string>
+			<string>لا يمكن إرسال جميع العناصر إلى القِصة التي حدَّدتها لأن نوع الملف غير مدعوم.</string>
 			<key>two</key>
-			<string>لا يمكن إرسال جميع العناصر إلى القِصص التي حددتها لأن نوع الملف غير مدعوم.</string>
+			<string>لا يمكن إرسال جميع العناصر إلى القِصص التي حدَّدتها لأن نوع الملف غير مدعوم.</string>
 			<key>few</key>
-			<string>لا يمكن إرسال جميع العناصر إلى القِصص التي حددتها لأن نوع الملف غير مدعوم.</string>
+			<string>لا يمكن إرسال جميع العناصر إلى القِصص التي حدَّدتها لأن نوع الملف غير مدعوم.</string>
 			<key>many</key>
-			<string>لا يمكن إرسال جميع العناصر إلى القِصص التي حددتها لأن نوع الملف غير مدعوم.</string>
+			<string>لا يمكن إرسال جميع العناصر إلى القِصص التي حدَّدتها لأن نوع الملف غير مدعوم.</string>
 			<key>other</key>
-			<string>لا يمكن إرسال جميع العناصر إلى القِصص التي حددتها لأن نوع الملف غير مدعوم.</string>
+			<string>لا يمكن إرسال جميع العناصر إلى القِصص التي حدَّدتها لأن نوع الملف غير مدعوم.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

@@ -6404,10 +6404,10 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Lažne tvrtke i ustanove";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal vas nikada neće kontaktirati kako bi vas pitao vaš kôd za registraciju ili PIN. Budite oprezni sa zahtjevima koji se pretvaraju da su netko drugi. Imena profila biraju vlasnici računa i ne provjeravaju se.";
 
 /* Message title describing the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Lažna imena i računi";
 
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Pažljivo pregledajte ovaj zahtjev. Niti jedan od vaših kontakata ili osoba s kojima razgovarate ne nalazi se u ovoj grupi. Slijedi nekoliko stvari na koje trebate pripaziti:";
@@ -8165,7 +8165,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Vrijeme poruka koje nestaju biti će postavljeno na %1$@ kada im pošaljete poruku.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Pažljivo pregledajte";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Nemate zajedničkih grupa. Pažljivo pregledajte zahtjeve.";

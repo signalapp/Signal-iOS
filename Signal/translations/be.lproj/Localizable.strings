@@ -6404,10 +6404,10 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Фэйкавыя прадпрыемствы і ўстановы";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal ніколі не запытвае ў вас код рэгістрацыі або PIN-код. Будзьце пiльнымi: за некаторымі запытамі могуць хавацца іншыя людзі. Імёны профіляў выбірае ўладальнік уліковага запісу, i яны не пацверджаны.";
 
 /* Message title describing the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Фэйкавыя імёны і ўліковыя запісы";
 
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Уважліва разглядзіце гэты запыт. Ні адзін з вашых кантактаў або людзей, з якімі вы размаўляеце ў чаце, не знаходзіцца ў гэтай групе. Вось некалькі момантаў, на якія варта звярнуць увагу:";
@@ -8165,7 +8165,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Час знікнення паведамлення будзе ўстаноўлены на %1$@, калі вы адпраўляеце паведамленне.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Разглядайце ўважліва";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Няма агульных груп. Уважліва разглядайце запыты.";

@@ -1,1 +1,1 @@
-• Now when you attempt to start a chat with someone's Signal username, it will work even if you accidentally type the “@” symbol first. Some h@bits @re h@rd to bre@k.
+• Když se nyní pokusíte zahájit chat s uživatelským jménem někoho ve službě Signal, bude to fungovat, i když omylem napíšete nejprve symbol @.
