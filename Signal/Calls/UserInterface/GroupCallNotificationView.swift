@@ -65,6 +65,8 @@ class GroupCallNotificationView: UIView {
 
         guard let bannerView: BannerView = {
             if membersPendingJoinNotification.count > 0 {
+                // Stop any active ringing when anyone joins the call
+                callService.audioService.stopPlayingAnySounds()
                 if !CurrentAppContext().isAppForegroundAndActive() {
                     callService.audioService.playJoinSound()
                 }

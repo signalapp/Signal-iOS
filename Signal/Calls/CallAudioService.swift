@@ -308,7 +308,7 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
 
     private var currentPlayer: AudioPlayer?
 
-    private func stopPlayingAnySounds() {
+    public func stopPlayingAnySounds() {
         Logger.info("Stop playing sound [\(String(describing: currentPlayer))]")
         currentPlayer?.stop()
         currentPlayer = nil
