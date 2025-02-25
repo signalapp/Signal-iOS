@@ -398,7 +398,7 @@ class MessageBackupIntegrationTests: XCTestCase {
         let stream: MessageBackupProtoInputStream
         switch plaintextStreamProvider.openPlaintextInputFileStream(
             fileUrl: testCaseFileUrl,
-            importFrameProgress: nil
+            frameRestoreProgress: nil
         ) {
         case .success(let _stream, _):
             stream = _stream

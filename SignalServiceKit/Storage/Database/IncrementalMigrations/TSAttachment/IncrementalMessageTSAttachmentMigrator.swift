@@ -12,7 +12,11 @@ public protocol IncrementalMessageTSAttachmentMigrator {
     /// If false, will skip running if previous attempts failed.
     ///
     /// Supports task cancellation.
-    func runUntilFinished(ignorePastFailures: Bool, progress: OWSProgressSink?) async
+    ///
+    /// - Returns
+    /// True if anything was migrated, false otherwise.
+    @discardableResult
+    func runUntilFinished(ignorePastFailures: Bool, progress: OWSProgressSink?) async -> Bool
 
     // Returns true if done.
     func runNextBatch(errorLogger: (String) -> Void) async -> Bool
@@ -57,20 +61,20 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
         Task { await self.runInMainAppBackground() }
     }
 
-    public func runUntilFinished(ignorePastFailures: Bool, progress: OWSProgressSink?) async {
+    public func runUntilFinished(ignorePastFailures: Bool, progress: OWSProgressSink?) async -> Bool {
         // We DO NOT check any of the feature flag or remote config break-glass-es here;
         // this is used by backups which require the migration to have finished
         // and aren't enabled outside internal builds anyway.
 
         if !ignorePastFailures, !store.shouldAttemptMigrationUntilFinished() {
             Logger.warn("Skipping migration because of past failed attempts")
-            return
+            return false
         }
 
         let state = databaseStorage.read(block: store.getState(tx:))
         switch state {
         case .finished:
-            return
+            return false
         case .unstarted, .started:
             Logger.info("Running until finished")
         }
@@ -108,10 +112,12 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
                 try Task.checkCancellation()
             } catch {
                 Logger.warn("Cancelled; stopping after \(batchCount) batches")
-                return
+                return true
             }
         }
+
         Logger.info("Ran until finished after \(batchCount) batches")
+        return true
     }
 
     private func fetchRemainingTSAttachmentCount(tx: SDSAnyReadTransaction) -> UInt64 {
@@ -249,7 +255,9 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
 public class NoOpIncrementalMessageTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator {
     public init() {}
 
-    public func runUntilFinished(ignorePastFailures: Bool, progress: OWSProgressSink?) async {}
+    public func runUntilFinished(ignorePastFailures: Bool, progress: OWSProgressSink?) async -> Bool {
+        return false
+    }
 
     // Returns true if done.
     public func runNextBatch(errorLogger: (String) -> Void) async -> Bool {
@@ -263,7 +271,9 @@ public class IncrementalMessageTSAttachmentMigratorMock: IncrementalMessageTSAtt
 
     public init() {}
 
-    public func runUntilFinished(ignorePastFailures: Bool, progress: OWSProgressSink?) async {}
+    public func runUntilFinished(ignorePastFailures: Bool, progress: OWSProgressSink?) async -> Bool {
+        return false
+    }
 
     // Returns true if done.
     public func runNextBatch(errorLogger: (String) -> Void) async -> Bool {

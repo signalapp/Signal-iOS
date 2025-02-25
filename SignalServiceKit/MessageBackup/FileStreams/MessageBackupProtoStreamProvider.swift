@@ -58,7 +58,7 @@ public protocol MessageBackupPlaintextProtoStreamProvider {
     /// it once finished.
     func openPlaintextInputFileStream(
         fileUrl: URL,
-        importFrameProgress: MessageBackupImportFrameProgress?
+        frameRestoreProgress: MessageBackupImportFrameRestoreProgress?
     ) -> ProtoStream.OpenInputStreamResult
 }
 
@@ -91,7 +91,7 @@ public protocol MessageBackupEncryptedProtoStreamProvider {
         fileUrl: URL,
         localAci: Aci,
         backupKey: BackupKey,
-        importFrameProgress: MessageBackupImportFrameProgress?,
+        frameRestoreProgress: MessageBackupImportFrameRestoreProgress?,
         tx: DBReadTransaction
     ) -> ProtoStream.OpenInputStreamResult
 }
@@ -163,7 +163,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
         fileUrl: URL,
         localAci: Aci,
         backupKey: BackupKey,
-        importFrameProgress: MessageBackupImportFrameProgress?,
+        frameRestoreProgress: MessageBackupImportFrameRestoreProgress?,
         tx: any DBReadTransaction
     ) -> ProtoStream.OpenInputStreamResult {
         guard validateBackupHMAC(localAci: localAci, backupKey: backupKey, fileUrl: fileUrl, tx: tx) else {
@@ -173,7 +173,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
         do {
             let messageBackupKey = try backupKey.asMessageBackupKey(for: localAci)
             let transforms: [any StreamTransform] = [
-                importFrameProgress.map { InputProgressStreamTransform(importFrameProgress: $0) },
+                frameRestoreProgress.map { InputProgressStreamTransform(frameRestoreProgress: $0) },
                 try HmacStreamTransform(hmacKey: Data(messageBackupKey.hmacKey), operation: .validate),
                 try DecryptingStreamTransform(encryptionKey: Data(messageBackupKey.aesKey)),
                 try GzipStreamTransform(.decompress),
@@ -244,10 +244,10 @@ public class MessageBackupPlaintextProtoStreamProviderImpl: MessageBackupPlainte
 
     public func openPlaintextInputFileStream(
         fileUrl: URL,
-        importFrameProgress: MessageBackupImportFrameProgress?
+        frameRestoreProgress: MessageBackupImportFrameRestoreProgress?
     ) -> ProtoStream.OpenInputStreamResult {
         let transforms: [any StreamTransform] = [
-            importFrameProgress.map { InputProgressStreamTransform(importFrameProgress: $0) },
+            frameRestoreProgress.map { InputProgressStreamTransform(frameRestoreProgress: $0) },
             ChunkedInputStreamTransform(),
         ].compacted()
 
@@ -354,14 +354,14 @@ private class GenericStreamProvider {
 /// applied after transforms that affect the size of read data, such as
 /// decompression or decryption, it may report an unexpected size.
 private class InputProgressStreamTransform: StreamTransform {
-    private let importFrameProgress: MessageBackupImportFrameProgress
+    private let frameRestoreProgress: MessageBackupImportFrameRestoreProgress
 
-    init(importFrameProgress: MessageBackupImportFrameProgress) {
-        self.importFrameProgress = importFrameProgress
+    init(frameRestoreProgress: MessageBackupImportFrameRestoreProgress) {
+        self.frameRestoreProgress = frameRestoreProgress
     }
 
     func transform(data: Data) throws -> Data {
-        importFrameProgress.didReadBytes(count: data.count)
+        frameRestoreProgress.didReadBytes(count: data.count)
         return data
     }
 }

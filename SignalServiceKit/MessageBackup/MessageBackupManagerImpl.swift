@@ -220,25 +220,12 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
-        let exportProgress: MessageBackupExportProgress?
-        if let progressSink {
-            exportProgress = try await .prepare(sink: progressSink, db: db)
-        } else {
-            exportProgress = nil
-        }
-
-        await migrateAttachmentsBeforeBackup(progress: progressSink)
-
-        let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
-        defer {
-            handle.invalidate()
-        }
-
         return try await _exportBackup<Upload.EncryptedBackupUploadMetadata>(
-            benchTitle: "Export encrypted Backup",
-            backupPurpose: backupPurpose,
             localIdentifiers: localIdentifiers,
-            openOutputStreamBlock: { tx in
+            backupPurpose: backupPurpose,
+            progressSink: progressSink,
+            benchTitle: "Export encrypted Backup",
+            openOutputStreamBlock: { exportProgress, tx in
                 return encryptedStreamProvider.openEncryptedOutputFileStream(
                     localAci: localIdentifiers.aci,
                     backupKey: backupKey,
@@ -259,25 +246,12 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
-        let exportProgress: MessageBackupExportProgress?
-        if let progressSink {
-            exportProgress = try await .prepare(sink: progressSink, db: db)
-        } else {
-            exportProgress = nil
-        }
-
-        await migrateAttachmentsBeforeBackup(progress: progressSink)
-
-        let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
-        defer {
-            handle.invalidate()
-        }
-
         return try await _exportBackup<URL>(
-            benchTitle: "Export plaintext Backup",
-            backupPurpose: backupPurpose,
             localIdentifiers: localIdentifiers,
-            openOutputStreamBlock: { tx in
+            backupPurpose: backupPurpose,
+            progressSink: progressSink,
+            benchTitle: "Export plaintext Backup",
+            openOutputStreamBlock: { exportProgress, tx in
                 return plaintextStreamProvider.openPlaintextOutputFileStream(
                     exportProgress: exportProgress
                 )
@@ -286,13 +260,40 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     }
 
     private func _exportBackup<OutputStreamMetadata>(
-        benchTitle: String,
-        backupPurpose: MessageBackupPurpose,
         localIdentifiers: LocalIdentifiers,
-        openOutputStreamBlock: (DBReadTransaction) -> MessageBackup.ProtoStream.OpenOutputStreamResult<OutputStreamMetadata>
+        backupPurpose: MessageBackupPurpose,
+        progressSink: OWSProgressSink?,
+        benchTitle: String,
+        openOutputStreamBlock: (
+            MessageBackupExportProgress?,
+            DBReadTransaction
+        ) -> MessageBackup.ProtoStream.OpenOutputStreamResult<OutputStreamMetadata>
     ) async throws -> OutputStreamMetadata {
-        let currentAppVersion = appVersion.currentAppVersion
-        let firstAppVersion = appVersion.firstBackupAppVersion ?? appVersion.firstAppVersion
+        let migrateAttachmentsProgressSink: OWSProgressSink?
+        let exportProgress: MessageBackupExportProgress?
+        if let progressSink {
+            migrateAttachmentsProgressSink = await progressSink.addChild(
+                withLabel: "Export Backup: Migrate Attachments",
+                unitCount: 5
+            )
+            exportProgress = try await .prepare(
+                sink: await progressSink.addChild(
+                    withLabel: "Export Backup: Export Frames",
+                    unitCount: 95
+                ),
+                db: db
+            )
+        } else {
+            migrateAttachmentsProgressSink = nil
+            exportProgress = nil
+        }
+
+        let messageProcessingSuspensionHandle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
+        defer {
+            messageProcessingSuspensionHandle.invalidate()
+        }
+
+        await migrateAttachmentsBeforeBackup(progress: migrateAttachmentsProgressSink)
 
         let result: Result<OutputStreamMetadata, Error> = await db.awaitableWriteWithTxCompletion { tx in
             return self.databaseChangeObserver.disable(tx: tx, during: { tx in
@@ -304,7 +305,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     ) { memorySampler -> OutputStreamMetadata in
                         let outputStream: MessageBackupProtoOutputStream
                         let outputStreamMetadataProvider: () throws -> OutputStreamMetadata
-                        switch openOutputStreamBlock(tx) {
+                        switch openOutputStreamBlock(exportProgress, tx) {
                         case .success(let _outputStream, let _outputStreamMetadataProvider):
                             outputStream = _outputStream
                             outputStreamMetadataProvider = _outputStreamMetadataProvider
@@ -316,8 +317,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                             outputStream: outputStream,
                             localIdentifiers: localIdentifiers,
                             backupPurpose: backupPurpose,
-                            currentAppVersion: currentAppVersion,
-                            firstAppVersion: firstAppVersion,
+                            currentAppVersion: appVersion.currentAppVersion,
+                            firstAppVersion: appVersion.firstBackupAppVersion ?? appVersion.firstAppVersion,
                             memorySampler: memorySampler,
                             tx: tx
                         )
@@ -627,32 +628,17 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
-        let importFrameProgress: MessageBackupImportFrameProgress?
-        if let progressSink {
-            importFrameProgress = try await .prepare(
-                sink: progressSink,
-                fileUrl: fileUrl
-            )
-        } else {
-            importFrameProgress = nil
-        }
-
-        await migrateAttachmentsBeforeBackup(progress: progressSink)
-
-        let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
-        defer {
-            handle.invalidate()
-        }
-
         try await _importBackup(
-            benchTitle: "Import encrypted Backup",
+            fileUrl: fileUrl,
             localIdentifiers: localIdentifiers,
-            openInputStreamBlock: { tx in
+            progressSink: progressSink,
+            benchTitle: "Import encrypted Backup",
+            openInputStreamBlock: { fileUrl, frameRestoreProgress, tx in
                 return encryptedStreamProvider.openEncryptedInputFileStream(
                     fileUrl: fileUrl,
                     localAci: localIdentifiers.aci,
                     backupKey: backupKey,
-                    importFrameProgress: importFrameProgress,
+                    frameRestoreProgress: frameRestoreProgress,
                     tx: tx
                 )
             }
@@ -669,40 +655,65 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
-        let importFrameProgress: MessageBackupImportFrameProgress?
-        if let progressSink {
-            importFrameProgress = try await .prepare(
-                sink: progressSink,
-                fileUrl: fileUrl
-            )
-        } else {
-            importFrameProgress = nil
-        }
-
-        await migrateAttachmentsBeforeBackup(progress: progressSink)
-
-        let handle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
-        defer {
-            handle.invalidate()
-        }
-
         try await _importBackup(
-            benchTitle: "Import plaintext Backup",
+            fileUrl: fileUrl,
             localIdentifiers: localIdentifiers,
-            openInputStreamBlock: { tx in
+            progressSink: progressSink,
+            benchTitle: "Import plaintext Backup",
+            openInputStreamBlock: { fileUrl, frameRestoreProgress, _ in
                 return plaintextStreamProvider.openPlaintextInputFileStream(
                     fileUrl: fileUrl,
-                    importFrameProgress: importFrameProgress
+                    frameRestoreProgress: frameRestoreProgress
                 )
             }
         )
     }
 
     private func _importBackup(
-        benchTitle: String,
+        fileUrl: URL,
         localIdentifiers: LocalIdentifiers,
-        openInputStreamBlock: (DBReadTransaction) -> MessageBackup.ProtoStream.OpenInputStreamResult
+        progressSink: OWSProgressSink?,
+        benchTitle: String,
+        openInputStreamBlock: (
+            URL,
+            MessageBackupImportFrameRestoreProgress?,
+            DBReadTransaction
+        ) -> MessageBackup.ProtoStream.OpenInputStreamResult
     ) async throws {
+        let migrateAttachmentsProgressSink: OWSProgressSink?
+        let frameRestoreProgress: MessageBackupImportFrameRestoreProgress?
+        let recreateIndexesProgress: MessageBackupImportRecreateIndexesProgress?
+        if let progressSink {
+            migrateAttachmentsProgressSink = await progressSink.addChild(
+                withLabel: "Import Backup: Migrate Attachments",
+                unitCount: 5
+            )
+            frameRestoreProgress = try await .prepare(
+                sink: await progressSink.addChild(
+                    withLabel: "Import Backup: Import Frames",
+                    unitCount: 80
+                ),
+                fileUrl: fileUrl
+            )
+            recreateIndexesProgress = await .prepare(
+                sink: await progressSink.addChild(
+                    withLabel: "Import Backup: Recreate Indexes",
+                    unitCount: 15
+                )
+            )
+        } else {
+            migrateAttachmentsProgressSink = nil
+            frameRestoreProgress = nil
+            recreateIndexesProgress = nil
+        }
+
+        let messageProcessingSuspensionHandle = messagePipelineSupervisor.suspendMessageProcessing(for: .messageBackup)
+        defer {
+            messageProcessingSuspensionHandle.invalidate()
+        }
+
+        await migrateAttachmentsBeforeBackup(progress: migrateAttachmentsProgressSink)
+
         let result: Result<BackupProto_BackupInfo, Error> = await db.awaitableWriteWithTxCompletion { tx in
             do {
                 let backupInfo = try BenchMemory(
@@ -712,7 +723,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 ) { memorySampler -> BackupProto_BackupInfo in
                     return try self.databaseChangeObserver.disable(tx: tx) { tx in
                         let inputStream: MessageBackupProtoInputStream
-                        switch openInputStreamBlock(tx) {
+                        switch openInputStreamBlock(fileUrl, frameRestoreProgress, tx) {
                         case .success(let protoStream, _):
                             inputStream = protoStream
                         case .fileNotFound:
@@ -726,6 +737,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         return try self._importBackup(
                             inputStream: inputStream,
                             localIdentifiers: localIdentifiers,
+                            recreateIndexesProgress: recreateIndexesProgress,
                             memorySampler: memorySampler,
                             tx: tx
                         )
@@ -749,6 +761,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private func _importBackup(
         inputStream stream: MessageBackupProtoInputStream,
         localIdentifiers: LocalIdentifiers,
+        recreateIndexesProgress: MessageBackupImportRecreateIndexesProgress?,
         memorySampler: MemorySampler,
         tx: DBWriteTransaction
     ) throws -> BackupProto_BackupInfo {
@@ -774,13 +787,15 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         var frameErrors = [LoggableErrorAndProto]()
         let result = Result<BackupProto_BackupInfo, Error>(catching: {
+            var hasMoreFrames = false
+            var framesRestored: UInt64 = 0
 
             let backupInfo: BackupProto_BackupInfo
-            var hasMoreFrames = false
             switch stream.readHeader() {
             case .success(let header, let moreBytesAvailable):
                 backupInfo = header
                 hasMoreFrames = moreBytesAvailable
+                framesRestored += 1
             case .invalidByteLengthDelimiter:
                 throw OWSAssertionError("invalid byte length delimiter on header")
             case .emptyFinalFrame:
@@ -863,6 +878,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     case let .success(_frame, moreBytesAvailable):
                         frame = _frame
                         hasMoreFrames = moreBytesAvailable
+                        framesRestored += 1
                     case .invalidByteLengthDelimiter:
                         throw OWSAssertionError("invalid byte length delimiter on header")
                     case .emptyFinalFrame:
@@ -1070,6 +1086,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
             // Now that we've imported successfully, we want to recreate the
             // the indexes we temporarily dropped.
+            recreateIndexesProgress?.willStartIndexRecreation(totalFramesRestored: framesRestored)
             try bencher.benchPostFrameRestoreAction(.RecreateInteractionIndexes) {
                 try createIndexes(
                     interactionIndexes,
@@ -1077,6 +1094,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     tx: tx
                 )
             }
+            recreateIndexesProgress?.didFinishIndexRecreation()
 
             // Take any necessary post-frame-restore actions.
             try postFrameRestoreActionManager.performPostFrameRestoreActions(
@@ -1215,7 +1233,22 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     /// TSAttachments must be migrated to v2 Attachments before we can create or restore backups.
     /// Normally this migration happens in the background; force it to run and finish now.
     private func migrateAttachmentsBeforeBackup(progress: OWSProgressSink?) async {
-        await incrementalTSAttachmentMigrator.runUntilFinished(ignorePastFailures: true, progress: progress)
+        let didMigrateAnything = await incrementalTSAttachmentMigrator.runUntilFinished(
+            ignorePastFailures: true,
+            progress: progress
+        )
+
+        if
+            let progress,
+            !didMigrateAnything
+        {
+            // Nothing was migrated, so progress wasn't updated. Complete it!
+            let source = await progress.addSource(
+                withLabel: "TSAttachmentMigrator had nothing to do",
+                unitCount: 1
+            )
+            source.complete()
+        }
     }
 
     public func validateEncryptedBackup(

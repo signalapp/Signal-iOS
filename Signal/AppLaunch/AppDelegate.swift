@@ -445,7 +445,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         }
                     }
                     let migrateTask = Task {
-                        await continuation.dependenciesBridge.incrementalMessageTSAttachmentMigrator
+                        _ = await continuation.dependenciesBridge.incrementalMessageTSAttachmentMigrator
                             .runUntilFinished(ignorePastFailures: false, progress: progressSink)
                     }
                     Task { @MainActor in
