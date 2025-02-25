@@ -367,16 +367,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     ) {
         assert(window.rootViewController == loadingViewController)
         configureGlobalUI(in: window)
-        setUpMainAppEnvironment(
-            launchContext: launchContext,
-            loadingViewController: loadingViewController
-        ).done(on: DispatchQueue.main) { (finalContinuation, sleepBlockObject) in
-            self.didLoadDatabase(
-                finalContinuation: finalContinuation,
-                launchContext: launchContext,
-                sleepBlockObject: sleepBlockObject,
-                window: window
-            )
+        Task {
+            let (finalContinuation, sleepBlockObject) = await setUpMainAppEnvironment(launchContext: launchContext, loadingViewController: loadingViewController)
+            self.didLoadDatabase(finalContinuation: finalContinuation, launchContext: launchContext, sleepBlockObject: sleepBlockObject, window: window)
         }
     }
 
@@ -393,7 +386,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private func setUpMainAppEnvironment(
         launchContext: LaunchContext,
         loadingViewController: LoadingViewController?
-    ) -> Guarantee<(AppSetup.FinalContinuation, DeviceSleepManager.BlockObject)> {
+    ) async -> (AppSetup.FinalContinuation, DeviceSleepManager.BlockObject) {
         let sleepBlockObject = DeviceSleepManager.BlockObject(blockReason: "app launch")
         DeviceSleepManager.shared.addBlock(blockObject: sleepBlockObject)
 
@@ -433,31 +426,25 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager
             )
         )
-        let result = databaseContinuation.prepareDatabase()
-        return result.then(
-            on: SyncScheduler()
-        ) { continuation in
-            if FeatureFlags.runTSAttachmentMigrationBlockingOnLaunch {
-                return Guarantee.wrapAsync {
-                    let progressSink = OWSProgress.createSink { [weak loadingViewController] progress in
-                        Task { @MainActor in
-                            loadingViewController?.updateProgress(progress)
-                        }
-                    }
-                    let migrateTask = Task {
-                        _ = await continuation.dependenciesBridge.incrementalMessageTSAttachmentMigrator
-                            .runUntilFinished(ignorePastFailures: false, progress: progressSink)
-                    }
-                    Task { @MainActor in
-                        loadingViewController?.setCancellableTask(migrateTask)
-                    }
-                    await migrateTask.value
-                    return (continuation, sleepBlockObject)
-                }
-            } else {
-                return .value((continuation, sleepBlockObject))
+        let continuation = await databaseContinuation.prepareDatabase().awaitable()
+        guard FeatureFlags.runTSAttachmentMigrationBlockingOnLaunch else {
+            return (continuation, sleepBlockObject)
+        }
+
+        let progressSink = OWSProgress.createSink { [weak loadingViewController] progress in
+            Task {
+                loadingViewController?.updateProgress(progress)
             }
         }
+        let migrateTask = Task {
+            _ = await continuation.dependenciesBridge.incrementalMessageTSAttachmentMigrator
+                .runUntilFinished(ignorePastFailures: false, progress: progressSink)
+        }
+        Task {
+            loadingViewController?.setCancellableTask(migrateTask)
+        }
+        await migrateTask.value
+        return (continuation, sleepBlockObject)
     }
 
     private func checkEnoughDiskSpaceAvailable() -> Bool {
@@ -1032,12 +1019,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             corruptDatabaseStorage: launchContext.databaseStorage,
             keychainStorage: launchContext.keychainStorage,
             setupSskEnvironment: { databaseStorage in
-                firstly(on: DispatchQueue.main) {
+                return Task {
                     launchContext.databaseStorage = databaseStorage
-                    return self.setUpMainAppEnvironment(
-                        launchContext: launchContext,
-                        loadingViewController: nil
-                    )
+                    return await self.setUpMainAppEnvironment(launchContext: launchContext, loadingViewController: nil)
                 }
             },
             launchApp: { (finalContinuation, sleepBlockObject) in
