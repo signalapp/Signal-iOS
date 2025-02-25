@@ -219,12 +219,10 @@ public class AttachmentPrepViewController: OWSViewController {
     private func presentFullScreen(viewController: UIViewController) {
         if let presentedViewController = presentedViewController {
             owsAssertDebug(false, "Already has presented view controller. [\(presentedViewController)]")
-            presentedViewController.dismiss(animated: false) { [weak self] in
-                self?.presentFullScreen(viewController: viewController)
-            }
-            return
+            presentedViewController.dismiss(animated: false)
         }
 
+        viewController.modalPresentationStyle = .fullScreen
         zoomOut(animated: true) { [weak self] in
             self?.presentFullScreen(viewController, animated: false)
         }
