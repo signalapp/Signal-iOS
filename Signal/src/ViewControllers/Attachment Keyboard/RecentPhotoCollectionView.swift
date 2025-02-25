@@ -317,14 +317,20 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate, UICollectionView
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard fetchingAttachmentIndex == nil else { return }
 
-        guard indexPath.row < collectionContents.assetCount else {
+        if isAccessToPhotosLimited && indexPath.row == 0 {
+            return
+        }
+        
+        let assetItemIndex = isAccessToPhotosLimited ? indexPath.row - 1 : indexPath.row
+        
+        guard assetItemIndex < collectionContents.assetCount else {
             owsFailDebug("Asset does not exist.")
             return
         }
 
         fetchingAttachmentIndex = indexPath
 
-        let asset = collectionContents.asset(at: indexPath.item)
+        let asset = collectionContents.asset(at: assetItemIndex)
         collectionContents.outgoingAttachment(
             for: asset
         ).done { [weak self] attachment in
@@ -418,8 +424,8 @@ extension RecentPhotosCollectionView: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard indexPath.row < collectionContents.assetCount else {
-            // If the index is beyond the asset count, we should be rendering the "select more photos" prompt.
+        if indexPath.row == 0 && isAccessToPhotosLimited {
+            // If the index is 0 and access to photos is limited, we should be rendering the "select more photos" prompt.
             owsAssertDebug(isAccessToPhotosLimited)
 
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SelectMorePhotosCell", for: indexPath)
@@ -433,11 +439,13 @@ extension RecentPhotosCollectionView: UICollectionViewDataSource {
             return cell
         }
 
+        let assetItemIndex = isAccessToPhotosLimited ? indexPath.row - 1 : indexPath.row
+        
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentPhotoCell.reuseIdentifier, for: indexPath) as? RecentPhotoCell else {
             owsFail("cell was unexpectedly nil")
         }
 
-        let assetItem = collectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
+        let assetItem = collectionContents.assetItem(at: assetItemIndex, photoMediaSize: photoMediaSize)
         cell.configure(item: assetItem, isLoading: fetchingAttachmentIndex == indexPath)
         #if DEBUG
         // These accessibilityIdentifiers won't be stable, but they
