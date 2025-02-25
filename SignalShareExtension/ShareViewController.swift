@@ -594,6 +594,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             case webUrl
             case fileUrl
             case contact
+            // Apple docs and runtime checks seem to imply "public.plain-text"
+            // should be able to be loaded from an NSItemProvider as
+            // "public.text", but in practice it fails with:
+            // "A string could not be instantiated because of an unknown error."
+            case plainText
             case text
             case pdf
             case pkPass
@@ -612,6 +617,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     return UTType.fileURL.identifier
                 case .contact:
                     return UTType.vCard.identifier
+                case .plainText:
+                    return UTType.plainText.identifier
                 case .text:
                     return UTType.text.identifier
                 case .pdf:
@@ -639,7 +646,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         var isStoriesCompatible: Bool {
             switch itemType {
-            case .movie, .image, .webUrl, .text:
+            case .movie, .image, .webUrl, .plainText, .text:
                 return true
             case .fileUrl, .contact, .pdf, .pkPass, .json, .data:
                 return false
@@ -653,7 +660,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         //     conforms to public.text, but when asking the OS for text it returns a file URL instead
         let forcedDataTypeIdentifiers: [String] = ["com.topografix.gpx"]
         // due to UT conformance fallbacks the order these are checked is important; more specific types need to come earlier in the list than their fallbacks
-        let itemTypeOrder: [TypedItemProvider.ItemType] = [.movie, .image, .contact, .json, .text, .pdf, .pkPass, .fileUrl, .webUrl, .data]
+        let itemTypeOrder: [TypedItemProvider.ItemType] = [.movie, .image, .contact, .json, .plainText, .text, .pdf, .pkPass, .fileUrl, .webUrl, .data]
         let candidates: [TypedItemProvider] = try itemProviders.map { itemProvider in
             for typeIdentifier in forcedDataTypeIdentifiers {
                 if itemProvider.hasItemConformingToTypeIdentifier(typeIdentifier) {
@@ -732,7 +739,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 throw attachmentError
             }
             return attachment
-        case .text:
+        case .plainText, .text:
             let text: NSString = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, cannotLoadError: .cannotLoadStringObject, failedLoadError: .loadStringObjectFailed)
             return try Self.createAttachment(withText: text as String)
         case .pkPass:
