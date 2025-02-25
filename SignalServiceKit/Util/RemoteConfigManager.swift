@@ -243,6 +243,10 @@ public class RemoteConfig {
         return false
     }
 
+    public var libsignalCdsUseNewConnectLogic: Bool {
+        return isEnabled(.libsignalCdsUseNewConnectLogic, defaultValue: true)
+    }
+
     public var messageQueueTime: TimeInterval {
         return interval(.messageQueueTimeInSeconds, defaultInterval: 45 * .day)
     }
@@ -450,6 +454,7 @@ private enum IsEnabledFlag: String, FlagType {
     case experimentalTransportShadowingHigh = "ios.experimentalTransportEnabled.shadowingHigh"
     case experimentalTransportUseLibsignal = "ios.experimentalTransportEnabled.libsignal"
     case experimentalTransportUseLibsignalAuth = "ios.experimentalTransportEnabled.libsignalAuth"
+    case libsignalCdsUseNewConnectLogic = "ios.libsignal.cdsUseNewConnectLogic"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
     case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
     case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
@@ -476,6 +481,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .experimentalTransportShadowingHigh: false
         case .experimentalTransportUseLibsignal: false
         case .experimentalTransportUseLibsignalAuth: false
+        case .libsignalCdsUseNewConnectLogic: false
         case .messageResendKillSwitch: false
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
@@ -503,6 +509,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .experimentalTransportShadowingHigh: false
         case .experimentalTransportUseLibsignal: false
         case .experimentalTransportUseLibsignalAuth: false
+        case .libsignalCdsUseNewConnectLogic: true
         case .messageResendKillSwitch: false
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false

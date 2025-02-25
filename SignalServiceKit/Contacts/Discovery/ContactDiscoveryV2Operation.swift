@@ -54,12 +54,13 @@ protocol ContactDiscoveryConnection {
 
 extension LibSignalClient.Net: ContactDiscoveryConnection {
     func performRequest(_ request: ContactDiscoveryLookupRequest, auth: Auth) async throws -> CdsiLookup {
-        return try await self.cdsiLookup(auth: auth, request: CdsiLookupRequest(
+        let request = try CdsiLookupRequest(
             e164s: request.newE164s.map(\.stringValue),
             prevE164s: request.prevE164s.map(\.stringValue),
             acisAndAccessKeys: request.acisAndAccessKeys,
             token: request.token
-        ))
+        )
+        return try await self.cdsiLookup(auth: auth, request: request, useNewConnectLogic: RemoteConfig.current.libsignalCdsUseNewConnectLogic)
     }
 
     func continueRequest(afterAckingToken tokenResult: CdsiLookup) async throws -> [ContactDiscoveryResult] {

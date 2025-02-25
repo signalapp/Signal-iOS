@@ -39,7 +39,7 @@ public class MockSSKEnvironment {
                 modelReadCaches: ModelReadCaches(
                     factory: TestableModelReadCacheFactory(appReadiness: appReadiness)
                 ),
-                networkManager: OWSFakeNetworkManager(libsignalNet: nil),
+                networkManager: OWSFakeNetworkManager(appReadiness: appReadiness, libsignalNet: nil),
                 paymentsCurrencies: MockPaymentsCurrencies(),
                 paymentsHelper: MockPaymentsHelper(),
                 pendingReceiptRecorder: NoopPendingReceiptRecorder(),

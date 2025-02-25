@@ -463,7 +463,7 @@ class MessageBackupIntegrationTests: XCTestCase {
             testDependencies: AppSetup.TestDependencies(
                 backupAttachmentDownloadManager: BackupAttachmentDownloadManagerMock(),
                 dateProvider: dateProvider,
-                networkManager: CrashyMocks.MockNetworkManager(libsignalNet: nil),
+                networkManager: CrashyMocks.MockNetworkManager(appReadiness: appReadiness, libsignalNet: nil),
                 webSocketFactory: CrashyMocks.MockWebSocketFactory()
             )
         ).prepareDatabase().awaitable()

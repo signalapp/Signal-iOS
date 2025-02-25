@@ -155,7 +155,10 @@ public class AppSetup {
             schedulers: schedulers
         )
 
-        let networkManager = testDependencies.networkManager ?? NetworkManager(libsignalNet: libsignalNet)
+        let networkManager = testDependencies.networkManager ?? NetworkManager(
+            appReadiness: appReadiness,
+            libsignalNet: libsignalNet
+        )
         let whoAmIManager = WhoAmIManagerImpl(networkManager: networkManager)
 
         let remoteConfigManager = testDependencies.remoteConfigManager ?? RemoteConfigManagerImpl(
