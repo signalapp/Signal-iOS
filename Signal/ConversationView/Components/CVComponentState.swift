@@ -413,8 +413,7 @@ public class CVComponentState: Equatable {
             let shouldShowProfileNamesEducation: Bool
             /// For phone numbers or group member count
             let detailsText: NSAttributedString?
-            /// For mutual groups, lack thereof, "no mutual contacts in group",
-            /// and note-to-self description.
+            /// For mutual groups, lack thereof and note-to-self description.
             let mutualGroupsText: NSAttributedString?
             let threadType: SafetyTipsType
             let shouldShowSafetyTipsButton: Bool
@@ -425,7 +424,7 @@ public class CVComponentState: Equatable {
         let titleText: String
         let shouldShowVerifiedBadge: Bool
         let bioText: String?
-        let safetySection: SafetySection
+        let safetySection: SafetySection?
         let groupDescriptionText: String?
     }
     let threadDetails: ThreadDetails?
