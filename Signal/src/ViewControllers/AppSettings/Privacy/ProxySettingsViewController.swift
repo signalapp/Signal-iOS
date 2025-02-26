@@ -206,9 +206,10 @@ class ProxySettingsViewController: OWSTableViewController2 {
             return
         }
 
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] modal in
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { [weak self] modal in
             guard let self else { return }
-            self.checkConnection().done { [weak self] connected in
+            Promise.race(modal.wasCancelledPromise.map { _ in false }, self.checkConnection().asPromise())
+            .done { [weak self] connected in
                 modal.dismiss { [weak self] in
                     guard let self else { return }
                     if connected {
@@ -228,6 +229,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
                     }
                 }
             }
+            .cauterize()
         }
     }
 
