@@ -1252,6 +1252,9 @@
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "অপেক্ষারত মেসেজ অনুরোধ";
 
+/* A label on the profile about sheet */
+"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Profile names are not verified";
+
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "\"%1$@\" হলো Signal-এ এই ব্যক্তির নিজের জন্য নির্ধারণ করা প্রোফাইলের নাম।";
 
@@ -3426,6 +3429,18 @@
 
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "সদস্যদের পর্যালোচনা করুন";
+
+/* First bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Be cautious of groups that impersonate organizations and businesses";
+
+/* Second bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Profile names of members in groups are not verified";
+
+/* Third bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+
+/* Header for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Group names</bold> are chosen by members of the group.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "গ্রপের নাম (আবশ্যক)";
@@ -5914,6 +5929,18 @@
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ তাদের প্রোফাইল নাম পরিবর্তন করে %2$@ রেখেছেন।";
 
+/* First bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Profile names are not verified";
+
+/* Second bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Be cautious of accounts that impersonate others";
+
+/* Third bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+
+/* Header for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Profile names</bold> on Signal are chosen by their account holder.";
+
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "আপনার নাম";
 
@@ -6404,10 +6431,10 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "ভুয়া ব্যবসা ও প্রতিষ্ঠান";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal কখনোই আপনার রেজিস্ট্রেশন কোড বা পিনের জন্য আপনার সাথে যোগাযোগ করবে না। অন্যদের ছদ্মবেশ ধারণ করে আছে এমন কারো অনুরোধ থেকে সাবধান থাকুন। প্রোফাইলের নামগুলো তাদের অ্যাকাউন্টধারী নির্বাচন করে থাকেন এবং সেগুলো যাচাইকৃত নয়।";
 
 /* Message title describing the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "নকল নাম ও অ্যাকাউন্ট";
 
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "সতর্কতার সাথে এই অনুরোধটি পর্যালোচনা করুন। আপনার কন্টাক্টদের কেউই বা আপনি যাদের সাথে চ্যাট করেন তাদের কেউই এই গ্রুপে নেই। খেয়াল রাখার মতো কিছু বিষয় এখানে দেওয়া হলো:";
@@ -8165,13 +8192,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "আপনি যখন তাদের মেসেজ পাঠাবেন, মেসেজ অদৃশ্য হওয়ার সময়টি %1$@-এ সেট করা হবে।";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
-
-/* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "একইরকম কোনও গ্রুপ নেই। সতর্কতার সাথে অনুরোধগুলি পর্যালোচনা করুন।";
-
-/* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "এই গ্রুপে কোনও কন্ট্যাক্ট নেই। অনুরোধগুলি সতর্কতার সাথে পর্যালোচনা করুন।";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "সাবধানে পর্যালোচনা করুন";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "একটি ইমোজি রিপ্লেস করতে ট্যাপ করুন";
@@ -8212,6 +8233,12 @@
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "এই বার্তাটি মুছে ফেলা হয়েছে।";
 
+/* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+
+/* Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Group names";
+
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%1$@, %2$@, এবং %3$lu এর অতিরিক্ত সদস্য";
 
@@ -8221,6 +8248,12 @@
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%1$@এর সদস্য";
 
+/* Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+
+/* Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Profile names";
+
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "দেখুন";
 
@@ -8229,6 +8262,9 @@
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%1$@এবং%2$@এর সদস্য";
+
+/* A string indicating there are no mutual groups the user shares with this contact */
+"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "No groups in common";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
 "THREAD_MERGE_LEARN_MORE" = "%1$@-এর সাথে ম্যাসেজ আদানপ্রদান করার পর আপনি জানতে পেরেছেন যে এই নম্বরটি %2$@-এর। তার ফোন নম্বরটি ব্যক্তিগত।\n\nউভয় চ্যাট-এর জন্য আপনার ম্যাসেজের ইতিহাস এখানে একত্রিত করা হয়েছে।";

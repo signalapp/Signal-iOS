@@ -1252,6 +1252,9 @@
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Permintaan pesan tertunda";
 
+/* A label on the profile about sheet */
+"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Profile names are not verified";
+
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "“%1$@” adalah nama profil yang ditetapkan pengguna ini untuk dirinya sendiri di Signal.";
 
@@ -1796,7 +1799,7 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Jalankan";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Ini akan membantu kami mengatasi masalah Anda dan mungkin perlu beberapa menit untuk bisa selesai. Anda dapat menutup Signal saat pemeriksaan berjalan, tetapi mohon kembali untuk mengirimkan log.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Kami perlu beberapa menit untuk mengatasi masalah ini. Anda dapat menutup Signal selama pemeriksaan ini berjalan, tetapi harap kembali untuk mengirim log Anda.";
 
 /* Button to skip database integrity check step */
 "DATABASE_INTEGRITY_CHECK_SKIP" = "Lewati";
@@ -1868,25 +1871,25 @@
 "DATE_YESTERDAY" = "Kemarin";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Tidak dapat memaketkan catatan.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Tidak dapat memaketkan log.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Tidak dapat mengunggah catatan.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Tidak dapat mengunggah log.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "Apa yang ingin Anda lakukan terhadap tautan catatan awakutu Anda?";
+"DEBUG_LOG_ALERT_MESSAGE" = "Apa yang ingin Anda lakukan terhadap tautan log debug Anda?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Tidak dapat menemukan catatan apapun.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "Tidak dapat menemukan log.";
 
 /* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Salin Tautan";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Hubungi Layanan Bantuan";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Kirim Email ke Tim Dukungan";
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
-"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Ekspor Catatan";
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Ekspor Log";
 
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Bagikan";
@@ -1895,7 +1898,7 @@
 "DEBUG_LOG_ALERT_TITLE" = "Satu Langkah Lagi";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Informasi tentang catatan awakutu";
+"DEBUG_LOG_INFO_BUTTON" = "Informasi tentang log debug";
 
 /* info message text in conversation view */
 "DECLINED_VIDEO_CALL" = "Anda menolak panggilan video";
@@ -1913,7 +1916,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Anda yakin ingin menghapus akun Anda?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Kode Negeri";
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Kode Negara";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Gagal menghapus akun. Pastikan Wi-Fi atau data seluler dinyalakan, lalu coba lagi.";
@@ -1925,10 +1928,10 @@
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Menghapus Akun…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Tidak ada koneksi internet. Pastikan Wi-Fi atau data seluler dinyalakan, lalu coba lagi.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Tidak ada koneksi internet. Pastikan wifi atau data seluler Anda aktif, lalu coba lagi.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Nomor Telefon";
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Nomor Telepon";
 
 /* Section header */
 "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Konfirmasi Nomor Signal Anda";
@@ -1985,7 +1988,7 @@
 "DEREGISTRATION_NOTIFICATION" = "Anda telah keluar dari Signal di perangkat ini.";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Daftarkan ulang nomor telpon ini";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Daftarkan ulang nomor telepon ini";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "Perangkat ini sudah tidak terdaftar. Hal ini mungkin karena Anda telah mendaftarkan nomor telepon Anda untuk Signal pada perangkat yang berbeda.";
@@ -1997,10 +2000,10 @@
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Terakhir aktif %1$@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Tersambung %1$@";
+"DEVICE_LINKED_AT_LABEL" = "Terhubung %1$@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Gagal memperbarui daftar alat";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Gagal memperbarui daftar perangkat.";
 
 /* Message appearing on a toast indicating a new device was successfully linked and synced. */
 "DEVICE_LIST_UPDATE_NEW_DEVICE_SYNCED_TOAST" = "Sinkronisasi pesan selesai";
@@ -2018,7 +2021,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Hentikan Transfer";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Menutup jendela ini akan menghentikan transfer yang sedang Anda jalankan, apakah Anda yakin untuk melanjutkan?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Menutup halaman ini akan menghentikan transfer yang sedang berjalan. Yakin ingin melanjutkan?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Hentikan Transfer?";
@@ -2027,7 +2030,7 @@
 "DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Pilih cara Anda mentransfer riwayat pesan dan data akun";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Lanjutkan tanpa mentransfer akun dan pesan-pesan Anda";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Lanjutkan tanpa mentransfer akun dan pesan Anda";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Tambahkan iPad ini sebagai perangkat terhubung yang baru";
@@ -2063,28 +2066,28 @@
 "DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Transfer tidak dapat dapat diselesaikan. Pastikan Anda membuka aplikasi Signal di kedua perangkat dan coba lagi.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Tidak dapat memverifikasi perangkat baru Anda, mohon coba lagi";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Tidak dapat memverifikasi perangkat baru Anda. Mohon coba lagi";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_GENERIC" = "Transfer tidak dapat dapat diselesaikan. Pastikan perangkat saling berdekatan dan coba lagi.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Untuk mengatur iPad ini sebagai perangkat tersambung, Anda harus memindai dengan iPad lama Anda";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Untuk menghubungkan iPad ini, Anda harus memindai dengan iPad lama Anda";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Untuk mentransfer akun Anda, Anda harus memindai dengan iPhone Anda";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Untuk mentransfer akun, Anda harus memindai dengan iPhone Anda";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Tidak ada ruang kosong untuk menyelesaikan transfer";
+"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Tidak dapat menyelesaikan transfer karena penyimpanan hampir penuh";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Perbarui ke versi terakhir Signal dan coba lagi";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Perbarui Signal ke versi terbaru dan coba lagi";
 
 /* Button shown to expand a QR code and view it fullscreen. */
 "DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "Lihat lebih besar";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer akun Signal Anda ke perangkat iOS baru. Pastikan perangkat baru Anda berada dalam jangkauan dan dalam kondisi menyala.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer akun Signal ke perangkat iOS baru. Pastikan perangkat baru Anda aktif dan dalam jangkauan.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Transfer Akun";
@@ -2096,13 +2099,13 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Posisikan kode QR ini di dalam bingkai perangkat iOS Anda yang lain.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Tidak melihat penjelasan muncul pada perangkat lama Anda?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Tidak melihat prompt di perangkat lama?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Pindai kode QR";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Tempatkan kedua perangkat dekat satu sama lain. Jangan matikan kedua perangkat dan biarkan Signal terbuka. Transfer dienkripsi ujung-ke-ujung.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Dekatkan kedua perangkat, jangan dimatikan, dan pastikan Signal tetap terbuka. Proses transfer ini dienkripsi secara menyeluruh.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Menerima Data";
@@ -2117,7 +2120,7 @@
 "DEVICE_TRANSFER_SCANNING_TITLE" = "Tahan Perangkat Baru Anda ke Arah Kamera";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Tempatkan kedua perangkat dekat satu sama lain. Jangan matikan kedua perangkat dan biarkan Signal terbuka.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Dekatkan kedua perangkat, jangan dimatikan, dan pastikan Signal tetap terbuka.";
 
 /* The title on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Mentransfer Data";
@@ -2153,7 +2156,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "detik";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Saat diaktifkan, pesan baru yang dikirim dan diterima pada percakapan baru yang Anda mulai akan menghilang setelah dibaca.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Saat Anda mengaktifkan opsi ini, pesan baru yang dikirim dan diterima di percakapan yang Anda mulai akan hilang setelah dibaca.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "minggu";
@@ -2168,7 +2171,7 @@
 "DISMISS_BUTTON_TEXT" = "Batalkan";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Hentikan Menu Konteks";
+"DISMISS_CONTEXT_MENU" = "Tutup Menu Konteks";
 
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Tampilkan lencana di profil";
@@ -2417,10 +2420,10 @@
 "DONATION_RECEIPT_DETAILS" = "Detail";
 
 /* Text on the button that exports the receipt */
-"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Bagikan Resi";
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Bagikan Kuitansi";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Terima kasih telah mendukung Signal. Kontribusi Anda membantu misi kami untuk mengembangkan teknologi privasi sumber terbuka yang melindungi kebebasan berekspresi dan memungkinkan komunikasi secara global bagi jutaan pengguna di seluruh dunia. Jika Anda warga Amerika Serikat, harap simpan resi ini untuk pencatatan pajak Anda. Signal Technology Foundation adalah organisasi nirlaba bebas pajak di Amerika Serikat menurut pasal 501c3 di Undang-undang Pendapatan Internal (IRC). ID Pajak Federal kami adalah 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Terima kasih sudah mendukung Signal. Kontribusi Anda membantu kami untuk mengembangkan teknologi yang melindungi privasi, keamanan, dan kebebasan berekspresi semua orang di seluruh dunia. Jika Anda warga Amerika Serikat, harap simpan kuitansi ini untuk pencatatan pajak. Signal Technology Foundation adalah organisasi nirlaba bebas pajak di Amerika Serikat menurut pasal 501c3 di Internal Revenue Code (IRC). ID Pajak Federal kami adalah 82-4506840.";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donasi untuk Teman";
@@ -2432,16 +2435,16 @@
 "DONATION_RECEIPT_RECURRING" = "Berulang";
 
 /* Title on donation receipts */
-"DONATION_RECEIPT_TITLE" = "Resi donasi";
+"DONATION_RECEIPT_TITLE" = "Kuitansi donasi";
 
 /* Section title for donation type on receipts */
 "DONATION_RECEIPT_TYPE" = "Tipe";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
-"DONATION_RECEIPTS" = "Resi donasi";
+"DONATION_RECEIPTS" = "Kuitansi Donasi";
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
-"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Jika Anda menginstall ulang Signal, resi dari donasi sebelumnya tidak akan tersedia.";
+"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Kuitansi dari donasi sebelumnya tidak akan tersedia jika Anda menginstal ulang Signal.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user cancels the webview before authrizing the payment. */
 "DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "Pembayaran dibatalkan. Silakan coba lagi.";
@@ -2534,13 +2537,13 @@
 "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Donasi untuk Teman";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
-"DONATION_VIEW_DONATION_TO_SIGNAL" = "Berdonasi ke Signal";
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "Donasi ke Signal";
 
 /* Title for the 'Donor FAQ' button on the donation screen */
 "DONATION_VIEW_DONOR_FAQ" = "Pertanyaan Umum tentang Donatur";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
-"DONATION_VIEW_LOAD_FAILED" = "Galat jaringan. Periksa koneksi Anda dan coba lagi.";
+"DONATION_VIEW_LOAD_FAILED" = "Terjadi masalah jaringan. Periksa koneksi Anda dan coba lagi.";
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "Lencana";
@@ -2549,7 +2552,7 @@
 "DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Donasi Bulanan ke Signal";
 
 /* Title for the 'more' section on the donation screen */
-"DONATION_VIEW_MORE_SECTION_TITLE" = "Selanjutnya";
+"DONATION_VIEW_MORE_SECTION_TITLE" = "Selengkapnya";
 
 /* Title for the 'my support' section in the donation view */
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "Dukungan Saya";
@@ -2570,25 +2573,25 @@
 "DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Ketuk Dua Kali untuk Edit";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Anda dapat mengaktifkan akses pada Pengaturan iOS.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Anda dapat mengaktifkan akses di pengaturan iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Butuh Akses Kontak untuk Mengubah Informasi Kontak";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Perlu Akses Kontak untuk Mengubah Informasi Kontak";
 
 /* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Ubah Grup";
+"EDIT_GROUP_DEFAULT_TITLE" = "Edit Grup";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Pengguna ini tidak dapat ditambahkan ke dalam grup sampai dia memperbarui Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Pengguna ini tidak dapat ditambahkan ke grup sampai dia meng-upgrade Signal.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Foto salah.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Foto tidak valid.";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "Perbarui";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Apakah Anda ingin menyimpan perubahan yang telah Anda buat pada grup ini?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Ingin menyimpan perubahan pada grup ini?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Perubahan Tak Tersimpan";
@@ -2612,10 +2615,10 @@
 "EMAIL_INVITE_SUBJECT" = "Pindah ke Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Perangkat Anda tidak dikonfigurasikan untuk mengirim surel. Untuk mengirimkan permintaan dukungan, pasang surel di perangkat Anda atau kirimkan surel ke support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "Perangkat Anda tidak dikonfigurasikan untuk mengirim email. Tambahkan email di perangkat atau kirim email ke support@signal.org untuk meminta dukungan.";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Surel tidak tersedia";
+"EMAIL_SIGNAL_TITLE" = "Email tidak tersedia";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Aktivitas";
@@ -2645,13 +2648,13 @@
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "Simbol";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Perjalanan & Tempat";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Perjalanan & Destinasi";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Tak satupun kontak Anda memiliki Signal";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Kontak Anda tidak ada yang menggunakan Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Mengapa Anda tidak mengundang seseorang?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Undang teman?";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Sibuk";
@@ -2660,16 +2663,16 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Panggilan gagal";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Gagal menembuskan pesan.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Gagal meneruskan pesan.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Gagal menembuskan pesan karena tidak lagi tersedia.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Gagal meneruskan pesan karena pesan sudah tidak tersedia.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Tidak dapat meneruskan pesan karena sudah tak tersedia lagi.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Gagal meneruskan pesan karena pesan sudah tidak tersedia.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Tidak dapat menembuskan pesan";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Tidak dapat meneruskan pesan";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Tidak dapat menyimpan video.";
@@ -2678,40 +2681,40 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Gagal mengirim pesan.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Gagal membuka aplikasi surel";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Gagal membuka aplikasi email";
 
 /* Error indicating that a support mailto link could not be created. */
 "ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Tidak dapat membuat permintaan dukungan";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Gagal mengunggah catatan.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Gagal mengunggah log.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Gagal mengirim pesan ke pengguna karena Anda memblokirnya.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Pesan gagal terkirim karena kekurangan penerima valid.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Pesan tidak terkirim karena beberapa penerimanya tidak valid.";
 
 /* Error indicating that a socket request failed. */
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Permintaan jaringan gagal.";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Waktu habis untuk menghubungi jaringan.";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Waktu habis untuk permintaan jaringan.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Tanggapan tidak valid dari layanan.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Respons tidak valid dari layanan.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Perangkat ini tidak lagi terdaftar dengan nomor telepon Anda. Mohon pasang ulang Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Perangkat ini tidak lagi terdaftar dengan nomor telepon Anda. Mohon instal ulang Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Server Gagal. Mohon coba lagi nanti.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Peladen memerlukan verifikasi pengguna sebelum mengirimkan pesan.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server memerlukan verifikasi sebelum mengirimkan pesan.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Sebuah kegagagalan tak dikenal muncul.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Muncul masalah tak dikenal.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontak bukan pengguna Signal.";
@@ -2720,16 +2723,16 @@
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Gagal mengunggah lampiran.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Sebuah pesan dari %1$@ tidak dapat diterima";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Pesan dari %1$@ tidak dapat diterima";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Sebuah pesan gagal terkirim";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Pesan gagal dikirim";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Menerima pesan rangkap.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Menerima pesan duplikat.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Kunci penerima tidak cocok";
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Kunci penerima tidak valid.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_MESSAGE" = "Pesan yang diterima tidak sinkron.";
@@ -2750,7 +2753,7 @@
 "ERROR_MESSAGE_SESSION_REFRESH" = "Sesi obrolan disegarkan";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "Sebuah kegagagalan tak dikenal muncul.";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "Muncul masalah tak dikenal.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Nomor keamanan diubah";
@@ -2759,10 +2762,10 @@
 "ERROR_NETWORK_FAILURE" = "Jaringan Gagal";
 
 /* Format string for an error alert notification message. Embeds {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Bantu kami meningkatkan Signal dengan melaporkan eror ini beserta log debug dari perangkat Anda ke support@signal.org; %1$@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Bantu kami meningkatkan Signal dengan melaporkan kesalahan ini beserta log debug dari perangkat Anda ke support@signal.org; %1$@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: Terjadi eror";
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: Terjadi masalah";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Perangkat anda tidak lagi terhubung. Harap hubungkan kembali untuk dapat mengirim pesan selanjutnya.";
@@ -2771,7 +2774,7 @@
 "ERROR_SENDING_DEREGISTERED" = "Perangkat anda tidak lagi terdaftar. Harap daftarkan kembali untuk dapat mengirim pesan selanjutnya.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "Versi Signal Anda telah kedaluwarsa. Mohon perbarui untuk dapat mengirimkan pesan.";
+"ERROR_SENDING_EXPIRED" = "Versi Signal Anda sudah kedaluwarsa. Mohon perbarui untuk dapat mengirimkan pesan.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Pengguna tidak terdaftar: %1$@";
@@ -3426,6 +3429,18 @@
 
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Tinjau Anggota";
+
+/* First bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Be cautious of groups that impersonate organizations and businesses";
+
+/* Second bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Profile names of members in groups are not verified";
+
+/* Third bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+
+/* Header for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Group names</bold> are chosen by members of the group.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Nama Grup (Wajib)";
@@ -5914,6 +5929,18 @@
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ mengganti nama profilnya menjadi %2$@.";
 
+/* First bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Profile names are not verified";
+
+/* Second bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Be cautious of accounts that impersonate others";
+
+/* Third bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+
+/* Header for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Profile names</bold> on Signal are chosen by their account holder.";
+
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Nama Anda";
 
@@ -6404,10 +6431,10 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Bisnis dan institusi palsu";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal tidak akan pernah menghubungi Anda untuk meminta kode registrasi atau PIN. Harap berhati-hati bila ada permintaan dari akun yang tidak jelas. Nama profil dipilih oleh pemilik akun dan belum diverifikasi.";
 
 /* Message title describing the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Nama dan akun palsu";
 
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Tinjau permintaan ini dengan cermat. Di grup ini tidak ada yang pernah mengobrol dengan Anda atau tersimpan sebagai kontak Anda. Berikut beberapa hal yang perlu diwaspadai:";
@@ -8165,13 +8192,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Waktu pesan menghilang akan diatur menjadi %1$@ saat Anda mengirimkan pesan.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
-
-/* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Tidak ada grup yang sama. Periksa permintaan secara hati-hati.";
-
-/* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Tidak ada kontak di grup ini. Periksa permintaan secara hati-hati.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Tinjau dengan Cermat";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "Ketuk untuk mengganti emoji";
@@ -8212,6 +8233,12 @@
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Pesan ini telah dihapus.";
 
+/* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+
+/* Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Group names";
+
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Anggota dari %1$@,%2$@, dan %3$lu grup tambahan";
 
@@ -8221,6 +8248,12 @@
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Anggota dari %1$@";
 
+/* Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+
+/* Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Profile names";
+
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Lihat";
 
@@ -8229,6 +8262,9 @@
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Anggota dari %1$@ dan %2$@";
+
+/* A string indicating there are no mutual groups the user shares with this contact */
+"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "No groups in common";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
 "THREAD_MERGE_LEARN_MORE" = "Setelah berkirim pesan dengan %1$@, Anda mengetahui nomor ini milik %2$@. Nomor teleponnya diatur privat.\n\nRiwayat pesan Anda untuk kedua obrolan telah digabungkan di sini.";

@@ -413,7 +413,7 @@
 "ATTACHMENT_KEYBOARD_NO_MEDIA_TITLE" = "Немає фото і відео";
 
 /* Text in chat attachment panel explaining that user needs to give Signal permission to access photos. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal не має доступу до ваших фото і відео. Щоб надати доступ, відкрийте налаштування і виберіть «Фото»";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Signal не має доступу до ваших фото і відео. Щоб надати доступ, відкрийте параметри й виберіть «Фото»";
 
 /* Button in chat attachment panel to let user open Settings app and give Signal persmission to access photos. */
 "ATTACHMENT_KEYBOARD_OPEN_SETTINGS" = "До налаштувань";
@@ -1251,6 +1251,9 @@
 
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Активний запит на повідомлення";
+
+/* A label on the profile about sheet */
+"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Profile names are not verified";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "%1$@ — це ім'я, яке сам користувач встановив у своєму профілі Signal.";
@@ -3427,6 +3430,18 @@
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Переглянути учасників";
 
+/* First bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Be cautious of groups that impersonate organizations and businesses";
+
+/* Second bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Profile names of members in groups are not verified";
+
+/* Third bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+
+/* Header for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Group names</bold> are chosen by members of the group.";
+
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Назва групи (обов'язково)";
 
@@ -4667,13 +4682,13 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Нові повідомлення";
 
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
-"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Пропущений виклик від контакту, заблокованого в налаштуваннях телефону";
+"MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Пропущено виклик від контакту, заблокованого в параметрах телефона";
 
 /* Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
 "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Заблокувати контакт і в Signal";
 
 /* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "Ви пропустили виклик, тому що цю людину заблоковано в налаштуваннях вашого телефону. Перейдіть у «Параметри» > «Телефон» > натисніть «Блоковані контакти» і внесіть зміни.";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "Ви пропустили виклик, тому що цю людину заблоковано в параметрах телефона. Перейдіть у параметри > Програми > Телефон > Блоковані контакти, щоб її розблокувати.";
 
 /* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
 "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ — заблокований контакт у параметрах телефону";
@@ -5120,7 +5135,7 @@
 "ONBOARDING_VERIFICATION_TITLE_LABEL" = "Код підтвердження";
 
 /* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "Налаштування";
+"OPEN_SETTINGS_BUTTON" = "Параметри";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. */
 "OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal більше не працює на цьому пристрої. Щоб знову користуватися застосунком, оновіть версію iOS вашого пристрою.";
@@ -5237,13 +5252,13 @@
 "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Забагато невдалих спроб автентифікації. Спробуйте пізніше.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Щоб використовувати захист платежів, ви маєте ввімкнути код доступу в налаштуваннях iOS.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Щоб використовувати захист платежів, ви маєте ввімкнути код доступу в параметрах iOS.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Щоб використовувати захист платежів, ви маєте ввімкнути код доступу в налаштуваннях iOS.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Щоб використовувати захист платежів, ви маєте ввімкнути код доступу в параметрах iOS.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Щоб використовувати захист платежів, ви маєте ввімкнути код доступу в налаштуваннях iOS.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Щоб використовувати захист платежів, ви маєте ввімкнути код доступу в параметрах iOS.";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Підсильте рівень захисту платежів, увімкнувши код доступу або Touch ID для переказу коштів";
@@ -5914,6 +5929,18 @@
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "Користувач %1$@ змінив ім'я профілю на %2$@.";
 
+/* First bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Profile names are not verified";
+
+/* Second bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Be cautious of accounts that impersonate others";
+
+/* Third bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+
+/* Header for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Profile names</bold> on Signal are chosen by their account holder.";
+
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Ваше ім'я";
 
@@ -6404,10 +6431,10 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Фіктивні компанії та організації";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Представники Signal ніколи не питатимуть у вас ні коду для реєстрації, ні PIN-коду. Зважайте на те, що вам можуть надходити запити від фейкових користувачів. Власники акаунтів самі обирають назви своїх профілів, і ми їх не перевіряємо.";
 
 /* Message title describing the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Фейкові акаунти під чужими назвами";
 
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Уважно перегляньте цей запит. Ніхто з ваших контактів і учасників ваших чатів не входить до цієї групи. Зверніть особливу увагу на таке:";
@@ -6494,7 +6521,7 @@
 "SEARCH_SECTION_MESSAGES" = "Повідомлення";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Щоб зв'язати цей пристрій з іншим акаунтом, спочатку потрібно скинути налаштування пристрою. Ви точно хочете видалити всю історію (повідомлення, вкладення, виклики тощо)? Видалення буде незворотне.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Щоб зв'язати цей пристрій з іншим акаунтом, спочатку потрібно скинути параметри пристрою. Ви точно хочете видалити всю історію (повідомлення, вкладення, виклики тощо)? Видалення буде незворотне.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Видалити все";
@@ -7226,16 +7253,16 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Використовувати Touch ID";
 
 /* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Увімкніть Face ID і додайте ще один рівень безпеки, щоб людина з вашим телефоном не змогла отримати доступ до ваших коштів. Цей параметр можна вимкнути в налаштуваннях.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Увімкніть Face ID і додайте ще один рівень безпеки, щоб людина з вашим телефоном не змогла отримати доступ до ваших коштів. Цю функцію можна вимкнути в параметах.";
 
 /* Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Увімкніть Optic ID для додаткового захисту, щоб ніхто не міг отримати доступ до ваших коштів, навіть маючи ваш телефон. Цю функцію можна вимкнути в налаштуваннях.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Увімкніть Optic ID для додаткового захисту, щоб ніхто не міг отримати доступ до ваших коштів, навіть маючи ваш телефон. Цю функцію можна вимкнути в параметрах.";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Активуйте код доступу і додайте ще один рівень безпеки, щоб людина з вашим телефоном не змогла отримати доступ до ваших коштів. Цей параметр можна вимкнути в налаштуваннях.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Активуйте код доступу і додайте ще один рівень безпеки, щоб людина з вашим телефоном не змогла отримати доступ до ваших коштів. Цю функцію можна вимкнути в параметрах.";
 
 /* Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Увімкніть Touch ID і додайте ще один рівень безпеки, щоб людина з вашим телефоном не змогла отримати доступ до ваших коштів. Цей параметр можна вимкнути в налаштуваннях.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Увімкніть Touch ID і додайте ще один рівень безпеки, щоб людина з вашим телефоном не змогла отримати доступ до ваших коштів. Цю функцію можна вимкнути в параметрах.";
 
 /* Button for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Оновити Signal";
@@ -8165,13 +8192,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Коли ви відправите це тимчасове повідомлення, буде встановлено відповідний таймер: %1$@.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
-
-/* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Спільних груп немає. Уважно перевіряйте, від кого надходять запити.";
-
-/* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "У цій групі немає контактів. Уважно перевіряйте, від кого надходять запити.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Уважно перегляньте цей запит";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "Торкніться, щоб замінити емоджі";
@@ -8212,6 +8233,12 @@
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Це повідомлення було видалено.";
 
+/* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+
+/* Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Group names";
+
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Учасник «%1$@»,«%2$@» та %3$lu інших груп";
 
@@ -8221,6 +8248,12 @@
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Учасник «%1$@»";
 
+/* Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+
+/* Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Profile names";
+
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Показати";
 
@@ -8229,6 +8262,9 @@
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Учасник «%1$@» і «%2$@»";
+
+/* A string indicating there are no mutual groups the user shares with this contact */
+"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "No groups in common";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
 "THREAD_MERGE_LEARN_MORE" = "Після спілкування з %1$@ ви дізналися, що цей номер належить користувачу %2$@. Це приватний номер.\n\nВашу історію повідомлень для обох чатів було об'єднано тут.";

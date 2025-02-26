@@ -47,7 +47,7 @@
 "ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Plik czytelny dla oprogramowania";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Wyeksportuj w fromacie JSON";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Wyeksportuj w formacie JSON";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to plain text mode. */
 "ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "Plik tekstowy, który można łatwo odczytać";
@@ -62,7 +62,7 @@
 "ACCOUNT_DATA_REPORT_FOOTER" = "Raport jest generowany wyłącznie wtedy, gdy prosisz o eksport, i nie jest przechowywany przez Signal na Twoim urządzeniu.";
 
 /* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
-"ACCOUNT_DATA_REPORT_SUBTITLE" = "Wyeksportuj i pobierz raport z danymi Twojego konta Signal. Raport nie zawiera treści wiadomości ani multimediów.";
+"ACCOUNT_DATA_REPORT_SUBTITLE" = "Wyeksportuj i pobierz raport z danymi swojego konta Signal. Raport nie zawiera wiadomości ani multimediów.";
 
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
 "ACCOUNT_DATA_REPORT_TITLE" = "Dane Twojego konta";
@@ -269,22 +269,22 @@
 "APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Spróbuj użyć innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Apple Pay donation error for decline failures where the user may need to contact their card or bank. */
-"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Sprawdź, czy Twoja metoda płatności w Apple Pay jest aktualna. Jeśli nie, zaktualizuj ją i spróbuj ponownie. Jeśli wproblem będzie się powtarzać, skontaktuj się ze swoim bankiem.";
+"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Sprawdź, czy Twoja metoda płatności w Apple Pay jest aktualna. Jeśli nie, uaktualnij ją i spróbuj ponownie. Jeśli problem będzie się powtarzać, skontaktuj się ze swoim bankiem.";
 
 /* Apple Pay donation error for decline failures where the card is not supported. */
-"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Twoja karta nie obsługuje takich płatności. Spróbuj użyć innej metody płatności lub skontaktuj się ze swoim bankiem.";
+"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Twoja karta nie obsługuje takich płatności. Spróbuj użyć innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Apple Pay donation error for decline failures where the card has expired. */
-"APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Karta straciła ważność. Sprawdź czy Twoja metoda płatności w Apple Pay jest aktualna. Jeśli nie, zaktualizuj ją i spróbuj ponownie.";
+"APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Karta straciła ważność. Sprawdź czy Twoja metoda płatności w Apple Pay jest aktualna. Jeśli nie, uaktualnij ją i spróbuj ponownie.";
 
 /* Apple Pay donation error for decline failures where the card number is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "W numerze karty jest błąd. Sprawdź, czy Twoja metoda płatności w Apple Pay jest poprawna. Jeśli nie, zaktualizuj ją i spróbuj ponownie.";
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "W numerze karty jest błąd. Sprawdź, czy Twoja metoda płatności w Apple Pay jest poprawna. Jeśli nie, uaktualnij ją i spróbuj ponownie.";
 
 /* Apple Pay donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "W kodzie CVC jest jest błąd. Sprawdź czy kod CVC podany w Apple Pay jest poprawny. Jeśli nie, zaktualizuj go i spróbuj ponownie.";
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "W kodzie CVC jest błąd. Sprawdź czy kod CVC podany w Apple Pay jest poprawny. Jeśli nie, uaktualnij go i spróbuj ponownie.";
 
 /* Apple Pay donation error for decline failures where the card has insufficient funds. */
-"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Na Twojej karcie nie ma wystarczającej ilości środków. Spróbuj użyć innej metody płatności lub skontaktuj się ze swoim bankiem.";
+"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Na Twojej karcie nie ma wystarczających środków. Spróbuj użyć innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Apple Pay donation error for decline failures where the expiration month on the payment method is incorrect. */
 "APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "Miesiąc wygaśnięcia Twojej metody płatności jest niepoprawny. Uaktualnij go w Apple Pay i spróbuj ponownie.";
@@ -302,7 +302,7 @@
 "APPLE_PAY_DONATION_ERROR_OTHER" = "Spróbuj użyć innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
-"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Sprawdź czy Twoja metoda płatności w Apple Pay jest aktualna. Jeśli nie, zaktualizuj ją i spróbuj ponownie.";
+"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Sprawdź czy Twoja metoda płatności w Apple Pay jest aktualna. Jeśli nie, uaktualnij ją i spróbuj ponownie.";
 
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
 "APPLICATION_SHORTCUT_NEW_MESSAGE" = "Nowa wiadomość";
@@ -311,7 +311,7 @@
 "ARCHIVE_ACTION" = "Zarchiwizuj";
 
 /* Button to try to join a call. The admin may need to approve the request before the user can join. */
-"ASK_TO_JOIN_CALL" = "Poproś o dołączenie do rozmowy";
+"ASK_TO_JOIN_CALL" = "Zaproś do rozmowy";
 
 /* One of the choices for pre-defined aspect ratio of a photo in media editor. */
 "ASPECT_RATIO_ORIGINAL" = "Oryginał";
@@ -401,7 +401,7 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* Text in chat attachment panel when Signal only has access to some photos/videos. */
-"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal ma dostęp tylko do zdjęć i filmów wybrancyh przez Ciebie";
+"ATTACHMENT_KEYBOARD_LIMITED_ACCESS" = "Signal ma dostęp tylko do zdjęć i filmów wybranych przez Ciebie";
 
 /* A button to select a location from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_LOCATION" = "Lokalizacja";
@@ -512,7 +512,7 @@
 "BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ wspiera Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Odznaka za wsparcie wygasła i nie wyświetla się już w Twoim profilu.\n\nNadal możesz korzystać z aplikacji Signal, ale rozważ przekazywanie comiesięcznej darowizny cyklicznej, aby wspierać rozwój technologii stworzonej z myślą o Tobie.";
+"BADGE_EXPIRED_BOOST_BODY" = "Odznaka za wsparcie wygasła i nie wyświetla się już w Twoim profilu.\n\nNadal możesz korzystać z aplikacji Signal. Aby wspierać technologię rozwijaną z myślą o Tobie, rozważ przekazywanie comiesięcznej darowizny cyklicznej.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Odznaka za wsparcie wygasła i nie wyświetla się już w Twoim profilu.\n\nAby reaktywować tę odznakę na kolejne 30 dni, wpłać darowiznę jednorazową.";
@@ -530,7 +530,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Comiesięczna darowizna anulowana";
 
 /* String explaining to the user on a badge expiry sheet that their subscription badge has expired because the renewal payment failed. Embeds {{ a specific, already-localized string describing the payment failure }}. Will have a 'learn more' link appended, when it is rendered. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Twoja comiesięczna darowizna została anulowana. %1$@\n\nOdznaka nie wyświetla się już w Twoim profilu.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Twoja comiesięczna darowizna cykliczna została anulowana. %1$@\n\nOdznaka nie wyświetla się już w Twoim profilu.";
 
 /* Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
 "BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Otrzymaliśmy Twój przelew. Możesz dodać do swojego profilu tę odznakę, aby pochwalić się udzielonym nam wsparciem.";
@@ -554,10 +554,10 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "Kiedy masz więcej niż jedną odznakę, możesz zdecydować, którą chcesz pokazać w swoim profilu.";
 
 /* On the bank donation screen, show a link below the input form to show help about finding account info. */
-"BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "Znajdź informacje o koncie";
+"BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO" = "Gdzie szukać informacji o koncie";
 
 /* On the bank transfer donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their bank information (2) tell them that Signal does not collect or store their personal information. */
-"BANK_DONATION_SUBHEADER_TEXT" = "Wprowadź dane do przelewu. Signal nie gromadzi ani nie przechowuje Twoich danych osobowych.";
+"BANK_DONATION_SUBHEADER_TEXT" = "Wpisz dane do przelewu. Signal nie gromadzi ani nie przechowuje Twoich danych osobowych.";
 
 /* Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a label for a button to agree to the mandate. */
 "BANK_MANDATE_AGREE" = "Zgadzam się";
@@ -698,7 +698,7 @@
 "BUTTON_SUBMIT" = "Prześlij";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Wyłącz wyciszenie.";
+"BUTTON_UNMUTE" = "Wył. wyciszenie";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Wyświetl";
@@ -752,7 +752,7 @@
 "CALL_LINK_CREATE" = "Utwórz link do połączenia";
 
 /* Description of sheet presented when call link creation fails. */
-"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Nie udało się utworzyć linku do połączenia. Sprawdź połączenie z internetem i spróbuj ponownie.";
+"CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION" = "Nie udało się utworzyć linku. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Title of sheet presented when call link creation or update fails. */
 "CALL_LINK_CREATION_OR_UPDATE_FAILURE_SHEET_TITLE" = "Błąd sieci";
@@ -764,7 +764,7 @@
 "CALL_LINK_DELETE_FAILED" = "Nie udało się usunąć linku do połączenia.";
 
 /* Text shown in a confirmation popup asking the user if they want to delete a call link. */
-"CALL_LINK_DELETE_MESSAGE" = "Ten link nie będzie już działał u nikogo.";
+"CALL_LINK_DELETE_MESSAGE" = "Ten link nie będzie już działać u nikogo.";
 
 /* Title shown in a confirmation popup asking the user if they want to delete a call link. */
 "CALL_LINK_DELETE_TITLE" = "Usunąć link?";
@@ -788,7 +788,7 @@
 "CALL_LINK_JOIN_REQUEST_PROMPT" = "Prosi o dołączenie…";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
-"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Użyj linku, aby dołączyć do rozmowy Signal";
+"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Użyj tego linku, aby dołączyć do rozmowy Signal";
 
 /* Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned off. */
 "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_OFF" = "Każda osoba, która dołączy do rozmowy za pomocą linku, zobaczy Twoje imię oraz zdjęcie.";
@@ -797,7 +797,7 @@
 "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "Każda osoba, która dołączy do rozmowy za pomocą linku, zobaczy Twoje imię, zdjęcie oraz numer telefonu.";
 
 /* Text shown in a confirmation popup when deleting multiple calls from the calls tab. */
-"CALL_LINK_MULTI_CONFIRM" = "Linki do połączenia utworzone przez Ciebie nie będą już działały u nikogo.";
+"CALL_LINK_MULTI_CONFIRM" = "Linki do połączenia utworzone przez Ciebie nie będą już działać u nikogo.";
 
 /* Title for button to approve all requests to join a call. */
 "CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Zatwierdź wszystkie";
@@ -821,7 +821,7 @@
 "CALL_LINK_SOME_NOT_DELETED" = "Nie udało się usunąć niektórych linków. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Description of sheet presented when call link update fails. */
-"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Nie udało się zaktualizować linku. Sprawdź połączenie z internetem i spróbuj ponownie.";
+"CALL_LINK_UPDATE_FAILURE_SHEET_DESCRIPTION" = "Nie udało się zmienić linku. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Opuść rękę";
@@ -1094,7 +1094,7 @@
 "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER" = "MM/RR";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
-"CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal nie gromadzi ani nie przechowuje Twoich danych osobowych potrzebnych do wpłacenia darowizny.\n\nDo przetwarzania darowizn używamy systemu płatności Stripe. Nie zapisujemy, nie przechowujemy ani nie mamy dostępu do żadnych danych, które przekazujesz.\n\nSignal nie powiązuje ani nie może powiązać darowizny z Twoim kontem Signal.\n\nDziękujemy za Twoje wsparcie!";
+"CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal nie gromadzi ani nie przechowuje Twoich danych osobowych potrzebnych do wpłacenia darowizny.\n\nDo przetwarzania darowizn używamy systemu płatności Stripe. Nie zapisujemy, nie przechowujemy ani nie mamy dostępu do żadnych danych, które przekazujesz.\n\nSignal nie wiąże ani nie może powiązać darowizny z Twoim kontem Signal.\n\nDziękujemy za Twoje wsparcie!";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the title of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_TITLE" = "Twoje dane są poufne";
@@ -1157,7 +1157,7 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "„Auto” dopasowuje kolor do wybranej tapety";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Przestań filtrować według nieodczytanych";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Usuń filtr według nieodczytanych";
 
 /* Button displayed in chat list to clear the unread filter when no chats are unread */
 "CHAT_LIST_EMPTY_FILTER_CLEAR_BUTTON" = "Usuń filtr";
@@ -1241,16 +1241,19 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Połącz nowe urządzenie";
 
 /* Indicates that the user has blocked the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ – zablokowano";
+"CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "%1$@ to zablokowany kontakt";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ jest w kontaktach Twojego telefonu";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Ty i %1$@ nie macie jeszcze prywatnego czatu";
+"CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Ty i %1$@ nie macie jeszcze czatu prywatnego";
 
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Oczekująca prośba o kontakt";
+
+/* A label on the profile about sheet */
+"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Profile names are not verified";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "%1$@ to imię, które ta osoba podała w swoim profilu Signal.";
@@ -1313,7 +1316,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_2_TITLE" = "Zezwól na dostęp do kontaktów";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Aby wyśwetlić w czatach imiona i zdjęcia kontaktów:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Aby wyświetlić w czatach imiona i zdjęcia kontaktów:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Dotknij opcji „Przejdź do ustawień”";
@@ -1601,7 +1604,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Gdy czat jest wyciszony, nie wysyłaj powiadomień";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Powiadamiać, gdy w wyciszonych czatach pojawi się wzmianka o Tobie?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Powiadamiać, gdy w wyciszonym czacie pojawi się wzmianka o Tobie?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Wzmianki";
@@ -1760,13 +1763,13 @@
 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "W miesiącu ważności karty jest błąd. Sprawdź poprawność danych karty i spróbuj ponownie.";
 
 /* Credit/debit card donation error for decline failures where the expiration year on the payment method is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "Rok ważności Twojej karty jest nieprawidłowy. Sprawdź, czy dane karty są poprawne i spróbuj ponownie.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "W roku ważności karty jest błąd. Sprawdź poprawność danych karty i spróbuj ponownie.";
 
 /* Credit/debit card donation error for unspecified decline failures. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_OTHER" = "Sprawdź, czy dane karty są poprawne i spróbuj ponownie. Jeśli problem nie zniknie, skontaktuj się ze swoim bankiem.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_OTHER" = "Sprawdź poprawność danych karty i spróbuj ponownie. Jeśli problem będzie się powtarzać, skontaktuj się ze swoim bankiem.";
 
 /* Credit/debit card donation error for decline failures where the payment cannot be authorized. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Sprawdź, czy dane karty są poprawne i spróbuj ponownie.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Sprawdź poprawność danych karty i spróbuj ponownie.";
 
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Przesuń lub dostosuj kadr";
@@ -1805,7 +1808,7 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Uruchomić diagnostykę bazy danych?";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Część histori wiadomości mogła zostać uszkodzona. Nie wpłynęło to na bezpieczeństwo Twojego konta ani Twoich wiadomości. Aby przywrócić dane, dotknij opcji „Kontynuuj”.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Część historii wiadomości mogła zostać uszkodzona. Nie wpłynęło to na bezpieczeństwo Twojego konta ani Twoich wiadomości. Aby przywrócić dane, dotknij opcji „Kontynuuj”.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem z przywracaniem danych";
@@ -1829,7 +1832,7 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Zresetuj";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Informacje o Twoim koncie, profil i wszystkie wiadomości zostaną usunięte. Po zakończeniu tego procesu aplikacja zostanie zamknięta.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Dane konta, profil i wszystkie wiadomości zostaną usunięte. Po zakończeniu tego procesu aplikacja zostanie zamknięta.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Zresetuj Signal";
@@ -1844,13 +1847,13 @@
 "DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Pozostaw aplikację otwartą na czas przywracania danych. Może to potrwać kilka minut.";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Odzyskiwanie danych";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Przywracanie danych";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Odzyskiwanie powiodło się, ale niektóre wiadomości mogły nie zostać odzyskane.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Udało się przywrócić dane z wyjątkiem niektórych wiadomości.";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Dane odzyskane pomyślnie";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Dane przywrócone";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "To może zająć kilka minut.";
@@ -1907,19 +1910,19 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Usuń konto";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "To działanie usunie Twoje konto Signal i zresetuje aplikację. Po zakończeniu tego procesu aplikacja zostanie zamknięta.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Spowoduje to usunięcie Twojego konta Signal i zresetowanie aplikacji. Po zakończeniu tego procesu zostanie ona zamknięta.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Czy na pewno chcesz usunąć swoje konto?";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Czy na pewno chcesz usunąć konto?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Kod kraju";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Nie udało się usunąć konta. Upewnij się, że masz włączone połączenie Wi-Fi lub dane mobilne i spróbuj ponownie.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Nie udało się usunąć konta. Upewnij się, że masz połączenie z Wi-Fi lub siecią komórkową, i spróbuj ponownie.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "To działanie usunie informacje o Twoim koncie, profil i wszystkie wiadomości.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Spowoduje to usunięcie danych Twojego konta, profilu i wszystkich wiadomości.";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Usuwanie konta…";
@@ -1949,16 +1952,16 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Usuń";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Ta osoba zostanie usunięta z kontaktów systemowych. Nie zobaczysz tej osoby podczas wyszukiwania. Jeśli w przyszłości wyśle Ci wiadomość, otrzymasz prośbę o kontakt.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Ta osoba zostanie usunięta z kontaktów na Twoim telefonie. Nie wyświetli się już podczas wyszukiwania. Jeśli w przyszłości wyśle Ci wiadomość, otrzymasz prośbę o kontakt.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_TITLE" = "Usunąć kontakt i skasować z Twojej listy?";
+"DELETE_CONTACT_ACTION_SHEET_TITLE" = "Usunąć tę osobę z kontaktów i Twojej listy?";
 
 /* Title of button for deleting system contact. */
 "DELETE_CONTACT_BUTTON" = "Usuń kontakt";
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
-"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ – usunięto z kontaktów i skasowano.";
+"DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ nie należy już do Twoich kontaktów ani nie pojawia się na liście.";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "Usuń";
@@ -1967,13 +1970,13 @@
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "Usunąć wiadomość?";
 
 /* Subheader for an action sheet explaining that a Note to Self deleted on this device will be deleted on the user's other devices as well. */
-"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "Te wiadomości zostaną usunięte ze wszystkich Twoich urządzeń.";
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "Ta wiadomość zostanie usunięta ze wszystkich Twoich urządzeń.";
 
 /* Label for a button in an info sheet confirming that deletes are now synced across devices. */
 "DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_BUTTON" = "Rozumiem";
 
 /* Subtitle for an info sheet explaining that deletes are now synced across devices. */
-"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_SUBTITLE" = "Gdy usuniesz wiadomości lub czaty, zostaną one usunięte z telefonu i wszystkich powiązanych urządzeń.";
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_SUBTITLE" = "Gdy usuniesz wiadomości lub czaty, zostaną one usunięte z telefonu i wszystkich połączonych urządzeń.";
 
 /* Title for an info sheet explaining that deletes are now synced across devices. */
 "DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_TITLE" = "Usuwanie jest teraz synchronizowane na wszystkich Twoich urządzeniach";
@@ -1982,13 +1985,13 @@
 "DELETED_USER" = "Konto usunięte";
 
 /* Notification warning the user that they have been de-registered. */
-"DEREGISTRATION_NOTIFICATION" = "Nastąpiło wylogowanie z usługi Signal na tym urządzeniu.";
+"DEREGISTRATION_NOTIFICATION" = "Wylogowano z usługi Signal na tym urządzeniu.";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Zarejestruj ten numer ponownie";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "To urządzenie nie jest już zarejestrowane. Powodem może być zarejestrowanie Twojego numeru telefonu w aplikacji Signal na innym urządzeniu.";
+"DEREGISTRATION_WARNING" = "To urządzenie nie jest już zarejestrowane. Możliwe, że ten sam numer telefonu został przez Ciebie zarejestrowany w aplikacji Signal na innym urządzeniu.";
 
 /* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
 "DEREGISTRATION_WARNING_ACTION_TITLE" = "Zarejestruj urządzenie ponownie";
@@ -2006,7 +2009,7 @@
 "DEVICE_LIST_UPDATE_NEW_DEVICE_SYNCED_TOAST" = "Synchronizacja wiadomości zakończona";
 
 /* Message appearing on a toast indicating a new device was successfully linked. Embeds {{ device name }} */
-"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "połączono „%1$@”";
+"DEVICE_LIST_UPDATE_NEW_DEVICE_TOAST" = "Połączono urządzenie „%1$@”";
 
 /* A label for this device in the device list. */
 "DEVICE_NAME_THIS_DEVICE" = "To urządzenie";
@@ -2045,7 +2048,7 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Przenieś konto i wiadomości";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Przenieś swoje konto i wiadomości ze swojego starego urządzenia z systemem iOS";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Przenieś konto i historię wiadomości ze swojego starego urządzenia z systemem iOS";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Przenieś konto i wiadomości ze swojego starego urządzenia z systemem iOS";
@@ -2057,16 +2060,16 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Przenieś z urządzenia z systemem iOS";
 
 /* Button shown to contract a QR code and exit the fullscreen view. */
-"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Pokaż mniejszy";
+"DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Wyświetl jako mniejszy";
 
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Nie udało się ukończyć przenoszenia. Upewnij się, że oba urządzenia mają uruchomioną aplikację Signal i spróbuj ponownie.";
+"DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Nie udało się przenieść. Upewnij się, że aplikacja Signal jest uruchomiona na obu urządzeniach, i spróbuj ponownie.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Nie udało się zweryfikować Twojego nowego urządzenia. Spróbuj ponownie";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "Nie udało się ukończyć przenoszenia. Upewnij się, że oba urządzenia są blisko siebie i spróbuj ponownie.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Nie udało się przenieść. Upewnij się, że urządzenia znajdują się blisko siebie, i spróbuj ponownie.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Aby skonfigurować ten iPad jako połączone urządzenie, musisz zeskanować kod swoim starym iPadem";
@@ -2081,7 +2084,7 @@
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Zaktualizuj Signal do najnowszej wersji i spróbuj ponownie";
 
 /* Button shown to expand a QR code and view it fullscreen. */
-"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "Pokaż większy";
+"DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "Wyświetl jako większy";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Przenieś swoje konto Signal na nowe urządzenie z systemem iOS. Upewnij się, że jest ono włączone i znajduje się w pobliżu.";
@@ -2090,16 +2093,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Przenieś konto";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Zbliż swoje stare urządzenie, upewnij się, że Wi-Fi i Bluetooth są włączone, a następnie zeskanuj za jego pomocą kod QR.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Zbliż swoje stare urządzenie, upewnij się, że są na nim włączone Wi-Fi i Bluetooth, a następnie zeskanuj kod QR.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Zeskanuj kod QR drugim urządzeniem iOS.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Zeskanuj kod QR swoim drugim urządzeniem z systemem iOS.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Komunikat nie wyświetla się na starym urządzeniu?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Skanuj kod QR";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Zeskanuj kod QR";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Urządzenia muszą znajdować się blisko siebie. Nie wyłączaj żadnego z nich ani nie zamykaj aplikacji Signal. Przenoszenie jest szyfrowane metodą end-to-end.";
@@ -2126,7 +2129,7 @@
 "DISAPPEARING_MESSAGES" = "Znikające wiadomości";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Wiadomości w tym czacie znikną po: %1$@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Czas, po którym wiadomości w tym czacie znikają, to %1$@.";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Ustaw inny czas";
@@ -2162,7 +2165,7 @@
 "DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "Tego działania nie można cofnąć.";
 
 /* Title for confirmation prompt when discarding a draft before editing a message */
-"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Odrzucić szkic?";
+"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Odrzucić wersję roboczą?";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Odrzuć";
@@ -2210,7 +2213,7 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Wpłać %1$@ i wesprzyj Signal";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message. */
-"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "Osoba ta otrzyma powiadomienie o darowiźnie w prywatnej wiadomości. Poniżej możesz dodać coś od siebie.";
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "Osoba ta otrzyma powiadomienie o darowiźnie w wiadomości prywatnej. Poniżej możesz dodać coś od siebie.";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is the placeholder in the text field for that additional message. */
 "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Dodaj wiadomość";
@@ -2219,43 +2222,43 @@
 "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Wygasła";
 
 /* Message in an alert presented when the user tries to make a donation, but already has an iDEAL donation that is currently awaiting approval. */
-"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Twoja darowizna za pośrednictwem iDEAL jest wciąż przetwarzana. Przejdź do swojej aplikacji bankowej, aby zatwierdzić płatność, zanim przekażesz kolejną darowiznę.";
+"DONATE_SCREEN_ERROR_MESSAGE_APPROVE_IDEAL_DONATION_BEFORE_MAKING_ANOTHER_DONATION" = "Twoja darowizna metodą iDEAL jest jeszcze przetwarzana. Zanim przekażesz kolejną darowiznę, przejdź do swojej aplikacji bankowej i zatwierdź płatność.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently awaiting authorization. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Twoja darowizna za pośrednictwem iDEAL jest wciąż przetwarzana. Przejdź do swojej aplikacji bankowej, aby zatwierdzić płatność, zanim przekażesz kolejną darowiznę.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Twoja darowizna metodą iDEAL jest jeszcze przetwarzana. Zanim przekażesz kolejną darowiznę, przejdź do swojej aplikacji bankowej i zatwierdź płatność.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Przelewy bankowe są zazwyczaj realizowane w ciągu 1 dnia roboczego. Poczekaj, aż płatność zostanie zakończona, zanim przekażesz kolejną darowiznę.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Czas realizacji przelewu bankowego to zwykle 1 dzień roboczy. Zanim wpłacisz kolejną darowiznę, poczekaj, aż ta płatność zostanie zrealizowana.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Przelewy bankowe są zazwyczaj realizowane w ciągu 1 dnia roboczego. Poczekaj, aż płatność zostanie zakończona, zanim zmienisz swoją subskrypcję.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Czas realizacji przelewu bankowego to zwykle 1 dzień roboczy. Zanim zmienisz swoją darowiznę cykliczną, poczekaj, aż ta płatność zostanie zrealizowana.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
-"DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Możesz wysłać maksymalnie %1$@ za pomocą przelewu bankowego. Spróbuj z inną kwotą lub wybierz inną metodę płatności.";
+"DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Przelewem bankowym możesz przekazać maksymalnie %1$@. Podaj inną kwotę lub wybierz inną metodę płatności.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Twoja darowizna wciąż jest przetwarzana. W zależności od Twojego połączenia z siecią może to potrwać kilka minut. Poczekaj, aż płatność zostanie zakończona, zanim przekażesz kolejną darowiznę.";
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Twoja darowizna jest jeszcze przetwarzana. W zależności od połączenia z internetem może to potrwać kilka minut. Zanim wpłacisz kolejną darowiznę, poczekaj, aż ta płatność zostanie zrealizowana.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Twoja darowizna wciąż jest przetwarzana. W zależności od Twojego połączenia z siecią może to potrwać kilka minut. Poczekaj, aż płatność zostanie zakończona, zanim zmienisz swoją subskrypcję.";
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Twoja darowizna jest jeszcze przetwarzana. W zależności od połączenia z internetem może to potrwać kilka minut. Zanim zmienisz swoją darowiznę cykliczną, poczekaj, aż ta płatność zostanie zrealizowana.";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Wybierz kwotę darowizny.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\". */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "Minimalna kwota darowizny wynosi %1$@.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "Minimalna kwota darowizny to %1$@.";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently awaiting authorization. */
 "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Darowizna oczekuje na autoryzację";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "Twoja darowizna oczekuje na realizację";
+"DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_YOU_HAVE_A_DONATION_PENDING" = "Darowizna oczekuje na realizację";
 
 /* Title for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. */
-"DONATE_SCREEN_ERROR_TITLE_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Kwota darowizny zbyt wysoka";
+"DONATE_SCREEN_ERROR_TITLE_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Zbyt duża kwota darowizny";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING" = "Twoja darowizna jest przetwarzana";
+"DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING" = "Darowizna jest przetwarzana";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "Co miesiąc";
@@ -2264,7 +2267,7 @@
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Wygasa %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these, this text is shown below it indicating when it will renew. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Odnawia się %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Ponowi się %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Zdobądź odznakę %1$@";
@@ -2276,25 +2279,25 @@
 "DONATE_SCREEN_ONE_TIME_CHOICE" = "Jednorazowo";
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
-"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Uaktualnij subskrypcję";
+"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Zmień darowiznę cykliczną";
 
 /* Message for a sheet explaining that a donation via bank payment has failed. Embeds {{ a specific, already-localized string describing the payment failure }}. */
-"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_MESSAGE" = "Mamy problem z przetworzeniem Twojego przelewu bankowego. %1$@";
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_MESSAGE" = "Wystąpił problem z przetworzeniem Twojego przelewu bankowego. %1$@";
 
 /* Title for a sheet explaining that a donation via bank payment has failed. */
-"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_TITLE" = "Darowizna nie mogła zostać zrealizowana";
+"DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_TITLE" = "Nie udało się przetworzyć darowizny";
 
 /* Title for a sheet explaining that a donation via bank payment is pending. */
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Darowizna oczekuje na realizację";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Twoja jednorazowa darowizna oczekuje na realizację. Odznaka %1$@ będzie widoczna na Twoim profilu, gdy otrzymamy Twoją darowiznę.\n\nPrzelewy bankowe są zazwyczaj realizowane w ciągu 1 dnia roboczego.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Twoja darowizna jednorazowa oczekuje na realizację. Gdy otrzymamy płatność, możesz zacząć wyświetlać w swoim profilu odznakę %1$@.\n\nCzas realizacji przelewu bankowego to zwykle 1 dzień roboczy.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Twoja comiesięczna darowizna oczekuje na realizację. Odznaka %1$@ będzie widoczna na Twoim profilu, gdy otrzymamy Twoją darowiznę.\n\nPrzelewy bankowe są zazwyczaj realizowane w ciągu 1 dnia roboczego.";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Twoja comiesięczna darowizna oczekuje na realizację. Gdy otrzymamy płatność, możesz zacząć wyświetlać w swoim profilu odznakę %1$@.\n\nCzas realizacji przelewu bankowego to zwykle 1 dzień roboczy.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
-"DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Odnów subskrypcję";
+"DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Ponów darowiznę cykliczną";
 
 /* Title for a button asking the user to try their donation again, because something went wrong. */
 "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "Spróbuj ponownie";
@@ -2303,13 +2306,13 @@
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "Aktywna przez %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Twoja darowizna wygasła i nie jest już wyświetlana na Twoim profilu.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Darowizna wygasła i nie jest już wyświetlana w Twoim profilu.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
 "DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Twoja darowizna wygasła";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Twoja darowizna od %1$@ wygasła i nie da się jej odebrać.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Darowizna wpłacona w Twoim imieniu, której zleceniodawca to %1$@, wygasła, więc nie możesz już odebrać odznaki.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
 "DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Twoja darowizna wygasła";
@@ -2330,7 +2333,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Potwierdź darowiznę";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "W tym czacie włączona jest opcja znikających wiadomości. Twoja wiadomość dołączona do darowizny zniknie za %1$@.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "W tym czacie włączona jest opcja znikających wiadomości. Twoja wiadomość na temat darowizny zniknie za %1$@.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Nie udało się wpłacić darowizny. Sprawdź połączenie z internetem i spróbuj ponownie.";
@@ -2342,13 +2345,13 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "Darowizna jednorazowa";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Twoja płatność nie mogła zostać przetworzona i Twoje konto nie zostało obciążone. Spróbuj ponownie.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Nie udało się przetworzyć płatności, a Twoje konto nie zostało obciążone. Spróbuj ponownie.";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Płatność nie powiodła się";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Płatność nieudana";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Twoja płatność została przetworzona, ale Signal nie mógł wysłać wiadomości dołączonej do darowizny. Skontaktuj się z pomocą techniczną.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Płatność została przetworzona, ale nie udało się wysłać Twojej wiadomości na temat darowizny. Skontaktuj się z zespołem pomocy technicznej.";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "Nie udało się wpłacić darowizny";
@@ -2363,16 +2366,16 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ wpłaca w Twoim imieniu darowiznę na rzecz aplikacji Signal";
 
 /* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "Wysyłanie darowizny nie powiodło się, ponieważ zablokowałeś(-aś) tego użytkownika.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "Nie możesz wpłacić darowizny w imieniu tej osoby, ponieważ została ona przez Ciebie zablokowana.";
 
 /* Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "Nie można wysłać darowizny";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "Nie można wpłacić darowizny";
 
 /* Label for a button used to redeem a badge that was received as a donation on your behalf. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Odbierz";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "Możesz odebrać darowiznę później";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "Możesz odebrać odznakę za darowiznę później";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ wpłaca darowiznę w Twoim imieniu";
@@ -2390,7 +2393,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Dziękujemy za Twoje wsparcie!";
 
 /* A button shown on a donation message you send, to view additional details about the badge that was sent. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "Zobacz";
+"DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "Wyświetl";
 
 /* A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ wpłaca w Twoim imieniu darowiznę na rzecz aplikacji Signal. Pochwal się okazanym wsparciem w swoim profilu.";
@@ -2399,10 +2402,10 @@
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "To prywatny komunikator. Bez reklam, bez śledzenia, bez kompromisów.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal istnieje dzięki darowiznom, więc Twoja prywatność to nasz priorytet. Tworzymy aplikację Signal dla Ciebie, a nie dla zysku czy w celu pozyskania Twoich danych.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal istnieje dzięki darowiznom, dlatego Twoja prywatność to nasz priorytet. Tworzymy aplikację Signal dla Ciebie, a nie dla zysku czy w celu pozyskania Twoich danych.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Jeśli możesz, wesprzyj Signal darowizną. To dzięki osobom takim jak Ty nasza aplikacja jest przyjazną przestrzenią godną zaufania i dostępną dla wszystkich.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Jeśli możesz, wesprzyj Signal darowizną. To dzięki osobom takim jak Ty nasza aplikacja jest przyjazną przestrzenią – godną zaufania i dostępną dla wszystkich.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
 "DONATION_READ_MORE_SCREEN_TITLE" = "Signal jest inny";
@@ -2444,7 +2447,7 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Jeśli aplikacja Signal została zainstalowana ponownie, wcześniejsze potwierdzenia darowizn nie są dostępne.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user cancels the webview before authrizing the payment. */
-"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "Anulowano płatność. Spróbuj ponownie.";
+"DONATION_REDIRECT_ERROR_CANCELLED_MESSAGE" = "Płatność anulowana. Spróbuj ponownie.";
 
 /* Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the callback is in an unexpected format. */
 "DONATION_REDIRECT_ERROR_INVALID_RESPONSE_MESSAGE" = "Nieprawidłowa odpowiedź dotycząca płatności. Spróbuj ponownie.";
@@ -2468,49 +2471,49 @@
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Wpłać darowiznę";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Kontynuując, anulujesz swoją ostatnią darowiznę. Opłata nie zostanie pobrana, ale do czasu podjęcia działania w aplikacji bankowej może być widoczne żądanie płatności. Czy na pewno chcesz przekazać nową darowiznę?";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Jeśli przejdziesz dalej, anulujesz swoją ostatnią darowiznę. Pieniądze nie zostaną pobrane, ale w Twojej aplikacji bankowej może być widoczne żądanie płatności. Na pewno chcesz wpłacić nową darowiznę?";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
-"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Odnów subskrypcję";
+"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Ponów darowiznę cykliczną";
 
 /* Title for an action in an action sheet asking the user to try again, in reference to a donation that failed. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Spróbuj ponownie";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Twoja darowizna za pośrednictwem iDEAL nie mogła zostać zatwierdzona. Przejdź do swojej aplikacji bankowej, aby zatwierdzić swoją płatność, lub spróbuj ponownie.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Twoja darowizna metodą iDEAL nie została zatwierdzona. Przejdź do aplikacji bankowej, aby zatwierdzić płatność, lub spróbuj ponownie.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Twój przelew bankowy oczekuje na realizację. Przelewy bankowe są zazwyczaj realizowane w ciągu 1 dnia roboczego.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Twój przelew bankowy oczekuje na realizację. Czas realizacji przelewu bankowego to zwykle 1 dzień roboczy.";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "Darowizna oczekuje na realizację";
 
 /* Message shown in a sheet explaining that the user's donation has failed because payment failed. Embeds {{ a specific, already-localized string describing the payment failure reason }}. */
-"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_MESSAGE_FORMAT" = "Mamy problem z przetworzeniem Twojej darowizny. %1$@";
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_MESSAGE_FORMAT" = "Wystąpił problem z przetworzeniem Twojej darowizny. %1$@";
 
 /* Title for a sheet explaining that a payment failed. */
-"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE" = "Błąd przy przetwarzaniu darowizny";
+"DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE" = "Błąd przetwarzania darowizny";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Nie udało się zatwierdzić darowizny";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Twoja jednorazowa darowizna iDEAL nie mogła zostać przetworzona. Wypróbuj inną metodę płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Nie udało się przetworzyć Twojej darowizny jednorazowej metodą iDEAL. Użyj innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Twoja jednorazowa darowizna iDEAL w wysokości %1$@ nie mogła zostać zatwierdzona. Przejdź do swojej aplikacji bankowej i zatwierdź darowiznę iDEAL.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Nie udało się zatwierdzić Twojej darowizny jednorazowej %1$@ metodą iDEAL. Zatwierdź darowiznę w swojej aplikacji bankowej.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Twoja cykliczna comiesięczna darowizna iDEAL nie mogła zostać przetworzona. Wypróbuj inną metodę płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Nie udało się przetworzyć Twojej comiesięcznej darowizny cyklicznej metodą iDEAL. Użyj innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Twoja cykliczna comiesięczna darowizna w wysokości %1$@/mies. nie mogła zostać zatwierdzona. Przejdź do swojej aplikacji bankowej i zatwierdź darowiznę iDEAL.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Nie udało się zatwierdzić Twojej comiesięcznej darowizny cyklicznej %1$@ metodą iDEAL. Zatwierdź darowiznę w swojej aplikacji bankowej.";
 
 /* Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}. */
 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT" = "Twoja comiesięczna darowizna została anulowana. %1$@";
 
 /* Title for a sheet explaining that the user's recurring subscription has ended because payment failed. */
-"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_TITLE" = "Comiesięczna darowizna została anulowana";
+"DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_TITLE" = "Comiesięczna darowizna anulowana";
 
 /* A label describing a donation payment that was made via bank transfer, which is still processing and has not completed. */
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING" = "Darowizna oczekuje na realizację";
@@ -2519,13 +2522,13 @@
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "Przetwarzanie darowizny…";
 
 /* A label describing a donation payment that has failed to process. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_PAYMENT_FAILED" = "Błąd przy przetwarzaniu darowizny";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_PAYMENT_FAILED" = "Błąd przetwarzania darowizny";
 
 /* A label describing a recurring monthly donation that used to be active, but has now been canceled because it failed to renew. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_SUBSCRIPTION_LAPSED" = "Comiesięczna darowizna została anulowana";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_SUBSCRIPTION_LAPSED" = "Comiesięczna darowizna anulowana";
 
 /* A label describing a donation payment that has requires authorization. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "Oczekuje na autoryzację";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "Oczekiwanie na autoryzację";
 
 /* A string describing the amount and currency of a one-time payment. Embeds {{ the amount, formatted as a currency }}. */
 "DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ jednorazowo";
@@ -2537,7 +2540,7 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Darowizna na rzecz aplikacji Signal";
 
 /* Title for the 'Donor FAQ' button on the donation screen */
-"DONATION_VIEW_DONOR_FAQ" = "FAQ darczyńców";
+"DONATION_VIEW_DONOR_FAQ" = "Częste pytania darczyńców";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "Błąd sieci. Sprawdź połączenie z internetem i spróbuj ponownie.";
@@ -2546,7 +2549,7 @@
 "DONATION_VIEW_MANAGE_BADGES" = "Odznaki";
 
 /* Text describing to the user that they're going to pay a monthly donation to Signal */
-"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Comiesięczna darowizna na rzecz Signal";
+"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Comiesięczna darowizna na rzecz aplikacji Signal";
 
 /* Title for the 'more' section on the donation screen */
 "DONATION_VIEW_MORE_SECTION_TITLE" = "Więcej";
@@ -2564,10 +2567,10 @@
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Waluta";
 
 /* Message for Double Tap to Edit sheet show on first interaction */
-"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Aby edytować daną wiadomość, szybko stuknij w nią dwukrotnie. Na edycję wiadomości masz 24 godziny od momentu wysłania.";
+"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Aby edytować daną wiadomość, szybko dwa razy jej dotknij. Możesz edytować wiadomości przez 24 godziny od ich wysłania.";
 
 /* Title for Double Tap to Edit sheet show on first interaction */
-"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Kliknij dwukrotnie, aby edytować";
+"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Aby edytować, dotknij dwa razy";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Możesz przyznać dostęp w ustawieniach swojego urządzenia z iOS.";
@@ -2600,7 +2603,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Skopiuj";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Edycji można dokonać tylko w przeciągu 24 godzin od wysłania wiadomości.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Zmiany można wprowadzić tylko w ciągu 24 godzin od wysłania wiadomości.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -2687,7 +2690,7 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Nie udało się przesłać dzienników.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Wysyłanie wiadomości nie powiodło się, ponieważ zablokowałeś(-aś) tego użytkownika.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Nie udało się wysłać wiadomości, ponieważ ta osoba została przez Ciebie zablokowana.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Nie udało się wysłać wiadomości, ponieważ nie podano prawidłowych odbiorców.";
@@ -2717,7 +2720,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt nie korzysta z aplikacji Signal.";
 
 /* Error message indicating that attachment upload(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Przesyłanie załącznika nie powiodło się.";
+"ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Nie udało się przesłać załącznika.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Nie udało się dostarczyć wiadomości, której nadawca to %1$@";
@@ -2783,19 +2786,19 @@
 "EXIT_REREGISTRATION" = "Opuść rejestrację";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Ta wersja Signal wygasła. Zaktualizuj, aby wysyłać i otrzymywać wiadomości.";
+"EXPIRATION_ERROR" = "Ta wersja Signal wygasła. Aby wysyłać i otrzymywać wiadomości, zaktualizuj aplikację.";
 
 /* If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal. */
-"EXPIRATION_WARNING_ACTION_TITLE" = "Aktualizuj teraz";
+"EXPIRATION_WARNING_ACTION_TITLE" = "Zaktualizuj teraz";
 
 /* Label warning the user that the app will expire soon. Embeds {{date}}. */
-"EXPIRATION_WARNING_SOON" = "Ta wersja Signal wygaśnie %1$@. Zaktualizuj aplikację, aby dalej otrzymywać wiadomości.";
+"EXPIRATION_WARNING_SOON" = "Ta wersja Signal wygaśnie %1$@. Aby dalej wysyłać i otrzymywać wiadomości, zaktualizuj aplikację.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Ta wersja Signal wygaśnie dzisiaj. Zaktualizuj aplikację, aby dalej otrzymywać wiadomości.";
+"EXPIRATION_WARNING_TODAY" = "Ta wersja Signal wygaśnie dzisiaj. Aby dalej wysyłać i otrzymywać wiadomości, zaktualizuj aplikację.";
 
 /* action sheet header when re-sending message which failed because of an invalid key signature */
-"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Wysłanie wiadomości nie powiodło się, ponieważ %1$@ musi zaktualizować i otworzyć Signal.";
+"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Nie udało się wysłać wiadomości. %1$@ musi zaktualizować i otworzyć Signal.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Zbyt dużo nieudanych prób dla tego kontaktu. Spróbuj ponownie później.";
@@ -2804,10 +2807,10 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Ty i %1$@ macie nowy numer bezpieczeństwa. Rozważ jego weryfikację, zanim spróbujesz wysłać wiadomość jeszcze raz.";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Nie udało się odebrać darowizny. Sprawdź połączenie z internetem i spróbuj ponownie.";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Nie udało się odebrać odznaki za darowiznę. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Nie udało się odebrać darowizny";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Nie udało się odebrać odznaki";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Nie udało się zweryfikować numeru bezpieczeństwa";
@@ -2828,22 +2831,22 @@
 "FILE_UNAVAILABLE_SHEET_TITLE" = "Plik niedostępny";
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet. */
-"FIND_ACCOUNT_INFO_SHEET_BODY" = "Znajdź swój numer IBAN na górze wyciągu bankowego. Numery IBAN zawierają do 34 znaków. Wprowadzone imię i nazwisko powinno zgadzać się z imieniem i nazwiskiem widniejącym na koncie bankowym. Skontaktuj się ze swoim bankiem, by uzyskać więcej informacji.";
+"FIND_ACCOUNT_INFO_SHEET_BODY" = "Poszukaj swojego numeru IBAN w górnej części wyciągu bankowego. Numer IBAN składa się z maksymalnie 34 znaków. Podane przez Ciebie imię i nazwisko muszą być takie same jak na Twoim koncie bankowym. Aby otrzymać więcej informacji, skontaktuj się ze swoim bankiem.";
 
 /* Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet. */
-"FIND_ACCOUNT_INFO_SHEET_TITLE" = "Znajdź informacje o koncie";
+"FIND_ACCOUNT_INFO_SHEET_TITLE" = "Gdzie znaleźć dane konta";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Wprowadź nazwę użytkownika, a następnie kropkę i zestaw cyfr.";
+"FIND_BY_USERNAME_FOOTER" = "Wpisz nazwę użytkownika, kropkę i zestaw cyfr.";
 
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "Nazwa użytkownika";
 
 /* A button below the username text field which opens a username QR code scanner */
-"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Skanuj kod QR";
+"FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "Zeskanuj kod QR";
 
 /* Title for the view for finding accounts by their username */
-"FIND_BY_USERNAME_TITLE" = "Znajdź po nazwie użytkownika";
+"FIND_BY_USERNAME_TITLE" = "Wyszukaj po nazwie użytkownika";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Oznacz ukończoną weryfikację";
@@ -2855,7 +2858,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "Zakończ tworzenie grupy";
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
-"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Opcja Przełącz kamerę została przeniesiona tutaj. Stuknij w swoje wideo, aby ją wypróbować";
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Opcja przełączania aparatu została przeniesiona tutaj. Aby ją wypróbować, dotknij swojego wideo";
 
 /* Message for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Wiadomości, które przekazujesz, są teraz natychmiast wysyłane.";
@@ -2969,7 +2972,7 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Nie możesz odbierać połączeń audio ani wideo od tej osoby, a ona nie może ich odbierać od Ciebie.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ jest zablokowany(-a)";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ to zablokowany kontakt";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Połączenia w tej grupie mogą rozpoczynać tylko administratorzy.";
@@ -2978,7 +2981,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Nie możesz zacząć połączenia grupowego";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ jest zablokowany(-a)";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ to zablokowany kontakt";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Kontynuuj połączenie";
@@ -3029,13 +3032,13 @@
 "GROUP_CALL_MEMBER_LIST_TITLE" = "Informacje o połączeniu";
 
 /* Message on an action sheet when tapping an info button next to unknown members in the group call member list. */
-"GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "Przed dołączeniem do rozmowy zobaczysz tylko nazwy kontaktów z telefonu, osób, z którymi jesteś w grupie, lub osób, z którymi zdarzyło Ci się rozmawiać 1:1. Wszystkie imiona i nazwiska oraz zdjęcia zobaczysz po dołączeniu do rozmowy.";
+"GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET" = "Zanim dołączysz do rozmowy, wyświetlą się tylko imiona osób, które masz w kontaktach telefonu, osób, z którymi jesteś w jakiejś grupie, lub osób, z którymi zdarzyło Ci się wymienić wiadomości prywatne. Wszystkie imiona oraz zdjęcia wyświetlą się, gdy dołączysz do rozmowy.";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Nie można odebrać treści audio ani wideo, których nadawca to %1$@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "To może być spowodowane tym, że ta osoba nie zweryfikowała Twojego numeru bezpieczeństwa, ma problem z urządzeniem albo Cię zablokowała.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Ta osoba mogła nie zweryfikować Twojego numeru bezpieczeństwa, ma problem z urządzeniem albo Cię zablokowała.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Nie można odebrać połączenia audio ani wideo, którego nadawca to %1$@";
@@ -3065,31 +3068,31 @@
 "GROUP_CALL_RECONNECTING" = "Ponowne łączenie";
 
 /* Label for a button to block a member from a group call. */
-"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_BLOCK_ACTION" = "Zablokuj połączenie dla użytkownika";
+"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_BLOCK_ACTION" = "Zablokuj dołączanie do rozmowy";
 
 /* Label for the button to confirm removing a member from a group call. */
 "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_REMOVE_ACTION" = "Usuń";
 
 /* Title for action sheet confirming removal of a member from a group call. embeds {{ name }} */
-"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE" = "Usunąć z połączenia użytkownika %1$@?";
+"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE" = "Usunąć z rozmowy tę osobę: %1$@?";
 
 /* The title of an alert when you've been removed from a group call. */
-"GROUP_CALL_REMOVED" = "Usunięto z połączenia";
+"GROUP_CALL_REMOVED" = "Połączenie przerwane";
 
 /* The message of an alert when you've been removed from a group call. */
-"GROUP_CALL_REMOVED_MESSAGE" = "Ktoś usunął Cię z połączenia.";
+"GROUP_CALL_REMOVED_MESSAGE" = "Ktoś usunął Cię z rozmowy.";
 
 /* The title of an alert when tried to join a call using a link but the admin rejected your request. */
-"GROUP_CALL_REQUEST_DENIED" = "Prośba o dołączenie odrzucona";
+"GROUP_CALL_REQUEST_DENIED" = "Prośba o przyjęcie odrzucona";
 
 /* The message of an alert when tried to join a call using a link but the admin rejected your request. */
-"GROUP_CALL_REQUEST_DENIED_MESSAGE" = "Twoja prośba o dołączenie do tego połączenia została odrzucona.";
+"GROUP_CALL_REQUEST_DENIED_MESSAGE" = "Twoja prośba o przyjęcie do rozmowy została odrzucona.";
 
 /* notification body when you join a group call and an already-joined participant has an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "Uczestnik rozmowy zmienił numer bezpieczeństwa. Stuknij, aby wyświetlić.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "Osoba uczestnicząca w rozmowie ma nowy numer bezpieczeństwa. Dotknij, aby wyświetlić.";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Uczestnik, który dołączył, ma zmieniony numer bezpieczeństwa. Stuknij, aby wyświetlić.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Osoba, która dołączyła do rozmowy, ma nowy numer bezpieczeństwa. Dotknij, aby wyświetlić.";
 
 /* Toast view text informing user about swiping to screen share */
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "Przesuń w górę, aby zobaczyć udostępniony ekran";
@@ -3242,7 +3245,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ zmienia ustawienia grupy tak, aby tylko administratorzy mogli wysyłać wiadomości.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Nie możesz dołączyć do tej grupy przez link, gdyż usunął Cię administrator grupy.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Nie możesz dołączyć do tej grupy przez link, ponieważ administrator Cię usunął.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Nie możesz dołączyć do grupy";
@@ -3266,7 +3269,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_BUTTON" = "Poproś o przyjęcie";
 
 /* Message text for the 'group invite link' action sheet, if the user will be requesting to join. */
-"GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_MESSAGE" = "Administrator tej grupy musi zaakceptować Twoją prośbę, zanim będziesz mieć możliwość dołączenia do grupy. Gdy poprosisz o przyjęcie, Twoje imię i zdjęcie zostanie udostępnione członkom grupy.";
+"GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_MESSAGE" = "Twoją prośbę o przyjęcie do grupy musi zaakceptować jej administrator. Gdy poprosisz o przyjęcie do grupy, jej członkom zostaną udostępnione Twoje imię i zdjęcie.";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Sprawdź, czy masz połączenie z internetem, i spróbuj ponownie.";
@@ -3386,13 +3389,13 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Dołączasz do grupy przez link.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ usunął(-ęła) Cię.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ usuwa Cię z grupy.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Zostałeś(-aś) usunięty(-a) z grupy.";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Ktoś usuwa Cię z grupy.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Twoja prośba o dołączenie do grupy została zaakceptowana.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Twoja prośba o przyjęcie do grupy została zaakceptowana.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ akceptuje Twoją prośbę o przyjęcie do grupy.";
@@ -3426,6 +3429,18 @@
 
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Przejrzyj członków";
+
+/* First bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Be cautious of groups that impersonate organizations and businesses";
+
+/* Second bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Profile names of members in groups are not verified";
+
+/* Third bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+
+/* Header for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Group names</bold> are chosen by members of the group.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Nazwa grupy (wymagana)";
@@ -3485,13 +3500,13 @@
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%1$@ opuszcza grupę.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Usunąłeś(-ęłaś) %1$@.";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Usuwasz tę osobę: %1$@.";
 
 /* Message indicating that a remote user was removed from the group by an unknown user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ nie należy już do tej grupy";
+"GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ nie należy już do grupy";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ usunął(-ęła) %2$@.";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ usuwa tę osobę: %2$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Zatwierdzasz prośbę o przyjęcie do grupy, którą przesyła %1$@.";
@@ -3500,7 +3515,7 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ zatwierdza prośbę o przyjęcie do grupy, którą przesyła %1$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "Prośba %1$@ o przyjęcie do grupy została zaakceptowana.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ prosi o przyjęcie do grupy. Prośba zostaje zaakceptowana.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ cofa prośbę o przyjęcie do grupy.";
@@ -3542,25 +3557,25 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Usuń relację grupową";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Czy na pewno chcesz usunąć „%1$@”?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Czy na pewno chcesz usunąć grupę „%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Członkowie czatu grupowego „%1$@” mogą wyświetlać tę relację i na nią odpowiadać. Listę członków grupy dla tego czatu możesz edytować.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Osoby, które należą do czatu grupowego „%1$@”, mogą wyświetlać relację i na nią odpowiadać. Listę tych osób możesz edytować w grupie.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Kto może wyświetlać tę relację";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Kto może wyświetlić tę relację";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Zaktualizowano grupę.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "Zdjęcie grupy zostało usunięte.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Ktoś usuwa zdjęcie grupy.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Usunąłeś(-ęłaś) zdjęcie.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Usuwasz zdjęcie.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ usunął(-ęła) zdjęcie.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ usuwa zdjęcie.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED" = "Zmieniono zdjęcie grupy.";
@@ -3578,13 +3593,13 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ wprowadza zmiany w grupie.";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "Opis grupy został usunięty.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "Ktoś usuwa opis grupy.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Usunąłeś(-ęłaś) opis grupy.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Usuwasz opis grupy.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ usunął(-ęła) opis grupy.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ usuwa opis grupy.";
 
 /* Message indicating that the group's description was changed. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED" = "Zmieniono opis grupy.";
@@ -3596,13 +3611,13 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ zmienia opis grupy.";
 
 /* Message indicating that the group's name was removed. */
-"GROUP_UPDATED_NAME_REMOVED" = "Nazwa grupy została usunięta.";
+"GROUP_UPDATED_NAME_REMOVED" = "Ktoś usuwa nazwę grupy.";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Usunąłeś(-ęłaś) nazwę grupy.";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Usuwasz nazwę grupy.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ usunął(-ęła) nazwę grupy.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ usuwa nazwę grupy.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Zmieniasz nazwę grupy na „%1$@”.";
@@ -3617,7 +3632,7 @@
 "GROUP_WAS_MIGRATED" = "Ta grupa została przeniesiona do nowej grupy.";
 
 /* Message indicating that the local user was invited after the group was migrated. */
-"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "Nie mogłeś(-aś) zostać dodany(-a) do nowej grupy i zostałeś(-aś) do niej zaproszony(-a).";
+"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "Nie udało się Ciebie dodać do nowej grupy. Otrzymujesz do niej zaproszenie.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Opuszczasz grupę.";
@@ -3656,10 +3671,10 @@
 "GROUPS_INVITE_BLOCK_GROUP" = "Zablokuj grupę";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Zablokuj grupę i %1$@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Zablokuj grupę i tę osobę: %1$@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Zablokuj %1$@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Zablokuj tę osobę: %1$@";
 
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "Zaproś znajomych";
@@ -3695,31 +3710,31 @@
 "HELP_SUPPORT_CENTER" = "Centrum pomocy";
 
 /* A format for the 'remove user' action sheet title. Embeds {{the removed user's name or phone number}}. */
-"HIDE_RECIPIENT_ACTION_SHEET_TITLE_FORMAT" = "%1$@ – usunąć?";
+"HIDE_RECIPIENT_ACTION_SHEET_TITLE_FORMAT" = "Usunąć tę osobę: %1$@?";
 
 /* An explanation of the consequences of removing a user. */
-"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "Nie zobaczysz tej osoby podczas wyszukiwania. Jeśli w przyszłości wyśle Ci wiadomość, otrzymasz prośbę o wiadomość.";
+"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "Ta osoba nie wyświetli się już podczas wyszukiwania. Jeśli w przyszłości wyśle Ci wiadomość, otrzymasz prośbę o kontakt.";
 
 /* Button label for the 'remove' button */
 "HIDE_RECIPIENT_BUTTON" = "Usuń";
 
 /* Toast message confirming the recipient was removed. Embeds {{The name of the user who was removed.}}.. */
-"HIDE_RECIPIENT_CONFIRMATION_TOAST" = "Usunięto: %1$@";
+"HIDE_RECIPIENT_CONFIRMATION_TOAST" = "Ta osoba została usunięta: %1$@.";
 
 /* An explanation of why a user was not successfully removed and what to do. */
 "HIDE_RECIPIENT_ERROR_ACTION_SHEET_EXPLANATION" = "Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Title for an action sheet indicating that the user was not successfully removed. Embeds {{name of user we attempted to hide}}. */
-"HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT" = "Nie udało się usunąć %1$@";
+"HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT" = "Nie udało się usunąć tej osoby: %1$@";
 
 /* An explanation of why the user cannot be removed. */
-"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Ta osoba jest zapisana jako kontakt na Twoim urządzeniu. Usuń ją z kontaktów, aby zniknęła z listy.";
+"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Ta osoba została zapisana jako kontakt na Twoim urządzeniu. Aby zniknęła z tej listy, usuń tę osobę z kontaktów.";
 
 /* A format for the 'unable to remove user' action sheet title. Embeds {{the removed user's name or phone number}}. */
-"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "Nie udało się usunąć %1$@";
+"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "Nie udało się usunąć tej osoby: %1$@";
 
 /* An explanation of why the user cannot be removed on a linked device. */
-"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Tę osobę masz zapisaną w kontaktach Twojego telefonu. Usuń ją z kontaktów Twojego telefonu i spróbuj ponownie.";
+"HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "Ta osoba została zapisana jako kontakt na Twoim telefonie. Usuń ją z kontaktów telefonu i spróbuj ponownie.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archiwum czatów";
@@ -3743,7 +3758,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Z aplikacji Signal korzystają już niektóre osoby z Twoich kontaktów, między innymi %1$@, %2$@ i %3$@.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Rozpocznij tu swój pierwszy czat.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Rozpocznij swój pierwszy czat tutaj.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ dodaje Cię do grupy";
@@ -3764,16 +3779,16 @@
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Przeczytaj wszystko";
 
 /* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
-"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Wybierz swój bank";
+"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Wybierz bank";
 
 /* Fallback title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Potwierdź darowiznę";
+"IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Zatwierdź darowiznę";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Aby skonfigurować darowiznę cykliczną, kliknij Dalej i potwierdź w banku obciążenie konta w wysokości 0,01 euro. Kwota zostanie automatycznie zwrócona i pozwoli na pobieranie z Twojego konta darowizny w wysokości %1$@ miesięcznie.";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Aby skonfigurować darowiznę cykliczną, kliknij Kontynuuj i potwierdź w banku obciążenie konta kwotą 0,01 euro. Kwota zostanie automatycznie zwrócona, a procedura ta pozwoli na pobieranie z Twojego konta %1$@ miesięcznie.";
 
 /* Title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Potwierdź darowiznę za pośrednictwem %1$@";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Potwierdź darowiznę przez %1$@";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Rysuj, aby rozmyć dowolny obszar";
@@ -3794,13 +3809,13 @@
 "IN_CALL_CONNECTING" = "Łączenie…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Odebrane na innym urządzeniu";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Odebrano na innym urządzeniu";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Nieodebrane z powodu rozmowy na innym urządzeniu";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Nie odebrane z powodu rozmowy na innym urządzeniu";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Odrzucone na innym urządzeniu";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Odrzucono na innym urządzeniu";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "Ponowne łączenie…";
@@ -3815,7 +3830,7 @@
 "IN_CALL_RINGING_VIDEO" = "Połączenie wideo…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Odebrane. Trwa zabezpieczanie…";
+"IN_CALL_SECURING" = "Połączenie odebrane. Zabezpieczanie…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Połączenie zakończone";
@@ -3827,16 +3842,16 @@
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Rozumiem";
 
 /* Title for an in-app megaphone about a user's inactive linked device. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Połączone urządzenie nieaktywne";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Nieaktywne połączone urządzenie";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Wyciszone czaty pozostaną w archiwum, gdy pojawi się nowa wiadomość.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Gdy w wyciszonym zarchiwizowanym czacie pojawi się nowa wiadomość, pozostanie on w archiwum.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Zarchiwizowane czaty zostaną przeniesione do skrzynki odbiorczej, gdy pojawi się nowa wiadomość.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Gdy w zarchiwizowanym czacie pojawi się nowa wiadomość, zostanie on przeniesiony do skrzynki odbiorczej.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Nie masz jeszcze żadnych czatów.\nZacznij od wysłania wiadomości do znajomego.";
+"INBOX_VIEW_EMPTY_INBOX" = "Nie masz jeszcze czatów.\nMoże wyślesz wiadomość do znajomej osoby?";
 
 /* info message text in conversation view */
 "INCOMING_VIDEO_CALL" = "Przychodzące połączenie wideo";
@@ -3845,37 +3860,37 @@
 "INCOMING_VOICE_CALL" = "Przychodzące połączenie głosowe";
 
 /* An info message inserted into the chat when you accept a message request, in a 1:1 or group chat. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "Zaakceptowano prośbę o przesłanie wiadomości.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST" = "Akceptujesz prośbę o kontakt.";
 
 /* Header for an action sheet providing options in response to an accepted 1:1 message request. Embeds {{ the name of your chat partner }}. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "Zaakceptowano prośbę o przesłanie wiadomości od %1$@. Jeżeli to pomyłka, możesz wybrać jedno z poniższych działań.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_CONTACT" = "Zaakceptowano prośbę o kontakt, której nadawca to %1$@. Jeżeli to pomyłka, wybierz jedną z opcji poniżej.";
 
 /* Header for an action sheet providing options in response to an accepted group message request. */
-"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "Zaakceptowano prośbę o przesłanie wiadomości z tej grupy. Jeżeli to pomyłka, możesz wybrać jedno z poniższych działań.";
+"INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_ACTION_SHEET_HEADER_GROUP" = "Zaakceptowano prośbę o kontakt od grupy. Jeżeli to pomyłka, wybierz jedną z opcji poniżej.";
 
 /* Title for a button shown alongside an info message indicating you accepted a message request. */
 "INFO_MESSAGE_ACCEPTED_MESSAGE_REQUEST_OPTIONS_BUTTON" = "Opcje";
 
 /* An info message inserted into a group chat when you block the group. */
-"INFO_MESSAGE_BLOCKED_GROUP" = "Ta grupa została przez Ciebie zablokowana.";
+"INFO_MESSAGE_BLOCKED_GROUP" = "Blokujesz grupę.";
 
 /* An info message inserted into a 1:1 chat when you block another user. */
-"INFO_MESSAGE_BLOCKED_OTHER_USER" = "Ta osoba została przez Ciebie zablokowana.";
+"INFO_MESSAGE_BLOCKED_OTHER_USER" = "Blokujesz tę osobę.";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
-"INFO_MESSAGE_CONTACT_REINSTATED" = "Ta osoba została z powrotem dodana do Twojej listy kontaktów Signal.";
+"INFO_MESSAGE_CONTACT_REINSTATED" = "Osoba została z powrotem dodana do listy Twoich kontaktów Signal.";
 
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
-"INFO_MESSAGE_CONTACT_REMOVED" = "Ta osoba została wcześniej usunięta z listy kontaktów Signal, wysłanie do niej wiadomości spowoduje ponowne dodanie do listy.";
+"INFO_MESSAGE_CONTACT_REMOVED" = "Ta osoba została wcześniej usunięta z listy Twoich kontaktów Signal. Jeśli wyślesz do tej osoby wiadomość, trafi ona z powrotem na listę.";
 
 /* When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}. */
-"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "Rozpoczęto czat z %1$@.";
+"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "Ty i %1$@ rozpoczynacie czat.";
 
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Aktywowano płatności.";
 
 /* Shown when a user activates payments from a chat. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "Od teraz %1$@ przyjmuje płatności.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ przyjmuje teraz płatności.";
 
 /* Shown when a user receives a payment activation request. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ prosi Cię o aktywację płatności. Wysyłaj płatności tylko zaufanym osobom.";
@@ -3887,19 +3902,19 @@
 "INFO_MESSAGE_REPORTED_SPAM" = "Zgłoszono jako spam";
 
 /* Body message of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Zostaliśmy powiadomieni o tym, że ten użytkownik może wysyłać spam. Signal nie widzi treści czatów.";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Zostaliśmy powiadomieni o tym, że ten użytkownik może wysyłać spam. Signal nie ma dostępu do treści czatów.";
 
 /* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Zgłoszono spam";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Dla Twojego bezpieczeństwa historia czatu nie jest przenoszona na nowe powiązane urządzenia.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Dla Twojego bezpieczeństwa historia czatu nie jest przenoszona na nowo połączone urządzenia.";
 
 /* An info message inserted into a group chat when you unblock the group. */
-"INFO_MESSAGE_UNBLOCKED_GROUP" = "Ta grupa została przez Ciebie odblokowana.";
+"INFO_MESSAGE_UNBLOCKED_GROUP" = "Odblokowujesz grupę.";
 
 /* An info message inserted into a 1:1 chat when you unblock another user. */
-"INFO_MESSAGE_UNBLOCKED_OTHER_USER" = "Ta osoba została przez Ciebie odblokowana.";
+"INFO_MESSAGE_UNBLOCKED_OTHER_USER" = "Odblokowujesz tę osobę.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ ma nowy numer telefonu.";
@@ -3929,7 +3944,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Nieprawidłowy plik audio.";
 
 /* The provided proxy host address is not valid */
-"INVALID_PROXY_HOST_ERROR" = "Wprowadzony adres proxy jest nieprawidłowy. Sprawdź adres i spróbuj ponownie.";
+"INVALID_PROXY_HOST_ERROR" = "Podany adres proxy jest nieprawidłowy. Sprawdź adres i spróbuj ponownie.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Aby zaprosić znajomych, zezwól aplikacji Signal na dostęp do kontaktów w ustawieniach swojego urządzenia z iOS.";
@@ -3998,7 +4013,7 @@
 "KEY_COMMAND_STICKERS" = "Pokaż naklejki";
 
 /* A keyboard command to unarchive the current conversation. */
-"KEY_COMMAND_UNARCHIVE" = "Przywróć czat";
+"KEY_COMMAND_UNARCHIVE" = "Przywróć czat z archiwum";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Dowiedz się więcej";
@@ -4013,19 +4028,19 @@
 "LEAVE_GROUP_FAILED" = "Podczas opuszczania grupy wystąpił błąd.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "„Stare grupy” nie obsługują takich funkcji jak @wzmianki i administratorzy. Większość starych grup została zaktualizowana automatycznie lub ręcznie do „Nowych grup”. W związku z długą nieaktywnością ta grupa nie może już zostać zaktualizowana.\n\nAby wznowić czat, musisz utworzyć nową grupę.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "„Stare grupy” nie obsługują takich funkcji jak @wzmianki i administracja. Większość starych grup została automatycznie lub ręcznie przeniesiona do „Nowych grup”. Ponieważ ta grupa przez dłuższy czas była nieaktywna, nie można jej już przenieść.\n\nAby dalej rozmawiać na czacie, musisz utworzyć nową grupę.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
 "LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Stare grupy";
 
 /* Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}. */
-"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "To jest grupa starego typu, która nie jest już wspierana. Aby kontynuować tę konwersację, stwórz nową grupę. %1$@";
+"LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "To jest tzw. stara grupa, której już nie obsługujemy. Aby dalej rozmawiać na czacie, utwórz nową grupę. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "Nowe grupy posiadają takie funkcje jak @wzmianki i administratorzy, a w przyszłości będą obsługiwać więcej funkcji.\n\nCała historia wiadomości i multimedia zostały zachowane po aktualizacji.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "W nowych grupach można korzystać z funkcji, takich jak @wzmianki i administracja. W przyszłości opcji będzie jeszcze więcej.\n\nCała historia wiadomości i wszystkie multimedia sprzed aktualizacji zostały zachowane.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Czym są Nowe grupy?";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Co to są nowe grupy?";
 
 /* subtitle for declining to send message history when linking a new device */
 "LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_SUBTITLE" = "Na połączone urządzenie nie zostaną przeniesione żadne stare wiadomości ani multimedia.";
@@ -4115,10 +4130,10 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Podgląd linku";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Zarządzanie kontaktami systemowymi przestało być obsługiwane na iPadzie. Aby dodać kontakty Signal do listy kontaktów systemowych, otwórz aplikację Signal w swoim telefonie.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Zarządzanie kontaktami systemowymi nie jest już obsługiwane na iPadzie. Aby dodać kontakty Signal do listy kontaktów telefonu, otwórz aplikację Signal na swoim telefonie.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Zarządzanie kontaktami systemowymi przestało być obsługiwane na iPadzie. To urządzenie będzie nadal synchronizować wszelkie zmiany na liście kontaktów z aplikacji Signal w telefonie.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Zarządzanie kontaktami systemowymi nie jest już obsługiwane na iPadzie. Na tym urządzeniu dalej będą synchronizowane wszelkie zmiany wprowadzane do listy kontaktów w aplikacji Signal na telefonie.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Dowiedz się więcej";
@@ -4256,7 +4271,7 @@
 "MEDIA_EDITOR_RESET" = "Zresetuj";
 
 /* Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles */
-"MEDIA_EDITOR_TAP_FOR_MORE" = "Stuknij, aby zobaczyć więcej";
+"MEDIA_EDITOR_TAP_FOR_MORE" = "Dotknij, aby wyświetlić więcej";
 
 /* Placeholder for message text input field in media editor. */
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Dodaj wiadomość";
@@ -4277,13 +4292,13 @@
 "MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Usuń filtr";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
-"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "To spowoduje trwałe usunięcie wybranych plików. Wszystkie wiadomości powiązane z tymi plikami również zostaną usunięte.";
+"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Spowoduje to trwałe usunięcie wybranych plików. Wszystkie wiadomości powiązane z plikami również zostaną usunięte.";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Wysyłane i otrzymywane wiadomości głosowe i pliki audio będą pojawiać się tutaj";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Wiadomości głosowe i pliki audio, które wyślesz lub otrzymasz, pojawią się tutaj";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
 "MEDIA_GALLERY_NO_AUDIO_TITLE" = "Brak plików audio";
@@ -4298,7 +4313,7 @@
 "MEDIA_GALLERY_NO_FILTER_RESULTS" = "Brak multimediów";
 
 /* Displayed in All Media screen when there's no media - second line. */
-"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Wysyłane i otrzymywane zdjęcia, wideo i GIF-y będą pojawiać się tutaj";
+"MEDIA_GALLERY_NO_MEDIA_SUBTITLE" = "Zdjęcia, wideo i GIF-y, które wyślesz lub otrzymasz, pojawią się tutaj";
 
 /* Displayed in All Media screen when there's no media - first line. */
 "MEDIA_GALLERY_NO_MEDIA_TITLE" = "Brak multimediów";
@@ -4307,7 +4322,7 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Ten miesiąc";
 
 /* Text explaining that the user will forward all media from a message. */
-"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "Wszystkie multimedia w tej wiadomości zostaną przekazane.";
+"MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE" = "Przekazane zostaną wszystkie multimedia z tej wiadomości.";
 
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Usuń";
@@ -4322,13 +4337,13 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Skopiuj tekst wiadomości";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Usuń wszędzie";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Usuń u wszystkich";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Ta wiadomość zostanie usunięta u wszystkich uczestników tego czatu, jeśli używają najnowszej wersji Signal. Będą oni mogli zobaczyć, że skasowałeś(-aś) wiadomość.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Wiadomość zostanie usunięta u wszystkich osób uczestniczących w czacie, pod warunkiem że mają najnowszą wersję aplikacji Signal. Wyświetli się u nich informacja, że wiadomość została przez Ciebie usunięta.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Gdzie chcesz usunąć tę wiadomość?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "U kogo chcesz usunąć tę wiadomość?";
 
 /* The title for the action that deletes a message for the local user only. */
 "MESSAGE_ACTION_DELETE_FOR_YOU" = "Usuń u mnie";
@@ -4358,10 +4373,10 @@
 "MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Przekaż wybrane wiadomości";
 
 /* A label for a button that will open an address in Apple Maps. \"Maps\" is a proper noun referring to the Apple Maps app, and should be translated as such. */
-"MESSAGE_ACTION_LINK_OPEN_ADDRESS_APPLE_MAPS" = "Otwórz w aplikacji Mapy";
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_APPLE_MAPS" = "Otwórz w Mapach";
 
 /* A label for a button that will open an address in Google Maps. \"Google Maps\" is a proper noun referring to the Google Maps app, and should be translated as such. */
-"MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS" = "Otwórz w Google Maps";
+"MESSAGE_ACTION_LINK_OPEN_ADDRESS_GOOGLE_MAPS" = "Otwórz w Mapach Google";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Otwórz zaproszenie do grupy";
@@ -4370,7 +4385,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Otwórz link";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Otwórz Signal proxy";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Otwórz proxy Signal";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Wyświetl pakiet naklejek";
@@ -4421,7 +4436,7 @@
 "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Czas wysłania skopiowany";
 
 /* Title for the 'edit history' section on the 'message details' view. */
-"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "Zobacz historię edycji";
+"MESSAGE_DETAILS_EDIT_HISTORY_TITLE" = "Wyświetl historię edycji";
 
 /* Title for the 'sent from' section on the 'message details' view. */
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "Nadawca";
@@ -4502,13 +4517,13 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Zablokowane osoby nie będą mogły do Ciebie dzwonić ani wysyłać Ci wiadomości.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Zablokować %1$@?";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Zablokować tę osobę: %1$@?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Opuścisz tę grupę i nie będziesz już w niej otrzymywać wiadomości ani powiadomień.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Zablokować i opuścić %1$@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Zablokować i opuścić grupę %1$@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Usuń";
@@ -4523,7 +4538,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Usuń i opuść";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Opuścisz tę grupę i zostanie ona usunięta ze wszystkich Twoich urządzeń.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Opuścisz tę grupę, a ta zostanie usunięta ze wszystkich Twoich urządzeń.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Usunąć i opuścić grupę?";
@@ -4562,13 +4577,13 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Zablokuj";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Pozwolić %1$@ wysyłać do Ciebie wiadomości i udostępnić Twoje imię i zdjęcie? Nie otrzymasz żadnych wiadomości, dopóki nie odblokujesz tego kontaktu.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Czy %1$@ może wysyłać Ci wiadomości oraz czy udostępnić tej osobie Twoje imię i zdjęcie? Nie otrzymasz żadnych wiadomości, dopóki nie odblokujesz tego kontaktu.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Czy chcesz odblokować tę grupę i udostępnić swoje imię i zdjęcie jej członkom? Nie otrzymasz żadnych wiadomości, dopóki nie odblokujesz tej grupy.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Czy chcesz odblokować tę grupę i udostępnić jej swoje imię oraz zdjęcie? Nie otrzymasz żadnych wiadomości, dopóki nie odblokujesz tej grupy.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Czy chcesz odblokować tę grupę? Członkowie grupy nie będą wiedzieć, że przeczytałeś(-aś) ich wiadomość, dopóki ich nie odblokujesz.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Czy chcesz odblokować tę grupę? Należące do niej osoby nie dowiedzą się, że wiadomość została przez Ciebie odczytana, dopóki nie odblokujesz grupy.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Kontynuuj";
@@ -4577,10 +4592,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Usuń";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Kontynuować ten czat z %1$@ i udostępnić imię i zdjęcie temu kontaktowi?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Czy Ty i %1$@ dalej będziecie komunikować się na czacie i czy udostępnić temu kontaktowi Twoje imię i zdjęcie?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Kontynuować czat z tą grupą i udostępnić Twoje imię i zdjęcie jej członkom?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Kontynuować czat z tą grupą i udostępnić jej Twoje imię i zdjęcie?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Czy %1$@ może wysyłać Ci wiadomości oraz czy udostępnić tej osobie Twoje imię i zdjęcie? Nie dowie się ona, że wiadomość została przez Ciebie odczytana, dopóki nie zaakceptujesz zaproszenia.";
@@ -4592,7 +4607,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Czy chcesz dołączyć do tej grupy? Jej członkowie nie będą wiedzieć, że wiadomość została przez Ciebie odczytana, dopóki nie zaakceptujesz zaproszenia.";
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Czy %1$@ może wysyłać Ci wiadomości i mieć dostęp do Twojego imienia i zdjęcia? W przeszłości zdarzyło Ci się usunąć tego użytkownika.";
+"MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Czy %1$@ może wysyłać Ci wiadomości oraz czy udostępnić tej osobie Twoje imię i zdjęcie? W przeszłości ten użytkownik został przez Ciebie usunięty.";
 
 /* incoming message request button text which reports a conversation as spam */
 "MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Zgłoś…";
@@ -4649,7 +4664,7 @@
 "MESSAGE_STATUS_SENT" = "Wysłano";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Wysyłanie…";
+"MESSAGE_STATUS_UPLOADING" = "Przesyłanie…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Wyświetlono";
@@ -4670,13 +4685,13 @@
 "MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Nieodebrane połączenie od kontaktu zablokowanego w ustawieniach telefonu";
 
 /* Action to block contact in Signal for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Zablokuj kontakt również w Signal";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "Zablokuj kontakt również w aplikacji Signal";
 
 /* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "Masz nieodebrane połączenie od tej osoby, ponieważ jest ona zablokowana w ustawieniach Twojego telefonu. Przejdź do Ustawienia > Telefon i stuknij w Zablokowane kontakty, aby to zmienić.";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "Nie odebrano połączenia od tej osoby, ponieważ została ona zablokowana w ustawieniach telefonu. Aby to zmienić, przejdź do sekcji  Ustawienia > Telefon i dotknij opcji Zablokowane kontakty.";
 
 /* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ zablokowany(-a) w ustawieniach telefonu";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ to kontakt zablokowany w ustawieniach telefonu";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
 "MISSED_CALL_FOCUS_MODE" = "Nieodebrane połączenie w trybie Skupienie";
@@ -4709,7 +4724,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Nie możesz połączyć więcej urządzeń.";
 
 /* A recovery suggestion shown as the body of an alert when try to link a new device & the user is already at the limit. */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Osiągnięto maksymalną ilość urządzeń podłączonych do Twojego konta. Usuń urządzenie i spróbuj ponownie.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Z kontem połączono już maksymalną liczbę urządzeń. Usuń urządzenie i spróbuj ponownie.";
 
 /* Text for a toast confirming that the mic has been muted for a call. */
 "MUTE_CONFIRMATION_TOAST_LABEL" = "Mikrofon wył.";
@@ -4718,7 +4733,7 @@
 "MUTED_BADGE" = "Wyciszono";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Tutaj pojawią się aktualizacje Twojej relacji.";
+"MY_STORIES_NO_STORIES" = "Tutaj pojawią się Twoje relacje.";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Wszyscy oprócz…";
@@ -4727,7 +4742,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Wszystkie kontakty Signal";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Udostępniaj tylko…";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Udostępnij tylko…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Moje relacje";
@@ -4736,7 +4751,7 @@
 "MY_STORY_NAME" = "Moje relacje";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
-"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Zdecyduj, kto może wyświetlać relację";
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Wybierz, kto może wyświetlać relację";
 
 /* Title for the my story settings sheet */
 "MY_STORY_SETTINGS_SHEET_TITLE" = "Prywatność moich relacji";
@@ -4823,7 +4838,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Wybierz członków";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ do %2$@ · relacja";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ do grupy %2$@ · relacja";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Wybierz grupę";
@@ -4841,16 +4856,16 @@
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "Utwórz";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Tytuł relacji jest wymagany.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Trzeba podać nazwę relacji.";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Brakujący tytuł relacji";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Brakuje nazwy relacji";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Tylko Ty możesz zobaczyć nazwę tej relacji.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Tylko Ty możesz wyśweitlić nazwę tej relacji.";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Tytuł relacji (wymagana)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Nazwa relacji (wymagana)";
 
 /* The title for the 'new private story' view. */
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "Wybierz odbiorców";
@@ -5914,6 +5929,18 @@
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ ma nową nazwę profilu: %2$@.";
 
+/* First bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Profile names are not verified";
+
+/* Second bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Be cautious of accounts that impersonate others";
+
+/* Third bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+
+/* Header for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Profile names</bold> on Signal are chosen by their account holder.";
+
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Twoje imię";
 
@@ -6404,10 +6431,10 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Nieistniejące firmy i instytucje";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal nigdy nie zwróci się do Ciebie z prośbą o podanie kodu rejestracyjnego ani PIN-u. Uważaj na tego typu wiadomości – mogą pochodzić od osób podszywających się pod kogoś innego. Nazwę użytkownika podaje osoba posługująca się kontem, a Signal nie weryfikuje imion ani nazwisk.";
 
 /* Message title describing the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Uwaga na oszustów";
 
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Przyjrzyj się uważnie tej prośbie. W tej grupie nie ma ani jednego Twojego kontaktu ani osoby, z którą prowadzisz rozmowę. Oto kilka rzeczy, na które należy uważać:";
@@ -8165,13 +8192,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Gdy wyślesz wiadomość, zniknie ona po %1$@.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
-
-/* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Brak wspólnych grup. Uważnie sprawdzaj prośby o kontakt.";
-
-/* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Nie masz kontaktów w tej grupie. Uważnie sprawdzaj wszystkie prośby o kontakt.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Zachowaj ostrożność";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "Dotknij, aby zastąpić emoji";
@@ -8212,6 +8233,12 @@
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Ta wiadomość została usunięta.";
 
+/* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+
+/* Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Group names";
+
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Członek grup %1$@, %2$@ i %3$lu innych";
 
@@ -8221,6 +8248,12 @@
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Członek grupy %1$@";
 
+/* Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+
+/* Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Profile names";
+
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Wyświetl";
 
@@ -8229,6 +8262,9 @@
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Członek grup %1$@ i %2$@";
+
+/* A string indicating there are no mutual groups the user shares with this contact */
+"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "No groups in common";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
 "THREAD_MERGE_LEARN_MORE" = "Po rozmowie z %1$@ dowiedziałeś(-aś) się, że ten numer należy do %2$@. Ten numer jest prywatny.\n\nTwoja historia wiadomości dla obu czatów została połączona tutaj.";

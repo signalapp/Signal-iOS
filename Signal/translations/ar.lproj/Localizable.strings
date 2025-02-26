@@ -1252,6 +1252,9 @@
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "طلب مراسلة في الانتظار";
 
+/* A label on the profile about sheet */
+"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Profile names are not verified";
+
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "\"%1$@\" هو اسم الحساب الذي حدّده هذا الشخص لنفسه في سيجنال.";
 
@@ -3427,6 +3430,18 @@
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "مراجعة الأعضاء";
 
+/* First bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Be cautious of groups that impersonate organizations and businesses";
+
+/* Second bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Profile names of members in groups are not verified";
+
+/* Third bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+
+/* Header for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Group names</bold> are chosen by members of the group.";
+
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "اسم المجموعة (مطلوب)";
 
@@ -4064,7 +4079,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "امسح ضوئيًا كود الـ QR";
 
 /* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "انقر على \"متابعة\" وأدخِل قفل هاتفك للتأكيد. لا تُدخِل رقم PIN لسيجنال الخاص بك.";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "انقر على \"متابعة\" وأدخِل قفل هاتفك للتأكيد. لا تُدخِل رقم التعريف الشخصي (PIN) لسيجنال الخاص بك.";
 
 /* Title for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
 "LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "قبل الربط، أكِّد هويتك";
@@ -4979,31 +4994,31 @@
 "OK" = "حسنًا";
 
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_CREATE_NEW_PIN" = "إنشاء رقم تعريف شخصي جديد";
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "إنشاء رقم تعريف شخصي (PIN) جديد";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "أدخِل رقم PIN مُكوَّن من أرقام وحروف";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "أدخِل رقم تعريف شخصي (PIN) مُكوَّن من أرقام وحروف";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "أدخِل رقم PIN رَقمي";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "أدخِل رقم تعريف شخصي (PIN) رَقمي";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_FORGOT_PIN_LINK" = "هَل تحتاج لمساعدة؟";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "رقم الـ PIN غير صحيح";
+"ONBOARDING_2FA_INVALID_PIN" = "رقم التعريف الشخصي (PIN) غير صحيح";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
-"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "رقم PIN غير صحيح. تبقَّى مُحاولة واحدة.";
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "رقم التعريف الشخصي (PIN) غير صحيح. تبقَّى مُحاولة واحدة.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "تجاهُل وإنشاء PIN جديد";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "تجاهُل وإنشاء رقم تعريف شخصي (PIN) جديد";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "إذا كُنتَ لا تستطيع تذكُّر رقم PIN الخاص بك، يُمكنك إنشاء واحد جديد. يُمكنك التسجيل واستخدام حسابك، لكن سوف تفقد بعض الإعدادات المحفوظة، مثل معلومات حسابك الشخصي.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "إذا كُنتَ لا تستطيع تذكُّر رقم التعريف الشخصي (PIN) الخاص بك، يُمكنك إنشاء واحد جديد. يُمكنك التسجيل واستخدام حسابك، لكن سوف تفقد بعض الإعدادات المحفوظة، مثل معلومات حسابك الشخصي.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "هل ترغبُ بتخطّي إدخال رقم PIN؟";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "هل ترغبُ بتخطّي إدخال رقم التعريف الشخصي (PIN)؟";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "تسجيل الآيباد";
@@ -5063,13 +5078,13 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "رقم الهاتف غير صالِح. للتسجيل يُرجى إدخال رقم هاتف صالِح.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "استنفدتَ تخمينات رقم PIN المسموحة لك، ولكن مازال بإمكانك الوصول إلى حسابك على سيجنال من خلال إنشاء رقم PIN جديد. للحفاظ على خصوصيتك وأمانك، ستتمُّ استعادة حسابك بدون أي معلومات حساب أو إعدادات محفوظة.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "استنفدتَ تخمينات رقم التعريف الشخصي (PIN) المسموحة لك، ولكن مازال بإمكانك الوصول إلى حسابك على سيجنال من خلال إنشاء رقم تعريف لشخصي (PIN) جديد. للحفاظ على خصوصيتك وأمانك، ستتمُّ استعادة حسابك بدون أي معلومات حساب أو إعدادات محفوظة.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "اعرف المزيد عن أرقام PINs";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "اعرف المزيد عن أرقام التعريف الشخصية (PIN)";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "رقم PIN غير صحيح";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "رقم التعريف الشخصي (PIN) غير صحيح";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "نَفَدت جميع مُحاولات تخمين رقم التعريف الشخصي (PIN)، لكن مازال بإمكانك الوصول إلى حساب سيجنال الخاص بِكَ عبر التحقُّق من رقم هاتفك. للحفاظ على خصوصيتك وأمانك، سَيُستعاد حسابك من غير أي معلومات حساب شخصي أو إعدادات محفوظة مُسبقًا.";
@@ -5831,7 +5846,7 @@
 "PRIVACY_UNVERIFY_BUTTON" = "انقر للمسح";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "لا يبدو هذا رقم أمانك مع %1$@. هل تتحقَّق من جهة الاتصال الصحيحة؟";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "لا يبدو هذا رقم الأمان الخاص بك مع %1$@. هل تتحقَّق من جهة الاتصال الصحيحة؟";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "لا يبدو الرقم الذي في حافظتك أنه رقم الأمان الصحيح لهذه الدردشة.";
@@ -5840,7 +5855,7 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "لم يجد سيجنال أي رقم أمان في حافظتك. هل نسخته بشكلٍ صحيح؟";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "كل زوج من مستخدمي سيجنال يتشاركان رقم أمان فريد. يُرجى التأكُّد أن %1$@ يعرض رقم أمانك الفريد.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "كل زوج من مستخدمي سيجنال يتشاركان رقم أمان فريد. يُرجى التأكُّد أن %1$@ يعرض رقم الأمان الفريد الخاص بك.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "أنت تستخدم إصدارًا قديمًا من سيجنال. تحتاج للتحديث لتتمكَّن من التحقُّق.";
@@ -5914,6 +5929,18 @@
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "غيَّرَ %1$@ اسم حسابه الشخصي إلى %2$@.";
 
+/* First bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Profile names are not verified";
+
+/* Second bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Be cautious of accounts that impersonate others";
+
+/* Third bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+
+/* Header for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Profile names</bold> on Signal are chosen by their account holder.";
+
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "اِسمُك";
 
@@ -5942,7 +5969,7 @@
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "تعديل اسم المُستخدِم";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "رابط أو كود QR";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "رابط أو كود الـ QR";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "اسمُ المُستخدِم";
@@ -6227,7 +6254,7 @@
 "REGISTRATION_PIN_CREATE_SUBTITLE" = "يُمكن أن تساعدك أرقام التعريف الشخصية (PINs) على استعادة حسابك والحفاظ على معلوماتك مُشفَّرة مع سيجنال.";
 
 /* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_CREATE_TITLE" = "إنشاء رقم PIN";
+"REGISTRATION_PIN_CREATE_TITLE" = "إنشاء رقم الـ PIN";
 
 /* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
 "REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "يُمكن أن تساعدك أرقام التعريف الشخصية (PINs) على استعادة حسابك والحفاظ على معلوماتك مُشفَّرة مع سيجنال.";
@@ -6404,10 +6431,10 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "الشركات والمُؤسَّسات الوهمية";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "لن يَطلب سيجنال منك أبدًا كود التسجيل أو رقم التعريف الشخصي (PIN). كُن حذِرًا من الطلبات التي تنتحل شخصية الآخرين. يقوم أصحاب الحسابات بتحديد أسماء حساباتهم الشخصية، وهي غير خاضعة لعملية التحقُّق.";
 
 /* Message title describing the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "الأسماء والحسابات المُزَيَّفة";
 
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "راجِع هذا الطلب بعناية. لا توجد أية جهات اتصال أو أشخاص تُدردش معهم في هذه المجموعة. إليك بعض الأمور التي عليك الانتباه إليها:";
@@ -6710,10 +6737,10 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "تجاوُز الرقابة ليس ضُروريًا؛ أنت بالفعل مُتصل بخدمة سيجنال.";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "إعدادات رقم PIN المُتقدِّمة";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "الإعدادات المُتقدِّمة لرقم الـ PIN";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "إعدادات رقم PIN المُتقدِّمة";
+"SETTINGS_ADVANCED_PIN_TITLE" = "الإعدادات المُتقدِّمة لرقم الـ PIN";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "تعطيل رقم PIN";
@@ -7205,7 +7232,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "هل ترغبُ بتخطِّي تمكين التعرُّف على الوجه (Face ID)؟";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Optic ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "هل ترغب بتخطّي تفعيل Optic ID؟";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "هل ترغبُ بتخطّي تفعيل Optic ID؟";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "هل ترغبُ بتخطِّي تمكين رمز المرور؟";
@@ -7346,7 +7373,7 @@
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "التعرُّف على الوجه (Face ID) مطلوب لتحويل المبالغ.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for opticid biometry */
-"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "يشترط استخدام Optic ID لتحويل المبالغ.";
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_OPTICID" = "يتطلَّب استخدام Optic ID لتحويل المبالغ.";
 
 /* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
 "SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "رمز المرور الخاص بهاتفك مطلوب لإرسال المبالغ.";
@@ -7451,13 +7478,13 @@
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "عنوان محفظتك";
 
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "لتغيير هذا الإعداد، اختر \"لا أحد\" عن تحديد \"من يُمكنه رؤية رقمي\".";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "لتغيير هذا الإعداد، اختر \"لا أحد\" عند تحديد \"من يُمكنه رؤية رقمي\".";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "يُمكن أن يُصعّب اختيار \"لا أحد\" في إعداد \"من يمكنه العثور عليَّ باستخدام رقمي\" على الناس العثور عليك على سيجنال.";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "يُمكن أن يُصعِّب اختيار \"لا أحد\" في إعداد \"من يمكنه العثور عليَّ باستخدام رقمي\" على الناس العثور عليك على سيجنال.";
 
 /* The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "هل أنت مُتأكد؟";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE" = "هل أنت مُتأكِّد؟";
 
 /* The title for the phone number discoverability setting section. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "مَن يُمكنه إيجادي باستخدام رقمي";
@@ -7556,7 +7583,7 @@
 "SETTINGS_SECURITY_DETAIL_FACEID" = "استخدِم تقنية التعرُّف على الوجه (Face ID) لفك قفل سيجنال.";
 
 /* Section footer */
-"SETTINGS_SECURITY_DETAIL_OPTICID" = "اِستِخدم Optic ID لفتح قفل سيجنال.";
+"SETTINGS_SECURITY_DETAIL_OPTICID" = "استخدِم Optic ID لفتح قفل سيجنال.";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL_PASSCODE" = "استخدِم رمز المرور الخاص بجهازك لفك قفل سيجنال.";
@@ -7610,7 +7637,7 @@
 "SHARE_ACTION_MESSAGE" = "الرسالة";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "رقم أمانك أنت مع %1$@ قد تغيَّر مؤخَّرًا. رُبما قد ترغب في التحقُّق منه في التطبيق الرئيسي قبل إعادة الإرسال.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "رقم الأمان الخاص بك أنت مع %1$@ قد تغيَّر مؤخَّرًا. رُبما قد ترغب في التحقُّق منه في التطبيق الرئيسي قبل إعادة الإرسال.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "جارٍ التحميل...";
@@ -7691,16 +7718,16 @@
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "إتمام التحقُّق";
 
 /* Text for a toast confirming that the speakerphone has been turned off for a call. */
-"SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "مكبر الصوت غير مُشغل";
+"SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "مُكبِّر الصوت غير مُشغَّل";
 
 /* Text for a toast confirming that the speakerphone has been turned on for a call. */
-"SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "مكبر الصوت مُشغل";
+"SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL" = "مكبر الصوت مُشغَّل";
 
 /* The name for the sticker category 'Featured' */
-"STICKER_CATEGORY_FEATURED_NAME" = "موصى به";
+"STICKER_CATEGORY_FEATURED_NAME" = "مُميَّزة";
 
 /* The name for the sticker category 'Recents' */
-"STICKER_CATEGORY_RECENTS_NAME" = "مؤخراً";
+"STICKER_CATEGORY_RECENTS_NAME" = "الأحدث";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "رسالة مُلصَق";
@@ -7805,7 +7832,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "لا توجد تحديثات للعرض حاليًا.";
 
 /* The subtitle when this story has no replies */
-"STORIES_NO_REPLIES_SUBTITLE" = "يُمكن لكُل أعضاء هذه المجموعة رؤية الردود";
+"STORIES_NO_REPLIES_SUBTITLE" = "يُمكن لجميع أعضاء هذه المجموعة رؤية الردود";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "لا ردود حاليًا";
@@ -7943,10 +7970,10 @@
 "STORY_REPLY_BUTTON" = "رد";
 
 /* Text indicating you reacted to a story (the header on the bubble says \"You\") */
-"STORY_REPLY_REACTION_SECOND_PERSON" = "المتفاعلون مع القصة";
+"STORY_REPLY_REACTION_SECOND_PERSON" = "تفاعلَ مع القصة";
 
 /* Text indicating someone else reacted to a story (the header on the bubble says their name, e.g. \"Bob\") */
-"STORY_REPLY_REACTION_THIRD_PERSON" = "المتفاعلون مع القصة";
+"STORY_REPLY_REACTION_THIRD_PERSON" = "تفاعلَ مع القصة";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "رد";
@@ -7955,10 +7982,10 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "رد على المجموعة";
 
 /* placeholder text for replying to a group story */
-"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "الردّ على المجموعة";
+"STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER" = "الرد على المجموعة";
 
 /* placeholder text for replying to a private story. Embeds {{author name}} */
-"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "الردّ على %1$@";
+"STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "الرد على %1$@";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "تعذَّر إرسال القصة. يُرجى التحقُّق من اتصالك بالشبكة ثم حاوِل مرّة أخرى.";
@@ -7976,7 +8003,7 @@
 "STORY_SEND_FAILED" = "فشِل الإرسال";
 
 /* Body for notification shown when a story fails to send. */
-"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️تعذّر إرسال القصة";
+"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️تعذَّر إرسال القصة";
 
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "انقر لإعادة المحاولة";
@@ -8000,7 +8027,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "قبول طلب التراسل معهم";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "وجودهم في جهات اتصال نظامك";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "وجودهم في جهات اتصال هاتفك";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "يمكن لِجهات اتصالكَ رؤية اسمك وصورتك، كما يمكنهم الاطِّلاع على منشوراتك في \"قصتي\" إلّا إذا أخفيتها عنهم.";
@@ -8039,10 +8066,10 @@
 "STORY_VIEWS_OFF" = "المشاهدات في حالة إيقاف";
 
 /* Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID) */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "تمّ نسخ مُعرف المتبرّع إلى الحافظة";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "تمَّ نسخ مُعرِّف المُتبرِّع إلى الحافظة";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "رقم أمانك مع %1$@ متطابق. يمكنك تعليم جهة الاتصال هذه كمُتحقَّق منها.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "رقم الأمان الخاص بك مع %1$@ متطابق. يمكنك تعليم جهة الاتصال هذه كمُتحقَّق منها.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "رقم الأمان متطابق!";
@@ -8120,22 +8147,22 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "تعذَّرت إضافة الشارة";
 
 /* Action sheet title for Error Authorizing Payment sheet */
-"SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE" = "حدث خطأ أثناء ترخيص عملية الدفع";
+"SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE" = "حدث خطأ أثناء تخويل عملية الدفع";
 
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "حدث خطأ أثناء معالجة التبرع";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "حدث خطأ أثناء معالجة التبرُّع";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%1$@/شهريًا";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "تبرعك قيد المعالجة…";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "التبرُّع قيد المعالجة…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "التجديد في %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "لا يزال تبرعك قيد المعالجة. قد يستغرق الأمر بضع دقائق حسب اتصال شبكتك.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "لا يزال تبرُّعك قيد المعالجة. قد يستغرق الأمر بضع دقائق حسب اتصال شبكتك.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "تمَّ إلغاء اشتراكك.";
@@ -8167,50 +8194,50 @@
 /* Indicator warning about an unknown contact thread */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
 
-/* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "لا وجود لمجموعات مشتركة. يُرجى مراجعة الطلبات بعناية.";
-
-/* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "لا وجود لجهات الاتصال في هذه المجموعة. يُرجى مراجعة الطلبات بعناية.";
-
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "انقر لاستبدال الرمز التعبيري (الإيموجي)";
 
 /* Option in selected text edit menu to make text bold */
-"TEXT_MENU_BOLD" = "خط Bold";
+"TEXT_MENU_BOLD" = "عريض";
 
 /* Option in selected text edit menu to clear all text formatting in the selected text range */
-"TEXT_MENU_CLEAR_FORMATTING" = "محو التنسيق";
+"TEXT_MENU_CLEAR_FORMATTING" = "إزالة التنسيق";
 
 /* Option in selected text edit menu to view text formatting options */
 "TEXT_MENU_FORMAT" = "التنسيق";
 
 /* Option in selected text edit menu to make text italic */
-"TEXT_MENU_ITALIC" = "خط Italic";
+"TEXT_MENU_ITALIC" = "مائل";
 
 /* Option in selected text edit menu to look up word definitions */
 "TEXT_MENU_LOOK_UP" = "بحث عن";
 
 /* Option in selected text edit menu to make text monospace */
-"TEXT_MENU_MONOSPACE" = "خط Monospace";
+"TEXT_MENU_MONOSPACE" = "موحَّد الأبعاد";
 
 /* Option in selected text edit menu to replace text with suggestions */
 "TEXT_MENU_REPLACE" = "استبدال";
 
 /* Option in selected text edit menu to share selected text */
-"TEXT_MENU_SHARE" = "المُشاركة";
+"TEXT_MENU_SHARE" = "مشاركة";
 
 /* Option in selected text edit menu to make text spoiler */
-"TEXT_MENU_SPOILER" = "تنسيق نص سبويلر";
+"TEXT_MENU_SPOILER" = "مخفي";
 
 /* Option in selected text edit menu to make text strikethrough */
-"TEXT_MENU_STRIKETHROUGH" = "تنسيق يتوسطه خط";
+"TEXT_MENU_STRIKETHROUGH" = "يتوسطه خط";
 
 /* Option in selected text edit menu to translate the word */
 "TEXT_MENU_TRANSLATE" = "ترجمة";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "تمَّ حذف هذه الرسالة.";
+
+/* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+
+/* Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Group names";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "عضو في %1$@، %2$@، وعدد %3$lu مِن المجموعات الأُخرى";
@@ -8221,6 +8248,12 @@
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "عضو في %1$@";
 
+/* Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+
+/* Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Profile names";
+
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "عرض";
 
@@ -8230,14 +8263,17 @@
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "عضو في %1$@ و%2$@";
 
+/* A string indicating there are no mutual groups the user shares with this contact */
+"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "No groups in common";
+
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
-"THREAD_MERGE_LEARN_MORE" = "بعد تبادل الرسائل مع %1$@، أدركت أن هذا الرقم يعود إلى %2$@. رقم هاتفه خاص.\n\nتم دمج سِجل رسائلك للدردشتين معًا.";
+"THREAD_MERGE_LEARN_MORE" = "بعد تبادل الرسائل مع %1$@، أدركت أن هذا الرقم يعود إلى %2$@. رقم هاتفه خاص.\n\nتمَّ دمج سِجل رسائلك للدردشتين معًا.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
-"THREAD_MERGE_NO_PHONE_NUMBER" = "تمّ دمج سِجّل رسائلك مع %1$@ ودردشة أخرى تخصه.";
+"THREAD_MERGE_NO_PHONE_NUMBER" = "تمَّ دمج سِجّل رسائلك مع %1$@ ودردشة أخرى تخصه.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameters are replaced with the contact's name (eg John Doe) and their phone number (eg +1 650 555 0100). */
-"THREAD_MERGE_PHONE_NUMBER" = "تمّ دمج سِجّل رسائلك مع %1$@ ورقمه %2$@.";
+"THREAD_MERGE_PHONE_NUMBER" = "تمَّ دمج سِجّل رسائلك مع %1$@ ورقمه %2$@.";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%1$@ أيام";
@@ -8282,13 +8318,13 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@أ";
 
 /* Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch. */
-"TRANSFER_COMPLETE_SHEET_BUTTON" = "أغلق سيجنال";
+"TRANSFER_COMPLETE_SHEET_BUTTON" = "أغلِق سيجنال";
 
 /* Subtitle for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "لبدء استخدام حسابك على هذا الجهاز، أغلق سيجنال وافتحه من جديد.";
+"TRANSFER_COMPLETE_SHEET_SUBTITLE" = "لبدء استخدام حسابك على هذا الجهاز، أغلِق سيجنال وافتحه من جديد.";
 
 /* Title for bottom sheet shown when device transfer completes on the receiving device. */
-"TRANSFER_COMPLETE_SHEET_TITLE" = "انتهى النقل";
+"TRANSFER_COMPLETE_SHEET_TITLE" = "اكتمَلَ النقل";
 
 /* Notification prompting the user to relaunch Signal after a device transfer completed. */
 "TRANSFER_RELAUNCH_NOTIFICATION" = "افتح سيجنال للبدء في المراسلة";
@@ -8351,10 +8387,10 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "هل ترغبُ بإلغاء ارتباط \"%1$@\"؟";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "لم يعد هذا الجهاز مرتبطًا. أعد ربط سيجنال مع هاتفك لتواصل المراسلة.";
+"UNLINKED_WARNING" = "لم يعد هذا الجهاز مُرتبطًا. أعِد ربط سيجنال مع هاتفك لمواصلة المراسلة.";
 
 /* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
-"UNLINKED_WARNING_ACTION_TITLE" = "أعد ربط الجهاز";
+"UNLINKED_WARNING_ACTION_TITLE" = "أعِد ربط الجهاز";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "لم يتمكَّن سيجنال من إلغاء ارتباط جهازك.";
@@ -8378,7 +8414,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "جهازك لا يدعم هذه الميزة.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "تغيَّر رقم أمانك مع %1$@، فمن المحتمل أن يكون ذلك الشخص قد أعاد تثبيت سيجنال أو قام بتغيير الأجهزة. يُرجى النقر لتأكيد رقم الأمان الجديد. هذا اﻹجراء اختياري.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "تغيَّر رقم الامان الخاص بك مع %1$@، فمن المحتمل أن يكون ذلك الشخص قد أعاد تثبيت سيجنال أو قام بتغيير الأجهزة. يُرجى النقر لتأكيد رقم الأمان الجديد. هذا اﻹجراء اختياري.";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "التَّحَقُق";
@@ -8393,16 +8429,16 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "لم يكن بالإمكان تحديث المجموعة. تحقَّق من اتصالك بالإنترنت ثمَّ حاول مرّة أُخرى.";
 
 /* Button to activate the signal proxy */
-"USE_PROXY_BUTTON" = "استخدم الوكيل";
+"USE_PROXY_BUTTON" = "استخدم البروكسي";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "اِستخدم الوكيل فقط إذا تعذّر عليك الاتصال بسيجنال (عبر البيانات الخلوية أو عبر شبكة Wi-Fi).";
+"USE_PROXY_EXPLANATION" = "استخدِم البروكسي فقط إذا تعذّر عليك الاتصال بسيجنال عبر بيانات الجوّال أو عبر شبكة الواي فاي.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "أسماء المُستخدمين لها رمز ورابط استجابة سريعة فريدين يُمكنك مُشاركتُهما مع أصدقائك لكي يبدؤوا الدردشة معك.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "أسماء المُستخدمين لها كودات QR فريدة يُمكنك مُشاركتُهما مع أصدقائك لكي يبدؤوا الدردشة معك.";
 
 /* Title for the username links and QR codes section on the username education sheet */
-"USERNAME_EDUCATION_LINK_TITLE" = "رموز أو رابط الاستجابة السريعة";
+"USERNAME_EDUCATION_LINK_TITLE" = "روابط وكودات الـ QR";
 
 /* Description of phone number privacy on the username education sheet */
 "USERNAME_EDUCATION_PRIVACY_DESCRIPTION" = "رقم هاتفك لم يعد مرئيًا في الدردشات. إذا تم حفظ رقم هاتفك في جهات اتصال صديق، فسَيظل مرئيًا بالنسبة له.";
@@ -8429,118 +8465,118 @@
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "اللون";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "لا تُشارك الرمز المربع الخاص بك والرابط إلاّ مع الأشخاص الذين تثق بهم. عند المشاركة، سيتمكن الآخرون من رؤية اسم المُستخدم الخاص بك وبدء محادثة معك.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "لا تُشارِك كود الـ QR الخاص بك والرابط إلاّ مع الأشخاص الذين تثق بهم. عند المشاركة، سيتمكَّن الآخرون من رؤية اسم المُستخدِم الخاص بك وبدء محادثة معك.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
-"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "لم يتم تعيين رمز ورابط الاستجابة السريع. تحقّق من اتصالك بالإنترنت وحاول مرة أخرى.";
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "لم يتم تعيين رابط وكود الـ QR. تحقَّق من اتصالك بالإنترنت وحاوِل مرّة أخرى.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "إعادة التعيين";
 
 /* A message explaining what will happen if the user resets their QR code. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "إذا قمت بإعادة تعيين رمز الاستجابة السريعة الخاص بك، فلن يعمل رمز الاستجابة والرابط الخاصّين بك بعدها.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SHEET_MESSAGE" = "إذا قُمتَ بإعادة تعيين رابط وكود الـ QR الخاص بك، فلن يعمل كود الـ QR والرابط الحاليين الخاصين بك بعدها.";
 
 /* Text presenting an action sheet notifying the user their QR code and link were reset. */
-"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "تمت إعادة تعيين رمز ورابط الاستجابة السريعة وتم إنشاء رمز ورابط الاستجابة السريعة جديدين.";
+"USERNAME_LINK_QR_CODE_VIEW_RESET_SUCCESSFUL" = "تمَّت إعادة تعيين رابط وكود الـ QR، وتمَّ إنشاء رابط وكود QR جديدين.";
 
 /* Title for a button to share your username link QR code. Lowercase styling is intentional. */
-"USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "المُشاركة";
+"USERNAME_LINK_QR_CODE_VIEW_SHARE_BUTTON" = "مشاركة";
 
 /* A title for a view that allows you to view and interact with a QR code for your username link. */
-"USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "الرمز";
+"USERNAME_LINK_QR_CODE_VIEW_TITLE_CODE" = "الكود";
 
 /* A title for a view that allows you to scan a username link QR code using the camera. */
 "USERNAME_LINK_QR_CODE_VIEW_TITLE_SCAN" = "امسح ضوئيًا";
 
 /* Text presented in a toast notifying the user that their username was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "تم نسخ اسم المُستخدم";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_COPIED" = "تمَّ نسخ اسم المُستخدم";
 
 /* Text presented in a toast notifying the user that their username link was copied to the system clipboard. */
-"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "نُسخَ الرابط";
+"USERNAME_LINK_QR_CODE_VIEW_USERNAME_LINK_COPIED" = "تمَّ نسخ الرابط";
 
 /* Text providing instructions on how to use the username link QR code scanning. */
-"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "امسح رمز الاستجابة السريعة المعروض على جهاز جهة اتصالك.";
+"USERNAME_LINK_SCAN_QR_CODE_INSTRUCTIONS_LABEL" = "امسح كود الـ QR المعروض على جهاز جهة اتصالك.";
 
 /* Text for a tappable cell that copies the user's username link when selected. */
 "USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION" = "نسخ الرابط";
 
 /* Text describing what you can do with a username link, on a sheet for sharing it. */
-"USERNAME_LINK_SHARE_SHEET_HEADER" = "يُمكن لأي شخص يتوفر على هذا الرابط رؤية اسم المُستخدم الخاص بك وبدء محادثة جديدة معك. شاركه مع من تثق فقط.";
+"USERNAME_LINK_SHARE_SHEET_HEADER" = "يُمكن لأي شخص لديه هذا الرابط رؤية اسم المُستخدِم الخاص بك وبدء محادثة جديدة معك. شارِكه مع من تثق فقط.";
 
 /* Title for a button to open a sheet for copying and sharing your username link. */
 "USERNAME_LINK_SHEET_BUTTON" = "الرابط";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "اسمح للآخرين ببدء محادثة معك عبر مشاركة رمز أو رابط الاستجابة السريع الفريد الخاص بك.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "اسمح للآخرين ببدء محادثة معك عبر مشاركة رابط أو كود الـ QR الفريد الخاص بك.";
 
 /* Title for a tooltip describing ways to share your username. */
 "USERNAME_LINK_TOOLTIP_TITLE" = "شارك اسم المُستخدم الخاص بك";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR_MESSAGE" = "حدث خطأ أثناء البحث عن اسم المُستخدم. يُرجى إعادة المُحاولة في وقت لاحق.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "حدث خطأ أثناء البحث عن اسم المُستخدِم. يُرجى إعادة المُحاولة في وقتٍ لاحق.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ ليس اسم مُستخدم صالح. تأكد من أنك أدخلت اسم المُستخدم كاملاً متبوعًا بمجموعة الأرقام الخاصة به.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ ليس اسم مُستخدِم صالح. تأكَّد من أنك أدخلتَ اسم المُستخدِم كاملًا متبوعًا بمجموعة الأرقام الخاصة به.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
-"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "اسم مُستخدم غير صالح";
+"USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "اسم مُستخدِم غير صالح";
 
 /* A message indicating that a username link the user attempted to query is no longer valid. */
 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "رابط اسم المُستخدم لم يعد صالحًا.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ ليس مُستخدم سيجنال. تأكد من إدخالك لاسم المُستخدم الكامل.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ ليس مُستخدِم سيجنال. تأكَّد من إدخالك لاسم المُستخدِم الكامل.";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
-"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "لم يتمّ العُثور على المُستخدم.";
+"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "لم يتم العثورعلى المُستخدِم.";
 
 /* Instructions that appear below the username QR code on a sharable exported image. */
-"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "امسح رمز الاستجابة السريعة هذا باستخدام هاتفك للدردشة معي على سيجنال.";
+"USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "امسح كود الـ QR هذا باستخدام هاتفك للدردشة معي على سيجنال.";
 
 /* A message in a toast informing the user their username, link, and QR code have successfully been reset. Embeds {{ the user's new username }}. */
-"USERNAME_RESET_SUCCESSFUL_TOAST" = "تمت إعادة تعيين رمز ورابط الاستجابة السريعة واسم المُستخدم الخاص بك هو %1$@";
+"USERNAME_RESET_SUCCESSFUL_TOAST" = "تمَّت إعادة تعيين رابط وكود الـ QR، واسم المُستخدِم الخاص بك هو %1$@";
 
 /* An error message shown when the user has typed a username that starts with a digit, which is invalid. */
-"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "اسم المُستخدم لا يمكن أن يبدأ برقم";
+"USERNAME_SELECTION_CANNOT_START_WITH_DIGIT_ERROR_MESSAGE" = "اسم المُستخدِم لا يمكن أن يبدأ برقم";
 
 /* A message explaining the side effects of changing your username. */
-"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "سيُؤدي تغيير اسم المُستخدم الخاص بك إلى إعادة تعيين رمز الاستجابة السريع والرابط الحاليين الخاصين بك. هل أنت متأكد؟";
+"USERNAME_SELECTION_CHANGE_USERNAME_CONFIRMATION_MESSAGE" = "سيُؤدي تغيير اسم المُستخدم الخاص بك إلى إعادة تعيين كود الـ QR والرابط الحاليين الخاصين بك. هل أنت متأكِّد؟";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "يتم دائمًا إقران أسماء المستخدمين بمجموعة من الأرقام. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "يتمُّ دائمًا إقران أسماء المُستخدِمين بمجموعة من الأرقام.%1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "يُرجى اختيار اسم المُستخدم";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "اختر اسم مُستخدم خاص بك";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "يُمكن أن تحتوي اسماء المُستخدمين على حروف a-z، أرقام 0-9 والشرطة السُفلية _ فقط";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "يُمكن أن تحتوي أسماء المُستخدمين على حروف a-z، وأرقام 0-9 وشرطة سُفلية _ فقط.";
 
 /* An error message shown when the user has typed an invalid discriminator for their username. */
-"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "اسم مُستخدم غير صحيح، أدخل رمزيْن على الأقل";
+"USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "اسم مُستخدِم غير صحيح. أدخِل رقمين على الأقل.";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "تُساعد هذه الأرقام في الحفاظ على خصوصية اسم المُستخدم الخاص بك حتى تتجنب الرسائل غير المرغوب فيها. شارك اسم المُستخدم الخاص بك فقط مع الأشخاص والمجموعات الذين ترغب في الدردشة معهم. إذا غيّرتَ أسماء المُستخدم الخاصة بك، فسَتحصل على مجموعة جديدة من الأرقام.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "تُساعد هذه الأرقام في الحفاظ على خصوصية اسم المُستخدِم الخاص بك حتى تتجنَّب الرسائل غير المرغوب فيها. شارِك اسم المُستخدِم الخاص بك فقط مع الأشخاص والمجموعات الذين ترغب في الدردشة معهم. إذا غيَّرتَ أسماء المُستخدِم الخاصة بك، فسَتحصل على مجموعة جديدة من الأرقام.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "ماذا يعني هذا الرقم؟";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "اسم المُستخدم هذا غير متاح";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "اسم المُستخدم هذا غير متاح.";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "قمت بمحاولات كثيرة. يُرجى المحاولة لاحقاً";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "قُمتَ بمحاولاتٍ كثيرة. يُرجى المحاولة لاحقًا.";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "اسم المُستخدم";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "اسم المُستخدِم";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "اسم المُستخدم";
+"USERNAME_SELECTION_TITLE" = "اسم المُستخدِم";
 
 /* An error message shown when the user has typed '00' as their discriminator for their username. */
-"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "لا يمكن لهذا الرقم أن يكون 00. أدخل رقمًا بين 1 –9";
+"USERNAME_SELECTION_ZERO_DISCRIMINATOR_ERROR_MESSAGE" = "لا يمكن لهذا الرقم أن يكون 00. أدخِل رقم بين 1-9.";
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
-"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "يُمكن تحديث أسماء المُستخدمين فقط عند وجود اتصال بالإنترنت.";
+"USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "يُمكن تحديث أسماء المُستخدِمين فقط عند وجود اتصال بالإنترنت.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "لا يُمكن ترك اسم الجهاز فارغًا";
@@ -8570,7 +8606,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "مُراجعة أرقام الأمان";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "للتحقّق من أمان التشفير من الطرف للطرف مع %1$@، قارن الأرقام أعلاه بأجهزته. يُمكنه أيضًا مسح الرمز على جهازه.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "للتحقُّق من أمان التشفير من طرف لطرف مع %1$@، قارِن الأرقام أعلاه بأجهزته. يُمكنه أيضًا مسح الكود على جهازه.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "تعذّر تشغيل هذا الفيديو";
@@ -8579,19 +8615,19 @@
 "VIDEO_CALL_LABEL" = "مكالمة فيديو";
 
 /* Button label for the 'View Contact' button */
-"VIEW_CONTACT_BUTTON" = "عرض جهات الاتصال";
+"VIEW_CONTACT_BUTTON" = "عرض جهة الاتصال";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "أنتَ بالفعل شاهدتَ هذه الرسالة.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "المس هنا لجعل هذه الرسالة تختفي بعد أن تتم مشاهدتها.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "انقر هنا لجعل هذه الرسالة تختفي بعد أن تتم مشاهدتها.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "تتمُّ إزالة ملفات وسائط-العرض-لمرة-واحدة الصادرة تلقائيًا بعد أن يتمَّ إرسالُها.";
+"VIEW_ONCE_OUTGOING_TOAST" = "ملفات وسائط العرض لمرّة واحدة الصادرة تتمُّ إزالتها تلقائيًا بعد أن يتمَّ إرسالها.";
 
 /* View the photo of a group or user */
-"VIEW_PHOTO" = "إظهار الصورة";
+"VIEW_PHOTO" = "عرض الصورة";
 
 /* View the story of a group or user */
 "VIEW_STORY" = "عرض القصة";
@@ -8606,67 +8642,67 @@
 "VOICE_MESSAGE_FILE_NAME" = "رِسالة صوتيَّة";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "إضغَط مَعَ الاِستِمرار فِي الضَّغط لِلتَسجِيل.";
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "اضغط مُطوَّلًا للتسجيل";
 
 /* Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }} */
-"WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "لون متدرج بـ %1$@ و%2$@";
+"WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "لون مُتدرِّج بـ %1$@ و%2$@";
 
 /* Placeholder text for header of the wallpaper mini preview */
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "اسم جهة الاتصال";
 
 /* Blur button on wallpaper preview. */
-"WALLPAPER_PREVIEW_BLUR_BUTTON" = "تضبيب الصورة";
+"WALLPAPER_PREVIEW_BLUR_BUTTON" = "تمويه الصورة";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "وَسِّع للتَّكبير، اسحب للتَّعديل.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "وَسِّع للتكبير، اسحب للتعديل.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "اِسحب لِمُعاينة المَزيد مِنَ الخلفيَّات.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "اسحب لمعاينة المزيد من الخلفيات";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "تعيِّين خَلفيَّة لِجَميع الدردشات.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "تعيين خلفية لجميع الدردشات.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "تعيِّين خَلفيَّة لـ %1$@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "تعيين خلفية لـ %1$@.";
 
 /* Title for the wallpaper preview view. */
-"WALLPAPER_PREVIEW_TITLE" = "مُعاينة";
+"WALLPAPER_PREVIEW_TITLE" = "معاينة";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "محو لون الدردشة";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "مسح لون الدردشة";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "محو لون هذه الدردشة؟";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "هل ترغبُ بمسح لون هذه الدردشة؟";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "محو الخلفية";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "إزالة الخلفية";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "محو الخلفية لهذه الدردشة؟";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "هل ترغبُ بإزالة الخلفية لهذه الدردشة؟";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "النَّمط الدَّاكِن يعتِّم الخلفيَّة";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "النمط الداكن يعتِّم الخلفية";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "تتعذَّر مَحوُ الخلفيَّة، يُرجى المُحاولة في وقت لاحق أو تواصل معَ الدَّعم في حال استمرار المُشكلة.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "تتعذَّر إزالة الخلفية. يُرجى المُحاولة في وقتٍ لاحق أو التواصل مع الدعم في حال استمرار المُشكلة.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "تتعذَّر إعادة تعيين جميع الخلفيَّات، يُرجى المُحاولة في وقت لاحق أو تواصل مع الدَّعم في حال استمرار المُشكلة.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "تتعذَّر إعادة تعيين جميع الخلفيَّات. يُرجى المُحاولة في وقتٍ لاحق أو تواصَل مع قسم الدعم في حال استمرار المُشكلة.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "إعادة تعيين كل الألوان";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "إعادة تعيِّين جميع الخلفيَّات";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "إعادة تعيين كل الخلفيات";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "هل لديك الرغبة في إلغاء جميع ألوان الدردشات؟";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "هل ترغبُ بتجاهل جميع ألوان الدردشات؟";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "إعادة تعيين الألوان";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "إعادة تعيين ألوان الدردشة";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "إعادة تعيين الألوان";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "إعادة تعيين ألوان الدردشة";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "إعادة تعيين الخلفية";
@@ -8675,16 +8711,16 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "إعادة تعيين الألوان الافتراضية";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "إعادة تعيين الألوان";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "إعادة تعيين ألوان الدردشة";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "إعادة تعيين الخلفية الافتراضية";
 
 /* Reset wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "إعادة تعيين الخلفية";
+"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "إعادة تعيين الخلفيات";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "أ لديك الرغبة في إلغاء جميع ألوان المحادثات ؟";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "هل ترغبُ بتجاهل جميع الخلفيات؟";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "إعادة تعيين الخلفية";
@@ -8693,19 +8729,19 @@
 "WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "لون الدردشة";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "تَعيِّين خلفيَّة";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "تعيين الخلفية";
 
 /* Second person pronoun to represent the local user. */
 "YOU" = "أنت";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "لقد حذفت هذه الرسالة.";
+"YOU_DELETED_THIS_MESSAGE" = "حذفتَ هذه الرسالة.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "لقد عطلتَ الرسائل المختفية.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "عطَّلتَ ميزة إختفاء الرسائل.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
-"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "يجبُ عليكَ أن تُكمِلَ الإعداد قبل المُتابعة.";
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "يجبُ عليكَ أن تُكمِلَ الإعداد قبل المتابعة.";
 
 /* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "ضبطتَ وقت إختفاء الرسائل على %1$@.";
