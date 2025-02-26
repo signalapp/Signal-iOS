@@ -206,41 +206,49 @@ class ProxySettingsViewController: OWSTableViewController2 {
             return
         }
 
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { [weak self] modal in
-            guard let self else { return }
-            Promise.race(modal.wasCancelledPromise.map { _ in false }, self.checkConnection().asPromise())
-            .done { [weak self] connected in
-                modal.dismiss { [weak self] in
-                    guard let self else { return }
-                    if connected {
-                        if self.navigationController?.viewControllers.count == 1 {
-                            self.presentingViewController?.presentToast(text: OWSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
-                            self.dismiss(animated: true)
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { modal in
+            _ = Task(priority: .userInitiated) {
+                await withTaskGroup(of: Bool.self) { group in
+                    group.addTask {
+                        return await self.checkConnection()
+                    }
+                    group.addTask {
+                        // If this completes successfully or erroneously, treat that as a cancellation.
+                        _ = try? await modal.wasCancelledPromise.awaitable()
+                        return false
+                    }
+                    let connected = await group.next()!
+                    group.cancelAll()
+
+                    // We have to do this inside the TaskGroup because the modal's wasCancelledPromise is,
+                    // ironically, not cancellable itself in the Swift concurrency sense. Dismissing the
+                    // modal is thus required to let the task group exit.
+                    modal.dismiss {
+                        if connected {
+                            if self.navigationController?.viewControllers.count == 1 {
+                                self.presentingViewController?.presentToast(text: OWSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
+                                self.dismiss(animated: true)
+                            } else {
+                                self.presentToast(text: OWSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
+                                self.updateNavigationBar()
+                            }
                         } else {
-                            self.presentToast(text: OWSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
-                            self.updateNavigationBar()
+                            self.presentToast(text: OWSLocalizedString("PROXY_FAILED_TO_CONNECT", comment: "The provided proxy couldn't connect"))
+                            SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                                SignalProxy.setProxyHost(host: self.host, useProxy: false, transaction: transaction)
+                            }
+                            self.updateTableContents()
                         }
-                    } else {
-                        self.presentToast(text: OWSLocalizedString("PROXY_FAILED_TO_CONNECT", comment: "The provided proxy couldn't connect"))
-                        SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                            SignalProxy.setProxyHost(host: self.host, useProxy: false, transaction: transaction)
-                        }
-                        self.updateTableContents()
                     }
                 }
             }
-            .cauterize()
         }
     }
 
-    private func checkConnection() -> Guarantee<Bool> {
+    private func checkConnection() async -> Bool {
         switch validationMethod {
         case .websocket:
-            let (guarantee, future) = Guarantee<Bool>.pending()
-            ProxyConnectionChecker.checkConnectionAndNotify { connected in
-                future.resolve(connected)
-            }
-            return guarantee
+            return await ProxyConnectionChecker.checkConnectionAndNotify()
         case .restGetRegistrationSession:
             let request = RegistrationRequestFactory.checkProxyConnectionRequest()
 
@@ -253,19 +261,18 @@ class ProxySettingsViewController: OWSTableViewController2 {
                 }
             }
 
-            return SSKEnvironment.shared.networkManagerRef.makePromise(request: request, canUseWebSocket: false)
-                .map { (response: HTTPResponse) -> Bool in
-                    return isConnected(response.responseStatusCode)
+            do {
+                let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: false)
+                return isConnected(response.responseStatusCode)
+            } catch {
+                guard
+                    !error.isNetworkFailureOrTimeout,
+                    let error = error as? OWSHTTPError
+                else {
+                    return false
                 }
-                .recover { (error: Error) -> Guarantee<Bool> in
-                    guard
-                        !error.isNetworkFailureOrTimeout,
-                        let error = error as? OWSHTTPError
-                    else {
-                        return .value(false)
-                    }
-                    return .value(isConnected(error.responseStatusCode))
-                }
+                return isConnected(error.responseStatusCode)
+            }
         }
     }
 
