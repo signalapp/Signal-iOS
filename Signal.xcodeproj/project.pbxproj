@@ -1297,6 +1297,8 @@
 		725DBBE12C7628BB003BAF74 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725DBBE02C7628BB003BAF74 /* DataSource.swift */; };
 		7267B1562C5D4D3100612C34 /* Sha256HmacSiv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7267B1552C5D4D3100612C34 /* Sha256HmacSiv.swift */; };
 		7267B1582C5D4F2800612C34 /* Sha256HmacSivTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7267B1572C5D4F2800612C34 /* Sha256HmacSivTest.swift */; };
+		726C94222D6F442D00ABF9B9 /* UncooperativeTimeout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 726C94212D6F442200ABF9B9 /* UncooperativeTimeout.swift */; };
+		726C94252D6F48DA00ABF9B9 /* UncooperativeTimeoutTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 726C94232D6F481B00ABF9B9 /* UncooperativeTimeoutTest.swift */; };
 		726E0F0A2C6263B0000BC973 /* ContactsManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 726E0F092C6263B0000BC973 /* ContactsManagerProtocol.swift */; };
 		726E0F0C2C626978000BC973 /* PhoneNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 726E0F0B2C626978000BC973 /* PhoneNumber.swift */; };
 		727328052CA661A10080E2C7 /* HttpSecurityPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 727328042CA6619A0080E2C7 /* HttpSecurityPolicy.swift */; };
@@ -5047,6 +5049,8 @@
 		725DBBE02C7628BB003BAF74 /* DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
 		7267B1552C5D4D3100612C34 /* Sha256HmacSiv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sha256HmacSiv.swift; sourceTree = "<group>"; };
 		7267B1572C5D4F2800612C34 /* Sha256HmacSivTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sha256HmacSivTest.swift; sourceTree = "<group>"; };
+		726C94212D6F442200ABF9B9 /* UncooperativeTimeout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UncooperativeTimeout.swift; sourceTree = "<group>"; };
+		726C94232D6F481B00ABF9B9 /* UncooperativeTimeoutTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UncooperativeTimeoutTest.swift; sourceTree = "<group>"; };
 		726E0F092C6263B0000BC973 /* ContactsManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManagerProtocol.swift; sourceTree = "<group>"; };
 		726E0F0B2C626978000BC973 /* PhoneNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumber.swift; sourceTree = "<group>"; };
 		727328042CA6619A0080E2C7 /* HttpSecurityPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpSecurityPolicy.swift; sourceTree = "<group>"; };
@@ -8650,6 +8654,8 @@
 				500AF3B02C58385600CB9F4F /* CooperativeTimeoutTest.swift */,
 				50C0203D2CA4A7A500BDC4EF /* Retry.swift */,
 				6605B9852B2112A100E8A68A /* SerialTaskQueue.swift */,
+				726C94212D6F442200ABF9B9 /* UncooperativeTimeout.swift */,
+				726C94232D6F481B00ABF9B9 /* UncooperativeTimeoutTest.swift */,
 			);
 			path = Concurrency;
 			sourceTree = "<group>";
@@ -18157,6 +18163,7 @@
 				7203F5332D53B53000639949 /* UInt64+SSK.swift in Sources */,
 				663D02DD2C06717900350632 /* UInt64SafeRecord.swift in Sources */,
 				7255A4CB2B98E04900E95368 /* UIView+OWS.swift in Sources */,
+				726C94222D6F442D00ABF9B9 /* UncooperativeTimeout.swift in Sources */,
 				50D6A93F2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift in Sources */,
 				6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */,
 				664BA8472BB5CE1A005638E0 /* UnpreparedOutgoingMessage.swift in Sources */,
@@ -18422,6 +18429,7 @@
 				F9426289289B1B5600460798 /* TSOutgoingMessageTest.swift in Sources */,
 				0517B9782BFCFF12002CDE7D /* TSThreadTests.swift in Sources */,
 				F942628F289B1B5600460798 /* TypingIndicatorMessageTest.swift in Sources */,
+				726C94252D6F48DA00ABF9B9 /* UncooperativeTimeoutTest.swift in Sources */,
 				F9426255289B1B5500460798 /* UnfairLockTest.swift in Sources */,
 				6600F34F298C823C00B1EDB7 /* UnknownEnumCodableTest.swift in Sources */,
 				F9D5BFD12979B027001737E5 /* URLPathComponentsTest.swift in Sources */,
