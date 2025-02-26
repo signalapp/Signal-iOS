@@ -317,41 +317,49 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
             return
         }
 
-        var didFail = false
+        let didFail = AtomicBool(false, lock: UnfairLock())
         // Set up the observer _before_ deleting, so its around
         // when the deletion happens.
-        NotificationCenter.default.observe(once: .OWSContactsManagerSignalAccountsDidChange)
-            .asVoid()
-            .timeout(on: DispatchQueue.main, seconds: 5, substituteValue: ())
-            .observe(on: DispatchQueue.main) { [weak self] _ in
-                guard let self, !didFail else { return }
-
-                defer {
-                    self.dismiss(animated: true)
-                }
-
-                // Check that the contact got deleted from our db.
-                let isStillSystemContact = SSKEnvironment.shared.contactManagerRef.cnContactId(for: self.e164.stringValue) != nil
-                if isStillSystemContact {
-                    // Can't hide; likely there was another contact with the same number.
-                    // Just exit.
-                    Logger.warn("Address still a system contact after deletion; possibly duplicate system contact")
-                    return
-                }
-                self.dependencies.databaseStorage.write { tx in
-                    do {
-                        try self.dependencies.recipientHidingManager.addHiddenRecipient(
-                            SignalServiceAddress(serviceId: self.serviceId, e164: self.e164),
-                            inKnownMessageRequestState: false,
-                            wasLocallyInitiated: true,
-                            tx: tx.asV2Write
-                        )
-                        self.displayDeletedContactToast(displayNameForToast: displayNameForToast)
-                    } catch {
-                        owsFailDebug("Failed to hide recipient")
+        Task {
+            do {
+                try await withCooperativeTimeout(seconds: 5) {
+                    for await _ in NotificationCenter.default.notifications(named: .OWSContactsManagerSignalAccountsDidChange).map({ _ in }) {
+                        break
                     }
                 }
+            } catch {
             }
+
+            if didFail.get() {
+                return
+            }
+
+            defer {
+                self.dismiss(animated: true)
+            }
+
+            // Check that the contact got deleted from our db.
+            let isStillSystemContact = SSKEnvironment.shared.contactManagerRef.cnContactId(for: self.e164.stringValue) != nil
+            if isStillSystemContact {
+                // Can't hide; likely there was another contact with the same number.
+                // Just exit.
+                Logger.warn("Address still a system contact after deletion; possibly duplicate system contact")
+                return
+            }
+            await self.dependencies.databaseStorage.awaitableWrite { tx in
+                do {
+                    try self.dependencies.recipientHidingManager.addHiddenRecipient(
+                        SignalServiceAddress(serviceId: self.serviceId, e164: self.e164),
+                        inKnownMessageRequestState: false,
+                        wasLocallyInitiated: true,
+                        tx: tx.asV2Write
+                    )
+                    self.displayDeletedContactToast(displayNameForToast: displayNameForToast)
+                } catch {
+                    owsFailDebug("Failed to hide recipient")
+                }
+            }
+        }
 
         // Delete
         let saveRequest = CNSaveRequest()
@@ -359,7 +367,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         do {
             try contactStore.execute(saveRequest)
         } catch {
-            didFail = true
+            didFail.set(true)
             Logger.error("Failed to delete CNContact!")
             showGenericErrorToastAndDismiss()
         }
