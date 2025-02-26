@@ -145,10 +145,11 @@ private struct ProxyConfig {
                     username: proxyConfig[kCFProxyUsernameKey] as! String?,
                     password: proxyConfig[kCFProxyPasswordKey] as! String?)
             case kCFProxyTypeHTTPS:
-                // iOS doesn't distinguish HTTP and HTTPS sometimes. Do a bit of extra sniffing by port.
+                // This seems to mean "HTTP proxy for HTTPS connections" rather than "proxy that itself uses TLS".
+                // Leave room for the latter interpretation if the port number is traditionally HTTPS.
                 let port = proxyConfig[kCFProxyPortNumberKey] as! UInt16?
                 return ProxyConfig(
-                    scheme: (port == 80 || port == 8080) ? "http" : "https",
+                    scheme: (port == 443 || port == 8443) ? "https" : "http",
                     host: proxyConfig[kCFProxyHostNameKey] as! String,
                     port: port,
                     username: proxyConfig[kCFProxyUsernameKey] as! String?,
