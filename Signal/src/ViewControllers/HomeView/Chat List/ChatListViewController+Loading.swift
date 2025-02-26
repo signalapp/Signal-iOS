@@ -72,14 +72,14 @@ extension ChatListViewController {
 
         switch loadResult {
         case .renderStateForReset(renderState: let renderState):
-            let previousSelection = tableDataSource.selectedThreads(in: tableView)
+            let previousSelection = tableDataSource.selectedThreadUniqueIds(in: tableView)
             tableDataSource.renderState = renderState
 
             threadViewModelCache.clear()
             cellContentCache.clear()
             conversationCellHeightCache = nil
 
-            reloadTableData(withSelection: previousSelection)
+            reloadTableData(previouslySelectedThreadUniqueIds: previousSelection)
 
         case .renderStateWithRowChanges(renderState: let renderState, let rowChanges):
             applyRowChanges(rowChanges, renderState: renderState, animated: animated)

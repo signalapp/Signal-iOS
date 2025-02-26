@@ -39,6 +39,20 @@ public class ThreadViewModel: NSObject {
     // This property is only populated if forChatList is true.
     public let chatListInfo: ChatListInfo?
 
+    /// Instantiate a view model for the thread with the given uniqueId.
+    /// - Important
+    /// Crashes if the corresponding thread does not exist.
+    public convenience init(threadUniqueId: String, forChatList: Bool, transaction tx: SDSAnyReadTransaction) {
+        guard let thread = DependenciesBridge.shared.threadStore.fetchThread(
+            uniqueId: threadUniqueId,
+            tx: tx.asV2Read
+        ) else {
+            owsFail("Unexpectedly missing thread for unique ID!")
+        }
+
+        self.init(thread: thread, forChatList: forChatList, transaction: tx)
+    }
+
     public init(thread: TSThread, forChatList: Bool, transaction: SDSAnyReadTransaction) {
         self.threadRecord = thread
 

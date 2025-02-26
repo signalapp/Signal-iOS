@@ -11,7 +11,7 @@ struct CLVRenderState {
         var type: ChatListSectionType
         var id: ChatListSectionType { type }
         var title: String?
-        var threads: KeyPath<CLVRenderState, [TSThread]>?
+        var threadUniqueIds: KeyPath<CLVRenderState, [String]>?
         var value: AnyHashable?
     }
 
@@ -30,22 +30,28 @@ struct CLVRenderState {
     }
 
     static var empty: CLVRenderState {
-        CLVRenderState(viewInfo: .empty, pinInfo: .empty, pinnedThreads: [], unpinnedThreads: [])
+        CLVRenderState(
+            viewInfo: .empty,
+            pinnedThreadUniqueIds: [],
+            unpinnedThreadUniqueIds: []
+        )
     }
 
     let viewInfo: CLVViewInfo
-    let pinInfo: ChatListPinInfo
-    let pinnedThreads: [TSThread]
-    let unpinnedThreads: [TSThread]
+    let pinnedThreadUniqueIds: [String]
+    let unpinnedThreadUniqueIds: [String]
 
     private(set) var sections: [Section] = []
     private(set) var inboxFilterSection: ChatListInboxFilterSection?
 
-    init(viewInfo: CLVViewInfo, pinInfo: ChatListPinInfo, pinnedThreads: [TSThread], unpinnedThreads: [TSThread]) {
+    init(
+        viewInfo: CLVViewInfo,
+        pinnedThreadUniqueIds: [String],
+        unpinnedThreadUniqueIds: [String]
+    ) {
         self.viewInfo = viewInfo
-        self.pinInfo = pinInfo
-        self.pinnedThreads = pinnedThreads
-        self.unpinnedThreads = unpinnedThreads
+        self.pinnedThreadUniqueIds = pinnedThreadUniqueIds
+        self.unpinnedThreadUniqueIds = unpinnedThreadUniqueIds
         self.inboxFilterSection = ChatListInboxFilterSection(renderState: self)
         self.sections = ChatListSectionType.allCases.compactMap(makeSection(for:))
     }
@@ -53,19 +59,19 @@ struct CLVRenderState {
     private func makeSection(for sectionType: ChatListSectionType) -> Section? {
         switch sectionType {
         case .pinned:
-            let isTitleVisible = hasSectionTitles && !pinnedThreads.isEmpty
+            let isTitleVisible = hasSectionTitles && !pinnedThreadUniqueIds.isEmpty
             return Section(
                 type: sectionType,
                 title: isTitleVisible ? OWSLocalizedString("PINNED_SECTION_TITLE", comment: "The title for pinned conversation section on the conversation list") : nil,
-                threads: \.pinnedThreads
+                threadUniqueIds: \.pinnedThreadUniqueIds
             )
 
         case .unpinned:
-            let isTitleVisible = hasSectionTitles && !unpinnedThreads.isEmpty
+            let isTitleVisible = hasSectionTitles && !unpinnedThreadUniqueIds.isEmpty
             return Section(
                 type: sectionType,
                 title: isTitleVisible ? OWSLocalizedString("UNPINNED_SECTION_TITLE", comment: "The title for unpinned conversation section on the conversation list") : nil,
-                threads: \.unpinnedThreads
+                threadUniqueIds: \.unpinnedThreadUniqueIds
             )
 
         case .reminders where hasVisibleReminders,
@@ -82,11 +88,11 @@ struct CLVRenderState {
     }
 
     var hasSectionTitles: Bool {
-        pinInfo.pinnedThreadCount > 0
+        !pinnedThreadUniqueIds.isEmpty
     }
 
     var visibleThreadCount: Int {
-        pinnedThreads.count + unpinnedThreads.count
+        pinnedThreadUniqueIds.count + unpinnedThreadUniqueIds.count
     }
 
     var hasArchivedThreadsRow: Bool {
@@ -104,9 +110,9 @@ struct CLVRenderState {
         case .reminders, .archiveButton, .inboxFilterFooter:
             return 1
         case .pinned:
-            return pinnedThreads.count
+            return pinnedThreadUniqueIds.count
         case .unpinned:
-            return unpinnedThreads.count
+            return unpinnedThreadUniqueIds.count
         }
     }
 
@@ -143,17 +149,17 @@ struct CLVRenderState {
         sections.firstIndex(where: { $0.type == sectionType })
     }
 
-    func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
+    func threadUniqueId(forIndexPath indexPath: IndexPath) -> String? {
         let section = sections[indexPath.section]
-        guard let key = section.threads else { return nil }
+        guard let key = section.threadUniqueIds else { return nil }
         return self[keyPath: key][indexPath.row]
     }
 
     func indexPath(forUniqueId uniqueId: String) -> IndexPath? {
-        if let index = pinnedThreads.firstIndex(where: { $0.uniqueId == uniqueId }) {
+        if let index = pinnedThreadUniqueIds.firstIndex(of: uniqueId) {
             let section = sectionIndex(for: .pinned)!
             return IndexPath(item: index, section: section)
-        } else if let index = unpinnedThreads.firstIndex(where: { $0.uniqueId == uniqueId }) {
+        } else if let index = unpinnedThreadUniqueIds.firstIndex(of: uniqueId) {
             let section = sectionIndex(for: .unpinned)!
             return IndexPath(item: index, section: section)
         } else {
@@ -162,25 +168,25 @@ struct CLVRenderState {
     }
 
     func indexPath(afterThread thread: TSThread?) -> IndexPath? {
-        let section: (index: Int, threads: KeyPath<CLVRenderState, [TSThread]>)
+        let section: (index: Int, threadUniqueIds: KeyPath<CLVRenderState, [String]>)
 
-        if let thread = thread, pinnedThreads.contains(where: { $0.uniqueId == thread.uniqueId }) {
+        if let thread = thread, pinnedThreadUniqueIds.contains(thread.uniqueId) {
             let index = sectionIndex(for: .pinned)!
-            section = (index, sections[index].threads!)
+            section = (index, sections[index].threadUniqueIds!)
         } else {
             let index = sectionIndex(for: .unpinned)!
-            section = (index, sections[index].threads!)
+            section = (index, sections[index].threadUniqueIds!)
         }
 
-        guard !self[keyPath: section.threads].isEmpty else { return nil }
+        guard !self[keyPath: section.threadUniqueIds].isEmpty else { return nil }
 
         let firstIndexPath = IndexPath(item: 0, section: section.index)
 
         guard let thread,
-              let index = self[keyPath: section.threads].firstIndex(where: { $0.uniqueId == thread.uniqueId })
+              let index = self[keyPath: section.threadUniqueIds].firstIndex(of: thread.uniqueId)
         else { return firstIndexPath }
 
-        if index < (self[keyPath: section.threads].count - 1) {
+        if index < (self[keyPath: section.threadUniqueIds].count - 1) {
             return IndexPath(item: index + 1, section: section.index)
         } else {
             return nil
@@ -188,22 +194,23 @@ struct CLVRenderState {
     }
 
     func indexPath(beforeThread thread: TSThread?) -> IndexPath? {
-        let section: (index: Int, threads: KeyPath<CLVRenderState, [TSThread]>)
+        let section: (index: Int, threadUniqueIds: KeyPath<CLVRenderState, [String]>)
 
-        if let thread = thread, pinnedThreads.contains(where: { $0.uniqueId == thread.uniqueId }) {
+        if let thread = thread, pinnedThreadUniqueIds.contains(thread.uniqueId) {
             let index = sectionIndex(for: .pinned)!
-            section = (index, sections[index].threads!)
+            section = (index, sections[index].threadUniqueIds!)
         } else {
             let index = sectionIndex(for: .unpinned)!
-            section = (index, sections[index].threads!)
+            section = (index, sections[index].threadUniqueIds!)
         }
 
-        guard !self[keyPath: section.threads].isEmpty else { return nil }
+        guard !self[keyPath: section.threadUniqueIds].isEmpty else { return nil }
 
-        let lastIndexPath = IndexPath(item: self[keyPath: section.threads].count - 1, section: section.index)
+        let lastIndexPath = IndexPath(item: self[keyPath: section.threadUniqueIds].count - 1, section: section.index)
 
-        guard let thread,
-              let index = self[keyPath: section.threads].firstIndex(where: { $0.uniqueId == thread.uniqueId })
+        guard
+            let thread,
+            let index = self[keyPath: section.threadUniqueIds].firstIndex(of: thread.uniqueId)
         else { return lastIndexPath }
 
         if index > 0 {

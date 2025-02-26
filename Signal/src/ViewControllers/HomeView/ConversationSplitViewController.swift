@@ -125,26 +125,38 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         }
     }
 
-    func presentThread(_ thread: TSThread, action: ConversationViewAction, focusMessageId: String?, animated: Bool) {
-        AssertIsOnMainThread()
+    // TODO: @sasha remove this API and adjust callers to use uniqueId-based API!
+    func presentThread(
+        _ thread: TSThread,
+        action: ConversationViewAction,
+        focusMessageId: String?,
+        animated: Bool
+    ) {
+        presentThread(
+            threadUniqueId: thread.uniqueId,
+            action: action,
+            focusMessageId: focusMessageId,
+            animated: animated
+        )
+    }
 
-        // On iOS 13, there is a bug with UISplitViewController that causes the `isCollapsed` state to
-        // get out of sync while the app isn't active and the orientation has changed while backgrounded.
-        // This results in conversations opening up in the wrong pane when you were in portrait and then
-        // try and open the app in landscape. We work around this by dispatching to the next runloop
-        // at which point things have stabilized.
-        if let windowScene = view.window?.windowScene, windowScene.activationState != .foregroundActive, lastActiveInterfaceOrientation != windowScene.interfaceOrientation {
-            owsFailDebug("check if this still happens")
-            // Reset this to avoid getting stuck in a loop. We're becoming active.
-            lastActiveInterfaceOrientation = windowScene.interfaceOrientation
-            DispatchQueue.main.async { self.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated) }
-            return
-        }
+    func presentThread(
+        threadUniqueId: String,
+        action: ConversationViewAction,
+        focusMessageId: String?,
+        animated: Bool
+    ) {
+        AssertIsOnMainThread()
 
         if homeVC.selectedHomeTab != .chatList {
             guard homeVC.presentedViewController == nil else {
                 homeVC.dismiss(animated: true) {
-                    self.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated)
+                    self.presentThread(
+                        threadUniqueId: threadUniqueId,
+                        action: action,
+                        focusMessageId: focusMessageId,
+                        animated: animated
+                    )
                 }
                 return
             }
@@ -153,7 +165,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             homeVC.selectedHomeTab = .chatList
         }
 
-        guard selectedThread?.uniqueId != thread.uniqueId else {
+        guard selectedThread?.uniqueId != threadUniqueId else {
             // If this thread is already selected, pop to the thread if
             // anything else has been presented above the view.
             guard let selectedConversationVC = selectedConversationViewController else { return }
@@ -167,24 +179,31 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
         // Update the last viewed thread on the conversation list so it
         // can maintain its scroll position when navigating back.
-        homeVC.chatListViewController.updateLastViewedThread(thread, animated: animated)
+        homeVC.chatListViewController.updateLastViewedThreadUniqueId(
+            threadUniqueId,
+            animated: animated
+        )
 
-        let vc = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            ConversationViewController.load(
+        let conversationViewController = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return ConversationViewController.load(
                 appReadiness: appReadiness,
-                threadViewModel: ThreadViewModel(thread: thread, forChatList: false, transaction: tx),
+                threadViewModel: ThreadViewModel(
+                    threadUniqueId: threadUniqueId,
+                    forChatList: false,
+                    transaction: tx
+                ),
                 action: action,
                 focusMessageId: focusMessageId,
                 tx: tx
             )
         }
 
-        selectedConversationViewController = vc
+        selectedConversationViewController = conversationViewController
 
         let detailVC: UIViewController = {
-            guard !isCollapsed else { return vc }
+            guard !isCollapsed else { return conversationViewController }
 
-            detailNavController.viewControllers = [vc]
+            detailNavController.viewControllers = [conversationViewController]
             return detailNavController
         }()
 

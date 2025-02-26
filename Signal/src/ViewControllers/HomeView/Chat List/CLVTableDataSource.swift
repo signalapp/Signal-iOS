@@ -103,24 +103,29 @@ class CLVTableDataSource: NSObject {
         tableView.tableFooterView = UIView()
     }
 
-    func threadViewModel(forThread thread: TSThread) -> ThreadViewModel {
+    func threadViewModel(threadUniqueId: String) -> ThreadViewModel {
         let threadViewModelCache = viewState.threadViewModelCache
-        if let value = threadViewModelCache.get(key: thread.uniqueId) {
+        if let value = threadViewModelCache.get(key: threadUniqueId) {
             return value
         }
-        let threadViewModel = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            ThreadViewModel(thread: thread, forChatList: true, transaction: transaction)
+        let threadViewModel = SSKEnvironment.shared.databaseStorageRef.read { tx in
+            return ThreadViewModel(
+                threadUniqueId: threadUniqueId,
+                forChatList: true,
+                transaction: tx
+            )
         }
-        threadViewModelCache.set(key: thread.uniqueId, value: threadViewModel)
+        threadViewModelCache.set(key: threadUniqueId, value: threadViewModel)
         return threadViewModel
     }
 
     func threadViewModel(forIndexPath indexPath: IndexPath) -> ThreadViewModel? {
-        renderState.thread(forIndexPath: indexPath).map(threadViewModel(forThread:))
+        renderState.threadUniqueId(forIndexPath: indexPath).map { threadViewModel(threadUniqueId: $0) }
     }
 
-    func selectedThreads(in tableView: UITableView) -> [TSThread]? {
-        tableView.indexPathsForSelectedRows?.compactMap(renderState.thread(forIndexPath:))
+    func selectedThreadUniqueIds(in tableView: UITableView) -> [String] {
+        let selectedIndexPaths = tableView.indexPathsForSelectedRows ?? []
+        return selectedIndexPaths.compactMap { renderState.threadUniqueId(forIndexPath: $0) }
     }
 
     private func preloadCellsIfNecessary() {
@@ -316,11 +321,11 @@ extension CLVTableDataSource: UITableViewDelegate {
             return indexPath
 
         case .pinned, .unpinned:
-            guard let thread = renderState.thread(forIndexPath: indexPath) else {
+            guard let threadUniqueId = renderState.threadUniqueId(forIndexPath: indexPath) else {
                 owsFailDebug("Missing thread at index path: \(indexPath)")
                 return nil
             }
-            threadIdBeingSelected = thread.uniqueId
+            threadIdBeingSelected = threadUniqueId
             return indexPath
         }
     }
@@ -358,18 +363,18 @@ extension CLVTableDataSource: UITableViewDelegate {
             tableView.deselectRow(at: indexPath, animated: false)
 
         case .pinned, .unpinned:
-            guard let thread = renderState.thread(forIndexPath: indexPath) else {
+            guard let threadUniqueId = renderState.threadUniqueId(forIndexPath: indexPath) else {
                 owsFailDebug("Missing thread.")
                 return
             }
-            owsAssertDebug(thread.uniqueId == threadIdBeingSelected)
+            owsAssertDebug(threadUniqueId == threadIdBeingSelected)
             threadIdBeingSelected = nil
-            viewState.lastSelectedThreadId = thread.uniqueId
+            viewState.lastSelectedThreadId = threadUniqueId
 
             if viewState.multiSelectState.isActive {
                 viewController.updateCaptions()
             } else {
-                viewController.presentThread(thread, animated: true)
+                viewController.presentThread(threadUniqueId: threadUniqueId, animated: true)
             }
 
         case .archiveButton:
@@ -390,12 +395,12 @@ extension CLVTableDataSource: UITableViewDelegate {
         guard viewController.canPresentPreview(fromIndexPath: indexPath) else {
             return nil
         }
-        guard let thread = renderState.thread(forIndexPath: indexPath) else {
+        guard let threadUniqueId = renderState.threadUniqueId(forIndexPath: indexPath) else {
             return nil
         }
 
         return UIContextMenuConfiguration(
-            identifier: thread.uniqueId as NSString,
+            identifier: threadUniqueId as NSString,
             previewProvider: { [weak viewController] in
                 viewController?.createPreviewController(atIndexPath: indexPath)
             },
@@ -789,11 +794,11 @@ extension CLVTableDataSource {
         let cellContentCacheResetCount = cellContentCache.resetCount
         let threadViewModelCacheResetCount = threadViewModelCache.resetCount
 
-        guard let thread = renderState.thread(forIndexPath: indexPath) else {
+        guard let threadUniqueId = renderState.threadUniqueId(forIndexPath: indexPath) else {
             owsFailDebug("Missing thread.")
             return
         }
-        let cacheKey = thread.uniqueId
+        let cacheKey = threadUniqueId
         guard nil == cellContentCache.get(key: cacheKey) else {
             // If we already have an existing CLVCellContentToken, abort.
             return
@@ -815,7 +820,11 @@ extension CLVTableDataSource {
             }
             // This is the expensive work we do off the main thread.
             let threadViewModel = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                ThreadViewModel(thread: thread, forChatList: true, transaction: transaction)
+                return ThreadViewModel(
+                    threadUniqueId: threadUniqueId,
+                    forChatList: true,
+                    transaction: transaction
+                )
             }
             let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
                                                             lastReloadDate: lastReloadDate)
