@@ -58,15 +58,14 @@ extension AddToBlockListViewController: RecipientPickerDelegate, UsernameLinkSca
         transaction: SDSAnyReadTransaction
     ) -> UITableViewCell.SelectionStyle {
         let blockingManager = SSKEnvironment.shared.blockingManagerRef
-        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
 
         switch recipient.identifier {
         case .address(let address):
-            if databaseStorage.read(block: { blockingManager.isAddressBlocked(address, transaction: $0) }) {
+            if blockingManager.isAddressBlocked(address, transaction: transaction) {
                 return .none
             }
         case .group(let thread):
-            if databaseStorage.read(block: { blockingManager.isThreadBlocked(thread, transaction: $0) }) {
+            if blockingManager.isThreadBlocked(thread, transaction: transaction) {
                 return .none
             }
         }
