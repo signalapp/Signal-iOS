@@ -5,6 +5,7 @@
 
 import SignalServiceKit
 import SignalUI
+import Foundation
 
 class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
     let thread: TSThread?
@@ -313,27 +314,9 @@ private class CustomTimePicker: UIPickerView, UIPickerViewDataSource, UIPickerVi
         }
     }
 
-    var selectedUnit: Unit = .second {
-        didSet {
-            guard oldValue != selectedUnit else { return }
-            reloadComponent(Component.duration.rawValue)
-            clampSelectedTimeIfSelectedUnitIsWeeks(selectedUnit)
-            durationChangeCallback(selectedDuration)
-        }
-    }
+    private var selectedUnit: Unit = .second
+    private var selectedTime: Int = 1
     
-    private func clampSelectedTimeIfSelectedUnitIsWeeks(_ unit: CustomTimePicker.Unit) {
-        if unit.interval == .week && selectedTime > unit.maxValue {
-            selectedTime = unit.maxValue
-        }
-    }
-    
-    var selectedTime: Int = 1 {
-        didSet {
-            guard oldValue != selectedTime else { return }
-            durationChangeCallback(selectedDuration)
-        }
-    }
     var selectedDuration: UInt32 { UInt32(selectedUnit.interval) * UInt32(selectedTime) }
 
     let durationChangeCallback: (UInt32) -> Void
@@ -359,7 +342,7 @@ private class CustomTimePicker: UIPickerView, UIPickerViewDataSource, UIPickerVi
             return 0
         }
     }
-
+            
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         switch Component(rawValue: component) {
         case .duration: return OWSFormat.formatInt(row + 1)
@@ -372,9 +355,17 @@ private class CustomTimePicker: UIPickerView, UIPickerViewDataSource, UIPickerVi
 
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         switch Component(rawValue: component) {
-        case .duration: selectedTime = row + 1
-        case .unit: selectedUnit = Unit(rawValue: row) ?? .second
+        case .duration:
+            selectedTime = row + 1
+            durationChangeCallback(selectedDuration)
+        case .unit:
+            selectedUnit = Unit(rawValue: row) ?? .second
+            reloadComponent(Component.duration.rawValue)
+            self.selectRow(selectedUnit.maxValue - 1, inComponent: Component.duration.rawValue, animated: false)
+            selectedTime = self.selectedRow(inComponent: Component.duration.rawValue) + 1
+            durationChangeCallback(selectedDuration)
         default: owsFailDebug("Unexpected component")
         }
     }
+    
 }
