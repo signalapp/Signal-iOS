@@ -44,6 +44,11 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
         guard let attachments = attachments, attachments.count == 1, let attachment = attachments.first else { return false }
         return attachment.isConvertibleToTextMessage && attachment.dataLength <= kOversizeTextMessageSizeThreshold
     }
+    
+    var isTextMessageWithFileAttachment: Bool {
+        guard let attachments = attachments, attachments.count == 2, let firstAttachment = attachments.first else { return false }
+        return firstAttachment.isConvertibleToTextMessage && firstAttachment.dataLength <= kOversizeTextMessageSizeThreshold
+    }
 
     var isContactShare: Bool {
         guard let attachments = attachments, attachments.count == 1, let attachment = attachments.first else { return false }
@@ -148,6 +153,17 @@ extension SharingThreadPickerViewController {
             approvalVC = approvalView
             approvalView.delegate = self
 
+        } else if isTextMessageWithFileAttachment {
+            guard let messageText = String(data: firstAttachment.data, encoding: .utf8)?.filterForDisplay else {
+                throw OWSAssertionError("Missing or invalid message text for text attachment")
+            }
+            if let fileAttachment = attachments[safe: 1] {
+                self.approvedAttachments = [fileAttachment]
+            }
+            let approvalView = TextApprovalViewController(messageBody: MessageBody(text: messageText, ranges: .empty))
+            approvalVC = approvalView
+            approvalView.delegate = self
+            
         } else if isContactShare {
             let cnContact = try SystemContact.parseVCardData(firstAttachment.data)
 
