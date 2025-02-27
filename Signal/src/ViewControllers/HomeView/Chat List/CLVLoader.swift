@@ -88,19 +88,22 @@ public class CLVLoader {
             )
         }
 
-        var pinnedThreadUniqueIdsForRender = [String]()
+        var pinnedThreadUniqueIdsToRender = Set<String>()
         var unpinnedThreadUniqueIdsForRender = [String]()
         for threadUniqueId in visibleThreadUniqueIds {
             if !isViewingArchive && pinnedThreadUniqueIds.contains(threadUniqueId) {
-                pinnedThreadUniqueIdsForRender.append(threadUniqueId)
+                pinnedThreadUniqueIdsToRender.insert(threadUniqueId)
             } else {
                 unpinnedThreadUniqueIdsForRender.append(threadUniqueId)
             }
         }
 
+        // Preserve the order from pinnedThreadUniqueIds
+        let orderedPinnedThreadUniqueIdsForRender = pinnedThreadUniqueIds.filter(pinnedThreadUniqueIdsToRender.contains(_:))
+
         return CLVRenderState(
             viewInfo: viewInfo,
-            pinnedThreadUniqueIds: pinnedThreadUniqueIdsForRender,
+            pinnedThreadUniqueIds: orderedPinnedThreadUniqueIdsForRender,
             unpinnedThreadUniqueIds: unpinnedThreadUniqueIdsForRender
         )
     }
