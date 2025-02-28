@@ -206,6 +206,10 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
 
         }
     }
+    
+    public func contextMenuInteraction(_ interaction: ContextMenuInteraction, overlayForPreviewWithConfiguration configuration: ContextMenuConfiguration) -> UIView? {
+        return nil
+    }
 
     public func contextMenuInteraction(_ interaction: ContextMenuInteraction, willDisplayMenuForConfiguration: ContextMenuConfiguration) {
         // Reset scroll view pan gesture recognizer, so CV does not scroll behind context menu post presentation on user swipe
