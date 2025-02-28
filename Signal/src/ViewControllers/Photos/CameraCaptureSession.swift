@@ -343,7 +343,7 @@ class CameraCaptureSession: NSObject {
 
     func updateVideoCaptureOrientation() {
         sessionQueue.async {
-            self.videoCapture.setVideoOrientation(self.captureOrientation)
+            self.videoCapture.setVideoOrientation(self.captureOrientation, outputMirrored: self.desiredPosition == .front)
         }
     }
 
@@ -726,9 +726,10 @@ class CameraCaptureSession: NSObject {
 
         let previewLayer = previewView.previewLayer
         let captureRect = previewLayer.metadataOutputRectConverted(fromLayerRect: previewLayer.bounds)
+        let captureMirrored = desiredPosition == .front
         delegate.cameraCaptureSessionDidStart(self)
         sessionQueue.async {
-            self.photoCapture.takePhoto(delegate: self, captureOrientation: self.captureOrientation, captureRect: captureRect)
+            self.photoCapture.takePhoto(delegate: self, captureOrientation: self.captureOrientation, captureRect: captureRect, captureMirrored: captureMirrored)
         }
     }
 
@@ -1341,7 +1342,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
     }
 
-    func setVideoOrientation(_ videoOrientation: AVCaptureVideoOrientation) {
+    func setVideoOrientation(_ videoOrientation: AVCaptureVideoOrientation, outputMirrored: Bool) {
         guard let videoConnection = videoDataOutput.connection(with: .video) else {
             #if !targetEnvironment(simulator)
             owsFailBeta("videoConnection was unexpectedly nil")
@@ -1350,6 +1351,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
         Logger.info("set videoOrientation: \(videoOrientation)")
         videoConnection.videoOrientation = videoOrientation
+        videoConnection.isVideoMirrored = outputMirrored
     }
 
     // `recordingQueue`
@@ -1485,12 +1487,13 @@ private class PhotoCapture {
 
     private var photoProcessors: [Int64: PhotoProcessor] = [:]
 
-    func takePhoto(delegate: PhotoCaptureDelegate, captureOrientation: AVCaptureVideoOrientation, captureRect: CGRect) {
+    func takePhoto(delegate: PhotoCaptureDelegate, captureOrientation: AVCaptureVideoOrientation, captureRect: CGRect, captureMirrored: Bool) {
         guard let avCaptureConnection = avCaptureOutput.connection(with: .video) else {
             owsFailBeta("photoVideoConnection was unexpectedly nil")
             return
         }
 
+        avCaptureConnection.isVideoMirrored = captureMirrored
         avCaptureConnection.videoOrientation = captureOrientation
 
         let photoSettings = AVCapturePhotoSettings()
