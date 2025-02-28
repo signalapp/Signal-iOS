@@ -396,10 +396,6 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
         return targetedPreview
     }
     
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, overlayForPreviewWithConfiguration configuration: ContextMenuConfiguration) -> UIView? {
-        return nil
-    }
-
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, willDisplayMenuForConfiguration: ContextMenuConfiguration) {}
 
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {}

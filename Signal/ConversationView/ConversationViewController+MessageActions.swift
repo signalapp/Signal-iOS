@@ -200,6 +200,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         if let componentView = cell.componentView, let contentView = componentView.contextMenuContentView?() {
             let preview = ContextMenuTargetedPreview(view: contentView, alignment: alignment, accessoryViews: accessories)
             preview?.auxiliaryView = componentView.contextMenuAuxiliaryContentView?()
+            preview?.overlayView = createOverlayViewForContextMenuTargetedPreview()
             return preview
         } else {
             return ContextMenuTargetedPreview(view: cell, alignment: alignment, accessoryViews: accessories)
@@ -207,10 +208,10 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         }
     }
     
-    public func contextMenuInteraction(_ interaction: ContextMenuInteraction, overlayForPreviewWithConfiguration configuration: ContextMenuConfiguration) -> UIView? {
+    private func createOverlayViewForContextMenuTargetedPreview() -> UIView? {
         return nil
     }
-
+    
     public func contextMenuInteraction(_ interaction: ContextMenuInteraction, willDisplayMenuForConfiguration: ContextMenuConfiguration) {
         // Reset scroll view pan gesture recognizer, so CV does not scroll behind context menu post presentation on user swipe
         collectionView.panGestureRecognizer.isEnabled = false

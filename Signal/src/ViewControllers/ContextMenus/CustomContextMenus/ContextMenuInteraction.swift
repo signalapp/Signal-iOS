@@ -14,7 +14,6 @@ public protocol ContextMenuInteractionDelegate: AnyObject {
     func contextMenuInteraction(
         _ interaction: ContextMenuInteraction,
         previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview?
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, overlayForPreviewWithConfiguration configuration: ContextMenuConfiguration) -> UIView?
     func contextMenuInteraction(_ interaction: ContextMenuInteraction,
                                 willDisplayMenuForConfiguration: ContextMenuConfiguration)
     func contextMenuInteraction(_ interaction: ContextMenuInteraction,
