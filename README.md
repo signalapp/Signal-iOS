@@ -2,7 +2,7 @@
 
 Signal is a free, open source, messaging app for simple private communication with friends.
 
-[![Available on the App Store](http://cl.ly/WouG/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://apps.apple.com/app/id874139669)
+[<img src="https://f.v1.n0.cdn.getcloudapp.com/items/3i3e3H392x2z3u30470v/Download_on_the_App_Store_Badge_US-UK_135x40.svg" alt="Download on Apple App Store" height="50">](https://apps.apple.com/app/id874139669)
 
 Also available on [Android](https://github.com/signalapp/signal-android) and [Desktop](https://github.com/signalapp/signal-desktop).
 
