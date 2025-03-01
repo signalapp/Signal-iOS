@@ -1,9 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "note.pdf",
-      "idiom" : "universal",
-      "language-direction" : "left-to-right"
+      "filename" : "note-rtl.pdf",
+      "idiom" : "universal"
     }
   ],
   "info" : {

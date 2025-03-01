@@ -566,7 +566,13 @@ public class AvatarBuilder {
         case cachedContact(address: SignalServiceAddress, cacheKey: String)
 
         static func noteToSelf(theme: AvatarTheme) -> Self {
-            return .tintedImage(name: "note-resizable", theme: theme)
+            return .tintedImage(
+                // The way we render avatars doesn't respect the asset catalog's
+                // icon direction, so the RTL variant needs to be specified
+                // here, but other uses of "note-resizable" automatically flip.
+                name: CurrentAppContext().isRTL ? "note-rtl" : "note-resizable",
+                theme: theme
+            )
         }
 
         static func groupDefault(theme: AvatarTheme) -> Self {
