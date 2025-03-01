@@ -30,10 +30,6 @@ extension ChatListViewController {
 
     // MARK: -
 
-    public func loadIfNecessary() {
-        loadCoordinator.loadIfNecessary()
-    }
-
     func updateShouldBeUpdatingView() {
         AssertIsOnMainThread()
 
