@@ -388,13 +388,21 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
         pendingChanges.insert(interaction: interaction)
         pendingChanges.insert(tableName: TSInteraction.table.tableName)
 
-        if !pendingChanges.threadUniqueIds.contains(interaction.uniqueThreadId) {
-            let interactionThread: TSThread? = interaction.thread(tx: transaction.asAnyRead)
-            if let thread = interactionThread {
-                didTouch(thread: thread, transaction: transaction)
-            } else {
-                owsFailDebug("Could not load thread for interaction.")
-            }
+        if
+            let interactionRowId = interaction.sqliteRowId,
+            let thread = interaction.thread(tx: transaction.asAnyRead)
+        {
+            // Skip updating the chat list if this isn't the last interaction
+            // for this thread.
+            let shouldUpdateChatListUI = thread.lastInteractionRowId == interactionRowId
+
+            didTouch(
+                thread: thread,
+                shouldUpdateChatListUi: shouldUpdateChatListUI,
+                transaction: transaction
+            )
+        } else {
+            owsFailDebug("Interaction missing expected database relationships!")
         }
 
         if isObserving {
