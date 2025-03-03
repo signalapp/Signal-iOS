@@ -30,7 +30,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     }
 
     // Coordinates blocking of the calloutQueue while we wait for an incoming call
-    private let incomingCallContinuation = AtomicValue<CheckedContinuation<Void, Never>?>(nil, lock: .init())
+    private let incomingCallFuture = AtomicValue<GuaranteeFuture<Void>?>(nil, lock: .init())
 
     // Private callout queue that we can use to synchronously wait for our call to start
     // TODO: Rewrite call message routing to be able to synchronously report calls
@@ -87,7 +87,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     }
 
     public func didFinishReportingIncomingCall() {
-        incomingCallContinuation.swap(nil)?.resume()
+        incomingCallFuture.swap(nil)?.resolve()
     }
 
     // MARK: Vanilla push token
@@ -146,39 +146,32 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     // MARK: PKPushRegistryDelegate - voIP Push Token
 
-    @objc(pushRegistry:didReceiveIncomingPushWithPayload:forType:withCompletionHandler:)
-    public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) async {
+    public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
         assertOnQueue(calloutQueue)
         owsAssertDebug(type == .voIP)
 
-        // Wait until the app is ready.
-        await withCheckedContinuation { continuation in
-            appReadiness.runNowOrWhenAppDidBecomeReadySync {
-                continuation.resume()
-            }
+        // Synchronously wait until the app is ready.
+        let appReady = DispatchSemaphore(value: 0)
+        appReadiness.runNowOrWhenAppDidBecomeReadySync {
+            appReady.signal()
         }
+        appReady.wait()
 
         // This branch MUST start a CallKit call before it returns or else we risk
         // a PushKit penalty that may prevent us from handling future calls.
         let callRelayPayload = CallMessagePushPayload(payload.dictionaryPayload)
         if let callRelayPayload {
             Logger.info("Received VoIP push from the NSE: \(callRelayPayload)")
-            do {
-                try await withUncooperativeTimeout(seconds: 5) {
-                    // there's no easy way to cancel this because it fires off into the message
-                    // processing pipeline and relies on a very long circuitous train of logic to
-                    // get back here and resume this continuation
-                    await withCheckedContinuation { continuation in
-                        self.incomingCallContinuation.set(continuation)
-                        AppEnvironment.shared.callService.earlyRingNextIncomingCall.set(true)
-                        CallMessageRelay.handleVoipPayload(callRelayPayload)
-                        Logger.info("Waiting for call to start: \(callRelayPayload)")
-                    }
-                }
-            } catch is UncooperativeTimeoutError {
-            } catch {
-                owsFailDebug("unexpected error \(error)")
-            }
+            let (guarantee, future) = Guarantee<Void>.pending()
+            incomingCallFuture.set(future)
+            AppEnvironment.shared.callService.earlyRingNextIncomingCall.set(true)
+            CallMessageRelay.handleVoipPayload(callRelayPayload)
+            Logger.info("Waiting for call to start: \(callRelayPayload)")
+            guarantee.timeout(
+                on: DispatchQueue.global(qos: .userInitiated),
+                seconds: 5,
+                substituteValue: ()
+            ).wait()
             Logger.info("Returning back to PushKit. Good luck! \(callRelayPayload)")
             return
         }
