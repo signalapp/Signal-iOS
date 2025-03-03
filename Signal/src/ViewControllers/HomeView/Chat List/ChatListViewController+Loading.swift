@@ -176,12 +176,22 @@ extension ChatListViewController {
                 if tableView.isEditing && !viewState.multiSelectState.isActive {
                     checkAndSetTableUpdates()
                 }
-                if !useFallBackUpdateMechanism, let tds = tableView.dataSource as? CLVTableDataSource {
-                    useFallBackUpdateMechanism = !tds.updateVisibleCellContent(at: oldIndexPath, for: tableView)
-                }
+
                 if useFallBackUpdateMechanism {
                     checkAndSetTableUpdates()
                     tableView.reloadRows(at: [oldIndexPath], with: .none)
+                } else if let tableDataSource = tableView.dataSource as? CLVTableDataSource {
+                    // If we can, we'll do an in-place update to the cell rather
+                    // than call `reloadRows`, to avoid what can be a disruptive
+                    // re-layout of the chat list.
+                    //
+                    // This optimization is particularly important when there are
+                    // many rapid-fire chat-list-cell updates needed, such as when
+                    // fetching avatars after a Backup restore. (See:
+                    // `MessageBackupAvatarFetcher`.)
+                    tableDataSource.updateCellContent(at: oldIndexPath, for: tableView)
+                } else {
+                    owsFailDebug("Failed to apply row update: unexpectedly missing table data source!")
                 }
             }
         }

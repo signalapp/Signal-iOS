@@ -56,7 +56,7 @@ class CLVTableDataSource: NSObject {
                 updateTimer = Timer.scheduledTimer(withTimeInterval: max(1, interval), repeats: false) { [weak self] (_) in
                     if let self = self {
                         for path in self.tableView.indexPathsForVisibleRows ?? [] {
-                            self.updateVisibleCellContent(at: path, for: self.tableView)
+                            self.updateCellContent(at: path, for: self.tableView)
                         }
                         self.calcRefreshTimer()
                     }
@@ -700,7 +700,7 @@ extension CLVTableDataSource {
 
     public func updateAndSetRefreshTimer() {
         for path in tableView.indexPathsForVisibleRows ?? [] {
-            updateVisibleCellContent(at: path, for: tableView)
+            updateCellContent(at: path, for: tableView)
         }
         calcRefreshTimer()
     }
@@ -712,13 +712,11 @@ extension CLVTableDataSource {
         }
     }
 
-    @discardableResult
-    public func updateVisibleCellContent(at indexPath: IndexPath, for tableView: UITableView) -> Bool {
+    public func updateCellContent(at indexPath: IndexPath, for tableView: UITableView) {
         AssertIsOnMainThread()
 
-        guard tableView.indexPathsForVisibleRows?.contains(indexPath) == true else { return false }
-        guard let cell = tableView.cellForRow(at: indexPath) as? ChatListCell else { return false }
-        guard let contentToken = buildCellContentToken(for: indexPath) else { return false }
+        guard let cell = tableView.cellForRow(at: indexPath) as? ChatListCell else { return }
+        guard let contentToken = buildCellContentToken(for: indexPath) else { return }
 
         let cellWasVisible = cell.isCellVisible
         cell.reset()
@@ -729,7 +727,6 @@ extension CLVTableDataSource {
             asyncAvatarLoadingAllowed: false
         )
         cell.isCellVisible = cellWasVisible
-        return true
     }
 
     // This method can be called from any thread.
