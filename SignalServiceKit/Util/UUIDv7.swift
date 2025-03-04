@@ -61,7 +61,7 @@ extension UUID {
 }
 
 extension NSUUID {
-    private static var sequentialCounter: UInt64 = MonotonicDate().millisSince(.distantPast)
+    private static var sequentialCounter: UInt64 = Date().ows_millisecondsSince1970
 
     @objc
     static func sequential() -> NSUUID {
