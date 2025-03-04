@@ -724,9 +724,21 @@ class StorageServiceOperation {
         }
 
         guard let masterKey else {
-            // We don't have backup keys, do nothing. We'll try a
-            // fresh restore once the keys are set.
-            Logger.info("Skipping storage service operation due to missing master key.")
+            if
+                !isPrimaryDevice,
+                DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+            {
+                // This is a linked device, and keys are missing. There's nothing that can be done
+                // until we receive new keys, so send a key sync message and return early.
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                    SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: tx)
+                }
+            } else {
+                // We're either not registered, or a primary.  Either way,
+                // we don't have backup keys, or a means to get them, so do nothing.
+                // We'll try a fresh restore once the keys are set.
+                Logger.info("Skipping storage service operation due to missing master key.")
+            }
             return
         }
         self.masterKey = masterKey

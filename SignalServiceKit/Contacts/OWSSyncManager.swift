@@ -197,7 +197,13 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return owsFailDebug("Missing thread")
         }
 
-        let accountEntropyPool = DependenciesBridge.shared.accountKeyStore.getAccountEntropyPool(tx: tx.asV2Read)
+        let accountEntropyPool: AccountEntropyPool?
+        if FeatureFlags.enableAccountEntropyPool {
+            accountEntropyPool = DependenciesBridge.shared.accountKeyStore.getAccountEntropyPool(tx: tx.asV2Read)
+        } else {
+            accountEntropyPool = nil
+        }
+
         if FeatureFlags.enableAccountEntropyPool,
            accountEntropyPool == nil
         {

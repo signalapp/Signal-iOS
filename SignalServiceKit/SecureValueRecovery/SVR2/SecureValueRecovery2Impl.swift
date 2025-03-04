@@ -428,11 +428,17 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             }
         }
 
+        var didSetAEP = false
         do {
             if let aep = try provisioningMessage.accountEntropyPool.map({ try AccountEntropyPool(key: $0) }) {
                 accountKeyStore.setAccountEntropyPool(aep, tx: tx)
+                didSetAEP = true
             }
         } catch {
+            Logger.warn("Failed to parse AEP")
+        }
+
+        if !didSetAEP {
             do {
                 accountKeyStore.setMasterKey(try MasterKey(data: provisioningMessage.masterKey), tx: tx)
             } catch {
