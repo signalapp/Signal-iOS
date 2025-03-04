@@ -632,12 +632,9 @@ public class MockRemoteConfigProvider: RemoteConfigProvider {
 public protocol RemoteConfigManager: RemoteConfigProvider {
     func warmCaches()
     var cachedConfig: RemoteConfig? { get }
-    /// Refresh the remote config from the server if either:
-    /// * has not been fetched this app launch
-    /// * its been too long since we last fetched it
-    /// and returns the latest fetched remote config value, whether just fetched
-    /// or an eligible cached value.
-    func refreshIfNeeded() async throws -> RemoteConfig
+    /// Refresh the remote config from the server if it's been too long since we
+    /// last fetched it.
+    func refreshIfNeeded() async throws
 }
 
 // MARK: -
@@ -649,8 +646,7 @@ public class StubbableRemoteConfigManager: RemoteConfigManager {
 
     public func warmCaches() {}
 
-    public func refreshIfNeeded() async throws -> RemoteConfig {
-        return cachedConfig!
+    public func refreshIfNeeded() async throws {
     }
 
     public func currentConfig() -> RemoteConfig {
@@ -791,14 +787,12 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     private var lastAttempt: Date?
     private var consecutiveFailures: UInt = 0
 
-    @discardableResult
-    public func refreshIfNeeded() async throws -> RemoteConfig {
+    public func refreshIfNeeded() async throws {
         return try await self.refreshIfNeeded(force: false)
     }
 
-    @discardableResult
-    private func refreshIfNeeded(force: Bool) async throws -> RemoteConfig {
-        return try await refreshTaskQueue.enqueue(operation: {
+    private func refreshIfNeeded(force: Bool) async throws {
+        try await refreshTaskQueue.enqueue(operation: {
             func msToNextRefresh() -> UInt64 {
                 let now = self.dateProvider()
                 let nowMs = now.ows_millisecondsSince1970
@@ -819,7 +813,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
             }
 
             if !force, msToNextRefresh() > 0, let cached = self._cachedConfig.get() {
-                return cached
+                return
             } else {
                 let result = await Result(catching: { try await self._refresh() })
 
@@ -842,13 +836,13 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
                     try await self.refreshIfNeeded()
                 }
 
-                return try result.get()
+                try result.get()
             }
         }).value
     }
 
     /// should only be called within `refreshTaskQueue`
-    private func _refresh() async throws -> RemoteConfig {
+    private func _refresh() async throws {
         let fetchedConfig = try await fetchRemoteConfig()
 
         let clockSkew: TimeInterval
@@ -961,8 +955,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         self.warmSecondaryCaches(valueFlags: mergedConfig.valueFlags)
 
         newConfig.logFlags()
-
-        return mergedConfig
     }
 
     // MARK: -
