@@ -36,7 +36,7 @@ extension UUID {
         // Set the next four bits to 0b0111, the required "version" for UUIDv7.
         // Set the rest of that byte to random.
         let versionBits = UInt8(0b0111)
-        let fourRandomBits = UInt8.random(in: 0...0xFF) | 0x0F
+        let fourRandomBits = UInt8.random(in: 0...((1 << 4) - 1))
         uuidBytes[6] = UInt8((versionBits << 4) | fourRandomBits)
 
         // Add a full byte of random.
@@ -45,7 +45,7 @@ extension UUID {
         // Set the next two bits to 0b10, the required "variant" for UUIDv7. Set
         // the rest of that byte to random.
         let variantBits = UInt8(0b10)
-        let sixRandomBits = UInt8.random(in: 0...0xFF) | 0x3F
+        let sixRandomBits = UInt8.random(in: 0...((1 << 6) - 1))
         uuidBytes[8] = UInt8((variantBits << 6) | sixRandomBits)
 
         // Set the remaining bytes to random.
