@@ -221,7 +221,9 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
             overlayView.addSubview(snapShottedInputBar)
             overlayView.addSubview(snapShottedNavigationBar)
                         
+            snapShottedInputBar.frame.x = window.bounds.width - snapShottedInputBar.frame.width
             snapShottedInputBar.frame.y = window.bounds.height - snapShottedInputBar.frame.height //Do we have a method buried somewhere in the code for this?
+            snapShottedNavigationBar.frame.x = window.bounds.width - snapShottedNavigationBar.frame.width
             snapShottedNavigationBar.frame.y = navigationBar.frame.y
             
             return overlayView

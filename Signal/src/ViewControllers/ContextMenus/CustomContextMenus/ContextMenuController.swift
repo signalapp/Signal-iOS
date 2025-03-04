@@ -602,8 +602,6 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
         let dispatchGroup = DispatchGroup()
         animationState = .animateOut
         
-        self.contextMenuPreview.overlayView?.isHidden = false
-        
         dispatchGroup.enter()
         UIView.animate(withDuration: animationDuration) {
             if self.renderBackgroundBlur {
@@ -617,6 +615,7 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
             case .fade:
                 self.previewView?.alpha = 1
             }
+            
         } completion: { _ in
             dispatchGroup.leave()
         }
@@ -661,6 +660,8 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
                 dispatchGroup.leave()
             }
         }
+        
+        self.overlayView?.isHidden = false
 
         dispatchGroup.notify(queue: .main) {
             self.contextMenuPreview.view.isHidden = false
