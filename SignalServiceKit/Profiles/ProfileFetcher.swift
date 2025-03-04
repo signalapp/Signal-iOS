@@ -63,8 +63,8 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         }
     }
 
-    private var rateLimitExpirationDate: MonotonicDate = .distantPast
-    private var scheduledOpportunisticDate: MonotonicDate = .distantPast
+    private var rateLimitExpirationDate: MonotonicDate?
+    private var scheduledOpportunisticDate: MonotonicDate?
 
     public init(
         db: any DB,
@@ -224,16 +224,16 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         // * Backing off aggressively if we hit the rate limit.
 
         let minimumDelay: TimeInterval
-        if now < rateLimitExpirationDate {
+        if let rateLimitExpirationDate, now < rateLimitExpirationDate {
             minimumDelay = 20
         } else {
             minimumDelay = 0.1
         }
 
-        let minimumDate = self.scheduledOpportunisticDate.adding(minimumDelay)
-        self.scheduledOpportunisticDate = max(now, minimumDate)
+        let minimumDate = self.scheduledOpportunisticDate?.adding(minimumDelay)
+        self.scheduledOpportunisticDate = [now, minimumDate].compacted().max()!
 
-        if now < minimumDate {
+        if let minimumDate, now < minimumDate {
             try await Task.sleep(nanoseconds: minimumDate - now)
         }
     }

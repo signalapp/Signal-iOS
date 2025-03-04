@@ -48,8 +48,6 @@ public struct MonotonicDate: Comparable {
         self.init(rawValue: rawValue)
     }
 
-    public static let distantPast = MonotonicDate(rawValue: 0)
-
     public func adding(_ timeInterval: TimeInterval) -> MonotonicDate {
         return MonotonicDate(rawValue: self.rawValue + UInt64(timeInterval * TimeInterval(NSEC_PER_SEC)))
     }
