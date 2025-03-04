@@ -706,12 +706,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         self.tsAccountManager = tsAccountManager
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            guard self.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-                return
-            }
-            Task {
-                try await self.refreshIfNeeded()
-            }
+            self.refreshRepeatedlyIfNeeded(forceInitialRefreshImmediately: false)
         }
 
         NotificationCenter.default.addObserver(
@@ -725,18 +720,12 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     // MARK: -
 
     @objc
+    @MainActor
     private func registrationStateDidChange() {
         AssertIsOnMainThread()
 
-        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
-        Logger.info("Refreshing and immediately applying new flags due to new registration.")
-        Task {
-            do {
-                try await refreshIfNeeded(force: true)
-            } catch let error {
-                Logger.error("Failed to update remote config after registration change \(error)")
-            }
-        }
+        Logger.info("Forcing a refresh because the registration state changed.")
+        self.refreshRepeatedlyIfNeeded(forceInitialRefreshImmediately: true)
     }
 
     public func warmCaches() {
@@ -780,65 +769,67 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     }
 
     private static let refreshInterval: TimeInterval = 2 * .hour
-    private let refreshTaskQueue = SerialTaskQueue()
+    private let refreshTaskQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
-    /// Nil if no attempt made this app session (not persisted across launches)
-    /// Should only be accessed within `refreshTaskQueue`
-    private var lastAttempt: Date?
-    private var consecutiveFailures: UInt = 0
+    @MainActor
+    private var refreshTask: Task<Void, any Error>?
 
-    public func refreshIfNeeded() async throws {
-        return try await self.refreshIfNeeded(force: false)
+    @MainActor
+    private func refreshRepeatedlyIfNeeded(forceInitialRefreshImmediately: Bool) {
+        self.refreshTask?.cancel()
+        guard self.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+            return
+        }
+        self.refreshTask = Task {
+            try await self.refreshRepeatedly(forceInitialRefreshImmediately: forceInitialRefreshImmediately)
+        }
     }
 
-    private func refreshIfNeeded(force: Bool) async throws {
-        try await refreshTaskQueue.enqueue(operation: {
-            func msToNextRefresh() -> UInt64 {
-                let now = self.dateProvider()
-                let nowMs = now.ows_millisecondsSince1970
+    private func refreshRepeatedly(forceInitialRefreshImmediately: Bool) async throws {
+        var refreshImmediately = forceInitialRefreshImmediately
+        while true {
+            try Task.checkCancellation()
 
-                let backoffDelay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: self.consecutiveFailures)
-                let earliestPermittedAttempt = (self.lastAttempt ?? .distantPast).addingTimeInterval(backoffDelay)
-
-                let lastSuccess = self.db.read { self.keyValueStore.getLastFetched(transaction: $0) }
-                let nextScheduledRefresh = (lastSuccess ?? .distantPast).addingTimeInterval(Self.refreshInterval)
-
-                let nextAttemptDate = max(earliestPermittedAttempt, nextScheduledRefresh)
-
-                if now >= nextAttemptDate {
-                    return 0
-                } else {
-                    return nextAttemptDate.ows_millisecondsSince1970 - nowMs
-                }
+            let nextFetchDate = self.fetchNextFetchDate()
+            let fetchDelay = nextFetchDate.timeIntervalSince(self.dateProvider())
+            if !refreshImmediately, fetchDelay > 0 {
+                try await Task.sleep(nanoseconds: fetchDelay.clampedNanoseconds)
             }
+            refreshImmediately = false
 
-            if !force, msToNextRefresh() > 0, let cached = self._cachedConfig.get() {
-                return
-            } else {
-                let result = await Result(catching: { try await self._refresh() })
-
-                // Note: have to make sure we update `lastAttempt` and
-                // `consecutiveFailures` before calling msToNextRefresh
-                // again below. `_refresh` updates `keyValueStore.lastFetched`.
-                self.lastAttempt = self.dateProvider()
-                switch result {
-                case .success:
-                    self.consecutiveFailures = 0
-                case .failure(let error):
-                    Logger.error("error: \(error)")
-                    self.consecutiveFailures += 1
-                }
-
-                // Kick off a task for the next refresh
-                let msToNextRefresh = msToNextRefresh()
-                Task {
-                    try await Task.sleep(nanoseconds: msToNextRefresh * NSEC_PER_MSEC)
+            try await Retry.performWithBackoff(maxAttempts: Int.max) {
+                do {
                     try await self.refreshIfNeeded()
+                } catch {
+                    // Treat all failures as retryable. They all *should* be retryable.
+                    throw OWSRetryableError()
                 }
-
-                try result.get()
             }
-        }).value
+
+            // We expect `_refresh` to update `keyValueStore.lastFetched`, so add a
+            // check to ensure that it does.
+            owsPrecondition(self.fetchNextFetchDate() != nextFetchDate)
+        }
+    }
+
+    private func fetchNextFetchDate() -> Date {
+        let lastFetchDate = self.db.read { self.keyValueStore.getLastFetched(transaction: $0) }
+        return (lastFetchDate ?? .distantPast).addingTimeInterval(Self.refreshInterval)
+    }
+
+    public func refreshIfNeeded() async throws {
+        try await refreshTaskQueue.run {
+            guard self.dateProvider() > self.fetchNextFetchDate() else {
+                return
+            }
+
+            do {
+                return try await self._refresh()
+            } catch {
+                Logger.warn("\(error)")
+                throw error
+            }
+        }
     }
 
     /// should only be called within `refreshTaskQueue`
