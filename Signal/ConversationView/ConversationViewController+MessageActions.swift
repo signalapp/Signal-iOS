@@ -212,7 +212,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
     private func createOverlayViewForContextMenuTargetedPreview() -> UIView? {
         if
             let snapShottedInputBar = inputToolbar?.snapshotView(afterScreenUpdates: false),
-            let navigationBar = navigationController?.navigationBar,
+            let navigationBar = navigationController?.navigationBar as? OWSNavigationBar,
             let snapShottedNavigationBar = navigationBar.snapshotView(afterScreenUpdates: false) {
             guard let window = view.window else { return nil }
             
