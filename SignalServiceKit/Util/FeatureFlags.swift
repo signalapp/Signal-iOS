@@ -61,6 +61,8 @@ public enum FeatureFlags {
     public static let useNewConversationLoadIndex = build.includes(.beta)
 
     public static let enableAccountEntropyPool = build.includes(.dev)
+
+    public static let libsignalForChat = build.includes(.beta)
 }
 
 // MARK: -

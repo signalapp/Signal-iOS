@@ -452,9 +452,8 @@ private enum IsEnabledFlag: String, FlagType {
     case enableGifSearch = "global.gifSearch"
     case experimentalTransportShadowingEnabled = "ios.experimentalTransportEnabled.shadowing"
     case experimentalTransportShadowingHigh = "ios.experimentalTransportEnabled.shadowingHigh"
-    case experimentalTransportUseLibsignal = "ios.experimentalTransportEnabled.libsignal"
-    case experimentalTransportUseLibsignalAuth = "ios.experimentalTransportEnabled.libsignalAuth"
     case libsignalCdsUseNewConnectLogic = "ios.libsignal.cdsUseNewConnectLogic"
+    case libsignalForChat = "ios.useLibsignalForChat"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
     case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
     case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
@@ -479,9 +478,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableGifSearch: false
         case .experimentalTransportShadowingEnabled: false
         case .experimentalTransportShadowingHigh: false
-        case .experimentalTransportUseLibsignal: false
-        case .experimentalTransportUseLibsignalAuth: false
         case .libsignalCdsUseNewConnectLogic: false
+        case .libsignalForChat: false
         case .messageResendKillSwitch: false
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
@@ -507,9 +505,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableGifSearch: false
         case .experimentalTransportShadowingEnabled: false
         case .experimentalTransportShadowingHigh: false
-        case .experimentalTransportUseLibsignal: false
-        case .experimentalTransportUseLibsignalAuth: false
         case .libsignalCdsUseNewConnectLogic: true
+        case .libsignalForChat: false
         case .messageResendKillSwitch: false
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
@@ -962,14 +959,13 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
             in: CurrentAppContext().appUserDefaults()
         )
         // Similarly, persist the choice of libsignal for the chat websockets.
-        let shouldUseLibsignalForIdentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportUseLibsignalAuth.rawValue] ?? false
+        let shouldUseLibsignalForChatWebsocket = isEnabledFlags[IsEnabledFlag.libsignalForChat.rawValue] ?? FeatureFlags.libsignalForChat
         ChatConnectionManagerImpl.saveShouldUseLibsignalForIdentifiedWebsocket(
-            shouldUseLibsignalForIdentifiedWebsocket,
+            shouldUseLibsignalForChatWebsocket,
             in: CurrentAppContext().appUserDefaults()
         )
-        let shouldUseLibsignalForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportUseLibsignal.rawValue] ?? false
         ChatConnectionManagerImpl.saveShouldUseLibsignalForUnidentifiedWebsocket(
-            shouldUseLibsignalForUnidentifiedWebsocket,
+            shouldUseLibsignalForChatWebsocket,
             in: CurrentAppContext().appUserDefaults()
         )
         let enableShadowingForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportShadowingEnabled.rawValue] ?? false
