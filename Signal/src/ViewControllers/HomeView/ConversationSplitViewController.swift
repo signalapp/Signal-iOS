@@ -148,6 +148,30 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     ) {
         AssertIsOnMainThread()
 
+        // On iOS 13, and possibly later versions, there is/was a bug in
+        // `UISplitViewController` that caused the `isCollapsed` state to fall
+        // out of sync while the app isn't active and the orientation has
+        // changed while backgrounded. That results in conversations opening in
+        // the wrong pane when the app was in portrait but is re-opened in
+        // landscape. We work around this by dispatching to the next runloop, at
+        // which point things have stabilized.
+        if
+            let windowScene = view.window?.windowScene,
+            windowScene.activationState != .foregroundActive,
+            lastActiveInterfaceOrientation != windowScene.interfaceOrientation
+        {
+            lastActiveInterfaceOrientation = windowScene.interfaceOrientation
+            DispatchQueue.main.async {
+                self.presentThread(
+                    threadUniqueId: threadUniqueId,
+                    action: action,
+                    focusMessageId: focusMessageId,
+                    animated: animated
+                )
+            }
+            return
+        }
+
         if homeVC.selectedHomeTab != .chatList {
             guard homeVC.presentedViewController == nil else {
                 homeVC.dismiss(animated: true) {
