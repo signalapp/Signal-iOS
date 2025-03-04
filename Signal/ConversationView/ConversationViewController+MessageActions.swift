@@ -4,6 +4,7 @@
 //
 
 public import SignalServiceKit
+import SignalUI
 
 extension ConversationViewController {
 
@@ -209,6 +210,22 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
     }
     
     private func createOverlayViewForContextMenuTargetedPreview() -> UIView? {
+        if
+            let snapShottedInputBar = inputToolbar?.snapshotView(afterScreenUpdates: false),
+            let navigationBar = navigationController?.navigationBar as? OWSNavigationBar,
+            let snapShottedNavigationBarView = navigationBar.snapshotView(afterScreenUpdates: false) {
+            guard let windowDimensions = view.window?.bounds else { return nil }
+            
+            let overlayView = UIView(frame: windowDimensions)
+            overlayView.backgroundColor = nil
+            overlayView.addSubview(snapShottedInputBar)
+            
+            snapShottedInputBar.frame.y = windowDimensions.height - snapShottedInputBar.frame.height //Do we have a method buried somewhere in the code for this?
+            
+            
+            
+            return overlayView
+        }
         return nil
     }
     
