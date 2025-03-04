@@ -637,7 +637,7 @@ public protocol RemoteConfigManager: RemoteConfigProvider {
     /// * its been too long since we last fetched it
     /// and returns the latest fetched remote config value, whether just fetched
     /// or an eligible cached value.
-    func refreshIfNeeded(account: AuthedAccount) async throws -> RemoteConfig
+    func refreshIfNeeded() async throws -> RemoteConfig
 }
 
 // MARK: -
@@ -649,7 +649,7 @@ public class StubbableRemoteConfigManager: RemoteConfigManager {
 
     public func warmCaches() {}
 
-    public func refreshIfNeeded(account: AuthedAccount) async throws -> RemoteConfig {
+    public func refreshIfNeeded() async throws -> RemoteConfig {
         return cachedConfig!
     }
 
@@ -792,12 +792,12 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     private var consecutiveFailures: UInt = 0
 
     @discardableResult
-    public func refreshIfNeeded(account: AuthedAccount = .implicit()) async throws -> RemoteConfig {
-        return try await self.refreshIfNeeded(account: account, force: false)
+    public func refreshIfNeeded() async throws -> RemoteConfig {
+        return try await self.refreshIfNeeded(force: false)
     }
 
     @discardableResult
-    private func refreshIfNeeded(account: AuthedAccount = .implicit(), force: Bool) async throws -> RemoteConfig {
+    private func refreshIfNeeded(force: Bool) async throws -> RemoteConfig {
         return try await refreshTaskQueue.enqueue(operation: {
             func msToNextRefresh() -> UInt64 {
                 let now = self.dateProvider()
@@ -821,7 +821,7 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
             if !force, msToNextRefresh() > 0, let cached = self._cachedConfig.get() {
                 return cached
             } else {
-                let result = await Result(catching: { try await self._refresh(account: account) })
+                let result = await Result(catching: { try await self._refresh() })
 
                 // Note: have to make sure we update `lastAttempt` and
                 // `consecutiveFailures` before calling msToNextRefresh
@@ -848,8 +848,8 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
     }
 
     /// should only be called within `refreshTaskQueue`
-    private func _refresh(account: AuthedAccount) async throws -> RemoteConfig {
-        let fetchedConfig = try await fetchRemoteConfig(auth: account.chatServiceAuth)
+    private func _refresh() async throws -> RemoteConfig {
+        let fetchedConfig = try await fetchRemoteConfig()
 
         let clockSkew: TimeInterval
         if let serverEpochTimeMs = fetchedConfig.serverEpochTimeMs {
@@ -977,10 +977,10 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         let serverEpochTimeMs: UInt64?
     }
 
-    private func fetchRemoteConfig(auth: ChatServiceAuth) async throws -> FetchedRemoteConfigResponse {
-        let request = OWSRequestFactory.getRemoteConfigRequest(auth: auth)
+    private func fetchRemoteConfig() async throws -> FetchedRemoteConfigResponse {
+        let request = OWSRequestFactory.getRemoteConfigRequest()
 
-        let response = try await networkManager.asyncRequest(request, canUseWebSocket: false)
+        let response = try await networkManager.asyncRequest(request)
 
         guard let json = response.responseBodyJson else {
             throw OWSAssertionError("Missing or invalid JSON.")

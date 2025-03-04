@@ -154,7 +154,7 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
         // Fetch remote config for kill switch; if fetch fails use cached local config.
         let isAllowedByRemoteConfig: Bool
         if tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-            let remoteConfig = (try? await remoteConfigManager.refreshIfNeeded(account: .implicit()))
+            let remoteConfig = (try? await remoteConfigManager.refreshIfNeeded())
                 ?? remoteConfigManager.currentConfig()
             isAllowedByRemoteConfig = remoteConfig.shouldRunTSAttachmentMigrationInMainAppBackground
         } else {

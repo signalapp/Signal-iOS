@@ -31,12 +31,8 @@ public enum OWSRequestFactory {
         return TSRequest(url: URL(string: "v1/payments/conversions")!, method: "GET", parameters: [:])
     }
 
-    static func getRemoteConfigRequest(
-        auth: ChatServiceAuth
-    ) -> TSRequest {
-        let result = TSRequest(url: URL(string: "v1/config/")!, method: "GET", parameters: [:])
-        result.setAuth(auth)
-        return result
+    static func getRemoteConfigRequest() -> TSRequest {
+        return TSRequest(url: URL(string: "v1/config/")!, method: "GET", parameters: [:])
     }
 
     public static func callingRelaysRequest() -> TSRequest {
