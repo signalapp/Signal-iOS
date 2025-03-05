@@ -26,6 +26,10 @@ public class ThreadViewModel: NSObject {
     public var mutedUntilDate: Date? { associatedData.mutedUntilDate }
     public var isMarkedUnread: Bool { associatedData.isMarkedUnread }
 
+    public var threadUniqueId: String {
+        return threadRecord.uniqueId
+    }
+
     public var isContactThread: Bool {
         return !isGroupThread
     }

@@ -197,7 +197,7 @@ public class ConversationSearchViewController: UITableViewController {
             }
 
             let threadViewModel = searchResult.threadViewModel
-            SignalApp.shared.presentConversationForThread(threadViewModel.threadRecord, action: .compose, animated: true)
+            SignalApp.shared.presentConversationForThread(threadUniqueId: threadViewModel.threadUniqueId, action: .compose, animated: true)
         case .groupThreads:
             let sectionResults = searchResultSet.groupThreadResults
             guard let searchResult = sectionResults[safe: indexPath.row] else {
@@ -206,7 +206,7 @@ public class ConversationSearchViewController: UITableViewController {
             }
 
             let threadViewModel = searchResult.threadViewModel
-            SignalApp.shared.presentConversationForThread(threadViewModel.threadRecord, action: .compose, animated: true)
+            SignalApp.shared.presentConversationForThread(threadUniqueId: threadViewModel.threadUniqueId, action: .compose, animated: true)
         case .contacts:
             let sectionResults = searchResultSet.contactResults
             guard let searchResult = sectionResults[safe: indexPath.row] else {
@@ -225,7 +225,7 @@ public class ConversationSearchViewController: UITableViewController {
 
             let threadViewModel = searchResult.threadViewModel
             SignalApp.shared.presentConversationForThread(
-                threadViewModel.threadRecord,
+                threadUniqueId: threadViewModel.threadUniqueId,
                 focusMessageId: searchResult.messageId,
                 animated: true
             )

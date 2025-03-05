@@ -1412,7 +1412,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     Logger.warn("Ignoring user activity; not registered.")
                     return
                 }
-                SignalApp.shared.presentConversationAndScrollToFirstUnreadMessage(forThreadId: threadUniqueId, animated: false)
+                SignalApp.shared.presentConversationAndScrollToFirstUnreadMessage(
+                    threadUniqueId: threadUniqueId,
+                    animated: false
+                )
             }
             return true
         case "INStartVideoCallIntent":

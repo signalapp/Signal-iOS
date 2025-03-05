@@ -36,7 +36,7 @@ class DebugUIContacts: DebugUIPage {
 
     private static func createUnregisteredContactThread() {
         let thread = TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(Aci(fromUUID: UUID())))
-        SignalApp.shared.presentConversationForThread(thread, animated: true)
+        SignalApp.shared.presentConversationForThread(threadUniqueId: thread.uniqueId, animated: true)
      }
 }
 

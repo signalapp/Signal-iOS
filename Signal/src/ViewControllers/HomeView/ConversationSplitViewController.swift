@@ -125,21 +125,6 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         }
     }
 
-    // TODO: @sasha remove this API and adjust callers to use uniqueId-based API!
-    func presentThread(
-        _ thread: TSThread,
-        action: ConversationViewAction,
-        focusMessageId: String?,
-        animated: Bool
-    ) {
-        presentThread(
-            threadUniqueId: thread.uniqueId,
-            action: action,
-            focusMessageId: focusMessageId,
-            animated: animated
-        )
-    }
-
     func presentThread(
         threadUniqueId: String,
         action: ConversationViewAction,

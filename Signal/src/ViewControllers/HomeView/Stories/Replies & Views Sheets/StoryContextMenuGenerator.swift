@@ -411,7 +411,7 @@ extension StoryContextMenuGenerator {
             icon: .contextMenuOpenInChat,
             contextualActionImage: UIImage(imageLiteralResourceName: "arrow-square-upright-fill"),
             handler: { completion in
-                SignalApp.shared.presentConversationForThread(thread, action: .compose, animated: true)
+                SignalApp.shared.presentConversationForThread(threadUniqueId: thread.uniqueId, action: .compose, animated: true)
                 completion(true)
             }
         )

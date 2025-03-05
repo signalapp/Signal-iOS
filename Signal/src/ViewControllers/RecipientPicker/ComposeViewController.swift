@@ -54,13 +54,21 @@ class ComposeViewController: RecipientPickerContainerViewController {
             // the conversationVC with the animated dismissal of the compose VC
             transitionCoordinator.animate { _ in
                 UIView.performWithoutAnimation {
-                    SignalApp.shared.presentConversationForThread(thread, action: .compose, animated: false)
+                    SignalApp.shared.presentConversationForThread(
+                        threadUniqueId: thread.uniqueId,
+                        action: .compose,
+                        animated: false
+                    )
                 }
             }
         } else {
             // There isn't a transition coordinator present for some reason, revert to displaying
             // the conversation VC in parallel with the animated dismissal of the compose VC
-            SignalApp.shared.presentConversationForThread(thread, action: .compose, animated: false)
+            SignalApp.shared.presentConversationForThread(
+                threadUniqueId: thread.uniqueId,
+                action: .compose,
+                animated: false
+            )
         }
     }
 

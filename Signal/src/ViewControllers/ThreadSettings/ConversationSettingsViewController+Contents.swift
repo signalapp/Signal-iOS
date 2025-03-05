@@ -926,7 +926,10 @@ extension ConversationSettingsViewController {
                     return cell
                 },
                 actionBlock: {
-                    SignalApp.shared.presentConversationForThread(groupThread, animated: true)
+                    SignalApp.shared.presentConversationForThread(
+                        threadUniqueId: groupThread.uniqueId,
+                        animated: true
+                    )
                 }
             ))
         }

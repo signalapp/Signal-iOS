@@ -40,10 +40,16 @@ public class GroupInviteLinksUI: UIView {
         }
 
         // If the group already exists in the database, open it.
-        if let existingGroupThread = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            TSGroupThread.fetch(groupId: groupV2ContextInfo.groupId, transaction: transaction)
-        }), existingGroupThread.isLocalUserFullMember || existingGroupThread.isLocalUserRequestingMember {
-            SignalApp.shared.presentConversationForThread(existingGroupThread, animated: true)
+        if
+            let existingGroupThread = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
+                TSGroupThread.fetch(groupId: groupV2ContextInfo.groupId, transaction: transaction)
+            }),
+            existingGroupThread.isLocalUserFullMember || existingGroupThread.isLocalUserRequestingMember
+        {
+            SignalApp.shared.presentConversationForThread(
+                threadUniqueId: existingGroupThread.uniqueId,
+                animated: true
+            )
             return
         }
 
@@ -444,7 +450,10 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                                 // We successfully joined, so we must be able to find the TSGroupThread.
                                 return TSGroupThread.fetch(groupId: groupV2ContextInfo.groupId, transaction: tx)!
                             }
-                            SignalApp.shared.presentConversationForThread(groupThread, animated: true)
+                            SignalApp.shared.presentConversationForThread(
+                                threadUniqueId: groupThread.uniqueId,
+                                animated: true
+                            )
                         }
                     }
                 } catch {

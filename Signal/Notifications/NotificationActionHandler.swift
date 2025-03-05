@@ -214,7 +214,7 @@ public class NotificationActionHandler {
         // can be visible to the user immediately upon opening the app, rather than having to watch
         // it animate in from the homescreen.
         SignalApp.shared.presentConversationAndScrollToFirstUnreadMessage(
-            forThreadId: uniqueId,
+            threadUniqueId: uniqueId,
             animated: UIApplication.shared.applicationState == .active
         )
     }

@@ -2162,7 +2162,11 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
     }
 
     func goToChat(for thread: TSThread) {
-        SignalApp.shared.presentConversationForThread(thread, action: .compose, animated: false)
+        SignalApp.shared.presentConversationForThread(
+            threadUniqueId: thread.uniqueId,
+            action: .compose,
+            animated: false
+        )
     }
 }
 

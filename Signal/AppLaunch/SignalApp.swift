@@ -151,11 +151,15 @@ extension SignalApp {
         let thread = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             return TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
         }
-        presentConversationForThread(thread, action: action, animated: animated)
+        presentConversationForThread(
+            threadUniqueId: thread.uniqueId,
+            action: action,
+            animated: animated
+        )
     }
 
     func presentConversationForThread(
-        _ thread: TSThread,
+        threadUniqueId: String,
         action: ConversationViewAction = .none,
         focusMessageId: String? = nil,
         animated: Bool
@@ -171,7 +175,7 @@ extension SignalApp {
 
         DispatchMainThreadSafe {
             if let visibleThread = conversationSplitViewController.visibleThread,
-               visibleThread.uniqueId == thread.uniqueId,
+               visibleThread.uniqueId == threadUniqueId,
                let conversationViewController = conversationSplitViewController.selectedConversationViewController {
                 conversationViewController.popKeyBoard()
                 if case .updateDraft = action {
@@ -179,14 +183,18 @@ extension SignalApp {
                 }
                 return
             }
-            conversationSplitViewController.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated)
+            conversationSplitViewController.presentThread(
+                threadUniqueId: threadUniqueId,
+                action: action,
+                focusMessageId: focusMessageId,
+                animated: animated
+            )
         }
     }
 
     @objc
-    func presentConversationAndScrollToFirstUnreadMessage(forThreadId threadId: String, animated: Bool) {
+    func presentConversationAndScrollToFirstUnreadMessage(threadUniqueId: String, animated: Bool) {
         AssertIsOnMainThread()
-        owsAssertDebug(!threadId.isEmpty)
 
         guard let conversationSplitViewController else {
             owsFailDebug("No conversationSplitViewController")
@@ -195,20 +203,13 @@ extension SignalApp {
 
         Logger.info("")
 
-        guard let thread = SSKEnvironment.shared.databaseStorageRef.read(block: { transaction in
-            return TSThread.anyFetch(uniqueId: threadId, transaction: transaction)
-        }) else {
-            owsFailDebug("unable to find thread with id: \(threadId)")
-            return
-        }
-
         DispatchMainThreadSafe {
             // If there's a presented blocking splash, but the user is trying to open a thread,
             // dismiss it. We'll try again next time they open the app. We don't want to block
             // them from accessing their conversations.
             ExperienceUpgradeManager.dismissSplashWithoutCompletingIfNecessary()
 
-            if let visibleThread = conversationSplitViewController.visibleThread, visibleThread.uniqueId == thread.uniqueId {
+            if let visibleThread = conversationSplitViewController.visibleThread, visibleThread.uniqueId == threadUniqueId {
                 conversationSplitViewController.selectedConversationViewController?.scrollToInitialPosition(animated: animated)
                 return
             } else if let sendMediaNavigationController = conversationSplitViewController.selectedConversationViewController?.presentedViewController as? SendMediaNavigationController {
@@ -216,12 +217,22 @@ extension SignalApp {
                     return
                 }
 
-                conversationSplitViewController.presentThread(thread, action: .none, focusMessageId: nil, animated: false)
+                conversationSplitViewController.presentThread(
+                    threadUniqueId: threadUniqueId,
+                    action: .none,
+                    focusMessageId: nil,
+                    animated: false
+                )
                 sendMediaNavigationController.dismiss(animated: animated)
                 return
             }
 
-            conversationSplitViewController.presentThread(thread, action: .none, focusMessageId: nil, animated: animated)
+            conversationSplitViewController.presentThread(
+                threadUniqueId: threadUniqueId,
+                action: .none,
+                focusMessageId: nil,
+                animated: animated
+            )
         }
     }
 
