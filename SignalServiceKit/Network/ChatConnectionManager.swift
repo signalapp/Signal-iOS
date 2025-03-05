@@ -40,26 +40,6 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
 
         if userDefaults.bool(forKey: Self.shouldUseLibsignalForUnidentifiedDefaultsKey) {
             connectionUnidentified = OWSUnauthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
-        } else if userDefaults.bool(forKey: Self.enableShadowingDefaultsKey) {
-            let shadowingConnection = OWSChatConnectionWithLibSignalShadowing(
-                libsignalNet: libsignalNet,
-                type: .unidentified,
-                accountManager: accountManager,
-                appExpiry: appExpiry,
-                appReadiness: appReadiness,
-                currentCallProvider: currentCallProvider,
-                db: db,
-                registrationStateChangeManager: registrationStateChangeManager,
-                shadowingFrequency: 0.0
-            )
-            // RemoteConfig isn't available while we're still setting up singletons,
-            // so we might not shadow the first few requests.
-            appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-                let frequency = RemoteConfig.current.experimentalTransportShadowingHigh ? 1.0 : 0.1
-                Logger.info("Using unauth OWSChatConnectionWithLibSignalShadowing, shadowing frequency \(frequency)")
-                shadowingConnection.updateShadowingFrequency(frequency)
-            }
-            connectionUnidentified = shadowingConnection
         } else {
             connectionUnidentified = OWSChatConnectionUsingSSKWebSocket(type: .unidentified, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
         }
@@ -157,16 +137,6 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     }
 
     // MARK: -
-
-    private static var enableShadowingDefaultsKey: String = "EnableShadowingForUnidentifiedWebsocket"
-
-    /// We cache this in UserDefaults because it's used too early to access the RemoteConfig object.
-    static func saveEnableShadowingForUnidentifiedWebsocket(
-        _ enableShadowingForUnidentifiedWebsocket: Bool,
-        in defaults: UserDefaults
-    ) {
-        defaults.set(enableShadowingForUnidentifiedWebsocket, forKey: enableShadowingDefaultsKey)
-    }
 
     private static var shouldUseLibsignalForUnidentifiedDefaultsKey: String = "UseLibsignalForUnidentifiedWebsocket"
 

@@ -229,20 +229,6 @@ public class RemoteConfig {
         ))
     }
 
-    @available(*, unavailable, message: "cached in UserDefaults by ChatConnectionManager")
-    public var experimentalTransportUseLibsignal: Bool {
-        return false
-    }
-
-    public var experimentalTransportShadowingHigh: Bool {
-        return isEnabled(.experimentalTransportShadowingHigh, defaultValue: false)
-    }
-
-    @available(*, unavailable, message: "cached in UserDefaults by ChatConnectionManager")
-    public var experimentalTransportShadowingEnabled: Bool {
-        return false
-    }
-
     public var libsignalCdsUseNewConnectLogic: Bool {
         return isEnabled(.libsignalCdsUseNewConnectLogic, defaultValue: true)
     }
@@ -450,8 +436,6 @@ private enum IsEnabledFlag: String, FlagType {
     case deleteForMeSyncMessageSending = "ios.deleteForMeSyncMessage.sending"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
-    case experimentalTransportShadowingEnabled = "ios.experimentalTransportEnabled.shadowing"
-    case experimentalTransportShadowingHigh = "ios.experimentalTransportEnabled.shadowingHigh"
     case libsignalCdsUseNewConnectLogic = "ios.libsignal.cdsUseNewConnectLogic"
     case libsignalForChat = "ios.useLibsignalForChat"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
@@ -476,8 +460,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .deleteForMeSyncMessageSending: false
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
-        case .experimentalTransportShadowingEnabled: false
-        case .experimentalTransportShadowingHigh: false
         case .libsignalCdsUseNewConnectLogic: false
         case .libsignalForChat: false
         case .messageResendKillSwitch: false
@@ -503,8 +485,6 @@ private enum IsEnabledFlag: String, FlagType {
         case .deleteForMeSyncMessageSending: false
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
-        case .experimentalTransportShadowingEnabled: false
-        case .experimentalTransportShadowingHigh: false
         case .libsignalCdsUseNewConnectLogic: true
         case .libsignalForChat: false
         case .messageResendKillSwitch: false
@@ -966,11 +946,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
         )
         ChatConnectionManagerImpl.saveShouldUseLibsignalForUnidentifiedWebsocket(
             shouldUseLibsignalForChatWebsocket,
-            in: CurrentAppContext().appUserDefaults()
-        )
-        let enableShadowingForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportShadowingEnabled.rawValue] ?? false
-        ChatConnectionManagerImpl.saveEnableShadowingForUnidentifiedWebsocket(
-            enableShadowingForUnidentifiedWebsocket,
             in: CurrentAppContext().appUserDefaults()
         )
 
