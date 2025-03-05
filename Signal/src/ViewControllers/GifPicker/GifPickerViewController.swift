@@ -90,8 +90,8 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDat
 }
 
 protocol GifPickerViewControllerDelegate: AnyObject {
-    func gifPickerDidSelect(attachment: SignalAttachment)
-    func gifPickerDidCancel()
+    @MainActor func gifPickerDidSelect(attachment: SignalAttachment)
+    @MainActor func gifPickerDidCancel()
 }
 
 class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate, OWSNavigationChildController {
@@ -214,6 +214,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         progressiveSearchTimer?.invalidate()
         progressiveSearchTimer = nil
+
+        fileForCellTask?.cancel()
+        fileForCellTask = nil
     }
 
     public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
@@ -463,57 +466,45 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         getFileForCell(cell)
     }
 
-    public func getFileForCell(_ cell: GifPickerCell) {
-        enum GetFileError: Error {
-            case noLongerRelevant
-        }
+    private var fileForCellTask: Task<Void, Never>?
 
+    public func getFileForCell(_ cell: GifPickerCell) {
         GiphyDownloader.giphyDownloader.cancelAllRequests()
 
-        firstly {
-            cell.requestRenditionForSending()
-        }.map(on: DispatchQueue.global()) { [weak self] (asset: ProxiedContentAsset) -> SignalAttachment in
-            // This check is just an optimization. The important check is below.
-            guard self != nil else { throw GetFileError.noLongerRelevant }
+        fileForCellTask?.cancel()
+        fileForCellTask = Task.detached(priority: .userInitiated) {
+            do {
+                let asset = try await cell.requestRenditionForSending()
+                guard let giphyAsset = asset.assetDescription as? GiphyAsset else {
+                    throw OWSAssertionError("Invalid asset description.")
+                }
 
-            guard let giphyAsset = asset.assetDescription as? GiphyAsset else {
-                throw OWSAssertionError("Invalid asset description.")
+                let assetTypeIdentifier = giphyAsset.type.utiType
+                let assetFileExtension = giphyAsset.type.extension
+                let pathForCachedAsset = asset.filePath
+
+                let pathForConsumableFile = OWSFileSystem.temporaryFilePath(fileExtension: assetFileExtension)
+                try FileManager.default.copyItem(atPath: pathForCachedAsset, toPath: pathForConsumableFile)
+                let dataSource = try DataSourcePath(filePath: pathForConsumableFile, shouldDeleteOnDeallocation: false)
+
+                let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: assetTypeIdentifier)
+                attachment.isLoopingVideo = attachment.isVideo
+
+                await self.delegate?.gifPickerDidSelect(attachment: attachment)
+            } catch {
+                await MainActor.run {
+                    let alert = ActionSheetController(title: OWSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected GIF couldn't be fetched"),
+                                                      message: error.userErrorDescription)
+                    alert.addAction(ActionSheetAction(title: CommonStrings.retryButton, style: .default) { _ in
+                        self.getFileForCell(cell)
+                    })
+                    alert.addAction(ActionSheetAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
+                        self.delegate?.gifPickerDidCancel()
+                    })
+
+                    self.presentActionSheet(alert)
+                }
             }
-
-            let assetTypeIdentifier = giphyAsset.type.utiType
-            let assetFileExtension = giphyAsset.type.extension
-            let pathForCachedAsset = asset.filePath
-
-            let pathForConsumableFile = OWSFileSystem.temporaryFilePath(fileExtension: assetFileExtension)
-            try FileManager.default.copyItem(atPath: pathForCachedAsset, toPath: pathForConsumableFile)
-            let dataSource = try DataSourcePath(filePath: pathForConsumableFile, shouldDeleteOnDeallocation: false)
-
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: assetTypeIdentifier)
-            attachment.isLoopingVideo = attachment.isVideo
-            return attachment
-
-        }.done { [weak self] attachment in
-            guard let self = self else {
-                throw GetFileError.noLongerRelevant
-            }
-
-            self.delegate?.gifPickerDidSelect(attachment: attachment)
-        }.catch { [weak self] error in
-            guard let self = self else {
-                Logger.info("ignoring failure, since VC was dismissed before fetching finished.")
-                return
-            }
-
-            let alert = ActionSheetController(title: OWSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected GIF couldn't be fetched"),
-                                          message: error.userErrorDescription)
-            alert.addAction(ActionSheetAction(title: CommonStrings.retryButton, style: .default) { _ in
-                self.getFileForCell(cell)
-            })
-            alert.addAction(ActionSheetAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
-                self.delegate?.gifPickerDidCancel()
-            })
-
-            self.presentActionSheet(alert)
         }
     }
 

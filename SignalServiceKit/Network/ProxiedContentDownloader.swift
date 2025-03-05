@@ -487,10 +487,29 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
     // list.
     private var assetRequestQueue = [ProxiedContentAssetRequest]()
 
+    public enum RequestAssetError: Error {
+        case failure
+    }
+
+    @MainActor
+    public func requestAsset(
+        assetDescription: ProxiedContentAssetDescription,
+        priority: ProxiedContentRequestPriority
+    ) async throws(RequestAssetError) -> ProxiedContentAsset {
+        return try await withCheckedContinuation { continuation in
+            _ = self.requestAsset(assetDescription: assetDescription, priority: priority) { request, asset in
+                continuation.resume(returning: Result.success(asset))
+            } failure: { request in
+                continuation.resume(returning: Result.failure(RequestAssetError.failure))
+            }
+        }.get()
+    }
+
     // The success and failure callbacks are always called on main queue.
     //
     // The success callbacks may be called synchronously on cache hit, in
     // which case the ProxiedContentAssetRequest parameter will be nil.
+    @MainActor
     public func requestAsset(
         assetDescription: ProxiedContentAssetDescription,
         priority: ProxiedContentRequestPriority,
