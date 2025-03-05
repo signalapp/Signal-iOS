@@ -255,18 +255,18 @@ class DebugLogs: NSObject {
         OWSFileSystem.deleteFile(zipDirPath)
 
         // Phase 3. Upload the log files.
-        DebugLogUploader.uploadFile(
-            fileUrl: zipFileUrl,
-            mimeType: MimeType.applicationZip.rawValue
-        ).done(on: DispatchQueue.global()) { url in
-            OWSFileSystem.deleteFile(zipFileUrl.path)
-            wrappedSuccess(url)
-        }.catch(on: DispatchQueue.global()) { error in
-            let errorMessage = OWSLocalizedString(
-                "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG",
-                comment: "Error indicating that a debug log could not be uploaded."
-            )
-            wrappedFailure(errorMessage, zipFileUrl.path)
+        Task {
+            do {
+                let url = try await DebugLogUploader.uploadFile(fileUrl: zipFileUrl, mimeType: MimeType.applicationZip.rawValue)
+                try OWSFileSystem.deleteFile(url: zipFileUrl)
+                wrappedSuccess(url)
+            } catch {
+                let errorMessage = OWSLocalizedString(
+                    "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG",
+                    comment: "Error indicating that a debug log could not be uploaded."
+                )
+                wrappedFailure(errorMessage, zipFileUrl.path)
+            }
         }
     }
 
@@ -308,12 +308,11 @@ class DebugLogs: NSObject {
 
 private enum DebugLogUploader {
 
-    static func uploadFile(fileUrl: URL, mimeType: String) -> Promise<URL> {
-        firstly(on: DispatchQueue.global()) {
-            getUploadParameters(fileUrl: fileUrl)
-        }.then(on: DispatchQueue.global()) { (uploadParameters: UploadParameters) -> Promise<URL> in
-            uploadFile(fileUrl: fileUrl, mimeType: mimeType, uploadParameters: uploadParameters)
-        }.recover(on: DispatchQueue.global()) { error -> Promise<URL> in
+    static func uploadFile(fileUrl: URL, mimeType: String) async throws -> URL {
+        do {
+            let uploadParameters = try await getUploadParameters(fileUrl: fileUrl)
+            return try await uploadFile(fileUrl: fileUrl, mimeType: mimeType, uploadParameters: uploadParameters)
+        } catch {
             Logger.warn("\(error)")
             throw error
         }
@@ -326,44 +325,41 @@ private enum DebugLogUploader {
         )
     }
 
-    private static func getUploadParameters(fileUrl: URL) -> Promise<UploadParameters> {
+    private static func getUploadParameters(fileUrl: URL) async throws -> UploadParameters {
         let url = URL(string: "https://debuglogs.org/")!
-        return Promise.wrapAsync {
-            return try await buildOWSURLSession().performRequest(url.absoluteString, method: .get, ignoreAppExpiry: true)
-        }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> (UploadParameters) in
-            guard let responseObject = response.responseBodyJson else {
-                throw OWSAssertionError("Invalid response.")
-            }
-            guard let params = ParamParser(responseObject: responseObject) else {
-                throw OWSAssertionError("Invalid response: \(String(describing: responseObject))")
-            }
-            let uploadUrl: String = try params.required(key: "url")
-            let fieldMap: [String: String] = try params.required(key: "fields")
-            guard !fieldMap.isEmpty else {
-                throw OWSAssertionError("Invalid response: \(String(describing: responseObject))")
-            }
-            for (key, value) in fieldMap {
-                guard nil != key.nilIfEmpty,
-                      nil != value.nilIfEmpty else {
-                          throw OWSAssertionError("Invalid response: \(String(describing: responseObject))")
-                      }
-            }
-            guard let rawUploadKey = fieldMap["key"]?.nilIfEmpty else {
-                throw OWSAssertionError("Invalid response: \(String(describing: responseObject))")
-            }
-            guard let fileExtension = (fileUrl.lastPathComponent as NSString).pathExtension.nilIfEmpty else {
-                throw OWSAssertionError("Invalid fileUrl: \(fileUrl)")
-            }
-            guard let uploadKey: String = (rawUploadKey as NSString).appendingPathExtension(fileExtension) else {
-                throw OWSAssertionError("Could not modify uploadKey.")
-            }
-            var orderedFieldMap = OrderedDictionary<String, String>()
-            for (key, value) in fieldMap {
-                orderedFieldMap.append(key: key, value: value)
-            }
-            orderedFieldMap.replace(key: "key", value: uploadKey)
-            return UploadParameters(uploadUrl: uploadUrl, fieldMap: orderedFieldMap, uploadKey: uploadKey)
+        let response = try await buildOWSURLSession().performRequest(url.absoluteString, method: .get, ignoreAppExpiry: true)
+        guard let responseObject = response.responseBodyJson else {
+            throw OWSAssertionError("Invalid response.")
         }
+        guard let params = ParamParser(responseObject: responseObject) else {
+            throw OWSAssertionError("Invalid response: \(String(describing: responseObject))")
+        }
+        let uploadUrl: String = try params.required(key: "url")
+        let fieldMap: [String: String] = try params.required(key: "fields")
+        guard !fieldMap.isEmpty else {
+            throw OWSAssertionError("Invalid response: \(String(describing: responseObject))")
+        }
+        for (key, value) in fieldMap {
+            guard nil != key.nilIfEmpty,
+                  nil != value.nilIfEmpty else {
+                      throw OWSAssertionError("Invalid response: \(String(describing: responseObject))")
+                  }
+        }
+        guard let rawUploadKey = fieldMap["key"]?.nilIfEmpty else {
+            throw OWSAssertionError("Invalid response: \(String(describing: responseObject))")
+        }
+        guard let fileExtension = (fileUrl.lastPathComponent as NSString).pathExtension.nilIfEmpty else {
+            throw OWSAssertionError("Invalid fileUrl: \(fileUrl)")
+        }
+        guard let uploadKey: String = (rawUploadKey as NSString).appendingPathExtension(fileExtension) else {
+            throw OWSAssertionError("Could not modify uploadKey.")
+        }
+        var orderedFieldMap = OrderedDictionary<String, String>()
+        for (key, value) in fieldMap {
+            orderedFieldMap.append(key: key, value: value)
+        }
+        orderedFieldMap.replace(key: "key", value: uploadKey)
+        return UploadParameters(uploadUrl: uploadUrl, fieldMap: orderedFieldMap, uploadKey: uploadKey)
     }
 
     private struct UploadParameters {
@@ -376,42 +372,40 @@ private enum DebugLogUploader {
         fileUrl: URL,
         mimeType: String,
         uploadParameters: UploadParameters
-    ) -> Promise<URL> {
-        return Promise.wrapAsync {
-            let urlSession = buildOWSURLSession()
+    ) async throws -> URL {
+        let urlSession = buildOWSURLSession()
 
-            guard let url = URL(string: uploadParameters.uploadUrl) else {
-                throw OWSAssertionError("Invalid url: \(uploadParameters.uploadUrl)")
-            }
-            let request = URLRequest(url: url)
-
-            var textParts = uploadParameters.fieldMap
-            textParts.append(key: "Content-Type", value: mimeType)
-
-            let response = try await urlSession.performMultiPartUpload(
-                request: request,
-                fileUrl: fileUrl,
-                name: "file",
-                fileName: fileUrl.lastPathComponent,
-                mimeType: mimeType,
-                textParts: textParts,
-                ignoreAppExpiry: true,
-                progress: nil
-            )
-
-            let statusCode = response.responseStatusCode
-            // We'll accept any 2xx status code.
-            guard statusCode/100 == 2 else {
-                Logger.error("statusCode: \(statusCode)")
-                Logger.error("headers: \(response.responseHeaders)")
-                throw OWSAssertionError("Invalid status code: \(statusCode)")
-            }
-
-            let urlString = "https://debuglogs.org/\(uploadParameters.uploadKey)"
-            guard let url = URL(string: urlString) else {
-                throw OWSAssertionError("Invalid url: \(urlString)")
-            }
-            return url
+        guard let url = URL(string: uploadParameters.uploadUrl) else {
+            throw OWSAssertionError("Invalid url: \(uploadParameters.uploadUrl)")
         }
+        let request = URLRequest(url: url)
+
+        var textParts = uploadParameters.fieldMap
+        textParts.append(key: "Content-Type", value: mimeType)
+
+        let response = try await urlSession.performMultiPartUpload(
+            request: request,
+            fileUrl: fileUrl,
+            name: "file",
+            fileName: fileUrl.lastPathComponent,
+            mimeType: mimeType,
+            textParts: textParts,
+            ignoreAppExpiry: true,
+            progress: nil
+        )
+
+        let statusCode = response.responseStatusCode
+        // We'll accept any 2xx status code.
+        guard statusCode/100 == 2 else {
+            Logger.error("statusCode: \(statusCode)")
+            Logger.error("headers: \(response.responseHeaders)")
+            throw OWSAssertionError("Invalid status code: \(statusCode)")
+        }
+
+        let urlString = "https://debuglogs.org/\(uploadParameters.uploadKey)"
+        guard let url = URL(string: urlString) else {
+            throw OWSAssertionError("Invalid url: \(urlString)")
+        }
+        return url
     }
 }
