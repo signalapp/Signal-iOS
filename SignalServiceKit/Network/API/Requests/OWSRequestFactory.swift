@@ -644,7 +644,7 @@ extension DeviceMessage {
             "type": type.rawValue,
             "destinationDeviceId": destinationDeviceId,
             "destinationRegistrationId": Int32(bitPattern: destinationRegistrationId),
-            "content": serializedMessage.base64EncodedString()
+            "content": content.base64EncodedString()
         ]
     }
 }
