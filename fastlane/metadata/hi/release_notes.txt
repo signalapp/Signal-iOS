@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• हमने एक गड़बड़ी ठीक है, जिसकी वजह से कभी-कभी iOS शेयर शीट इस्तेमाल करके किसी और ऐप से URL शेयर करने से रोका जाता था। हम उम्मीद करते हैं कि आपका हफ़्ता हमसे ज़्यादा रोमांचक रहा होगा।

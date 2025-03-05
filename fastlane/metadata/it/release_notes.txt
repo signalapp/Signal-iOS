@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Abbiamo risolto un bug che a volte impediva la condivisione di un URL da un'altra app usando la funzione di condivisione di iOS. Sì, è stata una settimana nel chill per noi: speriamo che la tua sia stata più emozionante!

@@ -1443,17 +1443,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>لتُبقي &quot;%2$@&quot; مُرتبِطًا، افتح سيجنال على ذلك الجهاز في غضون %1$d أيام.</string>
+			<string>لتُبقي &quot;%2$@&quot; مُرتبِطًا، افتح تطبيق سيجنال على ذلك الجهاز في غضون %1$d أيام.</string>
 			<key>one</key>
-			<string>لتُبقي &quot;%2$@&quot; مُرتبِطًا، افتح سيجنال على ذلك الجهاز في غضون %1$d يوم.</string>
+			<string>لتُبقي &quot;%2$@&quot; مُرتبِطًا، افتح تطبيق سيجنال على ذلك الجهاز في غضون %1$d يوم.</string>
 			<key>two</key>
-			<string>لتُبقي &quot;%2$@&quot; مُرتبِطًا، افتح سيجنال على ذلك الجهاز في غضون %1$d يومين.</string>
+			<string>لتُبقي &quot;%2$@&quot; مُرتبِطًا، افتح تطبيق سيجنال على ذلك الجهاز في غضون %1$d يومين.</string>
 			<key>few</key>
-			<string>لتُبقي &quot;%2$@&quot; مُرتبِطًا، افتح سيجنال على ذلك الجهاز في غضون %1$d أيام.</string>
+			<string>لتُبقي &quot;%2$@&quot; مُرتبِطًا، افتح تطبيق سيجنال على ذلك الجهاز في غضون %1$d أيام.</string>
 			<key>many</key>
-			<string>لتُبقي &quot;%2$@&quot; مُرتبِطًا، افتح سيجنال على ذلك الجهاز في غضون %1$d يومًا.</string>
+			<string>لتُبقي &quot;%2$@&quot; مُرتبِطًا، افتح تطبيق سيجنال على ذلك الجهاز في غضون %1$d يومًا.</string>
 			<key>other</key>
-			<string>لتُبقي &quot;%2$@&quot; مُرتبِطًا، افتح سيجنال على ذلك الجهاز في غضون %1$d يومٍ.</string>
+			<string>لتُبقي &quot;%2$@&quot; مُرتبِطًا، افتح تطبيق سيجنال على ذلك الجهاز في غضون %1$d يومٍ.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>

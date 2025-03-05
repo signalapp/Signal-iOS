@@ -68,7 +68,7 @@
 "ACCOUNT_DATA_REPORT_TITLE" = "بيانات حسابك";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "ادعُ إلى سيجنال";
+"ACTION_INVITE" = "ادْعُ إلى سيجنال";
 
 /* Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "إرسال رسالة";
@@ -155,7 +155,7 @@
 "ALL_MEDIA_AUDIO_FILTER_ALL" = "كل الملفات الصوتية";
 
 /* Menu option to limit All Media (Audio) view to displaying non-voice message audio files */
-"ALL_MEDIA_AUDIO_FILTER_AUDIO_FILES" = "الملفات الصوتية";
+"ALL_MEDIA_AUDIO_FILTER_AUDIO_FILES" = "ملفات الصوت";
 
 /* Menu option to limit All Media (Audio) view to displaying only Voice Messages */
 "ALL_MEDIA_AUDIO_FILTER_VOICE_MSG" = "الرسائل الصوتية";
@@ -206,13 +206,13 @@
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "يتعذَّر بدء سيجنال. لتمكيننا من مساعدتك في حل المشكلة، يُرجى إرسال سجل التصحيح إلى بريد الدعم: support@signal.org";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "فتح سيجنال بدلًا من ذلك";
+"APP_LAUNCH_FAILURE_CONTINUE" = "افتح تطبيق سيجنال بدلًا من ذلك";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "يُرجى إرسال سِجلات التصحيح إلى support@signal.org لكي نتمكّن من حل هذه المشكلة.";
 
 /* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "تعذَّر فتح سيجنال";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "تعذَّر فتح تطبيق سيجنال";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "تعذَّر تحميل قاعدة البيانات";
@@ -227,7 +227,7 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "وقع خطأ لسيجنال أثناء محاولة فتحه. يُرجى إرسال سِجل التصحيح إلى support@signal.org لمساعدتنا في حل المشكلة.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "تعذَّر فتح سيجنال";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "تعذَّر فتح تطبيق سيجنال";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "تعذَّر فتح سيجنال لأن مساحة تخزين جهازك مُنخفضة. لاستخدام سيجنال، يُرجى إفراغ المساحة عن طريق إدارة التخزين في الإعدادات.";
@@ -392,7 +392,7 @@
 "ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SELECT_MORE" = "اختر المزيد من الصور";
 
 /* Button in a context menu from the 'manage' button in attachment panel that opens the iOS system settings for Signal to update access permissions */
-"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS" = "الانتقال إلى الإعدادات";
+"ATTACHMENT_KEYBOARD_CONTEXT_MENU_BUTTON_SYSTEM_SETTINGS" = "انتقِل إلى الإعدادات";
 
 /* A button to select a file from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_FILE" = "ملف";
@@ -686,7 +686,7 @@
 "BUTTON_PREVIOUS" = "السابق";
 
 /* Button text to enable batch selection mode */
-"BUTTON_SELECT" = "اختيار";
+"BUTTON_SELECT" = "تحديد";
 
 /* Label for the 'set' button. */
 "BUTTON_SET" = "تعيين";
@@ -956,7 +956,7 @@
 "CALLS_TAB_FILTER_PICKER_OPTION_MISSED" = "فائتة";
 
 /* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
-"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "انتقل للدردشة";
+"CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "انتقِل إلى الدردشة";
 
 /* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
 "CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "انضم";
@@ -1196,13 +1196,13 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "العثور برقم الهاتف";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "إيجاد بحسب اسم المُستخدم";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "إيجاد بحسب اسم المُستخدِم";
 
 /* Menu action to display limited contact picker. */
 "COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE" = "اختر المزيد من جهات الاتصال";
 
 /* Menu action visit app contact permission in settings. */
-"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "الانتقال إلى الإعدادات";
+"COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS" = "انتقِل إلى الإعدادات";
 
 /* Multi-line label explaining why compose-screen contact picker may be missing contacts. */
 "COMPOSE_SCREEN_LIMITED_CONTACTS_CTA" = "إدارة";
@@ -1253,7 +1253,7 @@
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "طلب مراسلة في الانتظار";
 
 /* A label on the profile about sheet */
-"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Profile names are not verified";
+"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "أسماء الحسابات الشخصية لم يتم التحقُّق منها.";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "\"%1$@\" هو اسم الحساب الذي حدّده هذا الشخص لنفسه في سيجنال.";
@@ -1304,7 +1304,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_2_BODY" = "للعثور على الأشخاص الذين تعرفهم على سيجنال:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "انقر على \"الانتقال إلى الإعدادات\" في الأسفل";
+"CONTACT_PERMISSION_ACTION_SHEET_2_STEP_ONE" = "انقر على \"انتقِل إلى الإعدادات\" في الأسفل";
 
 /* Third step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_2_STEP_THREE" = "امنح الصلاحية";
@@ -1319,7 +1319,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "لرؤية أسماء وصور جهات الاتصال في دردشاتك:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "انقر على \"الانتقال إلى الإعدادات\" في الأسفل";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "انقر على \"انتقِل إلى الإعدادات\" في الأسفل";
 
 /* Second step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "تشغيل \"جهات الاتصال\"";
@@ -1361,7 +1361,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "جهة اتصال غير صالحة";
 
 /* Alert body when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_BODY" = "يحتاج سيجنال للوصول إلى جهات اتصالك. انتقل إلى إعدادات iOS وفعِّل جهات اتصالك. جهات اتصالك مُشفَّرة وغير مرئية لخدمة سيجنال.";
+"CONTACT_SHARING_NO_ACCESS_BODY" = "يحتاج سيجنال للوصول إلى جهات اتصالك. انتقِل إلى إعدادات iOS وفعِّل جهات اتصالك. جهات اتصالك مُشفَّرة وغير مرئية لخدمة سيجنال.";
 
 /* Alert title when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "السماح بالوصول لجهات الاتصال";
@@ -1538,7 +1538,7 @@
 "CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "جميع الوسائط";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "اختر الأعضاء الذين يمكنهم تحرير اسم وصورة المجموعة ووصفها وكذا مؤقِّت إخفاء الرسائل.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "اختَر الأعضاء الذين يمكنهم تحرير اسم وصورة المجموعة ووصفها وكذلك مؤقِّت اختفاء الرسائل.";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "احصل على شارات لملفك الشخصي عن طريق دعم سيجنال. انقر على شارة لمعرفة المزيد.";
@@ -2126,7 +2126,7 @@
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "جارٍ نقل البيانات";
 
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "ميزة إخفاء الرسائل";
+"DISAPPEARING_MESSAGES" = "ميزة اختفاء الرسائل";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ستختفي الرسائل في هذه الدردشة بعد %1$@.";
@@ -2147,7 +2147,7 @@
 "DISAPPEARING_MESSAGES_HOURS" = "ساعات";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "إعدادات ميزة إخفاء الرسائل";
+"DISAPPEARING_MESSAGES_LABEL" = "إعدادات ميزة اختفاء الرسائل";
 
 /* The unit for a number of minutes */
 "DISAPPEARING_MESSAGES_MINUTES" = "دقائق";
@@ -2333,7 +2333,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "تأكيد التبرُّع";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "تمَّ تشغيل ميزة إخفاء الرسائل لهذه الدردشة. سَتختفي رسالة التبرُّع الخاصة بك بعد %1$@.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "تمَّ تشغيل ميزة اختفاء الرسائل لهذه الدردشة. سَتختفي رسالة التبرُّع الخاصة بك بعد %1$@.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "تعذَّر التبرُّع. تحقَّق من اتصالك بالشبكة ثم حاوِل مُجدَّدًا.";
@@ -2798,7 +2798,7 @@
 "EXPIRATION_WARNING_TODAY" = "سَتنتهي صلاحية هذا الإصدار من سيجنال اليوم. قُم بالتحديث لتواصل المراسلة.";
 
 /* action sheet header when re-sending message which failed because of an invalid key signature */
-"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "تعذَّر إرسال الرسالة لأن %1$@ يَحتاج إلى تحديث سيجنال وفتحه.";
+"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "تعذَّر إرسال الرسالة لأن %1$@ يَحتاج إلى تحديث تطبيق سيجنال وفتحه.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "العديد من الأخطاء مع جهة الاتصال هذه. يُرجى إعادة المحاولة لاحقًا.";
@@ -2846,7 +2846,7 @@
 "FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON" = "امسح ضوئيًا كود الـ QR";
 
 /* Title for the view for finding accounts by their username */
-"FIND_BY_USERNAME_TITLE" = "إيجاد بحسب اسم المُستخدم";
+"FIND_BY_USERNAME_TITLE" = "إيجاد بحسب اسم المُستخدِم";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "تحديد كتمَّ التحقُّق منه";
@@ -2876,7 +2876,7 @@
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "إضافة نص";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "إعادة التوجيه نحو";
+"FORWARD_MESSAGE_TITLE" = "إعادة التوجيه إلى";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "جارٍ تحميل وسائط أحدث…";
@@ -2930,7 +2930,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "أدخِل ما تبحث عنه";
 
 /* Label for the 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "الانتقال إلى الإعدادات";
+"GO_TO_SETTINGS_BUTTON" = "انتقِل إلى الإعدادات";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "أنتَ غيَّرتَ من يمكنه تعديل معلومات المجموعة إلى \"%1$@\".";
@@ -3221,10 +3221,10 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "فعَّل %1$@ مُتطلَّب مُوافقة المُشرِف لرابط المجموعة.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "لا يُمكن إضافة %1$@ بواسطتك بشكل تلقائي للمجموعة. تمَّت دعوته للانضمام، لكنه لن يرى أي رسالة في المجموعة حتى يقبل بالانضمام إليها.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "لا يُمكن إضافة %1$@ تلقائيًا للمجموعة بواسطتك. تمَّت دعوته للانضمام، لكنه لن يرى أي رسالة من رسائل المجموعة حتى يقبل الدعوة.";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "لا يُمكن إضافة هؤلاء المُستخدمين بواسطتك بشكل تلقائي للمجموعة. تمَّت دعوتهم للانضمام، لكنهم لن يروا أي رسالة في المجموعة حتى يقبلوا بالانضمام إليها.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "لا يُمكن إضافة هؤلاء المُستخدمين تلقائيًا للمجموعة بواسطتك. تمَّت دعوتهم للانضمام، لكنهم لن يروا أي رسالة في المجموعة حتى يقبلوا الدعوة.";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "تغيَّرت إعدادات المجموعة للسماح لجميع الأعضاء بإرسال الرسائل.";
@@ -3431,16 +3431,16 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "مراجعة الأعضاء";
 
 /* First bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Be cautious of groups that impersonate organizations and businesses";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "كُن حذرًا من المجموعات التي تنتحل صفات المنظمات والشركات.";
 
 /* Second bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Profile names of members in groups are not verified";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "أسماء الحسابات الشخصية الخاصة بأعضاء المجموعات لم يتم التحقُّق منها.";
 
 /* Third bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "لا تشارِك معلومات شخصية مع أشخاص لا تعرفهم.";
 
 /* Header for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Group names</bold> are chosen by members of the group.";
+"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>أسماء المجموعات</bold> يقوم أفرادها باختيارها.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "اسم المجموعة (مطلوب)";
@@ -3554,7 +3554,7 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ إلى %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "حذف قصة المجموعة";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "حذف قصة المجموعات";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "هل أنت مُتأكِّد من أنك تريد حذف \"%1$@\"؟";
@@ -3962,7 +3962,7 @@
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "بحث";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "اُدعُ الأصدقاء";
+"INVITE_FRIENDS_PICKER_TITLE" = "ادْعُ الأصدقاء";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "إن دعوتك لعدة أشخاص في نفس الوقت ستؤدي إلى بدء مُحادثة جماعية. ووفقًا لذلك، فإن جميع المُستلمين سوف يتمكنون من رؤية بعضهم البعض.";
@@ -3974,7 +3974,7 @@
 "JOINED_WITH_DOT" = "%1$@ . %2$@";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "انتقل إلى \"جميع الوسائط\"";
+"KEY_COMMAND_ALL_MEDIA" = "انتقِل إلى \"جميع الوسائط\"";
 
 /* A keyboard command to archive the current conversation. */
 "KEY_COMMAND_ARCHIVE" = "أرشفة الدردشة";
@@ -3983,13 +3983,13 @@
 "KEY_COMMAND_ATTACHMENTS" = "أظهِر الملفات المُرفَقة";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "انتقل إلى معلومات الدردشة";
+"KEY_COMMAND_CONVERSATION_INFO" = "انتقِل إلى معلومات الدردشة";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "تحديد شريط الإدخال";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "انتقل إلى البحث عن صورة متحركة (GIF)";
+"KEY_COMMAND_GIF_SEARCH" = "انتقِل إلى البحث عن صورة متحركة (GIF)";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "مجموعة جديدة";
@@ -3998,7 +3998,7 @@
 "KEY_COMMAND_NEW_MESSAGE" = "رِسالة جديدة";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "انتقل إلى الدردشة التالية";
+"KEY_COMMAND_NEXT_CONVERSATION" = "انتقِل إلى الدردشة التالية";
 
 /* A keyboard command to jump to the previous conversation in the list. */
 "KEY_COMMAND_PREVIOUS_CONVERSATION" = "انتقل إلى الدردشة السابقة";
@@ -4148,7 +4148,7 @@
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "قُمتَ بربط جهازٍ جديد";
 
 /* Message for an action sheet telling users how to link a device, when trying to open an external device-linking URL. */
-"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "لِربط حاسوب أو جهاز آيباد بحساب سيجنال هذا، انتقل إلى \"الأجهزة المُرتبِطة\" وانقر على \"ربط جهاز جديد\" وامسح كود الـ QR من جديد. تأكَّد من مسح كودات الـ QR الصادرة مباشرةً عن سيجنال فقط.";
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "لِربط حاسوب أو جهاز آيباد بحساب سيجنال هذا، انتقِل إلى \"الأجهزة المُرتبِطة\" وانقر على \"ربط جهاز جديد\" وامسح كود الـ QR من جديد. تأكَّد من مسح كودات الـ QR الصادرة مباشرةً عن سيجنال فقط.";
 
 /* Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera. */
 "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "يبدو أنك تحاول ربط جهاز يستخدم سيجنال. انقر على \"متابعة\" ثم انقر على \"ربط جهاز جديد\" وامسح كود الـ QR من جديد.";
@@ -4385,7 +4385,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "فتح الرابط";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "فتح بروكسي سيجنال";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "افتح بروكسي سيجنال";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "عرض مجموعة الملصقات";
@@ -4559,7 +4559,7 @@
 "MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "سَيتمُّ إشعار سيجنال أن هذا الشخص قد يكون أرسل رسائل غير مرغوب فيها. لا يُمكن لسيجنال رؤية محتوى أي دردشات.";
 
 /* Action sheet title to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "هل ترغبُ بالإبلاغ عن رسائل غير مرغوب فيها؟";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "هل ترغبُ بالإبلاغ؟";
 
 /* Action sheet action to confirm reporting a conversation as spam via a message request. */
 "MESSAGE_REQUEST_REPORT_SPAM_ACTION" = "الإبلاغ عن رسائل غير مرغوب فيها";
@@ -4688,7 +4688,7 @@
 "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_BLOCK_ACTION" = "احظر أيضًا جهة الاتصال على سيجنال";
 
 /* Message for sheet shown when the user taps a missed call from a contact blocked in iOS settings. */
-"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "فاتتك مُكالمته لأنك حظرته في إعدادات هاتفك. انتقل إلى إعدادات > الهاتف وانقر على جهات الاتصال المحظورة لإدارتها.";
+"MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_MESSAGE" = "فاتتك مُكالمته لأنك حظرته في إعدادات هاتفك. انتقِل إلى إعدادات > الهاتف وانقر على جهات الاتصال المحظورة لإدارتها.";
 
 /* Title for sheet shown when the user taps a missed call from a contact blocked in iOS settings. Embeds {{ Contact's name }} */
 "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ محظور في إعدادات الهاتف";
@@ -4802,7 +4802,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "إيجاد بحسب رقم الهاتف";
 
 /* A label for the cell that lets you add a new member by their username */
-"NEW_CONVERSATION_FIND_BY_USERNAME" = "إيجاد بحسب اسم المُستخدم";
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "إيجاد بحسب اسم المُستخدِم";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "مجموعة جديدة";
@@ -4940,7 +4940,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "لتلقي إشعارات بالرسائل الجديدة:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "انقر على \"الانتقال إلى الإعدادات\" في الأسفل";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "انقر على \"انتقِل إلى الإعدادات\" في الأسفل";
 
 /* Third step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "تفعيل \"السماح بالإشعارات\"";
@@ -5153,7 +5153,7 @@
 "OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "سَيتوقَّف سيجنال عن دعم إصدار iOS على جهازك قريبًا. لمُواصلة استخدام سيجنال، قُم بتغيير جهازك إلى جهاز أحدث قبل %1$@.";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "عطَّلَ %1$@ ميزة إخفاء الرسائل.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "عطَّلَ %1$@ ميزة اختفاء الرسائل.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "ضَبَطَ %1$@ وقت اختفاء الرسائل على %2$@.";
@@ -5642,7 +5642,7 @@
 "PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "فشلت تهيئة الكاميرا.";
 
 /* Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "انتقل للدردشة";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "انتقِل إلى الدردشة";
 
 /* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
 "PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "ابدأ دردشة مع \"%1$@\"";
@@ -5930,16 +5930,16 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "غيَّرَ %1$@ اسم حسابه الشخصي إلى %2$@.";
 
 /* First bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Profile names are not verified";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "أسماء الحسابات الشخصية لم يتم التحقُّق منها.";
 
 /* Second bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Be cautious of accounts that impersonate others";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "كُن حذرًا من الحسابات التي تنتحل شخصية الآخرين.";
 
 /* Third bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "لا تشارِك معلومات شخصية مع أشخاص لا تعرفهم.";
 
 /* Header for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Profile names</bold> on Signal are chosen by their account holder.";
+"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>أسماء الحسابات الشخصية</bold> في سيجنال يقوم أصحاب الحسابات باختيارها.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "اِسمُك";
@@ -6149,7 +6149,7 @@
 "RECIPIENT_PICKER_INVITE_MESSAGE" = "لم يعُد %1$@ من مُستخدِمي سيجنال. هل تريد دعوة هذا الرقم؟";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_TITLE" = "ادعُ إلى سيجنال";
+"RECIPIENT_PICKER_INVITE_TITLE" = "ادْعُ إلى سيجنال";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "هل تُريد المُساعدة؟";
@@ -6296,7 +6296,7 @@
 "REGISTRATION_SCAN_QR_CODE_TITLE" = "امسح هذا الكود ضوئيًا باستخدام جهازك القديم";
 
 /* Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal */
-"REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "افتح سيجنال على جهازك القديم";
+"REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "افتح تطبيق سيجنال على جهازك القديم";
 
 /* Tutorial text describing the third step to scanning the restore/transfer QR code with your old phone: scan the code */
 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_SCAN" = "امسح هذا الكود ضوئيًا باستخدام الكاميرا";
@@ -6491,7 +6491,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "يجب عليك تمكين رمز المرور في إعدادات iOS الخاصة بك من أجل استخدام قفل الشاشة.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "قُم بالمصادقة لفتح سيجنال.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "قُم بالمصادقة لفتح تطبيق سيجنال.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "فشلت المُصادَقة.";
@@ -6581,13 +6581,13 @@
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "ليس لديّ تطبيق سيجنال على هاتفي…";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "اذهب إلى متجر التطبيقات على هاتفك، وثبِّت سيجنال، وأكمِل عملية التسجيل، وبعد ذلك يُمكنك ربط الآيباد الخاص بك بنفس الحساب.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "انتقِل إلى متجر التطبيقات على هاتفك، وثبِّت سيجنال، وأكمِل عملية التسجيل، وبعد ذلك يُمكنك ربط الآيباد الخاص بك بنفس الحساب.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "قُم بتثبيت سيجنال على الهاتف الخاص بك";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "انقر على صورة حسابك الشخصي لفتح ‫إعدادات ‫‫سيجنال‬‬‫ على الهاتف الخاص بك. بعد ذلك انقر على \"اﻷجهزة المُرتبطة\" ثم \"ربط جهاز جديد\" لمسح هذا الكود عن طريق هاتفك:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "انقر على صورة حسابك الشخصي لفتح ‫إعدادات تطبيق ‫‫سيجنال‬‬‫ على الهاتف الخاص بك. بعد ذلك انقر على \"اﻷجهزة المُرتبطة\" ثم \"ربط جهاز جديد\" لمسح هذا الكود عن طريق هاتفك:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "مِن هُنا احصل على المُساعدة في ربط الآيباد الخاص بك";
@@ -6785,7 +6785,7 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@ (افتراضي)";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "إضافة مُستخدِم محظور";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "احظُرأحد المُستخدِمين";
 
 /* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "ليس لديك جهات اتصال على سيجنال.";
@@ -6905,10 +6905,10 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "حذف كل شيء";
 
 /* Label for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES" = "ميزة إخفاء الرسائل";
+"SETTINGS_DISAPPEARING_MESSAGES" = "ميزة اختفاء الرسائل";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "تحديد مدة افتراضية لمؤقِّت إخفاء الرسائل، لجميع الدردشات الجديدة التي قُمتَ ببدئها.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "تعيين مؤقِّت افتراضي لاختفاء الرسائل لجميع الدردشات الجديدة التي قُمتَ ببدئها.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "التبرُّع لسيجنال";
@@ -6917,7 +6917,7 @@
 "SETTINGS_HELP" = "المُساعدة";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "اُدعُ أصدقائك";
+"SETTINGS_INVITE_TITLE" = "ادْعُ أصدقائك";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
 "SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "لون الدردشة والخلفية";
@@ -7802,7 +7802,7 @@
 "STORIES_FORWARD_STORY_ACTION" = "إعادة التوجيه";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "انتقل للدردشة";
+"STORIES_GO_TO_CHAT_ACTION" = "انتقِل إلى الدردشة";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
 "STORIES_GROUP_REPLY_NOT_A_MEMBER" = "لا تستطيع الردّ على هذه المجموعة لأنك لم تعد عضوًا فيها.";
@@ -8234,10 +8234,10 @@
 "THIS_MESSAGE_WAS_DELETED" = "تمَّ حذف هذه الرسالة.";
 
 /* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
-"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ لم يتم التحقُّق منها";
 
 /* Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
-"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Group names";
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "أسماء المجموعات";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "عضو في %1$@، %2$@، وعدد %3$lu مِن المجموعات الأُخرى";
@@ -8249,10 +8249,10 @@
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "عضو في %1$@";
 
 /* Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ لم يتم التحقُّق منها";
 
 /* Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Profile names";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "أسماء الحسابات الشخصية";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "عرض";
@@ -8264,7 +8264,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "عضو في %1$@ و%2$@";
 
 /* A string indicating there are no mutual groups the user shares with this contact */
-"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "No groups in common";
+"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "لا توجد مجموعات مُشتركة";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
 "THREAD_MERGE_LEARN_MORE" = "بعد تبادل الرسائل مع %1$@، أدركت أن هذا الرقم يعود إلى %2$@. رقم هاتفه خاص.\n\nتمَّ دمج سِجل رسائلك للدردشتين معًا.";
@@ -8327,7 +8327,7 @@
 "TRANSFER_COMPLETE_SHEET_TITLE" = "اكتمَلَ النقل";
 
 /* Notification prompting the user to relaunch Signal after a device transfer completed. */
-"TRANSFER_RELAUNCH_NOTIFICATION" = "افتح سيجنال للبدء في المراسلة";
+"TRANSFER_RELAUNCH_NOTIFICATION" = "افتح تطبيق سيجنال للبدء في المراسلة";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "إلغاء";
@@ -8369,7 +8369,7 @@
 "UNKNOWN_USER" = "غير معروف";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "تمَّ تعطيل اختفاء الرسائل.";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "تمَّ تعطيل ميزة اختفاء الرسائل.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "تمَّ تعيين زمن اختفاء الرسائل إلى %1$@.";
@@ -8738,7 +8738,7 @@
 "YOU_DELETED_THIS_MESSAGE" = "حذفتَ هذه الرسالة.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "عطَّلتَ ميزة إختفاء الرسائل.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "عطَّلتَ ميزة اختفاء الرسائل.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "يجبُ عليكَ أن تُكمِلَ الإعداد قبل المتابعة.";

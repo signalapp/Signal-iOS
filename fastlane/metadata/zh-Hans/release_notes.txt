@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• 我们修复了一个漏洞，该漏洞有时会导致用户无法使用 iOS 共享表从其他应用共享 URL。

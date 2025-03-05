@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Opravili jsme chybu, která občas nedovolovala sdílet adresu URL z jiné aplikace pomocí listu sdílení v systému iOS. Doufáme, že tvůj týden byl zajímavější než náš.

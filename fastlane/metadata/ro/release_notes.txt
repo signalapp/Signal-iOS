@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Am remediat un bug care împiedica uneori partajarea unei adrese URL dintr-o altă aplicație folosind foaia de partajare iOS. Sperăm că săptămâna ta a fost mai interesantă decât a noastră.

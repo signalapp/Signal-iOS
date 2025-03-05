@@ -1253,7 +1253,7 @@
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "મેસેજની વિનંતી બાકી";
 
 /* A label on the profile about sheet */
-"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Profile names are not verified";
+"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "પ્રોફાઇલ નેમ ચકાસાયેલા નથી";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "“%1$@” એ આ વ્યક્તિએ Signalમાં પોતાના માટે સેટ કરેલું પ્રોફાઇલ નેમ છે.";
@@ -3431,16 +3431,16 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "સભ્યોની સમીક્ષા કરો";
 
 /* First bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Be cautious of groups that impersonate organizations and businesses";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "કોઈ સંસ્થાઓ અને બિઝનેસ હોવાનો ઢોંગ કરતા ગ્રૂપથી સાવધ રહો";
 
 /* Second bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Profile names of members in groups are not verified";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "ગ્રૂપમાં સભ્યોના પ્રોફાઇલ નેમ ચકાસવામાં આવતા નથી";
 
 /* Third bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "અજાણ્યા લોકો સાથે વ્યક્તિગત માહિતી શેર કરશો નહીં";
 
 /* Header for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Group names</bold> are chosen by members of the group.";
+"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>ગ્રૂપના નામ</bold> ગ્રૂપના સભ્યો દ્વારા પસંદ કરવામાં આવે છે.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "ગ્રુપનું નામ (આવશ્યક)";
@@ -5930,16 +5930,16 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ એ તેમનું પ્રોફાઇલ નામ %2$@માં બદલ્યું.";
 
 /* First bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Profile names are not verified";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "પ્રોફાઇલ નેમ ચકાસાયેલા નથી";
 
 /* Second bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Be cautious of accounts that impersonate others";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "કોઈ અન્ય હોવાનો ઢોંગ કરતા એકાઉન્ટથી સાવધ રહો";
 
 /* Third bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "અજાણ્યા લોકો સાથે વ્યક્તિગત માહિતી શેર કરશો નહીં";
 
 /* Header for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Profile names</bold> on Signal are chosen by their account holder.";
+"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "Signal પરના <bold>પ્રોફાઇલ નેમ</bold> તેમના એકાઉન્ટ હોલ્ડર દ્વારા પસંદ કરવામાં આવે છે.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "તમારું નામ";
@@ -8234,10 +8234,10 @@
 "THIS_MESSAGE_WAS_DELETED" = "આ મેસેજ ડિલીટ કર્યો હતો.";
 
 /* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
-"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ ચકાસાયેલ નથી";
 
 /* Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
-"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Group names";
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "ગ્રૂપના નામ";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%1$@, %2$@ , અને %3$lu વધારાના ગ્રુપનો સભ્ય";
@@ -8249,10 +8249,10 @@
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%1$@ ના સભ્ય";
 
 /* Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ ચકાસાયેલ નથી";
 
 /* Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Profile names";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "પ્રોફાઇલ નેમ";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "વ્યૂ";
@@ -8264,7 +8264,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%1$@ અને %2$@ ના સભ્ય";
 
 /* A string indicating there are no mutual groups the user shares with this contact */
-"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "No groups in common";
+"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "કોઈ ગ્રૂપ સમાન નથી";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
 "THREAD_MERGE_LEARN_MORE" = "%1$@ સાથે મેસેજમાં વાતચીત કર્યા પછી તમે જાણ્યું કે આ નંબર %2$@નો છે. તેમનો નંબર ખાનગી છે.\n\nબંને ચેટ માટેની તમારી મેસેજ હિસ્ટ્રી અહીં મર્જ કરવામાં આવી છે.";

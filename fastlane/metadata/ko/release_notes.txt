@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• iOS 공유 시트를 사용하여 다른 앱에서 URL을 공유하는 기능이 때때로 작동하지 않는 버그를 해결했습니다.

@@ -1253,7 +1253,7 @@
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "보류 중인 메시지 요청";
 
 /* A label on the profile about sheet */
-"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Profile names are not verified";
+"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "프로필 이름 확인 안 됨";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "'%1$@'은(는) 사용자가 본인을 위해 Signal에 설정한 프로필 이름입니다.";
@@ -3431,16 +3431,16 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "멤버 검토";
 
 /* First bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Be cautious of groups that impersonate organizations and businesses";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "다른 조직이나 비즈니스를 사칭하는 그룹에 유의하세요";
 
 /* Second bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Profile names of members in groups are not verified";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "그룹의 구성원 프로필 이름이 확인되지 않았습니다";
 
 /* Third bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "모르는 사람과 개인 정보를 공유하지 마세요";
 
 /* Header for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Group names</bold> are chosen by members of the group.";
+"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>그룹 이름</bold>은 해당 그룹의 구성원이 선택합니다.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "그룹 이름(필수)";
@@ -5930,16 +5930,16 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ 님이 프로필 이름을 %2$@(으)로 바꾸었습니다.";
 
 /* First bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Profile names are not verified";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "프로필 이름 확인 안 됨";
 
 /* Second bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Be cautious of accounts that impersonate others";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "사칭 계정에 유의하세요";
 
 /* Third bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "모르는 사람과 개인 정보를 공유하지 마세요";
 
 /* Header for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Profile names</bold> on Signal are chosen by their account holder.";
+"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "Signal의 <bold>프로필 이름</bold>은 해당 계정 보유자가 선택합니다.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "사용자의 이름";
@@ -8234,10 +8234,10 @@
 "THIS_MESSAGE_WAS_DELETED" = "이 메세지는 삭제되었습니다.";
 
 /* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
-"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@이 확인되지 않았습니다";
 
 /* Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
-"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Group names";
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "그룹 이름";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%1$@, %2$@ 및 그룹 %3$lu개의 멤버";
@@ -8249,10 +8249,10 @@
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%1$@ 멤버";
 
 /* Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@이 확인되지 않았습니다";
 
 /* Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Profile names";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "프로필 이름";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "보기";
@@ -8264,7 +8264,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%1$@ 및 %2$@ 멤버";
 
 /* A string indicating there are no mutual groups the user shares with this contact */
-"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "No groups in common";
+"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "공통 그룹 없음";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
 "THREAD_MERGE_LEARN_MORE" = "%1$@ 님과 메시지를 주고받은 후 이 번호가 %2$@ 님의 전화번호라는 걸 알게 됐습니다. 해당 사용자의 번호는 비공개 상태입니다.\n\n두 대화의 메시지 기록이 여기에 병합됩니다.";
