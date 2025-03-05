@@ -113,7 +113,7 @@ private struct DebugLogsUploadError: Error, LocalizedError, UserErrorDescription
 }
 
 extension DebugLogs {
-    class func uploadLog() -> Promise<URL> {
+    static func uploadLog() -> Promise<URL> {
         return Promise { future in
             DebugLogs.uploadLogs(
                 success: future.resolve,

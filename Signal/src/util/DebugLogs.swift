@@ -11,18 +11,12 @@ import SignalUI
 typealias UploadDebugLogsSuccess = (URL) -> Void
 typealias UploadDebugLogsFailure = (String, String?) -> Void
 
-@objc
-class DebugLogs: NSObject {
-
-    private override init() {
-        super.init()
-    }
+enum DebugLogs {
 
     static func submitLogs() {
         submitLogsWithSupportTag(nil)
     }
 
-    @objc
     static func submitLogsWithSupportTag(_ tag: String?, completion: (() -> Void)? = nil) {
         let submitLogsCompletion = {
             if let completion {
