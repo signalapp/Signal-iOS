@@ -21,8 +21,15 @@ extension TSGroupThread {
 
     @objc
     func clearGroupSendEndorsementsIfNeeded(oldGroupMembers: [SignalServiceAddress], tx: SDSAnyWriteTransaction) {
-        let oldGroupMembers = Set(oldGroupMembers.compactMap(\.serviceId))
-        let newGroupMembers = Set(self.groupModel.groupMembers.compactMap(\.serviceId))
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read)
+        var oldGroupMembers = Set(oldGroupMembers.compactMap(\.serviceId))
+        var newGroupMembers = Set(self.groupModel.groupMembers.compactMap(\.serviceId))
+        // We don't have a GSE for ourselves, so ignore our own ACI in this check.
+        if let localIdentifiers {
+            oldGroupMembers.remove(localIdentifiers.aci)
+            newGroupMembers.remove(localIdentifiers.aci)
+        }
         if oldGroupMembers != newGroupMembers {
             let groupSendEndorsementStore = DependenciesBridge.shared.groupSendEndorsementStore
             Logger.info("Clearing GSEs in \(self.uniqueId) due to membership change.")

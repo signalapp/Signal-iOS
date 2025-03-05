@@ -1047,7 +1047,9 @@ public class GroupManager: NSObject {
             let oldMembers = oldGroupModel.membership.allMembersOfAnyKindServiceIds
             let newMembers = newGroupModel.membership.allMembersOfAnyKindServiceIds
 
-            if oldMembers.subtracting(newMembers).isEmpty == false {
+            // If somebody else was removed, reset the sender key session.
+            let removedMembers = oldMembers.subtracting(newMembers)
+            if !removedMembers.subtracting([localIdentifiers.aci]).isEmpty {
                 SSKEnvironment.shared.senderKeyStoreRef.resetSenderKeySession(for: groupThread, transaction: transaction)
             }
 
