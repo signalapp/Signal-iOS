@@ -17,6 +17,7 @@ public enum ProfileRequestError: Error {
 
 public class ProfileFetcherJob {
     private let serviceId: ServiceId
+    private let groupIdContext: GroupIdentifier?
     private let authedAccount: AuthedAccount
 
     private let db: any DB
@@ -36,6 +37,7 @@ public class ProfileFetcherJob {
 
     init(
         serviceId: ServiceId,
+        groupIdContext: GroupIdentifier?,
         authedAccount: AuthedAccount,
         db: any DB,
         disappearingMessagesConfigurationStore: any DisappearingMessagesConfigurationStore,
@@ -53,6 +55,7 @@ public class ProfileFetcherJob {
         versionedProfiles: any VersionedProfiles
     ) {
         self.serviceId = serviceId
+        self.groupIdContext = groupIdContext
         self.authedAccount = authedAccount
         self.db = db
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
@@ -123,89 +126,160 @@ public class ProfileFetcherJob {
         let serviceId = self.serviceId
         let versionedProfiles = self.versionedProfiles
 
-        let (profileKey, udAccess, shouldRequestCredential) = try db.read { (tx) -> (ProfileKey?, OWSUDAccess?, Bool) in
-            switch serviceId.concreteType {
-            case .aci(let aci):
-                let profileKey = (self.profileManager.userProfile(
-                    for: SignalServiceAddress(aci),
-                    tx: SDSDB.shimOnlyBridge(tx)
-                )?.profileKey).map(ProfileKey.init(_:))
-                let udAccess: OWSUDAccess?
-                if localIdentifiers.aci == aci {
-                    // Don't use UD for "self" profile fetches.
-                    udAccess = nil
-                } else {
-                    udAccess = udManager.udAccess(for: aci, tx: SDSDB.shimOnlyBridge(tx))
-                }
-                let profileKeyCredential = try versionedProfiles.validProfileKeyCredential(for: aci, transaction: SDSDB.shimOnlyBridge(tx))
-                return (profileKey, udAccess, profileKeyCredential == nil)
-            case .pni(_):
-                return (nil, nil, false)
+        let versionedFetchParameters = try db.read { tx in
+            return try self.readVersionedFetchParameters(localIdentifiers: localIdentifiers, tx: tx)
+        }
+        if let versionedFetchParameters {
+            let versionedProfileRequest = try versionedProfiles.versionedProfileRequest(
+                for: versionedFetchParameters.aci,
+                profileKey: versionedFetchParameters.profileKey,
+                shouldRequestCredential: versionedFetchParameters.shouldRequestCredential,
+                udAccessKey: versionedFetchParameters.auth?.key,
+                auth: self.authedAccount.chatServiceAuth
+            )
+            do {
+                let response = try await makeRequest(versionedProfileRequest.request)
+                let profile = try SignalServiceProfile.fromResponse(
+                    serviceId: serviceId,
+                    responseObject: response.responseBodyJson
+                )
+
+                await versionedProfiles.didFetchProfile(profile: profile, profileRequest: versionedProfileRequest)
+
+                return FetchedProfile(profile: profile, profileKey: versionedProfileRequest.profileKey)
+            } catch where versionedFetchParameters.auth != nil && error.httpStatusCode == 401 {
+                // Fall back to an unversioned fetch...
             }
         }
 
-        let endorsement: GroupSendFullTokenBuilder?
-        if profileKey == nil {
-            // TODO: GSE: Fetch unversioned profiles using GSEs.
-            endorsement = nil
-        } else {
-            endorsement = nil
-        }
+        // If we can't fetch a versioned profile, or if we run into an auth error
+        // when using an access key, fall back to an unversioned profile fetch.
+
+        let endorsement = { () -> GroupSendFullTokenBuilder? in
+            guard let groupId = self.groupIdContext else {
+                return nil
+            }
+            do {
+                return try db.read { tx in try readGroupSendEndorsement(groupId: groupId, tx: tx) }
+            } catch {
+                owsFailDebug("Couldn't fetch GSE for profile fetch: \(error)")
+                return nil
+            }
+        }()
 
         let requestMaker = RequestMaker(
             label: "Profile Fetch",
             serviceId: serviceId,
             canUseStoryAuth: false,
-            accessKey: udAccess,
+            accessKey: nil,
             endorsement: endorsement,
             authedAccount: self.authedAccount,
             options: [.allowIdentifiedFallback, .isProfileFetch]
         )
 
-        var versionedProfileRequest: VersionedProfileRequest?
         let result = try await requestMaker.makeRequest { sealedSenderAuth in
-            if let aci = serviceId as? Aci, let profileKey {
-                let udAccessKey: SMKUDAccessKey?
-                switch sealedSenderAuth {
-                case .story:
-                    owsFail("Can't use story auth.")
-                case .accessKey(let _udAccessKey):
-                    udAccessKey = _udAccessKey
-                case .endorsement:
-                    owsFail("Can't have endorsement if we have a profile key.")
-                case .none:
-                    udAccessKey = nil
-                }
-                let request = try versionedProfiles.versionedProfileRequest(
-                    for: aci,
-                    profileKey: profileKey,
-                    shouldRequestCredential: shouldRequestCredential,
-                    udAccessKey: udAccessKey,
-                    auth: self.authedAccount.chatServiceAuth
-                )
-                versionedProfileRequest = request
-                return request.request
-            } else {
-                return OWSRequestFactory.getUnversionedProfileRequest(
-                    serviceId: serviceId,
-                    sealedSenderAuth: sealedSenderAuth,
-                    auth: self.authedAccount.chatServiceAuth
-                )
-            }
+            return OWSRequestFactory.getUnversionedProfileRequest(
+                serviceId: serviceId,
+                sealedSenderAuth: sealedSenderAuth,
+                auth: self.authedAccount.chatServiceAuth
+            )
         }
 
-        let profile: SignalServiceProfile = try .fromResponse(
+        let profile = try SignalServiceProfile.fromResponse(
             serviceId: serviceId,
             responseObject: result.responseJson
         )
 
-        // If we sent a versioned request, store the credential that was returned.
-        if let versionedProfileRequest {
-            // This calls databaseStorage.write { }
-            await versionedProfiles.didFetchProfile(profile: profile, profileRequest: versionedProfileRequest)
-        }
+        return FetchedProfile(profile: profile, profileKey: nil)
+    }
 
-        return FetchedProfile(profile: profile, profileKey: profileKey)
+    private struct VersionedFetchParameters {
+        var aci: Aci
+        var profileKey: ProfileKey
+        var shouldRequestCredential: Bool
+        var auth: OWSUDAccess?
+    }
+
+    private func readVersionedFetchParameters(
+        localIdentifiers: LocalIdentifiers,
+        tx: any DBReadTransaction
+    ) throws -> VersionedFetchParameters? {
+        switch self.serviceId.concreteType {
+        case .pni(_):
+            return nil
+        case .aci(let aci):
+            let profileKey = self.profileManager.userProfile(
+                for: SignalServiceAddress(aci),
+                tx: SDSDB.shimOnlyBridge(tx)
+            )?.profileKey
+            guard let profileKey else {
+                return nil
+            }
+            let profileKeyCredential = try versionedProfiles.validProfileKeyCredential(for: aci, transaction: SDSDB.shimOnlyBridge(tx))
+            let auth: OWSUDAccess?
+            if localIdentifiers.aci == aci {
+                // Don't use UD for "self" profile fetches.
+                auth = nil
+            } else if let udAccess = udManager.udAccess(for: aci, tx: SDSDB.shimOnlyBridge(tx)) {
+                auth = udAccess
+            } else {
+                // We probably have the wrong profile key. Fall back to an unversioned
+                // fetch; that'll allow us to check if we know the profile key or not.
+                return nil
+            }
+
+            return VersionedFetchParameters(
+                aci: aci,
+                profileKey: ProfileKey(profileKey),
+                shouldRequestCredential: profileKeyCredential == nil,
+                auth: auth
+            )
+        }
+    }
+
+    private func readGroupSendEndorsement(groupId: GroupIdentifier, tx: any DBReadTransaction) throws -> GroupSendFullTokenBuilder? {
+        let threadStore = DependenciesBridge.shared.threadStore
+        guard let groupThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx) else {
+            throw OWSAssertionError("Can't find group that should exist.")
+        }
+        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            throw OWSAssertionError("Can't access v2 model for group with v2 identifier.")
+        }
+        let endorsementStore = DependenciesBridge.shared.groupSendEndorsementStore
+        let combinedEndorsement = try endorsementStore.fetchCombinedEndorsement(groupThreadId: groupThread.sqliteRowId!, tx: tx)
+        guard let combinedEndorsement else {
+            // Perhaps we haven't fetched it or it expired.
+            return nil
+        }
+        guard
+            let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx),
+            let individualEndorsement = try endorsementStore.fetchIndividualEndorsement(
+                groupThreadId: groupThread.sqliteRowId!,
+                recipientId: recipient.id!,
+                tx: tx
+            )
+        else {
+            throw OWSAssertionError("Can't find GSE for group member that should have one.")
+        }
+        return GroupSendFullTokenBuilder(
+            secretParams: try groupModel.secretParams(),
+            expiration: combinedEndorsement.expiration,
+            endorsement: try GroupSendEndorsement(contents: [UInt8](individualEndorsement.endorsement))
+        )
+    }
+
+    private func makeRequest(_ request: TSRequest) async throws -> any HTTPResponse {
+        // TODO: WebSockets: Inline this method once it doesn't need to branch.
+        let connectionType: OWSChatConnectionType = (request.isUDRequest ? .unidentified : .identified)
+        let shouldUseWebSocket: Bool = (
+            OWSChatConnection.canAppUseSocketsToMakeRequests
+            && DependenciesBridge.shared.chatConnectionManager.canMakeRequests(connectionType: connectionType)
+        )
+        if shouldUseWebSocket {
+            return try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)
+        } else {
+            return try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: false)
+        }
     }
 
     private func updateProfile(

@@ -4,20 +4,26 @@
 //
 
 import ContactsUI
-public import SignalServiceKit
-public import SignalUI
+import SignalServiceKit
+import SignalUI
 
-public extension ConversationViewController {
+extension ConversationViewController {
 
-    func updateV2GroupIfNecessary() {
+    func updateV2GroupIfNecessary() async {
         AssertIsOnMainThread()
 
-        guard let groupThread = thread as? TSGroupThread, thread.isGroupV2Thread else {
+        guard let groupModel = (thread as? TSGroupThread)?.groupModel as? TSGroupModelV2 else {
             return
         }
-        // Try to update the v2 group to latest from the service.
-        // This will help keep us in sync if we've missed any group updates, etc.
-        SSKEnvironment.shared.groupV2UpdatesRef.refreshGroupUpThroughCurrentRevision(groupThread: groupThread, throttle: true)
+        do {
+            let secretParams = try groupModel.secretParams()
+            // Try to update the v2 group to latest from the service.
+            // This will help keep us in sync if we've missed any group updates, etc.
+            let groupUpdater = SSKEnvironment.shared.groupV2UpdatesRef
+            try await groupUpdater.refreshGroup(secretParams: secretParams, options: [.throttle])
+        } catch {
+            Logger.warn("Couldn't refresh group: \(error)")
+        }
     }
 
     func showUnblockConversationUI(completion: BlockListUIUtils.Completion?) {
@@ -377,7 +383,7 @@ extension ConversationViewController {
         set { viewState.readTimer = newValue }
     }
 
-    public var reloadTimer: Timer? {
+    var reloadTimer: Timer? {
         get { viewState.reloadTimer }
         set { viewState.reloadTimer = newValue }
     }

@@ -348,7 +348,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
             }
             Task {
                 do {
-                    _ = try await profileFetcher.fetchProfile(for: serviceId, options: .opportunistic)
+                    _ = try await profileFetcher.fetchProfile(for: serviceId, context: .init(isOpportunistic: true))
                 } catch {
                     Logger.warn("Didn't fetch profile for Safety Number change: \(error)")
                 }

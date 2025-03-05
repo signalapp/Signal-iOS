@@ -10,6 +10,7 @@ import LibSignalClient
 protocol GroupSendEndorsementStore {
     func fetchCombinedEndorsement(groupThreadId: Int64, tx: any DBReadTransaction) throws -> CombinedGroupSendEndorsementRecord?
     func fetchIndividualEndorsements(groupThreadId: Int64, tx: any DBReadTransaction) throws -> [IndividualGroupSendEndorsementRecord]
+    func fetchIndividualEndorsement(groupThreadId: Int64, recipientId: SignalRecipient.RowId, tx: any DBReadTransaction) throws -> IndividualGroupSendEndorsementRecord?
     func deleteEndorsements(groupThreadId: Int64, tx: any DBWriteTransaction)
     func insertCombinedEndorsement(_ endorsementRecord: CombinedGroupSendEndorsementRecord, tx: any DBWriteTransaction)
     func insertIndividualEndorsement(_ endorsementRecord: IndividualGroupSendEndorsementRecord, tx: any DBWriteTransaction)
@@ -53,6 +54,17 @@ class GroupSendEndorsementStoreImpl: GroupSendEndorsementStore {
             return try IndividualGroupSendEndorsementRecord
                 .filter(Column(IndividualGroupSendEndorsementRecord.CodingKeys.threadId) == groupThreadId)
                 .fetchAll(tx.databaseConnection)
+        } catch {
+            throw error.grdbErrorForLogging
+        }
+    }
+
+    func fetchIndividualEndorsement(groupThreadId: Int64, recipientId: SignalRecipient.RowId, tx: any DBReadTransaction) throws -> IndividualGroupSendEndorsementRecord? {
+        do {
+            return try IndividualGroupSendEndorsementRecord
+                .filter(Column(IndividualGroupSendEndorsementRecord.CodingKeys.threadId) == groupThreadId)
+                .filter(Column(IndividualGroupSendEndorsementRecord.CodingKeys.recipientId) == recipientId)
+                .fetchOne(tx.databaseConnection)
         } catch {
             throw error.grdbErrorForLogging
         }

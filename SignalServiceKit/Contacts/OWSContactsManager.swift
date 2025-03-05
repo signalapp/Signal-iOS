@@ -1074,7 +1074,7 @@ extension OWSContactsManager: ContactManager {
         Self.unknownAddressFetchDateMap[aci] = Date()
 
         let profileFetcher = SSKEnvironment.shared.profileFetcherRef
-        _ = profileFetcher.fetchProfileSync(for: aci, options: [.opportunistic])
+        _ = profileFetcher.fetchProfileSync(for: aci, context: .init(isOpportunistic: true))
     }
 
     // MARK: - System Contacts

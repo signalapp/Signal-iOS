@@ -388,12 +388,16 @@ public final class ConversationViewController: OWSViewController {
         let addresses = Set(thread.recipientAddressesWithSneakyTransaction)
         let serviceIds = addresses.compactMap { $0.serviceId }
         Task {
+            await self.updateV2GroupIfNecessary()
+
+            // Fetch profiles AFTER refreshing the group to ensure GSEs are available.
             let profileFetcher = SSKEnvironment.shared.profileFetcherRef
             for serviceId in serviceIds {
-                _ = try? await profileFetcher.fetchProfile(for: serviceId, options: [.opportunistic])
+                let thread = self.thread as? TSGroupThread
+                let context = ProfileFetchContext(groupId: try? thread?.groupIdentifier, isOpportunistic: true)
+                _ = try? await profileFetcher.fetchProfile(for: serviceId, context: context)
             }
         }
-        self.updateV2GroupIfNecessary()
 
         if !self.viewHasEverAppeared {
             // To minimize time to initial apearance, we initially disable prefetching, but then
