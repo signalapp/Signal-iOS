@@ -340,9 +340,21 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             tx: tx
         ))
 
+        let recipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState] = {
+            switch messageParams.target {
+            case .contact(let contactThread, _) where localIdentifiers.contains(address: contactThread.contactAddress):
+                // If this is a sent transcript that went to our Note to Self,
+                // we should force it as read.
+                return [
+                    localIdentifiers.aciAddress: TSOutgoingMessageRecipientState(status: .read)
+                ]
+            case .contact, .group:
+                return transcript.recipientStates
+            }
+        }()
         interactionStore.updateRecipientsFromNonLocalDevice(
             outgoingMessage,
-            recipientStates: transcript.recipientStates,
+            recipientStates: recipientStates,
             isSentUpdate: false,
             tx: tx
         )
