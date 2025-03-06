@@ -365,6 +365,8 @@ public final class ConversationViewController: OWSViewController {
         self.viewWillAppearDidComplete()
     }
 
+    private var groupAndProfileRefresherTask: Task<Void, any Error>?
+
     public override func viewDidAppear(_ animated: Bool) {
         self.viewDidAppearDidBegin()
 
@@ -385,14 +387,16 @@ public final class ConversationViewController: OWSViewController {
         self.updateNavigationBarSubtitleLabel()
         _ = self.autoLoadMoreIfNecessary()
 
-        let addresses = Set(thread.recipientAddressesWithSneakyTransaction)
-        let serviceIds = addresses.compactMap { $0.serviceId }
-        Task {
+        let serviceIds = thread.recipientAddressesWithSneakyTransaction.compactMap(\.serviceId)
+
+        self.groupAndProfileRefresherTask?.cancel()
+        self.groupAndProfileRefresherTask = Task {
             await self.updateV2GroupIfNecessary()
 
             // Fetch profiles AFTER refreshing the group to ensure GSEs are available.
             let profileFetcher = SSKEnvironment.shared.profileFetcherRef
-            for serviceId in serviceIds {
+            for serviceId in Set(serviceIds).shuffled() {
+                try Task.checkCancellation()
                 let thread = self.thread as? TSGroupThread
                 let context = ProfileFetchContext(groupId: try? thread?.groupIdentifier, isOpportunistic: true)
                 _ = try? await profileFetcher.fetchProfile(for: serviceId, context: context)
@@ -460,6 +464,9 @@ public final class ConversationViewController: OWSViewController {
 
         self.dismissReactionsDetailSheet(animated: false)
         self.saveLastVisibleSortIdAndOnScreenPercentage(async: true)
+
+        self.groupAndProfileRefresherTask?.cancel()
+        self.groupAndProfileRefresherTask = nil
     }
 
     public override func viewDidDisappear(_ animated: Bool) {
