@@ -31,18 +31,18 @@ public enum GiphyAPI {
     private static let kGiphyApiKey = "ZsUpUm2L6cVbvei347EQNp7HrROjbOdc"
     private static let kGiphyPageSize = 100
 
-    public static func trending() -> Promise<[GiphyImageInfo]> {
-        return fetch(urlPath: "/v1/gifs/trending", queryItems: [])
+    public static func trending() async throws -> [GiphyImageInfo] {
+        try await fetch(urlPath: "/v1/gifs/trending", queryItems: [])
     }
 
-    public static func search(query: String) -> Promise<[GiphyImageInfo]> {
-        return fetch(urlPath: "/v1/gifs/search", queryItems: [
+    public static func search(query: String) async throws -> [GiphyImageInfo] {
+        try await fetch(urlPath: "/v1/gifs/search", queryItems: [
             URLQueryItem(name: "q", value: query),
             URLQueryItem(name: "offset", value: "0")
         ])
     }
 
-    private static func fetch(urlPath: String, queryItems: [URLQueryItem]) -> Promise<[GiphyImageInfo]> {
+    private static func fetch(urlPath: String, queryItems: [URLQueryItem]) async throws -> [GiphyImageInfo] {
         var urlComponents = URLComponents()
         urlComponents.path = urlPath
         let baseQueryItems: [URLQueryItem] = [
@@ -51,17 +51,16 @@ public enum GiphyAPI {
         ]
         urlComponents.queryItems = baseQueryItems + queryItems
         guard let urlString = urlComponents.string else {
-            return Promise(error: OWSAssertionError("Could not encode query."))
+            throw OWSAssertionError("Could not encode query.")
         }
 
         let urlSession = buildURLSession()
-        return Promise.wrapAsync {
+        do {
             var request = try urlSession.endpoint.buildRequest(urlString, method: .get)
             guard ContentProxy.configureProxiedRequest(request: &request) else {
                 throw OWSAssertionError("Invalid URL")
             }
-            return try await urlSession.performRequest(request: request, ignoreAppExpiry: false)
-        }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> [GiphyImageInfo] in
+            let response = try await urlSession.performRequest(request: request, ignoreAppExpiry: false)
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON")
             }
@@ -70,7 +69,7 @@ public enum GiphyAPI {
                 throw OWSAssertionError("unable to parse trending images")
             }
             return imageInfos
-        }.recover(on: DispatchQueue.global()) { error -> Promise<[GiphyImageInfo]> in
+        } catch {
             Logger.warn("Request failed: \(error.shortDescription)")
             throw error
         }

@@ -196,7 +196,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                                selector: #selector(didBecomeActive),
                                                name: .OWSApplicationDidBecomeActive,
                                                object: nil)
-        loadTrending()
+
+        // TODO: This really ought to be cancellable but it was not with promisekit so the refactor carries this for now.
+        Task { await loadTrending() }
     }
 
     var hasEverAppeared = false
@@ -568,18 +570,17 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             return
         }
 
-        search(query: query)
+        // TODO: This really ought to be cancellable but it was not with promisekit so the refactor carries this for now.
+        Task { await search(query: query) }
     }
 
-    private func loadTrending() {
+    private func loadTrending() async {
         assert(progressiveSearchTimer == nil)
         assert(lastQuery == nil)
         assert(searchBar.text.isEmptyOrNil)
 
-        firstly {
-            GiphyAPI.trending()
-        }.done(on: DispatchQueue.main) { [weak self] imageInfos in
-            guard let self = self else { return }
+        do {
+            let imageInfos = try await GiphyAPI.trending()
 
             guard self.lastQuery == nil else {
                 Logger.info("not showing trending results due to subsequent searches.")
@@ -593,36 +594,32 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             } else {
                 owsFailDebug("trending results was unexpectedly empty")
             }
-        }.catch(on: DispatchQueue.main) { error in
+        } catch {
             // Don't both showing error UI feedback for default "trending" results.
             Logger.error("error: \(error)")
         }
     }
 
-    private func search(query: String) {
+    private func search(query: String) async {
         imageInfos = []
         viewMode = .searching
         lastQuery = query
         self.collectionView.contentOffset = CGPoint.zero
 
-        firstly {
-            GiphyAPI.search(query: query)
-        }.done(on: DispatchQueue.main) { [weak self] imageInfos in
-            guard let strongSelf = self else { return }
+        do {
+            imageInfos = try await GiphyAPI.search(query: query)
             Logger.info("search complete")
-            strongSelf.imageInfos = imageInfos
             if imageInfos.count > 0 {
-                strongSelf.viewMode = .results
+                viewMode = .results
             } else {
-                strongSelf.viewMode = .noResults
+                viewMode = .noResults
             }
-        }.catch(on: DispatchQueue.main) { [weak self] error in
+        } catch {
             owsFailDebugUnlessNetworkFailure(error)
 
-            guard let strongSelf = self else { return }
             Logger.warn("search failed.")
             // TODO: Present this error to the user.
-            strongSelf.viewMode = .error
+            viewMode = .error
         }
     }
 
