@@ -2346,28 +2346,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
     }
 
-    public override func cellDidLayoutSubviews(componentView: CVComponentView,
-                                               renderItem: CVRenderItem,
-                                               messageSwipeActionState: CVMessageSwipeActionState) {
+    public override func cellDidBecomeVisible() {
         AssertIsOnMainThread()
-
-        guard let componentView = componentView as? CVComponentViewMessage else {
-            owsFailDebug("Unexpected componentView.")
-            return
-        }
-        tryToApplySwipeAction(componentView: componentView)
-    }
-
-    public override func cellDidBecomeVisible(componentView: CVComponentView,
-                                              renderItem: CVRenderItem,
-                                              messageSwipeActionState: CVMessageSwipeActionState) {
-        AssertIsOnMainThread()
-
-        guard let componentView = componentView as? CVComponentViewMessage else {
-            owsFailDebug("Unexpected componentView.")
-            return
-        }
-        tryToApplySwipeAction(componentView: componentView)
     }
 
     public override func contextMenuAccessoryViews(componentView: CVComponentView) -> [ContextMenuTargetedPreviewAccessory]? {

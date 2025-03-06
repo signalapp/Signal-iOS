@@ -38,15 +38,8 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
         didSet {
             componentView?.setIsCellVisible(isCellVisible)
 
-            if isCellVisible {
-                guard let renderItem = renderItem,
-                      let componentView = componentView,
-                      let messageSwipeActionState = messageSwipeActionState else {
-                    return
-                }
-                renderItem.rootComponent.cellDidBecomeVisible(componentView: componentView,
-                                                              renderItem: renderItem,
-                                                              messageSwipeActionState: messageSwipeActionState)
+            if isCellVisible, let renderItem {
+                renderItem.rootComponent.cellDidBecomeVisible()
             }
         }
     }
@@ -191,19 +184,6 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
         messageSwipeActionState = nil
         lastLayoutAttributes = nil
         layer.zPosition = 0
-    }
-
-    public override func layoutSubviews() {
-        super.layoutSubviews()
-
-        guard let renderItem = renderItem,
-              let componentView = componentView,
-              let messageSwipeActionState = messageSwipeActionState else {
-            return
-        }
-        renderItem.rootComponent.cellDidLayoutSubviews(componentView: componentView,
-                                                       renderItem: renderItem,
-                                                       messageSwipeActionState: messageSwipeActionState)
     }
 }
 
