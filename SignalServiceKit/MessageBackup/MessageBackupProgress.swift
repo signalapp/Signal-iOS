@@ -137,9 +137,8 @@ public class MessageBackupImportRecreateIndexesProgress {
         // device CPU as well as internal factors like how many indexes we're
         // creating.
         let framesEstimatePerSecond = 5_000
-        let unitCountPerSecond = UInt64(
-            Double(framesEstimatePerSecond) / Double(totalFramesRestored) * Double(Constants.progressSourceUnitCount)
-        )
+        let _unitCountPerSecond = Double(framesEstimatePerSecond) / Double(totalFramesRestored) * Double(Constants.progressSourceUnitCount)
+        let unitCountPerSecond = UInt64(clamping: _unitCountPerSecond)
 
         updateProcessPeriodicallyTask = Task {
             while true {
