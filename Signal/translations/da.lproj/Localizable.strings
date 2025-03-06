@@ -1253,7 +1253,7 @@
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Afventende beskedanmodning";
 
 /* A label on the profile about sheet */
-"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Profile names are not verified";
+"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Profilnavne verificeres ikke";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "\"%1$@\" er det profilnavn, denne person har angivet for sig selv i Signal.";
@@ -3431,16 +3431,16 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Gennemgå medlemmer";
 
 /* First bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Be cautious of groups that impersonate organizations and businesses";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Tag dig i agt for grupper, der udgiver sig for at være organisationer og virksomheder";
 
 /* Second bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Profile names of members in groups are not verified";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Profilnavne på medlemmer i grupper verificeres ikke";
 
 /* Third bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Del ikke personlige oplysninger med personer, du ikke kender";
 
 /* Header for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Group names</bold> are chosen by members of the group.";
+"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Gruppenavne</bold> er valgt af gruppens medlemmer.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Gruppenavn (Påkrævet)";
@@ -5930,16 +5930,16 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ ændrede sit profilnavn til %2$@";
 
 /* First bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Profile names are not verified";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Profilnavne verificeres ikke";
 
 /* Second bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Be cautious of accounts that impersonate others";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Tag dig i agt for kontoer, der udgiver sig for at være nogen, de ikke er";
 
 /* Third bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Del ikke personlige oplysninger med personer, du ikke kender";
 
 /* Header for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Profile names</bold> on Signal are chosen by their account holder.";
+"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Profilnavne</bold> på Signal vælges af kontoens indehaver.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Dit navn";
@@ -8234,10 +8234,10 @@
 "THIS_MESSAGE_WAS_DELETED" = "Beskeden blev slettet.";
 
 /* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
-"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ er ikke verificeret";
 
 /* Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
-"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Group names";
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Gruppenavne";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Medlem af %1$@, %2$@, og %3$lu andre grupper";
@@ -8249,10 +8249,10 @@
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Medlem af %1$@";
 
 /* Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ er ikke verificeret";
 
 /* Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Profile names";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Profilnavne";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Vis";
@@ -8264,7 +8264,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Medlem af %1$@ og %2$@";
 
 /* A string indicating there are no mutual groups the user shares with this contact */
-"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "No groups in common";
+"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "Ingen grupper tilfælles";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
 "THREAD_MERGE_LEARN_MORE" = "Efter at have sendt en besked til %1$@, fik du at vide at dette nummer tilhører %2$@. Vedkommendes telefonnummer er privat.\n\nDin beskedhistorik for begge chats er slået sammen her.";

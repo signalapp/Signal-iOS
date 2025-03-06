@@ -1253,7 +1253,7 @@
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Oczekująca prośba o kontakt";
 
 /* A label on the profile about sheet */
-"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Profile names are not verified";
+"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Imiona i nazwiska w profilach nie są weryfikowane";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "%1$@ to imię, które ta osoba podała w swoim profilu Signal.";
@@ -3431,16 +3431,16 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Przejrzyj członków";
 
 /* First bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Be cautious of groups that impersonate organizations and businesses";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Zachowaj czujność – niektóre grupy mogą się podszywać pod różne organizacje i firmy";
 
 /* Second bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Profile names of members in groups are not verified";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Imiona i nazwiska w profilach członków grup nie są weryfikowane";
 
 /* Third bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Nie udostępniaj danych osobowych użytkownikom, których nie znasz";
 
 /* Header for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Group names</bold> are chosen by members of the group.";
+"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Nazwy grupy</bold> są wybierane przez należące do nich osoby.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Nazwa grupy (wymagana)";
@@ -4073,22 +4073,22 @@
 "LINK_DEVICE_RESTART" = "Spróbuj ponownie";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Zeskanuj tym urządzeniem kod QR wyświetlony na urządzeniu, które chcesz powiązać";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_BODY" = "Zeskanuj tym urządzeniem kod QR wyświetlany na urządzeniu, które chcesz połączyć";
 
 /* Title for QR Scanning screen instructions sheet */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "Skanuj kod QR";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS_SHEET_TITLE" = "Zeskanuj kod QR";
 
 /* Body text for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Aby potwierdzić, wybierz Dalej i wprowadź kod blokady telefonu. Nie wpisuj swojego kodu PIN do Signal.";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_BODY" = "Aby potwierdzić, dotknij opcji Kontynuuj i użyj swojej metody odblokowywania telefonu. Nie wpisuj PIN-u do aplikacji Signal.";
 
 /* Title for a sheet when a user tries to link a device informing them that they will need to authenticate their device */
-"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "Przed połączeniem potwierdź, że to Ty";
+"LINK_NEW_DEVICE_AUTHENTICATION_INFO_SHEET_TITLE" = "Potwierdź, że to Ty";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking. */
 "LINK_NEW_DEVICE_AUTHENTICATION_REASON" = "Uwierzytelnij, aby połączyć urządzenie";
 
 /* Body text for a sheet when a user has started linking a device informing them to finish the process on that other device */
-"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Dokończ łączenie Signal na drugim urządzeniu";
+"LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_BODY" = "Dokończ łączenie aplikacji Signal na drugim urządzeniu";
 
 /* Title for a sheet when a user has started linking a device informing them to finish the process on that other device */
 "LINK_NEW_DEVICE_FINISH_ON_OTHER_DEVICE_SHEET_TITLE" = "Dokończ łączenie na drugim urządzeniu";
@@ -4280,7 +4280,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Multimedia jednorazowe";
 
 /* VoiceOver description for a generic audio file in All Media */
-"MEDIA_GALLERY_A11Y_AUDIO_FILE" = "plik audio";
+"MEDIA_GALLERY_A11Y_AUDIO_FILE" = "Plik audio";
 
 /* VoiceOver description for a generic non-audiovisual file in All Media */
 "MEDIA_GALLERY_A11Y_OTHER_FILE" = "Plik";
@@ -4556,7 +4556,7 @@
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Zmień kontakt";
 
 /* Action sheet message to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Zostaniemy powiadomieni o tym, że ten użytkownik może wysyłać spam. Signal nie widzi treści czatów.";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Zostaniemy powiadomieni o tym, że ten użytkownik może wysyłać spam. Signal nie ma dostępu do treści czatów.";
 
 /* Action sheet title to confirm reporting a conversation as spam via a message request. */
 "MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Zgłosić spam?";
@@ -4781,7 +4781,7 @@
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi i sieć komórkowa";
 
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
-"NEW_CALL_HINT" = "Wybierz kontakt lub grupę, aby rozpocząć nowe połączenie.";
+"NEW_CALL_HINT" = "Aby rozpocząć nowe połączenie, wybierz kontakt lub grupę.";
 
 /* Accessibility label for the new call button on the Calls Tab */
 "NEW_CALL_LABEL" = "Nowe połączenie";
@@ -4793,7 +4793,7 @@
 "NEW_CALL_TITLE" = "Nowe połączenie";
 
 /* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Wideo rozmowa";
+"NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Połączenie wideo";
 
 /* Title for a long-press context menu action to start a voice call, triggered from a recipient in the New Call contact picker */
 "NEW_CALL_VOICE_CALL_ACTION_TITLE" = "Połączenie głosowe";
@@ -4802,7 +4802,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Wyszukaj po numerze telefonu";
 
 /* A label for the cell that lets you add a new member by their username */
-"NEW_CONVERSATION_FIND_BY_USERNAME" = "Znajdź po nazwie użytkownika";
+"NEW_CONVERSATION_FIND_BY_USERNAME" = "Wyszukaj po nazwie użytkownika";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Nowa grupa";
@@ -4847,7 +4847,7 @@
 "NEW_LINKED_DEVICE_NOTIFICATION_MEGAPHONE_VIEW_DEVICE_BUTTON" = "Wyświetl urządzenie";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Znajdź po numerze telefonu";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Wyszukaj po numerze telefonu";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Nazwij relację";
@@ -4895,13 +4895,13 @@
 "NICKNAME_BUTTON_TITLE" = "Pseudonim";
 
 /* The message for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "Spowoduje to trwałe usunięcie tego pseudonimu i notatki.";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "Pseudonim i notatka zostaną trwale usunięte.";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
 "NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Usunąć pseudonim?";
 
 /* The description below the title on the profile nickname editor view. */
-"NICKNAME_EDITOR_DESCRIPTION" = "Pseudonimy i notatki są przechowywane przez Signal za pomocą usługi szyfrowania typu end-to-end. Są one widoczne tylko dla Ciebie.";
+"NICKNAME_EDITOR_DESCRIPTION" = "Pseudonimy i notatki są przechowywane przez aplikację Signal oraz szyfrowane metodą end-to-end. Są widoczne tylko dla Ciebie.";
 
 /* Placeholder text it the text field for the family name in the profile nickname editor. */
 "NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER" = "Nazwisko";
@@ -4919,7 +4919,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Wyszukaj kontakty po numerze telefonu";
 
 /* Label for a button that lets users search for contacts by username */
-"NO_CONTACTS_SEARCH_BY_USERNAME" = "Szukaj kontaktów po nazwie użytkownika";
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Wyszukaj kontakty po nazwie użytkownika";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Brak wspólnych grup";
@@ -4964,7 +4964,7 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Włączyć powiadomienia?";
 
 /* Shown as the body of an alert when notifications can't be shown due to an error. */
-"NOTIFICATIONS_ERROR_MESSAGE" = "Jeśli nie otrzymujesz powiadomień Signal, uruchom ponownie swój %1$@.";
+"NOTIFICATIONS_ERROR_MESSAGE" = "Jeśli nie otrzymujesz powiadomień z aplikacji Signal, problem może zniknąć, gdy %1$@ zostanie uruchomiony ponownie.";
 
 /* Shown as the title of an alert when notifications can't be shown due to an error. */
 "NOTIFICATIONS_ERROR_TITLE" = "Nie można wyświetlić powiadomień";
@@ -5009,7 +5009,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "Niepoprawny PIN";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
-"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Nieprawidłowy kod PIN. Pozostała 1 próba.";
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "PIN niepoprawny. Pozostała 1 próba.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Pomiń i utwórz nowy PIN";
@@ -5057,7 +5057,7 @@
 "ONBOARDING_PERMISSIONS_NOTIFICATIONS_TITLE" = "Powiadomienia";
 
 /* Preamble of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal prosi o następujące uprawnienia.";
+"ONBOARDING_PERMISSIONS_PREAMBLE" = "Signal prosi o te uprawnienia.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Włącz uprawnienia";
@@ -5087,7 +5087,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Niepoprawny PIN";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Skończyły Ci się próby odgadnięcia kodu PIN, ale wciąż możesz spróbować zalogować się na konto Signal poprzez weryfikację numeru telefonu. Przez wzgląd na ochronę prywatności i w celu zachowanie bezpieczeństwa Twoje konto zostanie przywrócone bez informacji profilowych i ustawień.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Nie możesz więcej razy próbować odgadnąć PIN-u. Aby zalogować się na konto Signal, możesz jeszcze spróbować zweryfikować swój numer telefonu. W trosce o Twoją prywatność i bezpieczeństwo Twojego konta przywrócimy je bez zapisanych wcześniej informacji w profilu ani ustawień.";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Przywróć lub przenieś konto";
@@ -5111,10 +5111,10 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Potwierdzanie kodu…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Upewnij się, że Twój telefon ma połączenie z siecią komórkową, aby otrzymać wiadomość SMS lub połączenie";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Upewnij się, że Twój telefon znajduje się w zasięgu sieci komórkowej, tak aby można było otrzymać SMS lub odebrać połączenie";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Upewnij się, że możesz odbierać połączenia telefoniczne pod tym numerem";
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Upewnij się, że możesz odbierać połączenia telefoniczne kierowane na ten numer";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
 "ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Sprawdź, czy podany numer telefonu jest poprawny.";
@@ -5138,19 +5138,19 @@
 "OPEN_SETTINGS_BUTTON" = "Ustawienia";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. */
-"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal nie działa już na tym urządzeniu. Aby znów móc używać aplikacji, zaktualizuj urządzenie do nowszej wersji iOS.";
+"OS_EXPIRED_AND_CAN_UPGRADE_OS" = "Signal nie działa już na tym urządzeniu. Aby dalej korzystać z aplikacji Signal, zaktualizuj system operacyjny do nowszej wersji iOS.";
 
 /* Signal doesn't support old devices. If that's the case, they'll be shown this action, and tapping it will open information about Signal's minimum supported operating systems. */
-"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal nie działa już na tym urządzeniu. Aby znów móc używać aplikacji, zmień urządzenie na nowsze.";
+"OS_EXPIRED_AND_DEVICE_IS_STUCK" = "Signal nie działa już na tym urządzeniu. Aby dalej korzystać z aplikacji Signal, zmień urządzenie na nowsze.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this action, and tapping it will open device update instructions. */
-"OS_SOON_TO_EXPIRE_ACTION_TITLE" = "Aktualizuj teraz";
+"OS_SOON_TO_EXPIRE_ACTION_TITLE" = "Zaktualizuj teraz";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're an old version that will soon lose support. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "Signal wkrótce przestanie wspierać wersję iOS zainstalowaną na tym urządzeniu. Aby dalej korzystać z aplikacji, zaktualizuj swoje urządzenie do nowszej wersji iOS do %1$@.";
+"OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT" = "Aplikacja Signal wkrótce przestanie być zgodna z wersją systemu iOS na tym urządzeniu. Aby dalej korzystać z aplikacji, zainstaluj nowszą wersję iOS do %1$@.";
 
 /* Signal doesn't support old versions of iOS and shows a warning if you're on an old version that will soon lose support. This is the text on that warning when users can't upgrade iOS without getting a new device. Embeds {{expiration date}}. */
-"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Signal wkrótce przestanie wspierać wersję iOS zainstalowaną na tym urządzeniu. Aby dalej korzystać z aplikacji, zaktualizuj swoje urządzenie do nowszej wersji iOS do %1$@.";
+"OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Aplikacja Signal wkrótce przestanie być zgodna z wersją systemu iOS na tym urządzeniu. Aby dalej korzystać z aplikacji, zmień swoje urządzenie na nowsze do %1$@.";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ wyłącza znikające wiadomości.";
@@ -5162,10 +5162,10 @@
 "OUTAGE_WARNING" = "Signal ma problemy techniczne. Staramy się jak najszybciej je rozwiązać.";
 
 /* Label for action link when the user has an outdated payment client */
-"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Aktualizuj teraz";
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Zaktualizuj teraz";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Zaktualizuj Signal, aby dalej korzystać z płatności. Twoje saldo może być nieaktualne.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Aby dalej korzystać z płatności, zaktualizuj Signal. Twoje saldo może być nieaktualne.";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Nieodebrane połączenie wideo";
@@ -5177,10 +5177,10 @@
 "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Zamknij Signal";
 
 /* Message for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Signal zostanie zamknięty na tym urządzeniu";
+"OUTGOING_TRANSFER_COMPLETE_MESSAGE" = "Aplikacja Signal na tym urządzeniu zostanie teraz zamknięta";
 
 /* Title for action sheet shown when device transfer completes */
-"OUTGOING_TRANSFER_COMPLETE_TITLE" = "Przenoszenie zakończone!";
+"OUTGOING_TRANSFER_COMPLETE_TITLE" = "Przenoszenie zakończone";
 
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "Wychodzące połączenie wideo";
@@ -5234,70 +5234,70 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Nieudana weryfikacja";
 
 /* Payments in-chat message shown if a payment fails to send, bottom half. */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Stuknij, aby zobaczyć szczegóły";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_BOTTOM" = "Dotknij, aby dowiedzieć się więcej";
 
 /* Payments in-chat message shown if a payment fails to send, top part. Embeds {{ number, amount of MOB coin not sent }} */
-"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ MOB nie zostało wysłane";
+"PAYMENTS_IN_CHAT_FAILURE_MESSAGE_TOP" = "%1$@ MOB – nie wysłano";
 
 /* Status indicator for invalid payments which could not be processed. */
 "PAYMENTS_INFO_UNAVAILABLE_MESSAGE" = "NIEDOSTĘPNE";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Nie udało się uzyskać dostępu do uwierzytelniania.";
+"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Nie udało się użyć metody uwierzytelniania.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Uwierzytelnianie nie powiodło się.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Nie udało się uwierzytelnić.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Zbyt wiele błędnych logowań. Spróbuj później.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Zbyt wiele nieudanych prób uwierzytelnienia. Spróbuj ponownie później.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Aby korzystać z zabezpieczenia płatności, musisz włączyć kod dostępu w Ustawieniach systemu iOS.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Aby korzystać z blokady płatności, musisz ustawić kod w ustawieniach iOS.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Aby korzystać z zabezpieczenia płatności, musisz włączyć kod dostępu w Ustawieniach systemu iOS.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Aby korzystać z blokady płatności, musisz ustawić kod w ustawieniach iOS.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Aby korzystać z zabezpieczenia płatności, musisz włączyć kod dostępu w Ustawieniach systemu iOS.";
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Aby korzystać z blokady płatności, musisz ustawić kod w ustawieniach iOS.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Dodaj dodatkowe zabezpieczenie — wymagaj kodu dostępu lub Touch ID do wysłania środków.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Skonfiguruj dodatkowe zabezpieczenie: aby wykonać płatność, trzeba będzie podać kod lub użyć Toich ID.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Dodaj dodatkowe zabezpieczenie — wymagaj Face ID do wysłania środków.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Skonfiguruj dodatkowe zabezpieczenie: aby wykonać płatność, trzeba będzie użyć Face ID.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Dodaj dodatkowe zabezpieczenie – wymagaj Optic ID do wysłania środków.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_OPTICID" = "Skonfiguruj dodatkowe zabezpieczenie: aby wykonać płatność, trzeba będzie użyć Optic ID.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Dodaj dodatkowe zabezpieczenie — wymagaj kodu dostępu do wysłania środków.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Skonfiguruj dodatkowe zabezpieczenie: aby wykonać płatność, trzeba będzie podać kod.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Dodaj dodatkowe zabezpieczenie — wymagaj Touch ID do wysłania środków.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Skonfiguruj dodatkowe zabezpieczenie: aby wykonać płatność, trzeba będzie użyć Touch ID.";
 
 /* First time payments suggest payments lock title */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Włączyć zabezpieczenie płatności dla przyszłych transakcji?";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Stosować w przyszłych transakcjach blokadę płatności?";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Wymagaj kodu dostępu lub Face ID do wysłania.";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Wymagaj kodu lub Touch ID";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Wymagaj Face ID do wysłania";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Używaj Face ID";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Wymagaj Optic ID do wysyłania";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_OPTICID" = "Używaj Optic ID";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Wymagaj kodu dostępu telefonu do wysłania";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Podawaj kod";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "Wymagaj Touch ID do wysłania";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "Używaj Touch ID";
 
 /* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
-"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "Uwierzytelnianie nie powiodło się. Upewnij się, że na urządzeniu włączona jest funkcja biometrii i ustawiony jest kod dostępu.";
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "Nie udało się uwierzytelnić. Upewnij się, że na urządzeniu włączona jest funkcja biometrii oraz ustawiony jest kod.";
 
 /* Title for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
-"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Uwierzytelnianie biometryczne nie powiodło się";
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Nie udało się uwierzytelnić za pomocą biometrii";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
 "PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Uwierzytelnij, aby potwierdzić płatność.";
@@ -5336,10 +5336,10 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Płatność nie została jeszcze zweryfikowana";
 
 /* Indicates that a payment failed because the payments lock attempt was cancelled. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Uwierzytelnianie zabezpieczenia płatności zostało anulowane.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Uwierzytelnienie w ramach blokady płatności anulowane.";
 
 /* Indicates that a payment failed because the payments lock failed to authenticate. */
-"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Uwierzytelnianie zabezpieczenia płatności nie powiodło się.";
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Uwierzytelnienie w ramach blokady płatności nieudane.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Nie udało się zrealizować płatności. Sprawdź połączenie z internetem i spróbuj ponownie.";
@@ -5348,7 +5348,7 @@
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Opłata sieciowa";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
-"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Szacowane %1$@";
+"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Około %1$@";
 
 /* Label for the 'invalid amount' button. */
 "PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "Nieprawidłowa kwota";
@@ -5381,7 +5381,7 @@
 "PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "Nowe powiadomienia o płatnościach (%1$@)";
 
 /* Payment status context with contact name, failed. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Płatność dla: %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Odbiorca płatności: %1$@";
 
 /* Payment status context while sending */
 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Przetwarzanie płatności…";
@@ -5390,7 +5390,7 @@
 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "%1$@ wysyła Tobie";
 
 /* Payment status context with contact name, sent. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "Wysłano do: %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "%1$@ otrzyma od Ciebie";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Płatność zrealizowana";
@@ -5576,13 +5576,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Wszyscy";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Każdy, kto ma Twój numer telefonu, zobaczy Cię w Signal i może rozpocząć z Tobą czat.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Każdy, kto ma Twój numer telefonu, może Cię znaleźć w aplikacji Signal i rozpocząć z Tobą czat.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Nikt";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nikt nie będzie mógł zobaczyć, że korzystasz z Signal, chyba że wyślesz tej osobie wiadomość lub macie już rozpoczętą rozmowę na czacie.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "O tym, że korzystasz z aplikacji Signal, nie dowie się nikt oprócz osób, którym wyślesz wiadomość lub z którymi masz już czat.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Przykład: %1$@";
@@ -5597,10 +5597,10 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "Nikt";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Nikt nie zobaczy Twojego numeru, o ile nie ma go zapisanego w kontaktach swojego telefonu.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY" = "Twój numer telefonu nie będzie widoczny dla nikogo oprócz osób, które mają Twój numer w kontaktach swojego telefonu.";
 
 /* A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Nikt nie zobaczy Twojego numeru telefonu.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY" = "Twój numer telefonu nie będzie widoczny dla nikogo.";
 
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "Domowy";
@@ -5645,13 +5645,13 @@
 "PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Przejdź do czatu";
 
 /* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Rozpocznij czat z „%1$@”";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Ty i %1$@ możecie porozmawiać na czacie";
 
 /* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "znaleziono %1$@";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "Znaleziono: %1$@";
 
 /* alert title, generic error preventing user from capturing a video that is too long */
-"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Zbyt długie wideo.";
+"PHOTO_CAPTURE_VIDEO_SIZE_ERROR" = "Wideo jest zbyt długie.";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Album bez nazwy";
@@ -5696,13 +5696,13 @@
 "PIN_CREATION_EXPLANATION" = "Dzięki PIN-owi dane przechowywane w aplikacji Signal są szyfrowane i tylko Ty masz do nich dostęp. PIN pozwoli Ci przywrócić profil, ustawienia i kontakty, gdy ponownie zainstalujesz Signal. Nie potrzebujesz PIN-u, aby otwierać aplikację.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Więcej informacji o kodach PIN";
+"PIN_CREATION_LEARN_MORE" = "Więcej informacji o PIN-ie";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
-"PIN_CREATION_LEARN_MORE_TEXT" = "Kody PIN gwarantują, że informacje przechowywane w Signal są zaszyfrowane i tylko Ty masz do nich dostęp. Twój profil, ustawienia i kontakty zostaną przywrócone po ponownej instalacji.";
+"PIN_CREATION_LEARN_MORE_TEXT" = "Dzięki PIN-owi dane przechowywane w aplikacji Signal są szyfrowane i tylko Ty masz do nich dostęp. PIN pozwoli Ci przywrócić profil, ustawienia i kontakty, gdy ponownie zainstalujesz aplikację.";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the title on that sheet. */
-"PIN_CREATION_LEARN_MORE_TITLE" = "O kodach PIN Signal";
+"PIN_CREATION_LEARN_MORE_TITLE" = "PIN Signal";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Kody PIN są różne. Spróbuj ponownie.";
@@ -5750,7 +5750,7 @@
 "PIN_CREATION_WEAK_ERROR" = "Ułóż silniejszy PIN";
 
 /* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
-"PIN_CREATION_WEAK_ERROR_MESSAGE" = "Kody PIN gwarantują, że informacje przechowywane w Signal są zaszyfrowane i tylko Ty masz do nich dostęp. Chroń swoje konto, wybierając mocniejszy PIN.";
+"PIN_CREATION_WEAK_ERROR_MESSAGE" = "Dzięki PIN-owi dane przechowywane w aplikacji Signal są szyfrowane i tylko Ty masz do nich dostęp. Aby chronić swoje konto, ustaw mocniejszy PIN.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_MESSAGE" = "Nie udało się wyłączyć Twojego PIN-u.";
@@ -5759,7 +5759,7 @@
 "PIN_DISABLE_ERROR_TITLE" = "Nie udało się wyłączyć PIN-u";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
-"PIN_ENTER_EXISTING_SKIP" = "Pomiń kod PIN";
+"PIN_ENTER_EXISTING_SKIP" = "Pomiń PIN";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
 "PIN_RECREATION_ERROR_TITLE" = "Nie udało się utworzyć PIN-u";
@@ -5849,7 +5849,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ty i %1$@ macie inny numer bezpieczeństwa niż ten. Sprawdź, czy weryfikujesz odpowiedni kontakt.";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Numer w Twoim schowku nie wygląda na poprawny numer bezpieczeństwa dla tego czatu.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Numer ze schowka nie wygląda na poprawny numer bezpieczeństwa tego czatu.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Aplikacja Signal nie znalazła w schowku numeru bezpieczeństwa. Upewnij się, że został on poprawnie skopiowany.";
@@ -5879,16 +5879,16 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Usuń relację niestandardową";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Czy na pewno chcesz usunąć „%1$@”? Wszelkie aktualizacje tej relacji również zostaną usunięte.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Czy na pewno chcesz usunąć relację „%1$@”? Wszelkie aktualizacje powiązane z tą relacją również zostaną usunięte.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Usuń";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Ta osoba nie będzie już widzieć tej relacji.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Ta osoba nie będzie już mogła wyświetlić relacji.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ – usunąć?";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Usunąć tę osobę: %1$@?";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Kontynuuj";
@@ -5930,16 +5930,16 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ ma nową nazwę profilu: %2$@.";
 
 /* First bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Profile names are not verified";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Imiona i nazwiska w profilach nie są weryfikowane";
 
 /* Second bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Be cautious of accounts that impersonate others";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Zachowaj czujność – niektóre konta mogą należeć do osób podszywających się pod kogoś innego";
 
 /* Third bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Nie udostępniaj danych osobowych użytkownikom, których nie znasz";
 
 /* Header for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Profile names</bold> on Signal are chosen by their account holder.";
+"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Imię i nazwisko w profilu</bold> w aplikacji Signal podaje osoba, do której należy dane konto.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Twoje imię";
@@ -5951,7 +5951,7 @@
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Imię";
 
 /* A message explaining that something is wrong with the username, on a sheet allowing the user to resolve the issue. */
-"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Wystąpił błąd związany z Twoją nazwą użytkownika – nie jest już przypisana do Twojego konta. Możesz spróbować ustawić ją ponownie lub wybrać nową nazwę.";
+"PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_CONFIRMATION_ALERT_MESSAGE" = "Coś poszło nie tak z Twoją nazwą użytkownika. Nie jest już ona przypisana do Twojego konta. Możesz spróbować ustawić tę samą nazwę ponownie lub wybrać nową.";
 
 /* Title for an action sheet button allowing users to delete their corrupted username. */
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_DELETE_USERNAME_ACTION_TITLE" = "Usuń nazwę użytkownika";
@@ -5960,7 +5960,7 @@
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "Napraw błąd teraz";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Ta czynność spowoduje usunięcie Twojej nazwy użytkownika i dezaktywację kodu QR i linku. Inni użytkownicy będą mogli użyć nazwy „%1$@”. Chcesz kontynuować?";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "Spowoduje to usunięcie Twojej nazwy użytkownika i dezaktywację kodu QR oraz linku. Inne osoby będą mogły użyć nazwy „%1$@”. Chcesz kontynuować?";
 
 /* The title of an action sheet button that will delete a user's username. */
 "PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "Usuń nazwę użytkownika";
@@ -5999,7 +5999,7 @@
 "PROFILE_VIEW_TITLE" = "Profil";
 
 /* Footer below the usernames section of the profile settings explaining username visibility. */
-"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Twoja nazwa użytkownika, kod QR i link nie są widoczne na Twoim profilu. Udostępniaj swoją nazwę użytkownika tylko zaufanym osobom.";
+"PROFILE_VIEW_USERNAME_DESCRIPTION" = "Nazwa użytkownika, kod QR ani link nie są widoczne w Twoim profilu. Udostępniaj swoją nazwę użytkownika tylko zaufanym osobom.";
 
 /* Footer below the usernames section of the profile settings when a username has not been set. */
 "PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Inne osoby mogą teraz wysyłać Ci wiadomości za pomocą Twojej opcjonalnej nazwy użytkownika. Nie musisz już podawać numeru telefonu.";
@@ -6008,7 +6008,7 @@
 "PROXY_ADDRESS" = "Adres proxy";
 
 /* The provided proxy connected successfully */
-"PROXY_CONNECTED_SUCCESSFULLY" = "Zostałeś(aś) połączony(a) z serwerem proxy. W każdej chwili możesz wyłączyć proxy w Ustawieniach.";
+"PROXY_CONNECTED_SUCCESSFULLY" = "Masz połączenie z serwerem proxy. W każdej chwili możesz wyłączyć proxy w ustawieniach.";
 
 /* The provided proxy couldn't connect */
 "PROXY_FAILED_TO_CONNECT" = "Nie udało się połączyć z serwerem proxy. Sprawdź adres proxy i spróbuj ponownie.";
@@ -6047,13 +6047,13 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Nie znaleziono oryginalnej wiadomości.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Zareagowano na Twoją relację";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reakcja na Twoją relację";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Zareagowano na relację %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reakcja na relację, którą udostępnia %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Relacja";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · relacja";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Załącznik";
@@ -6137,7 +6137,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Nie można wybrać użytkownika.";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ nie jest użytkownikiem Signal. Spróbuj ponownie, podając prawidłowy numer telefonu.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ nie używa aplikacji Signal. Podaj prawidłowy numer telefonu i spróbuj ponownie.";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Nieprawidłowy numer telefonu";
@@ -6146,10 +6146,10 @@
 "RECIPIENT_PICKER_INVITE_ACTION" = "Wiadomość";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ nie jest użytkownikiem Signal. Chcesz zaprosić ten numer?";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ nie używa aplikacji Signal. Chcesz wysłać na ten numer zaproszenie?";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_TITLE" = "Zaproś do Signal";
+"RECIPIENT_PICKER_INVITE_TITLE" = "Zaproś do aplikacji Signal";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Potrzebujesz pomocy?";
@@ -6158,10 +6158,10 @@
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "PIN to kod utworzony przez Ciebie z co najmniej 4 znaków. Może składać się z cyfr lub z cyfr i liter. Jeśli nie pamiętasz PIN-u, musisz poczekać 7 dni, aby ponownie zarejestrować konto.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Twój PIN to utworzony przez Ciebie kod składający się z 4 lub więcej znaków, który może być numeryczny lub alfanumeryczny. Jeśli nie pamiętasz kodu PIN, możesz zarejestrować się i używać konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje o profilu.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "PIN to kod utworzony przez Ciebie z co najmniej 4 znaków. Może składać się z cyfr lub z cyfr i liter. Jeśli nie pamiętasz PIN-u, możesz się zarejestrować i korzystać ze swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje w profilu.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Twój PIN to utworzony przez Ciebie kod składający się z 4 lub więcej znaków, który może być numeryczny lub alfanumeryczny.. Jeśli nie pamiętasz kodu PIN, możesz utworzyć nowy. Możesz zarejestrować się i używać swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje o Twoim profilu.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "PIN to kod utworzony przez Ciebie z co najmniej  4 znaków. Może składać się z cyfr lub z cyfr i liter. Jeśli nie pamiętasz PIN-u, możesz utworzyć nowy. Możesz się zarejestrować i korzystać ze swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje w profilu.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Nieprawidłowy PIN";
@@ -6170,7 +6170,7 @@
 "REGISTER_CONTACTS_WELCOME" = "Witaj!";
 
 /* Body of action sheet shown when rate-limited during registration. */
-"REGISTER_RATE_LIMITING_ALERT" = "Podjęto zbyt wiele prób. Poczekaj kilka minut, zanim spróbujesz ponownie.";
+"REGISTER_RATE_LIMITING_ALERT" = "Zbyt wiele prób. Odczekaj kilka minut, zanim spróbujesz ponownie.";
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "Zbyt wiele prób. Odczekaj chwilę, zanim spróbujesz ponownie.";
@@ -6182,7 +6182,7 @@
 "REGISTRATION_BODY" = "Nie udało się ponownie skonfigurować powiadomień push.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Uaktualnij";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Zaktualizuj";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "Aby kontynuować rejestrację, zaktualizuj aplikację Signal do najnowszej wersji.";
@@ -6191,13 +6191,13 @@
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Wymagana aktualizacja";
 
 /* During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA. */
-"REGISTRATION_CAPTCHA_TITLE" = "Musimy sprawdzić, czy jesteś człowiekiem";
+"REGISTRATION_CAPTCHA_TITLE" = "Musimy potwierdzić, że jesteś człowiekiem";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Kod kraju";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
-"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Kontynuując, spowodujesz wyłączenie Signal na wszystkich innych urządzeniach aktualnie zarejestrowanych przy użyciu tego numeru telefonu.";
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Jeśli przejdziesz dalej, aplikacja Signal zdezaktywuje się na wszystkich innych urządzeniach zarejestrowanych przy użyciu tego samego numeru telefonu.";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Przenieś konto i wiadomości";
@@ -6212,16 +6212,16 @@
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Wpisz numer";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
-"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Twoje konto zostało zablokowane w celu ochrony Twojej prywatności i bezpieczeństwa. Po %1$@ braku aktywności na Twoim koncie będziesz mógł/mogła zarejestrować ten numer telefonu bez konieczności wpisywania kodu PIN. Wszystkie zapisane dane zostaną skasowane.";
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "W trosce o Twoje bezpieczeństwo i prywatność, zablokowaliśmy konto. Musi ono pozostać nieaktywne przez %1$@, aby można było zarejestrować ten numer telefonu bez PIN-u. Wszystkie treści zostaną usunięte.";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
-"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Dowiedz się więcej o zablokowanych kontach.";
+"REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Dowiedz się więcej o blokowaniu kont.";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number. */
 "REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON" = "Użyj innego numeru";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen. */
-"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Konto zablokowane.";
+"REGISTRATION_LOCK_TIMEOUT_TITLE" = "Konto zablokowane";
 
 /* A network error occurred during registration, and an error is shown to the user. This is the body on that error sheet. */
 "REGISTRATION_NETWORK_ERROR_BODY" = "Aby kontynuować, sprawdź połączenie z internetem i spróbuj ponownie.";
@@ -6233,7 +6233,7 @@
 "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE" = "Nie masz kodu kopii zapasowej?";
 
 /* During registration, users are asked to enter their phone number. This is the subtitle on that screen, which gives users some instructions. */
-"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Aby rozpocząć, wprowadź swój numer telefonu.";
+"REGISTRATION_PHONE_NUMBER_SUBTITLE" = "Najpierw podaj swój numer telefonu.";
 
 /* During registration, users are asked to enter their phone number. This is the title on that screen. */
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Twój numer telefonu";
@@ -6245,43 +6245,43 @@
 "REGISTRATION_PHONENUMBER_BUTTON" = "Numer telefonu";
 
 /* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_CONFIRM_SUBTITLE" = "Wpisz ponownie utworzony PIN.";
+"REGISTRATION_PIN_CONFIRM_SUBTITLE" = "Wpisz ponownie utworzony właśnie PIN.";
 
 /* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_CONFIRM_TITLE" = "Potwierdź swój PIN";
+"REGISTRATION_PIN_CONFIRM_TITLE" = "Potwierdź PIN";
 
 /* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
-"REGISTRATION_PIN_CREATE_SUBTITLE" = "PIN-y mogą pomóc w przywróceniu konta i szyfrowaniu informacji w Signal.";
+"REGISTRATION_PIN_CREATE_SUBTITLE" = "PIN służy do przywracania konta i szyfrowania danych w aplikacji Signal.";
 
 /* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_CREATE_TITLE" = "Utwórz swój PIN";
+"REGISTRATION_PIN_CREATE_TITLE" = "Utwórz PIN";
 
 /* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
-"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PIN-y mogą pomóc w przywróceniu konta i szyfrowaniu informacji w Signal.";
+"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PIN służy do przywracania konta i szyfrowania danych w aplikacji Signal.";
 
 /* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "Wpisz swój PIN";
+"REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "Wpisz PIN";
 
 /* During registration, users set up their profile. Users input a family name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER" = "Nazwisko";
 
 /* During registration, users can choose who can see their phone number. */
-"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Kto może mnie znaleźć po numerze telefonu?";
+"REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE" = "Kto może mnie wyszukać po numerze telefonu?";
 
 /* During registration, users set up their profile. Users input a given name. This is the placeholder for that field. */
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Imię";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
-"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Twoja nazwa, zdjęcie i zmiany w profilu będą widoczne dla Twoich kontaktów oraz z chwilą rozpoczęcia lub akceptowania nowych czatów.";
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Twoje imię i nazwisko, zdjęcie, a także zmiany w profilu będą widoczne dla Twoich kontaktów oraz gdy rozpoczniesz nowy czat lub przyjmiesz do niego zaproszenie.";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
-"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "O prywatności profilu";
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "Prywatność profilu";
 
 /* During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string. */
-"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Profile są widoczne dla kontaktów, grup i osób, z którymi rozmawiasz";
+"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Profil jest widoczny dla kontaktów, grup i osób, z którymi wymieniasz wiadomości";
 
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
-"REGISTRATION_PROFILE_SETUP_TITLE" = "Ustaw swój profil";
+"REGISTRATION_PROFILE_SETUP_TITLE" = "Uzupełnij profil";
 
 /* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
 "REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Nie możemy wysłać kodu SMS z powodu problemów z dostawcą usługi SMS.";
@@ -6308,16 +6308,16 @@
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Połączenie głosowe";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "Nie udało nam się wysłać Ci kodu weryfikacyjnego przez SMS. Spróbuj go zażądać za pomocą połączenia głosowego.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "Nie udało się wysłać kodu weryfikacyjnego SMS-em. Spróbuj użyć opcji połączenia ghłosowego, aby optrzymać kod w ten sposób.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Przekroczono limit prób wprowadzenia kodu. Wyślij kod i spróbuj ponownie.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Zbyt wiele prób wprowadzenia kodu. Wyślij kod ponownie i spróbuj jeszcze raz.";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Przekroczono limit prób wprowadzenia kodu. Spróbuj ponownie za %1$@";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Zbyt wiele prób wprowadzenia kodu. Spróbuj jeszcze raz za %1$@";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "Wprowadzony kod jest nieprawidłowy. Wyślij kod i spróbuj ponownie.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "Podany kod jest nieprawidłowy. Wyślij kod ponownie i spróbuj jeszcze raz.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Aby się zarejestrować, podaj prawidłowy numer telefonu.";
@@ -6347,13 +6347,13 @@
 "REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Napraw błąd teraz";
 
 /* Label warning the user that something is wrong with their username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Wystąpił błąd związany z Twoją nazwą użytkownika – nie jest już przypisana do Twojego konta. Możesz spróbować ustawić ją ponownie lub wybrać nową nazwę.";
+"REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Coś poszło nie tak z Twoją nazwą użytkownika. Nie jest już ona przypisana do Twojego konta. Możesz spróbować ustawić tę samą nazwę ponownie lub wybrać nową.";
 
 /* Button below the warning to fix a username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Napraw błąd teraz";
 
 /* Label warning the user that something is wrong with their username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Coś poszło nie tak z kodem QR i linkiem do nazwy użytkownika — są nieważne. Utwórz nowy link do udostępniania innym.";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Coś poszło nie tak z kodem QR oraz linkiem przypisanymi do Twojej nazwy użytkownika. Nie są już prawidłowe. Utwórz nowy link do udostępniania.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "Usuń podgląd";
@@ -6365,10 +6365,10 @@
 "REREGISTER_FOR_PUSH" = "Ponownie skonfiguruj powiadomienia push";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. In some cases (such as for this string), the user has the option to skip PIN entry and will lose some data. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = "Pozostały(-a) %1$@. Jeśli skończą Ci się próby, możesz uworzyć nowy kod PIN. Możesz użyć swojego konta podczas rejestracji, ale stracisz niektóre niezapisane ustawienia, takie jak informacje o profilu.";
+"REREGISTER_INVALID_PIN_WARNING_SKIPPABLE_FORMAT" = " %1$@. Jeśli skończą Ci się próby, możesz uworzyć nowy PIN. Możesz się zarejestrować i korzystać ze swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje w profilu.";
 
 /* If the user is re-registering, they may need to enter their PIN to restore all their data. If they enter the incorrect PIN, they will be shown a warning. Embeds {{ number of attempts }}, such as \"3 attempts\". */
-"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "Pozostały(-a) %1$@. Jeśli skończą Ci się próby, Twoje konto zostanie zablokowane na 7 dni. Po 7 dniach nieaktywności możesz zarejestrować się ponownie bez kodu PIN. Wszystkie zapisane dane zostaną skasowane.";
+"REREGISTER_INVALID_PIN_WARNING_UNSKIPPABLE_FORMAT" = "%1$@. Jeśli skończą Ci się próby, Twoje konto zostanie zablokowane na 7 dni. Po 7 dniach nieaktywności możesz zarejestrować się ponownie bez podawania PIN-u. Wszystkie treści zostaną usunięte.";
 
 /* Configure reactions reset button text */
 "RESET" = "Zresetuj";
@@ -6473,7 +6473,7 @@
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Natychmiast";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Nie udało się użyć metody uwierzytelnienia.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Nie udało się użyć metody uwierzytelniania.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Nie udało się uwierzytelnić.";
@@ -6521,7 +6521,7 @@
 "SEARCH_SECTION_MESSAGES" = "Wiadomości";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Aby połączyć to urządzenie z innym kontem, musisz je najpierw zresetować. Czy na pewno chcesz usunąć całą historię (wiadomości, załączniki, połączenia itd.)? Tego działania nie można cofnąć.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Aby połączyć z innym kontem, najpierw musisz to urządzenie zresetować. Czy na pewno chcesz usunąć całą historię (wiadomości, załączniki, połączenia itd.)? Tego działania nie będzie można cofnąć.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Usuń wszystko";
@@ -6842,7 +6842,7 @@
 "SETTINGS_CHATS" = "Czaty";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Wyczyść historię czatu";
+"SETTINGS_CLEAR_HISTORY" = "Usuń historię czatu";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nOprogramowanie udostępniane na licencji AGPLv3";
@@ -6899,7 +6899,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Usuń wszystkie dane";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Czy na pewno chcesz usunąć całą historię (wiadomości, załączniki, połączenia itd.)? Tego działania nie można cofnąć.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Czy na pewno chcesz usunąć całą historię (wiadomości, załączniki, połączenia itd.)? Tego działania nie będzie można cofnąć.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Usuń wszystko";
@@ -6908,7 +6908,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Znikające wiadomości";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Ustaw domyślny czas znikania wiadomości dla wszystkich nowych, rozpoczętych przez Ciebie czatów.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Ustaw domyślny czas, po którym wiadomości znikają, we wszystkich nowych czatach rozpoczętych przez siebie.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Wesprzyj Signal darowizną";
@@ -6926,10 +6926,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Dźwięk wiadomości";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Wyciszone czaty pozostaną w archiwum, gdy pojawi się nowa wiadomość.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Gdy w wyciszonym zarchiwizowanym czacie pojawi się nowa wiadomość, pozostanie on w archiwum.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Wyciszone czaty pozostają w archiwum";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Pozostaw wyciszone czaty w archiwum";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Regulamin i polityka prywatności";
@@ -8234,10 +8234,10 @@
 "THIS_MESSAGE_WAS_DELETED" = "Ta wiadomość została usunięta.";
 
 /* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
-"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ nie są weryfikowane";
 
 /* Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
-"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Group names";
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Nazwy grup";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Członek grup %1$@, %2$@ i %3$lu innych";
@@ -8249,10 +8249,10 @@
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Członek grupy %1$@";
 
 /* Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ nie są weryfikowane";
 
 /* Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Profile names";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Imię i nazwisko w profilu";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Wyświetl";
@@ -8264,7 +8264,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Członek grup %1$@ i %2$@";
 
 /* A string indicating there are no mutual groups the user shares with this contact */
-"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "No groups in common";
+"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "Brak wspólnych grup";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
 "THREAD_MERGE_LEARN_MORE" = "Po rozmowie z %1$@ dowiedziałeś(-aś) się, że ten numer należy do %2$@. Ten numer jest prywatny.\n\nTwoja historia wiadomości dla obu czatów została połączona tutaj.";

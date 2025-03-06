@@ -35,7 +35,7 @@
 "ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "Exporter le rapport";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning. */
-"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Veuillez partager les données de votre compte Signal avec les personnes et les applis en qui vous avez confiance.";
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Ne partagez les données de votre compte Signal qu'avec des personnes ou des apps de confiance.";
 
 /* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the message on that error. */
 "ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "Vérifiez votre connexion et réessayez.";
@@ -44,16 +44,16 @@
 "ACCOUNT_DATA_REPORT_ERROR_TITLE" = "Impossible de générer le rapport";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Fichier pour lecture automatisée";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Format lisible par machine";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Exporter en tant que fichier JSON";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Exporter au format JSON";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to plain text mode. */
 "ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_SUBTITLE" = "Fichier texte facile à lire";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to plain text mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "Exporter en tant que fichier TXT";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "Exporter au format TXT";
 
 /* Users can request a report of their account data. Users tap this button to export their data. */
 "ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "Exporter le rapport";
@@ -197,7 +197,7 @@
 "ALL_MEDIA_THUMBNAIL_LABEL_VIDEO" = "Vidéo";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "Toutes les connexions";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Tous les contacts Signal";
 
 /* notification body */
 "APN_Message" = "Vous avez peut-être de nouveaux messages";
@@ -209,10 +209,10 @@
 "APP_LAUNCH_FAILURE_CONTINUE" = "Je préfère retenter d'ouvrir Signal";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Veuillez envoyer un journal de débogage à support@signal.org afin que nous cherchions la cause de ce problème.";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Pour nous aider à résoudre ce problème, veuillez envoyer un journal de débogage à support@signal.org.";
 
 /* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Impossible d’ouvrir Signal";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Impossible d'ouvrir Signal";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Impossible de charger la base de données";
@@ -266,13 +266,13 @@
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "Système";
 
 /* Apple Pay donation error for decline failures where authentication is required. */
-"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Essayez un autre mode de paiement ou contactez votre banque pour plus d’informations.";
+"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Veuillez choisir un autre mode de paiement ou contacter votre banque pour en savoir plus.";
 
 /* Apple Pay donation error for decline failures where the user may need to contact their card or bank. */
 "APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Vérifiez si votre mode de paiement est à jour dans Apple Pay. Si tel n'est pas le cas, mettez-le à jour, puis réessayez. Si le problème persiste, veuillez contacter votre banque.";
 
 /* Apple Pay donation error for decline failures where the card is not supported. */
-"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Votre carte ne permet pas ce type d’achat. Essayez un autre mode de paiement ou contactez votre banque pour en savoir plus.";
+"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Votre carte ne permet pas ce type d'achat. Veuillez choisir un autre mode de paiement ou contacter votre banque pour en savoir plus.";
 
 /* Apple Pay donation error for decline failures where the card has expired. */
 "APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Votre carte est arrivée à expiration. Vérifiez si votre mode de paiement est à jour dans Apple Pay. Si tel n'est pas le cas, mettez-le à jour et réessayez.";
@@ -284,7 +284,7 @@
 "APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Cryptogramme visuel incorrect. Vérifiez si le cryptogramme visuel saisi dans Apple Pay est le bon. Dans le cas contraire, veuillez le mettre à jour et réessayer.";
 
 /* Apple Pay donation error for decline failures where the card has insufficient funds. */
-"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Les fonds disponibles sur votre carte sont insuffisants. Veuillez essayer un autre mode de paiement ou contacter votre banque pour en savoir plus.";
+"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Les fonds disponibles sur votre carte sont insuffisants. Veuillez choisir un autre mode de paiement ou contacter votre banque pour en savoir plus.";
 
 /* Apple Pay donation error for decline failures where the expiration month on the payment method is incorrect. */
 "APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "La date de validité de votre mode de paiement est incorrecte. Mettez-la à jour dans Apple Pay et réessayez.";
@@ -299,7 +299,7 @@
 "APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE" = "Essayez à nouveau d’effectuer le paiement ou contactez votre banque pour plus d’informations.";
 
 /* Apple Pay donation error for unspecified decline failures. */
-"APPLE_PAY_DONATION_ERROR_OTHER" = "Essayez un autre mode de paiement ou contactez votre banque pour plus d’informations.";
+"APPLE_PAY_DONATION_ERROR_OTHER" = "Veuillez choisir un autre mode de paiement ou contacter votre banque pour en savoir plus.";
 
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
 "APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Vérifiez si votre mode de paiement est à jour dans Apple Pay. Si tel n'est pas le cas, mettez-le à jour et réessayez.";
@@ -1232,7 +1232,7 @@
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Voulez-vous vraiment supprimer toutes les données ?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Vous ne pourrez plus ni recevoir, ni envoyer de messages dans ce groupe.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Vous ne pourrez plus échanger de messages avec ce groupe.";
 
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "Voulez-vous vraiment quitter ce groupe ?";
@@ -1253,7 +1253,7 @@
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Invitation par message en attente";
 
 /* A label on the profile about sheet */
-"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Profile names are not verified";
+"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Signal ne vérifie pas les noms de profil";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "\"%1$@\" est le nom de profil que cette personne s’est attribué dans Signal.";
@@ -2498,13 +2498,13 @@
 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE" = "Impossible de confirmer le don";
 
 /* Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Impossible de traiter votre don ponctuel iDEAL. Essayez un autre mode de paiement ou contactez votre banque pour en savoir plus.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE" = "Impossible de traiter votre don ponctuel iDEAL. Veuillez choisir un autre mode de paiement ou contacter votre banque pour en savoir plus.";
 
 /* Title for a sheet explaining that a payment needs confirmation. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Impossible de valider votre don ponctuel de %1$@. Veuillez vérifier votre application bancaire pour autoriser votre don iDEAL.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed. */
-"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Impossible de traiter votre don ponctuel iDEAL. Essayez un autre mode de paiement ou contactez votre banque pour en savoir plus.";
+"DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE" = "Impossible de traiter votre don mensuel iDEAL. Veuillez choisir un autre mode de paiement ou contacter votre banque pour en savoir plus.";
 
 /* Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}. */
 "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT" = "Impossible de valider votre don ponctuel de %1$@. Veuillez vérifier votre application bancaire pour autoriser votre don iDEAL.";
@@ -3431,16 +3431,16 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Examiner les membres";
 
 /* First bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Be cautious of groups that impersonate organizations and businesses";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Attention aux groupes qui se font passer pour des organisations ou des entreprises";
 
 /* Second bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Profile names of members in groups are not verified";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Lorsque des utilisateurs rejoignent un groupe, Signal ne vérifie pas les noms de profil de ses membres";
 
 /* Third bullet point for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Ne communiquez pas vos informations personnelles à des inconnus";
 
 /* Header for the explainer sheet for group names */
-"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Group names</bold> are chosen by members of the group.";
+"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "Les <bold>noms de groupe</bold> sont choisis par les membres ou les admins.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Nom du groupe (obligatoire)";
@@ -5930,16 +5930,16 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ a remplacé son nom de profil par %2$@.";
 
 /* First bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Profile names are not verified";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Signal ne vérifie pas les noms de profil";
 
 /* Second bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Be cautious of accounts that impersonate others";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Certains utilisateurs peuvent se faire passer pour d'autres : faites attention";
 
 /* Third bullet point for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Don’t share personal information with people you don’t know";
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Ne communiquez pas vos informations personnelles à des inconnus";
 
 /* Header for the explainer sheet for profile names */
-"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Profile names</bold> on Signal are chosen by their account holder.";
+"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "Sur Signal, les <bold>noms de profil</bold> sont librement choisis par les utilisateurs.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Votre nom";
@@ -7865,7 +7865,7 @@
 "STORIES_SETTINGS_STORIES_HEADER" = "Stories";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Vous ne pourrez plus partager ou voir de Stories. Les nouveaux contenus récemment ajoutés à vos Stories seront également supprimés.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Vous ne pourrez plus partager ni consulter de stories. Les nouveaux contenus récemment ajoutés à vos stories seront également supprimés.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Désactiver et supprimer les Stories";
@@ -8234,10 +8234,10 @@
 "THIS_MESSAGE_WAS_DELETED" = "Ce message a été supprimé.";
 
 /* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
-"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "Signal ne vérifie pas les %1$@";
 
 /* Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
-"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Group names";
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "noms de groupe";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Membre de %1$@, %2$@ et %3$lu autres groupes.";
@@ -8249,10 +8249,10 @@
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Membre de %1$@";
 
 /* Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ are not verified";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "Signal ne vérifie pas les %1$@";
 
 /* Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
-"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Profile names";
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "noms de profil";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Afficher";
@@ -8264,7 +8264,7 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Membre de %1$@ et %2$@";
 
 /* A string indicating there are no mutual groups the user shares with this contact */
-"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "No groups in common";
+"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "Aucun groupe en commun";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
 "THREAD_MERGE_LEARN_MORE" = "Après avoir envoyé un message au %1$@, vous avez découvert que ce numéro appartient en fait à %2$@. Son numéro est privé.\n\nL’historique de vos messages contenus dans les deux conversations a été fusionné ici.";
@@ -8465,7 +8465,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "Couleur";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Partagez votre code QR et votre lien unique avec les personnes en qui vous avez confiance. Lorsque vous les partagez, les autres utilisateurs pourront voir votre nom d’utilisateur et démarrer une conversation avec vous.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Ne partagez votre lien et votre code QR qu'avec des personnes de confiance. Une fois que vous les partagez, ces personnes peuvent voir votre nom d'utilisateur et démarrer une conversation avec vous.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
 "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "Le code QR et le lien ne sont pas définis. Veuillez vérifier votre connexion réseau puis réessayez.";
