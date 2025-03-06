@@ -53,6 +53,16 @@ private class ContextMenuHostView: UIView {
             }
         }
     }
+    
+    var overlayView: UIView? {
+        didSet {
+            oldValue?.removeFromSuperview()
+            if let view = overlayView {
+                addSubview(view)
+                bringSubviewToFront(view)
+            }
+        }
+    }
 
     var auxiliaryPreviewView: UIView? {
         didSet {
@@ -97,6 +107,7 @@ private class ContextMenuHostView: UIView {
         super.layoutSubviews()
         blurView?.frame = bounds
         dismissButton?.frame = bounds
+        overlayView?.frame = bounds
 
         let animationState = delegate?.contextMenuViewAnimationState(self) ?? .none
         var auxVerticalOffset: CGFloat = 0
@@ -339,6 +350,14 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
 
         return nil
     }
+    
+    var overlayView: UIView? {
+        if let hostView = view as? ContextMenuHostView {
+            return hostView.overlayView
+        }
+        
+        return nil
+    }
 
     var gestureRecognizer: UIGestureRecognizer?
     var localPanGestureRecoginzer: UIPanGestureRecognizer?
@@ -426,6 +445,7 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
         contextMenuView.auxiliaryPreviewView = contextMenuPreview.auxiliarySnapshot
         contextMenuView.auxiliaryPreviewView?.isAccessibilityElement = false
         contextMenuView.accessoryViews = accessoryViews
+        contextMenuView.overlayView = contextMenuPreview.overlayView
 
         self.previewView?.isUserInteractionEnabled = false
         self.previewView?.isHidden = true
@@ -476,7 +496,7 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
         }
 
         animationState = .animateIn
-
+        
         UIView.animate(withDuration: animationDuration / 2.0) {
             if self.renderBackgroundBlur {
                 if !UIDevice.current.isIPad {
@@ -513,6 +533,7 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
             }
         }
         contextMenuPreview.view.isHidden = true
+        overlayView?.isHidden = true
         contextMenuPreview.auxiliaryView?.isHidden = true
 
         if shiftPreview {
@@ -580,7 +601,7 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
 
         let dispatchGroup = DispatchGroup()
         animationState = .animateOut
-
+        
         dispatchGroup.enter()
         UIView.animate(withDuration: animationDuration) {
             if self.renderBackgroundBlur {
@@ -594,6 +615,7 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
             case .fade:
                 self.previewView?.alpha = 1
             }
+            
         } completion: { _ in
             dispatchGroup.leave()
         }
@@ -631,13 +653,15 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
             )
         }
 
-        // Animate in accessories
+        // Animate out accessories
         for accessory in accessoryViews {
             dispatchGroup.enter()
             accessory.animateOut(duration: animationDuration, previewWillShift: shiftPreview) {
                 dispatchGroup.leave()
             }
         }
+        
+        self.overlayView?.isHidden = false
 
         dispatchGroup.notify(queue: .main) {
             self.contextMenuPreview.view.isHidden = false
