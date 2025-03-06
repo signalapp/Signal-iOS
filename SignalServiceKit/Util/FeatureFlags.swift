@@ -51,7 +51,7 @@ public enum FeatureFlags {
     public static let messageBackupDetailedBenchLogging = build.includes(.internal)
 
     public static let linkAndSyncPrimaryExport = true
-    public static let linkAndSyncLinkedImport = build.includes(.beta)
+    public static let linkAndSyncLinkedImport = true
 
     public static let storageServiceRecordIkmMigration = true
 
