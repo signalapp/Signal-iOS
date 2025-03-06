@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Τώρα μπορείς να επιλέξεις να μεταφέρεις το ιστορικό συνομιλιών σου και τα πολυμέσα των τελευταίων 45 ημερών σε μια νέα συνδεδεμένη συσκευή. Η διαδικασία μεταφοράς είναι κρυπτογραφημένη από άκρο σε άκρο και εντελώς προαιρετική.

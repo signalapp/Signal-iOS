@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• เพิ่มตัวเลือกในขั้นตอนการเชื่อมโยงอุปกรณ์ ให้คุณสามารถถ่ายโอนประวัติการแชทและไฟล์สื่อจาก 45 วันที่ผ่านมา เลือกถ่ายโอนหรือข้ามขั้นตอนนี้ได้ตามใจคุณ ทั้งยังมั่นใจได้เสมอด้วยการเข้ารหัสตั้งแต่ต้นทางถึงปลายทาง

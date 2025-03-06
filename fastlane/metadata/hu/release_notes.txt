@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Mostantól dönthetsz úgy, hogy a csevegési előzményeidet és az elmúlt 45 nap médiatartalmát áthelyezed egy új kapcsolt eszközre. Az átviteli folyamat végponttól végpontig titkosított, és teljesen opcionális.

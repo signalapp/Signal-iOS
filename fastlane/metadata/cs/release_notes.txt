@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Nyní se můžete rozhodnout, zda chcete přenést historii chatů a médií za posledních 45 dní do nového propojeného zařízení. Přenos je koncově šifrovaný a zcela volitelný.

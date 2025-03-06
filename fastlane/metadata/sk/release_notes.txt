@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Teraz si môžete preniesť históriu četov a médiá z posledných 45 dní do nového prepojeného zariadenia. Prenos je voliteľný a jeho proces chránený end-to-end šifrovaním.

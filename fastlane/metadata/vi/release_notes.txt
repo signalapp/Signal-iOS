@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Giờ đây bạn có thể chọn chuyển lịch sử trò chuyện và tập tin đa phương tiện trong 45 ngày vừa qua của mình đến thiết bị liên kết mới. Quá trình chuyển dữ liệu được mã hóa đầu cuối và hoàn toàn là tùy chọn.

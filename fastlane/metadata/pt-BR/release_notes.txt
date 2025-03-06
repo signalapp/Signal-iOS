@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Agora, ao vincular seu dispositivo principal do Signal a um novo desktop ou iPad, você pode levar seu histórico de conversa e os últimos 45 dias de mídia com você. O processo de transferência é criptografado de ponta a ponta e totalmente opcional..

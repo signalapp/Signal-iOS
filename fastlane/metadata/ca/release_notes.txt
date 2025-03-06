@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• A partir d'ara, quan enllacis un nou dispositiu, tindràs l'opció de transferir-hi l'historial del xat i els teus darrers 45 dies d'arxius multimèdia. El procés de transferència és xifrat d'extrem a extrem (i totalment opcional).

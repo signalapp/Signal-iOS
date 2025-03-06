@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• チャット履歴と過去45日間のメディアを、新しいリンク済み端末に移行するかどうかを選択できるようになりました。移行プロセスはエンドツーエンドで暗号化されており、完全にオプションです。

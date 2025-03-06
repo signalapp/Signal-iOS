@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Wenn du jetzt dein Mobiltelefon mit einem neuen Desktop oder iPad koppelst, kannst du deinen gesamten Chat-Verlauf und die Medien der letzten 45 Tage mitnehmen. Der Übertragungsprozess ist Ende-zu Ende-verschlüsselt und natürlich optional. Jetzt kannst du also selbst entscheiden, ob du die Vergangenheit komplett hinter dir lassen willst.

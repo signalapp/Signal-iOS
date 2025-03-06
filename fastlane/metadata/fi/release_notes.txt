@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Nyt voit halutessasi tuoda keskusteluhistoriasi ja viimeisten 45 päivän mediasisällön mukanasi uuteen yhdistettyyn laitteeseen. Siirtoprosessi on salattu päästä päähän ja täysin valinnainen.

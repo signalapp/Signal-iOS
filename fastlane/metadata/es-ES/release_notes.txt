@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Ahora, al vincular tu dispositivo Signal principal a un nuevo ordenador o iPad, podrás llevarte contigo tu historial de chats y tus últimos 45 días de archivos multimedia. El proceso de transferencia está cifrado de extremo a extremo y es completamente opcional. Así, la decisión de dejar tu pasado atrás solo dependerá de ti (¡y de tus dispositivos!).

@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Lorsque vous associez votre principal appareil Signal à un nouvel ordinateur ou à un nouvel iPad, vous pouvez maintenant transférer toutes vos conversations, ainsi que vos médias des 45 derniers jours. Chiffré de bout en bout, ce processus de transfert est complètement facultatif : à vous de voir si vous préférez faire table rase du passé ou emmener vos souvenirs avec vous.

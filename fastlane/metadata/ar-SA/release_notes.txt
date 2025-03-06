@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• الآن، عندما تربط جهازك الأساسي الذي يحمل تطبيق سيجنال بحاسوب أو جهاز آيباد جديد، يُمكنك أن تنقل سِجل الدردشة الخاص بك وآخر 45 يومًا من الوسائط. عملية النقل مُشفّرة من طرف لطرف واختيارية كليًا. إذا كُنتَ تُفكِّر في نقل بياناتك السابقة أو تجاهلها، دع أجهزتك تساعدك في ذلك.

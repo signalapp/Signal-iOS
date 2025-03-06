@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• עכשיו אפשר לבחור להעביר את היסטוריית הצ׳אט ואת 45 ימי המדיה האחרונים שלך למכשיר מקושר חדש. תהליך ההעברה מוצפן מקצה לקצה, והוא לגמרי לא חובה.

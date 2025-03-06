@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Da ora quando colleghi il tuo dispositivo principale di Signal a un nuovo Desktop o iPad, puoi importare la cronologia delle tue chat e gli ultimi 45 giorni di media inviati/ricevuti. Il trasferimento è crittografato e del tutto opzionale. Insomma, scegli tu se lasciarti il passato alle spalle o meno!

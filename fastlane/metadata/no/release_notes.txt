@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Nå kan du overføre samtaleloggen din og mediefilene dine fra de siste 45 dagene til en annen tilkoblet enhet. Overføringen er ende-til-ende-kryptert og helt valgfri.

@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Je kunt er nu voor kiezen om je chatgeschiedenis en de laatste 45 dagen aan media over te zetten naar een nieuw gekoppeld apparaat. Het overdrachtsproces is end-to-end versleuteld en volledig optioneel. Aan jou de keus of je je verleden achter je laat of gewoon met je mee blijft dragen.

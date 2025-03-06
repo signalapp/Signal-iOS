@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Тепер, зв'язуючи основний пристрій Signal з новим комп'ютером чи iPad, ви також можете переносити історію чатів і медіафайли за минулі 45 днів. Процес перенесення захищено наскрізним шифруванням. А ще воно необов'язкове, тож тільки вам вирішувати, чи зберегти минуле в пам'яті пристрою, чи тільки у своїй власній.

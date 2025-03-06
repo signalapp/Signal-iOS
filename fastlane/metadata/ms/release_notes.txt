@@ -1,1 +1,1 @@
-• We fixed a bug that sometimes prevented sharing a URL from another app using the iOS share sheet. We hope that your week was more exciting than ours.
+• Kini anda boleh memilih untuk memindahkan sejarah sembang anda dan media 45 hari lalu ke peranti baru yang dipautkan. Proses pemindahan ini disulitkan hujung ke hujung dan sepenuhnya terpulang kepada anda.
