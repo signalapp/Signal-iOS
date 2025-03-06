@@ -84,7 +84,7 @@ class BitmapsImageParsingTest: XCTestCase {
 
 private extension CGImage {
     static let signalDotOrgQRCode: CGImage = {
-        let urlData = "https://signal.org".data(using: .utf8)
+        let urlData = Data("https://signal.org".utf8)
 
         let filter = CIFilter(name: "CIQRCodeGenerator")!
         filter.setValue("L", forKey: "inputCorrectionLevel")

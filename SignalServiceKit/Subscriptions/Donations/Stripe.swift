@@ -375,9 +375,7 @@ fileprivate extension Stripe {
         static func postForm(endpoint: String,
                              parameters: [String: any StripeQueryParamValue],
                              idempotencyKey: String? = nil) throws -> Promise<HTTPResponse> {
-            guard let formData = try parameters.encodeStripeQueryParamValueToString().data(using: .utf8) else {
-                throw OWSAssertionError("Failed to generate post body data")
-            }
+            let formData = Data(try parameters.encodeStripeQueryParamValueToString().utf8)
 
             var headers: [String: String] = [
                 "Content-Type": "application/x-www-form-urlencoded",

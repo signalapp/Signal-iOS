@@ -360,10 +360,7 @@ public class RemoteConfig {
     }
 
     static func bucket(key: String, aci: Aci, bucketSize: UInt64) -> UInt64 {
-        guard var data = (key + ".").data(using: .utf8) else {
-            owsFailDebug("Failed to get data from key")
-            return 0
-        }
+        var data = Data((key + ".").utf8)
 
         data.append(Data(aci.serviceIdBinary))
 
@@ -1047,14 +1044,14 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
     private func parseClientExpiration(valueFlags: [String: String]) -> [MinimumVersion]? {
         let valueFlag = valueFlags[ValueFlag.clientExpiration.rawValue]
-        guard let valueFlag, let dataValue = valueFlag.nilIfEmpty?.data(using: .utf8) else {
+        guard let valueFlag = valueFlag?.nilIfEmpty else {
             return []
         }
 
         do {
             let jsonDecoder = JSONDecoder()
             jsonDecoder.dateDecodingStrategy = .iso8601
-            return try jsonDecoder.decode([MinimumVersion].self, from: dataValue)
+            return try jsonDecoder.decode([MinimumVersion].self, from: Data(valueFlag.utf8))
         } catch {
             owsFailDebug("Failed to decode client expiration (\(valueFlag), \(error)), ignoring.")
             return nil

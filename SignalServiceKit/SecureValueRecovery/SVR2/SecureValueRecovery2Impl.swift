@@ -1483,11 +1483,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             pin: String,
             wrapper: SVR2ClientWrapper
         ) throws -> SVR2PinHash {
-            guard
-                let utf8NormalizedPin = SVRUtil.normalizePin(pin).data(using: .utf8)
-            else {
-                throw SVR.SVRError.assertion
-            }
+            let utf8NormalizedPin = Data(SVRUtil.normalizePin(pin).utf8)
             return try wrapper.hashPin(
                 connection: connection,
                 utf8NormalizedPin: utf8NormalizedPin,

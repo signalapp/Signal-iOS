@@ -36,11 +36,11 @@ extension TSAttachmentMigration {
             while let storyMessageRow = try storyMessageCursor.next() {
                 guard
                     let storyMessageRowId = storyMessageRow["id"] as? Int64,
-                    let storyAttachmentString = storyMessageRow["attachment"] as? String,
-                    let storyMessageAttachmentData = storyAttachmentString.data(using: .utf8)
+                    let storyAttachmentString = storyMessageRow["attachment"] as? String
                 else {
                     throw OWSAssertionError("Unexpected row format")
                 }
+                let storyMessageAttachmentData = Data(storyAttachmentString.utf8)
                 let storyAttachment = try decoder.decode(
                     TSAttachmentMigration.SerializedStoryMessageAttachment.self,
                     from: storyMessageAttachmentData
@@ -76,13 +76,11 @@ extension TSAttachmentMigration {
                     sql: "SELECT attachment FROM model_StoryMessage WHERE id = ?;",
                     arguments: [storyMessageRowId]
                 )
-                guard
-                    let storyAttachmentString,
-                    let storyMessageAttachmentData = storyAttachmentString.data(using: .utf8)
-                else {
+                guard let storyAttachmentString else {
                     reservedFileIds.cleanUpFiles()
                     continue
                 }
+                let storyMessageAttachmentData = Data(storyAttachmentString.utf8)
                 // The `attachment` column is a SerializedStoryMessageAttachment encoded as a JSON string.
                 let storyAttachment = try decoder.decode(
                     TSAttachmentMigration.SerializedStoryMessageAttachment.self,

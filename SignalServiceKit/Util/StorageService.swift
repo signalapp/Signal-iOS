@@ -601,7 +601,7 @@ public struct StorageService {
         private func recordKey(forIdentifier identifier: StorageIdentifier) throws -> Data {
             /// The info used to derive the key incorporates the identifier for
             /// this Storage Service record.
-            let infoData = "20240801_SIGNAL_STORAGE_SERVICE_ITEM_".data(using: .utf8)! + identifier.data
+            let infoData = Data("20240801_SIGNAL_STORAGE_SERVICE_ITEM_".utf8) + identifier.data
 
             return try hkdf(
                 outputLength: 32,
@@ -649,7 +649,7 @@ public struct StorageService {
 
             let httpHeaders = OWSHttpHeaders()
             httpHeaders.addHeader("Content-Type", value: MimeType.applicationXProtobuf.rawValue, overwriteOnConflict: true)
-            try httpHeaders.addAuthHeader(username: username, password: password)
+            httpHeaders.addAuthHeader(username: username, password: password)
 
             Logger.info("Sending… -> \(requestDescription)")
 

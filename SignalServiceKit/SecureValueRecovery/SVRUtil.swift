@@ -28,7 +28,7 @@ public final class SVRUtil: NSObject {
     }
 
     internal static func deriveEncodedPINVerificationString(pin: String) throws -> String {
-        guard let pinData = normalizePin(pin).data(using: .utf8) else { throw SVR.SVRError.assertion }
+        let pinData = Data(normalizePin(pin).utf8)
         return try LibSignalClient.hashLocalPin(pinData)
     }
 
@@ -36,11 +36,7 @@ public final class SVRUtil: NSObject {
         pin: String,
         againstEncodedPINVerificationString encodedPINVerificationString: String
     ) -> Bool {
-        guard let pinData = normalizePin(pin).data(using: .utf8) else {
-            owsFailDebug("failed to determine pin data")
-            return false
-        }
-
+        let pinData = Data(normalizePin(pin).utf8)
         do {
             return try LibSignalClient.verifyLocalPin(pinData, againstEncodedHash: encodedPINVerificationString)
         } catch {

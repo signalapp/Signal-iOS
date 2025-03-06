@@ -491,7 +491,7 @@ lorem, in rhoncus nisi.\n\n
         }
 
         let largeText = text ?? DebugUIMessagesAssetLoader.largeTextSnippet
-        let textData = largeText.data(using: .utf8)!
+        let textData = Data(largeText.utf8)
 
         let filePath = OWSFileSystem.temporaryFilePath(fileExtension: "txt")
         do {

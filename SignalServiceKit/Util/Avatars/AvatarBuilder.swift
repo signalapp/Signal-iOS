@@ -1264,7 +1264,7 @@ fileprivate extension Data {
 
 fileprivate extension String {
     var sha1HexadecimalDigestString: String {
-        data(using: .utf8)!.sha1HexadecimalDigestString
+        Data(self.utf8).sha1HexadecimalDigestString
     }
 }
 

@@ -177,10 +177,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
             guard let value, !value.isEmpty else {
                 return nil
             }
-            guard let stringData = value.data(using: .utf8) else {
-                owsFailDebug("Invalid value.")
-                return nil
-            }
+            let stringData = Data(value.utf8)
             return try encryptOptionalData(stringData, paddedLengths: paddedLengths)
         }
 

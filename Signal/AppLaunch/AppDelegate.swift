@@ -50,7 +50,7 @@ private func uncaughtExceptionHandler(_ exception: NSException) {
         Logger.error("userInfo: \(String(describing: exception.userInfo))")
     } else {
         let reason = exception.reason ?? ""
-        let reasonData = reason.data(using: .utf8) ?? Data()
+        let reasonData = Data(reason.utf8)
         let reasonHash = Data(SHA256.hash(data: reasonData)).base64EncodedString()
 
         var truncatedReason = reason.prefix(20)

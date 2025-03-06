@@ -168,15 +168,13 @@ public final class OWSHttpHeaders: CustomDebugStringConvertible {
 
     public static var authHeaderKey: String { "Authorization" }
 
-    public static func authHeaderValue(username: String, password: String) throws -> String {
-        guard let data = "\(username):\(password)".data(using: .utf8) else {
-            throw OWSAssertionError("Failed to encode auth data.")
-        }
+    public static func authHeaderValue(username: String, password: String) -> String {
+        let data = Data("\(username):\(password)".utf8)
         return "Basic " + data.base64EncodedString()
     }
 
-    public func addAuthHeader(username: String, password: String) throws {
-        let value = try Self.authHeaderValue(username: username, password: password)
+    public func addAuthHeader(username: String, password: String) {
+        let value = Self.authHeaderValue(username: username, password: password)
         addHeader(Self.authHeaderKey, value: value, overwriteOnConflict: true)
     }
 

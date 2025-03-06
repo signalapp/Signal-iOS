@@ -92,9 +92,7 @@ extension HTMLMetadata {
     }
 
     private static func decodeHTMLEntities(in string: String) -> String? {
-        guard let data = string.data(using: .utf8) else {
-            return nil
-        }
+        let data = Data(string.utf8)
 
         let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
             .documentType: NSAttributedString.DocumentType.html,

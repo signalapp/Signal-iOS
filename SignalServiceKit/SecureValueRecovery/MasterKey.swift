@@ -124,7 +124,7 @@ private extension SVR.DerivedKey {
     }
 
     func derivedData(from dataToDeriveFrom: Data) -> Data {
-        let infoData = infoString.data(using: .utf8)!
+        let infoData = Data(infoString.utf8)
         switch self {
         case
                 .registrationLock,

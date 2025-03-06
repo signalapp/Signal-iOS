@@ -905,7 +905,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     nonisolated private static func isBplist(url: URL) -> Bool {
         if let handle = try? FileHandle(forReadingFrom: url) {
             let data = handle.readData(ofLength: 6)
-            return data == "bplist".data(using: .utf8)
+            return data == Data("bplist".utf8)
         } else {
             return false
         }

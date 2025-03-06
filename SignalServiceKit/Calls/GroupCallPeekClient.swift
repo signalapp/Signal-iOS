@@ -75,11 +75,11 @@ public class GroupCallPeekClient {
     public func fetchGroupMembershipProof(secretParams: GroupSecretParams) async throws -> Data {
         let credential = try await self.groupsV2.fetchGroupExternalCredentials(secretParams: secretParams)
 
-        guard let tokenData = credential.token?.data(using: .utf8) else {
+        guard let token = credential.token else {
             throw OWSAssertionError("Invalid credential")
         }
 
-        return tokenData
+        return Data(token.utf8)
     }
 
     public func groupMemberInfo(forGroupId groupId: GroupIdentifier, tx: DBReadTransaction) throws -> [GroupMemberInfo] {

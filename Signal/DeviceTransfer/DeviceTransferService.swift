@@ -77,7 +77,7 @@ class DeviceTransferService: NSObject {
     static let databaseIdentifier = "database"
     static let databaseWALIdentifier = "database-wal"
 
-    static let missingFileData = "Missing File".data(using: .utf8)!
+    static let missingFileData = Data("Missing File".utf8)
     static let missingFileHash = Data(SHA256.hash(data: missingFileData))
 
     // This must also be updated in the info.plist
@@ -438,7 +438,7 @@ class DeviceTransferService: NSObject {
         return protoBuilder.buildInfallibly()
     }
 
-    static let doneMessage = "Transfer Complete".data(using: .utf8)!
+    static let doneMessage = Data("Transfer Complete".utf8)
     func sendDoneMessage(to peerId: MCPeerID) throws {
         Logger.info("Sending done message")
 
@@ -449,7 +449,7 @@ class DeviceTransferService: NSObject {
         try session.send(DeviceTransferService.doneMessage, toPeers: [peerId], with: .reliable)
     }
 
-    static let backgroundAppMessage = "App backgrounded".data(using: .utf8)!
+    static let backgroundAppMessage = Data("App backgrounded".utf8)
     func sendBackgroundAppMessage(to peerId: MCPeerID) throws {
         Logger.info("Sending backgrounded message")
 

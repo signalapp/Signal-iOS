@@ -484,10 +484,7 @@ public extension String {
             return nil
         }
 
-        guard let data = shifted.data(using: .utf8) else {
-            owsFailDebug("data was unexpectedly nil")
-            return nil
-        }
+        let data = Data(shifted.utf8)
 
         return data.base64EncodedString()
     }

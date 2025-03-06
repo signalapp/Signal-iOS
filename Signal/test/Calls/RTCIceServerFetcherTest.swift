@@ -53,7 +53,7 @@ private struct TestCase {
 
     init(expectedUrls: [String], jsonString: String) {
         self.expectedUrls = expectedUrls
-        self.jsonData = jsonString.data(using: .utf8)!
+        self.jsonData = Data(jsonString.utf8)
     }
 
     static let multipleTurnServer = TestCase(
