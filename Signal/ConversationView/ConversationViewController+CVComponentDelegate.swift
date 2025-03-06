@@ -125,6 +125,38 @@ extension ConversationViewController: CVComponentDelegate {
 
     // MARK: -
 
+    public func willBecomeVisibleWithFailedOrPendingDownloads(_ message: TSMessage) {
+        AssertIsOnMainThread()
+
+        // Avoid doing this on the main actor, as this isn't user-initiated.
+        Task.detached {
+            let db = DependenciesBridge.shared.db
+            let attachmentDownloadManager = DependenciesBridge.shared.attachmentDownloadManager
+
+            await db.awaitableWrite { tx in
+                attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
+                    message,
+                    priority: .default,
+                    tx: tx
+                )
+            }
+        }
+    }
+
+    public func didTapFailedOrPendingDownloads(_ message: TSMessage) {
+        AssertIsOnMainThread()
+
+        SSKEnvironment.shared.databaseStorageRef.write { tx in
+            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
+                message,
+                priority: .userInitiated,
+                tx: tx.asV2Write
+            )
+        }
+    }
+
+    // MARK: -
+
     public func didTapReplyToItem(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
@@ -218,18 +250,6 @@ extension ConversationViewController: CVComponentDelegate {
         )
         sheet.delegate = self
         self.present(sheet, animated: true)
-    }
-
-    public func didTapFailedOrPendingDownloads(_ message: TSMessage) {
-        AssertIsOnMainThread()
-
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
-            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
-                message,
-                priority: .userInitiated,
-                tx: tx.asV2Write
-            )
-        }
     }
 
     public func didTapUndownloadableMedia() {

@@ -346,6 +346,12 @@ extension MediaGalleryFileCell: CVComponentDelegate {
 
     // MARK: -
 
+    func willBecomeVisibleWithFailedOrPendingDownloads(_ message: TSMessage) {}
+
+    func didTapFailedOrPendingDownloads(_ message: TSMessage) {}
+
+    // MARK: -
+
     func didTapReplyToItem(_ itemViewModel: CVItemViewModelImpl) {}
 
     func didTapSenderAvatar(_ interaction: TSInteraction) {}
@@ -361,8 +367,6 @@ extension MediaGalleryFileCell: CVComponentDelegate {
     func didTapShowEditHistory(_ itemViewModel: CVItemViewModelImpl) {}
 
     var hasPendingMessageRequest: Bool { false }
-
-    func didTapFailedOrPendingDownloads(_ message: TSMessage) {}
 
     func didTapUndownloadableMedia() {}
 

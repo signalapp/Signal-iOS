@@ -60,7 +60,7 @@ public protocol CVComponent: AnyObject {
                           renderItem: CVRenderItem,
                           messageSwipeActionState: CVMessageSwipeActionState)
 
-    func cellDidBecomeVisible()
+    func cellWillBecomeVisible(componentDelegate: CVComponentDelegate)
 
     func updateScrollingContent(componentView: CVComponentView)
 
@@ -157,7 +157,7 @@ public class CVComponentBase: NSObject {
         owsFailDebug("No pan in progress.")
     }
 
-    public func cellDidBecomeVisible() {
+    public func cellWillBecomeVisible(componentDelegate: CVComponentDelegate) {
         // Do nothing.
     }
 

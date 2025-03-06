@@ -29,10 +29,6 @@ public class CVCell: UICollectionViewCell, CVRootComponentHost {
     public var isCellVisible: Bool = false {
         didSet {
             componentView?.setIsCellVisible(isCellVisible)
-
-            if isCellVisible, let renderItem {
-                renderItem.rootComponent.cellDidBecomeVisible()
-            }
         }
     }
 

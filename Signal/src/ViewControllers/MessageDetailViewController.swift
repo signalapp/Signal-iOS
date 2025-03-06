@@ -1040,6 +1040,12 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     // MARK: -
 
+    func willBecomeVisibleWithFailedOrPendingDownloads(_ message: TSMessage) {}
+
+    func didTapFailedOrPendingDownloads(_ message: TSMessage) {}
+
+    // MARK: -
+
     // TODO:
     func didTapReplyToItem(_ itemViewModel: CVItemViewModelImpl) {}
 
@@ -1057,8 +1063,6 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     // TODO:
     var hasPendingMessageRequest: Bool { false }
-
-    func didTapFailedOrPendingDownloads(_ message: TSMessage) {}
 
     func didTapUndownloadableMedia() {}
 

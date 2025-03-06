@@ -718,7 +718,12 @@ extension CVLoadCoordinator: UICollectionViewDelegate {
             owsFailDebug("Unexpected cell type.")
             return
         }
+
         cell.isCellVisible = true
+        if let componentDelegate {
+            cell.renderItem?.rootComponent.cellWillBecomeVisible(componentDelegate: componentDelegate)
+        }
+
         let delegate = self.delegate
         DispatchQueue.main.async {
             delegate?.updateScrollingContent()

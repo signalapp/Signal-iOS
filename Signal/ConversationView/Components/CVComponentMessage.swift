@@ -1647,11 +1647,25 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     // MARK: - Events
 
-    public override func handleTap(sender: UIGestureRecognizer,
-                                   componentDelegate: CVComponentDelegate,
-                                   componentView: CVComponentView,
-                                   renderItem: CVRenderItem) -> Bool {
+    public override func cellWillBecomeVisible(
+        componentDelegate: CVComponentDelegate
+    ) {
+        AssertIsOnMainThread()
 
+        if
+            let message = interaction as? TSMessage,
+            componentState.failedOrPendingDownloads != nil
+        {
+            componentDelegate.willBecomeVisibleWithFailedOrPendingDownloads(message)
+        }
+    }
+
+    public override func handleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem
+    ) -> Bool {
         guard let componentView = componentView as? CVComponentViewMessage else {
             owsFailDebug("Unexpected componentView.")
             return false
@@ -2344,10 +2358,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                  isAnimated: true)
             }
         }
-    }
-
-    public override func cellDidBecomeVisible() {
-        AssertIsOnMainThread()
     }
 
     public override func contextMenuAccessoryViews(componentView: CVComponentView) -> [ContextMenuTargetedPreviewAccessory]? {
