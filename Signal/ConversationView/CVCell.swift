@@ -24,15 +24,7 @@ public enum CVCellReuseIdentifier: String, CaseIterable {
 
 // MARK: -
 
-// Represents a single item in the conversation history.
-// Could be a date header or a unread indicator.
-public protocol CVItemCell where Self: UICollectionViewCell {
-    var isCellVisible: Bool { get set }
-}
-
-// MARK: -
-
-public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
+public class CVCell: UICollectionViewCell, CVRootComponentHost {
 
     public var isCellVisible: Bool = false {
         didSet {

@@ -72,10 +72,47 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         updateConversationStyle()
     }
 
-    func updateAccessibilityCustomActionsForCell(_ cell: CVItemCell) {
-        if let cvcell = cell as? CVCell {
-            updateAccessibilityCustomActionsForCell(cell: cvcell)
+    func updateAccessibilityCustomActionsForCell(_ cell: CVCell) {
+        guard let renderItem = cell.renderItem else {
+            return
         }
+
+        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+        let shouldAllowReply = shouldAllowReplyForItem(itemViewModel)
+        let messageActions: [MessageAction]
+        if itemViewModel.messageCellType == .systemMessage {
+            messageActions = MessageActions.infoMessageActions(itemViewModel: itemViewModel,
+                                                               delegate: self)
+        } else if itemViewModel.messageCellType == .stickerMessage || itemViewModel.messageCellType == .genericAttachment {
+            messageActions = MessageActions.mediaActions(itemViewModel: itemViewModel,
+                                                         shouldAllowReply: shouldAllowReply,
+                                                         delegate: self)
+        } else {
+            messageActions = MessageActions.textActions(itemViewModel: itemViewModel,
+                                                        shouldAllowReply: shouldAllowReply,
+                                                        delegate: self)
+        }
+
+        var actions: [CVAccessibilityCustomAction] = []
+        for messageAction in messageActions {
+            let action = CVAccessibilityCustomAction(
+                name: messageAction.accessibilityLabel ?? messageAction.accessibilityIdentifier,
+                target: self,
+                selector: #selector(handleCustomAccessibilityActionInvoked(sender:))
+            )
+            action.messageAction = messageAction
+            actions.append(action)
+        }
+        cell.accessibilityCustomActions = actions
+    }
+
+    @objc
+    private func handleCustomAccessibilityActionInvoked(sender: UIAccessibilityCustomAction) {
+        guard let cvCustomAction = sender as? CVAccessibilityCustomAction else {
+            return
+        }
+
+        cvCustomAction.messageAction?.block(self)
     }
 
     func willUpdateWithNewRenderState(_ renderState: CVRenderState) -> CVUpdateToken {
