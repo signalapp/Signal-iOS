@@ -11,8 +11,6 @@ public import SignalUI
 
 extension ConversationViewController: CVComponentDelegate {
 
-    public var componentDelegate: CVComponentDelegate { self }
-
     public var isConversationPreview: Bool { false }
 
     public var wallpaperBlurProvider: WallpaperBlurProvider? { backgroundContainer }

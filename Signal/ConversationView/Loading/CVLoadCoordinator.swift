@@ -20,7 +20,7 @@ protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
 
     func chatColorDidChange()
 
-    func updateAccessibilityCustomActionsForCell(_ cell: CVItemCell)
+    func updateAccessibilityCustomActionsForCell(_ cell: CVCell)
 
     var isScrolledToBottom: Bool { get }
 
@@ -714,7 +714,7 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
 extension CVLoadCoordinator: UICollectionViewDelegate {
 
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let cell = cell as? CVItemCell else {
+        guard let cell = cell as? CVCell else {
             owsFailDebug("Unexpected cell type.")
             return
         }
@@ -727,7 +727,7 @@ extension CVLoadCoordinator: UICollectionViewDelegate {
     }
 
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let cell = cell as? CVItemCell else {
+        guard let cell = cell as? CVCell else {
             owsFailDebug("Unexpected cell type.")
             return
         }

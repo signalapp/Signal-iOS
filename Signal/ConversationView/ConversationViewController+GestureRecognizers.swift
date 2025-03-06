@@ -136,7 +136,7 @@ extension ConversationViewController: SingleOrDoubleTapGestureDelegate {
             return false
         }
 
-        return cell.handleTap(sender: sender, componentDelegate: componentDelegate)
+        return cell.handleTap(sender: sender, componentDelegate: self)
     }
 
     public func handleDoubleTap(_ sender: SingleOrDoubleTapGestureRecognizer) -> Bool {
@@ -193,7 +193,7 @@ extension ConversationViewController {
             return
         }
         guard let longPressHandler = cell.findLongPressHandler(sender: sender,
-                                                               componentDelegate: componentDelegate) else {
+                                                               componentDelegate: self) else {
             return
         }
 
@@ -205,7 +205,7 @@ extension ConversationViewController {
             return nil
         }
         guard let longPressHandler = cell.findLongPressHandler(sender: sender,
-                                                               componentDelegate: componentDelegate) else {
+                                                               componentDelegate: self) else {
             return nil
         }
         if sender == collectionViewContextMenuGestureRecognizer {
@@ -214,51 +214,6 @@ extension ConversationViewController {
             longPressHandler.startGesture(cell: cell)
         }
         return longPressHandler
-    }
-
-    // MARK: - VoiceOver Custom Actions
-
-    func updateAccessibilityCustomActionsForCell(cell: CVCell) {
-        guard let renderItem = cell.renderItem else {
-            return
-        }
-
-        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        let shouldAllowReply = shouldAllowReplyForItem(itemViewModel)
-        let messageActions: [MessageAction]
-        if itemViewModel.messageCellType == .systemMessage {
-            messageActions = MessageActions.infoMessageActions(itemViewModel: itemViewModel,
-                                                               delegate: self)
-        } else if itemViewModel.messageCellType == .stickerMessage || itemViewModel.messageCellType == .genericAttachment {
-            messageActions = MessageActions.mediaActions(itemViewModel: itemViewModel,
-                                                         shouldAllowReply: shouldAllowReply,
-                                                         delegate: self)
-        } else {
-            messageActions = MessageActions.textActions(itemViewModel: itemViewModel,
-                                                        shouldAllowReply: shouldAllowReply,
-                                                        delegate: self)
-        }
-
-        var actions: [CVAccessibilityCustomAction] = []
-        for messageAction in messageActions {
-            let action = CVAccessibilityCustomAction(
-                name: messageAction.accessibilityLabel ?? messageAction.accessibilityIdentifier,
-                target: self,
-                selector: #selector(handleCustomAccessibilityActionInvoked(sender:))
-            )
-            action.messageAction = messageAction
-            actions.append(action)
-        }
-        cell.accessibilityCustomActions = actions
-    }
-
-    @objc
-    public func handleCustomAccessibilityActionInvoked(sender: UIAccessibilityCustomAction) {
-        guard let cvCustomAction = sender as? CVAccessibilityCustomAction else {
-            return
-        }
-
-        cvCustomAction.messageAction?.block(self)
     }
 
     // MARK: - Pan
@@ -311,7 +266,7 @@ extension ConversationViewController {
         }
         let messageSwipeActionState = viewState.messageSwipeActionState
         guard let panHandler = cell.findPanHandler(sender: sender,
-                                                   componentDelegate: componentDelegate,
+                                                   componentDelegate: self,
                                                    messageSwipeActionState: messageSwipeActionState) else {
             return nil
         }
