@@ -325,14 +325,18 @@ class ProvisioningController: NSObject {
                 return
             }
 
-            if FeatureFlags.linkAndSyncLinkedImport {
+            let willLinkAndSync = provisionMessage.ephemeralBackupKey != nil
+            if
+                FeatureFlags.linkAndSyncLinkedImport,
+                willLinkAndSync
+            {
                 // Don't confirm the name in link'n'sync, just keep going.
                 didSetDeviceName(
                     UIDevice.current.name,
                     provisionMessage: provisionMessage,
                     from: viewController,
                     navigationController: navigationController,
-                    willLinkAndSync: provisionMessage.ephemeralBackupKey != nil
+                    willLinkAndSync: willLinkAndSync
                 )
             } else {
                 let confirmVC = ProvisioningSetDeviceNameViewController(
