@@ -518,9 +518,6 @@ public class MessageSender {
             var currentValidRecipients = groupMembership.fullMembers
 
             // ...or latest known list of "additional recipients".
-            //
-            // This is used to send group update messages for v2 groups to
-            // pending members who are not included in .sendingRecipientAddresses().
             if GroupManager.shouldMessageHaveAdditionalRecipients(message, groupThread: groupThread) {
                 currentValidRecipients.formUnion(groupMembership.invitedMembers)
             }
@@ -709,7 +706,7 @@ public class MessageSender {
         recoveryState: OuterRecoveryState,
         senderCertificates: SenderCertificates
     ) async throws {
-        let nextAction: SendMessageNextAction? = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+        let nextAction = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx -> SendMessageNextAction? in
             guard let thread = message.thread(tx: tx) else {
                 throw MessageSenderError.threadMissing
             }
@@ -833,9 +830,12 @@ public class MessageSender {
                 sendViaSenderKey = nil
             }
 
-            if thread is TSGroupThread, sendViaSenderKey == nil, serviceIds.count >= 2 {
-                let notificationPresenter = SSKEnvironment.shared.notificationPresenterRef
-                notificationPresenter.notifyTestPopulation(ofErrorMessage: "Couldn't send using GSEs.")
+            if let thread = thread as? TSGroupThread, sendViaSenderKey == nil {
+                let fullMembers = Set(thread.groupMembership.fullMembers.compactMap(\.serviceId))
+                if fullMembers.intersection(serviceIds).count >= 2 {
+                    let notificationPresenter = SSKEnvironment.shared.notificationPresenterRef
+                    notificationPresenter.notifyTestPopulation(ofErrorMessage: "Couldn't send using GSEs.")
+                }
             }
 
             return .sendPreparedMessage(SendMessageNextAction.PreparedState(
