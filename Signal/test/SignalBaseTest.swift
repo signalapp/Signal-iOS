@@ -12,7 +12,12 @@ open class SignalBaseTest: XCTestCase {
     @MainActor
     public override func setUp() {
         super.setUp()
-        MockSSKEnvironment.activate()
+        let setupExpectation = expectation(description: "mock ssk environment setup completed")
+        Task {
+            await MockSSKEnvironment.activate()
+            setupExpectation.fulfill()
+        }
+        waitForExpectations(timeout: 2)
     }
 
     open override func tearDown() {

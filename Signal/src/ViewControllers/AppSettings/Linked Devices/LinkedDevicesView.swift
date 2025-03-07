@@ -1119,7 +1119,12 @@ class EditDeviceNameViewController: NameEditorViewController {
 #if DEBUG
 @available(iOS 17, *)
 #Preview {
-    MockSSKEnvironment.activate()
+    let semaphore = DispatchSemaphore(value: 0)
+    Task.detached {
+        await MockSSKEnvironment.activate()
+        semaphore.signal()
+    }
+    semaphore.wait()
     let viewController = LinkedDevicesHostingController(isPreview: true)
     return OWSNavigationController(rootViewController: viewController)
 }

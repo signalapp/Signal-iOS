@@ -102,12 +102,15 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             authCredentialManager: databaseContinuation.authCredentialManager
         )
 
-        databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalContinuation in
-            switch finalContinuation.finish(willResumeInProgressRegistration: false) {
-            case .corruptRegistrationState:
-                self.showNotRegisteredView()
-            case nil:
-                self.setAppIsReady()
+        Task {
+            let finalContinuation = await databaseContinuation.prepareDatabase()
+            await MainActor.run {
+                switch finalContinuation.finish(willResumeInProgressRegistration: false) {
+                case .corruptRegistrationState:
+                    self.showNotRegisteredView()
+                case nil:
+                    self.setAppIsReady()
+                }
             }
         }
 

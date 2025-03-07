@@ -11,7 +11,12 @@ public class SSKBaseTest: XCTestCase {
     @MainActor
     public override func setUp() {
         DDLog.add(DDTTYLogger.sharedInstance!)
-        MockSSKEnvironment.activate()
+        let setupExpectation = expectation(description: "mock ssk environment setup completed")
+        Task {
+            await MockSSKEnvironment.activate()
+            setupExpectation.fulfill()
+        }
+        waitForExpectations(timeout: 2)
     }
 
     public override func tearDown() {

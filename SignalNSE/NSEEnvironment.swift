@@ -149,13 +149,16 @@ class NSEEnvironment {
             messageBackupErrorPresenterFactory: NoOpMessageBackupErrorPresenterFactory()
         )
 
-        databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalSetupContinuation in
-            switch finalSetupContinuation.finish(willResumeInProgressRegistration: false) {
-            case .corruptRegistrationState:
-                // TODO: Maybe notify that you should open the main app.
-                return owsFailDebug("Couldn't launch because of corrupted registration state.")
-            case nil:
-                self.setAppIsReady()
+        Task {
+            let finalSetupContinuation = await databaseContinuation.prepareDatabase()
+            await MainActor.run {
+                switch finalSetupContinuation.finish(willResumeInProgressRegistration: false) {
+                case .corruptRegistrationState:
+                    // TODO: Maybe notify that you should open the main app.
+                    return owsFailDebug("Couldn't launch because of corrupted registration state.")
+                case nil:
+                    self.setAppIsReady()
+                }
             }
         }
 

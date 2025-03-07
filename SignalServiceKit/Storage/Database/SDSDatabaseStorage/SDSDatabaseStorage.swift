@@ -68,7 +68,7 @@ public class SDSDatabaseStorage: NSObject {
         return GRDBDatabaseStorageAdapter.databaseFileUrl()
     }
 
-    func runGrdbSchemaMigrationsOnMainDatabase(completionScheduler: Scheduler, completion: @escaping () -> Void) {
+    func runGrdbSchemaMigrationsOnMainDatabase<T>(completion: () async -> T) async -> T {
         let didPerformIncrementalMigrations: Bool = {
             do {
                 return try GRDBSchemaMigrator.migrateDatabase(
@@ -86,16 +86,16 @@ public class SDSDatabaseStorage: NSObject {
 
         if didPerformIncrementalMigrations {
             do {
-                try reopenGRDBStorage(completionScheduler: completionScheduler, completion: completion)
+                return try await reopenGRDBStorage(completion: completion)
             } catch {
                 owsFail("Unable to reopen storage \(error.grdbErrorForLogging)")
             }
         } else {
-            completionScheduler.async(completion)
+            return await completion()
         }
     }
 
-    public func reopenGRDBStorage(completionScheduler: Scheduler, completion: @escaping () -> Void = {}) throws {
+    private func reopenGRDBStorage<T>(completion: () async -> T) async throws -> T {
         // There seems to be a rare issue where at least one reader or writer
         // (e.g. SQLite connection) in the GRDB pool ends up "stale" after
         // a schema migration and does not reflect the migrations.
@@ -110,16 +110,14 @@ public class SDSDatabaseStorage: NSObject {
             keyFetcher: keyFetcher
         )
 
-        completionScheduler.async {
-            // We want to make sure all db connections from the old adapter/pool are closed.
-            //
-            // We only reach this point by a predictable code path; the autoreleasepool
-            // should be drained by this point.
-            owsAssertDebug(weakPool == nil)
-            owsAssertDebug(weakGrdbStorage == nil)
+        // We want to make sure all db connections from the old adapter/pool are closed.
+        //
+        // We only reach this point by a predictable code path; the autoreleasepool
+        // should be drained by this point.
+        owsAssertDebug(weakPool == nil)
+        owsAssertDebug(weakGrdbStorage == nil)
 
-            completion()
-        }
+        return await completion()
     }
 
     // MARK: - Id Mapping

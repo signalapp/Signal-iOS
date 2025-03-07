@@ -1538,25 +1538,22 @@ extension AppSetup {
 }
 
 extension AppSetup.DatabaseContinuation {
-    public func prepareDatabase(
-        backgroundScheduler: Scheduler = DispatchQueue.global(),
-        mainScheduler: Scheduler = DispatchQueue.main
-    ) -> Guarantee<AppSetup.FinalContinuation> {
+    public func prepareDatabase() async -> AppSetup.FinalContinuation {
         let databaseStorage = sskEnvironment.databaseStorageRef
 
-        let (guarantee, future) = Guarantee<AppSetup.FinalContinuation>.pending()
-        backgroundScheduler.async {
-            if self.shouldTruncateGrdbWal() {
-                // Try to truncate GRDB WAL before any readers or writers are active.
-                do {
-                    databaseStorage.logFileSizes()
-                    try databaseStorage.grdbStorage.syncTruncatingCheckpoint()
-                    databaseStorage.logFileSizes()
-                } catch {
-                    owsFailDebug("Failed to truncate database: \(error)")
-                }
+        if self.shouldTruncateGrdbWal() {
+            // Try to truncate GRDB WAL before any readers or writers are active.
+            do {
+                databaseStorage.logFileSizes()
+                try databaseStorage.grdbStorage.syncTruncatingCheckpoint()
+                databaseStorage.logFileSizes()
+            } catch {
+                owsFailDebug("Failed to truncate database: \(error)")
             }
-            databaseStorage.runGrdbSchemaMigrationsOnMainDatabase(completionScheduler: mainScheduler) {
+        }
+        return await databaseStorage.runGrdbSchemaMigrationsOnMainDatabase {
+            // NOTE: I'm not sure why the code below needs to run on the main actor but it was doing so before this refactor.
+            return await MainActor.run {
                 do {
                     try databaseStorage.grdbStorage.setupDatabaseChangeObserver()
                 } catch {
@@ -1565,26 +1562,18 @@ extension AppSetup.DatabaseContinuation {
                 self.sskEnvironment.warmCaches(appReadiness: self.appReadiness)
 
                 self.backgroundTask.end()
-                future.resolve(AppSetup.FinalContinuation(
+                return AppSetup.FinalContinuation(
                     appReadiness: self.appReadiness,
                     authCredentialStore: self.authCredentialStore,
                     dependenciesBridge: self.dependenciesBridge,
                     sskEnvironment: self.sskEnvironment
-                ))
-
+                )
             }
         }
-        return guarantee
     }
 
     private func shouldTruncateGrdbWal() -> Bool {
-        guard appContext.isMainApp else {
-            return false
-        }
-        guard appContext.mainApplicationStateOnLaunch() != .background else {
-            return false
-        }
-        return true
+        appContext.isMainApp && appContext.mainApplicationStateOnLaunch() != .background
     }
 }
 
@@ -1616,6 +1605,7 @@ extension AppSetup.FinalContinuation {
         case corruptRegistrationState
     }
 
+    @MainActor
     public func finish(willResumeInProgressRegistration: Bool) -> SetupError? {
         AssertIsOnMainThread()
 

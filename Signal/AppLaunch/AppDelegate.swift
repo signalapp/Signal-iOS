@@ -432,7 +432,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager
             )
         )
-        let continuation = await databaseContinuation.prepareDatabase().awaitable()
+        let continuation = await databaseContinuation.prepareDatabase()
         guard FeatureFlags.runTSAttachmentMigrationBlockingOnLaunch else {
             return (continuation, sleepBlockObject)
         }

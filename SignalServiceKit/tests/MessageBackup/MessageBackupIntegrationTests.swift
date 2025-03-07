@@ -466,7 +466,7 @@ class MessageBackupIntegrationTests: XCTestCase {
                 networkManager: CrashyMocks.MockNetworkManager(appReadiness: appReadiness, libsignalNet: nil),
                 webSocketFactory: CrashyMocks.MockWebSocketFactory()
             )
-        ).prepareDatabase().awaitable()
+        ).prepareDatabase()
     }
 }
 

@@ -11,12 +11,12 @@ import GRDB
 public class MockSSKEnvironment {
     /// Set up a mock SSK environment as well as ``DependenciesBridge``.
     @MainActor
-    public static func activate() {
+    public static func activate() async {
         let testAppContext = TestAppContext()
         SetCurrentAppContext(testAppContext)
         let appReadiness = AppReadinessImpl()
 
-        let finalContinuation = AppSetup().start(
+        _ = await AppSetup().start(
             appContext: testAppContext,
             appReadiness: appReadiness,
             databaseStorage: try! SDSDatabaseStorage(
@@ -53,11 +53,7 @@ public class MockSSKEnvironment {
                 versionedProfiles: MockVersionedProfiles(),
                 webSocketFactory: WebSocketFactoryMock()
             )
-        ).prepareDatabase(
-            backgroundScheduler: SyncScheduler(),
-            mainScheduler: SyncScheduler()
-        )
-        owsPrecondition(finalContinuation.isSealed)
+        ).prepareDatabase()
     }
 
     public static func flushAndWait() {
