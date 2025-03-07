@@ -8,9 +8,6 @@ import zlib
 import SignalServiceKit
 import SignalUI
 
-typealias UploadDebugLogsSuccess = (URL) -> Void
-typealias UploadDebugLogsFailure = (String, String?) -> Void
-
 enum DebugLogs {
 
     static func submitLogs() {
@@ -107,37 +104,33 @@ enum DebugLogs {
         ModalActivityIndicatorViewController.present(
             fromViewController: viewController,
             canCancel: true,
-            backgroundBlock: { modalActivityIndicator in
-                uploadLogs(
-                    success: { url in
-                        AssertIsOnMainThread()
+            asyncBlock: { await _uploadLogs(modalActivityIndicator: $0, completion: completion) }
+        )
+    }
 
-                        guard !modalActivityIndicator.wasCancelled else { return }
+    @MainActor
+    private static func _uploadLogs(modalActivityIndicator: ModalActivityIndicatorViewController, completion: @escaping (URL) -> Void) async {
+        do {
+            let url = try await uploadLogs()
+            guard !modalActivityIndicator.wasCancelled else { return }
+            modalActivityIndicator.dismiss {
+                completion(url)
+            }
+        } catch {
+            guard !modalActivityIndicator.wasCancelled else {
+                if let logArchiveOrDirectoryPath = error.logArchiveOrDirectoryPath {
+                    OWSFileSystem.deleteFile(logArchiveOrDirectoryPath)
+                }
+                return
+            }
 
-                        modalActivityIndicator.dismiss {
-                            completion(url)
-                        }
-                    },
-                    failure: { localizedErrorMessage, logArchiveOrDirectoryPath in
-                        AssertIsOnMainThread()
-
-                        guard !modalActivityIndicator.wasCancelled else {
-                            if let logArchiveOrDirectoryPath {
-                                OWSFileSystem.deleteFile(logArchiveOrDirectoryPath)
-                            }
-                            return
-                        }
-
-                        modalActivityIndicator.dismiss {
-                            DebugLogs.showFailureAlert(
-                                with: localizedErrorMessage,
-                                logArchiveOrDirectoryPath: logArchiveOrDirectoryPath
-                            )
-                        }
-                    }
+            modalActivityIndicator.dismiss {
+                DebugLogs.showFailureAlert(
+                    with: error.localizedErrorMessage,
+                    logArchiveOrDirectoryPath: error.logArchiveOrDirectoryPath
                 )
             }
-        )
+        }
     }
 
     // MARK: - Collecting & uploading
@@ -195,18 +188,12 @@ enum DebugLogs {
         }
     }
 
-    static func uploadLogs(
-        success: @escaping UploadDebugLogsSuccess,
-        failure: @escaping UploadDebugLogsFailure
-    ) {
-        // Ensure that we call the completions on the main thread.
-        let wrappedSuccess: UploadDebugLogsSuccess = { url in
-            DispatchMainThreadSafe { success(url) }
-        }
-        let wrappedFailure: UploadDebugLogsFailure = { localizedErrorMessage, logArchiveOrDirectoryPath in
-            DispatchMainThreadSafe { failure(localizedErrorMessage, logArchiveOrDirectoryPath) }
-        }
+    struct UploadDebugLogError: Error {
+        var localizedErrorMessage: String
+        var logArchiveOrDirectoryPath: String?
+    }
 
+    static func uploadLogs() async throws(UploadDebugLogError) -> URL {
         // Phase 0. Flush any pending logs to disk.
         if DebugFlags.internalLogging {
             KeyValueStore.logCollectionStatistics()
@@ -220,8 +207,7 @@ enum DebugLogs {
         case let .success(logsDirPath):
             zipDirPath = logsDirPath
         case let .failure(error):
-            wrappedFailure(error.errorString, nil)
-            return
+            throw UploadDebugLogError(localizedErrorMessage: error.errorString)
         }
 
         // Phase 2. Zip up the log files.
@@ -241,26 +227,23 @@ enum DebugLogs {
                 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS",
                 comment: "Error indicating that the debug logs could not be packaged."
             )
-            wrappedFailure(errorMessage, zipDirPath)
-            return
+            throw UploadDebugLogError(localizedErrorMessage: errorMessage, logArchiveOrDirectoryPath: zipDirPath)
         }
 
         OWSFileSystem.protectFileOrFolder(atPath: zipFileUrl.path)
         OWSFileSystem.deleteFile(zipDirPath)
 
         // Phase 3. Upload the log files.
-        Task {
-            do {
-                let url = try await DebugLogUploader.uploadFile(fileUrl: zipFileUrl, mimeType: MimeType.applicationZip.rawValue)
-                try OWSFileSystem.deleteFile(url: zipFileUrl)
-                wrappedSuccess(url)
-            } catch {
-                let errorMessage = OWSLocalizedString(
-                    "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG",
-                    comment: "Error indicating that a debug log could not be uploaded."
-                )
-                wrappedFailure(errorMessage, zipFileUrl.path)
-            }
+        do {
+            let url = try await DebugLogUploader.uploadFile(fileUrl: zipFileUrl, mimeType: MimeType.applicationZip.rawValue)
+            try OWSFileSystem.deleteFile(url: zipFileUrl)
+            return url
+        } catch {
+            let errorMessage = OWSLocalizedString(
+                "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG",
+                comment: "Error indicating that a debug log could not be uploaded."
+            )
+            throw UploadDebugLogError(localizedErrorMessage: errorMessage, logArchiveOrDirectoryPath: zipFileUrl.path)
         }
     }
 

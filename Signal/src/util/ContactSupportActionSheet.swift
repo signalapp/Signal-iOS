@@ -45,16 +45,18 @@ enum ContactSupportActionSheet {
             var emailRequest = SupportEmailModel()
             emailRequest.supportFilter = emailFilter.asString
             emailRequest.debugLogPolicy = .requireUpload
-            let operation = ComposeSupportEmailOperation(model: emailRequest)
 
             ModalActivityIndicatorViewController.present(
                 fromViewController: fromViewController,
                 canCancel: true
             ) { modal in
-                _ = modal.wasCancelledPromise.done { operation.cancel() }
+                let composeTask = Task {
+                    return try await ComposeSupportEmailOperation(model: emailRequest).perform()
+                }
+                _ = modal.wasCancelledPromise.done { composeTask.cancel() }
 
-                firstly {
-                    operation.perform(on: DispatchQueue.sharedUserInitiated)
+                Promise.wrapAsync {
+                    try await composeTask.value
                 }.done {
                     modal.dismiss()
                 }.catch { error in
@@ -104,7 +106,7 @@ enum ContactSupportActionSheet {
 
 // MARK: -
 
-private struct DebugLogsUploadError: Error, LocalizedError, UserErrorDescriptionProvider {
+struct DebugLogsUploadError: Error, LocalizedError, UserErrorDescriptionProvider {
     let localizedDescription: String
 
     var errorDescription: String? {
@@ -113,19 +115,15 @@ private struct DebugLogsUploadError: Error, LocalizedError, UserErrorDescription
 }
 
 extension DebugLogs {
-    static func uploadLog() -> Promise<URL> {
-        return Promise { future in
-            DebugLogs.uploadLogs(
-                success: future.resolve,
-                failure: { localizedErrorDescription, logArchiveOrDirectoryPath in
-                    // FIXME: Should we do something with the local log file?
-                    if let logArchiveOrDirectoryPath = logArchiveOrDirectoryPath {
-                        _ = OWSFileSystem.deleteFile(logArchiveOrDirectoryPath)
-                    }
-
-                    future.reject(DebugLogsUploadError(localizedDescription: localizedErrorDescription))
-                }
-            )
+    static func uploadLog() async throws(DebugLogsUploadError) -> URL {
+        do {
+            return try await DebugLogs.uploadLogs()
+        } catch {
+            // FIXME: Should we do something with the local log file?
+            if let logArchiveOrDirectoryPath = error.logArchiveOrDirectoryPath {
+                _ = OWSFileSystem.deleteFile(logArchiveOrDirectoryPath)
+            }
+            throw DebugLogsUploadError(localizedDescription: error.localizedErrorMessage)
         }
     }
 }

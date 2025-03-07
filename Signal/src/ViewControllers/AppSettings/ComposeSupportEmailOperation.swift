@@ -98,13 +98,14 @@ final class ComposeSupportEmailOperation: NSObject {
     class func sendEmail(supportFilter: String, logUrl: URL? = nil) -> Promise<Void> {
         var model = SupportEmailModel()
         model.supportFilter = supportFilter
-        if let logUrl = logUrl { model.debugLogPolicy = .link(logUrl) }
-        return sendEmail(model: model)
+        if let logUrl {
+            model.debugLogPolicy = .link(logUrl)
+        }
+        return Promise.wrapAsync { try await sendEmail(model: model) }
     }
 
-    class func sendEmail(model: SupportEmailModel) -> Promise<Void> {
-        let operation = ComposeSupportEmailOperation(model: model)
-        return operation.perform(on: DispatchQueue.sharedUserInitiated)
+    class func sendEmail(model: SupportEmailModel) async throws(EmailError) {
+        return try await ComposeSupportEmailOperation(model: model).perform()
     }
 
     init(model: SupportEmailModel) {
@@ -112,73 +113,59 @@ final class ComposeSupportEmailOperation: NSObject {
         super.init()
     }
 
-    func perform(on workQueue: DispatchQueue = .sharedUtility) -> Promise<Void> {
-        guard !isCancelled else {
-            // If we're cancelled, return an empty success
-            return Promise()
+    func perform() async throws(EmailError) {
+        if Task.isCancelled {
+            return
         }
+
         guard Self.canSendEmails else {
             // If we can't send emails, fail early
-            return Promise(error: EmailError.failedToOpenURL)
+            throw EmailError.failedToOpenURL
         }
 
-        return firstly { () -> Promise<String?> in
-            // Returns an appropriate string for the debug logs
-            // If we're not uploading, returns nil
-            switch model.debugLogPolicy {
-            case .none:
-                return .value(nil)
-            case let .link(url):
-                return .value(url.absoluteString)
-            case .attemptUpload, .requireUpload:
-                return DebugLogs.uploadLog().map { $0.absoluteString }
+        let debugUrlString: String?
+        switch model.debugLogPolicy {
+        case .none:
+            debugUrlString = nil
+        case .link(let url):
+            debugUrlString = url.absoluteString
+        case .attemptUpload:
+            do {
+                debugUrlString = try await uploadDebugLogWithTimeout().absoluteString
+            } catch {
+                debugUrlString = "[Support note: Log upload failed — \(error.userErrorDescription)]"
             }
-
-        }.timeout(seconds: 60, timeoutErrorBlock: { () -> Error in
-            // If we haven't finished uploading logs in 10s, give up
-            return EmailError.logUploadTimedOut
-
-        })
-        .recover(on: workQueue) { error -> Promise<String?> in
-            // Suppress the error unless we're required to provide logs
-            if case .requireUpload = self.model.debugLogPolicy {
-                let emailError = EmailError.logUploadFailure(underlyingError: (error as? LocalizedError))
-                return Promise(error: emailError)
-            } else {
-                return .value("[Support note: Log upload failed — \(error.userErrorDescription)]")
+        case .requireUpload:
+            do {
+                debugUrlString = try await uploadDebugLogWithTimeout().absoluteString
+            } catch {
+                throw EmailError.logUploadFailure(underlyingError: (error as? LocalizedError))
             }
+        }
 
-        }.then(on: workQueue) { (debugURLString) -> Promise<URL> in
-            self.model.resolvedDebugString = debugURLString
+        self.model.resolvedDebugString = debugUrlString
 
-            if let url = self.emailURL {
-                return .value(url)
-            } else {
-                return Promise(error: EmailError.invalidURL)
-            }
+        guard let emailURL else {
+            throw EmailError.invalidURL
+        }
 
-        }.then(on: DispatchQueue.main) { (emailURL: URL) -> Promise<Void> in
-            (self.isCancelled == false) ? self.open(mailURL: emailURL) : Promise()
+        if Task.isCancelled {
+            return
+        }
+
+        let result = await UIApplication.shared.open(emailURL)
+        guard result else {
+            throw EmailError.failedToOpenURL
         }
     }
 
-    /// If invoked before the operation completes, will prevent the operation from opening email
-    /// Must be called from main queue. Note: This doesn't really *stop* the operation so much as
-    /// render it invisible to the user.
-    func cancel() {
-        AssertIsOnMainThread()
-        isCancelled = true
-    }
-
-    private func open(mailURL url: URL) -> Promise<Void> {
-        Promise { future in
-            UIApplication.shared.open(url, options: [:]) { (success) in
-                if success {
-                    future.resolve()
-                } else {
-                    future.reject(EmailError.failedToOpenURL)
-                }
+    private func uploadDebugLogWithTimeout() async throws -> URL {
+        do {
+            return try await withCooperativeTimeout(seconds: 60) {
+                return try await DebugLogs.uploadLog()
             }
+        } catch is CooperativeTimeoutError {
+            throw EmailError.logUploadTimedOut
         }
     }
 

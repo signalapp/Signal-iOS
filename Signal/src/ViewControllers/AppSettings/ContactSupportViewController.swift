@@ -244,11 +244,11 @@ final class ContactSupportViewController: OWSTableViewController2 {
     // MARK: - Actions
 
     private func didTapCancel() {
-        currentEmailComposeOperation?.cancel()
+        self.currentEmailComposeTask?.cancel()
         navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
 
-    var currentEmailComposeOperation: ComposeSupportEmailOperation?
+    private var currentEmailComposeTask: Task<Void, any Error>?
 
     private func didTapNext() {
         var emailRequest = SupportEmailModel()
@@ -258,18 +258,19 @@ final class ContactSupportViewController: OWSTableViewController2 {
         if let selectedFilter = selectedFilter {
             emailRequest.supportFilter = "iOS \(selectedFilter.emailFilterString)"
         }
-        let operation = ComposeSupportEmailOperation(model: emailRequest)
-        currentEmailComposeOperation = operation
         showSpinnerOnNextButton = true
 
         firstly { () -> Promise<Void> in
-            operation.perform(on: DispatchQueue.sharedUserInitiated)
-
+            let composeTask = Task {
+                try await ComposeSupportEmailOperation(model: emailRequest).perform()
+            }
+            self.currentEmailComposeTask = composeTask
+            return Promise.wrapAsync { try await composeTask.value }
         }.done(on: DispatchQueue.main) { _ in
             self.navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
 
         }.ensure(on: DispatchQueue.main) {
-            self.currentEmailComposeOperation = nil
+            self.currentEmailComposeTask = nil
             self.showSpinnerOnNextButton = false
 
         }.catch(on: DispatchQueue.main) { error in
