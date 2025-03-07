@@ -135,7 +135,7 @@ extension MessageBackup {
             switch (threadInfo, author) {
             case (.groupThread, _), (.contactThread, .localUser):
                 break
-            case (.contactThread(let threadContactAddress), .contact(let authorAddress)):
+            case (.contactThread(let threadContactAddress), .contact(_)):
                 let threadRecipientId = threadContactAddress.map { context[.contact($0)] } ?? nil
 
                 // If this message is in a contact thread, the author must either

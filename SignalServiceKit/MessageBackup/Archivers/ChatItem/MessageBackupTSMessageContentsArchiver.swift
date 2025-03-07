@@ -1904,7 +1904,7 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 ))
             } else {
                 let restoreErrorType: RestoreFrameError.ErrorType
-                if let oversizeTextAttachment {
+                if oversizeTextAttachment != nil {
                     restoreErrorType = .invalidProtoData(.directStoryReplyMessageEmptyWithLongText)
                 } else {
                     restoreErrorType = .invalidProtoData(.directStoryReplyMessageEmpty)

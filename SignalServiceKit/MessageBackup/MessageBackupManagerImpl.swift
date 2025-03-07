@@ -826,7 +826,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 throw BackupImportError.unsupportedVersion
             }
             do {
-                try localStorage.setMediaRootBackupKey(try BackupKey(contents: Array(backupInfo.mediaRootBackupKey)), tx: tx)
+                localStorage.setMediaRootBackupKey(try BackupKey(contents: Array(backupInfo.mediaRootBackupKey)), tx: tx)
             } catch {
                 frameErrors.append(LoggableErrorAndProto(
                     error: MessageBackup.RestoreFrameError.restoreFrameError(
