@@ -1638,8 +1638,8 @@ public class MessageSender {
 
         switch responseError.httpStatusCode {
         case 401:
-            Logger.warn("Unable to send due to invalid credentials.")
-            throw MessageSendUnauthorizedError()
+            // TODO: [WebSocket] Remove this case when REST is removed.
+            throw AppDeregisteredError()
         case 404:
             try await failSendForUnregisteredRecipient(messageSend)
         case 409:

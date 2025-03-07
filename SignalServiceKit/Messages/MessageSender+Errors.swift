@@ -406,31 +406,6 @@ class MessageDeletedBeforeSentError: CustomNSError, IsRetryableProvider {
 
 // MARK: -
 
-class MessageSendUnauthorizedError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
-    // NSError bridging: the domain of the error.
-    public static let errorDomain = OWSError.errorDomain
-
-    // NSError bridging: the error code within the given domain.
-    public var errorCode: Int { OWSErrorCode.messageSendUnauthorized.rawValue }
-
-    // NSError bridging: the error code within the given domain.
-    public var errorUserInfo: [String: Any] {
-        [NSLocalizedDescriptionKey: self.localizedDescription]
-    }
-
-    public var localizedDescription: String {
-        OWSLocalizedString(
-            "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED",
-            comment: "Error message when attempting to send message"
-        )
-    }
-
-    // No need to retry if we've been de-authed.
-    public var isRetryableProvider: Bool { false }
-}
-
-// MARK: -
-
 class MessageSendEncryptionError: CustomNSError, IsRetryableProvider {
     public let serviceId: ServiceId
     public let deviceId: UInt32
