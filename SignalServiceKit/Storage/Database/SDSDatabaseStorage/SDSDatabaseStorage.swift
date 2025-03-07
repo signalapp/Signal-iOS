@@ -621,6 +621,19 @@ public class SDSDatabaseStorage: NSObject {
 
 // MARK: -
 
+@inlinable
+@inline(__always)
+public func DEBUG_INDEXED_BY(_ indexName: @autoclosure () -> String) -> String {
+    // In DEBUG builds, confirm that we use the expected index.
+    #if DEBUG
+    return "INDEXED BY \(indexName())"
+    #else
+    return ""
+    #endif
+}
+
+// MARK: -
+
 protocol SDSDatabaseStorageAdapter {
     associatedtype ReadTransaction
     associatedtype WriteTransaction

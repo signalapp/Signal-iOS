@@ -17,17 +17,10 @@ public class MentionFinder {
         includeReadMessages: Bool = true,
         tx: SDSAnyReadTransaction
     ) -> [TSMessage] {
-        var sql = """
-            SELECT interaction.*
-            FROM \(InteractionRecord.databaseTableName) as interaction
-            INNER JOIN \(TSMention.databaseTableName) as mention
-                ON mention.\(TSMention.columnName(.uniqueMessageId)) = interaction.\(interactionColumn: .uniqueId)
-                AND mention.\(TSMention.columnName(.aciString)) = ?
-        """
-
+        var filters = [String]()
         var arguments = [aci.serviceIdUppercaseString]
 
-        var next = "WHERE"
+        var isIndexedByUnreadIndex = false
 
         if let thread {
             // The TSMention's uniqueThreadId should always match the TSInteraction's
@@ -46,25 +39,34 @@ public class MentionFinder {
             // fast. (The alternative index is one which scans all the messages in the
             // conversation, and that's much slower.)
             if includeReadMessages {
-                sql += " \(next) mention.\(TSMention.columnName(.uniqueThreadId)) = ?"
+                filters.append("mention.\(TSMention.columnName(.uniqueThreadId)) = ?")
                 arguments.append(thread.uniqueId)
-                next = "AND"
             } else {
-                sql += " \(next) interaction.\(interactionColumn: .threadUniqueId) = ?"
+                filters.append("interaction.\(interactionColumn: .threadUniqueId) = ?")
                 arguments.append(thread.uniqueId)
-                next = "AND"
+                isIndexedByUnreadIndex = true
             }
         }
 
         if !includeReadMessages {
-            sql += " \(next) interaction.\(interactionColumn: .read) IS 0"
-            next = "AND"
+            filters.append("interaction.\(interactionColumn: .read) IS 0")
         }
 
-        sql += " \(next) interaction.\(interactionColumn: .isGroupStoryReply) IS 0"
-        next = "AND"
+        filters.append("interaction.\(interactionColumn: .isGroupStoryReply) IS 0")
+        // The "WHERE" breaks if this is empty. The prior line ensures it passes.
+        owsPrecondition(!filters.isEmpty)
 
-        sql += " ORDER BY \(interactionColumn: .id)"
+        let sql = """
+            SELECT interaction.*
+            FROM \(InteractionRecord.databaseTableName) as interaction
+            \(isIndexedByUnreadIndex ? DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages") : "")
+            INNER JOIN \(TSMention.databaseTableName) as mention
+                \(!isIndexedByUnreadIndex ? DEBUG_INDEXED_BY("index_model_TSMention_on_uuidString_and_uniqueThreadId") : "")
+                ON mention.\(TSMention.columnName(.uniqueMessageId)) = interaction.\(interactionColumn: .uniqueId)
+                AND mention.\(TSMention.columnName(.aciString)) = ?
+            WHERE \(filters.joined(separator: " AND "))
+            ORDER BY \(interactionColumn: .id)
+            """
 
         let cursor = TSMessage.grdbFetchCursor(sql: sql, arguments: StatementArguments(arguments), transaction: tx.unwrapGrdbRead)
 

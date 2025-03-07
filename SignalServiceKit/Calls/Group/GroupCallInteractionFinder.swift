@@ -23,6 +23,7 @@ public final class GroupCallInteractionFinder {
         let sql = """
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType"))
             WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.groupCallMessage.rawValue)
             AND \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .eraId) = ?
@@ -52,6 +53,7 @@ public final class GroupCallInteractionFinder {
         let sql: String = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_and_hasEnded_and_recordType"))
             WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.groupCallMessage.rawValue)
             AND \(interactionColumn: .hasEnded) = 0
             AND \(interactionColumn: .threadUniqueId) = ?

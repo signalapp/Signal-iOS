@@ -252,6 +252,7 @@ private class ViewOnceMessageFinder {
                 sql: """
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
+                \(DEBUG_INDEXED_BY("index_interactions_on_view_once"))
                 WHERE \(interactionColumn: .isViewOnceMessage) = 1
                 AND \(interactionColumn: .isViewOnceComplete) = 0
                 AND \(interactionColumn: .id) > ?
@@ -265,6 +266,7 @@ private class ViewOnceMessageFinder {
                 sql: """
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
+                \(DEBUG_INDEXED_BY("index_interactions_on_view_once"))
                 WHERE \(interactionColumn: .isViewOnceMessage) = 1
                 AND \(interactionColumn: .isViewOnceComplete) = 0
                 ORDER BY \(interactionColumn: .id)

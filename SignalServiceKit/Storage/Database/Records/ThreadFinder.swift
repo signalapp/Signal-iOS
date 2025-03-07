@@ -186,6 +186,7 @@ public class ThreadFinder {
                     ON \(ThreadAssociatedData.databaseTableName).threadUniqueId = \(threadColumnFullyQualified: .uniqueId)
                     AND \(ThreadAssociatedData.databaseTableName).isArchived = 0
                 LEFT OUTER JOIN \(InteractionRecord.databaseTableName) AS i
+                    \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
                     ON i.\(interactionColumn: .threadUniqueId) = thread_uniqueId
                     AND \(InteractionFinder.sqlClauseForUnreadInteractionCounts(interactionsAlias: "i"))
                 WHERE \(threadColumnFullyQualified: .shouldThreadBeVisible) = 1

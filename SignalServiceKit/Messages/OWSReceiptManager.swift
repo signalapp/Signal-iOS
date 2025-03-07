@@ -823,6 +823,7 @@ extension OWSReceiptManager {
     ) {
         var sql = """
             UPDATE \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
             SET read = 1
             WHERE \(interactionColumn: .read) = 0
             AND \(interactionColumn: .threadUniqueId) = ?

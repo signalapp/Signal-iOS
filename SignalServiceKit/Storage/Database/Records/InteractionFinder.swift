@@ -53,6 +53,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"))
             WHERE \(interactionColumn: .timestamp) = ?
             AND (
                 \(interactionColumn: .authorUUID) = ?
@@ -91,6 +92,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"))
             WHERE \(interactionColumn: .timestamp) = ?
         """
 
@@ -105,6 +107,7 @@ public class InteractionFinder: NSObject {
         let sql: String = """
             SELECT \(interactionColumn: .uniqueId)
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
             WHERE \(interactionColumn: .recordType) = ?
             AND (
                 \(interactionColumn: .callType) = ?
@@ -135,6 +138,7 @@ public class InteractionFinder: NSObject {
         let sql: String = """
             SELECT \(interactionColumn: .uniqueId)
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interaction_on_storedMessageState"))
             WHERE \(interactionColumn: .storedMessageState) = ?
             """
         var result = [String]()
@@ -156,6 +160,7 @@ public class InteractionFinder: NSObject {
         let sql: String = """
             SELECT \(interactionColumn: .uniqueId)
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interaction_on_storedMessageState"))
             WHERE \(interactionColumn: .storedMessageState) = ?
             """
         var result = [String]()
@@ -178,7 +183,9 @@ public class InteractionFinder: NSObject {
             var unreadInteractionQuery = """
                 SELECT COUNT(interaction.\(interactionColumn: .id))
                 FROM \(InteractionRecord.databaseTableName) AS interaction
+                \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
                 INNER JOIN \(ThreadAssociatedData.databaseTableName) AS associatedData
+                \(DEBUG_INDEXED_BY("index_thread_associated_data_on_threadUniqueId_and_isArchived"))
                     ON associatedData.threadUniqueId = \(interactionColumn: .threadUniqueId)
                 WHERE associatedData.isArchived = "0"
                 """
@@ -225,6 +232,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interactions_on_expiresInSeconds_and_expiresAt"))
             WHERE \(interactionColumn: .expiresAt) > 0
             ORDER BY \(interactionColumn: .expiresAt)
             """
@@ -252,6 +260,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT \(interactionColumn: .id)
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interactions_on_expiresInSeconds_and_expiresAt"))
             WHERE \(interactionColumn: .expiresAt) > 0
             AND \(interactionColumn: .expiresAt) <= ?
             LIMIT \(limit)
@@ -271,6 +280,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT \(interactionColumn: .uniqueId)
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt"))
             WHERE \(interactionColumn: .storedShouldStartExpireTimer) IS TRUE
             AND (
                 \(interactionColumn: .expiresAt) IS 0 OR
@@ -325,6 +335,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_StoryContext"))
             WHERE \(interactionColumn: .storyTimestamp) = ?
             AND \(interactionColumn: .storyAuthorUuidString) = ?
             AND \(interactionColumn: .isGroupStoryReply) = 1
@@ -359,6 +370,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_StoryContext"))
             WHERE \(interactionColumn: .storyTimestamp) = ?
             AND \(interactionColumn: .storyAuthorUuidString) = ?
             AND \(interactionColumn: .recordType) = \(SDSRecordType.outgoingMessage.rawValue)
@@ -392,6 +404,7 @@ public class InteractionFinder: NSObject {
             let sql: String = """
                 SELECT \(interactionColumn: .uniqueId), \(interactionColumn: .id)
                 FROM \(InteractionRecord.databaseTableName)
+                \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_StoryContext"))
                 WHERE \(interactionColumn: .storyTimestamp) = ?
                 AND \(interactionColumn: .storyAuthorUuidString) = ?
                 AND \(interactionColumn: .isGroupStoryReply) = 1
@@ -414,6 +427,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
             WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)
             """
         do {
@@ -491,6 +505,7 @@ public class InteractionFinder: NSObject {
         let sql: String = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
             WHERE \(interactionColumn: .recordType) = ?
             AND \(interactionColumn: .callType) IS NULL
             ORDER BY \(interactionColumn: .id) DESC
@@ -524,6 +539,7 @@ public class InteractionFinder: NSObject {
             sql: """
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
+                \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 AND \(interactionColumn: .messageType) = ?
                 AND \(interactionColumn: .id) > ?
@@ -552,6 +568,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND (
                 \(interactionColumn: .authorUUID) = ?
@@ -573,6 +590,7 @@ public class InteractionFinder: NSObject {
             """
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
+                \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 \(Self.filterGroupStoryRepliesClause())
                 \(Self.filterEditHistoryClause())
@@ -641,6 +659,7 @@ public class InteractionFinder: NSObject {
             let sql = """
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
+                \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 AND \(InteractionFinder.sqlClauseForUnreadInteractionCounts())
                 """
@@ -668,6 +687,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(Self.sqlClauseForAllUnreadInteractions(excludeReadEdits: true))
             ORDER BY \(interactionColumn: .id)
@@ -703,6 +723,7 @@ public class InteractionFinder: NSObject {
             sql: """
                 SELECT 1
                 FROM \(InteractionRecord.databaseTableName)
+                \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 AND \(interactionColumn: .id) <= ?
                 AND \(Self.sqlClauseForAllUnreadInteractions())
@@ -720,6 +741,7 @@ public class InteractionFinder: NSObject {
             sql: """
                 SELECT 1
                 FROM \(InteractionRecord.databaseTableName) AS interaction
+                \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
                 INNER JOIN \(OWSReaction.databaseTableName) AS reaction
                     ON interaction.\(interactionColumn: .uniqueId) = reaction.\(OWSReaction.columnName(.uniqueMessageId))
                     AND reaction.\(OWSReaction.columnName(.read)) IS 0
@@ -745,6 +767,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .id) <= ?
             AND \(Self.sqlClauseForAllUnreadInteractions())
@@ -780,6 +803,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT interaction.*
             FROM \(InteractionRecord.databaseTableName) AS interaction
+            \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
             INNER JOIN \(OWSReaction.databaseTableName) AS reaction
                 ON interaction.\(interactionColumn: .uniqueId) = reaction.\(OWSReaction.columnName(.uniqueMessageId))
                 AND reaction.\(OWSReaction.columnName(.read)) IS 0
@@ -802,6 +826,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(Self.sqlClauseForAllUnreadInteractions(excludeReadEdits: true))
             ORDER BY \(interactionColumn: .id)
@@ -826,6 +851,7 @@ public class InteractionFinder: NSObject {
         let atOrBeforeQuery = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .id) <= ?
             \(Self.filterEditHistoryClause())
@@ -848,6 +874,7 @@ public class InteractionFinder: NSObject {
         let afterQuery = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .id) > ?
             \(Self.filterEditHistoryClause())
@@ -866,6 +893,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .recordType) = ?
             LIMIT 1
@@ -893,6 +921,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
             AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
@@ -919,18 +948,10 @@ public class InteractionFinder: NSObject {
         transaction: SDSAnyReadTransaction,
         block: (TSInfoMessage, UnsafeMutablePointer<ObjCBool>) -> Void
     ) throws {
-        // In DEBUG builds, confirm that we use the expected index.
-        let indexedBy: String
-        #if DEBUG
-        indexedBy = "INDEXED BY index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"
-        #else
-        indexedBy = ""
-        #endif
-
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
-            \(indexedBy)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
             AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
@@ -954,18 +975,10 @@ public class InteractionFinder: NSObject {
     }
 
     public func hasUserReportedSpam(transaction: SDSAnyReadTransaction) -> Bool {
-        // In DEBUG builds, confirm that we use the expected index.
-        let indexedBy: String
-        #if DEBUG
-        indexedBy = "INDEXED BY index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"
-        #else
-        indexedBy = ""
-        #endif
-
         let sql = """
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
-            \(indexedBy)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
             AND \(interactionColumn: .messageType) = \(TSInfoMessageType.reportedSpam.rawValue)
@@ -1027,6 +1040,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType"))
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND (
                 (
@@ -1083,6 +1097,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .recordType) IN (\(sqlInteractionTypes))
             LIMIT 1
@@ -1108,6 +1123,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT COUNT(*)
             FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .recordType) = ?
             """
@@ -1158,7 +1174,7 @@ public class InteractionFinder: NSObject {
         if FeatureFlags.useNewConversationLoadIndex {
             indexedBy = "INDEXED BY index_interactions_on_threadUniqueId_and_id"
         } else {
-            indexedBy = ""
+            indexedBy = DEBUG_INDEXED_BY("index_model_TSInteraction_ConversationLoadInteractionDistance")
         }
 
         let uniqueIds = try String.fetchAll(
@@ -1313,13 +1329,13 @@ public class InteractionFinder: NSObject {
         case .filterForConversationView where FeatureFlags.useNewConversationLoadIndex:
             indexedBy = "INDEXED BY index_interactions_on_threadUniqueId_and_id"
         case .filterForConversationView:
-            indexedBy = ""
+            indexedBy = DEBUG_INDEXED_BY("index_model_TSInteraction_ConversationLoadInteractionDistance")
         case .filterForIncomingMessages:
-            indexedBy = ""
+            indexedBy = DEBUG_INDEXED_BY("index_interactions_on_recordType_and_threadUniqueId_and_errorType")
         case .filterForOutgoingMessages:
-            indexedBy = ""
+            indexedBy = DEBUG_INDEXED_BY("index_interactions_on_recordType_and_threadUniqueId_and_errorType")
         case .noFiltering:
-            indexedBy = ""
+            indexedBy = DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id")
         }
 
         return TSInteraction.grdbFetchCursor(
