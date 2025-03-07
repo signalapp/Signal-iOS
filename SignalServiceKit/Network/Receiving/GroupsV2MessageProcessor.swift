@@ -771,7 +771,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
                 guard let serverGuid = jobInfo.envelope?.serverGuid else { return .unreportable }
                 return .reportable(serverGuid: serverGuid)
             }()
-            _ = try await SSKEnvironment.shared.groupsV2Ref.updateGroupWithChangeActions(
+            try await SSKEnvironment.shared.groupsV2Ref.updateGroupWithChangeActions(
                 groupId: oldGroupModel.groupId,
                 spamReportingMetadata: spamReportingMetadata,
                 changeActionsProto: changeActionsProto,

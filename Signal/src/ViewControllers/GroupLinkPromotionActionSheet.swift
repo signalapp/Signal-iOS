@@ -178,16 +178,23 @@ private extension GroupLinkPromotionActionSheet {
         let approveNewMembers = memberApprovalSwitch.isOn
         let linkMode = GroupLinkViewUtils.linkMode(isGroupInviteLinkEnabled: true,
                                                    approveNewMembers: approveNewMembers)
-        GroupLinkViewUtils.updateLinkMode(groupModelV2: groupModelV2,
-                                          linkMode: linkMode,
-                                          description: "[\(type(of: self))]",
-                                          fromViewController: actionSheetController) { [weak self] (groupThread) in
-            guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
-                owsFailDebug("Invalid groupModel.")
-                return
+        GroupLinkViewUtils.updateLinkMode(
+            groupModelV2: groupModelV2,
+            linkMode: linkMode,
+            description: "[\(type(of: self))]",
+            fromViewController: actionSheetController,
+            completion: { [weak self] in
+                let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+                let groupThread = databaseStorage.read { tx in
+                    return TSGroupThread.fetch(groupId: groupModelV2.groupId, transaction: tx)
+                }
+                guard let groupModelV2 = groupThread?.groupModel as? TSGroupModelV2 else {
+                    owsFailDebug("Invalid groupModel.")
+                    return
+                }
+                self?.dismissActionSheetAndShareLink(groupModelV2: groupModelV2)
             }
-            self?.dismissActionSheetAndShareLink(groupModelV2: groupModelV2)
-        }
+        )
     }
 
     @objc

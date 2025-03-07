@@ -209,9 +209,21 @@ public class GroupsV2Protos {
         groupModel: TSGroupModelV2,
         groupChangeProtoData: Data?
     ) throws -> SSKProtoGroupContextV2 {
+        return buildGroupContextProto(
+            masterKey: try groupModel.masterKey(),
+            revision: groupModel.revision,
+            groupChangeProtoData: groupChangeProtoData
+        )
+    }
+
+    public class func buildGroupContextProto(
+        masterKey: GroupMasterKey,
+        revision: UInt32,
+        groupChangeProtoData: Data?
+    ) -> SSKProtoGroupContextV2 {
         let builder = SSKProtoGroupContextV2.builder()
-        builder.setMasterKey(try groupModel.masterKey().serialize().asData)
-        builder.setRevision(groupModel.revision)
+        builder.setMasterKey(masterKey.serialize().asData)
+        builder.setRevision(revision)
 
         if let groupChangeProtoData {
             if groupChangeProtoData.count <= GroupManager.maxEmbeddedChangeProtoLength {

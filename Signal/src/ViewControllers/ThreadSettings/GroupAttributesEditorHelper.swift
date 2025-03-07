@@ -291,14 +291,14 @@ class GroupAttributesEditorHelper: NSObject {
             fromViewController: fromViewController,
             updateDescription: "[\(type(of: self))]",
             updateBlock: {
-                _ = try await GroupManager.updateGroupAttributes(
+                try await GroupManager.updateGroupAttributes(
                     title: currentTitle,
                     description: currentDescription,
                     avatarData: currentAvatarData,
                     inExistingGroup: oldGroupModel
                 )
             },
-            completion: { _ in completion() }
+            completion: completion
         )
     }
 }

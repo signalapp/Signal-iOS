@@ -203,7 +203,7 @@ public class GroupsV2Impl: GroupsV2 {
     //
     // We do those things here as well, to DRY them up and to ensure they're always
     // done immediately and in a consistent way.
-    private func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) async throws -> TSGroupThread {
+    private func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) async throws {
 
         let justUploadedAvatars = GroupV2DownloadedAvatars.from(changes: changes)
         let groupId = changes.groupId
@@ -252,7 +252,7 @@ public class GroupsV2Impl: GroupsV2 {
 
         let changeResponse = try GroupsProtoGroupChangeResponse(serializedData: httpResponse.responseBodyData ?? Data())
 
-        return try await handleGroupUpdatedOnService(
+        try await handleGroupUpdatedOnService(
             changeResponse: changeResponse,
             messageBehavior: messageBehavior,
             justUploadedAvatars: justUploadedAvatars,
@@ -333,7 +333,7 @@ public class GroupsV2Impl: GroupsV2 {
         justUploadedAvatars: GroupV2DownloadedAvatars,
         groupId: Data,
         groupV2Params: GroupV2Params
-    ) async throws -> TSGroupThread {
+    ) async throws {
         guard let changeProto = changeResponse.groupChange else {
             throw OWSAssertionError("Missing groupChange.")
         }
@@ -346,7 +346,7 @@ public class GroupsV2Impl: GroupsV2 {
             return try GroupSendEndorsementsResponse(contents: [UInt8]($0))
         }
 
-        let groupThread = try await updateGroupWithChangeActions(
+        try await updateGroupWithChangeActions(
             groupId: groupId,
             spamReportingMetadata: .learnedByLocallyInitatedRefresh,
             changeActionsProto: changeActionsProto,
@@ -357,26 +357,24 @@ public class GroupsV2Impl: GroupsV2 {
 
         switch messageBehavior {
         case .sendNothing:
-            return groupThread
+            return
         case .sendUpdateToOtherGroupMembers:
             break
         }
 
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier()
         let groupChangeProtoData = try changeProto.serializedData()
 
         await GroupManager.sendGroupUpdateMessage(
-            thread: groupThread,
+            groupId: groupId,
             groupChangeProtoData: groupChangeProtoData
         )
 
         await sendGroupUpdateMessageToRemovedUsers(
-            groupThread: groupThread,
             changeActionsProto: changeActionsProto,
             groupChangeProtoData: groupChangeProtoData,
             groupV2Params: groupV2Params
         )
-
-        return groupThread
     }
 
     private func membersRemovedByChangeActions(
@@ -421,7 +419,6 @@ public class GroupsV2Impl: GroupsV2 {
     }
 
     private func sendGroupUpdateMessageToRemovedUsers(
-        groupThread: TSGroupThread,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupChangeProtoData: Data,
         groupV2Params: GroupV2Params
@@ -435,16 +432,12 @@ public class GroupsV2Impl: GroupsV2 {
             return
         }
 
-        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-            owsFailDebug("Invalid groupModel.")
-            return
-        }
-
         let plaintextData: Data
         let timestamp = MessageTimestampGenerator.sharedInstance.generateTimestamp()
         do {
             let groupV2Context = try GroupsV2Protos.buildGroupContextProto(
-                groupModel: groupModel,
+                masterKey: groupV2Params.groupSecretParams.getMasterKey(),
+                revision: changeActionsProto.revision,
                 groupChangeProtoData: groupChangeProtoData
             )
 
@@ -482,9 +475,9 @@ public class GroupsV2Impl: GroupsV2 {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSecretParams: GroupSecretParams
-    ) async throws -> TSGroupThread {
+    ) async throws {
         let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
-        return try await _updateGroupWithChangeActions(
+        try await _updateGroupWithChangeActions(
             groupId: groupId,
             spamReportingMetadata: spamReportingMetadata,
             changeActionsProto: changeActionsProto,
@@ -501,8 +494,8 @@ public class GroupsV2Impl: GroupsV2 {
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         justUploadedAvatars: GroupV2DownloadedAvatars?,
         groupV2Params: GroupV2Params
-    ) async throws -> TSGroupThread {
-        return try await _updateGroupWithChangeActions(
+    ) async throws {
+        try await _updateGroupWithChangeActions(
             groupId: groupId,
             spamReportingMetadata: spamReportingMetadata,
             changeActionsProto: changeActionsProto,
@@ -519,14 +512,14 @@ public class GroupsV2Impl: GroupsV2 {
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         justUploadedAvatars: GroupV2DownloadedAvatars?,
         groupV2Params: GroupV2Params
-    ) async throws -> TSGroupThread {
+    ) async throws {
         let downloadedAvatars = try await fetchAllAvatarData(
             changeActionsProtos: [changeActionsProto],
             justUploadedAvatars: justUploadedAvatars,
             groupV2Params: groupV2Params
         )
-        return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            try SSKEnvironment.shared.groupV2UpdatesRef.updateGroupWithChangeActions(
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+            _ = try SSKEnvironment.shared.groupV2UpdatesRef.updateGroupWithChangeActions(
                 groupId: groupId,
                 spamReportingMetadata: spamReportingMetadata,
                 changeActionsProto: changeActionsProto,
@@ -987,13 +980,13 @@ public class GroupsV2Impl: GroupsV2 {
         groupId: Data,
         groupSecretParams: GroupSecretParams,
         changesBlock: (GroupsV2OutgoingChanges) -> Void
-    ) async throws -> TSGroupThread {
+    ) async throws {
         let changes = GroupsV2OutgoingChangesImpl(
             groupId: groupId,
             groupSecretParams: groupSecretParams
         )
         changesBlock(changes)
-        return try await updateExistingGroupOnService(changes: changes)
+        try await updateExistingGroupOnService(changes: changes)
     }
 
     // MARK: - Rotate Profile Key
@@ -1709,14 +1702,8 @@ public class GroupsV2Impl: GroupsV2 {
                 throw GroupsV2Error.requestingMemberCantLoadGroupState
             }
 
-            guard let groupThread = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                TSGroupThread.fetch(groupId: groupId, transaction: tx)
-            }) else {
-                throw OWSAssertionError("Missing group thread.")
-            }
-
             await GroupManager.sendGroupUpdateMessage(
-                thread: groupThread,
+                groupId: try groupV2Params.groupPublicParams.getGroupIdentifier(),
                 groupChangeProtoData: try changeProto.serializedData()
             )
         } catch {
@@ -1758,7 +1745,10 @@ public class GroupsV2Impl: GroupsV2 {
                 return
             }
 
-            await GroupManager.sendGroupUpdateMessage(thread: groupThread, groupChangeProtoData: nil)
+            await GroupManager.sendGroupUpdateMessage(
+                groupId: try groupV2Params.groupPublicParams.getGroupIdentifier(),
+                groupChangeProtoData: nil
+            )
         }
     }
 
@@ -1935,7 +1925,7 @@ public class GroupsV2Impl: GroupsV2 {
         return actionsBuilder.buildInfallibly()
     }
 
-    public func cancelRequestToJoin(groupModel: TSGroupModelV2) async throws -> TSGroupThread {
+    public func cancelRequestToJoin(groupModel: TSGroupModelV2) async throws {
         let groupV2Params = try groupModel.groupV2Params()
 
         var newRevision: UInt32?
@@ -1956,14 +1946,14 @@ public class GroupsV2Impl: GroupsV2 {
             }
         }
 
-        return try await updateGroupRemovingMemberRequest(groupId: groupModel.groupId, newRevision: newRevision)
+        try await updateGroupRemovingMemberRequest(groupId: groupModel.groupId, newRevision: newRevision)
     }
 
     private func updateGroupRemovingMemberRequest(
         groupId: Data,
         newRevision proposedRevision: UInt32?
-    ) async throws -> TSGroupThread {
-        return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction -> TSGroupThread in
+    ) async throws {
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction -> Void in
             guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
@@ -1981,7 +1971,7 @@ public class GroupsV2Impl: GroupsV2 {
                 if oldGroupModel.revision >= proposedRevision {
                     // No need to update database, group state is already acceptable.
                     owsAssertDebug(!oldGroupMembership.isMemberOfAnyKind(localIdentifiers.aci))
-                    return groupThread
+                    return
                 }
                 newRevision = max(newRevision, proposedRevision)
             }
@@ -2011,8 +2001,6 @@ public class GroupsV2Impl: GroupsV2 {
                 spamReportingMetadata: .createdByLocalAction,
                 transaction: transaction
             )
-
-            return groupThread
         }
     }
 

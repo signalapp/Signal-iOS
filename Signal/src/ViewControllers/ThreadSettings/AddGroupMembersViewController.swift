@@ -132,12 +132,12 @@ private extension AddGroupMembersViewController {
             fromViewController: self,
             updateDescription: "[\(type(of: self))]",
             updateBlock: {
-                _ = try await GroupManager.addOrInvite(
+                try await GroupManager.addOrInvite(
                     serviceIds: newServiceIds,
                     toExistingGroup: self.oldGroupModel
                 )
             },
-            completion: { _ in dismissAndUpdateDelegate() }
+            completion: dismissAndUpdateDelegate
         )
     }
 }

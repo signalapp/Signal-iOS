@@ -255,12 +255,12 @@ class DebugUIStress: DebugUIPage {
         }
         Task { @MainActor in
             do {
-                let groupThread = try await GroupManager.addOrInvite(
+                try await GroupManager.addOrInvite(
                     serviceIds: serviceIdsToAdd,
                     toExistingGroup: dstGroupThread.groupModel
                 )
                 Logger.info("Complete.")
-                SignalApp.shared.presentConversationForThread(threadUniqueId: groupThread.uniqueId, animated: true)
+                SignalApp.shared.presentConversationForThread(threadUniqueId: dstGroupThread.uniqueId, animated: true)
             } catch {
                 owsFailDebug("Error: \(error)")
             }

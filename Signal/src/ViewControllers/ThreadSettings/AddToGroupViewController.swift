@@ -158,12 +158,12 @@ public class AddToGroupViewController: OWSTableViewController2 {
             fromViewController: self,
             updateDescription: "[\(type(of: self))]",
             updateBlock: {
-                _ = try await GroupManager.addOrInvite(
+                try await GroupManager.addOrInvite(
                     serviceIds: [serviceId],
                     toExistingGroup: oldGroupModel
                 )
             },
-            completion: { [weak self] _ in
+            completion: { [weak self] in
                 self?.notifyOfAddedAndDismiss(groupThread: groupThread, shortName: shortName)
             }
         )

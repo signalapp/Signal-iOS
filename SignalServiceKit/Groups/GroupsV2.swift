@@ -112,14 +112,14 @@ public protocol GroupsV2 {
         groupId: Data,
         groupSecretParams: GroupSecretParams,
         changesBlock: (GroupsV2OutgoingChanges) -> Void
-    ) async throws -> TSGroupThread
+    ) async throws
 
     func updateGroupWithChangeActions(
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSecretParams: GroupSecretParams
-    ) async throws -> TSGroupThread
+    ) async throws
 
     func uploadGroupAvatar(avatarData: Data, groupSecretParams: GroupSecretParams) async throws -> String
 
@@ -150,7 +150,7 @@ public protocol GroupsV2 {
         avatarData: Data?
     ) async throws
 
-    func cancelRequestToJoin(groupModel: TSGroupModelV2) async throws -> TSGroupThread
+    func cancelRequestToJoin(groupModel: TSGroupModelV2) async throws
 
     func fetchGroupExternalCredentials(secretParams: GroupSecretParams) async throws -> GroupsProtoGroupExternalCredential
 
@@ -558,7 +558,7 @@ public class MockGroupsV2: GroupsV2 {
         groupId: Data,
         groupSecretParams: GroupSecretParams,
         changesBlock: (GroupsV2OutgoingChanges) -> Void
-    ) async throws -> TSGroupThread {
+    ) async throws {
         owsFail("Not implemented.")
     }
 
@@ -579,7 +579,7 @@ public class MockGroupsV2: GroupsV2 {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSecretParams: GroupSecretParams
-    ) async throws -> TSGroupThread {
+    ) async throws {
         owsFail("Not implemented.")
     }
 
@@ -645,7 +645,7 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func cancelRequestToJoin(groupModel: TSGroupModelV2) async throws -> TSGroupThread {
+    public func cancelRequestToJoin(groupModel: TSGroupModelV2) async throws {
         owsFail("Not implemented.")
     }
 

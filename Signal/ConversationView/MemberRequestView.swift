@@ -115,7 +115,7 @@ class MemberRequestView: UIStackView {
             fromViewController: fromViewController,
             updateDescription: "[\(type(of: self))]",
             updateBlock: {
-                return try await GroupManager.cancelRequestToJoin(groupModel: groupModelV2)
+                try await GroupManager.cancelRequestToJoin(groupModel: groupModelV2)
             },
             completion: nil
         )

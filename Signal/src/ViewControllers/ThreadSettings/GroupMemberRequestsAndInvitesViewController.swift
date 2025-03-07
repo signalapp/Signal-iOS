@@ -470,7 +470,7 @@ private extension GroupMemberRequestsAndInvitesViewController {
             updateBlock: {
                 try await GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModelV2, serviceIds: serviceIds)
             },
-            completion: { [weak self] _ in
+            completion: { [weak self] in
                 self?.reloadContent()
             }
         )
@@ -488,7 +488,7 @@ private extension GroupMemberRequestsAndInvitesViewController {
             updateBlock: {
                 try await GroupManager.revokeInvalidInvites(groupModel: groupModelV2)
             },
-            completion: { [weak self] _ in
+            completion: { [weak self] in
                 self?.reloadContent()
             }
         )
@@ -547,7 +547,7 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
             updateBlock: {
                 try await GroupManager.acceptOrDenyMemberRequestsV2(groupModel: groupModelV2, aci: aci, shouldAccept: shouldAccept)
             },
-            completion: { [weak self] _ in
+            completion: { [weak self] in
                 guard let self = self else { return }
                 if shouldAccept {
                     self.presentRequestApprovedToast(address: address)

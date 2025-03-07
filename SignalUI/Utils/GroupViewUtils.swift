@@ -16,11 +16,11 @@ public class GroupViewUtils {
         return String.localizedStringWithFormat(format, memberCount)
     }
 
-    public static func updateGroupWithActivityIndicator<T>(
+    public static func updateGroupWithActivityIndicator(
         fromViewController: UIViewController,
         updateDescription: String,
-        updateBlock: @escaping () async throws -> T,
-        completion: ((T?) -> Void)?
+        updateBlock: @escaping () async throws -> Void,
+        completion: (() -> Void)?
     ) {
         // GroupsV2 TODO: Should we allow cancel here?
         ModalActivityIndicatorViewController.present(
@@ -29,14 +29,14 @@ public class GroupViewUtils {
             asyncBlock: { modalActivityIndicator in
                 do {
                     try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout(description: updateDescription)
-                    let value = try await updateBlock()
+                    try await updateBlock()
                     modalActivityIndicator.dismiss {
-                        completion?(value)
+                        completion?()
                     }
                 } catch GroupsV2Error.redundantChange {
                     // Treat GroupsV2Error.redundantChange as a success.
                     modalActivityIndicator.dismiss {
-                        completion?(nil)
+                        completion?()
                     }
                 } catch {
                     owsFailDebugUnlessNetworkFailure(error)

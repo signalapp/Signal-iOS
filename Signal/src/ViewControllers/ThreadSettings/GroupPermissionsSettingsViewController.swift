@@ -295,7 +295,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
                     )
                 }
             },
-            completion: { [weak self] _ in
+            completion: { [weak self] in
                 self?.permissionsDelegate?.groupPermissionSettingsDidUpdate()
                 self?.dismiss(animated: true)
             }

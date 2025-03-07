@@ -29,9 +29,9 @@ extension GroupManager {
             groupSecretParamsData: Data,
             updateDescription: String,
             changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
-        ) async throws -> TSGroupThread {
+        ) async throws {
             do {
-                return try await Promise.wrapAsync {
+                try await Promise.wrapAsync {
                     try await self._run(groupId: groupId, groupSecretParamsData: groupSecretParamsData, changesBlock: changesBlock)
                 }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: updateDescription) {
                     return GroupsV2Error.timeout
@@ -52,10 +52,10 @@ extension GroupManager {
             groupId: Data,
             groupSecretParamsData: Data,
             changesBlock: (GroupsV2OutgoingChanges) -> Void
-        ) async throws -> TSGroupThread {
+        ) async throws {
             try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
 
-            return try await SSKEnvironment.shared.groupsV2Ref.updateGroupV2(
+            try await SSKEnvironment.shared.groupsV2Ref.updateGroupV2(
                 groupId: groupId,
                 groupSecretParams: try GroupSecretParams(contents: [UInt8](groupSecretParamsData)),
                 changesBlock: changesBlock
@@ -67,9 +67,9 @@ extension GroupManager {
         groupModel: TSGroupModelV2,
         description: String,
         changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
-    ) async throws -> TSGroupThread {
-        return try await operationQueue(forUpdatingGroup: groupModel).enqueue {
-            return try await GenericGroupUpdateOperation.run(
+    ) async throws {
+        try await operationQueue(forUpdatingGroup: groupModel).enqueue {
+            try await GenericGroupUpdateOperation.run(
                 groupId: groupModel.groupId,
                 groupSecretParamsData: groupModel.secretParamsData,
                 updateDescription: description,

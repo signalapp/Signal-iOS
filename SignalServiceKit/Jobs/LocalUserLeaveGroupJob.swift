@@ -59,7 +59,7 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
             return aci
         }
 
-        _ = try await GroupManager.updateGroupV2(
+        try await GroupManager.updateGroupV2(
             groupModel: groupModel,
             description: #fileID
         ) { groupChangeSet in

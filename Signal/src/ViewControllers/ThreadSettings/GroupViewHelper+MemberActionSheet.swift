@@ -37,7 +37,7 @@ extension GroupViewHelper {
                 fromViewController: fromViewController,
                 updateDescription: updateDescription,
                 updateBlock: { try await updateBlock(oldGroupModel, serviceId) },
-                completion: { [weak self] _ in
+                completion: { [weak self] in
                     self?.delegate?.groupViewHelperDidUpdateGroup()
                 }
             )
@@ -80,7 +80,7 @@ extension GroupViewHelper {
             actionTitle: actionTitle,
             updateDescription: "Make group admin",
             updateBlock: { (oldGroupModel, aci: Aci) in
-                _ = try await GroupManager.changeMemberRoleV2(groupModel: oldGroupModel, aci: aci, role: .administrator)
+                try await GroupManager.changeMemberRoleV2(groupModel: oldGroupModel, aci: aci, role: .administrator)
             }
         )
     }
@@ -113,7 +113,7 @@ extension GroupViewHelper {
             actionTitle: actionTitle,
             updateDescription: "Revoke group admin",
             updateBlock: { (oldGroupModel, aci: Aci) in
-                _ = try await GroupManager.changeMemberRoleV2(groupModel: oldGroupModel, aci: aci, role: .normal)
+                try await GroupManager.changeMemberRoleV2(groupModel: oldGroupModel, aci: aci, role: .normal)
             }
         )
     }

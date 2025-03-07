@@ -213,12 +213,12 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
                     }
                 }
 
-                _ = try await self.localUpdateDisappearingMessagesConfiguration(
+                try await self.localUpdateDisappearingMessagesConfiguration(
                     thread: thread,
                     newToken: configuration.asVersionedToken
                 )
             },
-            completion: { [weak self] _ in
+            completion: { [weak self] in
                 self?.completion(configuration)
                 self?.dismiss(animated: true)
             }
@@ -239,7 +239,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
             }
         } else if let groupThread = thread as? TSGroupThread {
             if let groupV2Model = groupThread.groupModel as? TSGroupModelV2 {
-                _ = try await GroupManager.updateGroupV2(
+                try await GroupManager.updateGroupV2(
                     groupModel: groupV2Model,
                     description: "Update disappearing messages"
                 ) { changeSet in

@@ -763,12 +763,12 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapResendGroupUpdateForErrorMessage(_ message: TSErrorMessage) {
         AssertIsOnMainThread()
 
-        guard let groupThread = self.thread as? TSGroupThread else {
+        guard let groupId = try? (self.thread as? TSGroupThread)?.groupIdentifier else {
             owsFailDebug("Invalid thread.")
             return
         }
         Task {
-            await GroupManager.sendGroupUpdateMessage(thread: groupThread)
+            await GroupManager.sendGroupUpdateMessage(groupId: groupId)
             Logger.info("Group updated, removing group creation error.")
 
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in

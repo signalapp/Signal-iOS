@@ -133,8 +133,12 @@ public class GroupLinkViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    fileprivate func updateView(groupThread: TSGroupThread) {
-        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+    fileprivate func updateView() {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let groupThread = databaseStorage.read { tx in
+            return TSGroupThread.fetch(groupId: self.groupModelV2.groupId, transaction: tx)
+        }
+        guard let groupModelV2 = groupThread?.groupModel as? TSGroupModelV2 else {
             owsFailDebug("Invalid thread.")
             navigationController?.popViewController(animated: true)
             return
@@ -238,24 +242,21 @@ public class GroupLinkViewController: OWSTableViewController2 {
 
 public class GroupLinkViewUtils {
 
-    static func updateLinkMode(groupModelV2: TSGroupModelV2,
-                               linkMode: GroupsV2LinkMode,
-                               description: String,
-                               fromViewController: UIViewController,
-                               completion: @escaping (TSGroupThread) -> Void) {
+    static func updateLinkMode(
+        groupModelV2: TSGroupModelV2,
+        linkMode: GroupsV2LinkMode,
+        description: String,
+        fromViewController: UIViewController,
+        completion: @escaping () -> Void
+    ) {
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: fromViewController,
             updateDescription: description,
             updateBlock: {
-                return try await GroupManager.updateLinkModeV2(groupModel: groupModelV2, linkMode: linkMode)
+                try await GroupManager.updateLinkModeV2(groupModel: groupModelV2, linkMode: linkMode)
             },
-            completion: { (groupThread: TSGroupThread?) in
-                guard let groupThread = groupThread else {
-                    owsFailDebug("Missing groupThread.")
-                    return
-                }
-                completion(groupThread)
-            })
+            completion: completion
+        )
     }
 
     static func linkMode(isGroupInviteLinkEnabled: Bool, approveNewMembers: Bool) -> GroupsV2LinkMode {
@@ -365,12 +366,13 @@ public class GroupLinkViewUtils {
 private extension GroupLinkViewController {
 
     func updateLinkMode(linkMode: GroupsV2LinkMode) {
-        GroupLinkViewUtils.updateLinkMode(groupModelV2: groupModelV2,
-                                          linkMode: linkMode,
-                                          description: "[\(type(of: self))]",
-                                          fromViewController: self) { [weak self] groupThread in
-            self?.updateView(groupThread: groupThread)
-        }
+        GroupLinkViewUtils.updateLinkMode(
+            groupModelV2: groupModelV2,
+            linkMode: linkMode,
+            description: "[\(type(of: self))]",
+            fromViewController: self,
+            completion: { [weak self] in self?.updateView() }
+        )
     }
 
     func resetLink() {
@@ -378,15 +380,9 @@ private extension GroupLinkViewController {
             fromViewController: self,
             updateDescription: "[\(type(of: self))]",
             updateBlock: {
-                return try await GroupManager.resetLinkV2(groupModel: self.groupModelV2)
+                try await GroupManager.resetLinkV2(groupModel: self.groupModelV2)
             },
-            completion: { [weak self] (groupThread: TSGroupThread?) in
-                guard let groupThread = groupThread else {
-                    owsFailDebug("Missing groupThread.")
-                    return
-                }
-                self?.updateView(groupThread: groupThread)
-            }
+            completion: { [weak self] in self?.updateView() }
         )
     }
 }

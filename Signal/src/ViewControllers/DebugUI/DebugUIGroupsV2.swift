@@ -17,10 +17,6 @@ class DebugUIGroupsV2: DebugUIPage {
         var sectionItems = [OWSTableItem]()
 
         if let groupThread = thread as? TSGroupThread {
-            sectionItems.append(OWSTableItem(title: "Send group update.") { [weak self] in
-                self?.sendGroupUpdate(groupThread: groupThread)
-            })
-
             if let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 {
                 // v2 Group
                 sectionItems.append(OWSTableItem(title: "Kick other group members.") { [weak self] in
@@ -115,15 +111,15 @@ class DebugUIGroupsV2: DebugUIPage {
 
                 // Last admin (local user) can't leave group, so first
                 // make the "other user" an admin.
-                let changeMemberThread = try await GroupManager.changeMemberRoleV2(
+                try await GroupManager.changeMemberRoleV2(
                     groupModel: groupModel,
                     aci: otherUserAci,
                     role: .administrator
                 )
                 SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    GroupManager.localLeaveGroupOrDeclineInvite(groupThread: changeMemberThread, tx: transaction)
+                    GroupManager.localLeaveGroupOrDeclineInvite(groupThread: groupThread3, tx: transaction)
                 }
-                guard let missingLocalUserGroupModelV2 = changeMemberThread.groupModel as? TSGroupModelV2 else {
+                guard let missingLocalUserGroupModelV2 = groupThread3.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid groupModel.")
                 }
 
@@ -405,13 +401,6 @@ class DebugUIGroupsV2: DebugUIPage {
         contentBuilder.setDataMessage(dataProto)
         let plaintextData = try! contentBuilder.buildSerializedData()
         return plaintextData
-    }
-
-    private func sendGroupUpdate(groupThread: TSGroupThread) {
-        Task {
-            await GroupManager.sendGroupUpdateMessage(thread: groupThread)
-            Logger.info("Success.")
-        }
     }
 }
 
