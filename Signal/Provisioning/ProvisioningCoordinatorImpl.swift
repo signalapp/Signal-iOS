@@ -111,33 +111,19 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
             throw .genericError(OWSAssertionError("Missing PNI in provisioning message!"))
         }
 
-        var undoBlock: () async throws -> Void = {}
-        let authedDevice: AuthedDevice.Explicit
-        do {
-            let result = try await completeProvisioning_updateCensorshipCircumvention(
-                provisionMessage: provisionMessage,
-                deviceName: deviceName,
-                aci: aci,
-                pni: pni,
-                phoneNumber: phoneNumber
-            )
-            undoBlock = result.undoBlock
-            authedDevice = result.authedDevice
-        } catch let error {
-            // If any of these pre-link'n'sync steps fail, roll back everything.
-            do {
-                try await undoBlock()
-            } catch {
-                throw .genericError(error)
-            }
-            throw error
-        }
+        let result = try await completeProvisioning_updateCensorshipCircumvention(
+            provisionMessage: provisionMessage,
+            deviceName: deviceName,
+            aci: aci,
+            pni: pni,
+            phoneNumber: phoneNumber
+        )
 
         try await continueFromLinkNSync(
-            authedDevice: authedDevice,
+            authedDevice: result.authedDevice,
             ephemeralBackupKey: BackupKey(provisioningMessage: provisionMessage),
             progressViewModel: progressViewModel,
-            undoAllPreviousSteps: undoBlock
+            undoAllPreviousSteps: result.undoBlock
         )
     }
 
