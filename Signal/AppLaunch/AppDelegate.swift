@@ -306,11 +306,36 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         )
         attachmentValidationRunner.registerBGProcessingTask(appReadiness: appReadiness)
 
+        let databaseMigratorRunner = LazyDatabaseMigratorRunner(databaseStorage: databaseStorage)
+        databaseMigratorRunner.registerBGProcessingTask(appReadiness: appReadiness)
+
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             if SSKEnvironment.shared.remoteConfigManagerRef.currentConfig().shouldRunTSAttachmentMigrationInBGProcessingTask {
                 attachmentMigrationRunner.scheduleBGProcessingTaskIfNeeded()
             }
             attachmentValidationRunner.scheduleBGProcessingTaskIfNeeded()
+        }
+
+        appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            Task {
+                databaseMigratorRunner.scheduleBGProcessingTaskIfNeeded()
+
+                #if targetEnvironment(simulator)
+                // The simulator won't run BGProcessingTasks, but we still want to run
+                // these migrations for simulators. So, if they're needed, run them.
+                //
+                // In production, users might interrupt these migrations, and that might
+                // mean they `run()` multiple times (even after they've all finished). To
+                // add coverage for these rare scenarios, run them redundantly, sometimes.
+                //
+                // Lastly, these are one-off migrations, and most test devices will run
+                // them immediately and never again, so running them redundantly will help
+                // provide coverage for otherwise dead code.
+                if databaseMigratorRunner.shouldLaunchBGProcessingTask() || databaseMigratorRunner.simulatePriorCancellation() {
+                    try await databaseMigratorRunner.run()
+                }
+                #endif
+            }
         }
 
         // Show LoadingViewController until the database migrations are complete.

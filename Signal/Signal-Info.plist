@@ -7,6 +7,7 @@
 		<string>AttachmentValidationBackfillMigrator</string>
 		<string>MessageAttachmentMigrationTask</string>
 		<string>MessageFetchBGRefreshTask</string>
+		<string>LazyDatabaseMigratorTask</string>
 	</array>
 	<key>BuildDetails</key>
 	<dict/>

@@ -91,7 +91,7 @@ public class EditMessageStoreImpl: EditMessageStore {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"))
+            \(DEBUG_INDEXED_BY("Interaction_timestamp", or: "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"))
             WHERE \(interactionColumn: .timestamp) = ?
             AND \(interactionColumn: .authorUUID) IS ?
             LIMIT 1

@@ -722,25 +722,16 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.indexFailedJob) { transaction in
-            // index this query:
-            //      SELECT \(interactionColumn: .uniqueId)
-            //      FROM \(InteractionRecord.databaseTableName)
-            //      WHERE \(interactionColumn: .storedMessageState) = ?
-            try transaction.database.create(index: "index_interaction_on_storedMessageState",
-                          on: "model_TSInteraction",
-                          columns: ["storedMessageState"])
-
-            // index this query:
-            //      SELECT \(interactionColumn: .uniqueId)
-            //      FROM \(InteractionRecord.databaseTableName)
-            //      WHERE \(interactionColumn: .recordType) = ?
-            //      AND (
-            //          \(interactionColumn: .callType) = ?
-            //          OR \(interactionColumn: .callType) = ?
-            //      )
-            try transaction.database.create(index: "index_interaction_on_recordType_and_callType",
-                          on: "model_TSInteraction",
-                          columns: ["recordType", "callType"])
+            try transaction.database.create(
+                index: "index_interaction_on_storedMessageState",
+                on: "model_TSInteraction",
+                columns: ["storedMessageState"]
+            )
+            try transaction.database.create(
+                index: "index_interaction_on_recordType_and_callType",
+                on: "model_TSInteraction",
+                columns: ["recordType", "callType"]
+            )
             return .success(())
         }
 
@@ -5404,6 +5395,123 @@ public class GRDBSchemaMigrator {
             NSDictionary.self, NSData.self, TSBlockedGroupModel.self
         ], forKey: NSKeyedArchiveRootObjectKey)
         return Array(((groupIdMap as? [Data: TSBlockedGroupModel]) ?? [:]).keys)
+    }
+
+    public static func rebuildIncompleteViewOnceIndex(tx: GRDBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+            DROP INDEX IF EXISTS "index_interactions_on_view_once"
+            """
+        )
+        try tx.database.create(
+            index: "Interaction_incompleteViewOnce_partial",
+            on: "model_TSInteraction",
+            columns: ["isViewOnceMessage", "isViewOnceComplete"],
+            options: [.ifNotExists],
+            condition: Column("isViewOnceMessage") == 1 && Column("isViewOnceComplete") == 0
+        )
+    }
+
+    public static func removeInteractionThreadUniqueIdUniqueIdIndex(tx: GRDBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+            DROP INDEX IF EXISTS "index_interactions_on_uniqueId_and_threadUniqueId"
+            """
+        )
+    }
+
+    public static func rebuildDisappearingMessagesIndex(tx: GRDBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+            DROP INDEX IF EXISTS "index_interactions_on_expiresInSeconds_and_expiresAt"
+            """
+        )
+        try tx.database.create(
+            index: "Interaction_disappearingMessages_partial",
+            on: "model_TSInteraction",
+            columns: ["expiresAt"],
+            options: [.ifNotExists],
+            condition: Column("expiresAt") > 0
+        )
+    }
+
+    public static func removeInteractionAttachmentIdsIndex(tx: GRDBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+            DROP INDEX IF EXISTS "index_model_TSInteraction_on_uniqueThreadId_and_attachmentIds"
+            """
+        )
+    }
+
+    public static func rebuildInteractionTimestampIndex(tx: GRDBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+            DROP INDEX IF EXISTS "index_interactions_on_timestamp_sourceDeviceId_and_authorUUID"
+            """
+        )
+        try tx.database.execute(sql: """
+            DROP INDEX IF EXISTS "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"
+            """
+        )
+        try tx.database.create(
+            index: "Interaction_timestamp",
+            on: "model_TSInteraction",
+            columns: ["timestamp"],
+            options: [.ifNotExists]
+        )
+    }
+
+    public static func rebuildInteractionUnendedGroupCallIndex(tx: GRDBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+            DROP INDEX IF EXISTS "index_model_TSInteraction_on_uniqueThreadId_and_hasEnded_and_recordType"
+            """
+        )
+        // This recordType constant can't ever change.
+        assert(SDSRecordType.groupCallMessage.rawValue == 65)
+        try tx.database.create(
+            index: "Interaction_unendedGroupCall_partial",
+            on: "model_TSInteraction",
+            columns: ["recordType", "hasEnded", "uniqueThreadId"],
+            options: [.ifNotExists],
+            condition: Column("recordType") == 65 && Column("hasEnded") == 0
+        )
+    }
+
+    public static func rebuildInteractionGroupCallEraIdIndex(tx: GRDBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+            DROP INDEX IF EXISTS "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType"
+            """
+        )
+        try tx.database.create(
+            index: "Interaction_groupCallEraId_partial",
+            on: "model_TSInteraction",
+            columns: ["uniqueThreadId", "recordType", "eraId"],
+            options: [.ifNotExists],
+            condition: Column("eraId") != nil
+        )
+    }
+
+    public static func rebuildInteractionStoryReplyIndex(tx: GRDBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+            DROP INDEX IF EXISTS "index_model_TSInteraction_on_StoryContext"
+            """
+        )
+        try tx.database.create(
+            index: "Interaction_storyReply_partial",
+            on: "model_TSInteraction",
+            columns: ["storyAuthorUuidString", "storyTimestamp", "isGroupStoryReply"],
+            options: [.ifNotExists],
+            condition: Column("storyAuthorUuidString") != nil && Column("storyTimestamp") != nil
+        )
+    }
+
+    public static func removeInteractionConversationLoadCountIndex(tx: GRDBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+            DROP INDEX IF EXISTS "index_model_TSInteraction_ConversationLoadInteractionCount"
+            """
+        )
+    }
+
+    public static func removeInteractionConversationLoadDistanceIndex(tx: GRDBWriteTransaction) throws {
+        try tx.database.execute(sql: """
+            DROP INDEX IF EXISTS "index_model_TSInteraction_ConversationLoadInteractionDistance"
+            """
+        )
     }
 }
 

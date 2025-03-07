@@ -53,7 +53,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"))
+            \(DEBUG_INDEXED_BY("Interaction_timestamp", or: "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"))
             WHERE \(interactionColumn: .timestamp) = ?
             AND (
                 \(interactionColumn: .authorUUID) = ?
@@ -92,7 +92,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"))
+            \(DEBUG_INDEXED_BY("Interaction_timestamp", or: "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"))
             WHERE \(interactionColumn: .timestamp) = ?
         """
 
@@ -232,7 +232,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interactions_on_expiresInSeconds_and_expiresAt"))
+            \(DEBUG_INDEXED_BY("Interaction_disappearingMessages_partial", or: "index_interactions_on_expiresInSeconds_and_expiresAt"))
             WHERE \(interactionColumn: .expiresAt) > 0
             ORDER BY \(interactionColumn: .expiresAt)
             """
@@ -260,7 +260,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT \(interactionColumn: .id)
             FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interactions_on_expiresInSeconds_and_expiresAt"))
+            \(DEBUG_INDEXED_BY("Interaction_disappearingMessages_partial", or: "index_interactions_on_expiresInSeconds_and_expiresAt"))
             WHERE \(interactionColumn: .expiresAt) > 0
             AND \(interactionColumn: .expiresAt) <= ?
             LIMIT \(limit)
@@ -335,7 +335,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_StoryContext"))
+            \(DEBUG_INDEXED_BY("Interaction_storyReply_partial", or: "index_model_TSInteraction_on_StoryContext"))
             WHERE \(interactionColumn: .storyTimestamp) = ?
             AND \(interactionColumn: .storyAuthorUuidString) = ?
             AND \(interactionColumn: .isGroupStoryReply) = 1
@@ -370,7 +370,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_StoryContext"))
+            \(DEBUG_INDEXED_BY("Interaction_storyReply_partial", or: "index_model_TSInteraction_on_StoryContext"))
             WHERE \(interactionColumn: .storyTimestamp) = ?
             AND \(interactionColumn: .storyAuthorUuidString) = ?
             AND \(interactionColumn: .recordType) = \(SDSRecordType.outgoingMessage.rawValue)
@@ -404,7 +404,7 @@ public class InteractionFinder: NSObject {
             let sql: String = """
                 SELECT \(interactionColumn: .uniqueId), \(interactionColumn: .id)
                 FROM \(InteractionRecord.databaseTableName)
-                \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_StoryContext"))
+                \(DEBUG_INDEXED_BY("Interaction_storyReply_partial", or: "index_model_TSInteraction_on_StoryContext"))
                 WHERE \(interactionColumn: .storyTimestamp) = ?
                 AND \(interactionColumn: .storyAuthorUuidString) = ?
                 AND \(interactionColumn: .isGroupStoryReply) = 1
@@ -1040,7 +1040,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType"))
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType", or: "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType"))
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND (
                 (
@@ -1174,7 +1174,7 @@ public class InteractionFinder: NSObject {
         if FeatureFlags.useNewConversationLoadIndex {
             indexedBy = "INDEXED BY index_interactions_on_threadUniqueId_and_id"
         } else {
-            indexedBy = DEBUG_INDEXED_BY("index_model_TSInteraction_ConversationLoadInteractionDistance")
+            indexedBy = DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id", or: "index_model_TSInteraction_ConversationLoadInteractionDistance")
         }
 
         let uniqueIds = try String.fetchAll(
@@ -1329,7 +1329,7 @@ public class InteractionFinder: NSObject {
         case .filterForConversationView where FeatureFlags.useNewConversationLoadIndex:
             indexedBy = "INDEXED BY index_interactions_on_threadUniqueId_and_id"
         case .filterForConversationView:
-            indexedBy = DEBUG_INDEXED_BY("index_model_TSInteraction_ConversationLoadInteractionDistance")
+            indexedBy = DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id", or: "index_model_TSInteraction_ConversationLoadInteractionDistance")
         case .filterForIncomingMessages:
             indexedBy = DEBUG_INDEXED_BY("index_interactions_on_recordType_and_threadUniqueId_and_errorType")
         case .filterForOutgoingMessages:

@@ -623,10 +623,17 @@ public class SDSDatabaseStorage: NSObject {
 
 @inlinable
 @inline(__always)
-public func DEBUG_INDEXED_BY(_ indexName: @autoclosure () -> String) -> String {
+public func DEBUG_INDEXED_BY(_ indexName: @autoclosure () -> String, or oldIndexName: @autoclosure () -> String? = nil) -> String {
     // In DEBUG builds, confirm that we use the expected index.
     #if DEBUG
-    return "INDEXED BY \(indexName())"
+    if oldIndexName() != nil {
+        // If we're in an ambiguous state, we can't enforce a single index. (This
+        // state should be temporary and eventually replaced by a blocking
+        // migration.)
+        return ""
+    } else {
+        return "INDEXED BY \(indexName())"
+    }
     #else
     return ""
     #endif

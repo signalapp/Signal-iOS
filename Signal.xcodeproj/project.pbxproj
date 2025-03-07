@@ -577,6 +577,7 @@
 		502D45462A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */; };
 		502D45482A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D45472A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift */; };
 		502D69322A7AC07C0085B656 /* Dictionary+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D69312A7AC07C0085B656 /* Dictionary+SSK.swift */; };
+		502F187F2D5530AA00A1BD62 /* LazyDatabaseMigratorRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502F187E2D5530AA00A1BD62 /* LazyDatabaseMigratorRunner.swift */; };
 		50311B8B2BC0C2A100AE5A5F /* MonotonicDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50311B8A2BC0C2A100AE5A5F /* MonotonicDate.swift */; };
 		503158F22B57B0010023A5DB /* ServiceIdTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503158F12B57B0010023A5DB /* ServiceIdTest.swift */; };
 		5033D45F29D4DAAC007FEADA /* ThreadMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D45E29D4DAAC007FEADA /* ThreadMerger.swift */; };
@@ -4391,6 +4392,7 @@
 		502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisappearingMessagesConfigurationStore.swift; sourceTree = "<group>"; };
 		502D45472A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadReplyInfoStore.swift; sourceTree = "<group>"; };
 		502D69312A7AC07C0085B656 /* Dictionary+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+SSK.swift"; sourceTree = "<group>"; };
+		502F187E2D5530AA00A1BD62 /* LazyDatabaseMigratorRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyDatabaseMigratorRunner.swift; sourceTree = "<group>"; };
 		50311B8A2BC0C2A100AE5A5F /* MonotonicDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonotonicDate.swift; sourceTree = "<group>"; };
 		503158F12B57B0010023A5DB /* ServiceIdTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceIdTest.swift; sourceTree = "<group>"; };
 		5033D45E29D4DAAC007FEADA /* ThreadMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMerger.swift; sourceTree = "<group>"; };
@@ -8844,6 +8846,7 @@
 			isa = PBXGroup;
 			children = (
 				F9F0B53E2982D7800012C590 /* FullTextSearchOptimizer.swift */,
+				502F187E2D5530AA00A1BD62 /* LazyDatabaseMigratorRunner.swift */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
@@ -16648,6 +16651,7 @@
 				32AC5CE7255B51E900829BD8 /* JoinGroupCallPill.swift in Sources */,
 				45C845AD291466C0005F6EA5 /* JournalingOrderedDictionary.swift in Sources */,
 				5045F44229E0DB7100058E5F /* LaunchJobs.swift in Sources */,
+				502F187F2D5530AA00A1BD62 /* LazyDatabaseMigratorRunner.swift in Sources */,
 				D9C30DDB2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift in Sources */,
 				B9A53B912CF507FB0000578B /* LinkAndSyncProgressModal.swift in Sources */,
 				660FA9112CE58CD7006F9C34 /* LinkAndSyncProvisioningProgressViewController.swift in Sources */,

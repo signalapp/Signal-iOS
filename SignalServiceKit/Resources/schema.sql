@@ -331,13 +331,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_interactions_on_view_once"
-        ON "model_TSInteraction"("isViewOnceMessage"
-    ,"isViewOnceComplete"
-)
-;
-
-CREATE
     INDEX "index_key_value_store_on_collection_and_key"
         ON "keyvalue"("collection"
     ,"key"
@@ -349,13 +342,6 @@ CREATE
         ON "model_TSInteraction"("recordType"
     ,"uniqueThreadId"
     ,"errorType"
-)
-;
-
-CREATE
-    INDEX "index_interactions_on_uniqueId_and_threadUniqueId"
-        ON "model_TSInteraction"("uniqueThreadId"
-    ,"uniqueId"
 )
 ;
 
@@ -380,29 +366,6 @@ CREATE
 CREATE
     INDEX "index_user_profiles_on_recipientUUID"
         ON "model_OWSUserProfile"("recipientUUID"
-)
-;
-
-CREATE
-    INDEX "index_interactions_on_timestamp_sourceDeviceId_and_authorUUID"
-        ON "model_TSInteraction"("timestamp"
-    ,"deprecated_sourceDeviceId"
-    ,"authorUUID"
-)
-;
-
-CREATE
-    INDEX "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"
-        ON "model_TSInteraction"("timestamp"
-    ,"deprecated_sourceDeviceId"
-    ,"authorPhoneNumber"
-)
-;
-
-CREATE
-    INDEX "index_interactions_on_expiresInSeconds_and_expiresAt"
-        ON "model_TSInteraction"("expiresAt"
-    ,"expiresInSeconds"
 )
 ;
 
@@ -658,13 +621,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_TSInteraction_on_uniqueThreadId_and_attachmentIds"
-        ON "model_TSInteraction"("uniqueThreadId"
-    ,"deprecated_attachmentIds"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "model_TSMention" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -689,22 +645,6 @@ CREATE
     UNIQUE INDEX "index_model_TSMention_on_uniqueMessageId_and_uuidString"
         ON "model_TSMention"("uniqueMessageId"
     ,"uuidString"
-)
-;
-
-CREATE
-    INDEX "index_model_TSInteraction_on_uniqueThreadId_and_hasEnded_and_recordType"
-        ON "model_TSInteraction"("uniqueThreadId"
-    ,"hasEnded"
-    ,"recordType"
-)
-;
-
-CREATE
-    INDEX "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType"
-        ON "model_TSInteraction"("uniqueThreadId"
-    ,"eraId"
-    ,"recordType"
 )
 ;
 
@@ -948,30 +888,6 @@ CREATE
 ;
 
 CREATE
-    INDEX index_model_TSInteraction_ConversationLoadInteractionCount
-        ON model_TSInteraction (
-        uniqueThreadId
-        ,isGroupStoryReply
-        ,recordType
-    )
-WHERE
-    recordType IS NOT 70
-;
-
-CREATE
-    INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
-        ON model_TSInteraction (
-        uniqueThreadId
-        ,id
-        ,isGroupStoryReply
-        ,recordType
-        ,uniqueId
-    )
-WHERE
-    recordType IS NOT 70
-;
-
-CREATE
     INDEX "index_model_TSInteraction_UnreadMessages"
         ON "model_TSInteraction" (
         "read"
@@ -981,14 +897,6 @@ CREATE
         ,"editState"
         ,"recordType"
     )
-;
-
-CREATE
-    INDEX "index_model_TSInteraction_on_StoryContext"
-        ON "model_TSInteraction"("storyTimestamp"
-    ,"storyAuthorUuidString"
-    ,"isGroupStoryReply"
-)
 ;
 
 CREATE
@@ -2295,5 +2203,73 @@ CREATE
 CREATE
     INDEX "IndividualGroupSendEndorsement_recipientId"
         ON "IndividualGroupSendEndorsement"("recipientId"
+)
+;
+
+CREATE
+    INDEX "Interaction_incompleteViewOnce_partial"
+        ON "model_TSInteraction"("isViewOnceMessage"
+    ,"isViewOnceComplete"
+)
+WHERE
+(
+    "isViewOnceMessage" = 1
+)
+AND (
+    "isViewOnceComplete" = 0
+)
+;
+
+CREATE
+    INDEX "Interaction_disappearingMessages_partial"
+        ON "model_TSInteraction"("expiresAt"
+)
+WHERE
+"expiresAt" > 0
+;
+
+CREATE
+    INDEX "Interaction_timestamp"
+        ON "model_TSInteraction"("timestamp"
+)
+;
+
+CREATE
+    INDEX "Interaction_unendedGroupCall_partial"
+        ON "model_TSInteraction"("recordType"
+    ,"hasEnded"
+    ,"uniqueThreadId"
+)
+WHERE
+(
+    "recordType" = 65
+)
+AND (
+    "hasEnded" = 0
+)
+;
+
+CREATE
+    INDEX "Interaction_groupCallEraId_partial"
+        ON "model_TSInteraction"("uniqueThreadId"
+    ,"recordType"
+    ,"eraId"
+)
+WHERE
+"eraId" IS NOT NULL
+;
+
+CREATE
+    INDEX "Interaction_storyReply_partial"
+        ON "model_TSInteraction"("storyAuthorUuidString"
+    ,"storyTimestamp"
+    ,"isGroupStoryReply"
+)
+WHERE
+(
+    "storyAuthorUuidString" IS NOT NULL
+)
+AND (
+    "storyTimestamp" IS NOT NULL
 )
 ;
