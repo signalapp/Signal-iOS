@@ -1551,24 +1551,23 @@ extension AppSetup.DatabaseContinuation {
                 owsFailDebug("Failed to truncate database: \(error)")
             }
         }
-        return await databaseStorage.runGrdbSchemaMigrationsOnMainDatabase {
-            // NOTE: I'm not sure why the code below needs to run on the main actor but it was doing so before this refactor.
-            return await MainActor.run {
-                do {
-                    try databaseStorage.grdbStorage.setupDatabaseChangeObserver()
-                } catch {
-                    owsFail("Couldn't set up change observer: \(error.grdbErrorForLogging)")
-                }
-                self.sskEnvironment.warmCaches(appReadiness: self.appReadiness)
-
-                self.backgroundTask.end()
-                return AppSetup.FinalContinuation(
-                    appReadiness: self.appReadiness,
-                    authCredentialStore: self.authCredentialStore,
-                    dependenciesBridge: self.dependenciesBridge,
-                    sskEnvironment: self.sskEnvironment
-                )
+        databaseStorage.runGrdbSchemaMigrationsOnMainDatabase()
+        // NOTE: I'm not sure why the code below needs to run on the main actor but it was doing so before this refactor.
+        return await MainActor.run {
+            do {
+                try databaseStorage.grdbStorage.setupDatabaseChangeObserver()
+            } catch {
+                owsFail("Couldn't set up change observer: \(error.grdbErrorForLogging)")
             }
+            self.sskEnvironment.warmCaches(appReadiness: self.appReadiness)
+
+            self.backgroundTask.end()
+            return AppSetup.FinalContinuation(
+                appReadiness: self.appReadiness,
+                authCredentialStore: self.authCredentialStore,
+                dependenciesBridge: self.dependenciesBridge,
+                sskEnvironment: self.sskEnvironment
+            )
         }
     }
 

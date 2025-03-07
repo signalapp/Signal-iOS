@@ -68,34 +68,31 @@ public class SDSDatabaseStorage: NSObject {
         return GRDBDatabaseStorageAdapter.databaseFileUrl()
     }
 
-    func runGrdbSchemaMigrationsOnMainDatabase<T>(completion: () async -> T) async -> T {
-        let didPerformIncrementalMigrations: Bool = {
-            do {
-                return try GRDBSchemaMigrator.migrateDatabase(
-                    databaseStorage: self,
-                    isMainDatabase: true
-                )
-            } catch {
-                DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
-                    userDefaults: CurrentAppContext().appUserDefaults(),
-                    error: error
-                )
-                owsFail("Database migration failed. Error: \(error.grdbErrorForLogging)")
-            }
-        }()
+    func runGrdbSchemaMigrationsOnMainDatabase() {
+        let didPerformIncrementalMigrations: Bool
+        do {
+            didPerformIncrementalMigrations = try GRDBSchemaMigrator.migrateDatabase(
+                databaseStorage: self,
+                isMainDatabase: true
+            )
+        } catch {
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Database migration failed. Error: \(error.grdbErrorForLogging)")
+        }
 
         if didPerformIncrementalMigrations {
             do {
-                return try await reopenGRDBStorage(completion: completion)
+                try reopenGRDBStorage()
             } catch {
                 owsFail("Unable to reopen storage \(error.grdbErrorForLogging)")
             }
-        } else {
-            return await completion()
         }
     }
 
-    private func reopenGRDBStorage<T>(completion: () async -> T) async throws -> T {
+    private func reopenGRDBStorage() throws {
         // There seems to be a rare issue where at least one reader or writer
         // (e.g. SQLite connection) in the GRDB pool ends up "stale" after
         // a schema migration and does not reflect the migrations.
@@ -116,8 +113,6 @@ public class SDSDatabaseStorage: NSObject {
         // should be drained by this point.
         owsAssertDebug(weakPool == nil)
         owsAssertDebug(weakGrdbStorage == nil)
-
-        return await completion()
     }
 
     // MARK: - Id Mapping
