@@ -8,16 +8,30 @@ import SignalServiceKit
 
 class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
     private let databaseStorage: SDSDatabaseStorage
+    private let remoteConfigManager: () -> any RemoteConfigManager
+    private let tsAccountManager: () -> any TSAccountManager
 
-    init(databaseStorage: SDSDatabaseStorage) {
+    init(
+        databaseStorage: SDSDatabaseStorage,
+        remoteConfigManager: @escaping () -> any RemoteConfigManager,
+        tsAccountManager: @escaping () -> any TSAccountManager
+    ) {
         self.databaseStorage = databaseStorage
+        self.remoteConfigManager = remoteConfigManager
+        self.tsAccountManager = tsAccountManager
     }
 
     static var taskIdentifier: String = "LazyDatabaseMigratorTask"
 
-    static var requiresNetworkConnectivity: Bool = false
+    static var requiresNetworkConnectivity: Bool = true
 
     func shouldLaunchBGProcessingTask() -> Bool {
+        guard
+            tsAccountManager().registrationStateWithMaybeSneakyTransaction.isRegistered,
+            remoteConfigManager().currentConfig().isLazyDatabaseMigratorEnabled
+        else {
+            return false
+        }
         do {
             let indexes = try databaseStorage.read { tx in
                 let db = tx.asV2Read.databaseConnection
@@ -63,6 +77,17 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
     /// `simulatePriorCancellation` to return true and run on a simulator.
     func run() async throws {
         // Must be idempotent.
+
+        guard tsAccountManager().registrationStateWithMaybeSneakyTransaction.isRegistered else {
+            Logger.warn("Skipping because we're not registered.")
+            return
+        }
+
+        try await remoteConfigManager().refreshIfNeeded()
+        guard remoteConfigManager().currentConfig().isLazyDatabaseMigratorEnabled else {
+            Logger.warn("Skipping because kill switch is set.")
+            return
+        }
 
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in

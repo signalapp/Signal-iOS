@@ -306,7 +306,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         )
         attachmentValidationRunner.registerBGProcessingTask(appReadiness: appReadiness)
 
-        let databaseMigratorRunner = LazyDatabaseMigratorRunner(databaseStorage: databaseStorage)
+        let databaseMigratorRunner = LazyDatabaseMigratorRunner(
+            databaseStorage: databaseStorage,
+            remoteConfigManager: { SSKEnvironment.shared.remoteConfigManagerRef },
+            tsAccountManager: { DependenciesBridge.shared.tsAccountManager }
+        )
         databaseMigratorRunner.registerBGProcessingTask(appReadiness: appReadiness)
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {

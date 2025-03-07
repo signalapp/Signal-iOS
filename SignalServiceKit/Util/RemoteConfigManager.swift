@@ -249,6 +249,10 @@ public class RemoteConfig {
         return !isEnabled(.tsAttachmentMigrationMainAppBackgroundKillSwitch)
     }
 
+    public var isLazyDatabaseMigratorEnabled: Bool {
+        return !isEnabled(.lazyDatabaseMigratorKillSwitch)
+    }
+
     // MARK: UInt values
 
     private func getUIntValue(
@@ -433,6 +437,7 @@ private enum IsEnabledFlag: String, FlagType {
     case deleteForMeSyncMessageSending = "ios.deleteForMeSyncMessage.sending"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
+    case lazyDatabaseMigratorKillSwitch = "ios.lazyDatabaseMigratorKillSwitch"
     case libsignalCdsUseNewConnectLogic = "ios.libsignal.cdsUseNewConnectLogic"
     case libsignalForChat = "ios.useLibsignalForChat"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
@@ -457,6 +462,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .deleteForMeSyncMessageSending: false
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
+        case .lazyDatabaseMigratorKillSwitch: false
         case .libsignalCdsUseNewConnectLogic: false
         case .libsignalForChat: false
         case .messageResendKillSwitch: false
@@ -482,6 +488,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .deleteForMeSyncMessageSending: false
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
+        case .lazyDatabaseMigratorKillSwitch: true
         case .libsignalCdsUseNewConnectLogic: true
         case .libsignalForChat: false
         case .messageResendKillSwitch: false
