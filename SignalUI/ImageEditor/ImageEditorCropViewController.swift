@@ -948,8 +948,7 @@ extension ImageEditorCropViewController {
 
     @objc
     private func didTapCancel() {
-        transitionUI(toState: .initial, animated: true) { finished in
-            guard finished else { return }
+        transitionUI(toState: .initial, animated: true) { _ in
             self.dismiss(animated: false)
         }
     }
@@ -957,8 +956,7 @@ extension ImageEditorCropViewController {
     @objc
     private func didTapDone() {
         model.replace(transform: transform)
-        transitionUI(toState: .initial, animated: true) { finished in
-            guard finished else { return }
+        transitionUI(toState: .initial, animated: true) { _ in
             self.dismiss(animated: false)
         }
     }
