@@ -425,11 +425,11 @@ class ImageEditorCropViewController: OWSViewController {
         imageView.layer.cornerRadius = imageCornerRadius
 
         if animated {
+            constrainContent(to: layoutGuide)
+            updateImageViewTransform()
             UIView.animate(withDuration: animationDuration,
                            animations: {
                 setControlsHiddenBlock()
-                self.constrainContent(to: layoutGuide)
-                self.updateImageViewTransform()
                 // Animate layout changes made within bottomBar.setControls(hidden:).
                 self.view.setNeedsDisplay()
                 self.view.layoutIfNeeded()
