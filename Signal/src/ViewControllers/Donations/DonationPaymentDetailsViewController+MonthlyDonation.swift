@@ -45,10 +45,12 @@ extension DonationPaymentDetailsViewController {
                 }.then(on: DispatchQueue.sharedUserInitiated) { clientSecret -> Promise<DonationSubscriptionManager.RecurringSubscriptionPaymentType> in
                     Logger.info("[Donations] Authorizing payment for new monthly subscription")
 
-                    return Stripe.setupNewSubscription(
-                        clientSecret: clientSecret,
-                        paymentMethod: validForm.stripePaymentMethod
-                    ).then(on: DispatchQueue.sharedUserInitiated) { confirmedIntent -> Promise<Stripe.ConfirmedSetupIntent> in
+                    return Promise.wrapAsync {
+                        return try await Stripe.setupNewSubscription(
+                            clientSecret: clientSecret,
+                            paymentMethod: validForm.stripePaymentMethod
+                        )
+                    }.then(on: DispatchQueue.sharedUserInitiated) { confirmedIntent -> Promise<Stripe.ConfirmedSetupIntent> in
                         if let redirectToUrl = confirmedIntent.redirectToUrl {
                             if case .ideal = validForm.donationPaymentMethod {
                                 Logger.info("[Donations] Subscription requires iDEAL authentication. Presenting...")

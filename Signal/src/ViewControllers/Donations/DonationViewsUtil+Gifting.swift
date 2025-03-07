@@ -89,12 +89,14 @@ extension DonationViewsUtil {
             amount: FiatMoney,
             withStripePaymentMethod paymentMethod: Stripe.PaymentMethod
         ) -> Promise<PreparedGiftPayment> {
-            firstly(on: DispatchQueue.sharedUserInitiated) {
-                Stripe.createBoostPaymentIntent(for: amount, level: .giftBadge(.signalGift), paymentMethod: paymentMethod.stripePaymentMethod)
-            }.then(on: DispatchQueue.sharedUserInitiated) { paymentIntent -> Promise<PreparedGiftPayment> in
-                Stripe.createPaymentMethod(with: paymentMethod).map { paymentMethodId in
-                    .forStripe(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)
-                }
+            Promise.wrapAsync {
+                let paymentIntent = try await Stripe.createBoostPaymentIntent(
+                    for: amount,
+                    level: .giftBadge(.signalGift),
+                    paymentMethod: paymentMethod.stripePaymentMethod
+                )
+                let paymentMethodId = try await Stripe.createPaymentMethod(with: paymentMethod)
+                return .forStripe(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)
             }.timeout(seconds: 30) {
                 Logger.warn("[Gifting] Timed out after preparing gift badge payment")
                 return SendGiftError.failedAndUserNotCharged

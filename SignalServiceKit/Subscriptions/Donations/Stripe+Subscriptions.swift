@@ -47,17 +47,14 @@ extension Stripe {
     public static func setupNewSubscription(
         clientSecret: String,
         paymentMethod: PaymentMethod
-    ) -> Promise<ConfirmedSetupIntent> {
-        firstly {
-            createPaymentMethod(with: paymentMethod)
-        }.then(on: DispatchQueue.sharedUserInitiated) { paymentMethodId -> Promise<ConfirmedSetupIntent> in
-            // Pass in the correct callback URL
-            confirmSetupIntent(
-                mandate: paymentMethod.mandate,
-                paymentMethodId: paymentMethodId,
-                clientSecret: clientSecret,
-                callbackURL: paymentMethod.callbackURL
-            )
-        }
+    ) async throws -> ConfirmedSetupIntent {
+        let paymentMethodId = try await createPaymentMethod(with: paymentMethod)
+        // Pass in the correct callback URL
+        return try await confirmSetupIntent(
+            mandate: paymentMethod.mandate,
+            paymentMethodId: paymentMethodId,
+            clientSecret: clientSecret,
+            callbackURL: paymentMethod.callbackURL
+        )
     }
 }

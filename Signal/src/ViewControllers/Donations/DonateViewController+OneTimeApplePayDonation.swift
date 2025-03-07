@@ -30,8 +30,8 @@ extension DonateViewController {
 
         let boostBadge = oneTime.profileBadge
 
-        firstly(on: DispatchQueue.global()) {
-            Stripe.boost(
+        Promise.wrapAsync {
+            try await Stripe.boost(
                 amount: amount,
                 level: .boostBadge,
                 for: .applePay(payment: payment)

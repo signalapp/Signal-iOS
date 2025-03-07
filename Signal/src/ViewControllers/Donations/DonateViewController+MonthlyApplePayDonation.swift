@@ -51,10 +51,12 @@ extension DonateViewController {
             }.then(on: DispatchQueue.sharedUserInitiated) { clientSecret -> Promise<Stripe.ConfirmedSetupIntent> in
                 Logger.info("[Donations] Authorizing payment for new monthly subscription with Apple Pay")
 
-                return Stripe.setupNewSubscription(
-                    clientSecret: clientSecret,
-                    paymentMethod: .applePay(payment: payment)
-                )
+                return Promise.wrapAsync {
+                    return try await Stripe.setupNewSubscription(
+                        clientSecret: clientSecret,
+                        paymentMethod: .applePay(payment: payment)
+                    )
+                }
             }.map(on: DispatchQueue.sharedUserInitiated) { confirmedIntent in
                 (subscriberId, confirmedIntent.paymentMethodId)
             }

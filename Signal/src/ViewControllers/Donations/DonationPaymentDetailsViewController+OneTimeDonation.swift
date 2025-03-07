@@ -18,8 +18,8 @@ extension DonationPaymentDetailsViewController {
 
         DonationViewsUtil.wrapPromiseInProgressView(
             from: self,
-            promise: firstly(on: DispatchQueue.sharedUserInitiated) {
-                Stripe.boost(
+            promise: Promise.wrapAsync {
+                try await Stripe.boost(
                     amount: amount,
                     level: .boostBadge,
                     for: validForm.stripePaymentMethod

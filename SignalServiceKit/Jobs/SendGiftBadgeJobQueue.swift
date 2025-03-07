@@ -286,7 +286,7 @@ private class SendGiftBadgeJobRunner: JobRunner {
                 paymentMethodId: paymentMethodId,
                 callbackURL: nil,
                 idempotencyKey: idempotencyKey
-            ).awaitable()
+            )
             return paymentIntentId
         case let .forBraintree(paypalApprovalParams, paymentId):
             return try await Paypal.confirmOneTimePayment(
