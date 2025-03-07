@@ -466,7 +466,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
 
 extension FingerprintViewController: CompareSafetyNumbersActivityDelegate {
 
-    public func compareSafetyNumbersActivitySucceeded(activity: CompareSafetyNumbersActivity) {
+    func compareSafetyNumbersActivitySucceeded(activity: CompareSafetyNumbersActivity) {
         FingerprintScanViewController.showVerificationSucceeded(
             from: self,
             identityKey: identityKey,
@@ -476,17 +476,14 @@ extension FingerprintViewController: CompareSafetyNumbersActivityDelegate {
         )
     }
 
-    public func compareSafetyNumbersActivity(_ activity: CompareSafetyNumbersActivity, failedWithError error: Error) {
-        let isUserError = (error as NSError).code == OWSErrorCode.userError.rawValue
-
+    func compareSafetyNumbersActivity(_ activity: CompareSafetyNumbersActivity, failedWithError error: CompareSafetyNumberError) {
         FingerprintScanViewController.showVerificationFailed(
             from: self,
-            isUserError: isUserError,
-            localizedErrorDescription: error.userErrorDescription,
+            isUserError: error == .userError,
+            localizedErrorDescription: error.localizedError,
             tag: "[\(type(of: self))]"
         )
     }
-
 }
 
 extension FingerprintViewController: UITextViewDelegate {

@@ -11,7 +11,7 @@ public enum OWSErrorCode: Int {
     case failedToDecodeJson = 13
     case failedToEncodeJson = 14
     case failedToDecodeQR = 15
-    case privacyVerificationFailure = 20
+    // case privacyVerificationFailure = 20
     case untrustedIdentity = 777427
     case invalidKeySignature = 777428
     case obsolete30 = 30
@@ -23,7 +23,7 @@ public enum OWSErrorCode: Int {
     case failedToEncryptUDMessage = 111
     case messageSendUnauthorized = 1001
     case signalServiceRateLimited = 1010
-    case userError = 2001
+    // case userError = 2001
     case noSuchSignalRecipient = 777404
     case messageSendDisabledDueToPreKeyUpdateFailures = 777405
     case messageSendFailedToBlockList = 777406

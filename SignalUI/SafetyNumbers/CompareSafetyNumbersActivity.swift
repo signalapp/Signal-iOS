@@ -8,9 +8,23 @@ import UIKit
 
 let CompareSafetyNumbersActivityType = "org.whispersystems.signal.activity.CompareSafetyNumbers"
 
-public protocol CompareSafetyNumbersActivityDelegate: AnyObject {
+enum CompareSafetyNumberError: Error {
+    case userError
+    case verificationError
+
+    var localizedError: String {
+        switch self {
+        case .userError:
+            OWSLocalizedString("PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD", comment: "Alert body for user error")
+        case .verificationError:
+            OWSLocalizedString("PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD", comment: "Alert body")
+        }
+    }
+}
+
+protocol CompareSafetyNumbersActivityDelegate: AnyObject {
     func compareSafetyNumbersActivitySucceeded(activity: CompareSafetyNumbersActivity)
-    func compareSafetyNumbersActivity(_ activity: CompareSafetyNumbersActivity, failedWithError error: Error)
+    func compareSafetyNumbersActivity(_ activity: CompareSafetyNumbersActivity, failedWithError error: CompareSafetyNumberError)
 }
 
 public class CompareSafetyNumbersActivity: UIActivity {
@@ -55,28 +69,20 @@ public class CompareSafetyNumbersActivity: UIActivity {
         }
 
         let pasteboardNumerics = numericOnly(string: UIPasteboard.general.string)
-        guard let pasteboardString = pasteboardNumerics,
-              pasteboardString.count == 60 else {
-            Logger.warn("no valid safety numbers found in pasteboard: \(String(describing: pasteboardNumerics))")
-            let error = OWSError(error: .userError,
-                                 description: OWSLocalizedString("PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD", comment: "Alert body for user error"),
-                                 isRetryable: false)
-
-            delegate.compareSafetyNumbersActivity(self, failedWithError: error)
+        guard let pasteboardString = pasteboardNumerics, pasteboardString.count == 60 else {
+            Logger.warn("no valid safety numbers found in pasteboard")
+            delegate.compareSafetyNumbersActivity(self, failedWithError: .userError)
             return
         }
 
         let pasteboardSafetyNumbers = pasteboardString
 
         if pasteboardSafetyNumbers == mySafetyNumbers {
-            Logger.info("successfully matched safety numbers. local numbers: \(String(describing: mySafetyNumbers)) pasteboard:\(pasteboardSafetyNumbers)")
+            Logger.info("successfully matched safety numbers")
             delegate.compareSafetyNumbersActivitySucceeded(activity: self)
         } else {
-            Logger.warn("local numbers: \(String(describing: mySafetyNumbers)) didn't match pasteboard:\(pasteboardSafetyNumbers)")
-            let error = OWSError(error: .privacyVerificationFailure,
-                                 description: OWSLocalizedString("PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD", comment: "Alert body"),
-                                 isRetryable: false)
-            delegate.compareSafetyNumbersActivity(self, failedWithError: error)
+            Logger.warn("local numbers didn't match pasteboard")
+            delegate.compareSafetyNumbersActivity(self, failedWithError: .verificationError)
         }
     }
 
