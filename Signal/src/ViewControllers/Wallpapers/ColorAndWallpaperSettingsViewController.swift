@@ -36,6 +36,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
     private func wallpaperDidChange(notification: Notification) {
         guard notification.object == nil || (notification.object as? String) == thread?.uniqueId else { return }
         updateWallpaperViewBuilder()
+        updateChatColor()
         updateTableContents()
     }
 
