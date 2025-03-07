@@ -463,7 +463,7 @@ public class InteractionFinder: NSObject {
                 transaction: transaction
             ).compactMap { $0 as? TSMessage }
         } catch {
-            owsFailDebug("Error loading interactions \(error.userErrorDescription)")
+            owsFailDebug("Error loading interactions \(error)")
             return nil
         }
 

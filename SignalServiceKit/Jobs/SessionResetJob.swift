@@ -54,7 +54,7 @@ private class SessionResetJobRunner: JobRunner {
                     // did succeed and the server just timed out our response or something.
                     // Since the cost of sending a future message using a session the recipient
                     // doesn't have is so high, we archive the session just in case.
-                    Logger.warn("Terminal failure: \(error.userErrorDescription)")
+                    Logger.warn("Terminal failure: \(error)")
                     if let contactThread = try? self.fetchThread(jobRecord: jobRecord, tx: tx) {
                         self.archiveAllSessions(for: contactThread, tx: tx)
                     }

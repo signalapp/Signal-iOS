@@ -33,7 +33,7 @@ public class OWS2FAManager {
                         try await self.migrateToRegistrationLockV2()
                         Logger.info("Successfully migrated to registration lock V2")
                     } catch {
-                        owsFailDebug("Failed to migrate V1 reglock to V2 reglock: \(error.userErrorDescription)")
+                        owsFailDebug("Failed to migrate V1 reglock to V2 reglock: \(error)")
                     }
                 }
             }

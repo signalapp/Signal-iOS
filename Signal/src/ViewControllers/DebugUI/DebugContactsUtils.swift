@@ -114,9 +114,6 @@ class DebugContactsUtils {
             }
         } catch {
             owsFailDebug("Error saving fake contacts: \(error)")
-            DispatchQueue.main.async {
-                OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
-            }
         }
     }
 
@@ -133,7 +130,6 @@ class DebugContactsUtils {
             try deleteContactsWithFilter { _ in return true }
         } catch {
             Logger.error("\(error)")
-            OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
         }
     }
 
@@ -150,7 +146,6 @@ class DebugContactsUtils {
             }
         } catch {
             Logger.error("\(error)")
-            OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
         }
     }
 
