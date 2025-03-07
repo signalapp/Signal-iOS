@@ -291,45 +291,26 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // We _must_ register BGProcessingTask handlers synchronously in didFinishLaunching.
         // https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler/register(fortaskwithidentifier:using:launchhandler:)
         // WARNING: Apple docs say we can only have 10 BGProcessingTasks registered.
-        IncrementalMessageTSAttachmentMigrationRunner.registerBGProcessingTask(
+        let attachmentMigrationRunner = IncrementalMessageTSAttachmentMigrationRunner(
+            db: databaseStorage,
             store: incrementalMessageTSAttachmentMigrationStore,
-            migrator: Task {
-                await withCheckedContinuation { continuation in
-                    appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-                        continuation.resume(with: .success(
-                            DependenciesBridge.shared.incrementalMessageTSAttachmentMigrator
-                        ))
-                    }
-                }
-            },
-            db: databaseStorage
+            migrator: { DependenciesBridge.shared.incrementalMessageTSAttachmentMigrator }
         )
+        attachmentMigrationRunner.registerBGProcessingTask(appReadiness: appReadiness)
+
         let attachmentBackfillStore = AttachmentValidationBackfillStore()
-        AttachmentValidationBackfillRunner.registerBGProcessingTask(
+        let attachmentValidationRunner = AttachmentValidationBackfillRunner(
+            db: databaseStorage,
             store: attachmentBackfillStore,
-            migrator: Task {
-                await withCheckedContinuation { continuation in
-                    appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-                        continuation.resume(with: .success(
-                            DependenciesBridge.shared.attachmentValidationBackfillMigrator
-                        ))
-                    }
-                }
-            },
-            db: databaseStorage
+            migrator: { DependenciesBridge.shared.attachmentValidationBackfillMigrator }
         )
+        attachmentValidationRunner.registerBGProcessingTask(appReadiness: appReadiness)
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             if SSKEnvironment.shared.remoteConfigManagerRef.currentConfig().shouldRunTSAttachmentMigrationInBGProcessingTask {
-                IncrementalMessageTSAttachmentMigrationRunner.scheduleBGProcessingTaskIfNeeded(
-                    store: incrementalMessageTSAttachmentMigrationStore,
-                    db: databaseStorage
-                )
+                attachmentMigrationRunner.scheduleBGProcessingTaskIfNeeded()
             }
-            AttachmentValidationBackfillRunner.scheduleBGProcessingTaskIfNeeded(
-                store: attachmentBackfillStore,
-                db: databaseStorage
-            )
+            attachmentValidationRunner.scheduleBGProcessingTaskIfNeeded()
         }
 
         // Show LoadingViewController until the database migrations are complete.
