@@ -954,6 +954,7 @@ extension ImageEditorCropViewController {
             // Fallback to reveal controls in case of an animation interruption
             guard finished else {
                     self.updateControlsVisibility(hidden: false)
+                    self.didTapReset()
                     return
                 }
             self.dismiss(animated: false)
@@ -968,6 +969,7 @@ extension ImageEditorCropViewController {
             // Fallback to reveal controls in case of an animation interruption
             guard finished else {
                     self.updateControlsVisibility(hidden: false)
+                    self.didTapReset()
                     return
                 }
             self.dismiss(animated: false)
