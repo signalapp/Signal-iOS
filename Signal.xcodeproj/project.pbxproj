@@ -1342,7 +1342,6 @@
 		762A41692A37D71600057955 /* UIViewController+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762A41682A37D71600057955 /* UIViewController+SignalUI.swift */; };
 		762A416B2A38397500057955 /* UIKit+Text.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762A416A2A38397500057955 /* UIKit+Text.swift */; };
 		762A416D2A383ABF00057955 /* UIKit+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762A416C2A383ABF00057955 /* UIKit+Image.swift */; };
-		762EBBD02A2FB759002FD28F /* AttachmentSharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762EBBCF2A2FB759002FD28F /* AttachmentSharing.swift */; };
 		762EBBD22A2FE370002FD28F /* BlockListUIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762EBBD12A2FE370002FD28F /* BlockListUIUtils.swift */; };
 		76387BF028F4ED73002C7BA5 /* CaseIterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */; };
 		763A16002AEC3A490081D7E5 /* OWSContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763A15FF2AEC3A490081D7E5 /* OWSContact.swift */; };
@@ -2462,6 +2461,8 @@
 		D94AEB3C2D28940A00B03D7A /* PreKeyTaskAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94AEB3B2D28940500B03D7A /* PreKeyTaskAPIClient.swift */; };
 		D94D67CD2C9DEF870091B485 /* MessageBackupPostFrameRestoreActionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94D67CC2C9DEF6E0091B485 /* MessageBackupPostFrameRestoreActionManager.swift */; };
 		D94D67CF2C9DF4720091B485 /* TSInfoMessage+ContactHidden.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94D67CE2C9DF46E0091B485 /* TSInfoMessage+ContactHidden.swift */; };
+		D954A5AD2D7BA7DD00F61C36 /* AttachmentSaving.swift in Sources */ = {isa = PBXBuildFile; fileRef = D954A5AC2D7BA7DA00F61C36 /* AttachmentSaving.swift */; };
+		D954A5AE2D7BA9B200F61C36 /* AttachmentSharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762EBBCF2A2FB759002FD28F /* AttachmentSharing.swift */; };
 		D95787772C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95787762C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift */; };
 		D95787792C6D2ADE0051AC74 /* TSInfoMessage+Payments.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95787782C6D2ADE0051AC74 /* TSInfoMessage+Payments.swift */; };
 		D957877B2C6D2B690051AC74 /* TSInfoMessage+LearnedProfileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D957877A2C6D2B690051AC74 /* TSInfoMessage+LearnedProfileName.swift */; };
@@ -6296,6 +6297,7 @@
 		D94D67CE2C9DF46E0091B485 /* TSInfoMessage+ContactHidden.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+ContactHidden.swift"; sourceTree = "<group>"; };
 		D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+WebAuthentication.swift"; sourceTree = "<group>"; };
 		D9517ABF292C5A3900DDD37E /* Paypal+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+API.swift"; sourceTree = "<group>"; };
+		D954A5AC2D7BA7DA00F61C36 /* AttachmentSaving.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentSaving.swift; sourceTree = "<group>"; };
 		D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallPeekClient.swift; sourceTree = "<group>"; };
 		D95787762C6D2A080051AC74 /* TSInfoMessage+GroupUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdates.swift"; sourceTree = "<group>"; };
 		D95787782C6D2ADE0051AC74 /* TSInfoMessage+Payments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Payments.swift"; sourceTree = "<group>"; };
@@ -8882,6 +8884,7 @@
 		50BF51062BB201AE00C2C309 /* Sharing */ = {
 			isa = PBXGroup;
 			children = (
+				D954A5AC2D7BA7DA00F61C36 /* AttachmentSaving.swift */,
 				762EBBCF2A2FB759002FD28F /* AttachmentSharing.swift */,
 			);
 			path = Sharing;
@@ -15963,7 +15966,7 @@
 				665D9B452C111C6D00E73E94 /* AttachmentMultisend+OversizeText.swift in Sources */,
 				661566722BCEDD58003F1647 /* AttachmentMultisend.swift in Sources */,
 				3402AA3D271D9DCD0084CBAE /* AttachmentPrepViewController.swift in Sources */,
-				762EBBD02A2FB759002FD28F /* AttachmentSharing.swift in Sources */,
+				D954A5AD2D7BA7DD00F61C36 /* AttachmentSaving.swift in Sources */,
 				3402AA42271D9DCD0084CBAE /* AttachmentTextToolbar.swift in Sources */,
 				3402AA55271D9DCD0084CBAE /* AttachmentTextView.swift in Sources */,
 				7609818C2936EF22008F8300 /* AudioPlayer.swift in Sources */,
@@ -16269,6 +16272,7 @@
 				661AEE482C2088FD0046B1D8 /* AttachmentDownloadRetryRunner.swift in Sources */,
 				88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */,
 				8809CE8722F8FE6D00D38867 /* AttachmentKeyboard.swift in Sources */,
+				D954A5AE2D7BA9B200F61C36 /* AttachmentSharing.swift in Sources */,
 				66DA8DFA2C91125200799E70 /* AttachmentValidationBackfillRunner.swift in Sources */,
 				45B3680B2A1D75DF0067D05A /* AudioAllMediaPresenter.swift in Sources */,
 				45D9784429F0B51F00BBB3C0 /* AudioCell.swift in Sources */,

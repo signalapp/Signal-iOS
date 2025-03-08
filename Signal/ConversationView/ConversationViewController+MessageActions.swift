@@ -112,19 +112,8 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
             var contextMenuActions: [ContextMenuAction] = []
             if let actions = self.collectionViewActiveContextMenuInteraction?.messageActions {
 
-                let actionOrder: [MessageAction.MessageActionType] = [
-                    .reply,
-                    .forward,
-                    .edit,
-                    .copy,
-                    .share,
-                    .select,
-                    .showPaymentDetails,
-                    .speak,
-                    .stopSpeaking,
-                    .info,
-                    .delete
-                ]
+                let actionOrder = MessageAction.MessageActionType.allCases
+                    .sorted { $0.priority < $1.priority }
 
                 for type in actionOrder {
                     let actionWithType = actions.first { $0.actionType == type }

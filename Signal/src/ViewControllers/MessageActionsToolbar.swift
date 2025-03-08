@@ -14,18 +14,37 @@ public class MessageAction: NSObject {
     let contextMenuTitle: String
     let contextMenuAttributes: ContextMenuAction.Attributes
 
-    public enum MessageActionType {
+    public enum MessageActionType: CaseIterable {
         case reply
         case copy
         case info
         case delete
         case share
+        case save
         case forward
         case select
         case speak
         case stopSpeaking
         case edit
         case showPaymentDetails
+
+        /// Lower priority numbers indicate an action should be shown earlier.
+        var priority: Int {
+            return switch self {
+            case .reply: 0
+            case .forward: 1
+            case .edit: 2
+            case .copy: 3
+            case .share: 4
+            case .save: 5
+            case .select: 6
+            case .showPaymentDetails: 7
+            case .speak: 8
+            case .stopSpeaking: 9
+            case .info: 10
+            case .delete: 11
+            }
+        }
     }
 
     let actionType: MessageActionType
@@ -58,6 +77,8 @@ public class MessageAction: NSObject {
                 return .contextMenuDelete
             case .share:
                 return .contextMenuShare
+            case .save:
+                return .contextMenuSave
             case .forward:
                 return .contextMenuForward
             case .select:

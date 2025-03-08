@@ -206,34 +206,47 @@ extension CVItemViewModelImpl {
         !shareableAttachments.isEmpty
     }
 
+    func shareMediaAction(sender: Any?) {
+        let attachments = shareableAttachments
+        guard !attachments.isEmpty else {
+            return
+        }
+
+        AttachmentSharing.showShareUI(for: attachments, sender: sender)
+    }
+
     private var shareableAttachments: [ShareableAttachment] {
         guard !isViewOnce else {
             return []
         }
 
+        guard !wasRemotelyDeleted else {
+            return []
+        }
+
         if let attachment = self.componentState.audioAttachmentStream {
             return (try? [attachment].asShareableAttachments()) ?? []
-        } else if let attachment = self.componentState.genericAttachmentStream {
-            return (try? [attachment].asShareableAttachments()) ?? []
-        } else {
-            return (try? self.componentState.bodyMediaAttachmentStreams.asShareableAttachments()) ?? []
         }
+
+        if let attachment = self.componentState.genericAttachmentStream {
+            return (try? [attachment].asShareableAttachments()) ?? []
+        }
+
+        return []
     }
 
-    func shareMediaAction(sender: Any?) {
-        guard !isViewOnce else {
-            return
-        }
+    var canSaveMedia: Bool {
+        !saveableAttachments.isEmpty
+    }
 
-        guard !wasRemotelyDeleted else {
-            return
-        }
+    func saveMediaAction() {
+        AttachmentSaving.saveToPhotoLibrary(
+            referencedAttachmentStreams: saveableAttachments
+        )
+    }
 
-        let attachments = shareableAttachments
-        guard !attachments.isEmpty else {
-            return
-        }
-        AttachmentSharing.showShareUI(for: attachments, sender: sender)
+    private var saveableAttachments: [ReferencedAttachmentStream] {
+        return self.componentState.bodyMediaAttachmentStreams
     }
 
     var canForwardMessage: Bool {

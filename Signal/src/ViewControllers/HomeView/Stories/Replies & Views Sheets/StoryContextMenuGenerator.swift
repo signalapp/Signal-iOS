@@ -554,62 +554,13 @@ extension StoryThumbnailView.Attachment {
     }
 
     func save(interactionIdentifier: InteractionSnapshotIdentifier, spoilerState: SpoilerRenderState) {
-        guard let vc = CurrentAppContext().frontmostViewController() else {
-            return owsFailDebug("Missing frontmost view controller")
-        }
-
         switch self {
         case .file(let fileAttachment):
-            guard
-                let attachment = fileAttachment.attachment.asStream(),
-                MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.mimeType)
-            else { break }
-
-            var mediaURL: URL?
-            let shouldDeleteFileAfterComplete: Bool
-            // Make a copy since we are about to send this off to the system anyway.
-            mediaURL = try? attachment.makeDecryptedCopy(filename: fileAttachment.reference.sourceFilename)
-            shouldDeleteFileAfterComplete = true
-            guard let mediaURL else {
+            guard let referencedAttachmentStream = fileAttachment.asReferencedStream else {
                 break
             }
 
-            vc.ows_askForMediaLibraryPermissions { isGranted in
-                guard isGranted else {
-                    return
-                }
-
-                PHPhotoLibrary.shared().performChanges({
-                    if MimeTypeUtil.isSupportedImageMimeType(attachment.mimeType) {
-                        PHAssetCreationRequest.creationRequestForAssetFromImage(atFileURL: mediaURL)
-                    } else if MimeTypeUtil.isSupportedVideoMimeType(attachment.mimeType) {
-                        PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: mediaURL)
-                    }
-                }, completionHandler: { didSucceed, error in
-                    DispatchQueue.main.async {
-                        if shouldDeleteFileAfterComplete {
-                            try? OWSFileSystem.deleteFile(url: mediaURL)
-                        }
-                        if didSucceed {
-                            let toastController = ToastController(
-                                text: OWSLocalizedString(
-                                    "STORIES_DID_SAVE",
-                                    comment: "toast alert shown after user taps the 'save' button"
-                                )
-                            )
-                            toastController.presentToastView(from: .bottom, of: vc.view, inset: 16)
-                        } else {
-                            owsFailDebug("error: \(String(describing: error))")
-                            OWSActionSheets.showErrorAlert(
-                                message: OWSLocalizedString(
-                                    "STORIES_SAVE_FAILED",
-                                    comment: "alert notifying that the 'save' operation failed"
-                                )
-                            )
-                        }
-                    }
-                })
-            }
+            AttachmentSaving.saveToPhotoLibrary(referencedAttachmentStreams: [referencedAttachmentStream])
         case .text(let attachment):
             let view = TextAttachmentView(
                 attachment: attachment,
@@ -620,35 +571,7 @@ extension StoryThumbnailView.Attachment {
             view.layoutIfNeeded()
             let image = view.renderAsImage()
 
-            vc.ows_askForMediaLibraryPermissions { isGranted in
-                guard isGranted else {
-                    return
-                }
-
-                PHPhotoLibrary.shared().performChanges({
-                    PHAssetCreationRequest.creationRequestForAsset(from: image)
-                }, completionHandler: { didSucceed, error in
-                    DispatchQueue.main.async {
-                        if didSucceed {
-                            let toastController = ToastController(
-                                text: OWSLocalizedString(
-                                    "STORIES_DID_SAVE",
-                                    comment: "toast alert shown after user taps the 'save' button"
-                                )
-                            )
-                            toastController.presentToastView(from: .bottom, of: vc.view, inset: 16)
-                        } else {
-                            owsFailDebug("error: \(String(describing: error))")
-                            OWSActionSheets.showErrorAlert(
-                                message: OWSLocalizedString(
-                                    "STORIES_SAVE_FAILED",
-                                    comment: "alert notifying that the 'save' operation failed"
-                                )
-                            )
-                        }
-                    }
-                })
-            }
+            AttachmentSaving.saveToPhotoLibrary(image: image)
         case .missing:
             owsFailDebug("Unexpectedly missing attachment for story.")
         }

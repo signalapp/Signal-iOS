@@ -335,6 +335,16 @@ class MediaPageViewController: UIPageViewController {
         // TODO: Edit
         contextMenuActions.append(UIAction(
             title: OWSLocalizedString(
+                "MEDIA_VIEWER_SAVE_MEDIA_ACTION",
+                comment: "Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app."
+            ),
+            image: Theme.iconImage(.contextMenuSave),
+            handler: { [weak self] _ in
+                self?.saveCurrentMediaToPhotos()
+            }
+        ))
+        contextMenuActions.append(UIAction(
+            title: OWSLocalizedString(
                 "MEDIA_VIEWER_DELETE_MEDIA_ACTION",
                 comment: "Context menu item in media viewer. Refers to deleting currently displayed photo/video."
             ),
@@ -492,6 +502,14 @@ class MediaPageViewController: UIPageViewController {
         }
         let sender = fromNavigationBar ? barButtonShareMedia : bottomMediaPanel
         AttachmentSharing.showShareUI(for: attachmentStream, sender: sender)
+    }
+
+    private func saveCurrentMediaToPhotos() {
+        guard let mediaItem = currentItem else { return }
+
+        AttachmentSaving.saveToPhotoLibrary(
+            referencedAttachmentStreams: [mediaItem.attachmentStream]
+        )
     }
 
     private func deleteCurrentMedia() {
