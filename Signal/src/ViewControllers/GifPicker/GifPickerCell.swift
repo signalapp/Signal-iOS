@@ -100,31 +100,23 @@ class GifPickerCell: UICollectionViewCell {
         (previewAsset != nil) && (mp4View.video != nil || imageView.image != nil)
     }
 
-    public func requestRenditionForSending() -> Promise<ProxiedContentAsset> {
+    public func requestRenditionForSending() async throws(GiphyError) -> ProxiedContentAsset {
         guard let imageInfo = imageInfo,
               let fullSizeAsset = imageInfo.fullSizeAsset else {
             owsFailDebug("fullSizeAsset was unexpectedly nil")
-            return Promise(error: GiphyError.assertionError(description: "fullSizeAsset was unexpectedly nil"))
+            throw GiphyError.assertionError(description: "fullSizeAsset was unexpectedly nil")
         }
-
-        let (promise, future) = Promise<ProxiedContentAsset>.pending()
 
         // We don't retain a handle on the asset request, since there will only ever
         // be one selected asset, and we never want to cancel it.
-        _ = GiphyDownloader.giphyDownloader.requestAsset(
-            assetDescription: fullSizeAsset,
-            priority: .high,
-            success: { _, asset in
-                future.resolve(asset)
-            },
-            failure: { _ in
-                // TODO GiphyDownloader API should pass through a useful failing error
-                // so we can pass it through here
-                Logger.error("request failed")
-                future.reject(GiphyError.fetchFailure)
-            })
-
-        return promise
+        do {
+            return try await GiphyDownloader.giphyDownloader.requestAsset(assetDescription: fullSizeAsset, priority: .high)
+        } catch {
+            // TODO GiphyDownloader API should pass through a useful failing error
+            // so we can pass it through here
+            Logger.error("request failed")
+            throw .fetchFailure
+        }
     }
 
     // MARK: UICollectionViewCell

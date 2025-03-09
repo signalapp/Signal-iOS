@@ -44,7 +44,7 @@ class StaleProfileFetcher {
         }
         Task { [profileFetcher] in
             for serviceId in staleServiceIds.shuffled() {
-                _ = try? await profileFetcher.fetchProfile(for: serviceId, options: [.opportunistic])
+                _ = try? await profileFetcher.fetchProfile(for: serviceId, context: .init(isOpportunistic: true))
             }
         }
     }

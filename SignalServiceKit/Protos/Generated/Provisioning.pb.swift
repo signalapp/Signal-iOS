@@ -226,6 +226,15 @@ struct ProvisioningProtos_ProvisionMessage: @unchecked Sendable {
   /// Clears the value of `ephemeralBackupKey`. Subsequent reads from it will return its default value.
   mutating func clearEphemeralBackupKey() {self._ephemeralBackupKey = nil}
 
+  var accountEntropyPool: String {
+    get {return _accountEntropyPool ?? String()}
+    set {_accountEntropyPool = newValue}
+  }
+  /// Returns true if `accountEntropyPool` has been explicitly set.
+  var hasAccountEntropyPool: Bool {return self._accountEntropyPool != nil}
+  /// Clears the value of `accountEntropyPool`. Subsequent reads from it will return its default value.
+  mutating func clearAccountEntropyPool() {self._accountEntropyPool = nil}
+
   /// NEXT ID: 17
   var mediaRootBackupKey: Data {
     get {return _mediaRootBackupKey ?? Data()}
@@ -254,6 +263,7 @@ struct ProvisioningProtos_ProvisionMessage: @unchecked Sendable {
   fileprivate var _provisioningVersion: UInt32? = nil
   fileprivate var _masterKey: Data? = nil
   fileprivate var _ephemeralBackupKey: Data? = nil
+  fileprivate var _accountEntropyPool: String? = nil
   fileprivate var _mediaRootBackupKey: Data? = nil
 }
 
@@ -356,6 +366,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     9: .same(proto: "provisioningVersion"),
     13: .same(proto: "masterKey"),
     14: .same(proto: "ephemeralBackupKey"),
+    15: .same(proto: "accountEntropyPool"),
     16: .same(proto: "mediaRootBackupKey"),
   ]
 
@@ -379,6 +390,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
       case 12: try { try decoder.decodeSingularBytesField(value: &self._pniIdentityKeyPrivate) }()
       case 13: try { try decoder.decodeSingularBytesField(value: &self._masterKey) }()
       case 14: try { try decoder.decodeSingularBytesField(value: &self._ephemeralBackupKey) }()
+      case 15: try { try decoder.decodeSingularStringField(value: &self._accountEntropyPool) }()
       case 16: try { try decoder.decodeSingularBytesField(value: &self._mediaRootBackupKey) }()
       default: break
       }
@@ -432,6 +444,9 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     try { if let v = self._ephemeralBackupKey {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 14)
     } }()
+    try { if let v = self._accountEntropyPool {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 15)
+    } }()
     try { if let v = self._mediaRootBackupKey {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 16)
     } }()
@@ -453,6 +468,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     if lhs._provisioningVersion != rhs._provisioningVersion {return false}
     if lhs._masterKey != rhs._masterKey {return false}
     if lhs._ephemeralBackupKey != rhs._ephemeralBackupKey {return false}
+    if lhs._accountEntropyPool != rhs._accountEntropyPool {return false}
     if lhs._mediaRootBackupKey != rhs._mediaRootBackupKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

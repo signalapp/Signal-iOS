@@ -1220,6 +1220,8 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func didTapViewGroupDescription(newGroupDescription: String) {}
 
+    func didTapNameEducation(type: SafetyTipsType) {}
+
     // TODO:
     func didTapShowConversationSettings() {}
 

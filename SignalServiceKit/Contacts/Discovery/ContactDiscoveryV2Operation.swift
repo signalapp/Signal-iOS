@@ -54,12 +54,13 @@ protocol ContactDiscoveryConnection {
 
 extension LibSignalClient.Net: ContactDiscoveryConnection {
     func performRequest(_ request: ContactDiscoveryLookupRequest, auth: Auth) async throws -> CdsiLookup {
-        return try await self.cdsiLookup(auth: auth, request: CdsiLookupRequest(
+        let request = try CdsiLookupRequest(
             e164s: request.newE164s.map(\.stringValue),
             prevE164s: request.prevE164s.map(\.stringValue),
             acisAndAccessKeys: request.acisAndAccessKeys,
             token: request.token
-        ))
+        )
+        return try await self.cdsiLookup(auth: auth, request: request, useNewConnectLogic: RemoteConfig.current.libsignalCdsUseNewConnectLogic)
     }
 
     func continueRequest(afterAckingToken tokenResult: CdsiLookup) async throws -> [ContactDiscoveryResult] {
@@ -216,10 +217,12 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
             // will get a new, valid token, at the cost of consuming additional quota.
             await persistentState?.reset()
             return ContactDiscoveryError.invalidToken
-        case .networkProtocolError(let message):
-            return ContactDiscoveryError.retryableError("protocol error: \(message)")
-        case .webSocketError(let message):
-            return ContactDiscoveryError.retryableError("web socket error: \(message)")
+        case .networkProtocolError(let message),
+                .webSocketError(let message),
+                .connectionTimeoutError(let message),
+                .requestTimeoutError(let message),
+                .connectionFailed(let message):
+            return ContactDiscoveryError.retryableError("connection error: \(message)")
         default:
             return ContactDiscoveryError.terminalError("libsignal-net error: \(libSignalError)")
         }

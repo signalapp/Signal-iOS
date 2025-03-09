@@ -88,7 +88,7 @@ public class MessageBackupAdHocCallArchiverImpl: MessageBackupAdHocCallArchiver 
         do {
             try context.bencher.wrapEnumeration(
                 callRecordStore.enumerateAdHocCallRecords(tx:block:),
-                context.tx
+                tx: context.tx
             ) { record, frameBencher in
                 try Task.checkCancellation()
                 autoreleasepool {

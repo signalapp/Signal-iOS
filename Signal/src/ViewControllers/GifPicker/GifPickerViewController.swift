@@ -90,8 +90,8 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDat
 }
 
 protocol GifPickerViewControllerDelegate: AnyObject {
-    func gifPickerDidSelect(attachment: SignalAttachment)
-    func gifPickerDidCancel()
+    @MainActor func gifPickerDidSelect(attachment: SignalAttachment)
+    @MainActor func gifPickerDidCancel()
 }
 
 class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate, OWSNavigationChildController {
@@ -196,7 +196,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                                selector: #selector(didBecomeActive),
                                                name: .OWSApplicationDidBecomeActive,
                                                object: nil)
-        loadTrending()
+
+        // TODO: This really ought to be cancellable but it was not with promisekit so the refactor carries this for now.
+        Task { await loadTrending() }
     }
 
     var hasEverAppeared = false
@@ -214,6 +216,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         progressiveSearchTimer?.invalidate()
         progressiveSearchTimer = nil
+
+        fileForCellTask?.cancel()
+        fileForCellTask = nil
     }
 
     public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
@@ -463,57 +468,45 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         getFileForCell(cell)
     }
 
-    public func getFileForCell(_ cell: GifPickerCell) {
-        enum GetFileError: Error {
-            case noLongerRelevant
-        }
+    private var fileForCellTask: Task<Void, Never>?
 
+    public func getFileForCell(_ cell: GifPickerCell) {
         GiphyDownloader.giphyDownloader.cancelAllRequests()
 
-        firstly {
-            cell.requestRenditionForSending()
-        }.map(on: DispatchQueue.global()) { [weak self] (asset: ProxiedContentAsset) -> SignalAttachment in
-            // This check is just an optimization. The important check is below.
-            guard self != nil else { throw GetFileError.noLongerRelevant }
+        fileForCellTask?.cancel()
+        fileForCellTask = Task.detached(priority: .userInitiated) {
+            do {
+                let asset = try await cell.requestRenditionForSending()
+                guard let giphyAsset = asset.assetDescription as? GiphyAsset else {
+                    throw OWSAssertionError("Invalid asset description.")
+                }
 
-            guard let giphyAsset = asset.assetDescription as? GiphyAsset else {
-                throw OWSAssertionError("Invalid asset description.")
+                let assetTypeIdentifier = giphyAsset.type.utiType
+                let assetFileExtension = giphyAsset.type.extension
+                let pathForCachedAsset = asset.filePath
+
+                let pathForConsumableFile = OWSFileSystem.temporaryFilePath(fileExtension: assetFileExtension)
+                try FileManager.default.copyItem(atPath: pathForCachedAsset, toPath: pathForConsumableFile)
+                let dataSource = try DataSourcePath(filePath: pathForConsumableFile, shouldDeleteOnDeallocation: false)
+
+                let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: assetTypeIdentifier)
+                attachment.isLoopingVideo = attachment.isVideo
+
+                await self.delegate?.gifPickerDidSelect(attachment: attachment)
+            } catch {
+                await MainActor.run {
+                    let alert = ActionSheetController(title: OWSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected GIF couldn't be fetched"),
+                                                      message: error.userErrorDescription)
+                    alert.addAction(ActionSheetAction(title: CommonStrings.retryButton, style: .default) { _ in
+                        self.getFileForCell(cell)
+                    })
+                    alert.addAction(ActionSheetAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
+                        self.delegate?.gifPickerDidCancel()
+                    })
+
+                    self.presentActionSheet(alert)
+                }
             }
-
-            let assetTypeIdentifier = giphyAsset.type.utiType
-            let assetFileExtension = giphyAsset.type.extension
-            let pathForCachedAsset = asset.filePath
-
-            let pathForConsumableFile = OWSFileSystem.temporaryFilePath(fileExtension: assetFileExtension)
-            try FileManager.default.copyItem(atPath: pathForCachedAsset, toPath: pathForConsumableFile)
-            let dataSource = try DataSourcePath(filePath: pathForConsumableFile, shouldDeleteOnDeallocation: false)
-
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: assetTypeIdentifier)
-            attachment.isLoopingVideo = attachment.isVideo
-            return attachment
-
-        }.done { [weak self] attachment in
-            guard let self = self else {
-                throw GetFileError.noLongerRelevant
-            }
-
-            self.delegate?.gifPickerDidSelect(attachment: attachment)
-        }.catch { [weak self] error in
-            guard let self = self else {
-                Logger.info("ignoring failure, since VC was dismissed before fetching finished.")
-                return
-            }
-
-            let alert = ActionSheetController(title: OWSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected GIF couldn't be fetched"),
-                                          message: error.userErrorDescription)
-            alert.addAction(ActionSheetAction(title: CommonStrings.retryButton, style: .default) { _ in
-                self.getFileForCell(cell)
-            })
-            alert.addAction(ActionSheetAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
-                self.delegate?.gifPickerDidCancel()
-            })
-
-            self.presentActionSheet(alert)
         }
     }
 
@@ -577,18 +570,17 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             return
         }
 
-        search(query: query)
+        // TODO: This really ought to be cancellable but it was not with promisekit so the refactor carries this for now.
+        Task { await search(query: query) }
     }
 
-    private func loadTrending() {
+    private func loadTrending() async {
         assert(progressiveSearchTimer == nil)
         assert(lastQuery == nil)
         assert(searchBar.text.isEmptyOrNil)
 
-        firstly {
-            GiphyAPI.trending()
-        }.done(on: DispatchQueue.main) { [weak self] imageInfos in
-            guard let self = self else { return }
+        do {
+            let imageInfos = try await GiphyAPI.trending()
 
             guard self.lastQuery == nil else {
                 Logger.info("not showing trending results due to subsequent searches.")
@@ -602,36 +594,32 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             } else {
                 owsFailDebug("trending results was unexpectedly empty")
             }
-        }.catch(on: DispatchQueue.main) { error in
+        } catch {
             // Don't both showing error UI feedback for default "trending" results.
             Logger.error("error: \(error)")
         }
     }
 
-    private func search(query: String) {
+    private func search(query: String) async {
         imageInfos = []
         viewMode = .searching
         lastQuery = query
         self.collectionView.contentOffset = CGPoint.zero
 
-        firstly {
-            GiphyAPI.search(query: query)
-        }.done(on: DispatchQueue.main) { [weak self] imageInfos in
-            guard let strongSelf = self else { return }
+        do {
+            imageInfos = try await GiphyAPI.search(query: query)
             Logger.info("search complete")
-            strongSelf.imageInfos = imageInfos
             if imageInfos.count > 0 {
-                strongSelf.viewMode = .results
+                viewMode = .results
             } else {
-                strongSelf.viewMode = .noResults
+                viewMode = .noResults
             }
-        }.catch(on: DispatchQueue.main) { [weak self] error in
+        } catch {
             owsFailDebugUnlessNetworkFailure(error)
 
-            guard let strongSelf = self else { return }
             Logger.warn("search failed.")
             // TODO: Present this error to the user.
-            strongSelf.viewMode = .error
+            viewMode = .error
         }
     }
 

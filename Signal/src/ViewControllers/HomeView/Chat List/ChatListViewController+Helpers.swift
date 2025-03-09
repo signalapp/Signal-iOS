@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-public import SignalServiceKit
+import SignalServiceKit
 import SignalUI
 
 public extension ChatListViewController {
@@ -18,23 +18,23 @@ public extension ChatListViewController {
         return topViewController
     }
 
-    func isConversationActive(forThread thread: TSThread) -> Bool {
+    func isConversationActive(threadUniqueId: String) -> Bool {
         AssertIsOnMainThread()
 
         guard let conversationSplitViewController = splitViewController as? ConversationSplitViewController else {
             owsFailDebug("Missing conversationSplitViewController.")
             return false
         }
-        return conversationSplitViewController.selectedThread?.uniqueId == thread.uniqueId
+        return conversationSplitViewController.selectedThread?.uniqueId == threadUniqueId
     }
 
-    func updateLastViewedThread(_ thread: TSThread, animated: Bool) {
-        lastViewedThread = thread
+    func updateLastViewedThreadUniqueId(_ threadUniqueId: String, animated: Bool) {
+        lastViewedThreadUniqueId = threadUniqueId
 
         // First ensure that the given thread is selected in the current state
         // of the table. This will update the view state and set a flag
         // indicating whether a load is necessary.
-        ensureSelectedThread(thread, animated: animated)
+        ensureSelectedThreadUniqueId(threadUniqueId, animated: animated)
 
         // Schedule a load if necessary.
         loadCoordinator.loadIfNecessary(suppressAnimations: !animated)
@@ -42,7 +42,7 @@ public extension ChatListViewController {
         // The chat list render state may now be changed, invalidating the
         // just-selected index path, so update the selection once more to
         // reflect the loaded data.
-        ensureSelectedThread(thread, animated: animated)
+        ensureSelectedThreadUniqueId(threadUniqueId, animated: animated)
 
         tableView.scrollToNearestSelectedRow(at: .none, animated: animated)
     }
@@ -50,7 +50,7 @@ public extension ChatListViewController {
     /// Verifies that the currently selected cell matches the provided thread.
     /// If it does or if the user's in multi-select: Do nothing.
     /// If it doesn't: Select the first cell matching the provided thread, if one exists. Otherwise, deselect the current row.
-    func ensureSelectedThread(_ targetThread: TSThread, animated: Bool) {
+    func ensureSelectedThreadUniqueId(_ targetThreadUniqueId: String, animated: Bool) {
         // Ignore any updates if we're in multiselect mode. I don't think this can happen,
         // but if it does let's avoid stepping over the user's manual selection.
         let selectedIndexPaths = tableView.indexPathsForSelectedRows ?? []
@@ -60,16 +60,16 @@ public extension ChatListViewController {
         }
 
         let selectedIndexPath = selectedIndexPaths.first
-        let selectedThread = selectedIndexPath.flatMap(renderState.thread(forIndexPath:))
+        let selectedThreadUniqueId = selectedIndexPath.flatMap { renderState.threadUniqueId(forIndexPath: $0) }
 
         tableView.performBatchUpdates {
-            viewState.lastSelectedThreadId = targetThread.uniqueId
+            viewState.lastSelectedThreadId = targetThreadUniqueId
 
-            if let selectedIndexPath, selectedThread?.uniqueId != targetThread.uniqueId {
+            if let selectedIndexPath, selectedThreadUniqueId != targetThreadUniqueId {
                 tableView.deselectRow(at: selectedIndexPath, animated: animated)
             }
 
-            if let targetIndexPath = renderState.indexPath(forUniqueId: targetThread.uniqueId) {
+            if let targetIndexPath = renderState.indexPath(forUniqueId: targetThreadUniqueId) {
                 tableView.selectRow(at: targetIndexPath, animated: animated, scrollPosition: .none)
             }
         }
@@ -170,7 +170,7 @@ extension ChatListViewController {
             // Currently, no previewing the currently selected thread.
             // Though, in a scene-aware, multiwindow world, we may opt to permit this.
             // If only to allow the user to pick up and drag a conversation to a new window.
-            return renderState.thread(forIndexPath: indexPath)?.uniqueId != currentSelectedThreadId
+            return renderState.threadUniqueId(forIndexPath: indexPath) != currentSelectedThreadId
 
         default:
             return false
@@ -200,6 +200,9 @@ extension ChatListViewController {
             owsFailDebug("Invalid previewController: \(type(of: previewController))")
             return
         }
-        presentThread(previewController.thread, animated: false)
+        presentThread(
+            threadUniqueId: previewController.thread.uniqueId,
+            animated: false
+        )
     }
 }

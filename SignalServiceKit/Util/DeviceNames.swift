@@ -18,11 +18,7 @@ public enum DeviceNames {
     private static let syntheticIVLength = 16
 
     public static func encryptDeviceName(plaintext: String, identityKeyPair: IdentityKeyPair) throws -> Data {
-
-        guard let plaintextData = plaintext.data(using: .utf8) else {
-            owsFailDebug("Could not convert text to UTF-8.")
-            throw DeviceNameError.invalidInput
-        }
+        let plaintextData = Data(plaintext.utf8)
 
         let ephemeralKeyPair = IdentityKeyPair.generate()
 

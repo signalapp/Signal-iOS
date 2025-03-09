@@ -102,6 +102,7 @@ public class DependenciesBridge {
     public let linkPreviewManager: LinkPreviewManager
     public let linkPreviewSettingStore: LinkPreviewSettingStore
     public let linkPreviewSettingManager: any LinkPreviewSettingManager
+    public let accountKeyStore: AccountKeyStore
     let localProfileChecker: LocalProfileChecker
     public let localUsernameManager: LocalUsernameManager
     public let masterKeySyncManager: MasterKeySyncManager
@@ -110,7 +111,6 @@ public class DependenciesBridge {
     public let messageBackupKeyMaterial: MessageBackupKeyMaterial
     public let messageBackupManager: MessageBackupManager
     public let messageStickerManager: MessageStickerManager
-    public let mrbkStore: MediaRootBackupKeyStore
     public let nicknameManager: any NicknameManager
     public let orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager
     public let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
@@ -219,6 +219,7 @@ public class DependenciesBridge {
         linkPreviewManager: LinkPreviewManager,
         linkPreviewSettingStore: LinkPreviewSettingStore,
         linkPreviewSettingManager: any LinkPreviewSettingManager,
+        accountKeyStore: AccountKeyStore,
         localProfileChecker: LocalProfileChecker,
         localUsernameManager: LocalUsernameManager,
         masterKeySyncManager: MasterKeySyncManager,
@@ -227,7 +228,6 @@ public class DependenciesBridge {
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
         messageBackupManager: MessageBackupManager,
         messageStickerManager: MessageStickerManager,
-        mrbkStore: MediaRootBackupKeyStore,
         nicknameManager: any NicknameManager,
         orphanedBackupAttachmentManager: OrphanedBackupAttachmentManager,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
@@ -335,6 +335,7 @@ public class DependenciesBridge {
         self.linkPreviewManager = linkPreviewManager
         self.linkPreviewSettingStore = linkPreviewSettingStore
         self.linkPreviewSettingManager = linkPreviewSettingManager
+        self.accountKeyStore = accountKeyStore
         self.localProfileChecker = localProfileChecker
         self.localUsernameManager = localUsernameManager
         self.masterKeySyncManager = masterKeySyncManager
@@ -343,7 +344,6 @@ public class DependenciesBridge {
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
         self.messageBackupManager = messageBackupManager
         self.messageStickerManager = messageStickerManager
-        self.mrbkStore = mrbkStore
         self.nicknameManager = nicknameManager
         self.orphanedBackupAttachmentManager = orphanedBackupAttachmentManager
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner

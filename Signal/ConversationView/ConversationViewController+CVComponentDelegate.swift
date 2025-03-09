@@ -235,10 +235,12 @@ extension ConversationViewController: CVComponentDelegate {
     }
 
     public func didTapUndownloadableMedia() {
-        (conversationSplitViewController ?? self).presentToast(text: OWSLocalizedString(
+        let toast = ToastController(text: OWSLocalizedString(
             "UNAVAILABLE_MEDIA_TAP_TOAST",
             comment: "Toast shown when tapping older media that can no longer be downloaded"
         ))
+        let inset = (self.inputToolbar?.height ?? 0) + 16
+        toast.presentToastView(from: .bottom, of: self.view, inset: inset)
     }
 
     public func didTapUndownloadableGenericFile() {
@@ -912,6 +914,11 @@ extension ConversationViewController: CVComponentDelegate {
         )
         let navigationController = OWSNavigationController(rootViewController: vc)
         self.presentFormSheet(navigationController, animated: true)
+    }
+
+    public func didTapNameEducation(type: SafetyTipsType) {
+        AssertIsOnMainThread()
+        present(NameEducationSheet(type: type), animated: true)
     }
 
     public func didTapShowConversationSettings() {

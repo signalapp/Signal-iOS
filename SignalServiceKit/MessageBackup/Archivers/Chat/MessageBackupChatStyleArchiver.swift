@@ -211,13 +211,16 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
         errorId: IDType
     ) -> MessageBackup.ArchiveSingleFrameResult<BackupProto_ChatStyle?, IDType> {
         var proto = BackupProto_ChatStyle()
+        // This can never be unset, so we'll default it to "auto". If we have an
+        // explicit bubble color, we'll overwrite this below.
+        proto.bubbleColor = .autoBubbleColor(BackupProto_ChatStyle.AutomaticBubbleColor())
 
         // If none of the things that feed the fields of the chat style are
         // _explicitly_ set, don't generate a chat style.
         var hasAnExplicitlySetField = false
 
         if let wallpaper = wallpaperStore.fetchWallpaper(for: thread?.tsThread.uniqueId, tx: context.tx) {
-            var protoWallpaper: BackupProto_ChatStyle.OneOf_Wallpaper?
+            let protoWallpaper: BackupProto_ChatStyle.OneOf_Wallpaper?
 
             switch wallpaper.asBackupProto() {
             case .wallpaperPreset(let preset):
@@ -231,8 +234,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
                 case .success(.some(let wallpaperAttachmentProto)):
                     protoWallpaper = .wallpaperPhoto(wallpaperAttachmentProto)
                 case .success(nil):
-                    // No wallpaper found; don't set.
-                    break
+                    protoWallpaper = nil
                 case .failure(let error):
                     return .failure(error)
                 }
@@ -240,11 +242,7 @@ public class MessageBackupChatStyleArchiver: MessageBackupProtoArchiver {
 
             if let protoWallpaper {
                 hasAnExplicitlySetField = true
-
                 proto.wallpaper = protoWallpaper
-                /// We'll set this to `.auto` for now, so it's never unset. If
-                /// we have an explicit bubble color we'll overwrite this below.
-                proto.bubbleColor = .autoBubbleColor(BackupProto_ChatStyle.AutomaticBubbleColor())
             }
         }
 

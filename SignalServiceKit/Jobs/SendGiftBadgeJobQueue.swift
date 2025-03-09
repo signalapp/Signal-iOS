@@ -89,42 +89,40 @@ public class SendGiftBadgeJobQueue {
         return (chargePromise, completionPromise)
     }
 
-    public func alreadyHasJob(for thread: TSContactThread, transaction: SDSAnyReadTransaction) -> Bool {
-        SendGiftBadgeJobFinder.jobExists(forThreadId: thread.uniqueId, transaction: transaction)
+    public func alreadyHasJob(threadId: String, transaction: SDSAnyReadTransaction) -> Bool {
+        jobExists(threadId: threadId, transaction: transaction)
     }
 }
 
 // MARK: - Job Finder
 
-private class SendGiftBadgeJobFinder {
-    public class func jobExists(forThreadId threadId: String, transaction: SDSAnyReadTransaction) -> Bool {
-        assert(!threadId.isEmpty)
+private func jobExists(threadId: String, transaction: SDSAnyReadTransaction) -> Bool {
+    assert(!threadId.isEmpty)
 
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            let sql = """
-                SELECT EXISTS (
-                    SELECT 1 FROM \(SendGiftBadgeJobRecord.databaseTableName)
-                    WHERE \(SendGiftBadgeJobRecord.columnName(.threadId)) IS ?
-                    AND \(SendGiftBadgeJobRecord.columnName(.recordType)) IS ?
-                    AND \(SendGiftBadgeJobRecord.columnName(.status)) NOT IN (?, ?)
-                )
-            """
-            let arguments: StatementArguments = [
-                threadId,
-                SDSRecordType.sendGiftBadgeJobRecord.rawValue,
-                SendGiftBadgeJobRecord.Status.permanentlyFailed.rawValue,
-                SendGiftBadgeJobRecord.Status.obsolete.rawValue
-            ]
-            do {
-                return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
-            } catch {
-                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                    userDefaults: CurrentAppContext().appUserDefaults(),
-                    error: error
-                )
-                owsFail("Unable to find job")
-            }
+    switch transaction.readTransaction {
+    case .grdbRead(let grdbTransaction):
+        let sql = """
+            SELECT EXISTS (
+                SELECT 1 FROM \(SendGiftBadgeJobRecord.databaseTableName)
+                WHERE \(SendGiftBadgeJobRecord.columnName(.threadId)) IS ?
+                AND \(SendGiftBadgeJobRecord.columnName(.recordType)) IS ?
+                AND \(SendGiftBadgeJobRecord.columnName(.status)) NOT IN (?, ?)
+            )
+        """
+        let arguments: StatementArguments = [
+            threadId,
+            SDSRecordType.sendGiftBadgeJobRecord.rawValue,
+            SendGiftBadgeJobRecord.Status.permanentlyFailed.rawValue,
+            SendGiftBadgeJobRecord.Status.obsolete.rawValue
+        ]
+        do {
+            return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Unable to find job")
         }
     }
 }

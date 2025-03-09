@@ -9,17 +9,19 @@ public import LibSignalClient
 // A class used for making HTTP requests against the main service.
 public class NetworkManager {
     private let restNetworkManager = RESTNetworkManager()
+    private let appReadiness: AppReadiness
     private let reachabilityDidChangeObserver: Task<Void, Never>?
     public let libsignalNet: Net?
 
-    public init(libsignalNet: Net?) {
+    public init(appReadiness: AppReadiness, libsignalNet: Net?) {
+        self.appReadiness = appReadiness
         self.libsignalNet = libsignalNet
         if let libsignalNet {
             self.reachabilityDidChangeObserver = Task {
                 for await _ in NotificationCenter.default.notifications(named: SSKReachability.owsReachabilityDidChange) {
                     do {
                         if !SignalProxy.isEnabled {
-                            Self.resetLibsignalNetProxySettings(libsignalNet)
+                            Self.resetLibsignalNetProxySettings(libsignalNet, appReadiness: appReadiness)
                         }
                         try libsignalNet.networkDidChange()
                     } catch {
@@ -27,7 +29,12 @@ public class NetworkManager {
                     }
                 }
             }
+
             self.resetLibsignalNetProxySettings()
+            appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+                // We did this once already, but doing it properly depends on RemoteConfig.
+                self.resetLibsignalNetProxySettings()
+            }
         } else {
             self.reachabilityDidChangeObserver = nil
         }
@@ -46,23 +53,40 @@ public class NetworkManager {
             // In tests without a libsignal Net instance, no action is needed.
             return
         }
-        Self.resetLibsignalNetProxySettings(libsignalNet)
+        Self.resetLibsignalNetProxySettings(libsignalNet, appReadiness: appReadiness)
     }
 
-    private static func resetLibsignalNetProxySettings(_ libsignalNet: Net) {
-        if let systemProxy = ProxyConfig.fromCFNetwork() {
-            Logger.info("System '\(systemProxy.scheme)' proxy detected")
-            do {
-                try libsignalNet.setProxy(scheme: systemProxy.scheme, host: systemProxy.host, port: systemProxy.port, username: systemProxy.username, password: systemProxy.password)
-            } catch {
-                Logger.error("invalid proxy: \(error)")
-                // When setProxy(...) fails, it refuses to connect in case your proxy was load-bearing.
-                // That makes sense for in-app settings, but less so for system-level proxies, given that we are already ignoring system-level proxies we don't understand.
-                libsignalNet.clearProxy()
-            }
+    private static func resetLibsignalNetProxySettings(_ libsignalNet: Net, appReadiness: AppReadiness) {
+        // Note: This is a workaround for libsignal's previous CDS implementation not supporting system proxies.
+        // In the long run, everything in libsignal will support system proxies and this can go away.
+        let supportsSystemProxiesForCds = if appReadiness.isAppReady {
+            RemoteConfig.current.libsignalCdsUseNewConnectLogic
         } else {
-            libsignalNet.clearProxy()
+            // This defaults to USING system proxies for connections before the app is ready,
+            // because CDS requests won't usually happen that early and chat connections might.
+            true
         }
+
+        if let systemProxy = ProxyConfig.fromCFNetwork() {
+            if supportsSystemProxiesForCds {
+                Logger.info("System '\(systemProxy.scheme)' proxy detected")
+                do {
+                    try libsignalNet.setProxy(scheme: systemProxy.scheme, host: systemProxy.host, port: systemProxy.port, username: systemProxy.username, password: systemProxy.password)
+                    return
+                } catch {
+                    Logger.error("invalid proxy: \(error)")
+                    // When setProxy(...) fails, it refuses to connect in case your proxy was load-bearing.
+                    // That makes sense for in-app settings, but less so for system-level proxies, given that we are already ignoring system-level proxies we don't understand.
+                    // Fall through to the reset call.
+                }
+            } else {
+                Logger.info("System '\(systemProxy.scheme)' proxy detected; not passing to libsignal for compatibility with older CDS implementation")
+                // Fall through to the reset call.
+            }
+        }
+
+        // This may be clearing a system proxy, or a previously set in-app proxy that is no longer in use.
+        libsignalNet.clearProxy()
     }
 
     public func asyncRequest(_ request: TSRequest, canUseWebSocket: Bool = true) async throws -> HTTPResponse {
@@ -121,10 +145,11 @@ private struct ProxyConfig {
                     username: proxyConfig[kCFProxyUsernameKey] as! String?,
                     password: proxyConfig[kCFProxyPasswordKey] as! String?)
             case kCFProxyTypeHTTPS:
-                // iOS doesn't distinguish HTTP and HTTPS sometimes. Do a bit of extra sniffing by port.
+                // This seems to mean "HTTP proxy for HTTPS connections" rather than "proxy that itself uses TLS".
+                // Leave room for the latter interpretation if the port number is traditionally HTTPS.
                 let port = proxyConfig[kCFProxyPortNumberKey] as! UInt16?
                 return ProxyConfig(
-                    scheme: (port == 80 || port == 8080) ? "http" : "https",
+                    scheme: (port == 443 || port == 8443) ? "https" : "http",
                     host: proxyConfig[kCFProxyHostNameKey] as! String,
                     port: port,
                     username: proxyConfig[kCFProxyUsernameKey] as! String?,

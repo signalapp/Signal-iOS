@@ -424,12 +424,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
         if !rawRequest.isUDRequest, rawRequest.shouldHaveAuthorizationHeaders {
             owsAssertDebug(nil != rawRequest.authUsername?.nilIfEmpty)
             owsAssertDebug(nil != rawRequest.authPassword?.nilIfEmpty)
-            do {
-                try httpHeaders.addAuthHeader(username: rawRequest.authUsername ?? "", password: rawRequest.authPassword ?? "")
-            } catch {
-                owsFailDebug("Could not add auth header: \(error).")
-                throw OWSHTTPError.invalidAppState
-            }
+            httpHeaders.addAuthHeader(username: rawRequest.authUsername ?? "", password: rawRequest.authPassword ?? "")
         }
 
         let method: HTTPMethod

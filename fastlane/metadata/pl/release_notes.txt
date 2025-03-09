@@ -1,1 +1,1 @@
-• Now when you attempt to start a chat with someone's Signal username, it will work even if you accidentally type the “@” symbol first. Some h@bits @re h@rd to bre@k.
+• Od teraz, gdy połączysz w aplikacji Signal swoje główne urządzenie z nowym komputerem lub iPadem, oprócz historii czatów możesz też przenieść multimedia z ostatnich 45 dni. Proces transferu danych jest szyfrowany metodą end-to-end i całkowicie opcjonalny. Wymazać przeszłość czy zachować ciągłość historii? Tę decyzję zostawiamy Tobie.

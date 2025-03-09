@@ -717,16 +717,28 @@ class StorageServiceOperation {
             case .explicit(let keyData):
                 masterKey = keyData
             case .implicit:
-                masterKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx.asV2Read)
+                masterKey = DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: tx.asV2Read)
             }
 
             return (state, masterKey)
         }
 
         guard let masterKey else {
-            // We don't have backup keys, do nothing. We'll try a
-            // fresh restore once the keys are set.
-            Logger.info("Skipping storage service operation due to missing master key.")
+            if
+                !isPrimaryDevice,
+                DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+            {
+                // This is a linked device, and keys are missing. There's nothing that can be done
+                // until we receive new keys, so send a key sync message and return early.
+                await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                    SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: tx)
+                }
+            } else {
+                // We're either not registered, or a primary.  Either way,
+                // we don't have backup keys, or a means to get them, so do nothing.
+                // We'll try a fresh restore once the keys are set.
+                Logger.info("Skipping storage service operation due to missing master key.")
+            }
             return
         }
         self.masterKey = masterKey
@@ -1103,7 +1115,8 @@ class StorageServiceOperation {
                 await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                     // Clear out the key, it's no longer valid. This will prevent us
                     // from trying to backup again until the sync response is received.
-                    DependenciesBridge.shared.svr.clearSyncedStorageServiceKey(transaction: transaction.asV2Write)
+                    DependenciesBridge.shared.svrLocalStorage.clearStorageServiceKeys(transaction.asV2Write)
+                    DependenciesBridge.shared.accountKeyStore.setMasterKey(nil, tx: transaction.asV2Write)
                     SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
                 }
             }
@@ -1653,7 +1666,8 @@ class StorageServiceOperation {
                 await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                     // Clear out the key, it's no longer valid. This will prevent us
                     // from trying to backup again until the sync response is received.
-                    DependenciesBridge.shared.svr.clearSyncedStorageServiceKey(transaction: transaction.asV2Write)
+                    DependenciesBridge.shared.svrLocalStorage.clearStorageServiceKeys(transaction.asV2Write)
+                    DependenciesBridge.shared.accountKeyStore.setMasterKey(nil, tx: transaction.asV2Write)
                     SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
                 }
             } else if

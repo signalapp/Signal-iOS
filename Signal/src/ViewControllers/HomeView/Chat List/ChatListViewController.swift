@@ -110,7 +110,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         if isSearching {
             scrollSearchBarToTop(animated: false)
-        } else if let lastViewedThread {
+        } else if let lastViewedThreadUniqueId {
             owsAssertDebug((searchBar.text ?? "").stripped.isEmpty)
 
             // When returning to conversation list, try to ensure that the "last" thread is still
@@ -118,7 +118,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             // to incoming & outgoing messages. Reload to ensure we have this latest ordering
             // before we find the index path we want to scroll to.
             loadCoordinator.loadIfNecessary(suppressAnimations: true, shouldForceLoad: true)
-            if let indexPathOfLastThread = renderState.indexPath(forUniqueId: lastViewedThread.uniqueId) {
+            if let indexPathOfLastThread = renderState.indexPath(forUniqueId: lastViewedThreadUniqueId) {
                 tableView.scrollToRow(at: indexPathOfLastThread, at: .none, animated: false)
             }
         }
@@ -148,10 +148,13 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         }
 
         let isCollapsed = splitViewController?.isCollapsed ?? true
-        if let selectedIndexPath = tableView.indexPathForSelectedRow, let selectedThread = renderState.thread(forIndexPath: selectedIndexPath) {
-            if viewState.lastSelectedThreadId != selectedThread.uniqueId {
+        if
+            let selectedIndexPath = tableView.indexPathForSelectedRow,
+            let selectedThreadUniqueId = renderState.threadUniqueId(forIndexPath: selectedIndexPath)
+        {
+            if viewState.lastSelectedThreadId != selectedThreadUniqueId {
                 owsFailDebug("viewState.lastSelectedThreadId out of sync with table view")
-                viewState.lastSelectedThreadId = selectedThread.uniqueId
+                viewState.lastSelectedThreadId = selectedThreadUniqueId
                 updateShouldBeUpdatingView()
             }
 
@@ -164,14 +167,14 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                             tableView.selectRow(at: selectedIndexPath, animated: false, scrollPosition: .none)
                         } else {
                             viewState.lastSelectedThreadId = nil
-                            loadCoordinator.scheduleLoad(updatedThreadIds: [selectedThread.uniqueId], animated: true)
+                            loadCoordinator.scheduleLoad(updatedThreadIds: [selectedThreadUniqueId], animated: true)
                         }
                     }
                 } else {
                     // No animated transition, so just update the state immediately.
                     viewState.lastSelectedThreadId = nil
                     tableView.deselectRow(at: selectedIndexPath, animated: false)
-                    loadCoordinator.scheduleLoad(updatedThreadIds: [selectedThread.uniqueId], animated: false)
+                    loadCoordinator.scheduleLoad(updatedThreadIds: [selectedThreadUniqueId], animated: false)
                 }
             }
         } else if isCollapsed, let threadId = viewState.lastSelectedThreadId {
@@ -476,24 +479,22 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         reloadTableData()
     }
 
-    func reloadTableData(withSelection previousSelection: [TSThread]? = nil) {
+    func reloadTableData(previouslySelectedThreadUniqueIds: [String] = []) {
         AssertIsOnMainThread()
 
-        let selectedThreadIds: Set<String>
-        if let previousSelection {
-            selectedThreadIds = Set(previousSelection.lazy.map(\.uniqueId))
-        } else {
-            selectedThreadIds = []
-        }
-
         tableView.reloadData()
+
+        let selectedThreadIds: Set<String> = Set(previouslySelectedThreadUniqueIds)
 
         if !selectedThreadIds.isEmpty {
             var threadIdsToBeSelected = selectedThreadIds
             for section in 0..<tableDataSource.numberOfSections(in: tableView) {
                 for row in 0..<tableDataSource.tableView(tableView, numberOfRowsInSection: section) {
                     let indexPath = IndexPath(row: row, section: section)
-                    if let key = renderState.thread(forIndexPath: indexPath)?.uniqueId, threadIdsToBeSelected.contains(key) {
+                    if
+                        let key = renderState.threadUniqueId(forIndexPath: indexPath),
+                        threadIdsToBeSelected.contains(key)
+                    {
                         tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
                         threadIdsToBeSelected.remove(key)
                         if threadIdsToBeSelected.isEmpty {
@@ -541,7 +542,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     private var hasEverPresentedExperienceUpgrade = false
 
-    var lastViewedThread: TSThread?
+    var lastViewedThreadUniqueId: String?
 
     func updateBarButtonItems() {
         updateLeftBarButtonItem()

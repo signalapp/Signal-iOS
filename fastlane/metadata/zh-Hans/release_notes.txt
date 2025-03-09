@@ -1,1 +1,1 @@
-• Now when you attempt to start a chat with someone's Signal username, it will work even if you accidentally type the “@” symbol first. Some h@bits @re h@rd to bre@k.
+• 现在您可以选择将聊天记录和最近 45 天的媒体转移到新的已链接设备。转移过程受端到端加密保护，并且是完全可选的选项。

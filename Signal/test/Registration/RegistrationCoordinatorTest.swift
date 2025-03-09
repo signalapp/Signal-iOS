@@ -20,8 +20,10 @@ public class RegistrationCoordinatorTest {
     private var appExpiryMock: MockAppExpiry!
     private var changeNumberPniManager: ChangePhoneNumberPniManagerMock!
     private var contactsStore: RegistrationCoordinatorImpl.TestMocks.ContactsStore!
+    private var db: (any DB)!
     private var experienceManager: RegistrationCoordinatorImpl.TestMocks.ExperienceManager!
     private var featureFlags: RegistrationCoordinatorImpl.TestMocks.FeatureFlags!
+    private var accountKeyStore: AccountKeyStore!
     private var localUsernameManagerMock: MockLocalUsernameManager!
     private var mockMessagePipelineSupervisor: RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor!
     private var mockMessageProcessor: RegistrationCoordinatorImpl.TestMocks.MessageProcessor!
@@ -32,20 +34,28 @@ public class RegistrationCoordinatorTest {
     private var profileManagerMock: RegistrationCoordinatorImpl.TestMocks.ProfileManager!
     private var pushRegistrationManagerMock: RegistrationCoordinatorImpl.TestMocks.PushRegistrationManager!
     private var receiptManagerMock: RegistrationCoordinatorImpl.TestMocks.ReceiptManager!
+    private var registrationCoordinatorLoader: RegistrationCoordinatorLoaderImpl!
     private var registrationStateChangeManagerMock: MockRegistrationStateChangeManager!
     private var sessionManager: RegistrationSessionManagerMock!
-    private var storageServiceManagerMock: FakeStorageServiceManager!
+    private var storageServiceManagerMock: RegistrationCoordinatorImpl.TestMocks.StorageServiceManager!
     private var svr: SecureValueRecoveryMock!
     private var svrLocalStorageMock: SVRLocalStorageMock!
     private var svrAuthCredentialStore: SVRAuthCredentialStorageMock!
     private var tsAccountManagerMock: MockTSAccountManager!
     private var usernameApiClientMock: MockUsernameApiClient!
     private var usernameLinkManagerMock: MockUsernameLinkManager!
-    private var coordinatorFactory: ((RegistrationMode) -> RegistrationCoordinatorImpl)!
+    private var missingKeyGenerator: MissingKeyGenerator!
+
+    private class MissingKeyGenerator {
+        var masterKey: () -> MasterKey = { fatalError("Default MasterKey not provided") }
+        var accountEntropyPool: () -> SignalServiceKit.AccountEntropyPool = { fatalError("Default AccountEntropyPool not provided")  }
+    }
 
     init() {
         dateProvider = { self.date }
-        let db = InMemoryDB()
+        db = InMemoryDB()
+
+        missingKeyGenerator = .init()
 
         appExpiryMock = MockAppExpiry()
         changeNumberPniManager = ChangePhoneNumberPniManagerMock(
@@ -54,6 +64,10 @@ public class RegistrationCoordinatorTest {
         contactsStore = RegistrationCoordinatorImpl.TestMocks.ContactsStore()
         experienceManager = RegistrationCoordinatorImpl.TestMocks.ExperienceManager()
         featureFlags = RegistrationCoordinatorImpl.TestMocks.FeatureFlags()
+        accountKeyStore = AccountKeyStore(
+            masterKeyGenerator: { self.missingKeyGenerator.masterKey() },
+            accountEntropyPoolGenerator: { self.missingKeyGenerator.accountEntropyPool() }
+        )
         localUsernameManagerMock = {
             let mock = MockLocalUsernameManager()
             // This should result in no username reclamation. Tests that want to
@@ -73,8 +87,8 @@ public class RegistrationCoordinatorTest {
         receiptManagerMock = RegistrationCoordinatorImpl.TestMocks.ReceiptManager()
         registrationStateChangeManagerMock = MockRegistrationStateChangeManager()
         sessionManager = RegistrationSessionManagerMock()
-        storageServiceManagerMock = FakeStorageServiceManager()
         svrLocalStorageMock = SVRLocalStorageMock()
+        storageServiceManagerMock = RegistrationCoordinatorImpl.TestMocks.StorageServiceManager()
         tsAccountManagerMock = MockTSAccountManager()
         usernameApiClientMock = MockUsernameApiClient()
         usernameLinkManagerMock = MockUsernameLinkManager()
@@ -97,6 +111,7 @@ public class RegistrationCoordinatorTest {
             db: db,
             experienceManager: experienceManager,
             featureFlags: featureFlags,
+            accountKeyStore: accountKeyStore,
             localUsernameManager: localUsernameManagerMock,
             messageBackupKeyMaterial: MessageBackupKeyMaterialMock(),
             messageBackupErrorPresenter: NoOpMessageBackupErrorPresenter(),
@@ -117,35 +132,111 @@ public class RegistrationCoordinatorTest {
             storageServiceRecordIkmCapabilityStore: StorageServiceRecordIkmCapabilityStoreImpl(),
             storageServiceManager: storageServiceManagerMock,
             svr: svr,
-            svrLocalStorage: svrLocalStorageMock,
             svrAuthCredentialStore: svrAuthCredentialStore,
             tsAccountManager: tsAccountManagerMock,
             udManager: RegistrationCoordinatorImpl.TestMocks.UDManager(),
             usernameApiClient: usernameApiClientMock,
             usernameLinkManager: usernameLinkManagerMock
         )
-        let loader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
-        coordinatorFactory = { mode in
-            db.write {
-                return loader.coordinator(
-                    forDesiredMode: mode,
-                    transaction: $0
-                ) as! RegistrationCoordinatorImpl
+        registrationCoordinatorLoader = RegistrationCoordinatorLoaderImpl(dependencies: dependencies)
+    }
+
+    enum KeyType: CustomDebugStringConvertible {
+        case none
+        case masterKey
+        case accountEntropyPool
+
+        var debugDescription: String {
+            switch self {
+            case .none: return "none"
+            case .masterKey: return "masterKey"
+            case .accountEntropyPool: return "AEP"
+            }
+        }
+
+        static var testCases: [(old: Self, new: Self)] {
+            return [
+                (.masterKey, .masterKey),
+                (.masterKey, .accountEntropyPool),
+                (.accountEntropyPool, .accountEntropyPool)
+            ]
+        }
+
+        static var noKeyTestCases: [(old: Self, new: Self)] {
+            return [
+                (.none, .masterKey),
+                (.none, .accountEntropyPool)
+            ]
+        }
+
+    }
+
+    static let testModes: [RegistrationMode] = [
+        RegistrationMode.registering,
+        RegistrationMode.reRegistering(.init(e164: Stubs.e164, aci: Stubs.aci))
+    ]
+
+    typealias TestCase = (mode: RegistrationMode, oldKey: KeyType, newKey: KeyType)
+
+    static func testCases() -> [TestCase] {
+        var results = [(mode: RegistrationMode, oldKey: KeyType, newKey: KeyType)]()
+        for mode in Self.testModes {
+            for keys in KeyType.testCases {
+                results.append((mode, keys.old, keys.new))
+            }
+        }
+        return results
+    }
+
+    func setupTest(_ testCase: TestCase) -> RegistrationCoordinatorImpl {
+        featureFlags.enableAccountEntropyPool = testCase.newKey == .accountEntropyPool
+        return db.write {
+            return registrationCoordinatorLoader.coordinator(
+                forDesiredMode: testCase.mode,
+                transaction: $0
+            ) as! RegistrationCoordinatorImpl
+        }
+    }
+
+    enum TestStep: String, Equatable, CustomDebugStringConvertible {
+        case restoreKeys
+        case requestPushToken
+        case createPreKeys
+        case createAccount
+        case finalizePreKeys
+        case rotateOneTimePreKeys
+        case restoreStorageService
+        case backupMasterKey
+        case confirmReservedUsername
+        case rotateManifest
+        case updateAccountAttribute
+        case failedRequest
+
+        var debugDescription: String {
+            switch self {
+            case .restoreKeys: return "restoreKeys"
+            case .requestPushToken: return "requestPushToken"
+            case .createPreKeys: return "createPreKeys"
+            case .createAccount: return "createAccount"
+            case .finalizePreKeys: return "finalizePreKeys"
+            case .rotateOneTimePreKeys: return "rotateOneTimePreKeys"
+            case .restoreStorageService: return "restoreStorageService"
+            case .backupMasterKey: return "backupMasterKey"
+            case .confirmReservedUsername: return "confirmReservedUsername"
+            case .rotateManifest: return "rotateManifest"
+            case .updateAccountAttribute: return "updateAccountAttribute"
+            case .failedRequest: return "failedRequest"
             }
         }
     }
 
-    static let testCases = [
-        RegistrationMode.registering,
-        RegistrationMode.reRegistering(.init(e164: Stubs.e164, aci: Stubs.aci)),
-    ]
-
     // MARK: - Opening Path
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testOpeningPath_splash(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testOpeningPath_splash(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
 
         // Don't care about timing, just start it.
         scheduler.start()
@@ -164,9 +255,9 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testOpeningPath_appExpired(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testOpeningPath_appExpired(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
 
         // Don't care about timing, just start it.
         scheduler.start()
@@ -180,9 +271,10 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testOpeningPath_permissions(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testOpeningPath_permissions(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
 
         // Don't care about timing, just start it.
         scheduler.start()
@@ -218,9 +310,10 @@ public class RegistrationCoordinatorTest {
     // MARK: - Reg Recovery Password Path
 
     @MainActor
-    @Test(arguments: Self.testCases, [true, false])
-    func runRegRecoverPwPathTestHappyPath(mode: RegistrationMode, wasReglockEnabled: Bool) throws {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases(), [true, false])
+    func runRegRecoverPwPathTestHappyPath(testCase: TestCase, wasReglockEnabled: Bool) throws {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
 
         // Don't care about timing, just start it.
         scheduler.start()
@@ -233,18 +326,7 @@ public class RegistrationCoordinatorTest {
         // Set a PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
-        // Make SVR give us back a reg recovery password.
-        svrLocalStorageMock.masterKey = MasterKeyMock()
-        svrLocalStorageMock.masterKey?.dataGenerator = {
-            switch $0 {
-            case .registrationRecoveryPassword:
-                return Stubs.regRecoveryPwData
-            case .registrationLock:
-                return Stubs.reglockData
-            default:
-                return Data()
-            }
-        }
+        let (initialMasterKey, finalMasterKey) = buildKeyDataMocks(testCase)
 
         // NOTE: We expect to skip opening path steps because
         // if we have a SVR master key locally, this _must_ be
@@ -275,10 +357,10 @@ public class RegistrationCoordinatorTest {
         }
 
         let expectedRequest = RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
+            verificationMethod: .recoveryPassword(initialMasterKey.regRecoveryPw),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(),
+            accountAttributes: Stubs.accountAttributes(initialMasterKey),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles()
@@ -292,8 +374,11 @@ public class RegistrationCoordinatorTest {
                 // to register is used later for other requests.
                 authPassword = request.authPassword
                 let requestAttributes = Self.attributesFromCreateAccountRequest(request)
+                let recoveryPw = initialMasterKey.regRecoveryPw
+                #expect(recoveryPw == (request.parameters["recoveryPassword"] as? String) ?? "")
+                #expect(recoveryPw == requestAttributes.registrationRecoveryPassword)
                 if wasReglockEnabled {
-                    #expect(Stubs.reglockData.hexadecimalString == requestAttributes.registrationLockToken)
+                    #expect(initialMasterKey.reglockToken == requestAttributes.registrationLockToken)
                 } else {
                     #expect(requestAttributes.registrationLockToken == nil)
                 }
@@ -321,9 +406,10 @@ public class RegistrationCoordinatorTest {
 
         if wasReglockEnabled {
             // If we had reglock before registration, it should be re-enabled.
-            let expectedReglockRequest = OWSRequestFactory.enableRegistrationLockV2Request(token: Stubs.reglockToken)
+            let expectedReglockRequest = OWSRequestFactory.enableRegistrationLockV2Request(token: finalMasterKey.reglockToken)
             mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
                 matcher: { request in
+                    #expect(finalMasterKey.reglockToken == request.parameters["registrationLock"] as! String)
                     return request.url == expectedReglockRequest.url
                 },
                 statusCode: 200,
@@ -332,18 +418,24 @@ public class RegistrationCoordinatorTest {
         }
 
         // We haven't done a SVR backup; that should happen now.
-        svr.generateAndBackupKeysMock = { pin, authMethod in
+        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
             #expect(pin == Stubs.pinCode)
             // We don't have a SVR auth credential, it should use chat server creds.
+            #expect(masterKey.rawData == finalMasterKey.rawData)
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
-            return .value(())
+            return .value(masterKey)
         }
 
         // Once we sync push tokens, we should restore from storage service.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
             #expect(auth.authedAccount == expectedAuthedAccount())
-            #expect(masterKey == .implicit)
+            switch masterKeySource {
+            case .explicit(let explicitMasterKey):
+                #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
+            default:
+                Issue.record("Unexpected master key used in storage service operation.")
+            }
             return .value(())
         }
 
@@ -363,7 +455,7 @@ public class RegistrationCoordinatorTest {
         // Once we do the username reclamation,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(),
+            Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
@@ -381,9 +473,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testRegRecoveryPwPath_wrongPIN(mode: RegistrationMode) throws {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testRegRecoveryPwPath_wrongPIN(testCase: TestCase) throws {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         // Don't care about timing, just start it.
         scheduler.start()
 
@@ -395,19 +489,7 @@ public class RegistrationCoordinatorTest {
         // Set a different PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
-        // Make SVR give us back a reg recovery password.
-        svrLocalStorageMock.masterKey = MasterKeyMock()
-        svrLocalStorageMock.masterKey?.dataGenerator = {
-            switch $0 {
-            case .registrationRecoveryPassword:
-                return Stubs.regRecoveryPwData
-            case .registrationLock:
-                return Stubs.reglockData
-            default:
-                return Data()
-            }
-        }
-
+        let (initialMasterKey, finalMasterKey) = buildKeyDataMocks(testCase)
         // NOTE: We expect to skip opening path steps because
         // if we have a SVR master key locally, this _must_ be
         // a previously registered device, and we can skip intros.
@@ -447,10 +529,10 @@ public class RegistrationCoordinatorTest {
         }
 
         let expectedRequest = RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
+            verificationMethod: .recoveryPassword(initialMasterKey.regRecoveryPw),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(),
+            accountAttributes: Stubs.accountAttributes(initialMasterKey),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles()
@@ -461,6 +543,11 @@ public class RegistrationCoordinatorTest {
         mockURLSession.addResponse(TSRequestOWSURLSessionMock.Response(
             matcher: { request in
                 authPassword = request.authPassword
+                let requestAttributes = Self.attributesFromCreateAccountRequest(request)
+                let recoveryPw = initialMasterKey.regRecoveryPw
+                #expect(recoveryPw == (request.parameters["recoveryPassword"] as? String) ?? "")
+                #expect(recoveryPw == requestAttributes.registrationRecoveryPassword)
+                #expect(requestAttributes.registrationLockToken == nil)
                 return request.url == expectedRequest.url
             },
             statusCode: 200,
@@ -484,18 +571,24 @@ public class RegistrationCoordinatorTest {
         }
 
         // We haven't done a SVR backup; that should happen now.
-        svr.generateAndBackupKeysMock = { pin, authMethod in
+        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
             #expect(pin == Stubs.pinCode)
+            #expect(masterKey.rawData == finalMasterKey.rawData)
             // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
-            return .value(())
+            return .value(masterKey)
         }
 
         // Once we sync push tokens, we should restore from storage service.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
             #expect(auth.authedAccount == expectedAuthedAccount())
-            #expect(masterKey == .implicit)
+            switch masterKeySource {
+            case .explicit(let explicitMasterKey):
+                #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
+            default:
+                Issue.record("Unexpected master key used in storage service operation.")
+            }
             return .value(())
         }
 
@@ -508,11 +601,12 @@ public class RegistrationCoordinatorTest {
         // Once we do the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(),
+            Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
             matcher: { request in
+                #expect(finalMasterKey.regRecoveryPw == (request.parameters["recoveryPassword"] as? String) ?? "")
                 return request.url == expectedAttributesRequest.url
             },
             statusCode: 200
@@ -526,9 +620,10 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testRegRecoveryPwPath_wrongPassword(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testRegRecoveryPwPath_wrongPassword(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
 
         // Set profile info so we skip those steps.
         setupDefaultAccountAttributes()
@@ -537,18 +632,8 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make SVR give us back a reg recovery password.
-        svrLocalStorageMock.masterKey = MasterKeyMock()
-        svrLocalStorageMock.masterKey?.dataGenerator = {
-            switch $0 {
-            case .registrationRecoveryPassword:
-
-                return Stubs.regRecoveryPwData
-            case .registrationLock:
-                return Stubs.reglockData
-            default:
-                return Data()
-            }
-        }
+        let masterKey = AccountEntropyPool().getMasterKey()
+        db.write { accountKeyStore.setMasterKey(masterKey, tx: $0) }
         svr.hasMasterKey = true
 
         // Run the scheduler for a bit; we don't care about timing these bits.
@@ -613,10 +698,10 @@ public class RegistrationCoordinatorTest {
         }
 
         let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
+            verificationMethod: .recoveryPassword(masterKey.regRecoveryPw),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(),
+            accountAttributes: Stubs.accountAttributes(masterKey),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles()
@@ -673,9 +758,10 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testRegRecoveryPwPath_failedReglock(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testRegRecoveryPwPath_failedReglock(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
 
         // Set profile info so we skip those steps.
         setupDefaultAccountAttributes()
@@ -684,17 +770,8 @@ public class RegistrationCoordinatorTest {
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
         // Make SVR give us back a reg recovery password.
-        svrLocalStorageMock.masterKey = MasterKeyMock()
-        svrLocalStorageMock.masterKey?.dataGenerator = {
-            switch $0 {
-            case .registrationRecoveryPassword:
-                return Stubs.regRecoveryPwData
-            case .registrationLock:
-                return Stubs.reglockData
-            default:
-                return Data()
-            }
-        }
+        let masterKey = AccountEntropyPool().getMasterKey()
+        db.write { accountKeyStore.setMasterKey(masterKey, tx: $0) }
         svr.hasMasterKey = true
 
         // Run the scheduler for a bit; we don't care about timing these bits.
@@ -772,10 +849,10 @@ public class RegistrationCoordinatorTest {
         }
 
         let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
+            verificationMethod: .recoveryPassword(masterKey.regRecoveryPw),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(),
+            accountAttributes: Stubs.accountAttributes(masterKey),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles()
@@ -835,27 +912,19 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testRegRecoveryPwPath_retryNetworkError(mode: RegistrationMode) throws {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testRegRecoveryPwPath_retryNetworkError(testCase: TestCase) throws {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+        var actualSteps = [TestStep]()
+
         // Set profile info so we skip those steps.
         setupDefaultAccountAttributes()
 
         // Set a PIN on disk.
         ows2FAManagerMock.pinCodeMock = { Stubs.pinCode }
 
-        // Make SVR give us back a reg recovery password.
-        svrLocalStorageMock.masterKey = MasterKeyMock()
-        svrLocalStorageMock.masterKey?.dataGenerator = {
-            switch $0 {
-            case .registrationRecoveryPassword:
-                return Stubs.regRecoveryPwData
-            case .registrationLock:
-                return Stubs.reglockData
-            default:
-                return Data()
-            }
-        }
+        let (initialMasterKey, finalMasterKey) = buildKeyDataMocks(testCase)
         svr.hasMasterKey = true
 
         // Run the scheduler for a bit; we don't care about timing these bits.
@@ -885,8 +954,10 @@ public class RegistrationCoordinatorTest {
         pushRegistrationManagerMock.requestPushTokenMock = {
             switch self.scheduler.currentTime {
             case 0:
+                actualSteps.append(.requestPushToken)
                 return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 1)
             case 3:
+                actualSteps.append(.requestPushToken)
                 return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 4)
             default:
                 Issue.record("Got unexpected push tokens request")
@@ -897,6 +968,7 @@ public class RegistrationCoordinatorTest {
         preKeyManagerMock.createPreKeysMock = {
             switch self.scheduler.currentTime {
             case 1, 4:
+                actualSteps.append(.createPreKeys)
                 return .value(Stubs.prekeyBundles())
             default:
                 Issue.record("Got unexpected push tokens request")
@@ -907,9 +979,11 @@ public class RegistrationCoordinatorTest {
         preKeyManagerMock.finalizePreKeysMock = { didSucceed in
             switch self.scheduler.currentTime {
             case 3:
+                actualSteps.append(.finalizePreKeys)
                 #expect(didSucceed.negated)
                 return .value(())
             case 5:
+                actualSteps.append(.finalizePreKeys)
                 #expect(didSucceed)
                 return .value(())
             default:
@@ -919,17 +993,23 @@ public class RegistrationCoordinatorTest {
         }
 
         let expectedRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
+            verificationMethod: .recoveryPassword(initialMasterKey.regRecoveryPw),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(),
+            accountAttributes: Stubs.accountAttributes(initialMasterKey),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles()
         )
 
         // Fail the request at t=3 with a network error.
-        let failResponse = TSRequestOWSURLSessionMock.Response.networkError(url: expectedRecoveryPwRequest.url!)
+        let failResponse = TSRequestOWSURLSessionMock.Response.networkError(
+            matcher: { _ in
+                actualSteps.append(.failedRequest)
+                return true
+            },
+            url: expectedRecoveryPwRequest.url!
+        )
         mockURLSession.addResponse(failResponse, atTime: 3, on: scheduler)
 
         let identityResponse = Stubs.accountIdentityResponse()
@@ -939,10 +1019,10 @@ public class RegistrationCoordinatorTest {
         scheduler.run(atTime: 2) {
             // Resolve with success at t=5
             let expectedRequest = RegistrationRequestFactory.createAccountRequest(
-                verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
+                verificationMethod: .recoveryPassword(initialMasterKey.regRecoveryPw),
                 e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
-                accountAttributes: Stubs.accountAttributes(),
+                accountAttributes: Stubs.accountAttributes(initialMasterKey),
                 skipDeviceTransfer: true,
                 apnRegistrationId: Stubs.apnsRegistrationId,
                 prekeyBundles: Stubs.prekeyBundles()
@@ -951,11 +1031,15 @@ public class RegistrationCoordinatorTest {
             self.mockURLSession.addResponse(
                 TSRequestOWSURLSessionMock.Response(
                     matcher: { request in
-                        // The password is generated internally by RegistrationCoordinator.
-                        // Extract it so we can check that the same password sent to the server
-                        // to register is used later for other requests.
-                        authPassword = request.authPassword
-                        return request.url == expectedRequest.url
+                        if request.url == expectedRequest.url {
+                            actualSteps.append(.createAccount)
+                            // The password is generated internally by RegistrationCoordinator.
+                            // Extract it so we can check that the same password sent to the server
+                            // to register is used later for other requests.
+                            authPassword = request.authPassword
+                            return true
+                        }
+                        return false
                     },
                     statusCode: 200,
                     bodyData: try! JSONEncoder().encode(identityResponse)
@@ -977,28 +1061,50 @@ public class RegistrationCoordinatorTest {
 
         // When registered at t=5, it should try and sync pre-keys. Succeed at t=6.
         preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
+            actualSteps.append(.rotateOneTimePreKeys)
             #expect(self.scheduler.currentTime == 5)
             #expect(auth == expectedAuthedAccount().chatServiceAuth)
             return self.scheduler.promise(resolvingWith: (), atTime: 6)
         }
 
         // We haven't done a SVR backup; that should happen at t=6. Succeed at t=7.
-        svr.generateAndBackupKeysMock = { pin, authMethod in
-            #expect(self.scheduler.currentTime == 6)
+        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
+            actualSteps.append(.backupMasterKey)
             #expect(pin == Stubs.pinCode)
+            #expect(masterKey.rawData == finalMasterKey.rawData)
             // We don't have a SVR auth credential, it should use chat server creds.
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
             self.svr.hasMasterKey = true
-            return self.scheduler.promise(resolvingWith: (), atTime: 7)
+            return self.scheduler.promise(resolvingWith: masterKey, atTime: 8)
         }
 
         // Once we back up to svr at t=7, we should restore from storage service.
         // Succeed at t=8.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
-            #expect(self.scheduler.currentTime == 7)
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
+            actualSteps.append(.restoreStorageService)
             #expect(auth.authedAccount == expectedAuthedAccount())
-            #expect(masterKey == .implicit)
-            return self.scheduler.promise(resolvingWith: (), atTime: 8)
+
+            if self.scheduler.currentTime == 6 {
+                switch masterKeySource {
+                case .explicit(let explicitMasterKey):
+                    #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
+                default:
+                    Issue.record("Unexpected master key used in storage service operation.")
+                }
+                return self.scheduler.promise(resolvingWith: (), atTime: 7)
+            } else if self.scheduler.currentTime == 8 {
+                switch masterKeySource {
+                case .explicit(let explicitMasterKey):
+                    #expect(finalMasterKey.rawData == explicitMasterKey.rawData)
+                default:
+                    Issue.record("Unexpected master key used in storage service operation.")
+                }
+                return self.scheduler.promise(resolvingWith: (), atTime: 9)
+            } else {
+                Issue.record("Method called at unexpected time")
+                // Not the correct time, but moves things forward
+                return self.scheduler.promise(resolvingWith: (), atTime: 9)
+            }
         }
 
         // Once we restore from storage service at t=8, we should attempt to
@@ -1006,7 +1112,7 @@ public class RegistrationCoordinatorTest {
         let mockUsernameLink: Usernames.UsernameLink = .mocked
         localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
         usernameApiClientMock.confirmReservedUsernameMock = { _, _, chatServiceAuth in
-            #expect(self.scheduler.currentTime == 8)
+            actualSteps.append(.confirmReservedUsername)
             #expect(chatServiceAuth == .explicit(
                 aci: identityResponse.aci,
                 deviceId: .primary,
@@ -1014,30 +1120,58 @@ public class RegistrationCoordinatorTest {
             ))
             return self.scheduler.promise(
                 resolvingWith: .success(usernameLinkHandle: mockUsernameLink.handle),
-                atTime: 9
+                atTime: 10
             )
         }
 
         // Once we do the storage service restore at t=9,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(),
+            Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
             TSRequestOWSURLSessionMock.Response(
                 matcher: { request in
-                    return request.url == expectedAttributesRequest.url
+                    if request.url == expectedAttributesRequest.url {
+                        actualSteps.append(.updateAccountAttribute)
+                        return true
+                    }
+                    return false
                 },
                 statusCode: 200,
                 bodyData: nil
             ),
-            atTime: 10,
+            atTime: 11,
             on: scheduler
         )
 
         scheduler.runUntilIdle()
-        #expect(scheduler.currentTime == 10)
+
+        var expectedSteps: [TestStep] = [
+            .requestPushToken,
+            .createPreKeys,
+            .failedRequest,
+            .finalizePreKeys,
+            .requestPushToken,
+            .createPreKeys,
+            .createAccount,
+            .finalizePreKeys,
+            .rotateOneTimePreKeys,
+            // .restoreStorageService, // If going from MasterKey -> AEP
+            .backupMasterKey,
+            // .restoreStorageService,
+            .confirmReservedUsername,
+            .updateAccountAttribute
+        ]
+
+        if testCase.newKey == .accountEntropyPool && testCase.oldKey != .accountEntropyPool {
+            expectedSteps.insert(.restoreStorageService, at: 9)
+        } else {
+            expectedSteps.insert(.restoreStorageService, at: 10)
+        }
+
+        #expect(actualSteps == expectedSteps)
 
         #expect(nextStep.value == .done)
 
@@ -1048,9 +1182,10 @@ public class RegistrationCoordinatorTest {
     // MARK: - SVR Auth Credential Path
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSVRAuthCredentialPath_happyPath(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSVRAuthCredentialPath_happyPath(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
 
         // Run the scheduler for a bit; we don't care about timing these bits.
         scheduler.start()
@@ -1060,6 +1195,8 @@ public class RegistrationCoordinatorTest {
 
         // Set profile info so we skip those steps.
         self.setAllProfileInfo()
+
+        var actualSteps = [String]()
 
         // Put some auth credentials in storage.
         let svr2CredentialCandidates: [SVR2AuthCredential] = [
@@ -1111,40 +1248,31 @@ public class RegistrationCoordinatorTest {
         scheduler.stop()
         scheduler.adjustTime(to: 0)
 
+        let (initialMasterKey, finalMasterKey) = buildKeyDataMocks(testCase)
+
         // Enter the PIN, which should try and recover from SVR.
         // Once we do that, it should follow the Reg Recovery Password Path.
         let nextStepPromise = coordinator.submitPINCode(Stubs.pinCode)
 
         // At t=1, resolve the key restoration from SVR and have it start returning the key.
         svr.restoreKeysMock = { pin, authMethod in
+            actualSteps.append("restoreKeys")
             #expect(self.scheduler.currentTime == 0)
             #expect(pin == Stubs.pinCode)
             #expect(authMethod == .svrAuth(Stubs.svr2AuthCredential, backup: nil))
             self.svr.hasMasterKey = true
-            return self.scheduler.guarantee(resolvingWith: .success, atTime: 1)
-        }
-
-        // At t=1 it should get the latest credentials from SVR.
-        svrLocalStorageMock.masterKey = MasterKeyMock()
-        svrLocalStorageMock.masterKey?.dataGenerator = {
-            #expect(self.scheduler.currentTime == 1)
-            switch $0 {
-            case .registrationRecoveryPassword:
-                return Stubs.regRecoveryPwData
-            case .registrationLock:
-                return Stubs.reglockData
-            default:
-                return Data()
-            }
+            return self.scheduler.guarantee(resolvingWith: .success(initialMasterKey), atTime: 1)
         }
 
         // Before registering at t=1, it should ask for push tokens to give the registration.
         pushRegistrationManagerMock.requestPushTokenMock = {
+            actualSteps.append("requestPushToken")
             #expect(self.scheduler.currentTime == 1)
             return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 2)
         }
         // Every time we register we also ask for prekeys.
         preKeyManagerMock.createPreKeysMock = {
+            actualSteps.append("createPreKeys")
             switch self.scheduler.currentTime {
             case 2:
                 return .value(Stubs.prekeyBundles())
@@ -1155,6 +1283,7 @@ public class RegistrationCoordinatorTest {
         }
         // And we finalize them after.
         preKeyManagerMock.finalizePreKeysMock = { didSucceed in
+            actualSteps.append("finalizePreKeys")
             switch self.scheduler.currentTime {
             case 3:
                 #expect(didSucceed)
@@ -1169,10 +1298,10 @@ public class RegistrationCoordinatorTest {
         let accountIdentityResponse = Stubs.accountIdentityResponse()
         var authPassword: String!
         let expectedRegRecoveryPwRequest = RegistrationRequestFactory.createAccountRequest(
-            verificationMethod: .recoveryPassword(Stubs.regRecoveryPw),
+            verificationMethod: .recoveryPassword(initialMasterKey.regRecoveryPw),
             e164: Stubs.e164,
             authPassword: "", // Doesn't matter for request generation.
-            accountAttributes: Stubs.accountAttributes(),
+            accountAttributes: Stubs.accountAttributes(initialMasterKey),
             skipDeviceTransfer: true,
             apnRegistrationId: Stubs.apnsRegistrationId,
             prekeyBundles: Stubs.prekeyBundles()
@@ -1180,6 +1309,7 @@ public class RegistrationCoordinatorTest {
         self.mockURLSession.addResponse(
             TSRequestOWSURLSessionMock.Response(
                 matcher: { request in
+                    actualSteps.append("createAccount")
                     #expect(self.scheduler.currentTime == 2)
                     authPassword = request.authPassword
                     return request.url == expectedRegRecoveryPwRequest.url
@@ -1204,28 +1334,59 @@ public class RegistrationCoordinatorTest {
         // When registered at t=3, it should try and create pre-keys.
         // Resolve at t=4.
         preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
+            actualSteps.append("rotateOneTimePreKeys")
             #expect(self.scheduler.currentTime == 3)
             #expect(auth == expectedAuthedAccount().chatServiceAuth)
             return self.scheduler.promise(resolvingWith: (), atTime: 4)
         }
 
         // At t=4 once we create pre-keys, we should back up to svr.
-        svr.generateAndBackupKeysMock = { (pin: String, authMethod: SVR.AuthMethod) in
-            #expect(self.scheduler.currentTime == 4)
+        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
+            actualSteps.append("backupMasterKey")
+            let expectedTime = switch testCase.newKey {
+            case .accountEntropyPool: 5
+            default: 4
+            }
+            #expect(self.scheduler.currentTime == expectedTime)
             #expect(pin == Stubs.pinCode)
+            #expect(masterKey.rawData == finalMasterKey.rawData)
             #expect(authMethod == .svrAuth(
                 Stubs.svr2AuthCredential,
                 backup: .chatServerAuth(expectedAuthedAccount())
             ))
-            return self.scheduler.promise(resolvingWith: (), atTime: 5)
+            return self.scheduler.promise(resolvingWith: masterKey, atTime: 6)
         }
 
         // At t=5 once we back up to svr, we should restore from storage service.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
-            #expect(self.scheduler.currentTime == 5)
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
             #expect(auth.authedAccount == expectedAuthedAccount())
-            #expect(masterKey == .implicit)
-            return self.scheduler.promise(resolvingWith: (), atTime: 6)
+            actualSteps.append("restoreStorageService")
+            if self.scheduler.currentTime == 4 {
+                switch masterKeySource {
+                case .explicit(let explicitMasterKey):
+                    #expect(initialMasterKey.rawData == explicitMasterKey.rawData)
+                default:
+                    Issue.record("Unexpected master key used in storage service operation.")
+                }
+                return self.scheduler.promise(resolvingWith: (), atTime: 5)
+            } else if self.scheduler.currentTime == 6 {
+                switch masterKeySource {
+                case .explicit(let explicitMasterKey):
+                    #expect(finalMasterKey.rawData == explicitMasterKey.rawData)
+                default:
+                    Issue.record("Unexpected master key used in storage service operation.")
+                }
+                return self.scheduler.promise(resolvingWith: (), atTime: 7)
+            } else {
+                Issue.record("Method called at unexpected time")
+                // Not the correct time, but moves things forward
+                return self.scheduler.promise(resolvingWith: (), atTime: 7)
+            }
+        }
+
+        storageServiceManagerMock.rotateManifestMock = { _, _ in
+            actualSteps.append("rotateManifest")
+            return .value(())
         }
 
         // Once we restore from storage service at t=6, we should attempt to
@@ -1233,7 +1394,7 @@ public class RegistrationCoordinatorTest {
         let mockUsernameLink: Usernames.UsernameLink = .mocked
         localUsernameManagerMock.startingUsernameState = .available(username: "boba.42", usernameLink: mockUsernameLink)
         usernameApiClientMock.confirmReservedUsernameMock = { _, _, chatServiceAuth in
-            #expect(self.scheduler.currentTime == 6)
+            actualSteps.append("confirmReservedUsername")
             #expect(chatServiceAuth == .explicit(
                 aci: accountIdentityResponse.aci,
                 deviceId: .primary,
@@ -1241,19 +1402,19 @@ public class RegistrationCoordinatorTest {
             ))
             return self.scheduler.promise(
                 resolvingWith: .success(usernameLinkHandle: mockUsernameLink.handle),
-                atTime: 7
+                atTime: 8
             )
         }
 
-        // And at t=6 once we do the storage service restore,
+        // And at t=7 once we do the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(),
+            Stubs.accountAttributes(finalMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
             matcher: { request in
-                #expect(self.scheduler.currentTime == 7)
+                actualSteps.append("updateAccountAttributes")
                 return request.url == expectedAttributesRequest.url
             },
             statusCode: 200
@@ -1266,7 +1427,29 @@ public class RegistrationCoordinatorTest {
         }
 
         scheduler.runUntilIdle()
-        #expect(scheduler.currentTime == 7)
+
+        var expectedSteps = [
+            "restoreKeys",
+            "requestPushToken",
+            "createPreKeys",
+            "createAccount",
+            "finalizePreKeys",
+            "rotateOneTimePreKeys",
+//            "restoreStorageService",
+            "backupMasterKey",
+//            "restoreStorageService",
+            "confirmReservedUsername",
+            "rotateManifest",
+            "updateAccountAttributes"
+        ]
+
+        if testCase.newKey == .accountEntropyPool {
+            expectedSteps.insert("restoreStorageService", at: 6)
+        } else {
+            expectedSteps.insert("restoreStorageService", at: 7)
+        }
+
+        #expect(actualSteps == expectedSteps)
 
         #expect(nextStepPromise.value == .done)
 
@@ -1275,9 +1458,10 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSVRAuthCredentialPath_noMatchingCredentials(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSVRAuthCredentialPath_noMatchingCredentials(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
 
         // Don't care about timing, just start it.
         scheduler.start()
@@ -1368,9 +1552,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSVRAuthCredentialPath_noMatchingCredentialsThenChangeNumber(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSVRAuthCredentialPath_noMatchingCredentialsThenChangeNumber(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         // Don't care about timing, just start it.
         scheduler.start()
 
@@ -1485,10 +1671,18 @@ public class RegistrationCoordinatorTest {
     // MARK: - Session Path
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_happyPath(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_happyPath(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
 
+        let accountEntropyPool = AccountEntropyPool()
+        let newMasterKey = accountEntropyPool.getMasterKey()
+        if testCase.newKey == .accountEntropyPool {
+            missingKeyGenerator.accountEntropyPool = { accountEntropyPool }
+        } else {
+            missingKeyGenerator.masterKey = { newMasterKey }
+        }
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
         scheduler.tick()
@@ -1540,7 +1734,7 @@ public class RegistrationCoordinatorTest {
                 verificationMethod: .sessionId(Stubs.sessionId),
                 e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
-                accountAttributes: Stubs.accountAttributes(),
+                accountAttributes: Stubs.accountAttributes(newMasterKey),
                 skipDeviceTransfer: true,
                 apnRegistrationId: Stubs.apnsRegistrationId,
                 prekeyBundles: Stubs.prekeyBundles()
@@ -1608,18 +1802,24 @@ public class RegistrationCoordinatorTest {
         nextStep = coordinator.submitPINCode(Stubs.pinCode)
 
         // Finish the validation at t=1.
-        svr.generateAndBackupKeysMock = { pin, authMethod in
+        svr.backupMasterKeyMock = { pin, masterKey, authMethod in
             #expect(self.scheduler.currentTime == 0)
             #expect(pin == Stubs.pinCode)
+            #expect(masterKey.rawData == newMasterKey.rawData)
             #expect(authMethod == .chatServerAuth(expectedAuthedAccount()))
-            return self.scheduler.promise(resolvingWith: (), atTime: 1)
+            return self.scheduler.promise(resolvingWith: masterKey, atTime: 1)
         }
 
         // At t=1 once we sync push tokens, we should restore from storage service.
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKey in
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
             #expect(self.scheduler.currentTime == 1)
             #expect(auth.authedAccount == expectedAuthedAccount())
-            #expect(masterKey == .implicit)
+            switch masterKeySource {
+            case .explicit(let explicitMasterKey):
+                #expect(newMasterKey.rawData == explicitMasterKey.rawData)
+            default:
+                Issue.record("Unexpected master key used in storage service operation.")
+            }
             return self.scheduler.promise(resolvingWith: (), atTime: 2)
         }
 
@@ -1644,7 +1844,7 @@ public class RegistrationCoordinatorTest {
         // And at t=3 once we do the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(),
+            Stubs.accountAttributes(newMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
@@ -1665,9 +1865,10 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_invalidE164(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_invalidE164(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
 
         switch mode {
         case .registering, .changingNumber:
@@ -1708,9 +1909,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_rateLimitSessionCreation(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_rateLimitSessionCreation(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         let retryTimeInterval: TimeInterval = 5
@@ -1742,9 +1945,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_cantSendFirstSMSCode(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_cantSendFirstSMSCode(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         // Give it a phone number, which should cause it to start a session.
@@ -1782,9 +1987,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_landline(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_landline(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         // Give it a phone number, which should cause it to start a session.
@@ -1870,9 +2077,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_landline_submitCodeWithNoneSentYet(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_landline_submitCodeWithNoneSentYet(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         // Give it a phone number, which should cause it to start a session.
@@ -1974,9 +2183,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_rateLimitFirstSMSCode(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_rateLimitFirstSMSCode(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         // Give it a phone number, which should cause it to start a session.
@@ -2042,9 +2253,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_changeE164(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_changeE164(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         let originalE164 = E164("+17875550100")!
@@ -2172,9 +2385,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_captchaChallenge(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_captchaChallenge(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         // Give it a phone number, which should cause it to start a session.
@@ -2321,9 +2536,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_pushChallenge(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_pushChallenge(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         pushRegistrationManagerMock.requestPushTokenMock = {
@@ -2413,9 +2630,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_pushChallengeTimeoutAfterResolutionThatTakesTooLong(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_pushChallengeTimeoutAfterResolutionThatTakesTooLong(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         let sessionStartsAt = 2
 
         setUpSessionPath(coordinator: coordinator, mode: mode)
@@ -2486,9 +2705,10 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_pushChallengeTimeoutAfterNoResolution(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_pushChallengeTimeoutAfterNoResolution(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
 
         let pushChallengeMinTime = Int(RegistrationCoordinatorImpl.Constants.pushTokenMinWaitTime / scheduler.secondsPerTick)
         let pushChallengeTimeout = Int(RegistrationCoordinatorImpl.Constants.pushTokenTimeout / scheduler.secondsPerTick)
@@ -2547,9 +2767,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_pushChallengeWithoutPushNotificationsAvailable(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_pushChallengeWithoutPushNotificationsAvailable(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         pushRegistrationManagerMock.requestPushTokenMock = {
@@ -2596,9 +2818,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_preferPushChallengesIfWeCanAnswerThemImmediately(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_preferPushChallengesIfWeCanAnswerThemImmediately(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         pushRegistrationManagerMock.requestPushTokenMock = {
@@ -2685,9 +2909,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_prefersCaptchaChallengesIfWeCannotAnswerPushChallengeQuickly(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_prefersCaptchaChallengesIfWeCannotAnswerPushChallengeQuickly(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         pushRegistrationManagerMock.requestPushTokenMock = {
@@ -2747,9 +2973,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_pushChallengeFastResolution(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_pushChallengeFastResolution(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         pushRegistrationManagerMock.requestPushTokenMock = {
@@ -2848,9 +3076,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_ignoresPushChallengesIfWeCannotEverAnswerThem(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_ignoresPushChallengesIfWeCannotEverAnswerThem(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         pushRegistrationManagerMock.requestPushTokenMock = {
@@ -2885,9 +3115,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_unknownChallenge(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_unknownChallenge(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         // Give it a phone number, which should cause it to start a session.
@@ -2948,9 +3180,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_wrongVerificationCode(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_wrongVerificationCode(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
         // Now try and send the wrong code.
@@ -2987,9 +3221,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_verificationCodeTimeouts(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_verificationCodeTimeouts(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
         // At t=1, give back a retry response.
@@ -3110,9 +3346,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_disallowedVerificationCode(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_disallowedVerificationCode(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
         // At t=1, give back a disallowed response when submitting a code.
@@ -3160,9 +3398,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_timedOutVerificationCodeWithoutRetries(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_timedOutVerificationCodeWithoutRetries(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
 
         // At t=1, give back a retry response when submitting a code,
@@ -3203,9 +3443,11 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_expiredSession(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_expiredSession(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         setUpSessionPath(coordinator: coordinator, mode: mode)
 
         // Give it a phone number, which should cause it to start a session.
@@ -3286,10 +3528,20 @@ public class RegistrationCoordinatorTest {
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_skipPINCode(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_skipPINCode(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
+
+        let accountEntropyPool = AccountEntropyPool()
+        let newMasterKey = accountEntropyPool.getMasterKey()
+        if testCase.newKey == .accountEntropyPool {
+            missingKeyGenerator.accountEntropyPool = { accountEntropyPool }
+        } else {
+            missingKeyGenerator.masterKey = { newMasterKey }
+        }
 
         scheduler.tick()
 
@@ -3340,7 +3592,7 @@ public class RegistrationCoordinatorTest {
                 verificationMethod: .sessionId(Stubs.sessionId),
                 e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
-                accountAttributes: Stubs.accountAttributes(),
+                accountAttributes: Stubs.accountAttributes(newMasterKey),
                 skipDeviceTransfer: true,
                 apnRegistrationId: Stubs.apnsRegistrationId,
                 prekeyBundles: Stubs.prekeyBundles()
@@ -3350,6 +3602,10 @@ public class RegistrationCoordinatorTest {
                 TSRequestOWSURLSessionMock.Response(
                     matcher: { request in
                         authPassword = request.authPassword
+                        let requestAttributes = Self.attributesFromCreateAccountRequest(request)
+                        // These should be empty if sessionId is sent
+                        #expect((request.parameters["recoveryPassword"] as? String) == nil)
+                        #expect(requestAttributes.registrationRecoveryPassword == nil)
                         return request.url == expectedRequest.url
                     },
                     statusCode: 200,
@@ -3400,10 +3656,9 @@ public class RegistrationCoordinatorTest {
         nextStep = coordinator.skipPINCode()
 
         // When we skip the pin, it should skip any SVR backups.
-        svr.generateAndBackupKeysMock = { _, _ in
+        svr.backupMasterKeyMock = { _, masterKey, _ in
             Issue.record("Shouldn't talk to SVR with skipped PIN!")
-            return .value(())
-
+            return .value(masterKey)
         }
         storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { _, _ in
             return .value(())
@@ -3412,7 +3667,7 @@ public class RegistrationCoordinatorTest {
         // And at t=0 once we skip the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(),
+            Stubs.accountAttributes(newMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
@@ -3425,6 +3680,13 @@ public class RegistrationCoordinatorTest {
 
         // At this point we should have no master key.
         #expect(svr.hasMasterKey == false)
+        #expect(svr.hasAccountEntropyPool == false)
+
+        var didSetLocalAccountEntropyPool = false
+        svr.useDeviceLocalAccountEntropyPoolMock = { _ in
+            #expect(self.svr.hasAccountEntropyPool == false)
+            didSetLocalAccountEntropyPool = true
+        }
 
         var didSetLocalMasterKey = false
         svr.useDeviceLocalMasterKeyMock = { _ in
@@ -3432,21 +3694,39 @@ public class RegistrationCoordinatorTest {
             didSetLocalMasterKey = true
         }
 
+        // Once we sync push tokens, we should restore from storage service.
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
+            #expect(auth.authedAccount == expectedAuthedAccount())
+            switch masterKeySource {
+            case .explicit(let explicitMasterKey):
+                #expect(newMasterKey.rawData == explicitMasterKey.rawData)
+            default:
+                Issue.record("Unexpected master key used in storage service operation.")
+            }
+            return .value(())
+        }
+
         scheduler.runUntilIdle()
         #expect(scheduler.currentTime == 0)
 
         #expect(nextStep.value == .done)
 
-        #expect(didSetLocalMasterKey)
+        if testCase.newKey == .accountEntropyPool {
+            #expect(didSetLocalAccountEntropyPool)
+        } else {
+            #expect(didSetLocalMasterKey)
+        }
 
         // Since we set profile info, we should have scheduled a reupload.
         #expect(profileManagerMock.didScheduleReuploadLocalProfile)
     }
 
     @MainActor
-    @Test(arguments: Self.testCases)
-    func testSessionPath_skipPINRestore_createNewPIN(mode: RegistrationMode) {
-        let coordinator = coordinatorFactory(mode)
+    @Test(arguments: Self.testCases())
+    func testSessionPath_skipPINRestore_createNewPIN(testCase: TestCase) {
+        let coordinator = setupTest(testCase)
+        let mode = testCase.mode
+
         switch mode {
         case .registering:
             break
@@ -3456,6 +3736,14 @@ public class RegistrationCoordinatorTest {
         }
 
         createSessionAndRequestFirstCode(coordinator: coordinator, mode: mode)
+
+        let accountEntropyPool = AccountEntropyPool()
+        let newMasterKey = accountEntropyPool.getMasterKey()
+        if testCase.newKey == .accountEntropyPool {
+            missingKeyGenerator.accountEntropyPool = { accountEntropyPool }
+        } else {
+            missingKeyGenerator.masterKey = { newMasterKey }
+        }
 
         scheduler.tick()
 
@@ -3507,7 +3795,7 @@ public class RegistrationCoordinatorTest {
                 verificationMethod: .sessionId(Stubs.sessionId),
                 e164: Stubs.e164,
                 authPassword: "", // Doesn't matter for request generation.
-                accountAttributes: Stubs.accountAttributes(),
+                accountAttributes: Stubs.accountAttributes(newMasterKey),
                 skipDeviceTransfer: true,
                 apnRegistrationId: Stubs.apnsRegistrationId,
                 prekeyBundles: Stubs.prekeyBundles()
@@ -3576,19 +3864,27 @@ public class RegistrationCoordinatorTest {
         nextStep = coordinator.skipPINCode()
 
         // When we skip the pin, it should skip any SVR backups.
-        svr.generateAndBackupKeysMock = { _, _ in
+        svr.backupMasterKeyMock = { _, masterKey, _ in
             Issue.record("Shouldn't talk to SVR with skipped PIN!")
-            return .value(())
+            return .value(masterKey)
 
         }
-        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { _, _ in
+
+        storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { auth, masterKeySource in
+            #expect(auth.authedAccount == expectedAuthedAccount())
+            switch masterKeySource {
+            case .explicit(let explicitMasterKey):
+                #expect(newMasterKey.rawData == explicitMasterKey.rawData)
+            default:
+                Issue.record("Unexpected master key used in storage service operation.")
+            }
             return .value(())
         }
 
         // And at t=0 once we skip the storage service restore,
         // we will sync account attributes and then we are finished!
         let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
-            Stubs.accountAttributes(),
+            Stubs.accountAttributes(newMasterKey),
             auth: .implicit() // doesn't matter for url matching
         )
         self.mockURLSession.addResponse(
@@ -3602,6 +3898,12 @@ public class RegistrationCoordinatorTest {
         // At this point we should have no master key.
         #expect(svr.hasMasterKey.negated)
 
+        var didSetLocalAccountEntropyPool = false
+        svr.useDeviceLocalAccountEntropyPoolMock = { _ in
+            #expect(self.svr.hasAccountEntropyPool == false)
+            didSetLocalAccountEntropyPool = true
+        }
+
         var didSetLocalMasterKey = false
         svr.useDeviceLocalMasterKeyMock = { _ in
             #expect(self.svr.hasMasterKey == false)
@@ -3613,7 +3915,11 @@ public class RegistrationCoordinatorTest {
 
         #expect(nextStep.value == .done)
 
-        #expect(didSetLocalMasterKey)
+        if testCase.newKey == .accountEntropyPool {
+            #expect(didSetLocalAccountEntropyPool)
+        } else {
+            #expect(didSetLocalMasterKey)
+        }
 
         // Since we set profile info, we should have scheduled a reupload.
         #expect(profileManagerMock.didScheduleReuploadLocalProfile)
@@ -3840,6 +4146,44 @@ public class RegistrationCoordinatorTest {
         )
     }
 
+    // MARK: - Helpers
+
+    func buildKeyDataMocks(_ testCase: TestCase) -> (MasterKey, MasterKey) {
+        let newAccountEntropyPool = AccountEntropyPool()
+        let newMasterKey = newAccountEntropyPool.getMasterKey()
+        let oldAccountEntropyPool = AccountEntropyPool()
+        let oldMasterKey = oldAccountEntropyPool.getMasterKey()
+        switch (testCase.oldKey, testCase.newKey) {
+        case (.accountEntropyPool, .accountEntropyPool):
+            // on re-registration, make the AEP be present
+            db.write { accountKeyStore.setAccountEntropyPool(oldAccountEntropyPool, tx: $0) }
+            return (oldMasterKey, oldMasterKey)
+        case (.masterKey, .masterKey):
+            db.write { accountKeyStore.setMasterKey(oldMasterKey, tx: $0) }
+            return (oldMasterKey, oldMasterKey)
+        case (.masterKey, .accountEntropyPool):
+            // If this is a reregistration from an non-AEP client,
+            // AEP is only available after calling getOrGenerateAEP()
+            db.write { accountKeyStore.setMasterKey(oldMasterKey, tx: $0) }
+            missingKeyGenerator.accountEntropyPool = {
+                return newAccountEntropyPool
+            }
+            return (oldMasterKey, newMasterKey)
+        case (.none, .masterKey):
+            missingKeyGenerator.masterKey = { newMasterKey }
+            return (newMasterKey, newMasterKey)
+        case (.none, .accountEntropyPool):
+            missingKeyGenerator.accountEntropyPool = {
+                newAccountEntropyPool
+            }
+            return (newMasterKey, newMasterKey)
+        case (.accountEntropyPool, .masterKey):
+            fatalError("Migrating to masterkey from AEP not supported")
+        case (_, .none):
+            fatalError("Registration requires a destination key")
+        }
+    }
+
     // MARK: - Stubs
 
     private struct Stubs {
@@ -3847,12 +4191,6 @@ public class RegistrationCoordinatorTest {
         static let e164 = E164("+17875550100")!
         static let aci = Aci.randomForTesting()
         static let pinCode = "1234"
-
-        static let regRecoveryPwData = Data(repeating: 8, count: 8)
-        static var regRecoveryPw: String { regRecoveryPwData.base64EncodedString() }
-
-        static let reglockData = Data(repeating: 7, count: 8)
-        static var reglockToken: String { reglockData.hexadecimalString }
 
         static let svr2AuthCredential = SVR2AuthCredential(credential: RemoteAttestation.Auth(username: "xxx", password: "yyy"))
 
@@ -3868,7 +4206,7 @@ public class RegistrationCoordinatorTest {
 
         var date: Date = Date()
 
-        static func accountAttributes() -> AccountAttributes {
+        static func accountAttributes(_ masterKey: MasterKey? = nil) -> AccountAttributes {
             return AccountAttributes(
                 isManualMessageFetchEnabled: false,
                 registrationId: 0,
@@ -3876,7 +4214,7 @@ public class RegistrationCoordinatorTest {
                 unidentifiedAccessKey: "",
                 unrestrictedUnidentifiedAccess: false,
                 twofaMode: .none,
-                registrationRecoveryPassword: nil,
+                registrationRecoveryPassword: masterKey?.regRecoveryPw,
                 encryptedDeviceName: nil,
                 discoverableByPhoneNumber: .nobody,
                 hasSVRBackups: true
@@ -4165,6 +4503,11 @@ extension RegistrationMode {
             return .exitChangeNumber
         }
     }
+}
+
+private extension MasterKey {
+    var regRecoveryPw: String { data(for: .registrationRecoveryPassword).rawData.base64EncodedString() }
+    var reglockToken: String { data(for: .registrationLock).rawData.hexadecimalString }
 }
 
 private class PreKeyError: Error {

@@ -267,6 +267,7 @@ extension FindByPhoneNumberViewController: SheetDismissalDelegate {
 extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
     public func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountry country: PhoneNumberCountry) {
         updateCountry(country)
+        updateButtonState()
     }
 
     private func didTapCountryRow() {

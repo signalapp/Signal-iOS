@@ -43,7 +43,7 @@ public class MessageBackupPostFrameRestoreActionManager {
     func performPostFrameRestoreActions(
         recipientActions: SharedMap<RecipientId, RecipientActions>,
         chatActions: SharedMap<ChatId, ChatActions>,
-        bencher: MessageBackup.Bencher,
+        bencher: MessageBackup.RestoreBencher,
         chatItemContext: MessageBackup.ChatItemRestoringContext
     ) throws {
         // Proactively mark the group call tooltip shown; we don't know
@@ -53,12 +53,12 @@ public class MessageBackupPostFrameRestoreActionManager {
 
         for (recipientId, actions) in recipientActions {
             if actions.insertContactHiddenInfoMessage {
-                try bencher.benchPostFrameAction(.InsertContactHiddenInfoMessage) {
+                try bencher.benchPostFrameRestoreAction(.InsertContactHiddenInfoMessage) {
                     try insertContactHiddenInfoMessage(recipientId: recipientId, chatItemContext: chatItemContext)
                 }
             }
             if actions.hasIncomingMessagesMissingAci {
-                bencher.benchPostFrameAction(.InsertPhoneNumberMissingAci) {
+                bencher.benchPostFrameRestoreAction(.InsertPhoneNumberMissingAci) {
                     insertPhoneNumberMissingAci(recipientId: recipientId, chatItemContext: chatItemContext)
                 }
             }
@@ -72,7 +72,7 @@ public class MessageBackupPostFrameRestoreActionManager {
             guard let thread = chatItemContext.chatContext[chatId] else {
                 continue
             }
-            try bencher.benchPostFrameAction(.UpdateThreadMetadata) {
+            try bencher.benchPostFrameRestoreAction(.UpdateThreadMetadata) {
                 if actions.shouldBeMarkedVisible {
                     wasAnyThreadVisible = true
                     try threadStore.markVisible(
@@ -130,7 +130,7 @@ public class MessageBackupPostFrameRestoreActionManager {
                 return action.lastVisibleInteractionRowId
             }
 
-            try bencher.benchPostFrameAction(.EnqueueAvatarFetch) {
+            try bencher.benchPostFrameRestoreAction(.EnqueueAvatarFetch) {
                 switch recipientAddress {
                 case .releaseNotesChannel, .distributionList, .callLink:
                     return

@@ -42,6 +42,7 @@ public enum ThemeIcon: UInt {
     case contactInfoSafetyNumber
     case contactInfoUserInContacts
     case contactInfoAddToContacts
+    case contactInfoNameEducation
     case contactInfoSignalConnection
     case contactInfoNoDirectChat
     case contactInfoPendingRequest
@@ -273,6 +274,8 @@ public extension Theme {
             return "person-circle"
         case .contactInfoAddToContacts:
             return "person-circle-plus"
+        case .contactInfoNameEducation:
+            return "person-questionmark-compact"
         case .contactInfoSignalConnection:
             return "connections"
         case .contactInfoNoDirectChat:

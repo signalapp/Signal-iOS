@@ -10,12 +10,16 @@ import LibSignalClient
 public enum SVR {
 
     static let maximumKeyAttempts: UInt32 = 10
-    static let masterKeyLengthBytes: UInt = 32
 
     public enum SVRError: Error, Equatable {
         case assertion
         case invalidPin(remainingAttempts: UInt32)
         case backupMissing
+    }
+
+    public enum KeysError: Error {
+        case missingMasterKey
+        case missingMediaRootBackupKey
     }
 
     public enum PinType: Int {
@@ -85,7 +89,7 @@ public enum SVR {
     }
 
     public enum RestoreKeysResult {
-        case success
+        case success(MasterKey)
         case invalidPin(remainingAttempts: UInt32)
         // This could mean there was never a backup, or it's been
         // deleted due to using up all pin attempts.
@@ -143,9 +147,8 @@ public protocol SecureValueRecovery {
     /// Loads the users key, if any, from the SVR into the database, then backs them up again.
     func restoreKeysAndBackup(pin: String, authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>
 
-    /// Backs up the user's master key to SVR and stores it locally in the database.
-    /// If the user doesn't have a master key already a new one is generated.
-    func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod) -> Promise<Void>
+    /// Backs up the user's master key to SVR.
+    func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) -> Promise<MasterKey>
 
     /// Remove the keys locally from the device and from the SVR,
     /// they will not be able to be restored.
@@ -157,20 +160,30 @@ public protocol SecureValueRecovery {
     /// restored from the server if you know the pin.
     func clearKeys(transaction: DBWriteTransaction)
 
-    func storeSyncedMasterKey(
-        data: Data,
+    func storeKeys(
+        fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
         authedDevice: AuthedDevice,
-        updateStorageService: Bool,
-        transaction: DBWriteTransaction
-    )
+        tx: DBWriteTransaction
+    ) throws(SVR.KeysError)
 
-    func masterKeyDataForKeysSyncMessage(tx: DBReadTransaction) -> Data?
-
-    /// When we fail to decrypt information on storage service on a linked device, we assume the storage
-    /// service key (or master key it is derived from) we have synced from the primary is wrong/out-of-date, and wipe it.
-    func clearSyncedStorageServiceKey(transaction: DBWriteTransaction)
+    func storeKeys(
+        fromProvisioningMessage provisioningMessage: ProvisionMessage,
+        authedDevice: AuthedDevice,
+        tx: DBWriteTransaction
+    ) throws(SVR.KeysError)
 
     /// Rotate the master key and _don't_ back it up to the SVR server, in effect switching to a
     /// local-only master key and disabling PIN usage for backup restoration.
-    func useDeviceLocalMasterKey(authedAccount: AuthedAccount, transaction: DBWriteTransaction)
+    func useDeviceLocalMasterKey(
+        _ masterKey: MasterKey,
+        disablePIN: Bool,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    )
+
+    func useDeviceLocalAccountEntropyPool(
+        _ accountEntropyPool: AccountEntropyPool,
+        disablePIN: Bool,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction)
 }

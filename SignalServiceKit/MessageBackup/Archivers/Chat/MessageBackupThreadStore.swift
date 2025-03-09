@@ -15,51 +15,39 @@ public final class MessageBackupThreadStore {
 
     // MARK: - Archiving
 
-    /// Covers contact and group threads.
-    /// - Parameter block
-    /// A block executed for each enumerated thread. Returns `true` if
-    /// enumeration should continue, and `false` otherwise.
     func enumerateNonStoryThreads(
-        context: MessageBackup.ChatArchivingContext,
+        tx: DBReadTransaction,
         block: (TSThread) throws -> Bool
     ) throws {
-        try threadStore.enumerateNonStoryThreads(tx: context.tx, block: block)
+        try threadStore.enumerateNonStoryThreads(tx: tx, block: block)
     }
 
-    /// Enumerates group threads in "last interaction" order.
-    /// - Parameter block
-    /// A block executed for each enumerated thread. Returns `true` if
-    /// enumeration should continue, and `false` otherwise.
     func enumerateGroupThreads(
-        context: MessageBackup.ArchivingContext,
+        tx: DBReadTransaction,
         block: (TSGroupThread) throws -> Bool
     ) throws {
-        try threadStore.enumerateGroupThreads(tx: context.tx, block: block)
+        try threadStore.enumerateGroupThreads(tx: tx, block: block)
     }
 
-    /// Enumerates story distribution lists
-    /// - Parameter block
-    /// A block executed for each enumerated thread. Returns `true` if
-    /// enumeration should continue, and `false` otherwise.
     func enumerateStoryThreads(
-        context: MessageBackup.ArchivingContext,
+        tx: DBReadTransaction,
         block: (TSPrivateStoryThread) throws -> Bool
     ) throws {
-        try threadStore.enumerateStoryThreads(tx: context.tx, block: block)
+        try threadStore.enumerateStoryThreads(tx: tx, block: block)
     }
 
     func fetchOrDefaultAssociatedData(
         for thread: TSThread,
-        context: MessageBackup.ChatArchivingContext
+        tx: DBReadTransaction
     ) -> ThreadAssociatedData {
-        return threadStore.fetchOrDefaultAssociatedData(for: thread, tx: context.tx)
+        return threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
     }
 
     func fetchContactThread(
         recipient: SignalRecipient,
-        context: MessageBackup.ArchivingContext
+        tx: DBReadTransaction
     ) -> TSContactThread? {
-        return threadStore.fetchContactThread(recipient: recipient, tx: context.tx)
+        return threadStore.fetchContactThread(recipient: recipient, tx: tx)
     }
 
     // MARK: - Restoring

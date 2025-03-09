@@ -89,7 +89,7 @@
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Möchtest du dein Profil mit dieser Gruppe teilen?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Möchtest du diesen Nutzer zu deinen Kontakten hinzufügen?";
+"ADD_TO_CONTACTS_OFFER" = "Möchtest du diese Person zu deinen Kontakten hinzufügen?";
 
 /* Label for button or row which allows users to add to another group. */
 "ADD_TO_GROUP" = "Zu weiterer Gruppe hinzufügen";
@@ -116,7 +116,7 @@
 "ADD_TO_GROUP_TITLE" = "Zu einer Gruppe hinzufügen";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Möchtest du dein Profil mit diesem Nutzer teilen?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Möchtest du dein Profil mit diesem Kontakt teilen?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Verstanden";
@@ -590,13 +590,13 @@
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blockierte Gruppen";
 
 /* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blockierte Nutzer";
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blockierte Kontakte";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
 "BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Gruppe bereits blockiert.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Nutzer bereits blockiert.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Kontakt bereits blockiert.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Freigeben";
@@ -623,7 +623,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%1$@ wurde blockiert.";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Nutzer blockiert";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Kontakt blockiert";
 
 /* The title of the 'group blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Gruppe blockiert";
@@ -641,7 +641,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Bestehende Mitglieder können dich jetzt wieder zur Gruppe hinzufügen.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blockierte Nutzer werden dich nicht anrufen oder dir Nachrichten senden können.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blockierte Kontakte werden dich nicht anrufen oder dir Nachrichten senden können.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Neu: Verwische Gesichter oder zeichne zum Verwischen in beliebige Bereiche.";
@@ -917,7 +917,7 @@
 "CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Deine Kamera ist ausgeschaltet";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal-Nutzer";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal-Kontakt";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal-Gruppe";
@@ -1252,6 +1252,9 @@
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Ausstehende Unterhaltungsanfrage";
 
+/* A label on the profile about sheet */
+"CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION" = "Profilnamen werden nicht verifiziert";
+
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "»%1$@« ist der Profilname, den diese Person in Signal für sich festgelegt hat.";
 
@@ -1514,7 +1517,7 @@
 "CONVERSATION_PICKER_SECTION_STORIES" = "Storys";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Empfänger auswählen";
+"CONVERSATION_PICKER_TITLE" = "Empfänger*innen auswählen";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Keine Ergebnisse";
@@ -1547,7 +1550,7 @@
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Gruppe blockieren";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Nutzer blockieren";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "Kontakt blockieren";
 
 /* A label indicating that a call was an incoming video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Eingehender Videoanruf";
@@ -1694,7 +1697,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Gruppe freigeben";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Nutzer freigeben";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Kontakt freigeben";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Stummschaltung aufheben";
@@ -1910,7 +1913,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Dies löscht dein Signal-Konto und setzt die App in ihren Ursprungszustand zurück. Nach Abschluss des Vorgangs wird die App geschlossen.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Möchtest du dein Nutzerkonto wirklich löschen?";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Möchtest du dein Konto wirklich löschen?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Landesvorwahl";
@@ -2210,7 +2213,7 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Spende %1$@ an Signal";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message. */
-"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "Der Empfänger wird in einer persönlichen Nachricht über die Spende informiert. Füge unten deine eigene Nachricht hinzu.";
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "Die empfangende Person wird in einer persönlichen Nachricht über die Spende informiert. Füge unten deine eigene Nachricht hinzu.";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is the placeholder in the text field for that additional message. */
 "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Füge eine Nachricht hinzu";
@@ -2321,10 +2324,10 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Unterstütze Signal, indem du für einen Signal-Kontakt spendest. Der Kontakt erhält ein Abzeichen, das er im Profil anzeigen kann.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Für einen Freund spenden";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Für einen Kontakt spenden";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Empfänger auswählen";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Empfänger*in auswählen";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Spende bestätigen";
@@ -2423,7 +2426,7 @@
 "DONATION_RECEIPT_FOOTER" = "Vielen Dank, dass du Signal unterstützt. Deine Spende trägt dazu bei, die Entwicklung von Open-Source-Datenschutztechnologien voranzutreiben, die die freie Meinungsäußerung schützen und eine sichere globale Kommunikation für Millionen von Menschen auf der ganzen Welt ermöglichen. Falls du deinen Wohnsitz in den USA hast, bewahre bitte diese Bescheinigung für deine Steuerunterlagen auf. Die Signal Stiftung (Signal Technology Foundation) ist eine steuerbefreite gemeinnützige Organisation in den USA gemäß Abschnitt 501c3 des Internal Revenue Code. Unsere Federal Tax ID lautet 82-4506840.";
 
 /* Title for receipts for donations given on a friend's behalf */
-"DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Spende für einen Freund";
+"DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Spende für einen Kontakt";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "Einmalig";
@@ -2531,7 +2534,7 @@
 "DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "Einmalig %1$@";
 
 /* Title for the \"donate for a friend\" button on the donation view. */
-"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Für einen Freund spenden";
+"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Für einen Kontakt spenden";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Spende für Signal";
@@ -2579,7 +2582,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Gruppe bearbeiten";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Dieser Nutzer kann erst dann zur Gruppe hinzugefügt werden, wenn er Signal aktualisiert hat.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Diese Person kann erst dann zur Gruppe hinzugefügt werden, wenn sie Signal aktualisiert hat.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Ungültiges Foto.";
@@ -2687,10 +2690,10 @@
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Diagnoseprotokoll konnte nicht hochgeladen werden.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Nachricht konnte nicht versendet werden, da du den Nutzer blockiert hast.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Nachricht konnte nicht versendet werden, da du den Kontakt blockiert hast.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Nachricht konnte mangels gültiger Empfänger nicht versendet werden.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Nachricht konnte mangels gültiger Empfänger*innen nicht versendet werden.";
 
 /* Error indicating that a socket request failed. */
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Netzanfrage gescheitert.";
@@ -2708,13 +2711,13 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfehler. Bitte versuche es später erneut.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Vor Senden der Nachricht erfordert der Server eine Nutzerverifizierung.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Vor Senden der Nachricht erfordert der Server eine Verifizierung.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Ein unbekannter Fehler ist aufgetreten.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt ist kein Signal-Nutzer.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt nutzt Signal nicht.";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Hochladen des Anhangs fehlgeschlagen.";
@@ -2729,7 +2732,7 @@
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Nachricht doppelt erhalten.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Empfängerschlüssel ist ungültig.";
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Empfänger*in-Schlüssel ist ungültig.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_MESSAGE" = "Empfangene Nachricht war fehlerhaft verschlüsselt.";
@@ -2774,7 +2777,7 @@
 "ERROR_SENDING_EXPIRED" = "Deine Signal-Version ist veraltet. Bitte aktualisiere Signal, um weitere Nachrichten zu versenden.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistrierter Nutzer: %1$@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistrierter Nutzer*innen: %1$@";
 
 /* Button to exit change number, shown in context menu. */
 "EXIT_CHANGE_NUMBER" = "Telefonnummer ändern beenden";
@@ -3427,6 +3430,18 @@
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Mitglieder prüfen";
 
+/* First bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_1" = "Sei misstrauisch bei Gruppen, die sich als Organisationen und Unternehmen ausgeben";
+
+/* Second bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_2" = "Profilnamen von Gruppenmitgliedern werden nicht verifiziert";
+
+/* Third bullet point for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_BULLET_3" = "Gib keine persönlichen Informationen an Leute weiter, die du nicht kennst";
+
+/* Header for the explainer sheet for group names */
+"GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Gruppennamen</bold> werden von Gruppenmitgliedern gewählt.";
+
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Gruppenname (erforderlich)";
 
@@ -3647,7 +3662,7 @@
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Wähle einen neuen Admin für diese Gruppe, bevor du sie verlässt.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Nutzer bereits in Gruppe.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Kontakt bereits in Gruppe.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Einladung konnte nicht angenommen werden.";
@@ -3662,7 +3677,7 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "%1$@ blockieren";
 
 /* Label for 'invite friends to group' button. */
-"GROUPS_INVITE_FRIENDS_BUTTON" = "Freunde einladen";
+"GROUPS_INVITE_FRIENDS_BUTTON" = "Kontakte einladen";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Gruppe alten Typs";
@@ -3950,7 +3965,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Kontakte einladen";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Gleichzeitiges Einladen mehrerer Personen beginnt eine Gruppennachricht, deren Empfänger sich gegenseitig sehen können.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Gleichzeitiges Einladen mehrerer Personen beginnt eine Gruppennachricht. Die empfangenden Personen können sich gegenseitig sehen.";
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "Beitreten";
@@ -4709,7 +4724,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Du kannst keine weiteren Geräte koppeln.";
 
 /* A recovery suggestion shown as the body of an alert when try to link a new device & the user is already at the limit. */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du hast die maximale Anzahl an Geräten erreicht, die du derzeit mit deinem Nutzerkonto koppeln kannst. Bitte entferne ein Gerät und versuche es erneut.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du hast die maximale Anzahl an Geräten erreicht, die du derzeit mit deinem Konto koppeln kannst. Bitte entferne ein Gerät und versuche es erneut.";
 
 /* Text for a toast confirming that the mic has been muted for a call. */
 "MUTE_CONFIRMATION_TOAST_LABEL" = "Mikrofon aus";
@@ -5000,7 +5015,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Überspringen und neue PIN erstellen";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Falls du deine PIN vergessen hast, kannst du eine neue erstellen. Du kannst dich registrieren und dein Nutzerkonto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Falls du deine PIN vergessen hast, kannst du eine neue erstellen. Du kannst dich registrieren und dein Konto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "PIN-Eingabe überspringen?";
@@ -5213,7 +5228,7 @@
 "PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Unzureichendes Guthaben";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Empfangsbestätigung konnte nicht an Empfänger gesendet werden";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Empfangsbestätigung konnte nicht an empfangende Person gesendet werden";
 
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Ungültig";
@@ -5444,10 +5459,10 @@
 "PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "Unbekannte Zahlung";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Zum Senden einer Zahlung an diesen Nutzer muss er deine Unterhaltungsanfrage akzeptieren.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Zum Senden einer Zahlung an diesen Kontakt muss er deine Unterhaltungsanfrage akzeptieren.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Zum Senden einer Zahlung an diesen Nutzer muss er deine Unterhaltungsanfrage akzeptieren. Sende ihm eine Nachricht, um eine Unterhaltungsanfrage zu stellen.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Zum Senden einer Zahlung an diesen Kontakt muss er deine Unterhaltungsanfrage akzeptieren. Sende ihm eine Nachricht, um eine Unterhaltungsanfrage zu stellen.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Zahlung kann nicht gesendet werden";
@@ -5914,6 +5929,18 @@
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ hat den Profilnamen zu %2$@ geändert.";
 
+/* First bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_1" = "Profilnamen werden nicht verifiziert";
+
+/* Second bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_2" = "Sei misstrauisch bei Konten, bei denen sich jemand als eine bestimmte Person ausgibt";
+
+/* Third bullet point for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_BULLET_3" = "Gib keine persönlichen Informationen an Leute weiter, die du nicht kennst";
+
+/* Header for the explainer sheet for profile names */
+"PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT" = "<bold>Profilnamen</bold> auf Signal sind frei wählbar.";
+
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Dein Name";
 
@@ -6107,10 +6134,10 @@
 "RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "Entfernen";
 
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Nutzer kann nicht ausgewählt werden.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Kontakt kann nicht ausgewählt werden.";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ ist kein Signal-User Versuche es noch einmal mit einer gültigen Telefonnummer.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ nutzt Signal nicht. Versuche es noch einmal mit einer gültigen Telefonnummer.";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Ungültige Telefonnummer";
@@ -6119,7 +6146,7 @@
 "RECIPIENT_PICKER_INVITE_ACTION" = "Nachricht";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ ist kein Signal-User. Möchtest du diese Nummer einladen?";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ nutzt Signal bislang nicht. Möchtest du diese Nummer einladen?";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_TITLE" = "Zu Signal einladen";
@@ -6128,13 +6155,13 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Hilfe benötigt?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens vier Zeichen. Falls du dich an deine PIN nicht erinnerst, musst du für das erneute Registrieren deines Nutzerkontos 7 Tage warten.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens vier Zeichen. Falls du dich an deine PIN nicht erinnerst, musst du für das erneute Registrieren deines Kontos 7 Tage warten.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens 4 Zeichen. Falls du deine PIN vergessen hast, kannst du dich registrieren und dein Nutzerkonto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens 4 Zeichen. Falls du deine PIN vergessen hast, kannst du dich registrieren und dein Konto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens 4 Zeichen. Falls du deine PIN vergessen hast, kannst du eine neue erstellen. Du kannst dich registrieren und dein Nutzerkonto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Deine PIN ist ein von dir erstellter, numerischer oder alphanumerischer Code von mindestens 4 Zeichen. Falls du deine PIN vergessen hast, kannst du eine neue erstellen. Du kannst dich registrieren und dein Konto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Falsche PIN";
@@ -6404,10 +6431,10 @@
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Gefälschte Unternehmen und Institutionen";
 
 /* Message contents for the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal will never contact you for your registration code or PIN. Be cautious of requests that impersonate others. Profile names are chosen by their account holder and aren't verified.";
+"SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal wird dich nie nach deinem Registrierungscode oder deiner PIN fragen. Sei misstrauisch bei Anfragen, bei denen sich jemand als eine bestimmte Person ausgibt. Profilnamen sind frei wählbar und werden nicht verifiziert.";
 
 /* Message title describing the fake names safety tip. */
-"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake names and accounts";
+"SAFETY_TIPS_FAKE_NAMES_TITLE" = "Fake-Namen und -Konten";
 
 /* Message describing safety tips for group conversations. */
 "SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Prüfe diese Anfrage sorgfältig. Keiner deiner Kontakte oder Personen, mit denen du chattest, ist in dieser Gruppe. Hier sind ein paar Dinge, auf die du achten solltest:";
@@ -6698,7 +6725,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Bei Aktivierung wird Signal versuchen, Zensurmaßnahmen zu umgehen. Aktiviere diese Funktion nur dann, wenn du dich an einem Ort befindest, an dem Signal zensiert wird.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Die Zensurumgehung wurde aufgrund der Telefonnummer deines Nutzerkontos aktiviert.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Die Zensurumgehung wurde aufgrund der Telefonnummer deines Kontos aktiviert.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Du hast die Zensurumgehung manuell deaktiviert.";
@@ -6758,7 +6785,7 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@ (Standard)";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Blockierten Nutzer hinzufügen";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Blockierten Kontakte hinzufügen";
 
 /* A label that indicates the user has no Signal contacts that they haven't blocked. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Du hast bei Signal keine Kontakte.";
@@ -6890,7 +6917,7 @@
 "SETTINGS_HELP" = "Hilfe";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Freunde einladen";
+"SETTINGS_INVITE_TITLE" = "Kontakte einladen";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
 "SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Chat-Farbe und Hintergrund";
@@ -7331,7 +7358,7 @@
 "SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Speichere deine Wiederherstellungsphrase";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scanne den QR-Code des Überweisungsempfängers.";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scanne den QR-Code der empfangenden Person der Überweisung.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Ungültige Adresse";
@@ -7361,7 +7388,7 @@
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "Zahlung senden";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Empfänger auswählen";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Empfangende Person auswählen";
 
 /* Title for the 'set currency' view in the app settings. */
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Währungsumrechnung";
@@ -8165,13 +8192,7 @@
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Die Ablaufzeit für verschwindende Nachrichten wird auf %1$@ festgelegt, sobald du dem Kontakt eine Nachricht sendest.";
 
 /* Indicator warning about an unknown contact thread */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Review Carefully";
-
-/* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Keine gemeinsamen Gruppen. Prüfe Anfragen sorgfältig.";
-
-/* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Keine Kontakte in dieser Gruppe. Prüfe Anfragen sorgfältig.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Prüfe sorgfältig";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "Antippen, um ein Emoji zu ersetzen";
@@ -8212,14 +8233,26 @@
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Diese Nachricht wurde gelöscht.";
 
+/* Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ werden nicht verifiziert";
+
+/* Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
+"THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Gruppennamen";
+
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Mitglied von %1$@, %2$@ und %3$lu weiteren Gruppen";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kannst in diesem Chat an dich selbst gerichtete Notizen hinzufügen. Falls dein Nutzerkonto gekoppelte Geräte besitzt, werden neue Notizen synchronisiert.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kannst in diesem Chat an dich selbst gerichtete Notizen hinzufügen. Falls dein Konto gekoppelte Geräte besitzt, werden neue Notizen synchronisiert.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Mitglied von %1$@";
+
+/* Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }} */
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE" = "%1$@ werden nicht verifiziert";
+
+/* Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE. */
+"THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT" = "Profilnamen";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Anzeigen";
@@ -8229,6 +8262,9 @@
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Mitglied von %1$@ und %2$@";
+
+/* A string indicating there are no mutual groups the user shares with this contact */
+"THREAD_DETAILS_ZERO_MUTUAL_GROUPS" = "Keine gemeinsamen Gruppen";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
 "THREAD_MERGE_LEARN_MORE" = "Nach dem Nachrichtenaustausch mit der Nummer %1$@ hast du erfahren, dass diese zu %2$@ gehört. Diese Nummer ist privat.\n\nDein Nachrichtenverlauf für beide Chats wurde hier zusammengeführt.";
@@ -8306,7 +8342,7 @@
 "UNAVAILABLE_MEDIA_TAP_TOAST" = "Dieser Medieninhalt ist nicht länger verfügbar";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Nutzer nicht in deinen Kontakten. Möchtest du diesen Nutzer blockieren?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Person nicht in deinen Kontakten. Möchtest du diese Person blockieren?";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Eines deiner Geräte hat eine Nachricht gesendet, die nicht verarbeitet oder hier angezeigt werden kann, da sie ein neues Signal-Feature nutzt.";
@@ -8327,7 +8363,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Da du nun eine aktuelle Signal-Version verwendest, kannst du %1$@ bitten, diese Nachricht erneut zu senden.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Da du nun eine aktuelle Signal-Version verwendest, kannst du den Absender bitten, diese Nachricht erneut zu senden.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Da du nun eine aktuelle Signal-Version verwendest, kannst du die sendende Person bitten, diese Nachricht erneut zu senden.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "Unbekannt";
@@ -8399,7 +8435,7 @@
 "USE_PROXY_EXPLANATION" = "Verwende einen Proxy nur, falls die App sich trotz bestehender Internetverbindung nicht mit dem Signal-Server verbinden kann.";
 
 /* Description of username links and QR codes on the username education sheet */
-"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Nutzernamen haben einen einzigartigen QR-Code und einen Link, den du mit Freund*innen teilen kannst, damit diese schnell einen Chat mit dir beginnen können.";
+"USERNAME_EDUCATION_LINK_DESCRIPTION" = "Nutzernamen haben einen einzigartigen QR-Code und einen Link, den du mit Kontakten teilen kannst, damit diese schnell einen Chat mit dir beginnen können.";
 
 /* Title for the username links and QR codes section on the username education sheet */
 "USERNAME_EDUCATION_LINK_TITLE" = "QR-Codes und Links";
@@ -8489,10 +8525,10 @@
 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE" = "Dieser Nutzername ist nicht mehr gültig.";
 
 /* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ ist kein Signal-Nutzer. Achte darauf, dass du den vollständigen Nutzernamen eingegeben hast.";
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ ist kein Signal-Nutzername. Achte darauf, dass du den vollständigen Nutzernamen eingegeben hast.";
 
 /* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
-"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Nutzer nicht gefunden";
+"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "Nutzername nicht gefunden";
 
 /* Instructions that appear below the username QR code on a sharable exported image. */
 "USERNAME_QR_CODE_EXPORT_INSTRUCTIONS" = "Scanne diesen QR-Code mit deinem Smartphone, um mit mir auf Signal zu chatten.";

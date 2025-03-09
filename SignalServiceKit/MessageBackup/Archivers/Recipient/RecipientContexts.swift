@@ -132,7 +132,7 @@ extension MessageBackup {
 
         init(
             backupPurpose: MessageBackupPurpose,
-            bencher: MessageBackup.Bencher,
+            bencher: MessageBackup.ArchiveBencher,
             currentBackupAttachmentUploadEra: String?,
             backupAttachmentUploadManager: BackupAttachmentUploadManager,
             localIdentifiers: LocalIdentifiers,

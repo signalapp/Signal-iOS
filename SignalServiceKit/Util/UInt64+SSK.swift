@@ -11,3 +11,13 @@ extension UInt64 {
     public static let dayInMs: UInt64 = hourInMs * 24
     public static let weekInMs: UInt64 = dayInMs * 7
 }
+
+extension UInt64 {
+    init(clamping double: Double) {
+        if double > Double(UInt64.max) {
+            self.init(UInt64.max)
+        } else {
+            self.init(double)
+        }
+    }
+}

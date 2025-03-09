@@ -212,11 +212,7 @@ public extension AvatarTheme {
     }
 
     static func forSeed(_ seed: String) -> AvatarTheme {
-        guard let data = seed.data(using: .utf8) else {
-            owsFailDebug("Invalid seed.")
-            return Self.default
-        }
-        return forData(data)
+        return forData(Data(seed.utf8))
     }
 
     static func forIcon(_ icon: AvatarIcon) -> AvatarTheme {

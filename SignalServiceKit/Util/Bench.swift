@@ -48,7 +48,12 @@ private func BenchAsync(title: String, logInProduction: Bool = false, block: (@e
 ///        }
 ///    }
 ///
-public func Bench<T>(title: String, logIfLongerThan intervalLimit: TimeInterval = 0, logInProduction: Bool = false, block: () throws -> T) rethrows -> T {
+public func Bench<T>(
+    title: String,
+    logIfLongerThan intervalLimit: TimeInterval = 0,
+    logInProduction: Bool = false,
+    block: () throws -> T
+) rethrows -> T {
     let startTime = CACurrentMediaTime()
     let value = try block()
     let timeElapsed = CACurrentMediaTime() - startTime
@@ -96,18 +101,20 @@ public protocol MemorySampler {
 ///        }
 ///    }
 ///
-public func Bench<T>(
+public func BenchMemory<T>(
     title: String,
     memorySamplerRatio: Float,
     logInProduction: Bool = false,
     block: (MemorySampler) throws -> T
 ) rethrows -> T {
-    let memoryBencher = MemoryBencher(title: title, sampleRatio: memorySamplerRatio)
-    return try Bench(title: title, logInProduction: logInProduction) {
-        let value = try block(memoryBencher)
-        memoryBencher.complete()
-        return value
-    }
+    let memoryBencher = MemoryBencher(
+        title: title,
+        logInProduction: logInProduction,
+        sampleRatio: memorySamplerRatio
+    )
+    let value = try block(memoryBencher)
+    memoryBencher.complete()
+    return value
 }
 
 /// When it's not convenient to retain the event completion handler, e.g. when the measured event
@@ -175,18 +182,23 @@ private class MemoryBencher: MemorySampler {
     @usableFromInline lazy var byteFormatter = ByteCountFormatter()
 
     let title: String
+    let logInProduction: Bool
 
     /// 0.0-1.0 ratio of blocks to measure
     ///
     /// We run the block , and then, to minimize performance impact, we only sample memory usage
     /// some of the time, depending on the sampleRatio.
     @usableFromInline let sampleRatio: Float
-    @usableFromInline let growthMargin: UInt64 = 1_000_000
     @usableFromInline var maxSize: mach_vm_size_t?
     @usableFromInline var initialSize: mach_vm_size_t?
 
-    public init(title: String, sampleRatio: Float) {
+    public init(
+        title: String,
+        logInProduction: Bool,
+        sampleRatio: Float
+    ) {
         self.title = title
+        self.logInProduction = logInProduction
         self.sampleRatio = sampleRatio
 
         let currentSize = residentMemorySize()
@@ -206,7 +218,10 @@ private class MemoryBencher: MemorySampler {
 
     @inlinable
     public func sample() {
-        guard Bool.trueWithProbability(ratio: sampleRatio) else {
+        guard
+            sampleRatio > 0,
+            Bool.trueWithProbability(ratio: sampleRatio)
+        else {
             return
         }
 
@@ -235,7 +250,12 @@ private class MemoryBencher: MemorySampler {
         let maxBytes = byteFormatter.string(fromByteCount: Int64(maxSize))
         let growthBytes = byteFormatter.string(fromByteCount: Int64(maxSize - initialSize))
 
-        Logger.debug("[Bench] title: \(title) memory: \(initialBytes) -> \(maxBytes) (+\(growthBytes))")
+        let benchMessage = "[Bench] title: \(title) memory: \(initialBytes) -> \(maxBytes) (+\(growthBytes))"
+        if logInProduction {
+            Logger.info(benchMessage)
+        } else {
+            Logger.debug(benchMessage)
+        }
     }
 
     @usableFromInline

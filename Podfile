@@ -11,12 +11,12 @@ source 'https://cdn.cocoapods.org/'
 pod 'blurhash', podspec: './ThirdParty/blurhash.podspec'
 pod 'SwiftProtobuf', "1.28.2"
 
-ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = '469e4a853f9ce49c77093b4cea1aa77d3644a83c8eace506478d184455463746'
-pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal.git', tag: 'v0.66.1', testspecs: ["Tests"]
+ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = 'b66a99e2ac81008a6a0d52460e7f77927c534d4b28dbd1e27ac0f8f510d43663'
+pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal.git', tag: 'v0.67.0', testspecs: ["Tests"]
 # pod 'LibSignalClient', path: '../libsignal', testspecs: ["Tests"]
 
-ENV['RINGRTC_PREBUILD_CHECKSUM'] = '23d8dff51cd398709fc7c1ea8dcfa9fc03079117f667efcc56f0e1d563dfbad7'
-pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.49.4', inhibit_warnings: true
+ENV['RINGRTC_PREBUILD_CHECKSUM'] = '3250c8dd94e834f671d873978ccc71c1147be6cdbd7992bddff1d06cb9570644'
+pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.50.0', inhibit_warnings: true
 # pod 'SignalRingRTC', path: '../ringrtc', testspecs: ["Tests"]
 
 pod 'GRDB.swift/SQLCipher'

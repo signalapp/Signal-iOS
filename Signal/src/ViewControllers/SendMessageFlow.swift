@@ -172,7 +172,11 @@ extension SendMessageFlow {
             }
             Logger.info("Transitioning to single thread.")
             SignalApp.shared.dismissAllModals(animated: true) {
-                SignalApp.shared.presentConversationForThread(thread, action: .updateDraft, animated: true)
+                SignalApp.shared.presentConversationForThread(
+                    threadUniqueId: thread.uniqueId,
+                    action: .updateDraft,
+                    animated: true
+                )
             }
         }
     }

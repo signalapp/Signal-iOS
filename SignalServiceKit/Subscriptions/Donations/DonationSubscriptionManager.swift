@@ -423,8 +423,7 @@ public enum DonationSubscriptionManager {
         priorSubscriptionLevel: UInt?,
         paymentProcessor: DonationPaymentProcessor,
         paymentMethod: DonationPaymentMethod?,
-        isNewSubscription: Bool,
-        shouldSuppressPaymentAlreadyRedeemed: Bool
+        isNewSubscription: Bool
     ) async throws {
         let db = DependenciesBridge.shared.db
 
@@ -443,7 +442,6 @@ public enum DonationSubscriptionManager {
                 targetSubscriptionLevel: subscriptionLevel,
                 priorSubscriptionLevel: priorSubscriptionLevel,
                 isNewSubscription: isNewSubscription,
-                shouldSuppressPaymentAlreadyRedeemed: shouldSuppressPaymentAlreadyRedeemed,
                 tx: tx
             )
         }
@@ -772,18 +770,6 @@ public enum DonationSubscriptionManager {
                     receiptCredentialRequest
                 ) = generateReceiptRequest()
 
-                /// It's possible that we won't know which subscription period we
-                /// last renewed for, potentially due to reinstalling. If that
-                /// happens, we may or may not have already redeemed for the period
-                /// we're in now.
-                ///
-                /// The consequence of attempting to redeem, if we'd already done so
-                /// in a previous install, is that we'll get a "payment already
-                /// redeemed" error from our servers. That's fine – we've clearly
-                /// already done the thing we want to do, so we can always treat
-                /// this like a success.
-                let shouldSuppressPaymentAlreadyRedeemed = true
-
                 return receiptCredentialRedemptionJobQueue.saveSubscriptionRedemptionJob(
                     paymentProcessor: donationPaymentProcessor,
                     paymentMethod: subscription.donationPaymentMethod,
@@ -793,7 +779,6 @@ public enum DonationSubscriptionManager {
                     targetSubscriptionLevel: subscription.level,
                     priorSubscriptionLevel: nil,
                     isNewSubscription: false,
-                    shouldSuppressPaymentAlreadyRedeemed: shouldSuppressPaymentAlreadyRedeemed,
                     tx: tx
                 )
             },

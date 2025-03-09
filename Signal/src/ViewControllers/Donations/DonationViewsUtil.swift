@@ -312,8 +312,7 @@ public final class DonationViewsUtil {
                     priorSubscriptionLevel: priorSubscriptionLevel?.level,
                     paymentProcessor: paymentType.paymentProcessor,
                     paymentMethod: paymentType.paymentMethod,
-                    isNewSubscription: true,
-                    shouldSuppressPaymentAlreadyRedeemed: false
+                    isNewSubscription: true
                 )
             }
 

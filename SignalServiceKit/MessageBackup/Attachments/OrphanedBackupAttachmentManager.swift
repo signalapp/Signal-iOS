@@ -107,7 +107,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
                     // If we don't have root keys, we definitely don't have any
                     // orphaned backup media. quit.
                     continue
-                case .missingMasterKey, .derivationError:
+                case .missingMessageBackupKey, .derivationError:
                     owsFailDebug("Unexpected encryption material error")
                 }
             }

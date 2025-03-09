@@ -211,7 +211,7 @@ public class MessageBackupAvatarFetcher {
                     } else {
                         _ = try await profileFetcher.fetchProfileImpl(
                             for: serviceId,
-                            options: .opportunistic,
+                            context: .init(isOpportunistic: true),
                             authedAccount: .implicit()
                         )
                     }

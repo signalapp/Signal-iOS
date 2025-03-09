@@ -546,7 +546,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         let string2 = "kat"
         let messageCount: UInt = 100
 
-        Bench(title: "Populate Index", memorySamplerRatio: 1) { _ in
+        BenchMemory(title: "Populate Index", memorySamplerRatio: 1) { _ in
             self.write { transaction in
                 let thread = try! GroupManager.createGroupForTests(
                     members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
@@ -567,7 +567,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
             }
         }
 
-        Bench(title: "Search", memorySamplerRatio: 1) { _ in
+        BenchMemory(title: "Search", memorySamplerRatio: 1) { _ in
             self.read { transaction in
                 let getMatchCount = { (searchText: String) -> UInt in
                     var count: UInt = 0

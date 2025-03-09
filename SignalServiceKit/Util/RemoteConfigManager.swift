@@ -229,18 +229,8 @@ public class RemoteConfig {
         ))
     }
 
-    @available(*, unavailable, message: "cached in UserDefaults by ChatConnectionManager")
-    public var experimentalTransportUseLibsignal: Bool {
-        return false
-    }
-
-    public var experimentalTransportShadowingHigh: Bool {
-        return isEnabled(.experimentalTransportShadowingHigh, defaultValue: false)
-    }
-
-    @available(*, unavailable, message: "cached in UserDefaults by ChatConnectionManager")
-    public var experimentalTransportShadowingEnabled: Bool {
-        return false
+    public var libsignalCdsUseNewConnectLogic: Bool {
+        return isEnabled(.libsignalCdsUseNewConnectLogic, defaultValue: true)
     }
 
     public var messageQueueTime: TimeInterval {
@@ -370,10 +360,7 @@ public class RemoteConfig {
     }
 
     static func bucket(key: String, aci: Aci, bucketSize: UInt64) -> UInt64 {
-        guard var data = (key + ".").data(using: .utf8) else {
-            owsFailDebug("Failed to get data from key")
-            return 0
-        }
+        var data = Data((key + ".").utf8)
 
         data.append(Data(aci.serviceIdBinary))
 
@@ -446,10 +433,8 @@ private enum IsEnabledFlag: String, FlagType {
     case deleteForMeSyncMessageSending = "ios.deleteForMeSyncMessage.sending"
     case enableAutoAPNSRotation = "ios.enableAutoAPNSRotation"
     case enableGifSearch = "global.gifSearch"
-    case experimentalTransportShadowingEnabled = "ios.experimentalTransportEnabled.shadowing"
-    case experimentalTransportShadowingHigh = "ios.experimentalTransportEnabled.shadowingHigh"
-    case experimentalTransportUseLibsignal = "ios.experimentalTransportEnabled.libsignal"
-    case experimentalTransportUseLibsignalAuth = "ios.experimentalTransportEnabled.libsignalAuth"
+    case libsignalCdsUseNewConnectLogic = "ios.libsignal.cdsUseNewConnectLogic"
+    case libsignalForChat = "ios.useLibsignalForChat"
     case messageResendKillSwitch = "ios.messageResendKillSwitch"
     case paymentsResetKillSwitch = "ios.paymentsResetKillSwitch"
     case paypalGiftDonationKillSwitch = "ios.paypalGiftDonationKillSwitch"
@@ -472,10 +457,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .deleteForMeSyncMessageSending: false
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
-        case .experimentalTransportShadowingEnabled: false
-        case .experimentalTransportShadowingHigh: false
-        case .experimentalTransportUseLibsignal: false
-        case .experimentalTransportUseLibsignalAuth: false
+        case .libsignalCdsUseNewConnectLogic: false
+        case .libsignalForChat: false
         case .messageResendKillSwitch: false
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
@@ -499,10 +482,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .deleteForMeSyncMessageSending: false
         case .enableAutoAPNSRotation: false
         case .enableGifSearch: false
-        case .experimentalTransportShadowingEnabled: false
-        case .experimentalTransportShadowingHigh: false
-        case .experimentalTransportUseLibsignal: false
-        case .experimentalTransportUseLibsignalAuth: false
+        case .libsignalCdsUseNewConnectLogic: true
+        case .libsignalForChat: false
         case .messageResendKillSwitch: false
         case .paymentsResetKillSwitch: false
         case .paypalGiftDonationKillSwitch: false
@@ -955,19 +936,13 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
             in: CurrentAppContext().appUserDefaults()
         )
         // Similarly, persist the choice of libsignal for the chat websockets.
-        let shouldUseLibsignalForIdentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportUseLibsignalAuth.rawValue] ?? false
+        let shouldUseLibsignalForChatWebsocket = isEnabledFlags[IsEnabledFlag.libsignalForChat.rawValue] ?? FeatureFlags.libsignalForChat
         ChatConnectionManagerImpl.saveShouldUseLibsignalForIdentifiedWebsocket(
-            shouldUseLibsignalForIdentifiedWebsocket,
+            shouldUseLibsignalForChatWebsocket,
             in: CurrentAppContext().appUserDefaults()
         )
-        let shouldUseLibsignalForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportUseLibsignal.rawValue] ?? false
         ChatConnectionManagerImpl.saveShouldUseLibsignalForUnidentifiedWebsocket(
-            shouldUseLibsignalForUnidentifiedWebsocket,
-            in: CurrentAppContext().appUserDefaults()
-        )
-        let enableShadowingForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportShadowingEnabled.rawValue] ?? false
-        ChatConnectionManagerImpl.saveEnableShadowingForUnidentifiedWebsocket(
-            enableShadowingForUnidentifiedWebsocket,
+            shouldUseLibsignalForChatWebsocket,
             in: CurrentAppContext().appUserDefaults()
         )
 
@@ -1069,14 +1044,14 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
     private func parseClientExpiration(valueFlags: [String: String]) -> [MinimumVersion]? {
         let valueFlag = valueFlags[ValueFlag.clientExpiration.rawValue]
-        guard let valueFlag, let dataValue = valueFlag.nilIfEmpty?.data(using: .utf8) else {
+        guard let valueFlag = valueFlag?.nilIfEmpty else {
             return []
         }
 
         do {
             let jsonDecoder = JSONDecoder()
             jsonDecoder.dateDecodingStrategy = .iso8601
-            return try jsonDecoder.decode([MinimumVersion].self, from: dataValue)
+            return try jsonDecoder.decode([MinimumVersion].self, from: Data(valueFlag.utf8))
         } catch {
             owsFailDebug("Failed to decode client expiration (\(valueFlag), \(error)), ignoring.")
             return nil

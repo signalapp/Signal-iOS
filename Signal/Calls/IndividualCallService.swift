@@ -209,7 +209,6 @@ final class IndividualCallService: CallServiceStateObserver {
 
         // Get the current local device Id, must be valid for lifetime of the call.
         let localDeviceId = tsAccountManager.storedDeviceId(tx: tx.asV2Read)
-        let isPrimaryDevice = tsAccountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice ?? true
 
         let newCall = SignalCall(individualCall: individualCall)
 
@@ -251,7 +250,6 @@ final class IndividualCallService: CallServiceStateObserver {
                     messageAgeSec: messageAgeSec,
                     callMediaType: newCall.individualCall.offerMediaType.asCallMediaType,
                     localDevice: localDeviceId,
-                    isLocalDevicePrimary: isPrimaryDevice,
                     senderIdentityKey: partialResult.identityKeys.contactIdentityKey.publicKey.keyBytes.asData,
                     receiverIdentityKey: partialResult.identityKeys.localIdentityKey.publicKey.keyBytes.asData
                 )

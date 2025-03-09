@@ -96,8 +96,8 @@ extension AVAudioSessionPortDescription {
     var logSafeDescription: String {
         let portName = self.portName
         if portName.dropFirst(4).isEmpty {
-            return "<\(portType): \(portName)>"
+            return "<\(portType.rawValue): \(portName)>"
         }
-        return "<\(portType): \(portName.prefix(2))..\(portName.suffix(2))>"
+        return "<\(portType.rawValue): \(portName.prefix(2))..\(portName.suffix(2))>"
     }
 }

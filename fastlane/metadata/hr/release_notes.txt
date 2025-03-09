@@ -1,1 +1,1 @@
-• Now when you attempt to start a chat with someone's Signal username, it will work even if you accidentally type the “@” symbol first. Some h@bits @re h@rd to bre@k.
+• Sada možete prenijeti svoju povijest razgovora i medijske zapise iz posljednjih 45 dana na novi povezani uređaj. Proces prijenosa je sveobuhvatno šifriran i potpuno neobavezan.

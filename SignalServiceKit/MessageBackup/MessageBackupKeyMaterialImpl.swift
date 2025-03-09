@@ -8,15 +8,12 @@ public import LibSignalClient
 
 public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
 
-    private let mrbkStore: MediaRootBackupKeyStore
-    private let svrLocalStorage: SVRLocalStorage
+    private let accountKeyStore: AccountKeyStore
 
     public init(
-        mrbkStore: MediaRootBackupKeyStore,
-        svrLocalStorage: SVRLocalStorage
+        accountKeyStore: AccountKeyStore
     ) {
-        self.mrbkStore = mrbkStore
-        self.svrLocalStorage = svrLocalStorage
+        self.accountKeyStore = accountKeyStore
     }
 
     /// Get the root backup key used by the encryption mode. The key may be derived
@@ -25,27 +22,21 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         type: MessageBackupAuthCredentialType,
         tx: DBReadTransaction
     ) throws(MessageBackupKeyMaterialError) -> BackupKey {
-        let resultData: Data
         switch type {
         case .media:
-            guard let backupKey = mrbkStore.getMediaRootBackupKey(tx: tx) else {
+            guard let backupKey = accountKeyStore.getMediaRootBackupKey(tx: tx) else {
                 throw MessageBackupKeyMaterialError.missingMediaRootBackupKey
             }
-            resultData = backupKey
+            return backupKey
         case .messages:
-            guard let backupKey = svrLocalStorage.getMasterKey(tx)?.data(for: .backupKey) else {
-                throw MessageBackupKeyMaterialError.missingMasterKey
+            do {
+                guard let backupKey = accountKeyStore.getMessageRootBackupKey(tx: tx) else {
+                    throw MessageBackupKeyMaterialError.missingMessageBackupKey
+                }
+                return backupKey
+            } catch {
+                throw MessageBackupKeyMaterialError.derivationError(error)
             }
-            guard backupKey.type == .backupKey else {
-                owsFailDebug("Wrong key provided")
-                throw MessageBackupKeyMaterialError.missingMasterKey
-            }
-            resultData = backupKey.rawData
-        }
-        do {
-            return try resultData.withUnsafeBytes { try BackupKey(contents: Array($0)) }
-        } catch {
-            throw MessageBackupKeyMaterialError.derivationError(error)
         }
     }
 

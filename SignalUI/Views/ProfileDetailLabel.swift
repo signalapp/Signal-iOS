@@ -156,6 +156,20 @@ public extension ProfileDetailLabel {
         )
     }
 
+    static func profileNameEducation(
+        tapAction: @escaping () -> Void
+    ) -> ProfileDetailLabel {
+        .init(
+            title: OWSLocalizedString(
+                "CONTACT_ABOUT_SHEET_PROFILE_NAMES_EDUCATION",
+                comment: "A label on the profile about sheet"
+            ),
+            icon: .contactInfoNameEducation,
+            showDetailDisclosure: true,
+            tapAction: tapAction
+        )
+    }
+
     static func verified(
         font: UIFont = .dynamicTypeBody
     ) -> ProfileDetailLabel {

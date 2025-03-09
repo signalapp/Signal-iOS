@@ -1,1 +1,1 @@
-• Now when you attempt to start a chat with someone's Signal username, it will work even if you accidentally type the “@” symbol first. Some h@bits @re h@rd to bre@k.
+• Agora, ao vincular seu dispositivo principal do Signal a um novo desktop ou iPad, você pode levar seu histórico de conversa e os últimos 45 dias de mídia com você. O processo de transferência é criptografado de ponta a ponta e totalmente opcional..

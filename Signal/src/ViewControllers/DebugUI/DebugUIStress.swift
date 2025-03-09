@@ -230,7 +230,7 @@ class DebugUIStress: DebugUIPage {
             disappearingMessageToken: .disabledToken,
             shouldSendMessage: false
         )
-        SignalApp.shared.presentConversationForThread(groupThread, animated: true)
+        SignalApp.shared.presentConversationForThread(threadUniqueId: groupThread.uniqueId, animated: true)
     }
 
     private func copyToAnotherGroup(_ srcGroupThread: TSGroupThread, fromViewController: UIViewController) {
@@ -260,7 +260,7 @@ class DebugUIStress: DebugUIPage {
                     toExistingGroup: dstGroupThread.groupModel
                 )
                 Logger.info("Complete.")
-                SignalApp.shared.presentConversationForThread(groupThread, animated: true)
+                SignalApp.shared.presentConversationForThread(threadUniqueId: groupThread.uniqueId, animated: true)
             } catch {
                 owsFailDebug("Error: \(error)")
             }

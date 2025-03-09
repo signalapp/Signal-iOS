@@ -188,6 +188,12 @@ class DebugUIMisc: NSObject, DebugUIPage {
                     DeleteForMeInfoSheetCoordinator.fromGlobals()
                         .forceEnableInfoSheet(tx: tx.asV2Write)
                 }
+            }),
+
+            OWSTableItem(title: "Clear AEP", actionBlock: {
+                SSKEnvironment.shared.databaseStorageRef.write { tx in
+                    DependenciesBridge.shared.accountKeyStore.setAccountEntropyPool(nil, tx: tx.asV2Write)
+                }
             })
         ]
         return OWSTableSection(title: name, items: items)

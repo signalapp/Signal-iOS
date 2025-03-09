@@ -807,9 +807,7 @@ extension BodyRangesTextView {
             return
         }
 
-        guard let plaintextData = plaintext.data(using: .utf8) else {
-            return owsFailDebug("Failed to calculate plaintextData on copy")
-        }
+        let plaintextData = Data(plaintext.utf8)
 
         UIPasteboard.general.addItems([["public.utf8-plain-text": plaintextData]])
     }
@@ -821,9 +819,7 @@ extension BodyRangesTextView {
             UIPasteboard.general.setItems([], options: [:])
         }
 
-        guard let plaintextData = messageBody.text.data(using: .utf8) else {
-            return owsFailDebug("Failed to calculate plaintextData on copy")
-        }
+        let plaintextData = Data(messageBody.text.utf8)
 
         UIPasteboard.general.addItems([["public.utf8-plain-text": plaintextData]])
     }

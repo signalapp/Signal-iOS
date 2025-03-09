@@ -6,33 +6,26 @@
 import CryptoKit
 import LibSignalClient
 
-public protocol MasterKey {
+public struct MasterKey: Codable {
 
-    var rawData: Data { get }
-
-    func data(for key: SVR.DerivedKey) -> SVR.DerivedKeyData
-
-    func encrypt(
-        keyType: SVR.DerivedKey,
-        data: Data
-    ) -> SVR.ApplyDerivedKeyResult
-
-    func decrypt(
-        keyType: SVR.DerivedKey,
-        encryptedData: Data
-    ) -> SVR.ApplyDerivedKeyResult
-
-}
-
-public struct MasterKeyImpl: MasterKey {
+    public enum Constants {
+        public static let byteLength: UInt = 32 /* bytes */
+    }
 
     private let masterKey: Data
 
     // Convenience method for better readibility (e.g. masterKey.rawData vs masterKey.masterKey)
     public var rawData: Data { masterKey }
 
-    init(masterKey: Data) {
-        self.masterKey = masterKey
+    init() {
+        self.masterKey = Randomness.generateRandomBytes(Constants.byteLength)
+    }
+
+    init(data: Data) throws {
+        guard data.count == Constants.byteLength else {
+            throw OWSAssertionError("Invalid MasterKey data length.")
+        }
+        self.masterKey = data
     }
 
     public func data(for key: SVR.DerivedKey) -> SVR.DerivedKeyData {
@@ -131,7 +124,7 @@ private extension SVR.DerivedKey {
     }
 
     func derivedData(from dataToDeriveFrom: Data) -> Data {
-        let infoData = infoString.data(using: .utf8)!
+        let infoData = Data(infoString.utf8)
         switch self {
         case
                 .registrationLock,

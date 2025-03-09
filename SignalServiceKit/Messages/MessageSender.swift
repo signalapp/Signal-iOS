@@ -1856,7 +1856,7 @@ public class MessageSender {
             type: messageType,
             destinationDeviceId: protocolAddress.deviceId,
             destinationRegistrationId: try session.remoteRegistrationId(),
-            serializedMessage: serializedMessage
+            content: serializedMessage
         )
     }
 
@@ -1911,7 +1911,7 @@ public class MessageSender {
             type: messageType,
             destinationDeviceId: protocolAddress.deviceId,
             destinationRegistrationId: try session.remoteRegistrationId(),
-            serializedMessage: serializedMessage
+            content: serializedMessage
         )
     }
 }

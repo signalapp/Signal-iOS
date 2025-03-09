@@ -643,10 +643,8 @@ private extension UsernameSelectionViewController {
         ) { modal in
             UsernameLogger.shared.info("Changing username case.")
 
-            firstly(on: self.context.schedulers.sync) { () -> Guarantee<Usernames.RemoteMutationResult<Void>> in
-                Guarantee.wrapAsync {
-                    await self.context.localUsernameManager.updateVisibleCaseOfExistingUsername(newUsername: newUsername.reassembled)
-                }
+            Guarantee.wrapAsync {
+                await self.context.localUsernameManager.updateVisibleCaseOfExistingUsername(newUsername: newUsername.reassembled)
             }.map(on: self.context.schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Void> in
                 let newState = self.context.databaseStorage.read { tx in
                     return self.context.localUsernameManager.usernameState(tx: tx.asV2Read)
@@ -705,10 +703,8 @@ private extension UsernameSelectionViewController {
         ) { modal in
             UsernameLogger.shared.info("Confirming username.")
 
-            firstly(on: self.context.schedulers.sync) { () -> Guarantee<Usernames.RemoteMutationResult<Usernames.ConfirmationResult>> in
-                return Guarantee.wrapAsync {
-                    await self.context.localUsernameManager.confirmUsername(reservedUsername: reservedUsername)
-                }
+            Guarantee.wrapAsync {
+                await self.context.localUsernameManager.confirmUsername(reservedUsername: reservedUsername)
             }.map(on: self.context.schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Usernames.ConfirmationResult> in
                 let newState = self.context.databaseStorage.read { tx in
                     return self.context.localUsernameManager.usernameState(tx: tx.asV2Read)
@@ -857,9 +853,7 @@ private extension UsernameSelectionViewController {
                 let debounceId = UUID()
                 currentUsernameState = .pending(id: debounceId)
 
-                firstly(on: context.schedulers.sync) { () -> Guarantee<Void> in
-                    return Guarantee.after(wallInterval: Constants.tooShortDebounceTimeInterval)
-                }.done(on: context.schedulers.main) {
+                Guarantee.after(wallInterval: Constants.tooShortDebounceTimeInterval).done(on: context.schedulers.main) {
                     if
                         case let .pending(id) = self.currentUsernameState,
                         debounceId == id
@@ -903,14 +897,9 @@ private extension UsernameSelectionViewController {
         let thisAttemptId = UUID()
         let logger = UsernameLogger.shared.suffixed(with: "Attempt ID: \(thisAttemptId)")
 
-        firstly(on: self.context.schedulers.sync) { () -> Guarantee<Void> in
-            self.currentUsernameState = .pending(id: thisAttemptId)
-
-            // Delay to detect multiple rapid consecutive edits.
-            return Guarantee.after(
-                wallInterval: Constants.reservationDebounceTimeInternal
-            )
-        }.then(on: self.context.schedulers.main) { () -> Guarantee<ReservationResult> in
+        self.currentUsernameState = .pending(id: thisAttemptId)
+        // Delay to detect multiple rapid consecutive edits.
+        Guarantee.after(wallInterval: Constants.reservationDebounceTimeInternal).then(on: self.context.schedulers.main) { () -> Guarantee<ReservationResult> in
             // If this attempt is no longer current after debounce, we should
             // bail out without firing a reservation.
             guard

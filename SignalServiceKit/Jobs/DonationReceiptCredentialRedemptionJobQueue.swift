@@ -87,7 +87,6 @@ public class DonationReceiptCredentialRedemptionJobQueue {
             targetSubscriptionLevel: 0, // Unused
             priorSubscriptionLevel: 0, // Unused
             isNewSubscription: true, // Unused
-            shouldSuppressPaymentAlreadyRedeemed: false, // Unused
             isBoost: true,
             amount: amount.value,
             currencyCode: amount.currencyCode,
@@ -113,9 +112,6 @@ public class DonationReceiptCredentialRedemptionJobQueue {
     /// - Parameter isNewSubscription
     /// `true` if this job represents a new or updated subscription. `false` if
     /// this job is associated with the renewal of an existing subscription.
-    ///
-    /// - Parameter shouldSuppressPaymentAlreadyRedeemed
-    /// Whether this job should suppress "payment already redeemed" errors.
     func saveSubscriptionRedemptionJob(
         paymentProcessor: DonationPaymentProcessor,
         paymentMethod: DonationPaymentMethod?,
@@ -125,7 +121,6 @@ public class DonationReceiptCredentialRedemptionJobQueue {
         targetSubscriptionLevel: UInt,
         priorSubscriptionLevel: UInt?,
         isNewSubscription: Bool,
-        shouldSuppressPaymentAlreadyRedeemed: Bool,
         tx: DBWriteTransaction
     ) -> DonationReceiptCredentialRedemptionJobRecord {
         logger.info("Adding a subscription redemption job.")
@@ -139,7 +134,6 @@ public class DonationReceiptCredentialRedemptionJobQueue {
             targetSubscriptionLevel: targetSubscriptionLevel,
             priorSubscriptionLevel: priorSubscriptionLevel ?? 0,
             isNewSubscription: isNewSubscription,
-            shouldSuppressPaymentAlreadyRedeemed: shouldSuppressPaymentAlreadyRedeemed,
             isBoost: false,
             amount: nil,
             currencyCode: nil,
@@ -193,15 +187,14 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
             subscriberId: Data,
             targetSubscriptionLevel: UInt,
             priorSubscriptionLevel: UInt,
-            isNewSubscription: Bool,
-            shouldSuppressPaymentAlreadyRedeemed: Bool
+            isNewSubscription: Bool
         )
 
         var receiptCredentialResultMode: DonationReceiptCredentialResultStore.Mode {
             switch self {
             case .oneTimeBoost: return .oneTimeBoost
-            case .recurringSubscription(_, _, _, isNewSubscription: true, _): return .recurringSubscriptionInitiation
-            case .recurringSubscription(_, _, _, isNewSubscription: false, _): return .recurringSubscriptionRenewal
+            case .recurringSubscription(_, _, _, isNewSubscription: true): return .recurringSubscriptionInitiation
+            case .recurringSubscription(_, _, _, isNewSubscription: false): return .recurringSubscriptionRenewal
             }
         }
 
@@ -209,7 +202,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
             switch self {
             case .oneTimeBoost:
                 return .boost
-            case let .recurringSubscription(_, targetSubscriptionLevel, _, _, _):
+            case let .recurringSubscription(_, targetSubscriptionLevel, _, _):
                 return .subscription(subscriptionLevel: targetSubscriptionLevel)
             }
         }
@@ -217,8 +210,8 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         var description: String {
             switch self {
             case .oneTimeBoost: return "one-time"
-            case .recurringSubscription(_, _, _, isNewSubscription: true, _): return "recurring-initiation"
-            case .recurringSubscription(_, _, _, isNewSubscription: false, _): return "recurring-renewal"
+            case .recurringSubscription(_, _, _, isNewSubscription: true): return "recurring-initiation"
+            case .recurringSubscription(_, _, _, isNewSubscription: false): return "recurring-renewal"
             }
         }
     }
@@ -356,8 +349,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                 subscriberId: jobRecord.subscriberID,
                 targetSubscriptionLevel: jobRecord.targetSubscriptionLevel,
                 priorSubscriptionLevel: jobRecord.priorSubscriptionLevel,
-                isNewSubscription: jobRecord.isNewSubscription,
-                shouldSuppressPaymentAlreadyRedeemed: jobRecord.shouldSuppressPaymentAlreadyRedeemed
+                isNewSubscription: jobRecord.isNewSubscription
             )
         }
 
@@ -416,6 +408,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         // jobs. If one is for SEPA, and if that job hit a "still processing" error
         // in the past 24 hours, don't check again until 24 hours after the error.
         if let retryDelay = sepaRetryDelay(configuration: configuration) {
+            logger.info("Skipping SEPA job for \(configuration.paymentType): in SEPA retry-delay period!")
             return .retryAfter(retryDelay, canRetryEarly: false)
         }
 
@@ -465,8 +458,11 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                 return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                     if
                         errorCode == .paymentIntentRedeemed,
-                        case .recurringSubscription(_, _, _, _, shouldSuppressPaymentAlreadyRedeemed: true) = paymentType
+                        case .recurringSubscription = paymentType
                     {
+                        /// This error indicates that the user has gotten their
+                        /// badge via another redemption from another job. No
+                        /// harm done, so we'll treat these like a success.
                         self.logger.warn("Suppressing payment-already-redeemed error.")
                         jobRecord.anyRemove(transaction: tx)
                         return .finished(.success(()))
@@ -541,7 +537,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         switch paymentType {
         case .oneTimeBoost:
             return try await DonationSubscriptionManager.getBoostBadge().awaitable()
-        case let .recurringSubscription(_, targetSubscriptionLevel, _, _, _):
+        case let .recurringSubscription(_, targetSubscriptionLevel, _, _):
             return try await DonationSubscriptionManager.getSubscriptionBadge(
                 subscriptionLevel: targetSubscriptionLevel
             ).awaitable()
@@ -554,7 +550,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         switch paymentType {
         case .oneTimeBoost(paymentIntentId: _, amount: let amount):
             return amount
-        case let .recurringSubscription(subscriberId, _, _, _, _):
+        case let .recurringSubscription(subscriberId, _, _, _):
             let subscription = try await DonationSubscriptionManager.getCurrentSubscriptionStatus(for: subscriberId).awaitable()
             guard let subscription else {
                 throw OWSAssertionError("Missing subscription", logger: logger)
@@ -583,7 +579,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                 logger: logger
             ).awaitable()
 
-        case let .recurringSubscription(subscriberId, targetSubscriptionLevel, priorSubscriptionLevel, _, _):
+        case let .recurringSubscription(subscriberId, targetSubscriptionLevel, priorSubscriptionLevel, _):
             logger.info("Durable job requesting receipt for subscription")
             receiptCredential = try await DonationSubscriptionManager.requestReceiptCredential(
                 subscriberId: subscriberId,

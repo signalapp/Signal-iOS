@@ -395,18 +395,10 @@ class MessageBackupIntegrationTests: XCTestCase {
     private func readBackupTimeMs(testCaseFileUrl: URL) async throws -> UInt64 {
         let plaintextStreamProvider = MessageBackupPlaintextProtoStreamProviderImpl()
 
-        let progress = try await MessageBackupImportProgress.prepare(sink: nil, fileUrl: testCaseFileUrl)
-
-        class FakeMemorySampler: MemorySampler {
-            init() {}
-            func sample() {}
-        }
-
         let stream: MessageBackupProtoInputStream
         switch plaintextStreamProvider.openPlaintextInputFileStream(
             fileUrl: testCaseFileUrl,
-            progress: progress,
-            memorySampler: FakeMemorySampler()
+            frameRestoreProgress: nil
         ) {
         case .success(let _stream, _):
             stream = _stream
@@ -454,18 +446,6 @@ class MessageBackupIntegrationTests: XCTestCase {
             keychainStorage: MockKeychainStorage()
         )
 
-        let svrLocalStorageMock = SVRLocalStorageMock()
-        let backupKey = Data(repeating: 8, count: 32)
-        svrLocalStorageMock.masterKey = MasterKeyMock()
-        svrLocalStorageMock.masterKey?.dataGenerator = { derivedKey in
-            switch derivedKey {
-            case .backupKey:
-                return backupKey
-            default:
-                owsFail("Unexpected key request")
-            }
-        }
-
         /// We use crashy versions of dependencies that should never be called
         /// during backups, and no-op implementations of payments because those
         /// are bound to the SignalUI target.
@@ -483,8 +463,7 @@ class MessageBackupIntegrationTests: XCTestCase {
             testDependencies: AppSetup.TestDependencies(
                 backupAttachmentDownloadManager: BackupAttachmentDownloadManagerMock(),
                 dateProvider: dateProvider,
-                networkManager: CrashyMocks.MockNetworkManager(libsignalNet: nil),
-                svrLocalStorage: svrLocalStorageMock,
+                networkManager: CrashyMocks.MockNetworkManager(appReadiness: appReadiness, libsignalNet: nil),
                 webSocketFactory: CrashyMocks.MockWebSocketFactory()
             )
         ).prepareDatabase().awaitable()

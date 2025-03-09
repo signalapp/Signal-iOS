@@ -754,43 +754,41 @@ public extension PaymentsImpl {
     }
 
     func blockOnOutgoingVerification(paymentModel: TSPaymentModel) -> Promise<Bool> {
-        firstly(on: DispatchQueue.global()) { () -> Promise<Bool> in
-            let paymentModelLatest = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                TSPaymentModel.anyFetch(uniqueId: paymentModel.uniqueId,
-                                        transaction: transaction)
-            }
-            guard let paymentModel = paymentModelLatest else {
-                throw PaymentsError.missingModel
-            }
-
-            switch paymentModel.paymentState {
-            case .outgoingUnsubmitted,
-                 .outgoingUnverified:
-                // Not yet verified, wait then try again.
-                return firstly(on: DispatchQueue.global()) {
-                    Guarantee.after(seconds: 0.05)
-                }.then(on: DispatchQueue.global()) { () -> Promise<Bool> in
-                    // Recurse.
-                    self.blockOnOutgoingVerification(paymentModel: paymentModel)
+        Promise.wrapAsync {
+            while true {
+                let paymentModelLatest = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+                    TSPaymentModel.anyFetch(uniqueId: paymentModel.uniqueId,
+                                            transaction: transaction)
                 }
-            case .outgoingVerified,
-                 .outgoingSending,
-                 .outgoingSent,
-                 .outgoingComplete:
-                // Success: Verified.
-                return Promise.value(true)
-            case .outgoingFailed:
-                // Success: Failed.
-                return Promise.value(false)
-            case .incomingUnverified,
-                 .incomingVerified,
-                 .incomingComplete,
-                 .incomingFailed:
-                owsFailDebug("Unexpected paymentState: \(paymentModel.descriptionForLogs)")
-                throw PaymentsError.invalidModel
-            @unknown default:
-                owsFailDebug("Invalid paymentState: \(paymentModel.descriptionForLogs)")
-                throw PaymentsError.invalidModel
+                guard let paymentModel = paymentModelLatest else {
+                    throw PaymentsError.missingModel
+                }
+
+                switch paymentModel.paymentState {
+                case .outgoingUnsubmitted,
+                        .outgoingUnverified:
+                    // Not yet verified, wait then try again.
+                    try await Task.sleep(nanoseconds: 50_000_000)
+                    // loop by not returning
+                case .outgoingVerified,
+                        .outgoingSending,
+                        .outgoingSent,
+                        .outgoingComplete:
+                    // Success: Verified.
+                    return true
+                case .outgoingFailed:
+                    // Success: Failed.
+                    return false
+                case .incomingUnverified,
+                        .incomingVerified,
+                        .incomingComplete,
+                        .incomingFailed:
+                    owsFailDebug("Unexpected paymentState: \(paymentModel.descriptionForLogs)")
+                    throw PaymentsError.invalidModel
+                @unknown default:
+                    owsFailDebug("Invalid paymentState: \(paymentModel.descriptionForLogs)")
+                    throw PaymentsError.invalidModel
+                }
             }
         }
     }

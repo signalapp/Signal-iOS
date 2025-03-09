@@ -34,10 +34,7 @@ public extension TSGroupModelV2 {
 public extension GroupV2Params {
 
     fileprivate func encryptString(_ value: String) throws -> Data {
-        guard let plaintext: Data = value.data(using: .utf8) else {
-            throw OWSAssertionError("Could not encrypt value.")
-        }
-        return try encryptBlob(plaintext)
+        return try encryptBlob(Data(value.utf8))
     }
 
     fileprivate func decryptString(_ data: Data) throws -> String {

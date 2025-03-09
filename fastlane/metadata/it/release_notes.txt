@@ -1,1 +1,1 @@
-• Now when you attempt to start a chat with someone's Signal username, it will work even if you accidentally type the “@” symbol first. Some h@bits @re h@rd to bre@k.
+• Da ora quando colleghi il tuo dispositivo principale di Signal a un nuovo Desktop o iPad, puoi importare la cronologia delle tue chat e gli ultimi 45 giorni di media inviati/ricevuti. Il trasferimento è crittografato e del tutto opzionale. Insomma, scegli tu se lasciarti il passato alle spalle o meno!

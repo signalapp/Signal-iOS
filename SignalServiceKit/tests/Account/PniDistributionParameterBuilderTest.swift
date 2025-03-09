@@ -242,7 +242,7 @@ private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.Messa
                 type: .ciphertext,
                 destinationDeviceId: deviceId,
                 destinationRegistrationId: registrationId,
-                serializedMessage: Randomness.generateRandomBytes(32)
+                content: Randomness.generateRandomBytes(32)
             )
         case .invalidDevice:
             return nil

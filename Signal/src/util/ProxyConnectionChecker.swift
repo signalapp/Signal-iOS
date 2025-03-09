@@ -6,30 +6,22 @@
 import SignalServiceKit
 
 enum ProxyConnectionChecker {
-    static func checkConnectionAndNotify(completion: @escaping (Bool) -> Void) {
-        var observer: NSObjectProtocol?
-        func unregisterObserver() {
-            observer.map { NotificationCenter.default.removeObserver($0) }
-            observer = nil
-        }
-
+    static func checkConnectionAndNotify() async -> Bool {
         var hasTransitionedToConnecting = false
-
-        // Wait to see if we can establish a websocket connection via the new proxy.
-        observer = NotificationCenter.default.addObserver(forName: OWSChatConnection.chatConnectionStateDidChange, object: nil, queue: nil) { _ in
+        for await _ in NotificationCenter.default.notifications(named: OWSChatConnection.chatConnectionStateDidChange) {
             switch DependenciesBridge.shared.chatConnectionManager.identifiedConnectionState {
             case .closed:
                 // Ignore closed state until we start connecting, it's expected that old sockets will close
-                guard hasTransitionedToConnecting else { break }
-
-                unregisterObserver()
-                completion(false)
+                guard hasTransitionedToConnecting else { continue }
+                return false
             case .connecting:
                 hasTransitionedToConnecting = true
             case .open:
-                unregisterObserver()
-                completion(true)
+                return true
             }
         }
+
+        // If we get here, the task was cancelled before we got a successful connection.
+        return false
     }
 }

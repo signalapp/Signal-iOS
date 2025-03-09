@@ -67,8 +67,11 @@ public class ToastController: NSObject, ToastViewDelegate {
         }
 
         if UIDevice.current.isIPad {
-            toastView.autoSetDimension(.width, toSize: 512)
+            // As wide as possible, not exceeding 512 pt, and not exceeding superview width
             toastView.autoHCenterInSuperview()
+            toastView.autoSetDimension(.width, toSize: 512, relation: .lessThanOrEqual)/*.priority = .defaultLow*/
+            toastView.autoPinWidthToSuperview(withMargin: 8, relation: .lessThanOrEqual)
+            toastView.autoPinWidthToSuperview(withMargin: 8).forEach { $0.priority = .defaultHigh }
         } else {
             toastView.autoPinWidthToSuperview(withMargin: 8)
         }

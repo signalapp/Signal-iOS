@@ -948,9 +948,7 @@ extension OWSUserProfile {
             guard let strippedTruncatedString = StrippedNonEmptyString(rawValue: truncatedString) else {
                 return nil
             }
-            guard let dataValue = strippedTruncatedString.rawValue.data(using: .utf8) else {
-                return nil
-            }
+            let dataValue = Data(strippedTruncatedString.rawValue.utf8)
             return (
                 NameComponent(stringValue: strippedTruncatedString, dataValue: dataValue),
                 didTruncate: truncatedString != strippedString

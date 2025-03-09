@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSSyncKeysMessage ()
 
-@property (nonatomic, readonly, nullable) NSData *storageServiceKey;
+@property (nonatomic, readonly, nullable) NSString *accountEntropyPool;
 @property (nonatomic, readonly, nullable) NSData *masterKey;
 @property (nonatomic, readonly, nullable) NSData *mediaRootBackupKey;
 
@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSSyncKeysMessage
 
 - (instancetype)initWithLocalThread:(TSContactThread *)localThread
-                  storageServiceKey:(nullable NSData *)storageServiceKey
+                 accountEntropyPool:(nullable NSString *)accountEntropyPool
                           masterKey:(nullable NSData *)masterKey
                  mediaRootBackupKey:(nullable NSData *)mediaRootBackupKey
                         transaction:(SDSAnyReadTransaction *)transaction
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    _storageServiceKey = storageServiceKey;
+    _accountEntropyPool = accountEntropyPool;
     _masterKey = masterKey;
     _mediaRootBackupKey = mediaRootBackupKey;
 
@@ -45,8 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     SSKProtoSyncMessageKeysBuilder *keysBuilder = [SSKProtoSyncMessageKeys builder];
 
-    if (self.storageServiceKey) {
-        keysBuilder.storageService = self.storageServiceKey;
+    if (self.accountEntropyPool) {
+        keysBuilder.accountEntropyPool = self.accountEntropyPool;
     }
     if (self.masterKey) {
         keysBuilder.master = self.masterKey;

@@ -20,10 +20,7 @@ struct QRCodeGenerator {
 
     /// Generates a styled, Signal-branded QR code image encoding the given URL.
     func generateQRCode(url: URL, stylingMode: StylingMode = .brandedWithLogo) -> UIImage? {
-        guard let urlData: Data = url.absoluteString.data(using: .utf8) else {
-            owsFailDebug("Failed to convert URL to data!")
-            return nil
-        }
+        let urlData = Data(url.absoluteString.utf8)
 
         guard let unstyledQRCode = generateUnstyledQRCode(data: urlData) else {
             return nil

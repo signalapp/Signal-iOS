@@ -280,15 +280,18 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         } else {
             backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
         }
-        let icon: UIImage
-        guard let asset = UIImage(named: "photo-slash-36") else {
-            owsFailDebug("Missing image")
-            return
-        }
-        icon = asset
+
+        let backgroundSize: CGFloat = 44
+        let background = UIView()
+        background.backgroundColor = .black.withAlphaComponent(0.40)
+        background.layer.cornerRadius = backgroundSize / 2
+        addSubviewToCenterOnSuperview(background, size: .init(square: 44))
+
+        let icon = UIImage(named: "photo-slash-36")!
         let iconView = CVImageView(image: icon)
-        iconView.tintColor = Theme.primaryTextColor.withAlphaComponent(0.6)
-        addSubviewToCenterOnSuperview(iconView, size: icon.size)
+        iconView.tintColor = .white
+        iconView.contentMode = .scaleAspectFit
+        addSubviewToCenterOnSuperview(iconView, size: .init(square: 24))
     }
 
     public func loadMedia() {

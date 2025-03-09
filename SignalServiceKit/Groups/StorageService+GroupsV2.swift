@@ -203,7 +203,7 @@ public extension StorageService {
         let password: String = authCredentialPresentationData.hexadecimalString
         request.addHeader(
             OWSHttpHeaders.authHeaderKey,
-            value: try OWSHttpHeaders.authHeaderValue(username: username, password: password)
+            value: OWSHttpHeaders.authHeaderValue(username: username, password: password)
         )
     }
 }

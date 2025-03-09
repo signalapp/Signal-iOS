@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
                       transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (instancetype)initWithLocalThread:(TSContactThread *)localThread
-                  storageServiceKey:(nullable NSData *)storageServiceKey
+                 accountEntropyPool:(nullable NSString *)accountEntropyPool
                           masterKey:(nullable NSData *)masterKey
                  mediaRootBackupKey:(nullable NSData *)mediaRootBackupKey
                         transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;

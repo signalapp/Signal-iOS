@@ -21,6 +21,7 @@ public class ViewControllerContext {
     public let editManager: EditManager
 
     public let svr: SecureValueRecovery
+    public let accountKeyStore: AccountKeyStore
     public let schedulers: Schedulers
 
     public let usernameApiClient: UsernameApiClient
@@ -32,6 +33,7 @@ public class ViewControllerContext {
     public init(
         db: any DB,
         editManager: EditManager,
+        accountKeyStore: AccountKeyStore,
         svr: SecureValueRecovery,
         schedulers: Schedulers,
         usernameApiClient: UsernameApiClient,
@@ -42,6 +44,7 @@ public class ViewControllerContext {
     ) {
         self.db = db
         self.editManager = editManager
+        self.accountKeyStore = accountKeyStore
         self.svr = svr
         self.schedulers = schedulers
         self.usernameApiClient = usernameApiClient
@@ -63,6 +66,7 @@ public class ViewControllerContext {
         return ViewControllerContext(
             db: bridge.db,
             editManager: bridge.editManager,
+            accountKeyStore: bridge.accountKeyStore,
             svr: bridge.svr,
             schedulers: bridge.schedulers,
             usernameApiClient: bridge.usernameApiClient,

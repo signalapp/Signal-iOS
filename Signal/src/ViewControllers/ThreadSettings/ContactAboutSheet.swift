@@ -179,6 +179,17 @@ class ContactAboutSheet: StackSheetViewController {
         self.nameLabel = nameLabel
         stackView.addArrangedSubview(nameLabel)
 
+        if !isInSystemContacts, !isVerified {
+            let label = ProfileDetailLabel.profileNameEducation { [weak fromViewController, weak dismissalDelegate] in
+                let sheet = NameEducationSheet(type: .contact)
+                sheet.dismissalDelegate = dismissalDelegate
+                fromViewController?.dismiss(animated: true) {
+                    fromViewController?.present(sheet, animated: true)
+                }
+            }
+            stackView.addArrangedSubview(label)
+        }
+
         if isVerified {
             stackView.addArrangedSubview(ProfileDetailLabel.verified())
         }

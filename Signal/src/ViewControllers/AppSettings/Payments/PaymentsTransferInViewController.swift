@@ -116,11 +116,11 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             configureWithSubviews(subviews: [label])
         }
 
-        guard let walletAddressBase58 = SUIEnvironment.shared.paymentsRef.walletAddressBase58(),
-              let walletAddressBase58Data = walletAddressBase58.data(using: .utf8) else {
+        guard let walletAddressBase58 = SUIEnvironment.shared.paymentsRef.walletAddressBase58() else {
             configureForError()
             return
         }
+        let walletAddressBase58Data = Data(walletAddressBase58.utf8)
 
         guard let qrImage = QRCodeGenerator().generateUnstyledQRCode(
             data: walletAddressBase58Data

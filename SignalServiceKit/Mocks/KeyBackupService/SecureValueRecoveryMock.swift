@@ -9,6 +9,11 @@ import Foundation
 
 public class SecureValueRecoveryMock: SecureValueRecovery {
 
+    public var hasAccountEntropyPool = false
+    public func hasAccountEntropyPool(transaction: any DBReadTransaction) -> Bool {
+        return hasAccountEntropyPool
+    }
+
     public init() {}
 
     public var hasMasterKey = false
@@ -37,10 +42,10 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public var reglockToken: String?
 
-    public var generateAndBackupKeysMock: ((_ pin: String, _ authMethod: SVR.AuthMethod) -> Promise<Void>)?
+    public var backupMasterKeyMock: ((_ pin: String, _ masterKey: MasterKey, _ authMethod: SVR.AuthMethod) -> Promise<MasterKey>)?
 
-    public func generateAndBackupKeys(pin: String, authMethod: SVR.AuthMethod) -> Promise<Void> {
-        return generateAndBackupKeysMock!(pin, authMethod)
+    public func backupMasterKey(pin: String, masterKey: MasterKey, authMethod: SVR.AuthMethod) -> Promise<MasterKey> {
+        return backupMasterKeyMock!(pin, masterKey, authMethod)
     }
 
     public var restoreKeysMock: ((_ pin: String, _ authMethod: SVR.AuthMethod) -> Guarantee<SVR.RestoreKeysResult>)?
@@ -69,21 +74,20 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public var syncedMasterKey: Data?
 
-    public func storeSyncedMasterKey(
-        data: Data,
+    public func storeKeys(
+        fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
         authedDevice: AuthedDevice,
-        updateStorageService: Bool,
-        transaction: DBWriteTransaction
-    ) {
-        syncedMasterKey = data
+        tx: any DBWriteTransaction
+    ) throws(SVR.KeysError) {
+        syncedMasterKey = syncMessage.master
     }
 
-    public func masterKeyDataForKeysSyncMessage(tx: DBReadTransaction) -> Data? {
-        return nil
-    }
-
-    public func clearSyncedStorageServiceKey(transaction: DBWriteTransaction) {
-        // Do nothing
+    public func storeKeys(
+        fromProvisioningMessage provisioningMessage: ProvisionMessage,
+        authedDevice: AuthedDevice,
+        tx: DBWriteTransaction
+    ) throws(SVR.KeysError) {
+        syncedMasterKey = provisioningMessage.masterKey
     }
 
     public var hasHadBackupKeyRequestFail = false
@@ -109,10 +113,25 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
     public var useDeviceLocalMasterKeyMock: ((_ authedAccount: AuthedAccount) -> Void)?
 
     public func useDeviceLocalMasterKey(
+        _ masterKey: MasterKey,
+        disablePIN: Bool,
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {
         useDeviceLocalMasterKeyMock?(authedAccount)
+        hasMasterKey = true
+    }
+
+    public var useDeviceLocalAccountEntropyPoolMock: ((_ authedAccount: AuthedAccount) -> Void)?
+    public func useDeviceLocalAccountEntropyPool(
+        _ accountEntropyPool: AccountEntropyPool,
+        disablePIN: Bool,
+        authedAccount: AuthedAccount,
+        transaction: DBWriteTransaction
+    ) {
+        useDeviceLocalAccountEntropyPoolMock?(authedAccount)
+        hasAccountEntropyPool = true
+        hasMasterKey = true
     }
 }
 

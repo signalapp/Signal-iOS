@@ -518,7 +518,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             // profile to make sure everything is up-to-date.
             if localUserProfile?.givenName != nil {
                 Task { [profileFetcher] in
-                    _ = try? await profileFetcher.fetchProfile(for: serviceIds.aciOrElsePni, options: [.opportunistic])
+                    _ = try? await profileFetcher.fetchProfile(for: serviceIds.aciOrElsePni, context: .init(isOpportunistic: true))
                 }
             } else {
                 let profileAddress = OWSUserProfile.insertableAddress(

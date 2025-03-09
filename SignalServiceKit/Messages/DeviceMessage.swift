@@ -9,7 +9,7 @@ struct DeviceMessage {
     let type: SSKProtoEnvelopeType
     let destinationDeviceId: UInt32
     let destinationRegistrationId: UInt32
-    let serializedMessage: Data
+    let content: Data
 }
 
 struct SentDeviceMessage {

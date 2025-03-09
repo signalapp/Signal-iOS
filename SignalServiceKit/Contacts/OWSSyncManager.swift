@@ -197,14 +197,31 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return owsFailDebug("Missing thread")
         }
 
-        let storageServiceKey = DependenciesBridge.shared.svrLocalStorage.getMasterKey(tx.asV2Read)?.data(for: .storageService)
-        let masterKey = DependenciesBridge.shared.svr.masterKeyDataForKeysSyncMessage(tx: tx.asV2Read)
-        let mrbk = DependenciesBridge.shared.mrbkStore.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
+        let accountEntropyPool: AccountEntropyPool?
+        if FeatureFlags.enableAccountEntropyPool {
+            accountEntropyPool = DependenciesBridge.shared.accountKeyStore.getAccountEntropyPool(tx: tx.asV2Read)
+        } else {
+            accountEntropyPool = nil
+        }
+
+        if FeatureFlags.enableAccountEntropyPool,
+           accountEntropyPool == nil
+        {
+            Logger.warn("Expecting AEP present for sync message")
+        }
+        let masterKey = DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: tx.asV2Read)
+
+        guard accountEntropyPool != nil || masterKey != nil else {
+            return owsFailDebug("Missing root key")
+        }
+
+        let mrbk = DependenciesBridge.shared.accountKeyStore.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
+
         let syncKeysMessage = OWSSyncKeysMessage(
             localThread: thread,
-            storageServiceKey: storageServiceKey?.rawData,
-            masterKey: masterKey,
-            mediaRootBackupKey: mrbk,
+            accountEntropyPool: accountEntropyPool?.rawData,
+            masterKey: masterKey?.rawData,
+            mediaRootBackupKey: mrbk.serialize().asData,
             transaction: tx
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(
@@ -218,19 +235,20 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return owsFailDebug("Key sync messages should only be processed on linked devices")
         }
 
-        if let masterKey = syncMessage.master {
-            DependenciesBridge.shared.svr.storeSyncedMasterKey(
-                data: masterKey,
+        do {
+            try DependenciesBridge.shared.svr.storeKeys(
+                fromKeysSyncMessage: syncMessage,
                 authedDevice: .implicit,
-                updateStorageService: true,
-                transaction: transaction.asV2Write
+                tx: transaction.asV2Write
             )
+        } catch {
+            switch error {
+            case .missingMasterKey:
+                Logger.warn("Key sync messages missing master key")
+            case .missingMediaRootBackupKey:
+                Logger.warn("Key sync messages missing media root backup key")
+            }
         }
-
-        try? DependenciesBridge.shared.mrbkStore.setMediaRootBackupKey(
-            fromKeysSyncMessage: syncMessage,
-            tx: transaction.asV2Write
-        )
 
         transaction.addAsyncCompletionOffMain {
             NotificationCenter.default.postNotificationNameAsync(.syncManagerKeysSyncDidComplete, object: nil)

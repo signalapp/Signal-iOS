@@ -116,7 +116,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         websocketFactory: WebSocketFactory,
         scheduler: Scheduler
     ) throws -> WebSocketPromise {
-        let authHeaderValue = try OWSHttpHeaders.authHeaderValue(username: auth.username, password: auth.password)
+        let authHeaderValue = OWSHttpHeaders.authHeaderValue(username: auth.username, password: auth.password)
         let request = WebSocketRequest(
             signalService: Configurator.signalServiceType,
             urlPath: Configurator.websocketUrlPath(mrenclaveString: configurator.mrenclave.dataValue.hexadecimalString),

@@ -43,7 +43,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         if let localAci = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
             Task {
                 let profileFetcher = SSKEnvironment.shared.profileFetcherRef
-                _ = try? await profileFetcher.fetchProfile(for: localAci, options: [.opportunistic])
+                _ = try? await profileFetcher.fetchProfile(for: localAci, context: .init(isOpportunistic: true))
             }
         }
 

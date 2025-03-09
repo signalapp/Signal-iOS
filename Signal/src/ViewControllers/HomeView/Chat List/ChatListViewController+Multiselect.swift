@@ -61,8 +61,8 @@ extension ChatListViewController {
         hideToolbar()
         loadCoordinator.loadIfNecessary(shouldForceLoad: true)
 
-        if let lastViewedThread, isConversationActive(forThread: lastViewedThread) {
-            ensureSelectedThread(lastViewedThread, animated: false)
+        if let lastViewedThreadUniqueId, isConversationActive(threadUniqueId: lastViewedThreadUniqueId) {
+            ensureSelectedThreadUniqueId(lastViewedThreadUniqueId, animated: false)
         }
     }
 
@@ -152,6 +152,12 @@ extension ChatListViewController {
                 }
             }
         } else {
+            func hasUnreadEntry(threadUniqueIds: [String]) -> Bool {
+                return threadUniqueIds.contains {
+                    tableDataSource.threadViewModel(threadUniqueId: $0).hasUnreadMessages
+                }
+            }
+
             readButton = UIBarButtonItem(
                 title: OWSLocalizedString(
                     "HOME_VIEW_TOOLBAR_READ_ALL",
@@ -161,7 +167,9 @@ extension ChatListViewController {
                 target: self,
                 action: #selector(performReadAll)
             )
-            readButton.isEnabled = hasUnreadEntry(threads: renderState.pinnedThreads) || hasUnreadEntry(threads: renderState.unpinnedThreads)
+            readButton.isEnabled = false
+            readButton.isEnabled = readButton.isEnabled || hasUnreadEntry(threadUniqueIds: renderState.pinnedThreadUniqueIds)
+            readButton.isEnabled = readButton.isEnabled || hasUnreadEntry(threadUniqueIds: renderState.unpinnedThreadUniqueIds)
         }
 
         let deleteBtn = UIBarButtonItem(title: CommonStrings.deleteButton, style: .plain, target: self, action: #selector(performDelete))
@@ -175,17 +183,6 @@ extension ChatListViewController {
             entries.append(button)
         }
         toolbar?.setItems(entries, animated: false)
-    }
-
-    private func hasUnreadEntry(threads: [TSThread]? = nil) -> Bool {
-        if let entries = threads {
-            for entry in entries {
-                if tableDataSource.threadViewModel(forThread: entry).hasUnreadMessages {
-                    return true
-                }
-            }
-        }
-        return false
     }
 
     private func hideToolbar() {
@@ -259,14 +256,10 @@ extension ChatListViewController {
 
     @objc
     func performReadAll() {
-        var threadViewModels: [ThreadViewModel] = []
-        var threads = renderState.pinnedThreads
-        threads.append(contentsOf: renderState.unpinnedThreads)
-        for t in threads {
-            let threadViewModel = tableDataSource.threadViewModel(forThread: t)
-            if threadViewModel.hasUnreadMessages {
-                threadViewModels.append(threadViewModel)
-            }
+        let threadUniqueIds = renderState.pinnedThreadUniqueIds + renderState.unpinnedThreadUniqueIds
+        let threadViewModels = threadUniqueIds.compactMap { threadUniqueId in
+            let threadViewModel = tableDataSource.threadViewModel(threadUniqueId: threadUniqueId)
+            return threadViewModel.hasUnreadMessages ? threadViewModel : nil
         }
 
         performOn(threadViewModels: threadViewModels) { threadViewModels in

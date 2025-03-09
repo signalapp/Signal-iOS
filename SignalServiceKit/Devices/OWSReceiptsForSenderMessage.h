@@ -27,7 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSReceiptsForSenderMessage *)readReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                              receiptSet:(MessageReceiptSet *)receiptSet
-                                                            transaction:(SDSAnyReadTransaction *)transaction;
+                                                            transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(readReceiptsForSenderMessage(with:receiptSet:transaction:));
 
 + (OWSReceiptsForSenderMessage *)viewedReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                                receiptSet:(MessageReceiptSet *)receiptSet

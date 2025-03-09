@@ -14,6 +14,11 @@ extension JobRecord {
     /// some columns have been reused across multiple job types.
     public enum JobRecordColumns: String, CodingKey, ColumnExpression, CaseIterable {
 
+        // MARK: Unused/Deprecated columns
+
+        /// Previously used by `DonationReceiptCredentialRedemptionJobRecord`.
+        case shouldSuppressPaymentAlreadyRedeemed
+
         // MARK: GRDB columns
 
         case id
@@ -78,7 +83,6 @@ extension JobRecord {
         case targetSubscriptionLevel
         case priorSubscriptionLevel
         case isNewSubscription
-        case shouldSuppressPaymentAlreadyRedeemed
 
         // MARK: SendGiftBadgeJobRecord & DonationReceiptCredentialRedemptionJobRecord
 

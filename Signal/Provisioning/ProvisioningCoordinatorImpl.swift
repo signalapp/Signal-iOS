@@ -14,8 +14,8 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let deviceService: OWSDeviceService
     private let identityManager: OWSIdentityManager
     private let linkAndSyncManager: LinkAndSyncManager
+    private let accountKeyStore: AccountKeyStore
     private let messageFactory: Shims.MessageFactory
-    private let mrbkStore: MediaRootBackupKeyStore
     private let preKeyManager: PreKeyManager
     private let profileManager: Shims.ProfileManager
     private let pushRegistrationManager: Shims.PushRegistrationManager
@@ -25,7 +25,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     private let signalService: OWSSignalServiceProtocol
     private let storageServiceManager: StorageServiceManager
     private let svr: SecureValueRecovery
-    private let svrLocalStorage: SVRLocalStorage
     private let syncManager: Shims.SyncManager
     private let threadStore: ThreadStore
     private let tsAccountManager: TSAccountManager
@@ -37,8 +36,8 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         deviceService: OWSDeviceService,
         identityManager: OWSIdentityManager,
         linkAndSyncManager: LinkAndSyncManager,
+        accountKeyStore: AccountKeyStore,
         messageFactory: Shims.MessageFactory,
-        mrbkStore: MediaRootBackupKeyStore,
         preKeyManager: PreKeyManager,
         profileManager: Shims.ProfileManager,
         pushRegistrationManager: Shims.PushRegistrationManager,
@@ -48,7 +47,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         signalService: OWSSignalServiceProtocol,
         storageServiceManager: StorageServiceManager,
         svr: SecureValueRecovery,
-        svrLocalStorage: SVRLocalStorage,
         syncManager: Shims.SyncManager,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
@@ -59,8 +57,8 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         self.deviceService = deviceService
         self.identityManager = identityManager
         self.linkAndSyncManager = linkAndSyncManager
+        self.accountKeyStore = accountKeyStore
         self.messageFactory = messageFactory
-        self.mrbkStore = mrbkStore
         self.preKeyManager = preKeyManager
         self.profileManager = profileManager
         self.pushRegistrationManager = pushRegistrationManager
@@ -70,7 +68,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         self.signalService = signalService
         self.storageServiceManager = storageServiceManager
         self.svr = svr
-        self.svrLocalStorage = svrLocalStorage
         self.syncManager = syncManager
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
@@ -398,12 +395,29 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 userProfileWriter: .linking,
                 tx: tx
             )
-            self.svr.storeSyncedMasterKey(
-                data: provisionMessage.masterKey,
-                authedDevice: .explicit(authedDevice),
-                updateStorageService: false,
-                transaction: tx
-            )
+
+            do {
+                try svr.storeKeys(
+                    fromProvisioningMessage: provisionMessage,
+                    authedDevice: .explicit(authedDevice),
+                    tx: tx
+                )
+            } catch {
+                switch error {
+                case SVR.KeysError.missingMasterKey:
+                    owsFailDebug("Failed to store master key from provisioning message")
+                    return .obsoleteLinkedDeviceError
+                case SVR.KeysError.missingMediaRootBackupKey:
+                    if FeatureFlags.linkAndSyncLinkedImport || FeatureFlags.messageBackupFileAlpha {
+                        return .obsoleteLinkedDeviceError
+                    } else {
+                        Logger.warn("Invalid MRBK; ignoring")
+                        owsFailDebug("Failed to store MBRK from provisioning message")
+                    }
+                default:
+                    owsFailDebug("Unexpected Error")
+                }
+            }
 
             if let areReadReceiptsEnabled = provisionMessage.areReadReceiptsEnabled {
                 self.receiptManager.setAreReadReceiptsEnabled(
@@ -412,15 +426,6 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                 )
             }
 
-            do {
-                try self.mrbkStore.setMediaRootBackupKey(fromProvisioningMessage: provisionMessage, tx: tx)
-            } catch {
-                if FeatureFlags.linkAndSyncLinkedImport || FeatureFlags.messageBackupFileAlpha {
-                    return .obsoleteLinkedDeviceError
-                } else {
-                    Logger.warn("Invalid MRBK; ignoring")
-                }
-            }
             return nil
         }
         if let error {
@@ -449,7 +454,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
                     tx: tx
                 )
 
-                self.mrbkStore.wipeMediaRootBackupKeyFromFailedProvisioning(tx: tx)
+                self.accountKeyStore.wipeMediaRootBackupKeyFromFailedProvisioning(tx: tx)
             }
         }
     }
@@ -774,7 +779,7 @@ class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
         // Don't bother with this field at all; just put explicit none.
         let twoFaMode: AccountAttributes.TwoFactorAuthMode = .none
 
-        let registrationRecoveryPassword = svrLocalStorage.getMasterKey(tx)?.data(
+        let registrationRecoveryPassword = accountKeyStore.getMasterKey(tx: tx)?.data(
             for: .registrationRecoveryPassword
         ).canonicalStringRepresentation
 

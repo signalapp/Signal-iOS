@@ -202,10 +202,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         }
         let truncatedBody = MessageBody(text: truncatedText, ranges: messageBody.ranges)
 
-        guard let textData = messageBody.text.data(using: .utf8) else {
-            throw OWSAssertionError("Unable to encode text")
-        }
-        let input = Input.inMemory(textData)
+        let input = Input.inMemory(Data(messageBody.text.utf8))
         let encryptionKey = Cryptography.randomAttachmentEncryptionKey()
         let pendingAttachment = try self.validateContents(
             input: input,

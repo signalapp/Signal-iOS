@@ -80,8 +80,7 @@ extension DonateViewController {
                     priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
                     paymentProcessor: .stripe,
                     paymentMethod: .applePay,
-                    isNewSubscription: true,
-                    shouldSuppressPaymentAlreadyRedeemed: false
+                    isNewSubscription: true
                 )
             }
 

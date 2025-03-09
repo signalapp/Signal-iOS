@@ -102,9 +102,9 @@ extension SignalProxy {
         private func stateDidChange(to state: NWConnection.State) {
             switch state {
             case .ready:
-                relayClient?.send("HTTP/1.1 200\r\n\r\n".data(using: .utf8)!)
+                relayClient?.send(Data("HTTP/1.1 200\r\n\r\n".utf8))
             case .failed(let error), .waiting(let error):
-                relayClient?.send("HTTP/1.1 503\r\n\r\n".data(using: .utf8)!)
+                relayClient?.send(Data("HTTP/1.1 503\r\n\r\n".utf8))
                 stop(error: error)
             default:
                 break

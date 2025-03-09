@@ -4,6 +4,7 @@
 //
 
 public struct AccountAttributesGenerator {
+    private let accountKeyStore: AccountKeyStore
     private let ows2FAManager: OWS2FAManager
     private let profileManager: ProfileManager
     private let svrLocalStorage: SVRLocalStorage
@@ -11,12 +12,14 @@ public struct AccountAttributesGenerator {
     private let udManager: OWSUDManager
 
     init(
+        accountKeyStore: AccountKeyStore,
         ows2FAManager: OWS2FAManager,
         profileManager: ProfileManager,
         svrLocalStorage: SVRLocalStorage,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager
     ) {
+        self.accountKeyStore = accountKeyStore
         self.ows2FAManager = ows2FAManager
         self.profileManager = profileManager
         self.svrLocalStorage = svrLocalStorage
@@ -46,7 +49,7 @@ public struct AccountAttributesGenerator {
 
         let twoFaMode: AccountAttributes.TwoFactorAuthMode
         if
-            let reglockToken = svrLocalStorage.getMasterKey(tx)?.data(for: .registrationLock),
+            let reglockToken = accountKeyStore.getMasterKey(tx: tx)?.data(for: .registrationLock),
             ows2FAManager.isRegistrationLockV2Enabled(transaction: sdsTx)
         {
             twoFaMode = .v2(reglockToken: reglockToken.canonicalStringRepresentation)
@@ -60,7 +63,7 @@ public struct AccountAttributesGenerator {
             twoFaMode = .none
         }
 
-        let registrationRecoveryPassword = svrLocalStorage.getMasterKey(tx)?.data(
+        let registrationRecoveryPassword = accountKeyStore.getMasterKey(tx: tx)?.data(
             for: .registrationRecoveryPassword
         ).canonicalStringRepresentation
 

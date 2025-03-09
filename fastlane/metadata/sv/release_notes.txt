@@ -1,1 +1,1 @@
-• Now when you attempt to start a chat with someone's Signal username, it will work even if you accidentally type the “@” symbol first. Some h@bits @re h@rd to bre@k.
+• Nu kan du välja att överföra din chatthistorik och dina senaste 45 dagars media till en ny länkad enhet. Överföringsprocessen är krypterad från början till slut och är helt frivillig.

@@ -28,12 +28,9 @@ public struct AccountDataReport {
             options: .prettyPrinted
         )
 
-        guard
-            let text = jsonObject["text"] as? String,
-            let textData = text.data(using: .utf8)
-        else {
+        guard let text = jsonObject["text"] as? String else {
             throw OWSGenericError("Text is missing or cannot be parsed")
         }
-        self.textData = textData
+        self.textData = Data(text.utf8)
     }
 }

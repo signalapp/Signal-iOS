@@ -205,6 +205,7 @@ public class GroupsV2Impl: GroupsV2 {
     // done immediately and in a consistent way.
     private func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) async throws -> TSGroupThread {
 
+        let justUploadedAvatars = GroupV2DownloadedAvatars.from(changes: changes)
         let groupId = changes.groupId
         let groupV2Params = try GroupV2Params(groupSecretParams: changes.groupSecretParams)
 
@@ -254,7 +255,7 @@ public class GroupsV2Impl: GroupsV2 {
         return try await handleGroupUpdatedOnService(
             changeResponse: changeResponse,
             messageBehavior: messageBehavior,
-            justUploadedAvatars: GroupV2DownloadedAvatars.from(changes: changes),
+            justUploadedAvatars: justUploadedAvatars,
             groupId: groupId,
             groupV2Params: groupV2Params
         )

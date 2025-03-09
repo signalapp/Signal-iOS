@@ -49,11 +49,11 @@ extension DonationViewsUtil {
         /// This *could* happen without a Signal developer making a mistake, if the app is
         /// terminated at the right time and network conditions are right.
         static func throwIfAlreadySendingGift(
-            to thread: TSContactThread,
+            threadId: String,
             transaction: SDSAnyReadTransaction
         ) throws {
             let isAlreadyGifting = DonationUtilities.sendGiftBadgeJobQueue.alreadyHasJob(
-                for: thread,
+                threadId: threadId,
                 transaction: transaction
             )
             if isAlreadyGifting {

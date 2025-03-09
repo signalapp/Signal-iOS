@@ -107,7 +107,7 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
             }
         }
 
-        func enumerateStickerPackRecord(tx: DBReadTransaction, _ block: (StickerPack) throws -> Void) throws {
+        func enumerateStickerPackRecord(tx: DBReadTransaction, block: (StickerPack) throws -> Void) throws {
             let cursor = try StickerPackRecord
                 .filter(Column(StickerPackRecord.CodingKeys.isInstalled) == true)
                 .fetchCursor(tx.databaseConnection)
@@ -120,8 +120,8 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
         // Iterate over the installed sticker packs
         do {
             try context.bencher.wrapEnumeration(
-                enumerateStickerPackRecord(tx:_:),
-                context.tx
+                enumerateStickerPackRecord(tx:block:),
+                tx: context.tx
             ) { stickerPack, frameBencher in
                 try Task.checkCancellation()
                 archiveInstalledStickerPack(stickerPack, frameBencher)
@@ -136,7 +136,7 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
         do {
             try context.bencher.wrapEnumeration(
                 backupStickerPackDownloadStore.iterateAllEnqueued(tx:block:),
-                context.tx
+                tx: context.tx
             ) { record, frameBencher in
                 try Task.checkCancellation()
                 autoreleasepool {

@@ -133,12 +133,11 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         do {
             try context.bencher.wrapEnumeration(
                 interactionStore.enumerateAllInteractions(tx:block:),
-                context.tx,
-                block: { interaction, frameBencher in
-                    try Task.checkCancellation()
-                    return archiveInteraction(interaction, frameBencher)
-                }
-            )
+                tx: context.tx
+            ) { interaction, frameBencher in
+                try Task.checkCancellation()
+                return archiveInteraction(interaction, frameBencher)
+            }
         } catch let error as CancellationError {
             throw error
         } catch let error {

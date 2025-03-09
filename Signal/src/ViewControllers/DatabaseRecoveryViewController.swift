@@ -10,14 +10,14 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     private let appReadiness: AppReadiness
     private let corruptDatabaseStorage: SDSDatabaseStorage
     private let keychainStorage: any KeychainStorage
-    private let setupSskEnvironment: (SDSDatabaseStorage) -> Guarantee<SetupResult>
+    private let setupSskEnvironment: (SDSDatabaseStorage) -> Task<SetupResult, Never>
     private let launchApp: (SetupResult) -> Void
 
     public init(
         appReadiness: AppReadiness,
         corruptDatabaseStorage: SDSDatabaseStorage,
         keychainStorage: any KeychainStorage,
-        setupSskEnvironment: @escaping (SDSDatabaseStorage) -> Guarantee<SetupResult>,
+        setupSskEnvironment: @escaping (SDSDatabaseStorage) -> Task<SetupResult, Never>,
         launchApp: @escaping (SetupResult) -> Void
     ) {
         self.appReadiness = appReadiness
@@ -286,7 +286,9 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
                     databaseFileUrl: self.corruptDatabaseStorage.databaseFileUrl,
                     keychainStorage: self.keychainStorage
                 )
-                return self.setupSskEnvironment(databaseStorage).map(on: DispatchQueue.sharedUserInitiated) { setupResult in
+                return Guarantee.wrapAsync {
+                    await self.setupSskEnvironment(databaseStorage).value
+                }.map(on: DispatchQueue.sharedUserInitiated) { setupResult in
                     if shouldDumpAndRecreate {
                         let manualRecreation = DatabaseRecovery.ManualRecreation(databaseStorage: databaseStorage)
                         progress.addChild(manualRecreation.progress, withPendingUnitCount: 1)
@@ -298,8 +300,8 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
                 }
             }
         case .corruptedButAlreadyDumpedAndRestored:
-            promise = firstly(on: DispatchQueue.sharedUserInitiated) {
-                self.setupSskEnvironment(self.corruptDatabaseStorage)
+            promise = Guarantee.wrapAsync {
+                await self.setupSskEnvironment(self.corruptDatabaseStorage).value
             }.map(on: DispatchQueue.sharedUserInitiated) { setupResult in
                 let manualRecreation = DatabaseRecovery.ManualRecreation(databaseStorage: self.corruptDatabaseStorage)
                 progress.addChild(

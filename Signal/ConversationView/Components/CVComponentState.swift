@@ -406,9 +406,17 @@ public class CVComponentState: Equatable {
     let typingIndicator: TypingIndicator?
 
     struct ThreadDetails: Equatable {
-        enum MutualGroupsTapAction: Equatable {
-            case showContactSafetyTip
-            case showGroupSafetyTip
+        struct SafetySection: Equatable {
+            /// For "⚠️ Review Carefully"
+            let shouldShowLowTrustWarning: Bool
+            /// For "Profile names are not verified"
+            let shouldShowProfileNamesEducation: Bool
+            /// For phone numbers or group member count
+            let detailsText: NSAttributedString?
+            /// For mutual groups, lack thereof and note-to-self description.
+            let mutualGroupsText: NSAttributedString?
+            let threadType: SafetyTipsType
+            let shouldShowSafetyTipsButton: Bool
         }
 
         let avatarDataSource: ConversationAvatarDataSource?
@@ -416,9 +424,7 @@ public class CVComponentState: Equatable {
         let titleText: String
         let shouldShowVerifiedBadge: Bool
         let bioText: String?
-        let detailsText: String?
-        let mutualGroupsText: NSAttributedString?
-        let mutualGroupsTapAction: MutualGroupsTapAction?
+        let safetySection: SafetySection?
         let groupDescriptionText: String?
     }
     let threadDetails: ThreadDetails?

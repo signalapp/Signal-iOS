@@ -465,6 +465,18 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCodin
     }
 
     @objc
+    public var accountEntropyPool: String? {
+        guard hasAccountEntropyPool else {
+            return nil
+        }
+        return proto.accountEntropyPool
+    }
+    @objc
+    public var hasAccountEntropyPool: Bool {
+        return proto.hasAccountEntropyPool
+    }
+
+    @objc
     public var mediaRootBackupKey: Data? {
         guard hasMediaRootBackupKey else {
             return nil
@@ -620,6 +632,9 @@ extension ProvisioningProtoProvisionMessage {
         }
         if let _value = ephemeralBackupKey {
             builder.setEphemeralBackupKey(_value)
+        }
+        if let _value = accountEntropyPool {
+            builder.setAccountEntropyPool(_value)
         }
         if let _value = mediaRootBackupKey {
             builder.setMediaRootBackupKey(_value)
@@ -791,6 +806,17 @@ public class ProvisioningProtoProvisionMessageBuilder: NSObject {
 
     public func setEphemeralBackupKey(_ valueParam: Data) {
         proto.ephemeralBackupKey = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setAccountEntropyPool(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.accountEntropyPool = valueParam
+    }
+
+    public func setAccountEntropyPool(_ valueParam: String) {
+        proto.accountEntropyPool = valueParam
     }
 
     @objc

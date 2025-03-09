@@ -140,22 +140,13 @@ public class LoopingVideoView: UIView {
             invalidateIntrinsicContentSize()
 
             if let asset = video?.asset {
-                firstly(on: DispatchQueue.global(qos: .userInitiated)) { [weak self] () -> Void in
-                    guard let self = self else {
-                        return
-                    }
-                    let playerItem = AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: ["tracks"])
-                    self.player.replaceCurrentItem(with: playerItem)
-                    if !UIAccessibility.isReduceMotionEnabled {
-                        self.player.play()
-                    }
-                }.done(on: DispatchQueue.main) { [weak self] in
-                    guard let self = self else {
-                        return
-                    }
-                    self.invalidateIntrinsicContentSize()
-                    self.delegate?.loopingVideoViewChangedPlayerItem()
-                }
+                let playerItem = AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: ["tracks"])
+                self.player.replaceCurrentItem(with: playerItem)
+				if !UIAccessibility.isReduceMotionEnabled {
+                	self.player.play()
+				}
+                self.invalidateIntrinsicContentSize()
+                self.delegate?.loopingVideoViewChangedPlayerItem()
             }
         }
     }

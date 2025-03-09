@@ -415,9 +415,10 @@ public class TestSchedulerTest: XCTestCase {
         let scheduler = TestScheduler()
 
         var didFirstly = false
-        let promise = firstly(on: scheduler) {
+        let (promise, future) = Guarantee<String>.pending()
+        scheduler.asyncIfNecessary {
             didFirstly = true
-            return "Hello"
+            future.resolve("Hello")
         }
         var didObserveResult = false
         promise.observe(on: scheduler) { result in

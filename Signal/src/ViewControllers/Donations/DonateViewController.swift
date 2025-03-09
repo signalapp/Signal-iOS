@@ -543,8 +543,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                             priorSubscriptionLevel: subscription.level,
                             paymentProcessor: donationPaymentProcessor,
                             paymentMethod: subscription.donationPaymentMethod,
-                            isNewSubscription: true,
-                            shouldSuppressPaymentAlreadyRedeemed: false
+                            isNewSubscription: true
                         )
                     }
 

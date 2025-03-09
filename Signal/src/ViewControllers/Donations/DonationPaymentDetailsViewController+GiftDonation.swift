@@ -22,7 +22,7 @@ extension DonationPaymentDetailsViewController {
             promise: firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Void> in
                 try SSKEnvironment.shared.databaseStorageRef.read { transaction in
                     try DonationViewsUtil.Gifts.throwIfAlreadySendingGift(
-                        to: thread,
+                        threadId: thread.uniqueId,
                         transaction: transaction
                     )
                 }

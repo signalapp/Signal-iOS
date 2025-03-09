@@ -155,8 +155,7 @@ extension DonateViewController {
                     priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
                     paymentProcessor: .braintree,
                     paymentMethod: .paypal,
-                    isNewSubscription: true,
-                    shouldSuppressPaymentAlreadyRedeemed: false
+                    isNewSubscription: true
                 )
             }
 

@@ -148,6 +148,12 @@ public protocol OWSProgressSource {
 }
 
 extension OWSProgressSource {
+    func complete() {
+        incrementCompletedUnitCount(by: totalUnitCount)
+    }
+}
+
+extension OWSProgressSource {
 
     /// Given some block of asynchronous work, update progress
     /// on the current source periodically (every ``timeInterval`` seconds)
@@ -517,9 +523,19 @@ private class OWSProgressSourceNode: OWSProgressSource, OWSProgressChildNode {
 
     func incrementCompletedUnitCount(by increment: UInt64) {
         owsAssertDebug(increment > 0)
+
+        let incrementedUnitCount: UInt64 = {
+            if UInt64.max - increment < completedUnitCount {
+                // Avoid UInt64 overflow, if necessary.
+                return .max
+            }
+
+            return completedUnitCount + increment
+        }()
+
         completedUnitCount = min(
             totalUnitCount,
-            completedUnitCount + increment
+            incrementedUnitCount
         )
         emitProgressIfNeeded()
     }
