@@ -78,6 +78,7 @@ public class StickerView {
             let yyView = YYAnimatedImageView()
             yyView.alwaysInfiniteLoop = true
             yyView.contentMode = .scaleAspectFit
+            yyView.autoPlayAnimatedImage = !UIAccessibility.isReduceMotionEnabled
             yyView.image = stickerImage
             stickerView = yyView
         }

@@ -15,6 +15,7 @@ protocol MessageActionsDelegate: AnyObject {
     func messageActionsStopSpeakingItem(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsEditItem(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsShowPaymentDetails(_ itemViewModel: CVItemViewModelImpl)
+    func messageActionsShowStickerPack(_ itemViewModel: CVItemViewModelImpl)
 }
 
 // MARK: -
@@ -151,6 +152,19 @@ struct MessageActionBuilder {
             }
         )
     }
+
+    static func showStickerPack(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
+        MessageAction(
+            .showStickerPack,
+            accessibilityLabel: OWSLocalizedString("MESSAGE_ACTION_SHOW_STICKER_PACK", comment: "Action sheet accessibility label"),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "show_sticker_pack"),
+            contextMenuTitle: OWSLocalizedString("CONTEXT_MENU_SHOW_STICKER_PACK", comment: "Context menu button title"),
+            contextMenuAttributes: [],
+            block: { [weak delegate] _ in
+                delegate?.messageActionsShowStickerPack(itemViewModel)
+            }
+        )
+    }
 }
 
 class MessageActions: NSObject {
@@ -227,6 +241,11 @@ class MessageActions: NSObject {
         if itemViewModel.canEditMessage {
             let editAction = MessageActionBuilder.editMessage(itemViewModel: itemViewModel, delegate: delegate)
             actions.append(editAction)
+        }
+
+        if itemViewModel.isSticker {
+            let showPackAction = MessageActionBuilder.showStickerPack(itemViewModel: itemViewModel, delegate: delegate)
+            actions.append(showPackAction)
         }
 
         let selectAction = MessageActionBuilder.selectMessage(itemViewModel: itemViewModel, delegate: delegate)
