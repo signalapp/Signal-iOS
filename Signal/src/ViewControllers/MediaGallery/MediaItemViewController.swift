@@ -331,7 +331,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
     private var hasAutoPlayedVideo = false
 
     private var isVideo: Bool {
-        galleryItem.isVideo || galleryItem.isAnimated
+        galleryItem.isVideo || (UIAccessibility.isReduceMotionEnabled && galleryItem.isAnimated)
     }
 
     private func playVideo() {
