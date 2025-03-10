@@ -170,7 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setOpaque:self.opaqueMessage];
     }
 
-    if (self.destinationDeviceId) {
+    if (self.destinationDeviceId != nil) {
         [builder setDestinationDeviceID:self.destinationDeviceId.unsignedIntValue];
     }
 

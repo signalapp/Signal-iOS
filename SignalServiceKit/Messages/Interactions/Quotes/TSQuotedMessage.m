@@ -142,12 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    if (timestamp) {
-        OWSAssertDebug(timestamp > 0);
-        _timestamp = [timestamp unsignedLongLongValue];
-    } else {
-        _timestamp = 0;
-    }
+    _timestamp = [timestamp unsignedLongLongValue];
     _authorAddress = authorAddress;
     _body = body;
     _bodyRanges = bodyRanges;
@@ -198,12 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(authorAddress.isValid);
 
     uint64_t rawTimestamp;
-    if (timestamp) {
-        OWSAssertDebug(timestamp > 0);
-        rawTimestamp = [timestamp unsignedLongLongValue];
-    } else {
-        rawTimestamp = 0;
-    }
+    rawTimestamp = [timestamp unsignedLongLongValue];
 
     return [[TSQuotedMessage alloc] initWithTimestamp:rawTimestamp
                                         authorAddress:authorAddress

@@ -178,11 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [builder setExpireTimer:self.expiresInSeconds];
-    if (self.expireTimerVersion) {
-        [builder setExpireTimerVersion:[self.expireTimerVersion unsignedIntValue]];
-    } else {
-        [builder setExpireTimerVersion:0];
-    }
+    [builder setExpireTimerVersion:[self.expireTimerVersion unsignedIntValue]];
 
     [builder setRequiredProtocolVersion:(uint32_t)SSKProtoDataMessageProtocolVersionPayments];
     return builder;

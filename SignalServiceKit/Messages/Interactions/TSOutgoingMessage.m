@@ -475,11 +475,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
 
     [builder setExpireTimer:self.expiresInSeconds];
-    if (self.expireTimerVersion) {
-        [builder setExpireTimerVersion:[self.expireTimerVersion unsignedIntValue]];
-    } else {
-        [builder setExpireTimerVersion:0];
-    }
+    [builder setExpireTimerVersion:[self.expireTimerVersion unsignedIntValue]];
 
 
     // Group Messages
