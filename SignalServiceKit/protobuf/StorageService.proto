@@ -216,6 +216,7 @@ message AccountRecord {
   bool preferContactAvatars = 15;
   Payments payments = 16;
   uint32 universalExpireTimer = 17;
+  reserved 18; // primarySendsSms
   string e164 = 19;
   repeated string preferredReactionEmoji = 20;
   bytes donorSubscriberID = 21;
