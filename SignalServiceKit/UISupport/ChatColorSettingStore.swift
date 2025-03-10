@@ -144,7 +144,7 @@ public class ChatColorSettingStore {
         // return the global wallpaper.
         if
             let threadId = thread?.uniqueId,
-            let threadWallpaperColor = wallpaperStore.fetchWallpaper(for: thread?.uniqueId, tx: tx)?.defaultChatColor
+            let threadWallpaperColor = wallpaperStore.fetchWallpaper(for: threadId, tx: tx)?.defaultChatColor
         {
             return threadWallpaperColor.colorSetting
         }
