@@ -161,7 +161,7 @@ final class RequestMaker {
         let connectionType: OWSChatConnectionType = (request.isUDRequest ? .unidentified : .identified)
         let shouldUseWebsocket: Bool = (
             OWSChatConnection.canAppUseSocketsToMakeRequests
-            && (self.options.contains(.waitForWebSocketToOpen) || DependenciesBridge.shared.chatConnectionManager.canMakeRequests(connectionType: connectionType))
+            && (self.options.contains(.waitForWebSocketToOpen) || DependenciesBridge.shared.chatConnectionManager.shouldWaitForSocketToMakeRequest(connectionType: connectionType))
         )
 
         let response: HTTPResponse

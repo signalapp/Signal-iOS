@@ -11,7 +11,7 @@ public protocol ChatConnectionManager {
     var identifiedConnectionState: OWSChatConnectionState { get }
     var hasEmptiedInitialQueue: Bool { get }
 
-    func canMakeRequests(connectionType: OWSChatConnectionType) -> Bool
+    func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool
     func makeRequest(_ request: TSRequest) async throws -> HTTPResponse
 
     func didReceivePush()
@@ -56,8 +56,8 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         }
     }
 
-    public func canMakeRequests(connectionType: OWSChatConnectionType) -> Bool {
-        connection(ofType: connectionType).canMakeRequests
+    public func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool {
+        connection(ofType: connectionType).shouldSocketBeOpen
     }
 
     public typealias RequestSuccess = OWSChatConnection.RequestSuccess
@@ -182,10 +182,10 @@ public class ChatConnectionManagerMock: ChatConnectionManager {
 
     public var identifiedConnectionState: OWSChatConnectionState = .closed
 
-    public var canMakeRequestsPerType = [OWSChatConnectionType: Bool]()
+    public var shouldWaitForSocketToMakeRequestPerType = [OWSChatConnectionType: Bool]()
 
-    public func canMakeRequests(connectionType: OWSChatConnectionType) -> Bool {
-        return canMakeRequestsPerType[connectionType] ?? true
+    public func shouldWaitForSocketToMakeRequest(connectionType: OWSChatConnectionType) -> Bool {
+        return shouldWaitForSocketToMakeRequestPerType[connectionType] ?? true
     }
 
     public var requestHandler: (_ request: TSRequest) async throws -> HTTPResponse = { _ in

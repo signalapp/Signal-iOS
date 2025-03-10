@@ -273,7 +273,7 @@ public class ProfileFetcherJob {
         let connectionType: OWSChatConnectionType = (request.isUDRequest ? .unidentified : .identified)
         let shouldUseWebSocket: Bool = (
             OWSChatConnection.canAppUseSocketsToMakeRequests
-            && DependenciesBridge.shared.chatConnectionManager.canMakeRequests(connectionType: connectionType)
+            && DependenciesBridge.shared.chatConnectionManager.shouldWaitForSocketToMakeRequest(connectionType: connectionType)
         )
         if shouldUseWebSocket {
             return try await DependenciesBridge.shared.chatConnectionManager.makeRequest(request)

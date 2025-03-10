@@ -68,11 +68,6 @@ public class OWSChatConnection {
         return .closed
     }
 
-    // This var is thread-safe.
-    public final var canMakeRequests: Bool {
-        currentState == .open
-    }
-
     // This var must be thread-safe.
     public var hasEmptiedInitialQueue: Bool {
         false
