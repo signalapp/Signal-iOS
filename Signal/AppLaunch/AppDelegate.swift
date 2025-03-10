@@ -725,9 +725,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             Task {
                 do {
                     _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(authedAccount: .implicit())
-                    try await SSKEnvironment.shared.profileManagerRef.downloadAndDecryptLocalUserAvatarIfNeeded(
-                        authedAccount: .implicit()
-                    )
                 } catch {
                     Logger.warn("Couldn't fetch local user profile or avatar: \(error)")
                 }
