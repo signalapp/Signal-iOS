@@ -2560,6 +2560,8 @@
 		D979DA112B8D1B06000EEAB8 /* BadgeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DC42A1860EF00A00935 /* BadgeManager.swift */; };
 		D979DA132B8D1B65000EEAB8 /* BadgeManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DCD2A1BEBAE00A00935 /* BadgeManagerTest.swift */; };
 		D979DA162B8D1FDD000EEAB8 /* BadgeCountFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979DA152B8D1FDD000EEAB8 /* BadgeCountFetcher.swift */; };
+		D97C43962D7F74F300BA41E0 /* recipient_contacts_05.txtproto in Resources */ = {isa = PBXBuildFile; fileRef = D97C43952D7F74F300BA41E0 /* recipient_contacts_05.txtproto */; };
+		D97C43972D7F74F300BA41E0 /* recipient_contacts_05.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D97C43942D7F74F300BA41E0 /* recipient_contacts_05.binproto */; };
 		D984F7242C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */; };
 		D985D86629B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */; };
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
@@ -6398,6 +6400,8 @@
 		D979CC5A2AD61699006AAC49 /* GroupCallRecordManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCallRecordManager.swift; sourceTree = "<group>"; };
 		D979CC5C2AD616A4006AAC49 /* GroupCallRecordManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCallRecordManagerTest.swift; sourceTree = "<group>"; };
 		D979DA152B8D1FDD000EEAB8 /* BadgeCountFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeCountFetcher.swift; sourceTree = "<group>"; };
+		D97C43942D7F74F300BA41E0 /* recipient_contacts_05.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; path = recipient_contacts_05.binproto; sourceTree = "<group>"; };
+		D97C43952D7F74F300BA41E0 /* recipient_contacts_05.txtproto */ = {isa = PBXFileReference; lastKnownFileType = text; path = recipient_contacts_05.txtproto; sourceTree = "<group>"; };
 		D98300B12936E6C70018FDC2 /* DonationSubscriptionManager+DonationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationSubscriptionManager+DonationConfiguration.swift"; sourceTree = "<group>"; };
 		D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageTest.swift; sourceTree = "<group>"; };
 		D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManagerTest.swift; sourceTree = "<group>"; };
@@ -11955,6 +11959,8 @@
 				D90AA30C2CC9616A00021CB0 /* recipient_contacts_03.txtproto */,
 				664AC11D2D39AE5300561B1C /* recipient_contacts_04.binproto */,
 				664AC11E2D39AE5300561B1C /* recipient_contacts_04.txtproto */,
+				D97C43942D7F74F300BA41E0 /* recipient_contacts_05.binproto */,
+				D97C43952D7F74F300BA41E0 /* recipient_contacts_05.txtproto */,
 				D90AA30D2CC9616A00021CB0 /* recipient_distribution_list_00.binproto */,
 				D90AA30E2CC9616A00021CB0 /* recipient_distribution_list_00.txtproto */,
 				D90AA30F2CC9616A00021CB0 /* recipient_distribution_list_01.binproto */,
@@ -15612,6 +15618,8 @@
 				D90AA4ED2CC9616B00021CB0 /* recipient_contacts_03.txtproto in Resources */,
 				664AC11F2D39AE5300561B1C /* recipient_contacts_04.binproto in Resources */,
 				664AC1202D39AE5300561B1C /* recipient_contacts_04.txtproto in Resources */,
+				D97C43972D7F74F300BA41E0 /* recipient_contacts_05.binproto in Resources */,
+				D97C43962D7F74F300BA41E0 /* recipient_contacts_05.txtproto in Resources */,
 				D90AA5B02CC9616B00021CB0 /* recipient_distribution_list_00.binproto in Resources */,
 				D90AA5522CC9616B00021CB0 /* recipient_distribution_list_00.txtproto in Resources */,
 				D90AA4CC2CC9616B00021CB0 /* recipient_distribution_list_01.binproto in Resources */,

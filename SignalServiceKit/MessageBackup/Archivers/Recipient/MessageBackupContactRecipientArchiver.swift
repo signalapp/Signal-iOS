@@ -20,6 +20,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
 
     private let avatarFetcher: MessageBackupAvatarFetcher
     private let blockingManager: MessageBackup.Shims.BlockingManager
+    private let contactManager: MessageBackup.Shims.ContactManager
     private let dateProvider: DateProvider
     private let nicknameManager: NicknameManager
     private let profileManager: MessageBackup.Shims.ProfileManager
@@ -35,6 +36,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     public init(
         avatarFetcher: MessageBackupAvatarFetcher,
         blockingManager: MessageBackup.Shims.BlockingManager,
+        contactManager: MessageBackup.Shims.ContactManager,
         dateProvider: @escaping DateProvider,
         nicknameManager: NicknameManager,
         profileManager: MessageBackup.Shims.ProfileManager,
@@ -49,6 +51,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     ) {
         self.avatarFetcher = avatarFetcher
         self.blockingManager = blockingManager
+        self.contactManager = contactManager
         self.dateProvider = dateProvider
         self.nicknameManager = nicknameManager
         self.profileManager = profileManager
@@ -240,7 +243,11 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                     for: recipient.address,
                     tx: context.tx
                 ),
-                identity: identity
+                identity: identity,
+                signalAccount: self.contactManager.fetchSignalAccount(
+                    recipient.address,
+                    tx: context.tx
+                )
             )
 
             writeToStream(contact: contact, contactAddress: contactAddress, frameBencher: frameBencher)
@@ -350,7 +357,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                     userProfile: userProfile,
                     // We don't have (and can't fetch) identity info for
                     // profile addresses without SignalRecipients.
-                    identity: nil
+                    identity: nil,
+                    signalAccount: nil
                 )
 
                 writeToStream(
@@ -415,7 +423,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             visibility: .visible,
             registration: .notRegistered(registration),
             userProfile: nil,
-            identity: nil
+            identity: nil,
+            signalAccount: nil
         )
 
         let recipientAddress = address.asArchivingAddress()
@@ -455,7 +464,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         visibility: BackupProto_Contact.Visibility,
         registration: BackupProto_Contact.OneOf_Registration,
         userProfile: OWSUserProfile?,
-        identity: OWSRecipientIdentity?
+        identity: OWSRecipientIdentity?,
+        signalAccount: SignalAccount?
     ) -> BackupProto_Contact {
         var contact = BackupProto_Contact()
         contact.blocked = isBlocked
@@ -514,6 +524,11 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         }
         if let note = nicknameRecord?.note?.nilIfEmpty {
             contact.note = note
+        }
+        if let signalAccount {
+            contact.systemGivenName = signalAccount.givenName
+            contact.systemFamilyName = signalAccount.familyName
+            contact.systemNickname = signalAccount.nickname
         }
 
         return contact
@@ -762,6 +777,30 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             profileKey: profileKey,
             tx: context.tx
         )
+
+        let systemGivenName = contactProto.systemGivenName
+        let systemFamilyName = contactProto.systemFamilyName
+        let systemNickname = contactProto.systemNickname
+        let systemFullName = Contact.fullName(
+            fromGivenName: systemGivenName,
+            familyName: systemFamilyName,
+            nickname: systemNickname
+        )
+        if let systemFullName {
+            let systemContact = SignalAccount(
+                recipientPhoneNumber: backupContactAddress.e164?.stringValue,
+                recipientServiceId: backupContactAddress.aci ?? backupContactAddress.pni,
+                multipleAccountLabelText: nil,
+                cnContactId: nil,
+                givenName: systemGivenName,
+                familyName: systemFamilyName,
+                nickname: systemNickname,
+                fullName: systemFullName,
+                contactAvatarHash: nil
+            )
+
+            contactManager.insertSignalAccount(systemContact, tx: context.tx)
+        }
 
         if partialErrors.isEmpty {
             return .success

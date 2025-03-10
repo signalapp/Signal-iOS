@@ -63,6 +63,8 @@ public class _MessageBackup_BlockingManagerWrapper: _MessageBackup_BlockingManag
 
 public protocol _MessageBackup_ContactManagerShim {
     func displayName(_ address: SignalServiceAddress, tx: DBWriteTransaction) -> String
+    func fetchSignalAccount(_ address: SignalServiceAddress, tx: DBReadTransaction) -> SignalAccount?
+    func insertSignalAccount(_ account: SignalAccount, tx: DBWriteTransaction)
 }
 
 public class _MessageBackup_ContactManagerWrapper: _MessageBackup_ContactManagerShim {
@@ -74,6 +76,14 @@ public class _MessageBackup_ContactManagerWrapper: _MessageBackup_ContactManager
 
     public func displayName(_ address: SignalServiceAddress, tx: any DBWriteTransaction) -> String {
         return contactManager.displayName(for: address, tx: SDSDB.shimOnlyBridge(tx)).resolvedValue()
+    }
+
+    public func fetchSignalAccount(_ address: SignalServiceAddress, tx: any DBReadTransaction) -> SignalAccount? {
+        return contactManager.fetchSignalAccount(for: address, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func insertSignalAccount(_ account: SignalAccount, tx: any DBWriteTransaction) {
+        account.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 

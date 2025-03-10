@@ -17,7 +17,7 @@
 // Copyright 2024 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import Foundation
+public import Foundation
 public import SwiftProtobuf
 
 // If the compiler emits an error on this type, it is because this file
@@ -784,6 +784,21 @@ public struct BackupProto_Contact: @unchecked Sendable {
   public var note: String {
     get {return _storage._note}
     set {_uniqueStorage()._note = newValue}
+  }
+
+  public var systemGivenName: String {
+    get {return _storage._systemGivenName}
+    set {_uniqueStorage()._systemGivenName = newValue}
+  }
+
+  public var systemFamilyName: String {
+    get {return _storage._systemFamilyName}
+    set {_uniqueStorage()._systemFamilyName = newValue}
+  }
+
+  public var systemNickname: String {
+    get {return _storage._systemNickname}
+    set {_uniqueStorage()._systemNickname = newValue}
   }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -6743,6 +6758,9 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     15: .same(proto: "identityState"),
     16: .same(proto: "nickname"),
     17: .same(proto: "note"),
+    18: .same(proto: "systemGivenName"),
+    19: .same(proto: "systemFamilyName"),
+    20: .same(proto: "systemNickname"),
   ]
 
   fileprivate class _StorageClass {
@@ -6762,6 +6780,9 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     var _identityState: BackupProto_Contact.IdentityState = .default
     var _nickname: BackupProto_Contact.Name? = nil
     var _note: String = String()
+    var _systemGivenName: String = String()
+    var _systemFamilyName: String = String()
+    var _systemNickname: String = String()
 
     #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
@@ -6792,6 +6813,9 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       _identityState = source._identityState
       _nickname = source._nickname
       _note = source._note
+      _systemGivenName = source._systemGivenName
+      _systemFamilyName = source._systemFamilyName
+      _systemNickname = source._systemNickname
     }
   }
 
@@ -6851,6 +6875,9 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
         case 15: try { try decoder.decodeSingularEnumField(value: &_storage._identityState) }()
         case 16: try { try decoder.decodeSingularMessageField(value: &_storage._nickname) }()
         case 17: try { try decoder.decodeSingularStringField(value: &_storage._note) }()
+        case 18: try { try decoder.decodeSingularStringField(value: &_storage._systemGivenName) }()
+        case 19: try { try decoder.decodeSingularStringField(value: &_storage._systemFamilyName) }()
+        case 20: try { try decoder.decodeSingularStringField(value: &_storage._systemNickname) }()
         default: break
         }
       }
@@ -6919,6 +6946,15 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       if !_storage._note.isEmpty {
         try visitor.visitSingularStringField(value: _storage._note, fieldNumber: 17)
       }
+      if !_storage._systemGivenName.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._systemGivenName, fieldNumber: 18)
+      }
+      if !_storage._systemFamilyName.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._systemFamilyName, fieldNumber: 19)
+      }
+      if !_storage._systemNickname.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._systemNickname, fieldNumber: 20)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -6944,6 +6980,9 @@ extension BackupProto_Contact: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
         if _storage._identityState != rhs_storage._identityState {return false}
         if _storage._nickname != rhs_storage._nickname {return false}
         if _storage._note != rhs_storage._note {return false}
+        if _storage._systemGivenName != rhs_storage._systemGivenName {return false}
+        if _storage._systemFamilyName != rhs_storage._systemFamilyName {return false}
+        if _storage._systemNickname != rhs_storage._systemNickname {return false}
         return true
       }
       if !storagesAreEqual {return false}

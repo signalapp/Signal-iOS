@@ -1031,6 +1031,7 @@ public class AppSetup {
         let messageBackupContactRecipientArchiver = MessageBackupContactRecipientArchiver(
             avatarFetcher: messageBackupAvatarFetcher,
             blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
+            contactManager: MessageBackup.Wrappers.ContactManager(contactManager),
             dateProvider: dateProvider,
             nicknameManager: nicknameManager,
             profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
