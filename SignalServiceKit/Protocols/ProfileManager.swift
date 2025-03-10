@@ -82,7 +82,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
 
     // MARK: -
 
-    func fetchLocalUsersProfile(authedAccount: AuthedAccount) -> Promise<FetchedProfile>
+    func fetchLocalUsersProfile(authedAccount: AuthedAccount) async throws -> FetchedProfile
     func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?]
 
     func reuploadLocalProfile(authedAccount: AuthedAccount)

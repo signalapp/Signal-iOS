@@ -699,7 +699,9 @@ public enum DonationSubscriptionManager {
                 throw OWSRetryableSubscriptionError()
             }
         }.then(on: DispatchQueue.global()) {
-            SSKEnvironment.shared.profileManagerImplRef.fetchLocalUsersProfile(authedAccount: .implicit()).asVoid()
+            Promise.wrapAsync {
+                _ = try await SSKEnvironment.shared.profileManagerImplRef.fetchLocalUsersProfile(authedAccount: .implicit())
+            }
         }
     }
 

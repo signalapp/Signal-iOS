@@ -84,8 +84,8 @@ extension OWSFakeProfileManager: ProfileManager {
     func warmCaches() {
     }
 
-    public func fetchLocalUsersProfile(authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
-        return Promise(error: OWSGenericError("Not supported."))
+    public func fetchLocalUsersProfile(authedAccount: AuthedAccount) async throws -> FetchedProfile {
+        throw OWSGenericError("Not supported.")
     }
 
     public func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?] {

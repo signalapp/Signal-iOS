@@ -724,9 +724,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         if tsRegistrationState.isRegistered {
             Task {
                 do {
-                    _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(
-                        authedAccount: .implicit()
-                    ).awaitable()
+                    _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(authedAccount: .implicit())
                     try await SSKEnvironment.shared.profileManagerRef.downloadAndDecryptLocalUserAvatarIfNeeded(
                         authedAccount: .implicit()
                     )

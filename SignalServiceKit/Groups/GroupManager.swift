@@ -1335,7 +1335,7 @@ public class GroupManager: NSObject {
         // If we don't have a local profile key credential we should first
         // check if it is simply expired, by asking for a new one (which we
         // would get as part of fetching our local profile).
-        _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(authedAccount: .implicit()).awaitable()
+        _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(authedAccount: .implicit())
 
         guard try !hasProfileKeyCredential() else {
             return

@@ -415,15 +415,13 @@ extension OWSProfileManager: ProfileManager {
         }
     }
 
-    public func fetchLocalUsersProfile(authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
-        return Promise.wrapAsync {
-            let profileFetcher = SSKEnvironment.shared.profileFetcherRef
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            return try await profileFetcher.fetchProfile(
-                for: tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount).aci,
-                authedAccount: authedAccount
-            )
-        }
+    public func fetchLocalUsersProfile(authedAccount: AuthedAccount) async throws -> FetchedProfile {
+        let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        return try await profileFetcher.fetchProfile(
+            for: tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount).aci,
+            authedAccount: authedAccount
+        )
     }
 
     public func updateProfile(
@@ -1456,7 +1454,7 @@ extension OWSProfileManager: ProfileManager {
             // If we're changing the profile key, then the normal "fetch our profile"
             // method will fail because it will the just-obsoleted profile key.
             if newProfileKey == nil {
-                _ = try await fetchLocalUsersProfile(authedAccount: authedAccount).awaitable()
+                _ = try await fetchLocalUsersProfile(authedAccount: authedAccount)
             }
         } catch let error where error.isNetworkFailureOrTimeout {
             // We retry network errors forever (with exponential backoff).
