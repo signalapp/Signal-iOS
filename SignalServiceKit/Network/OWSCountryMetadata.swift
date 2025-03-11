@@ -184,7 +184,7 @@ public struct OWSCountryMetadata {
         OWSCountryMetadata(name: "Qatar", frontingDomain: .googleQatar, countryCode: "QA"),
         OWSCountryMetadata(name: "Romania", frontingDomain: nil, countryCode: "RO"),
         OWSCountryMetadata(name: "Serbia", frontingDomain: nil, countryCode: "RS"),
-        OWSCountryMetadata(name: "Russia", frontingDomain: .fastly, countryCode: "RU"),
+        OWSCountryMetadata(name: "Russia", frontingDomain: .default, countryCode: "RU"),
         OWSCountryMetadata(name: "Rwanda", frontingDomain: nil, countryCode: "RW"),
         OWSCountryMetadata(name: "Saudi Arabia", frontingDomain: nil, countryCode: "SA"),
         OWSCountryMetadata(name: "Solomon Islands", frontingDomain: nil, countryCode: "SB"),
