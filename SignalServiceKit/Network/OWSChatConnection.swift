@@ -1819,6 +1819,19 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         }
     }
 
+    func chatConnection(_ chat: AuthenticatedChatConnection, didReceiveAlerts alerts: [String]) {
+        self.serialQueue.async { [self] in
+            guard self.connection.isActive(chat) else {
+                // We have since disconnected from the chat service instance that reported the alerts.
+                return
+            }
+
+            if !alerts.isEmpty {
+                Logger.warn("ignoring \(alerts.count) alerts from the server")
+            }
+        }
+    }
+
     func chatConnection(_ chat: AuthenticatedChatConnection, didReceiveIncomingMessage envelope: Data, serverDeliveryTimestamp: UInt64, sendAck: @escaping () throws -> Void) {
         ensureBackgroundKeepAlive(.receiveMessage)
         let backgroundTask = OWSBackgroundTask(label: "handleIncomingMessage")
