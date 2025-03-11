@@ -988,9 +988,7 @@ extension CVComponentThreadDetails {
         let mutualGroupNames = groupThreads.filter { $0.isLocalUserFullMember && $0.shouldThreadBeVisible }.map { $0.groupNameOrDefault }
 
         let formatString: String
-        var formatArgs: [AttributedFormatArg] = mutualGroupNames.map { name in
-            return .string(name, attributes: [.font: Self.mutualGroupsFont.semibold()])
-        }
+        var args: [CVarArg] = mutualGroupNames
 
         let isMessageRequest = contactThread.hasPendingMessageRequest(transaction: tx)
 
@@ -1029,9 +1027,9 @@ extension CVComponentThreadDetails {
             // For this string, we want to use the first two groups' names
             // and add a final format arg for the number of remaining
             // groups.
-            let firstTwoGroups = Array(formatArgs[0..<2])
+            let firstTwoGroups = Array(args[0..<2])
             let remainingGroupsCount = mutualGroupNames.count - firstTwoGroups.count
-            formatArgs = firstTwoGroups + [.raw(remainingGroupsCount)]
+            args = firstTwoGroups + [remainingGroupsCount]
         }
 
         // In order for the phone number to appear in the same box as the
@@ -1071,10 +1069,7 @@ extension CVComponentThreadDetails {
                     font: Self.mutualGroupsFont
                 ),
                 "  ",
-                NSAttributedString.make(
-                    fromFormat: formatString,
-                    attributedFormatArgs: formatArgs
-                )
+                String(format: formatString, arguments: args),
             ]),
             threadType: .contact,
             shouldShowSafetyTipsButton: isMessageRequest
