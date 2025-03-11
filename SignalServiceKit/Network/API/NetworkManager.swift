@@ -18,7 +18,7 @@ public class NetworkManager {
         self.libsignalNet = libsignalNet
         if let libsignalNet {
             self.reachabilityDidChangeObserver = Task {
-                for await _ in NotificationCenter.default.notifications(named: SSKReachability.owsReachabilityDidChange) {
+                for await _ in NotificationCenter.default.notifications(named: .reachabilityChanged) {
                     do {
                         if !SignalProxy.isEnabled {
                             Self.resetLibsignalNetProxySettings(libsignalNet, appReadiness: appReadiness)
