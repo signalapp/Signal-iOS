@@ -812,10 +812,6 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
                     throw OWSRetryableError()
                 }
             }
-
-            // We expect `_refresh` to update `keyValueStore.lastFetched`, so add a
-            // check to ensure that it does.
-            owsPrecondition(self.fetchNextFetchDate() != nextFetchDate)
         }
     }
 
@@ -826,12 +822,16 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
     public func refreshIfNeeded() async throws {
         try await refreshTaskQueue.run {
-            guard self.dateProvider() > self.fetchNextFetchDate() else {
+            let nextFetchDate = self.fetchNextFetchDate()
+            guard self.dateProvider() > nextFetchDate else {
                 return
             }
 
             do {
-                return try await self._refresh()
+                try await self._refresh()
+                // We expect `_refresh` to update `keyValueStore.lastFetched`, so add a
+                // check to ensure that it does.
+                owsPrecondition(self.fetchNextFetchDate() != nextFetchDate)
             } catch {
                 Logger.warn("\(error)")
                 throw error
