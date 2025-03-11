@@ -1004,9 +1004,11 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                     return .value(nil)
                 }
 
-                return DonationSubscriptionManager.getCurrentSubscriptionStatus(
-                    for: donationSubscriberID
-                )
+                return Promise.wrapAsync {
+                    try await DonationSubscriptionManager.getCurrentSubscriptionStatus(
+                        for: donationSubscriberID
+                    )
+                }
             }.done(on: DispatchQueue.global()) { currentSubscription in
                 defer {
                     SSKEnvironment.shared.databaseStorageRef.write { transaction in

@@ -133,37 +133,33 @@ public enum DonationSubscriptionManager {
     public static func getCurrentSubscriptionStatus(
         for subscriberID: Data,
         networkManager: NetworkManager = SSKEnvironment.shared.networkManagerRef
-    ) -> Promise<Subscription?> {
+    ) async throws -> Subscription? {
         let request = OWSRequestFactory.subscriptionGetCurrentSubscriptionLevelRequest(subscriberID: subscriberID)
-        return firstly {
-            networkManager.makePromise(request: request)
-        }.map(on: DispatchQueue.global()) { response throws -> Subscription? in
-            let statusCode = response.responseStatusCode
-
-            switch statusCode {
-            case 200:
-                guard
-                    let responseJson = response.responseBodyJson,
-                    let parser = ParamParser(responseObject: responseJson)
-                else {
-                    throw OWSAssertionError("Missing or invalid response body!")
-                }
-
-                guard let subscriptionDict: [String: Any] = try parser.optional(key: "subscription") else {
-                    return nil
-                }
-
-                let chargeFailureDict: [String: Any]? = try parser.optional(key: "chargeFailure")
-
-                return try Subscription(
-                    subscriptionDict: subscriptionDict,
-                    chargeFailureDict: chargeFailureDict
-                )
-            case 404:
-                return nil
-            default:
-                throw OWSAssertionError("Got bad response code! \(statusCode)")
+        let response = try await networkManager.asyncRequest(request)
+        let statusCode = response.responseStatusCode
+        switch statusCode {
+        case 200:
+            guard
+                let responseJson = response.responseBodyJson,
+                let parser = ParamParser(responseObject: responseJson)
+            else {
+                throw OWSAssertionError("Missing or invalid response body!")
             }
+
+            guard let subscriptionDict: [String: Any] = try parser.optional(key: "subscription") else {
+                return nil
+            }
+
+            let chargeFailureDict: [String: Any]? = try parser.optional(key: "chargeFailure")
+
+            return try Subscription(
+                subscriptionDict: subscriptionDict,
+                chargeFailureDict: chargeFailureDict
+            )
+        case 404:
+            return nil
+        default:
+            throw OWSAssertionError("Got bad response code! \(statusCode)")
         }
     }
 
@@ -202,43 +198,36 @@ public enum DonationSubscriptionManager {
         paymentType: RecurringSubscriptionPaymentType,
         subscription: DonationSubscriptionLevel,
         currencyCode: Currency.Code
-    ) -> Promise<Subscription> {
-        firstly { () -> Promise<Void> in
-            Logger.info("[Donations] Setting default payment method on service")
+    ) async throws -> Subscription {
+        Logger.info("[Donations] Setting default payment method on service")
 
-            switch paymentType {
-            case let .ideal(setupIntentId):
-                return setDefaultIDEALPaymentMethod(
-                    for: subscriberId,
-                    setupIntentId: setupIntentId
-                )
-            case
-                    .applePay(let paymentMethodId),
-                    .creditOrDebitCard(let paymentMethodId),
-                    .paypal(let paymentMethodId),
-                    .sepa(let paymentMethodId):
-                return setDefaultPaymentMethod(
-                    for: subscriberId,
-                    using: paymentType.paymentProcessor,
-                    paymentMethodId: paymentMethodId
-                )
-            }
-        }.then(on: DispatchQueue.sharedUserInitiated) { _ -> Promise<Subscription> in
-            Logger.info("[Donations] Selecting subscription level on service")
-
-            SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                Self.setMostRecentSubscriptionPaymentMethod(
-                    paymentMethod: paymentType.paymentMethod,
-                    transaction: transaction
-                )
-            }
-
-            return setSubscription(
+        switch paymentType {
+        case let .ideal(setupIntentId):
+            try await setDefaultIDEALPaymentMethod(
                 for: subscriberId,
-                subscription: subscription,
-                currencyCode: currencyCode
+                setupIntentId: setupIntentId
+            ).awaitable()
+        case    .applePay(let paymentMethodId),
+                .creditOrDebitCard(let paymentMethodId),
+                .paypal(let paymentMethodId),
+                .sepa(let paymentMethodId):
+            try await setDefaultPaymentMethod(
+                for: subscriberId,
+                using: paymentType.paymentProcessor,
+                paymentMethodId: paymentMethodId
+            ).awaitable()
+        }
+
+        Logger.info("[Donations] Selecting subscription level on service")
+
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+            setMostRecentSubscriptionPaymentMethod(
+                paymentMethod: paymentType.paymentMethod,
+                transaction: transaction
             )
         }
+
+        return try await setSubscription(for: subscriberId, subscription: subscription, currencyCode: currencyCode)
     }
 
     /// Update the subscription level for the given subscriber ID.
@@ -246,10 +235,10 @@ public enum DonationSubscriptionManager {
         for subscriberID: Data,
         to subscription: DonationSubscriptionLevel,
         currencyCode: Currency.Code
-    ) -> Promise<Subscription> {
+    ) async throws -> Subscription {
         Logger.info("[Donations] Updating subscription level")
 
-        return setSubscription(
+        return try await setSubscription(
             for: subscriberID,
             subscription: subscription,
             currencyCode: currencyCode
@@ -257,57 +246,43 @@ public enum DonationSubscriptionManager {
     }
 
     /// Cancel a subscription for the given subscriber ID.
-    public static func cancelSubscription(for subscriberID: Data) -> Promise<Void> {
+    public static func cancelSubscription(for subscriberID: Data) async throws {
         Logger.info("[Donations] Cancelling subscription")
 
-        return firstly(on: DispatchQueue.global())  {
-            // Fetch the latest subscription state
-            self.getCurrentSubscriptionStatus(for: subscriberID)
-        }.then(on: DispatchQueue.global()) { subscription in
-            guard let subscription else {
-                return Promise.value(())
-            }
-
+        // Fetch the latest subscription state
+        if let subscription = try await getCurrentSubscriptionStatus(for: subscriberID) {
             // Check the subscription is in a state that can be cancelled
             // If the state isn't in active or pastDue, skip deleting the
             // subscription on the backend, and continue to clearing out the
             // local subscription information.
-            switch subscription.status {
+            let needsDeleteRequest = switch subscription.status {
             case .active, .pastDue:
-                break
+                true
             case .canceled, .incomplete, .unpaid, .unknown:
-                return Promise.value(())
+                false
             }
-
-            let request = OWSRequestFactory.deleteSubscriberID(subscriberID)
-            return firstly(on: DispatchQueue.global()) {
-                SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
-            }.map(on: DispatchQueue.global()) { response in
-                switch response.responseStatusCode {
-                case 200, 404:
-                    break
-                default:
+            if needsDeleteRequest {
+                let request = OWSRequestFactory.deleteSubscriberID(subscriberID)
+                let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+                if response.responseStatusCode != 200, response.responseStatusCode != 404 {
                     throw OWSAssertionError("Got bad response code \(response.responseStatusCode).")
                 }
-            }.done(on: DispatchQueue.global()) {
                 Logger.info("[Donations] Deleted remote subscription.")
             }
-        }.done(on: DispatchQueue.global()) {
-            SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                self.setSubscriberID(nil, transaction: transaction)
-                self.setSubscriberCurrencyCode(nil, transaction: transaction)
-                self.setMostRecentSubscriptionPaymentMethod(paymentMethod: nil, transaction: transaction)
-                self.setUserManuallyCancelledSubscription(true, transaction: transaction)
-
-                DependenciesBridge.shared.donationReceiptCredentialResultStore
-                    .clearRedemptionSuccessForAnyRecurringSubscription(tx: transaction)
-                DependenciesBridge.shared.donationReceiptCredentialResultStore
-                    .clearRequestErrorForAnyRecurringSubscription(tx: transaction)
-            }
-
-            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
-            Logger.info("[Donations] Deleted local subscription.")
         }
+
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+            self.setSubscriberID(nil, transaction: transaction)
+            self.setSubscriberCurrencyCode(nil, transaction: transaction)
+            self.setMostRecentSubscriptionPaymentMethod(paymentMethod: nil, transaction: transaction)
+            self.setUserManuallyCancelledSubscription(true, transaction: transaction)
+
+            DependenciesBridge.shared.donationReceiptCredentialResultStore.clearRedemptionSuccessForAnyRecurringSubscription(tx: transaction)
+            DependenciesBridge.shared.donationReceiptCredentialResultStore.clearRequestErrorForAnyRecurringSubscription(tx: transaction)
+        }
+
+        SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
+        Logger.info("[Donations] Deleted local subscription.")
     }
 
     /// Generate and register an ID for a new subscriber.
@@ -385,7 +360,7 @@ public enum DonationSubscriptionManager {
         for subscriberID: Data,
         subscription: DonationSubscriptionLevel,
         currencyCode: Currency.Code
-    ) -> Promise<Subscription> {
+    ) async throws -> Subscription {
         let key = Randomness.generateRandomBytes(UInt(32)).asBase64Url
         let request = OWSRequestFactory.subscriptionSetSubscriptionLevelRequest(
             subscriberID: subscriberID,
@@ -393,28 +368,23 @@ public enum DonationSubscriptionManager {
             currency: currencyCode,
             idempotencyKey: key
         )
-        return firstly {
-            SSKEnvironment.shared.networkManagerRef.makePromise(request: request)
-        }.then(on: DispatchQueue.global()) { response -> Promise<Subscription?> in
-            let statusCode = response.responseStatusCode
-            if statusCode != 200 {
-                throw OWSAssertionError("Got bad response code \(statusCode).")
-            }
-
-            return self.getCurrentSubscriptionStatus(for: subscriberID)
-        }.map(on: DispatchQueue.global()) { subscription in
-            guard let subscription = subscription else {
-                throw OWSAssertionError("Failed to fetch valid subscription object after setSubscription")
-            }
-
-            SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
-            }
-
-            SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
-
-            return subscription
+        let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
+        let statusCode = response.responseStatusCode
+        if statusCode != 200 {
+            throw OWSAssertionError("Got bad response code \(statusCode).")
         }
+
+        guard let subscription = try await getCurrentSubscriptionStatus(for: subscriberID) else {
+            throw OWSAssertionError("Failed to fetch valid subscription object after setSubscription")
+        }
+
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+            setSubscriberCurrencyCode(currencyCode, transaction: transaction)
+        }
+
+        SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
+
+        return subscription
     }
 
     public static func requestAndRedeemReceipt(

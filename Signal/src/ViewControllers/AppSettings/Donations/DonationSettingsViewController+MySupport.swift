@@ -569,7 +569,7 @@ extension DonationSettingsViewController {
             Task.detached {
                 if let subscriberId = SSKEnvironment.shared.databaseStorageRef.read(block: {
                     DonationSubscriptionManager.getSubscriberID(transaction: $0) }) {
-                    try await DonationSubscriptionManager.cancelSubscription(for: subscriberId).awaitable()
+                    try await DonationSubscriptionManager.cancelSubscription(for: subscriberId)
                 }
                 await self.loadAndUpdateState().awaitable()
                 await self.showDonateViewController(preferredDonateMode: .monthly)

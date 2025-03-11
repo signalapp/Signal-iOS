@@ -31,7 +31,9 @@ extension DonateViewController {
             if let existingSubscriberId = monthly.subscriberID {
                 Logger.info("[Donations] Cancelling existing subscription")
 
-                return DonationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
+                return Promise.wrapAsync {
+                    try await DonationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
+                }
             } else {
                 Logger.info("[Donations] No existing subscription to cancel")
 
@@ -63,12 +65,14 @@ extension DonateViewController {
         }.then(on: DispatchQueue.sharedUserInitiated) { (subscriberId, paymentMethodId) -> Promise<Data> in
             Logger.info("[Donations] Finalizing new subscription for Apple Pay donation")
 
-            return DonationSubscriptionManager.finalizeNewSubscription(
-                forSubscriberId: subscriberId,
-                paymentType: .applePay(paymentMethodId: paymentMethodId),
-                subscription: selectedSubscriptionLevel,
-                currencyCode: monthly.selectedCurrencyCode
-            ).map(on: DispatchQueue.sharedUserInitiated) { _ in subscriberId }
+            return Promise.wrapAsync {
+                try await DonationSubscriptionManager.finalizeNewSubscription(
+                    forSubscriberId: subscriberId,
+                    paymentType: .applePay(paymentMethodId: paymentMethodId),
+                    subscription: selectedSubscriptionLevel,
+                    currencyCode: monthly.selectedCurrencyCode
+                )
+            }.map(on: DispatchQueue.sharedUserInitiated) { _ in subscriberId }
         }.done(on: DispatchQueue.main) { subscriberID in
             let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
             completion(authResult)

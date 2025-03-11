@@ -524,8 +524,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         {
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,
-                promise: firstly(on: DispatchQueue.sharedUserInitiated) {
-                    DonationSubscriptionManager.updateSubscriptionLevel(
+                promise: Promise.wrapAsync {
+                    try await DonationSubscriptionManager.updateSubscriptionLevel(
                         for: subscriberID,
                         to: selectedSubscriptionLevel,
                         currencyCode: monthly.selectedCurrencyCode
@@ -653,8 +653,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
 
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
-            firstly {
-                DonationSubscriptionManager.cancelSubscription(for: subscriberID)
+            Promise.wrapAsync {
+                try await DonationSubscriptionManager.cancelSubscription(for: subscriberID)
             }.done(on: DispatchQueue.main) { [weak self] in
                 modal.dismiss { [weak self] in
                     guard let self = self else { return }
@@ -803,9 +803,9 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
 
         // Start loading the current subscription.
-        let loadCurrentSubscriptionPromise: Promise<Subscription?> = DonationViewsUtil.loadCurrentSubscription(
-            subscriberID: subscriberID
-        )
+        let loadCurrentSubscriptionPromise: Promise<Subscription?> = Promise.wrapAsync {
+            try await DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
+        }
 
         return firstly { () -> Promise<(DonationConfiguration, Subscription?)> in
             // Compose the configuration and subscription.

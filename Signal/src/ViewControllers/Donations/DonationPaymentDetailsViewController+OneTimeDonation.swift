@@ -53,12 +53,14 @@ extension DonationPaymentDetailsViewController {
             }.then(on: DispatchQueue.sharedUserInitiated) { intentId in
                 Logger.info("[Donations] Creating and redeeming one-time boost receipt")
 
-                return DonationViewsUtil.completeOneTimeDonation(
-                    paymentIntentId: intentId,
-                    amount: amount,
-                    paymentMethod: validForm.donationPaymentMethod,
-                    databaseStorage: SSKEnvironment.shared.databaseStorageRef
-                )
+                return Promise.wrapAsync {
+                    try await DonationViewsUtil.completeOneTimeDonation(
+                        paymentIntentId: intentId,
+                        amount: amount,
+                        paymentMethod: validForm.donationPaymentMethod,
+                        databaseStorage: SSKEnvironment.shared.databaseStorageRef
+                    )
+                }
             }
         ).done(on: DispatchQueue.main) { [weak self] in
             Logger.info("[Donations] One-time donation finished")

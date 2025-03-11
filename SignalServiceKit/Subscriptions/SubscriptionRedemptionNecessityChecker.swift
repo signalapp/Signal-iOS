@@ -133,7 +133,7 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobRecord: JobRecord> {
         let subscription = try await DonationSubscriptionManager.getCurrentSubscriptionStatus(
             for: subscriberId,
             networkManager: networkManager
-        ).awaitable()
+        )
 
         guard let subscription else {
             logger.warn("No subscription for this subscriber ID!")

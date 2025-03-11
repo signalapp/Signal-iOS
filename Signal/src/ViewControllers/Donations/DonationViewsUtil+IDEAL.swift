@@ -141,10 +141,12 @@ extension DonationViewsUtil {
         }.then(on: DispatchQueue.main) { badge in
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: donationsVC,
-                promise: DonationViewsUtil.completeIDEALDonation(
-                    donationType: donationType,
-                    databaseStorage: databaseStorage
-                )
+                promise: Promise.wrapAsync {
+                    try await DonationViewsUtil.completeIDEALDonation(
+                        donationType: donationType,
+                        databaseStorage: databaseStorage
+                    )
+                }
             ).done(on: DispatchQueue.main) {
                 // Do this after the `wrapPromiseInProgressView` completes
                 // to dismiss the progress spinner.  Then display the

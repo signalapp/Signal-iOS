@@ -168,7 +168,9 @@ class DonationSettingsViewController: OWSTableViewController2 {
         }
 
         let subscriptionLevelsPromise = DonationViewsUtil.loadSubscriptionLevels(badgeStore: SSKEnvironment.shared.profileManagerRef.badgeStore)
-        let currentSubscriptionPromise = DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
+        let currentSubscriptionPromise = Promise.wrapAsync {
+            try await DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
+        }
         let profileBadgeLookupPromise = loadProfileBadgeLookup()
 
         return profileBadgeLookupPromise.then { profileBadgeLookup -> Guarantee<State> in

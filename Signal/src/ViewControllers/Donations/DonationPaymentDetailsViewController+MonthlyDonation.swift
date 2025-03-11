@@ -27,7 +27,9 @@ extension DonationPaymentDetailsViewController {
                 if let existingSubscriberId {
                     Logger.info("[Donations] Cancelling existing subscription")
 
-                    return DonationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
+                    return Promise.wrapAsync {
+                        try await DonationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
+                    }
                 } else {
                     Logger.info("[Donations] No existing subscription to cancel")
 
@@ -93,14 +95,16 @@ extension DonationPaymentDetailsViewController {
                     (subscriberId, paymentType)
                 }
             }.then(on: DispatchQueue.sharedUserInitiated) { (subscriberId, paymentType) in
-                return DonationViewsUtil.completeMonthlyDonations(
-                    subscriberId: subscriberId,
-                    paymentType: paymentType,
-                    newSubscriptionLevel: newSubscriptionLevel,
-                    priorSubscriptionLevel: priorSubscriptionLevel,
-                    currencyCode: currencyCode,
-                    databaseStorage: SSKEnvironment.shared.databaseStorageRef
-                )
+                return Promise.wrapAsync {
+                    try await DonationViewsUtil.completeMonthlyDonations(
+                        subscriberId: subscriberId,
+                        paymentType: paymentType,
+                        newSubscriptionLevel: newSubscriptionLevel,
+                        priorSubscriptionLevel: priorSubscriptionLevel,
+                        currencyCode: currencyCode,
+                        databaseStorage: SSKEnvironment.shared.databaseStorageRef
+                    )
+                }
             }
         ).done(on: DispatchQueue.main) { [weak self] in
             Logger.info("[Donations] Monthly donation finished")

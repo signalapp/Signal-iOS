@@ -97,7 +97,9 @@ extension DonateViewController {
                 if let existingSubscriberId = monthly.subscriberID {
                     Logger.info("[Donations] Cancelling existing subscription")
 
-                    return DonationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
+                    return Promise.wrapAsync {
+                        try await DonationSubscriptionManager.cancelSubscription(for: existingSubscriberId)
+                    }
                 } else {
                     Logger.info("[Donations] No existing subscription to cancel")
 
@@ -139,12 +141,14 @@ extension DonateViewController {
         let finalizePromise: Promise<Void> = firstly { () -> Promise<Subscription> in
             Logger.info("[Donations] Finalizing new subscription for PayPal donation")
 
-            return DonationSubscriptionManager.finalizeNewSubscription(
-                forSubscriberId: subscriberId,
-                paymentType: .paypal(paymentMethodId: paymentMethodId),
-                subscription: selectedSubscriptionLevel,
-                currencyCode: monthly.selectedCurrencyCode
-            )
+            return Promise.wrapAsync {
+                try await DonationSubscriptionManager.finalizeNewSubscription(
+                    forSubscriberId: subscriberId,
+                    paymentType: .paypal(paymentMethodId: paymentMethodId),
+                    subscription: selectedSubscriptionLevel,
+                    currencyCode: monthly.selectedCurrencyCode
+                )
+            }
         }.then(on: DispatchQueue.sharedUserInitiated) { _ -> Promise<Void> in
             Logger.info("[Donations] Redeeming monthly receipt for PayPal donation")
 

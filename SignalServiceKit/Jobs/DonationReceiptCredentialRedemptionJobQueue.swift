@@ -551,7 +551,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         case .oneTimeBoost(paymentIntentId: _, amount: let amount):
             return amount
         case let .recurringSubscription(subscriberId, _, _, _):
-            let subscription = try await DonationSubscriptionManager.getCurrentSubscriptionStatus(for: subscriberId).awaitable()
+            let subscription = try await DonationSubscriptionManager.getCurrentSubscriptionStatus(for: subscriberId)
             guard let subscription else {
                 throw OWSAssertionError("Missing subscription", logger: logger)
             }

@@ -340,7 +340,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             return
         }
         Logger.info("Found subscriber ID. Canceling subscription...")
-        return try await DonationSubscriptionManager.cancelSubscription(for: activeSubscriptionId).awaitable()
+        return try await DonationSubscriptionManager.cancelSubscription(for: activeSubscriptionId)
     }
 
     private func unregisterAccount() async throws {
