@@ -337,12 +337,17 @@ class EmojiPickerCollectionView: UICollectionView {
             for term in terms {
                 if let range = term.range(of: searchText, options: [.caseInsensitive]) {
                     if range.lowerBound == term.startIndex {
-                        partialResult.anchoredMatches.append(emoji)
+                        // Anchored match
+                        if range.upperBound == term.endIndex {
+                            // Exact match. Put very first
+                            partialResult.anchoredMatches.insert(emoji, at: 0)
+                        } else {
+                            partialResult.anchoredMatches.append(emoji)
+                        }
                         return
-                    } else {
-                        unanchoredMatch = true
-                        // Don't break here to continue to check for anchored matches
                     }
+                    unanchoredMatch = true
+                    // Don't break here to continue to check for anchored matches
                 }
             }
 
