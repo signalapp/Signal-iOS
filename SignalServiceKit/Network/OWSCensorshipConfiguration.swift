@@ -73,7 +73,7 @@ enum OWSFrontingHost {
         "android.clients.google.com",
         "clients3.google.com",
         "clients4.google.com",
-        "inbox.google.com"
+        "googlemail.com",
     ]
     private static let googleEgyptSniHeaders = googleCommonSniHeaders + ["www.google.com.eg"]
     private static let googleUaeSniHeaders = googleCommonSniHeaders + ["www.google.ae"]
