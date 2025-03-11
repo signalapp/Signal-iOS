@@ -62,7 +62,7 @@ public enum DisplayName {
                 formatBlock: useShortNameIfAvailable ? OWSFormat.formatNameComponentsShort(_:) : OWSFormat.formatNameComponents(_:)
             ).filterForDisplay
         case .phoneNumber(let phoneNumber):
-            return phoneNumber.stringValue
+            return PhoneNumber.bestEffortLocalizedPhoneNumber(e164: phoneNumber.stringValue)
         case .username(let username):
             return username
         case .deletedAccount:

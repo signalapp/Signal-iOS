@@ -200,7 +200,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         read { transaction in
             let contactsManager = SSKEnvironment.shared.contactManagerRef as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
-            let expected = ["+17035559900", "+17035559901"]
+            let expected = ["+1 703-555-9900", "+1 703-555-9901"]
             XCTAssertEqual(actual, expected)
         }
     }
@@ -287,7 +287,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         read { transaction in
             let addresses = [aliceAddress, bobAddress, carolAddress, daveAddress, eveAddress, feliciaAddress]
             let actual = SSKEnvironment.shared.contactManagerRef.displayNames(for: addresses, tx: transaction).map { $0.resolvedValue() }
-            let expected = ["Alice Aliceson (home)", "Bob Bobson", "+17035559900", "dave", "Unknown", "Felicia Felicity"]
+            let expected = ["Alice Aliceson (home)", "Bob Bobson", "+1 703-555-9900", "dave", "Unknown", "Felicia Felicity"]
             XCTAssertEqual(actual, expected)
         }
     }
