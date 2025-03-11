@@ -4253,7 +4253,7 @@
 		45C845AC291466C0005F6EA5 /* JournalingOrderedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingOrderedDictionary.swift; sourceTree = "<group>"; };
 		45C845AE291467F7005F6EA5 /* JournalingOrderedDictionaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingOrderedDictionaryTests.swift; sourceTree = "<group>"; };
 		45CADA8A298DD2B4009EBDF5 /* MediaTileScrollFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTileScrollFlag.swift; sourceTree = "<group>"; };
-		45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Signal/src/util/Launch Screen.storyboard"; sourceTree = SOURCE_ROOT; };
+		45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Signal/util/Launch Screen.storyboard"; sourceTree = SOURCE_ROOT; };
 		45D062F427D7F49800BD505E /* OWSContactsManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactsManagerTest.swift; sourceTree = "<group>"; };
 		45D231761DC7E8F10034FA89 /* SessionResetJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionResetJob.swift; sourceTree = "<group>"; };
 		45D49114296F69AA00B92BB1 /* AllMediaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllMediaViewController.swift; sourceTree = "<group>"; };
@@ -10247,10 +10247,8 @@
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
-				D9DCFDAC2A3BB22800C73C0B /* QRCodes */,
 				45CD81A41DBFF8CF004C9430 /* Storyboards */,
 				450DF2061E0DD28D003D14BE /* UserInterface */,
-				76EB04C818170B33006006FC /* util */,
 				6698FC12297F38AC004EFC30 /* ViewControllerContext */,
 				66DA8DF92C91125200799E70 /* AttachmentValidationBackfillRunner.swift */,
 				66DA8DF72C910D3B00799E70 /* BGProcessingTaskRunner.swift */,
@@ -11107,6 +11105,7 @@
 				50A76F512AF565A300FCF02D /* Preconditions */,
 				50423CA22BBF426700DCB8F5 /* Profiles */,
 				66CDB7532AFC3EFB009A36EC /* Provisioning */,
+				D9DCFDAC2A3BB22800C73C0B /* QRCodes */,
 				6600F38C29918A5100B1EDB7 /* Registration */,
 				50BF51062BB201AE00C2C309 /* Sharing */,
 				34074F54203D0722004596AE /* Sounds */,
@@ -11116,6 +11115,7 @@
 				B660F66C1C29867F00687D6E /* test */,
 				5033D46C29DCA8DE007FEADA /* URLs */,
 				D99840BB297A04A300F7ED6D /* Usernames */,
+				76EB04C818170B33006006FC /* util */,
 				052D17872C7E34D00023D56F /* AppIcon.xcassets */,
 				B66DBF4919D5BBC8006EA940 /* Images.xcassets */,
 				F0C124B626D4788A0031C96F /* NSE-Images.xcassets */,
