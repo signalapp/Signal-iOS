@@ -38,7 +38,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
             )
         }
 
-        if userDefaults.bool(forKey: Self.shouldUseLibsignalForUnidentifiedDefaultsKey) {
+        if userDefaults.bool(forKey: Self.shouldUseLibsignalForUnidentifiedDefaultsKey), false {
             connectionUnidentified = OWSUnauthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
         } else {
             connectionUnidentified = OWSChatConnectionUsingSSKWebSocket(type: .unidentified, accountManager: accountManager, appExpiry: appExpiry, appReadiness: appReadiness, currentCallProvider: currentCallProvider, db: db, registrationStateChangeManager: registrationStateChangeManager)
