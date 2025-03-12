@@ -8027,7 +8027,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accettando una richiesta di messaggio";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Avere il contatto della persona nella rubrica del proprio telefono";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Inserendole nei contatti del tuo telefono";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Le tue Amicizie su Signal possono vedere il tuo nome e la foto del tuo profilo, così come i contenuti che condividi su \"Le mie Storie\" (a meno che tu non scelga di nasconderli a qualcuno).";

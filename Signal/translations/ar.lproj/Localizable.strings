@@ -4388,7 +4388,7 @@
 "MESSAGE_ACTION_LINK_OPEN_PROXY" = "افتح بروكسي سيجنال";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "عرض مجموعة الملصقات";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "عرض مجموعة المُلصَقات";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_PAYMENT_DETAILS" = "تفاصيل عملية الدفع";
@@ -7751,7 +7751,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "حزم المُلصَقات التي قد تلقيتها";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "فشل تحميل بعض حزم المُلصَقات";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "فشل تحميل بعض مجموعات المُلصَقات";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "حزم المُلصَقات المُثبَّتة";
@@ -7769,13 +7769,13 @@
 "STICKERS_MANAGE_VIEW_TITLE" = "المُلصَقات";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "حزمة مُلصَقات";
+"STICKERS_PACK_DEFAULT_TITLE" = "مجموعة المُلصَقات";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "حزمة مُلصَقات";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "مجموعة المُلصَقات";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "فشل تحميل حزمة المُلصَقات";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "فشل تحميل مجموعة المُلصَقات";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "إلغاء التثبيت";

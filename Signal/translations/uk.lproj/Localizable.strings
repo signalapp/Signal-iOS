@@ -4148,7 +4148,7 @@
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "Ви зв'язали новий пристрій";
 
 /* Message for an action sheet telling users how to link a device, when trying to open an external device-linking URL. */
-"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "Щоб зв'язати з цим обліковим записом Signal комп’ютер або iPad, перейдіть у «Зв’язані пристрої», натисніть «Зв'язати новий пристрій» і ще раз зіскануйте QR-код. Переконайтеся, що скануєте QR-коди, згенеровані безпосередньо Signal.";
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "Щоб зв'язати комп’ютер або iPad з цим акаунтом Signal, перейдіть у «Зв’язані пристрої», натисніть «Зв'язати новий пристрій» і ще раз зіскануйте QR-код. Переконайтеся, що скануєте QR-коди, згенеровані безпосередньо Signal.";
 
 /* Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera. */
 "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "Схоже, ви намагаєтеся зв'язати пристрій із Signal. Натисніть «Продовжити», потім натисніть «Зв'язати новий пристрій» і зіскануйте QR-код знову.";

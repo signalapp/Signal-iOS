@@ -4277,7 +4277,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Nachricht hinzufügen";
 
 /* Shown in place of message input text in media editor when 'View Once' is on. */
-"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Medieninhalte einmal anzeigen";
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Medien zur Einmalansicht";
 
 /* VoiceOver description for a generic audio file in All Media */
 "MEDIA_GALLERY_A11Y_AUDIO_FILE" = "Audiodatei";
