@@ -38,10 +38,7 @@ public class AccountKeyStore {
     }
 
     public func getMasterKey(tx: DBReadTransaction) -> MasterKey? {
-        if
-            FeatureFlags.enableAccountEntropyPool,
-            let aepDerivedKey = getAccountEntropyPool(tx: tx)?.getMasterKey()
-        {
+        if let aepDerivedKey = getAccountEntropyPool(tx: tx)?.getMasterKey() {
             return aepDerivedKey
         }
         // No AEP? Try fetching from the legacy location
