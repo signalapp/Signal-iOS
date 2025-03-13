@@ -325,52 +325,22 @@ class ProvisioningController: NSObject {
                 return
             }
 
-            let willLinkAndSync = provisionMessage.ephemeralBackupKey != nil
-            if
-                FeatureFlags.linkAndSyncLinkedImport,
-                willLinkAndSync
-            {
-                // Don't confirm the name in link'n'sync, just keep going.
-                didSetDeviceName(
-                    UIDevice.current.name,
-                    provisionMessage: provisionMessage,
-                    from: viewController,
-                    navigationController: navigationController,
-                    willLinkAndSync: willLinkAndSync
-                )
-            } else {
-                let confirmVC = ProvisioningSetDeviceNameViewController(
-                    provisionMessage: provisionMessage,
-                    provisioningController: self,
-                    qrCodeViewController: viewController
-                )
-                navigationController.pushViewController(confirmVC, animated: true)
-            }
+            let progressViewModel = LinkAndSyncSecondaryProgressViewModel()
+
+            performCoordinatorTaskWithModal(
+                task: Task {
+                    try await self.provisioningCoordinator.completeProvisioning(
+                        provisionMessage: provisionMessage,
+                        deviceName: UIDevice.current.name,
+                        progressViewModel: progressViewModel
+                    )
+                },
+                viewController: viewController,
+                navigationController: navigationController,
+                willLinkAndSync: provisionMessage.ephemeralBackupKey != nil,
+                progressViewModel: progressViewModel
+            )
         }
-    }
-
-    func didSetDeviceName(
-        _ deviceName: String,
-        provisionMessage: ProvisionMessage,
-        from viewController: ProvisioningQRCodeViewController,
-        navigationController: UINavigationController,
-        willLinkAndSync: Bool
-    ) {
-        let progressViewModel = LinkAndSyncSecondaryProgressViewModel()
-
-        performCoordinatorTaskWithModal(
-            task: Task {
-                try await self.provisioningCoordinator.completeProvisioning(
-                    provisionMessage: provisionMessage,
-                    deviceName: deviceName,
-                    progressViewModel: progressViewModel
-                )
-            },
-            viewController: viewController,
-            navigationController: navigationController,
-            willLinkAndSync: willLinkAndSync,
-            progressViewModel: progressViewModel
-        )
     }
 
     func provisioningDidComplete(from viewController: UIViewController) {
