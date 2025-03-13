@@ -1,8 +1,8 @@
 # Signal iOS
 
-Signal is a free, open source, messaging app for simple private communication with friends.
+Signal is a free and open source messaging app for simple private communication with friends.
 
-[![Available on the App Store](http://cl.ly/WouG/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://apps.apple.com/app/id874139669)
+[![Available on the App Store](https://signal.org/external/images/app-store-download-badge.svg)](https://apps.apple.com/app/id874139669)
 
 Also available on [Android](https://github.com/signalapp/signal-android) and [Desktop](https://github.com/signalapp/signal-desktop).
 
@@ -12,11 +12,11 @@ For troubleshooting and questions, please visit our [support center](https://sup
 
 ## Contributing Bug Reports
 
-We use GitHub for bug tracking. Please search [existing issues](https://github.com/signalapp/signal-ios/issues) and create a new one if the issue is not yet tracked. For Android users, please use the [Signal for Android issue tracker](https://github.com/signalapp/signal-android/issues).
+The best way to submit a bug report or support request is [via the Support Center](https://support.signal.org/hc/requests/new). Signal iOS doesn't collect any analytics or telemetry, and we rely on your feedback to help us troubleshoot and fix problems when something isn't working correctly.
 
 ## Contributing Code
 
-Instructions on how to setup your development environment and build Signal-iOS can be found in [BUILDING.md](https://github.com/signalapp/Signal-iOS/blob/main/BUILDING.md). We also recommend reading the [contribution guidelines](https://github.com/signalapp/Signal-iOS/blob/main/CONTRIBUTING.md).
+Instructions for how to configure your development environment and build Signal iOS can be found in [BUILDING.md](https://github.com/signalapp/Signal-iOS/blob/main/BUILDING.md). We also recommend reading the [contribution guidelines](https://github.com/signalapp/Signal-iOS/blob/main/CONTRIBUTING.md).
 
 ## Contributing Ideas
 
@@ -33,7 +33,7 @@ The form and manner of this distribution makes it eligible for export under the 
 
 ## License
 
-Copyright 2013-2024 Signal Messenger, LLC
+Copyright 2013-2025 Signal Messenger, LLC
 
 Licensed under the GNU AGPLv3: https://www.gnu.org/licenses/agpl-3.0.html
 
