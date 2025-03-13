@@ -60,15 +60,3 @@ public class ChatServiceAuth: Equatable, Hashable {
         }
     }
 }
-
-extension TSRequest {
-    public func setAuth(_ auth: ChatServiceAuth) {
-        switch auth.credentials {
-        case .implicit:
-            break
-        case let .explicit(username, password):
-            self.authUsername = username
-            self.authPassword = password
-        }
-    }
-}

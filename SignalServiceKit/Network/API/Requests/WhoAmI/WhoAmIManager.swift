@@ -111,8 +111,7 @@ public enum WhoAmIRequestFactory {
             method: "GET",
             parameters: [:]
         )
-        result.shouldHaveAuthorizationHeaders = true
-        result.setAuth(auth)
+        result.auth = .identified(auth)
         return result
     }
 

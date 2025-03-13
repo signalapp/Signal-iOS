@@ -63,7 +63,7 @@ public enum OWSRequestFactory {
 
     static func storageAuthRequest(auth: ChatServiceAuth) -> TSRequest {
         let result = TSRequest(url: URL(string: "v1/storage/auth")!, method: "GET", parameters: [:])
-        result.setAuth(auth)
+        result.auth = .identified(auth)
         return result
     }
 
@@ -132,7 +132,7 @@ public enum OWSRequestFactory {
 
         let request = TSRequest(url: URL(string: path)!, method: "PUT", parameters: parameters)
         if let auth {
-            request.setAuth(sealedSender: auth)
+            request.auth = .sealedSender(auth)
         }
         return request
     }
@@ -158,7 +158,7 @@ public enum OWSRequestFactory {
 
         let request = TSRequest(url: components.url!, method: "PUT", parameters: nil)
         request.setValue("application/vnd.signal-messenger.mrm", forHTTPHeaderField: "Content-Type")
-        request.setAuth(sealedSender: auth)
+        request.auth = .sealedSender(auth)
         request.httpBody = ciphertext
         return request
     }
@@ -235,7 +235,7 @@ public enum OWSRequestFactory {
             method: "GET",
             parameters: nil
         )
-        result.shouldHaveAuthorizationHeaders = false
+        result.auth = .anonymous
         return result
     }
 
@@ -245,7 +245,7 @@ public enum OWSRequestFactory {
             method: "PUT",
             parameters: nil
         )
-        result.shouldHaveAuthorizationHeaders = false
+        result.auth = .anonymous
         result.applyRedactionStrategy(.redactURLForSuccessResponses())
         return result
     }
@@ -256,7 +256,7 @@ public enum OWSRequestFactory {
             method: "DELETE",
             parameters: nil
         )
-        result.shouldHaveAuthorizationHeaders = false
+        result.auth = .anonymous
         result.applyRedactionStrategy(.redactURLForSuccessResponses())
         return result
     }
@@ -278,7 +278,7 @@ public enum OWSRequestFactory {
             method: "POST",
             parameters: nil
         )
-        result.shouldHaveAuthorizationHeaders = false
+        result.auth = .anonymous
         result.applyRedactionStrategy(.redactURLForSuccessResponses())
         return result
     }
@@ -298,7 +298,7 @@ public enum OWSRequestFactory {
             method: "POST",
             parameters: nil
         )
-        result.shouldHaveAuthorizationHeaders = false
+        result.auth = .anonymous
         result.applyRedactionStrategy(.redactURLForSuccessResponses())
         return result
     }
@@ -313,7 +313,7 @@ public enum OWSRequestFactory {
             method: "GET",
             parameters: nil
         )
-        result.shouldHaveAuthorizationHeaders = false
+        result.auth = .anonymous
         result.applyRedactionStrategy(.redactURLForSuccessResponses())
         return result
     }
@@ -329,7 +329,7 @@ public enum OWSRequestFactory {
             method: "POST",
             parameters: nil
         )
-        result.shouldHaveAuthorizationHeaders = false
+        result.auth = .anonymous
         result.applyRedactionStrategy(.redactURLForSuccessResponses())
         return result
     }
@@ -353,7 +353,7 @@ public enum OWSRequestFactory {
                 "cancelUrl": cancelURL.absoluteString,
             ]
         )
-        result.shouldHaveAuthorizationHeaders = false
+        result.auth = .anonymous
         result.applyRedactionStrategy(.redactURLForSuccessResponses())
         return result
     }
@@ -377,7 +377,7 @@ public enum OWSRequestFactory {
             method: "PUT",
             parameters: nil
         )
-        result.shouldHaveAuthorizationHeaders = false
+        result.auth = .anonymous
         result.applyRedactionStrategy(.redactURLForSuccessResponses())
         return result
     }
@@ -398,7 +398,7 @@ public enum OWSRequestFactory {
                 "receiptCredentialRequest": request.base64EncodedString(),
             ]
         )
-        result.shouldHaveAuthorizationHeaders = false
+        result.auth = .anonymous
         result.applyRedactionStrategy(.redactURLForSuccessResponses())
         return result
     }
@@ -440,7 +440,7 @@ public enum OWSRequestFactory {
                 "processor": paymentProcessor,
             ]
         )
-        result.shouldHaveAuthorizationHeaders = false
+        result.auth = .anonymous
         return result
     }
 
@@ -456,7 +456,7 @@ public enum OWSRequestFactory {
             parameters: nil
         )
         result.addValue(OWSHttpHeaders.acceptLanguageHeaderValue, forHTTPHeaderField: OWSHttpHeaders.acceptLanguageHeaderKey)
-        result.shouldHaveAuthorizationHeaders = false
+        result.auth = .anonymous
         return result
     }
 
@@ -498,7 +498,7 @@ public enum OWSRequestFactory {
 
         let request = TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
         if let auth {
-            request.setAuth(sealedSender: auth)
+            request.auth = .sealedSender(auth)
         }
         return request
     }
@@ -539,7 +539,7 @@ public enum OWSRequestFactory {
             method: "PUT",
             parameters: parameters
         )
-        request.setAuth(auth)
+        request.auth = .identified(auth)
         return request
     }
 
@@ -554,14 +554,10 @@ public enum OWSRequestFactory {
 
     // MARK: - Profiles
 
-    static func getUnversionedProfileRequest(serviceId: ServiceId, sealedSenderAuth: TSRequest.SealedSenderAuth?, auth: ChatServiceAuth) -> TSRequest {
+    static func getUnversionedProfileRequest(serviceId: ServiceId, auth: TSRequest.Auth) -> TSRequest {
         let path = "v1/profile/\(serviceId.serviceIdString)"
         let request = TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
-        if let sealedSenderAuth {
-            request.setAuth(sealedSender: sealedSenderAuth)
-        } else {
-            request.setAuth(auth)
-        }
+        request.auth = auth
         return request
     }
 
@@ -569,8 +565,7 @@ public enum OWSRequestFactory {
         aci: Aci,
         profileKeyVersion: String,
         credentialRequest: Data?,
-        udAccessKey: SMKUDAccessKey?,
-        auth: ChatServiceAuth
+        auth: TSRequest.Auth
     ) -> TSRequest {
         var components = [String]()
         components.append(aci.serviceIdString)
@@ -582,11 +577,7 @@ public enum OWSRequestFactory {
         let path = "v1/profile/\(components.joined(separator: "/"))"
 
         let request = TSRequest(url: URL(string: path)!, method: "GET", parameters: [:])
-        if let udAccessKey {
-            request.setAuth(sealedSender: .accessKey(udAccessKey))
-        } else {
-            request.setAuth(auth)
-        }
+        request.auth = auth
         return request
     }
 
@@ -624,7 +615,7 @@ public enum OWSRequestFactory {
             parameters["paymentAddress"] = paymentAddress.encryptedBase64Value
         }
         let request = TSRequest(url: URL(string: "v1/profile/")!, method: "PUT", parameters: parameters)
-        request.setAuth(auth)
+        request.auth = .identified(auth)
         return request
     }
 }

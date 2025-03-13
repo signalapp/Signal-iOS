@@ -108,7 +108,7 @@ public class UsernameApiClientImpl: UsernameApiClient {
             reservedUsernameZKProof: reservedUsername.proofString,
             encryptedUsernameForLink: encryptedUsernameForLink
         )
-        request.setAuth(chatServiceAuth)
+        request.auth = .identified(chatServiceAuth)
 
         func onRequestSuccess(response: HTTPResponse) throws -> Usernames.ApiClientConfirmationResult {
             guard response.responseStatusCode == 200 else {

@@ -14,12 +14,15 @@ class RESTNetworkManager {
     }
 
     private func makeRequest(_ request: TSRequest) async throws -> any HTTPResponse {
-        let isUdRequest = request.isUDRequest
-        if (isUdRequest) {
-            owsPrecondition(!request.shouldHaveAuthorizationHeaders)
+        let isAnonymousRequest: Bool
+        switch request.auth {
+        case .identified, .registration:
+            isAnonymousRequest = false
+        case .messageBackup, .sealedSender, .anonymous:
+            isAnonymousRequest = true
         }
 
-        let sessionManagerPool = isUdRequest ? self.udSessionManagerPool : self.nonUdSessionManagerPool
+        let sessionManagerPool = isAnonymousRequest ? self.udSessionManagerPool : self.nonUdSessionManagerPool
         let sessionManager = sessionManagerPool.get()
         defer {
             sessionManagerPool.returnToPool(sessionManager)

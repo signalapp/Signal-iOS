@@ -40,7 +40,7 @@ public struct AccountAttributesRequestFactory {
             parameters: parameters
         )
         result.addValue("OWI", forHTTPHeaderField: "X-Signal-Agent")
-        result.setAuth(auth)
+        result.auth = .identified(auth)
         return result
     }
 
@@ -58,7 +58,7 @@ public struct AccountAttributesRequestFactory {
             method: "PUT",
             parameters: capabilities.requestParameters
         )
-        result.setAuth(auth)
+        result.auth = .identified(auth)
         return result
     }
 }

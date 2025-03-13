@@ -36,7 +36,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.url?.relativeString, "v1/provisioning/foo%20bar")
         XCTAssertEqual(request.httpMethod, "PUT")
         XCTAssertEqual(request.parameters as! [String: String], ["body": "AQID"])
-        XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
     }
 
     // MARK: - Message requests
@@ -64,7 +63,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.parameters["online"] as? Bool, true)
         XCTAssertEqual(request.parameters["urgent"] as? Bool, false)
         XCTAssertEqual(try queryItemsAsDictionary(url: url), ["story": "false"])
-        XCTAssertEqual(request.allHTTPHeaderFields?["Unidentified-Access-Key"], udAccessKey.keyData.base64EncodedString())
     }
 
     func testSubmitMultiRecipientMessageRequest() throws {
@@ -84,7 +82,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(url.path, "v1/messages/multi_recipient")
         XCTAssertEqual(try queryItemsAsDictionary(url: url), ["ts": "1234", "online": "true", "urgent": "false", "story": "false"])
         XCTAssertEqual(request.allHTTPHeaderFields?["Content-Type"], "application/vnd.signal-messenger.mrm")
-        XCTAssertEqual(request.allHTTPHeaderFields?["Unidentified-Access-Key"], udAccessKey.keyData.base64EncodedString())
         XCTAssertEqual(request.httpBody, ciphertext)
     }
 
@@ -95,7 +92,6 @@ class OWSRequestFactoryTest: XCTestCase {
 
         XCTAssertEqual(request.url?.path, "v1/subscription/configuration")
         XCTAssertEqual(request.httpMethod, "GET")
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 
     func testBoostStripeCreatePaymentIntentWithAmount() {
@@ -119,7 +115,6 @@ class OWSRequestFactoryTest: XCTestCase {
             XCTAssertEqual(request.parameters["amount"] as? UInt, 123)
             XCTAssertEqual(request.parameters["level"] as? UInt64, 456)
             XCTAssertEqual(request.parameters["paymentMethod"] as? String, expectedPaymentMethodValue)
-            XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
         }
     }
 
@@ -143,7 +138,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.parameters["level"] as? UInt64, 456)
         XCTAssertEqual(request.parameters["returnUrl"] as? String, "https://example.com/approved")
         XCTAssertEqual(request.parameters["cancelUrl"] as? String, "https://example.com/canceled")
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 
     func testSetSubscriberID() {
@@ -151,7 +145,6 @@ class OWSRequestFactoryTest: XCTestCase {
 
         XCTAssertEqual(request.url?.path, "v1/subscription/_4A")
         XCTAssertEqual(request.httpMethod, "PUT")
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 
     func testDeleteSubscriberID() {
@@ -159,7 +152,6 @@ class OWSRequestFactoryTest: XCTestCase {
 
         XCTAssertEqual(request.url?.path, "v1/subscription/_4A")
         XCTAssertEqual(request.httpMethod, "DELETE")
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 
     func testSubscriptionSetDefaultPaymentMethod() {
@@ -171,7 +163,6 @@ class OWSRequestFactoryTest: XCTestCase {
 
         XCTAssertEqual(request.url?.path, "v1/subscription/_4A/default_payment_method/STRIPE/xyz")
         XCTAssertEqual(request.httpMethod, "POST")
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 
     func testSubscriptionCreateStripePaymentMethodRequest() {
@@ -181,7 +172,6 @@ class OWSRequestFactoryTest: XCTestCase {
 
         XCTAssertEqual(request.url?.path, "v1/subscription/_4A/create_payment_method")
         XCTAssertEqual(request.httpMethod, "POST")
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 
     func testSubscriptionCreatePaypalPaymentMethodRequest() {
@@ -198,7 +188,6 @@ class OWSRequestFactoryTest: XCTestCase {
         ]))
         XCTAssertEqual(request.parameters["returnUrl"] as? String, "https://example.com/approved")
         XCTAssertEqual(request.parameters["cancelUrl"] as? String, "https://example.com/canceled")
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 
     func testSubscriptionSetSubscriptionLevelRequest() {
@@ -211,7 +200,6 @@ class OWSRequestFactoryTest: XCTestCase {
 
         XCTAssertEqual(request.url?.path, "v1/subscription/_4A/level/123/CHF/t3DUeQcC0laEdwMJ")
         XCTAssertEqual(request.httpMethod, "PUT")
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 
     func testSubscriptionReceiptCredentialsRequest() {
@@ -224,7 +212,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.httpMethod, "POST")
         XCTAssertEqual(Set(request.parameters.keys), Set(["receiptCredentialRequest"]))
         XCTAssertEqual(request.parameters["receiptCredentialRequest"] as? String, "gP8=")
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 
     func testSubscriptionRedeemReceiptCredential() {
@@ -250,7 +237,6 @@ class OWSRequestFactoryTest: XCTestCase {
 
         XCTAssertEqual(request.url?.path, "v1/subscription/_4A")
         XCTAssertEqual(request.httpMethod, "GET")
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 
     func testBoostReceiptCredentialsWithPaymentIntentId() {
@@ -270,7 +256,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.parameters["paymentIntentId"] as? String, "abc_123")
         XCTAssertEqual(request.parameters["receiptCredentialRequest"] as? String, "gP8=")
         XCTAssertEqual(request.parameters["processor"] as? String, "STRIPE")
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 
     // MARK: - Spam
@@ -288,7 +273,6 @@ class OWSRequestFactoryTest: XCTestCase {
         )
         XCTAssertEqual(request.httpMethod, "POST")
         XCTAssertEqual(request.parameters as! [String: String], [:])
-        XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
     }
 
     func testReportSpamFromUuidWithEmptyServerGuid() {
@@ -323,7 +307,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.url?.path, "v1/accounts/username_hash/reserve")
         XCTAssertEqual(request.httpMethod, "PUT")
         XCTAssertEqual(request.parameters as! [String: [String]], ["usernameHashes": ["boba", "fett"]])
-        XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
     }
 
     func testConfirmReservedUsername() {
@@ -340,7 +323,6 @@ class OWSRequestFactoryTest: XCTestCase {
             "zkProof": "fett",
             "encryptedUsername": "YWE_" // base64Url
         ])
-        XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
     }
 
     func testDeleteExistingUsername() {
@@ -349,7 +331,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.url?.path, "v1/accounts/username_hash")
         XCTAssertEqual(request.httpMethod, "DELETE")
         XCTAssertEqual(request.parameters as! [String: String], [:])
-        XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
     }
 
     func testLookupAciForUsername() {
@@ -358,7 +339,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.url?.path, "v1/accounts/username_hash/obi-wan")
         XCTAssertEqual(request.httpMethod, "GET")
         XCTAssertEqual(request.parameters as! [String: String], [:])
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 
     func testSetUsernameLink() {
@@ -371,7 +351,6 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.httpMethod, "PUT")
         XCTAssertEqual(request.parameters["usernameLinkEncryptedValue"] as! String, "YWE_") // base64Url
         XCTAssertEqual(request.parameters["keepLinkHandle"] as! Bool, true)
-        XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
     }
 
     func testLookupUsernameLink() {
@@ -381,6 +360,5 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.url?.path, "v1/accounts/username_link/\(handle)")
         XCTAssertEqual(request.httpMethod, "GET")
         XCTAssertEqual(request.parameters as! [String: String], [:])
-        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 }

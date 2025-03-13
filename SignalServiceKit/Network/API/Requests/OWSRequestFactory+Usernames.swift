@@ -94,7 +94,7 @@ public extension OWSRequestFactory {
             parameters: nil
         )
 
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .anonymous
 
         return request
     }
@@ -136,7 +136,7 @@ public extension OWSRequestFactory {
             parameters: nil
         )
 
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .anonymous
 
         return request
     }

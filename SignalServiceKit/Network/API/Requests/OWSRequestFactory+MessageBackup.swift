@@ -21,7 +21,7 @@ extension OWSRequestFactory {
                 "mediaBackupAuthCredentialRequest": mediaBackupId
             ]
         )
-        request.setAuth(auth)
+        request.auth = .identified(auth)
         return request
     }
 
@@ -33,7 +33,7 @@ extension OWSRequestFactory {
         owsAssertDebug(fromRedemptionSeconds > 0)
         owsAssertDebug(toRedemptionSeconds > 0)
         let request = TSRequest(url: URL(string: "v1/archives/auth?redemptionStartSeconds=\(fromRedemptionSeconds)&redemptionEndSeconds=\(toRedemptionSeconds)")!, method: "GET", parameters: nil)
-        request.setAuth(auth)
+        request.auth = .identified(auth)
         return request
     }
 
@@ -43,8 +43,7 @@ extension OWSRequestFactory {
             method: "PUT",
             parameters: ["backupIdPublicKey": Data(auth.publicKey.serialize()).base64EncodedString()]
         )
-        auth.apply(to: request)
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .messageBackup(auth)
         return request
     }
 
@@ -54,8 +53,7 @@ extension OWSRequestFactory {
             method: "GET",
             parameters: nil
         )
-        auth.apply(to: request)
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .messageBackup(auth)
         return request
     }
 
@@ -65,8 +63,7 @@ extension OWSRequestFactory {
             method: "GET",
             parameters: nil
         )
-        auth.apply(to: request)
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .messageBackup(auth)
         return request
     }
 
@@ -76,8 +73,7 @@ extension OWSRequestFactory {
             method: "GET",
             parameters: nil
         )
-        auth.apply(to: request)
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .messageBackup(auth)
         return request
     }
 
@@ -87,8 +83,7 @@ extension OWSRequestFactory {
             method: "PUT",
             parameters: nil
         )
-        auth.apply(to: request)
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .messageBackup(auth)
         return request
     }
 
@@ -98,8 +93,7 @@ extension OWSRequestFactory {
             method: "DELETE",
             parameters: nil
         )
-        auth.apply(to: request)
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .messageBackup(auth)
         return request
     }
 
@@ -109,8 +103,7 @@ extension OWSRequestFactory {
             method: "GET",
             parameters: nil
         )
-        auth.apply(to: request)
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .messageBackup(auth)
         return request
     }
 
@@ -123,8 +116,7 @@ extension OWSRequestFactory {
             method: "PUT",
             parameters: item.asParameters
         )
-        auth.apply(to: request)
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .messageBackup(auth)
         return request
     }
 
@@ -138,8 +130,7 @@ extension OWSRequestFactory {
             method: "PUT",
             parameters: parameters
         )
-        auth.apply(to: request)
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .messageBackup(auth)
         return request
     }
 
@@ -164,8 +155,7 @@ extension OWSRequestFactory {
             method: "GET",
             parameters: [:]
         )
-        auth.apply(to: request)
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .messageBackup(auth)
         return request
     }
 
@@ -178,8 +168,7 @@ extension OWSRequestFactory {
             method: "POST",
             parameters: ["mediaToDelete": NSArray(array: objects.map(\.asParameters))]
         )
-        auth.apply(to: request)
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .messageBackup(auth)
         return request
     }
 
@@ -191,7 +180,6 @@ extension OWSRequestFactory {
             method: "POST",
             parameters: ["receiptCredentialPresentation": receiptCredentialPresentation.base64EncodedString()]
         )
-        request.shouldHaveAuthorizationHeaders = false
         return request
     }
 }

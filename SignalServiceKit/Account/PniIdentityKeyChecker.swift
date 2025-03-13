@@ -84,8 +84,7 @@ class _PniIdentityKeyCheckerImpl_ProfileFetcher_Wrapper: _PniIdentityKeyCheckerI
         do {
             let request = OWSRequestFactory.getUnversionedProfileRequest(
                 serviceId: localPni,
-                sealedSenderAuth: nil,
-                auth: .implicit()
+                auth: .identified(.implicit())
             )
             let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 

@@ -42,8 +42,7 @@ public enum ProvisioningRequestFactory {
 
         let result = TSRequest(url: url, method: "PUT", parameters: parameters)
         // The "verify code" request handles auth differently.
-        result.authUsername = phoneNumber
-        result.authPassword = authPassword
+        result.auth = .registration((username: phoneNumber, password: authPassword))
         return result
     }
 }

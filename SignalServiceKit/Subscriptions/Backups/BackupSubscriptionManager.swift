@@ -518,7 +518,7 @@ private extension TSRequest {
             method: "POST",
             parameters: nil
         )
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .anonymous
         request.applyRedactionStrategy(.redactURLForSuccessResponses())
         return request
     }

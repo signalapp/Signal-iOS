@@ -68,10 +68,6 @@ public extension RemoteAttestation {
 }
 
 fileprivate extension RemoteAttestation.Auth {
-    /// - parameter authUsername: If present (alongside authPassword), used in the request.
-    ///   If either authUsername or authPassword is missing, uses auth information from TSAccountManager.
-    /// - parameter authPassword: If present (alongside authUsername), used in the request.
-    ///   If either authUsername or authPassword is missing, uses auth information from TSAccountManager.
     static func fetch(
         forService service: RemoteAttestation.Service,
         auth: ChatServiceAuth
@@ -84,10 +80,10 @@ fileprivate extension RemoteAttestation.Auth {
                 return Promise(error: OWSGenericError("Not registered."))
             }
         case let .explicit(username, password):
-            request.shouldHaveAuthorizationHeaders = true
-            request.authUsername = username
-            request.authPassword = password
+            break
         }
+
+        request.auth = .identified(auth)
 
         return firstly {
             SSKEnvironment.shared.networkManagerRef.makePromise(request: request, canUseWebSocket: false)

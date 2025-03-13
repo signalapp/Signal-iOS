@@ -180,8 +180,7 @@ public class ProfileFetcherJob {
         let result = try await requestMaker.makeRequest { sealedSenderAuth in
             return OWSRequestFactory.getUnversionedProfileRequest(
                 serviceId: serviceId,
-                sealedSenderAuth: sealedSenderAuth,
-                auth: self.authedAccount.chatServiceAuth
+                auth: sealedSenderAuth.map({ .sealedSender($0) }) ?? .identified(self.authedAccount.chatServiceAuth)
             )
         }
 
@@ -270,7 +269,7 @@ public class ProfileFetcherJob {
 
     private func makeRequest(_ request: TSRequest) async throws -> any HTTPResponse {
         // TODO: WebSockets: Inline this method once it doesn't need to branch.
-        let connectionType: OWSChatConnectionType = (request.isUDRequest ? .unidentified : .identified)
+        let connectionType = try request.auth.connectionType
         let shouldUseWebSocket: Bool = (
             OWSChatConnection.canAppUseSocketsToMakeRequests
             && DependenciesBridge.shared.chatConnectionManager.shouldWaitForSocketToMakeRequest(connectionType: connectionType)

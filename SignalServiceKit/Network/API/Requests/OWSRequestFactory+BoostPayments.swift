@@ -50,7 +50,7 @@ public extension OWSRequestFactory {
                 "paymentMethod": paymentMethod.rawValue
             ]
         )
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .anonymous
         return request
     }
 
@@ -73,8 +73,7 @@ public extension OWSRequestFactory {
                 "cancelUrl": cancelUrl.absoluteString
             ]
         )
-
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .anonymous
         return request
     }
 
@@ -99,8 +98,7 @@ public extension OWSRequestFactory {
                 "paymentToken": paymentToken
             ]
         )
-
-        request.shouldHaveAuthorizationHeaders = false
+        request.auth = .anonymous
         return request
     }
 }

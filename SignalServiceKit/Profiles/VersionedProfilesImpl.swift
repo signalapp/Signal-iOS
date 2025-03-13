@@ -260,7 +260,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
         profileKey: ProfileKey,
         shouldRequestCredential: Bool,
         udAccessKey: SMKUDAccessKey?,
-        auth: ChatServiceAuth
+        auth chatServiceAuth: ChatServiceAuth
     ) throws -> VersionedProfileRequest {
         // We need to request a credential if we don't have a valid one already.
         var requestContext: ProfileKeyCredentialRequestContext?
@@ -271,13 +271,19 @@ public class VersionedProfilesImpl: VersionedProfiles {
             )
         }
 
+        let auth: TSRequest.Auth
+        if let udAccessKey {
+            auth = .sealedSender(.accessKey(udAccessKey))
+        } else {
+            auth = .identified(chatServiceAuth)
+        }
+
         return VersionedProfileRequest(
             aci: aci,
             request: OWSRequestFactory.getVersionedProfileRequest(
                 aci: aci,
                 profileKeyVersion: try profileKey.getProfileKeyVersion(userId: aci).asHexadecimalString(),
                 credentialRequest: try requestContext?.getRequest().serialize().asData,
-                udAccessKey: udAccessKey,
                 auth: auth
             ),
             profileKey: profileKey,

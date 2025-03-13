@@ -527,18 +527,13 @@ public class OWSChatConnection {
 
     // MARK: - Message Sending
 
-    public func makeRequest(_ request: TSRequest,
-                            unsubmittedRequestToken: UnsubmittedRequestToken) async throws -> HTTPResponse {
+    func makeRequest(_ request: TSRequest, unsubmittedRequestToken: UnsubmittedRequestToken) async throws -> HTTPResponse {
         guard !appExpiry.isExpired else {
             removeUnsubmittedRequestToken(unsubmittedRequestToken)
             throw OWSHTTPError.invalidAppState
         }
 
         let connectionType = self.type
-
-        let isIdentifiedConnection = connectionType == .identified
-        let isIdentifiedRequest = request.shouldHaveAuthorizationHeaders && !request.isUDRequest
-        owsAssertDebug(isIdentifiedConnection == isIdentifiedRequest)
 
         let requestId = UInt64.random(in: .min ... .max)
         let requestDescription = "\(request) [\(requestId)]"
@@ -719,6 +714,8 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
 
         let httpHeaders = OWSHttpHeaders(httpHeaders: request.allHTTPHeaderFields, overwriteOnConflict: false)
         httpHeaders.addDefaultHeaders()
+
+        request.applyAuth(to: httpHeaders, willSendViaWebSocket: true)
 
         if let existingBody = request.httpBody {
             requestBuilder.setBody(existingBody)
@@ -1595,6 +1592,8 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection>: OWSC
 
         let httpHeaders = OWSHttpHeaders(httpHeaders: request.allHTTPHeaderFields, overwriteOnConflict: false)
         httpHeaders.addDefaultHeaders()
+
+        request.applyAuth(to: httpHeaders, willSendViaWebSocket: true)
 
         let body: Data
         if let existingBody = request.httpBody {

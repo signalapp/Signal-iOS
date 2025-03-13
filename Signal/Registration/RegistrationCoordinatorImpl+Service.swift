@@ -283,7 +283,7 @@ extension RegistrationCoordinatorImpl {
             retriesLeft: Int = RegistrationCoordinatorImpl.Constants.networkErrorRetries
         ) -> Promise<Void> {
             let request = OWSRequestFactory.enableRegistrationLockV2Request(token: reglockToken)
-            request.setAuth(auth)
+            request.auth = .identified(auth)
             return signalService.urlSessionForMainSignalService().promiseForTSRequest(request).asVoid()
                 .recover(on: schedulers.sync) { error in
                     if error.isNetworkFailureOrTimeout, retriesLeft > 0 {

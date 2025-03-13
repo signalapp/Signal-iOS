@@ -421,11 +421,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
         // Then apply any custom headers for the request
         httpHeaders.addHeaderMap(rawRequest.allHTTPHeaderFields, overwriteOnConflict: true)
 
-        if !rawRequest.isUDRequest, rawRequest.shouldHaveAuthorizationHeaders {
-            owsAssertDebug(nil != rawRequest.authUsername?.nilIfEmpty)
-            owsAssertDebug(nil != rawRequest.authPassword?.nilIfEmpty)
-            httpHeaders.addAuthHeader(username: rawRequest.authUsername ?? "", password: rawRequest.authPassword ?? "")
-        }
+        rawRequest.applyAuth(to: httpHeaders, willSendViaWebSocket: false)
 
         let method: HTTPMethod
         do {

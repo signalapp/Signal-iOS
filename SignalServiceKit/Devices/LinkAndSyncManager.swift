@@ -830,7 +830,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 method: "GET",
                 parameters: nil
             )
-            request.shouldHaveAuthorizationHeaders = true
             request.applyRedactionStrategy(.redactURLForSuccessResponses())
             // The timeout is server side; apply wiggle room for our local clock.
             request.timeoutInterval = 10 + TimeInterval(Constants.longPollRequestTimeoutSeconds)
@@ -875,7 +874,6 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                     }()
                 ]
             )
-            request.shouldHaveAuthorizationHeaders = true
             request.applyRedactionStrategy(.redactURLForSuccessResponses())
             return request
         }
@@ -907,8 +905,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                 method: "GET",
                 parameters: nil
             )
-            request.shouldHaveAuthorizationHeaders = true
-            request.setAuth(auth)
+            request.auth = .identified(auth)
             request.applyRedactionStrategy(.redactURLForSuccessResponses())
             // The timeout is server side; apply wiggle room for our local clock.
             request.timeoutInterval = 10 + TimeInterval(Constants.longPollRequestTimeoutSeconds)

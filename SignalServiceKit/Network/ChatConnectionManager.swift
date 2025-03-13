@@ -87,31 +87,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
 
     // This method can be called from any thread.
     public func makeRequest(_ request: TSRequest) async throws -> HTTPResponse {
-        let connectionType: OWSChatConnectionType = {
-            if request.isUDRequest {
-                return .unidentified
-            } else if !request.shouldHaveAuthorizationHeaders {
-                return .unidentified
-            } else {
-                return .identified
-            }
-        }()
-
-        // connectionType, isUDRequest and shouldHaveAuthorizationHeaders
-        // should be (mostly?) aligned.
-        switch connectionType {
-        case .identified:
-            owsAssertDebug(!request.isUDRequest)
-            owsAssertDebug(request.shouldHaveAuthorizationHeaders)
-            if request.isUDRequest || !request.shouldHaveAuthorizationHeaders {
-                Logger.info("request: \(request.description), isUDRequest: \(request.isUDRequest), shouldHaveAuthorizationHeaders: \(request.shouldHaveAuthorizationHeaders)")
-            }
-        case .unidentified:
-            owsAssertDebug(request.isUDRequest || !request.shouldHaveAuthorizationHeaders)
-            if !request.isUDRequest && request.shouldHaveAuthorizationHeaders {
-                Logger.info("request: \(request.description), isUDRequest: \(request.isUDRequest), shouldHaveAuthorizationHeaders: \(request.shouldHaveAuthorizationHeaders)")
-            }
-        }
+        let connectionType = try request.auth.connectionType
 
         // Request that the websocket open to make this request, if necessary.
         let unsubmittedRequestToken = connection(ofType: connectionType).makeUnsubmittedRequestToken()

@@ -145,8 +145,14 @@ final class RequestMaker {
         return try await self.forEachAuthMechanism { sealedSenderAuth in
             do {
                 let request = try requestBlock(sealedSenderAuth?.toRequestAuth())
-                let isUDRequest = sealedSenderAuth != nil
-                owsPrecondition(isUDRequest == request.isUDRequest)
+                let isUDRequest: Bool
+                switch request.auth {
+                case .identified, .registration:
+                    isUDRequest = false
+                case .anonymous, .sealedSender, .messageBackup:
+                    isUDRequest = true
+                }
+                owsPrecondition(isUDRequest == (sealedSenderAuth != nil))
 
                 let result = try await self._makeRequest(request: request)
                 await requestSucceeded(sealedSenderAuth: sealedSenderAuth)
@@ -158,7 +164,7 @@ final class RequestMaker {
     }
 
     private func _makeRequest(request: TSRequest) async throws -> RequestMakerResult {
-        let connectionType: OWSChatConnectionType = (request.isUDRequest ? .unidentified : .identified)
+        let connectionType = try request.auth.connectionType
         let shouldUseWebsocket: Bool = (
             OWSChatConnection.canAppUseSocketsToMakeRequests
             && (self.options.contains(.waitForWebSocketToOpen) || DependenciesBridge.shared.chatConnectionManager.shouldWaitForSocketToMakeRequest(connectionType: connectionType))
@@ -170,7 +176,7 @@ final class RequestMaker {
         } else {
             response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request, canUseWebSocket: false)
         }
-        return RequestMakerResult(response: response, wasSentByUD: request.isUDRequest)
+        return RequestMakerResult(response: response, wasSentByUD: connectionType == .unidentified)
     }
 
     private func requestFailed(error: Error, sealedSenderAuth: SealedSenderAuth?) async throws -> Never {
