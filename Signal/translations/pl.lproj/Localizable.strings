@@ -436,6 +436,24 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Nieobsługiwany plik";
 
+/* Title for an action in an action sheet that will save attachments to the device's Photos app. */
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Save";
+
+/* Title for an action in an action sheet that will save attachments to the device's Photos app, and disable the action sheet in the future. */
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Save and Don't Show Again";
+
+/* Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "This media will be saved to your phone’s Photos app. Other apps may be able to access it depending on your phone's permissions.";
+
+/* Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Save to Photos?";
+
+/* Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Failed to save to Photos";
+
+/* Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Saved to Photos";
+
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "Animacja";
 
@@ -1464,6 +1482,9 @@
 
 /* Context menu button title */
 "CONTEXT_MENU_REPLY" = "Odpowiedz";
+
+/* Context menu button title */
+"CONTEXT_MENU_SAVE_MEDIA" = "Save";
 
 /* Context menu button title */
 "CONTEXT_MENU_SELECT_MESSAGE" = "Zaznacz";
@@ -2703,9 +2724,6 @@
 
 /* Error indicating that a socket response failed. */
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Nieprawidłowa odpowiedź usługi.";
-
-/* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "To urządzenie nie jest już zarejestrowane przy użyciu Twojego numeru telefonu. Zainstaluj Signal ponownie.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Błąd serwera. Spróbuj później.";
@@ -4327,6 +4345,9 @@
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Usuń";
 
+/* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
+"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Save";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "Przypomnij mi później";
 
@@ -4407,6 +4428,9 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Odpowiedz na wiadomość";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_SAVE_MEDIA" = "Save";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SELECT_MESSAGE" = "Wybierz wiele";
@@ -6077,7 +6101,7 @@
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "Opuść";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
-"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ podnosisz rękę";
+"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ podnosi rękę";
 
 /* A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}} */
 "RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "Ty +%1$d";
@@ -6341,16 +6365,16 @@
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Wyślij SMS";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Nie udało nam się podać Ci kodu weryfikacyjnego przez połączenie głosowe. Spróbuj go zażądać za pomocą SMS-a.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Nie udało się podać kodu weryfikacyjnego przez połączenie głosowe. Możesz zamiast tego poprosić o SMS z kodem.";
 
 /* Button below the warning to fix a corrupted username. */
-"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Napraw błąd teraz";
+"REMINDER_VIEW_USERNAME_CORRUPTED_FIX_BUTTON" = "Napraw teraz";
 
 /* Label warning the user that something is wrong with their username. */
 "REMINDER_VIEW_USERNAME_CORRUPTED_WARNING" = "Coś poszło nie tak z Twoją nazwą użytkownika. Nie jest już ona przypisana do Twojego konta. Możesz spróbować ustawić tę samą nazwę ponownie lub wybrać nową.";
 
 /* Button below the warning to fix a username link. */
-"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Napraw błąd teraz";
+"REMINDER_VIEW_USERNAME_LINK_CORRUPTED_FIX_BUTTON" = "Napraw teraz";
 
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Coś poszło nie tak z kodem QR oraz linkiem przypisanymi do Twojej nazwy użytkownika. Nie są już prawidłowe. Utwórz nowy link do udostępniania.";
@@ -6419,16 +6443,16 @@
 "SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Wskazówki dotyczące bezpieczeństwa";
 
 /* Message contents for the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_BODY" = "Jeśli ktoś, kogo nie znasz, wysyła Ci wiadomości o kryptowalutach (takich jak Bitcoin) lub okazjach finansowych, uważaj — prawdopodobnie jest to spam.";
+"SAFETY_TIPS_CRYPTO_BODY" = "Jeśli ktoś, kogo nie znasz, wysyła Ci wiadomości o kryptowalutach (takich jak Bitcoin) lub okazjach finansowych, uważaj – prawdopodobnie jest to spam.";
 
 /* Message title describing the crypto safety tip. */
-"SAFETY_TIPS_CRYPTO_TITLE" = "Oszustwa związane z kryptowalutami lub pieniędzmi";
+"SAFETY_TIPS_CRYPTO_TITLE" = "Oszustwa związane z pieniędzmi, w tym kryptowalutami";
 
 /* Message contents for the safety tip concerning fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Uważaj na firmy lub agencje rządowe, które się z Tobą kontaktują. Wiadomości od instytucji podatkowych, kurierów itd. mogą być spamem.";
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Zachowaj ostrożność, jeśli kontaktuje się z Tobą organizacja rządowa lub firma. Wiadomości, których nadawcami mieliby być kurierzy, instytucje podatkowe itd., mogą być spamem.";
 
 /* Message title describing the safety tip about unknown or fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Nieistniejące firmy i instytucje";
+"SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Fałszywe konta firm i instytucji";
 
 /* Message contents for the fake names safety tip. */
 "SAFETY_TIPS_FAKE_NAMES_BODY" = "Signal nigdy nie zwróci się do Ciebie z prośbą o podanie kodu rejestracyjnego ani PIN-u. Uważaj na tego typu wiadomości – mogą pochodzić od osób podszywających się pod kogoś innego. Nazwę użytkownika podaje osoba posługująca się kontem, a Signal nie weryfikuje imion ani nazwisk.";
@@ -6437,16 +6461,16 @@
 "SAFETY_TIPS_FAKE_NAMES_TITLE" = "Uwaga na oszustów";
 
 /* Message describing safety tips for group conversations. */
-"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Przyjrzyj się uważnie tej prośbie. W tej grupie nie ma ani jednego Twojego kontaktu ani osoby, z którą prowadzisz rozmowę. Oto kilka rzeczy, na które należy uważać:";
+"SAFETY_TIPS_GROUPS_HEADER_MESSAGE" = "Uważnie przyjrzyj się tej prośbie. W grupie nie ma żadnegoTwojego kontaktu ani osób, z którymi masz już czaty. Oto na co należy uważać:";
 
 /* Title for Safety Tips education screen. */
 "SAFETY_TIPS_HEADER_TITLE" = "Wskazówki dotyczące bezpieczeństwa";
 
 /* Message describing safety tips for 1:1 conversations. */
-"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Zachowaj rozwagę, zatwierdzając prośby od nieznajomych. Uważaj na:";
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Zachowaj ostrożność, gdy akceptujesz prośbę o kontakt od nieznajomej osoby. Oto na co należy uważać:";
 
 /* Message contents for the unknown links in messages safety tip. */
-"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Uważaj na wiadomości od nieznajomych zawierające linki do stron internetowych. Nigdy nie wchodź w linki przesłane przez osoby, którym nie ufasz.";
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Uważaj na wiadomości od nieznanych Ci osób zawierające linki do stron internetowych. Nigdy nie otwieraj linków przesłanych przez osoby, do których nie masz zaufania.";
 
 /* Message title describing the safety tip about unknown links in messages. */
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Wiadomości z linkami";
@@ -6455,10 +6479,10 @@
 "SAFETY_TIPS_NEXT_TIP_BUTTON" = "Dalej";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Cofnij";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Wstecz";
 
 /* Message contents for the vague message safety tip. */
-"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spamerzy często zaczynają od prostej, angażującej wiadomości, takiej jak „cześć”. Jeśli odpiszesz, mogą wciągnąć Cię w dalszą rozmowę.";
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spamerzy często zaczynają od prostej, angażującej wiadomości, takiej jak „cześć”. Jeśli odpiszesz, mogą Cię wciągnąć w dalszą rozmowę.";
 
 /* Message title describing the safety tip about vague messages. */
 "SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Wiadomości ogólnikowe lub nie na temat";
@@ -6650,28 +6674,28 @@
 "SEPA_DONATION_EMAIL_PLACEHOLDER" = "Adres e-mail";
 
 /* SEPA bank account donation error for insufficient funds. */
-"SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Na podanym koncie bankowym nie ma wystarczających środków do zrealizowania tego zakupu, spróbuj ponownie lub skontaktuj się ze swoim bankiem po więcej informacji.";
+"SEPA_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Na podanym koncie bankowym nie ma wystarczających środków do zrealizowania transakcji. Spróbuj ponownie lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* SEPA bank account donation error for missing or incorrect mandate information. */
-"SEPA_DONATION_ERROR_NOT_AUTHORIZED" = "W trakcie realizacji tej płatności wystąpił błąd. Spróbuj ponownie.";
+"SEPA_DONATION_ERROR_NOT_AUTHORIZED" = "Podczas realizowania płatności wystąpił błąd. Spróbuj ponownie.";
 
 /* SEPA bank account donation error for the account details not being able to be processed. */
-"SEPA_DONATION_ERROR_NOT_PROCESSED" = "Podane dane bankowe nie mogły zostać uwzględnione przy realizacji. Skontaktuj się ze swoim bankiem po więcej informacji.";
+"SEPA_DONATION_ERROR_NOT_PROCESSED" = "Nie udało się przetworzyć danych bankowych. Skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.";
 
 /* SEPA bank account donation error for unspecified decline failures. */
-"SEPA_DONATION_ERROR_OTHER" = "Sprawdź, czy dane banku są poprawne i spróbuj ponownie. Jeśli problem nie ustąpi, skontaktuj się ze swoim bankiem.";
+"SEPA_DONATION_ERROR_OTHER" = "Sprawdź, czy dane bankowe są poprawne, i spróbuj ponownie. Jeśli problem będzie się powtarzać, skontaktuj się ze swoim bankiem.";
 
 /* SEPA bank account donation error for the payment not being authorizing by the account holder. */
-"SEPA_DONATION_ERROR_PAYMENT_NOT_AUTHORIZED" = "Ta płatność została anulowana przez właściciela konta i nie mogła zostać zrealizowana. Środki nie zostały pobrane.";
+"SEPA_DONATION_ERROR_PAYMENT_NOT_AUTHORIZED" = "Płatność została odrzucona przez właściciela konta, więc nie mogła zostać zrealizowana. Środki nie zostały pobrane.";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) contains characters other than letters and numbers, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_INVALID_CHARACTERS_ERROR" = "IBAN może zawierać wyłącznie znaki A-Z i 0-9";
+"SEPA_DONATION_IBAN_INVALID_CHARACTERS_ERROR" = "IBAN może zawierać wyłącznie znaki A–Z i 0–9";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) does not pass validation, this error will be shown. Try to use a short string to make space in the UI. */
 "SEPA_DONATION_IBAN_INVALID_CHECK_ERROR" = "Nieprawidłowy numer IBAN";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) has an unsupported country code, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_INVALID_COUNTRY_ERROR" = "Kod kraju IBAN nie jest obsługiwany";
+"SEPA_DONATION_IBAN_INVALID_COUNTRY_ERROR" = "Nieobsługiwany kod kraju IBAN";
 
 /* Users can donate to Signal with a bank account. This is the label for IBAN (internation bank account number) field on that screen. */
 "SEPA_DONATION_IBAN_LABEL" = "IBAN";
@@ -6695,7 +6719,7 @@
 "SESSION_REFRESH_ALERT_TITLE" = "Sesja czatu odświeżona";
 
 /* If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient. */
-"SESSION_SWITCHOVER_EVENT" = "%1$@ należy do: %2$@";
+"SESSION_SWITCHOVER_EVENT" = "%1$@ to numer tej osoby: %2$@";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Wybierz ze zdjęć";
@@ -6758,7 +6782,7 @@
 "SETTINGS_APP_ICON_EDUCATION_APP_NAME" = "Nazwa „Signal” będzie widoczna na ekranie początkowym, w powiadomieniach oraz w bibliotece aplikacji.";
 
 /* Information on sheet about changing the app icon - second line */
-"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "Możesz ukryć nazwę „Signal” z ekranu początkowego, przenosząc aplikację do paska znajdującego się na dole ekranu początkowego.";
+"SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK" = "Możesz usunąć nazwę „Signal” z ekranu początkowego. Aby to zrobić, przenieś aplikację na pasek u dołu ekranu początkowego.";
 
 /* The footer for the app icon selection settings page. */
 "SETTINGS_APP_ICON_FOOTER" = "Nazwa „Signal” będzie widoczna na ekranie początkowym, w powiadomieniach oraz w bibliotece aplikacji.";
@@ -7031,7 +7055,7 @@
 "SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Płatności w aplikacji Signal nie są już dostępne. Wciąż możesz przenieść środki do kantoru, ale nie możesz otrzymywać ani wysyłać płatności, jak również dodawać środków.";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Wymiana waluty podaje tylko szacowane wartości, które mogą nie być dokładne.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Kursy wymiany walut mają szacowane wartości, które mogą nie być dokładne.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
 "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "Wszystkie waluty";
@@ -7055,10 +7079,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Zdezaktywuj płatności";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Przed dezaktywacją płatności zalecamy przeniesienie środków do innego portfela. Jeśli postanowisz nie przenosić teraz swoich środków, pozostaną one w Twoim portfelu powiązanym z Signal, jeśli reaktywujesz płatności.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Przed dezaktywacją płatności zalecamy przeniesienie środków do innego portfela. Jeśli ich teraz nie przeniesiesz, pozostaną w Twoim portfelu powiązanym z aplikacją Signal. Możesz ich użyć, jeśli za jakiś czas reaktywujesz znów płatności.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Twoje środki pozostaną w portfelu połączonym z Signal, jeśli postanowisz reaktywować płatności.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Środki oozostaną w Twoim portfelu powiązanym z aplikacją Signal. Możesz ich użyć, jeśli za jakiś czas reaktywujesz znów płatności.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Zdezaktywować bez przenoszenia?";
@@ -7076,7 +7100,7 @@
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Włącz płatności";
 
 /* Title for the 'enable payments lock' view of the payments activation flow. */
-"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Zabezpieczenie płatności";
+"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Blokada płatności";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin to nowa cyfrowa waluta, której twórcy kładą duży nacisk na prywatność.";
@@ -7100,7 +7124,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "Zapisz swoją frazę";
 
 /* Description for the 'Save Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "Twoje hasło odzyskiwania to dodatkowy sposób na przywrócenie środków.";
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "Fraza odzyskiwania to dodatkowy sposób na przywrócenie środków.";
 
 /* Title for the 'Save Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "Zapisz swoją frazę";
@@ -7118,7 +7142,7 @@
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Nieprawidłowy adres portfela";
 
 /* Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase. */
-"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Zabezpieczenie płatności";
+"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Blokada płatności";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Brak transakcji do wyświetlenia.";
@@ -7163,10 +7187,10 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Jeśli ponownie zainstalujesz aplikację Signal, środki zostaną automatycznie przywrócone, gdy podasz swój PIN. Możesz też przywrócić środki za pomocą frazy odzyskiwania, która jest Twoim unikalnym hasłem złożonym z 24 wyrazów. Zapisz je i przechowuj w bezpiecznym miejscu.";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "Masz środki! Czas zapisać frazę odzyskiwania — 24-wyrazowy klucz, którego możesz użyć do przywrócenia środków.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "W Twoi portfelu są środki. Pora zapisać frazę odzyskiwania, czyli 24-wyrazowy klucz, którego możesz użyć do przywrócenia środków.";
 
 /* Explanation of the 'payments passphrase' when from the help card. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Czas zapisać frazę odzyskiwania — 24-wyrazowy klucz, którego możesz użyć do przywrócenia środków.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Pora zapisać frazę odzyskiwania, czyli 24-wyrazowy klucz, którego możesz użyć do przywrócenia środków.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Dodaj środki";
@@ -7199,7 +7223,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Wysłano płatność";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Wysłano do %1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Wysłano. Odbiorca: %1$@";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Stan";
@@ -7226,19 +7250,19 @@
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Płatności zdezaktywowane.";
 
 /* Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Pominięcie tego kroku może umożliwić każdemu, kto ma fizyczny dostęp do Twojego telefonu, przelanie środków lub wyświetlenie frazy odzyskiwania.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Jeśli pominiesz ten krok, każdy, kto będzie mieć fizyczny dostęp do Twojego telefonu, będzie mógł przelać środki lub wyświetlić Twoją frazę odzyskiwania.";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Face ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Pominąć włączenie Face ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Nie włączać Face ID?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Optic ID. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_OPTICID" = "Pominąć włączenie Optic ID?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Pominąć włączenie kodu dostępu?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Nie włączać kodu?";
 
 /* Double reminder action sheet title in Payments Lock Prompt view for Touch ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "Pominąć włączenie Touch ID?";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "Nie włączać Touch ID?";
 
 /* Enable Button title in Payments Lock Prompt view for Face ID. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Użyj Face ID";
@@ -7247,28 +7271,28 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_OPTICID" = "Używaj Optic ID";
 
 /* Enable Button title in Payments Lock Prompt view for Passcode. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Użyj kodu dostępu";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Użyj kodu";
 
 /* Enable Button title in Payments Lock Prompt view for Touch ID. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Użyj Touch ID";
 
 /* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Dodaj kolejną warstwę zabezpieczeń w postaci Face ID, które uniemożliwi osobom korzystającym z Twojego telefonu dostęp do Twoich środków. Możesz wyłączyć tę opcję w Ustawieniach.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Dodatkowo zabezpiecz swoje konto za pomocą Face ID, co uniemożliwi osobom trzecim używającym Twojego telefonu dostęp do Twoich środków. Możesz wyłączyć tę opcję w ustawieniach.";
 
 /* Explanation of 'payments lock' with Optic ID in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_OPTICID" = "Dodaj kolejną warstwę zabezpieczeń, włączając Optic ID, co uniemożliwi innym dostęp do Twoich środków przy użyciu Twojego telefonu. Możesz wyłączyć tę opcję w Ustawieniach.";
 
 /* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Używaj kodu dostępu, który uniemożliwi osobom korzystającym z Twojego telefonu dostęp do Twoich środków. Możesz wyłączyć tę opcję w Ustawieniach.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Dodatkowo zabezpiecz swoje konto za pomocą kodu, co uniemożliwi osobom trzecim używającym Twojego telefonu dostęp do Twoich środków. Możesz wyłączyć tę opcję w ustawieniach.";
 
 /* Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Dodaj kolejną warstwę zabezpieczeń w postaci Touch ID, które uniemożliwi osobom korzystającym z Twojego telefonu dostęp do Twoich środków. Możesz wyłączyć tę opcję w Ustawieniach.";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Dodatkowo zabezpiecz swoje konto za pomocą Touch ID, co uniemożliwi osobom trzecim używającym Twojego telefonu dostęp do Twoich środków. Możesz wyłączyć tę opcję w ustawieniach.";
 
 /* Button for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Zaktualizuj Signal";
 
 /* Message for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Aktualizacja jest wymagana do dalszego wysyłania i otrzymywania płatności oraz do wyświetlania aktualnego salda płatności.";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Aby dalej móc wysyłać i otrzymywać płatności oraz wyświetlać ich saldo, musisz zaktualizować aplikację.";
 
 /* Title for payments outdated sheet saying cant send. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Nie można wysłać płatności";
@@ -7523,7 +7547,7 @@
 "SETTINGS_PINS_TITLE" = "PIN Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Ustawienia omijania cenzury, proxy, przekazywania połączeń i ukrytego nadawcy.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Ustawienia obchodzenia cenzury, proxy, pośredniczenia w połączeniach i zaszyfrowanego nadawcy.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Zaawansowane";
@@ -7604,7 +7628,7 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Udostępnij kontakty systemowi iOS";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Zezwól na dostęp systemu iOS do kontaktów i czatów Signal, aby korzystać z takich funkcji, jak sugestie udostępniania i powiadomienia.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Zezwól systemowi iOS na dostęp do kontaktów i czatów Signal, aby korzystać z takich funkcji jak sugestie udostępniania i powiadomienia.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Blokada rejestracji";
@@ -7795,9 +7819,6 @@
 /* Title asking the user if they are sure they want to delete their story */
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Usunąć tę relację? To działanie spowoduje również usunięcie jej u wszystkich, którzy ją otrzymali.";
 
-/* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Relacja zapisana";
-
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Przekaż";
 
@@ -7851,9 +7872,6 @@
 
 /* Title text for the 'replies' tab on the stories views & replies sheet */
 "STORIES_REPLIES_TAB" = "Odpowiedzi";
-
-/* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Nie udało się zapisać relacji";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "Zapisz";

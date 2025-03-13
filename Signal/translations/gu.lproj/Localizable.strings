@@ -436,6 +436,24 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "અસમર્થિત ફાઇલ";
 
+/* Title for an action in an action sheet that will save attachments to the device's Photos app. */
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Save";
+
+/* Title for an action in an action sheet that will save attachments to the device's Photos app, and disable the action sheet in the future. */
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Save and Don't Show Again";
+
+/* Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "This media will be saved to your phone’s Photos app. Other apps may be able to access it depending on your phone's permissions.";
+
+/* Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Save to Photos?";
+
+/* Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Failed to save to Photos";
+
+/* Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Saved to Photos";
+
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "એનિમેશન સાથે";
 
@@ -1464,6 +1482,9 @@
 
 /* Context menu button title */
 "CONTEXT_MENU_REPLY" = "જવાબ";
+
+/* Context menu button title */
+"CONTEXT_MENU_SAVE_MEDIA" = "Save";
 
 /* Context menu button title */
 "CONTEXT_MENU_SELECT_MESSAGE" = "પસંદ કરો";
@@ -2703,9 +2724,6 @@
 
 /* Error indicating that a socket response failed. */
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "સર્વિસનો અમાન્ય પ્રતિસાદ.";
-
-/* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "આ ડિવાઇસ હવે તમારા ફોન નંબર સાથે નોંધાયેલ નથી. કૃપા કરીને Signal ફરીથી ઇન્સ્ટોલ કરો.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "સર્વર એરર. પછીથી ફરી પ્રયત્ન કરો.";
@@ -4327,6 +4345,9 @@
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "ડિલીટ કરો";
 
+/* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
+"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Save";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "મને પછી યાદ કરાવો";
 
@@ -4407,6 +4428,9 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "આ મેસેજનો જવાબ આપો";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_SAVE_MEDIA" = "Save";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SELECT_MESSAGE" = "મલ્ટીપલ પસંદ કરો";
@@ -7795,9 +7819,6 @@
 /* Title asking the user if they are sure they want to delete their story */
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "આ સ્ટોરી ડિલીટ કરવી છે? જેણે તે પ્રાપ્ત કરી હતી તે દરેક માટે પણ તે ડિલીટ થઈ જશે.";
 
-/* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "સ્ટોરી સેવ કરી";
-
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "ફોરવર્ડ";
 
@@ -7851,9 +7872,6 @@
 
 /* Title text for the 'replies' tab on the stories views & replies sheet */
 "STORIES_REPLIES_TAB" = "જવાબો";
-
-/* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "સ્ટોરી સેવ કરવામાં નિષ્ફળ";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "સેવ કરો";

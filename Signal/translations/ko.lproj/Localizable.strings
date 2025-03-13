@@ -436,6 +436,24 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "지원되지 않는 파일";
 
+/* Title for an action in an action sheet that will save attachments to the device's Photos app. */
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Save";
+
+/* Title for an action in an action sheet that will save attachments to the device's Photos app, and disable the action sheet in the future. */
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Save and Don't Show Again";
+
+/* Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "This media will be saved to your phone’s Photos app. Other apps may be able to access it depending on your phone's permissions.";
+
+/* Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Save to Photos?";
+
+/* Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Failed to save to Photos";
+
+/* Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Saved to Photos";
+
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "애니메이션";
 
@@ -1464,6 +1482,9 @@
 
 /* Context menu button title */
 "CONTEXT_MENU_REPLY" = "답장";
+
+/* Context menu button title */
+"CONTEXT_MENU_SAVE_MEDIA" = "Save";
 
 /* Context menu button title */
 "CONTEXT_MENU_SELECT_MESSAGE" = "선택";
@@ -2703,9 +2724,6 @@
 
 /* Error indicating that a socket response failed. */
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "서비스에서 잘못된 응답을 받았습니다.";
-
-/* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "이 기기의 전화번호 등록이 해제되었습니다. Signal을 다시 설치하세요.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "서버에서 오류가 발생했습니다. 나중에 다시 시도해 주세요.";
@@ -4327,6 +4345,9 @@
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "삭제";
 
+/* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
+"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Save";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "나중에 알림 받기";
 
@@ -4407,6 +4428,9 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "메시지 답장";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_SAVE_MEDIA" = "Save";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SELECT_MESSAGE" = "다중 선택";
@@ -7795,9 +7819,6 @@
 /* Title asking the user if they are sure they want to delete their story */
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "이 스토리를 삭제할까요? 스토리를 받은 모든 사람에게서 해당 스토리가 삭제됩니다.";
 
-/* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "스토리 저장 완료";
-
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "전달";
 
@@ -7851,9 +7872,6 @@
 
 /* Title text for the 'replies' tab on the stories views & replies sheet */
 "STORIES_REPLIES_TAB" = "답장";
-
-/* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "스토리 저장 실패";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "저장";

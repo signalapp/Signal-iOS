@@ -436,6 +436,24 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "الملف غير مدعوم";
 
+/* Title for an action in an action sheet that will save attachments to the device's Photos app. */
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Save";
+
+/* Title for an action in an action sheet that will save attachments to the device's Photos app, and disable the action sheet in the future. */
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Save and Don't Show Again";
+
+/* Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "This media will be saved to your phone’s Photos app. Other apps may be able to access it depending on your phone's permissions.";
+
+/* Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Save to Photos?";
+
+/* Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Failed to save to Photos";
+
+/* Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
+"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Saved to Photos";
+
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "صورة متحركة";
 
@@ -1464,6 +1482,9 @@
 
 /* Context menu button title */
 "CONTEXT_MENU_REPLY" = "الرد";
+
+/* Context menu button title */
+"CONTEXT_MENU_SAVE_MEDIA" = "Save";
 
 /* Context menu button title */
 "CONTEXT_MENU_SELECT_MESSAGE" = "حَدِّد";
@@ -2703,9 +2724,6 @@
 
 /* Error indicating that a socket response failed. */
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "إجابة غير صالحة من الخدمة.";
-
-/* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "لم يعُد هَذَا الجِهاز مُسجَّلًا مَع رَقم هاتفك. يُرجى إعادَة تَثبيت سيجنال.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "خطأ في الخادم. يُرجى المحاولة لاحقًا مُجدَّدًا.";
@@ -4327,6 +4345,9 @@
 /* Context menu item in media viewer. Refers to deleting currently displayed photo/video. */
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "حذف";
 
+/* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
+"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Save";
+
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "ذكِّرني لاحقًا";
 
@@ -4388,7 +4409,7 @@
 "MESSAGE_ACTION_LINK_OPEN_PROXY" = "افتح بروكسي سيجنال";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "عرض مجموعة الملصقات";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "عرض مجموعة المُلصَقات";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_PAYMENT_DETAILS" = "تفاصيل عملية الدفع";
@@ -4407,6 +4428,9 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "الرَّد على هذه الرسالة";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_SAVE_MEDIA" = "Save";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SELECT_MESSAGE" = "اختيار مُتعدِّد";
@@ -5273,13 +5297,13 @@
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "أَضِف طبقة أمان إضافية واِشترط رمز المرور لإرسال المبالغ.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "أَضِف طبقة أمان إضافية واِشترط بصمة الأصبع (Touch ID) لإرسال المبالغ.";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "أَضِف طبقة أمان إضافية واِشترِط بصمة الإصبع (Touch ID) لإرسال المبالغ.";
 
 /* First time payments suggest payments lock title */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "هل تريد تفعيل قفل عملية الدفع لعمليات الإرسال المُستقبلية؟";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "يتطلَّب رمز المرور الخاص بك أو بصمة الأصبع (Touch ID) للإرسال";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "يتطلَّب رمز المرور الخاص بك أو بصمة الإصبع (Touch ID) للإرسال";
 
 /* Affirmative action title to enable payments lock */
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "يتطلَّب تقنية التعرُّف على الوجه (Face ID) للإرسال";
@@ -5291,7 +5315,7 @@
 "PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "يتطلَّب رمز المرور الخاص بهاتفك للإرسال";
 
 /* Affirmative action title to enable payments lock */
-"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "يتطلَّب بصمة الأصبع (Touch ID) للإرسال";
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "يتطلَّب بصمة الإصبع (Touch ID) للإرسال";
 
 /* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
 "PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "فشلت المُصادَقة. تأكَّد من تمكين المصادقة البيومترية على جهازك وتعيين رمز مرور.";
@@ -7250,7 +7274,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "استخدام رمز المرور";
 
 /* Enable Button title in Payments Lock Prompt view for Touch ID. */
-"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "استخدام بصمة الأصبع (Touch ID)";
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "استخدام بصمة الإصبع (Touch ID)";
 
 /* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "ساعد في منع أي شخص يستخدم هاتفكَ من الوصول إلى أموالك عن طريق تفعيل تقنية التعرُّف على الوجه (Face ID). يُمكنك تعطيل هذا الخيار في الإعدادات.";
@@ -7751,7 +7775,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "حزم المُلصَقات التي قد تلقيتها";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "فشل تحميل بعض حزم المُلصَقات";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "فشل تحميل بعض مجموعات المُلصَقات";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "حزم المُلصَقات المُثبَّتة";
@@ -7769,13 +7793,13 @@
 "STICKERS_MANAGE_VIEW_TITLE" = "المُلصَقات";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "حزمة مُلصَقات";
+"STICKERS_PACK_DEFAULT_TITLE" = "مجموعة المُلصَقات";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "حزمة مُلصَقات";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "مجموعة المُلصَقات";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "فشل تحميل حزمة المُلصَقات";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "فشل تحميل مجموعة المُلصَقات";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "إلغاء التثبيت";
@@ -7794,9 +7818,6 @@
 
 /* Title asking the user if they are sure they want to delete their story */
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "هل ترغبُ بحذف هذه القصة؟ ستُحذَف أيضًا من عند جميع من استلمها.";
-
-/* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "تمَّ حفظ القصة";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "إعادة التوجيه";
@@ -7851,9 +7872,6 @@
 
 /* Title text for the 'replies' tab on the stories views & replies sheet */
 "STORIES_REPLIES_TAB" = "الردود";
-
-/* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "تعذّر حفظ القصة";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "حفظ";
