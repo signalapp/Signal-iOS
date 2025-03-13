@@ -168,6 +168,7 @@ public class ContextMenuTargetedPreview {
     public let previewView: UIView
     public let previewViewSourceFrame: CGRect
     public var auxiliarySnapshot: UIView?
+    public var overlayView: UIView?
 
     /// The horizontal edge to which accessory views should be aligned.
     /// - Note

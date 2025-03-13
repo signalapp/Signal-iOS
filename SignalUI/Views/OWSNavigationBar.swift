@@ -321,6 +321,30 @@ internal struct OWSNavigationBarAppearance: Equatable {
     }
 }
 
+extension OWSNavigationBar {
+    
+    public override func snapshotView(afterScreenUpdates: Bool) -> UIView? {
+        if
+            let navigationBackground = subviews.first(where: {
+                String(describing: type(of: $0)) == "_UIBarBackground"
+            }),
+            let navigationContentView = subviews.first(where: {
+                String(describing: type(of: $0)) == "_UINavigationBarContentView"
+            }),
+            let snapShottedBackground = navigationBackground.snapshotView(afterScreenUpdates: afterScreenUpdates),
+            let snapShottedContentView = navigationContentView.snapshotView(afterScreenUpdates: afterScreenUpdates) {
+            let navigationBarViewContainer = UIView(frame: CGRect(origin: .zero, size: self.bounds.size))
+            navigationBarViewContainer.addSubview(snapShottedBackground)
+            navigationBarViewContainer.addSubview(snapShottedContentView)
+            
+            snapShottedBackground.frame.y = navigationBackground.frame.y
+            return navigationBarViewContainer
+        }
+        return nil
+    }
+    
+}
+
 fileprivate extension UIVisualEffectView {
 
     var tintingView: UIView? {

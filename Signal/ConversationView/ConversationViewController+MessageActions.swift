@@ -4,6 +4,7 @@
 //
 
 public import SignalServiceKit
+import SignalUI
 
 extension ConversationViewController {
 
@@ -189,13 +190,36 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         if let componentView = cell.componentView, let contentView = componentView.contextMenuContentView?() {
             let preview = ContextMenuTargetedPreview(view: contentView, alignment: alignment, accessoryViews: accessories)
             preview?.auxiliaryView = componentView.contextMenuAuxiliaryContentView?()
+            preview?.overlayView = createOverlayViewForContextMenuTargetedPreview()
             return preview
         } else {
             return ContextMenuTargetedPreview(view: cell, alignment: alignment, accessoryViews: accessories)
 
         }
     }
-
+    
+    private func createOverlayViewForContextMenuTargetedPreview() -> UIView? {
+        if
+            let snapShottedInputBar = inputToolbar?.snapshotView(afterScreenUpdates: false),
+            let navigationBar = navigationController?.navigationBar as? OWSNavigationBar,
+            let snapShottedNavigationBar = navigationBar.snapshotView(afterScreenUpdates: false) {
+            guard let window = view.window else { return nil }
+            
+            let overlayView = UIView(frame: window.bounds)
+            overlayView.backgroundColor = nil
+            overlayView.addSubview(snapShottedInputBar)
+            overlayView.addSubview(snapShottedNavigationBar)
+                        
+            snapShottedInputBar.frame.x = window.bounds.width - snapShottedInputBar.frame.width
+            snapShottedInputBar.frame.y = window.bounds.height - snapShottedInputBar.frame.height //Do we have a method buried somewhere in the code for this?
+            snapShottedNavigationBar.frame.x = window.bounds.width - snapShottedNavigationBar.frame.width
+            snapShottedNavigationBar.frame.y = navigationBar.frame.y
+            
+            return overlayView
+        }
+        return nil
+    }
+    
     public func contextMenuInteraction(_ interaction: ContextMenuInteraction, willDisplayMenuForConfiguration: ContextMenuConfiguration) {
         // Reset scroll view pan gesture recognizer, so CV does not scroll behind context menu post presentation on user swipe
         collectionView.panGestureRecognizer.isEnabled = false
