@@ -129,6 +129,6 @@ public class ReactionFinder {
             DELETE FROM \(OWSReaction.databaseTableName)
             WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
         """
-        transaction.execute(sql: sql, arguments: [uniqueMessageId])
+        transaction.database.executeHandlingErrors(sql: sql, arguments: [uniqueMessageId])
     }
 }

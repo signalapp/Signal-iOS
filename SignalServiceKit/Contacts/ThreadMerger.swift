@@ -330,7 +330,7 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
 
     private func mergeInteractions(_ threadPair: MergePair<TSContactThread>, tx: SDSAnyWriteTransaction) {
         let uniqueIds = threadPair.map { $0.uniqueId }
-        tx.unwrapGrdbWrite.execute(
+        tx.unwrapGrdbWrite.database.executeHandlingErrors(
             sql: """
                 UPDATE "\(InteractionRecord.databaseTableName)"
                 SET "\(interactionColumn: .threadUniqueId)" = ?
@@ -342,13 +342,13 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
 
     private func mergeReceiptsPendingMessageRequest(_ threadPair: MergePair<TSContactThread>, tx: SDSAnyWriteTransaction) {
         let threadRowIds = threadPair.map { $0.sqliteRowId! }
-        tx.unwrapGrdbWrite.execute(
+        tx.unwrapGrdbWrite.database.executeHandlingErrors(
             sql: """
                 UPDATE "\(PendingViewedReceiptRecord.databaseTableName)" SET "threadId" = ? WHERE "threadId" = ?
             """,
             arguments: [threadRowIds.intoValue, threadRowIds.fromValue]
         )
-        tx.unwrapGrdbWrite.execute(
+        tx.unwrapGrdbWrite.database.executeHandlingErrors(
             sql: """
                 UPDATE "\(PendingReadReceiptRecord.databaseTableName)" SET "threadId" = ? WHERE "threadId" = ?
             """,

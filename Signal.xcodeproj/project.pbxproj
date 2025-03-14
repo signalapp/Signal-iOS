@@ -2766,6 +2766,7 @@
 		D9F6554229D67708002A330A /* SDSCodableModel+SDSSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */; };
 		D9F6554429D798CC002A330A /* FactoryInitialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554329D798CC002A330A /* FactoryInitialization.swift */; };
 		D9F6554829DA4277002A330A /* FactoryInitializationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */; };
+		D9F96EDE2D83BEFF00466C6A /* Database+Execute.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F96EDD2D83BEFB00466C6A /* Database+Execute.swift */; };
 		D9F9A6392BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */; };
 		D9F9A63B2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */; };
 		D9F9A63D2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63C2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift */; };
@@ -6619,6 +6620,7 @@
 		D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+SDSSerialization.swift"; sourceTree = "<group>"; };
 		D9F6554329D798CC002A330A /* FactoryInitialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitialization.swift; sourceTree = "<group>"; };
 		D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitializationTests.swift; sourceTree = "<group>"; };
+		D9F96EDD2D83BEFB00466C6A /* Database+Execute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Database+Execute.swift"; sourceTree = "<group>"; };
 		D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkDeleteInteractionJobRecord.swift; sourceTree = "<group>"; };
 		D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkDeleteInteractionJobQueue.swift; sourceTree = "<group>"; };
 		D9F9A63C2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeAddressableMessageFinder.swift; sourceTree = "<group>"; };
@@ -13737,6 +13739,7 @@
 				6673FF83297B666500F96CFD /* SDSDatabaseStorage */,
 				F9C5CA3C289453B100548EEE /* Snapshots */,
 				501E4DAA2D133F4400D883C7 /* CompletionSerializer.swift */,
+				D9F96EDD2D83BEFB00466C6A /* Database+Execute.swift */,
 				F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */,
 				F9B652C228D8E3DF006914CA /* DatabaseRecovery.swift */,
 				F9C5CA48289453B100548EEE /* DeepCopy.swift */,
@@ -17233,6 +17236,7 @@
 				F9C5CE35289453B400548EEE /* DarwinNotificationName.swift in Sources */,
 				F93999F828C8204800E34899 /* Data+MessagePadding.swift in Sources */,
 				F9C5CDFF289453B400548EEE /* Data+SSK.swift in Sources */,
+				D9F96EDE2D83BEFF00466C6A /* Database+Execute.swift in Sources */,
 				F9C5CD1D289453B300548EEE /* DatabaseChangeObserver.swift in Sources */,
 				669C4AAC2B7D4E56001EF103 /* DatabaseChanges.swift in Sources */,
 				669C4AAE2B7D4F7F001EF103 /* DatabaseChangesSnapshot.swift in Sources */,

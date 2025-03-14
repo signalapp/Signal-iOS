@@ -243,7 +243,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
             tx: tx
         )
 
-        tx.unwrapGrdbWrite.executeAndCacheStatement(
+        tx.unwrapGrdbWrite.database.executeAndCacheStatementHandlingErrors(
             sql: "DELETE FROM model_TSInteraction WHERE uniqueId = ?",
             arguments: [interaction.uniqueId]
         )

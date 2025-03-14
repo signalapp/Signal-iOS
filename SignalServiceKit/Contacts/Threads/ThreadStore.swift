@@ -207,7 +207,7 @@ public class ThreadStoreImpl: ThreadStore {
         let tx = SDSDB.shimOnlyBridge(tx)
 
         let sql = "DELETE FROM \(thread.sdsTableName) WHERE uniqueId = ?"
-        tx.unwrapGrdbWrite.executeAndCacheStatement(sql: sql, arguments: [thread.uniqueId])
+        tx.unwrapGrdbWrite.database.executeAndCacheStatementHandlingErrors(sql: sql, arguments: [thread.uniqueId])
     }
 
     public func updateThread(_ thread: TSThread, tx: DBWriteTransaction) {

@@ -195,46 +195,6 @@ public extension StoreContext {
     }
 }
 
-// MARK: - Convenience Methods
-
-public extension GRDBWriteTransaction {
-    /// Execute some SQL.
-    func execute(sql: String, arguments: StatementArguments = .init()) {
-        database.executeHandlingErrors(sql: sql, arguments: arguments)
-    }
-
-    func executeAndCacheStatement(sql: String, arguments: StatementArguments) {
-        database.executeAndCacheStatementHandlingErrors(sql: sql, arguments: arguments)
-    }
-}
-
-public extension Database {
-    /// Execute some SQL.
-    func executeHandlingErrors(sql: String, arguments: StatementArguments) {
-        do {
-            let statement = try makeStatement(sql: sql)
-            try statement.setArguments(arguments)
-            try statement.execute()
-        } catch {
-            handleFatalDatabaseError(error)
-        }
-    }
-
-    /// Execute some SQL and cache the statement.
-    ///
-    /// Caching the statement has significant performance benefits over ``execute`` for queries
-    /// that are performed repeatedly.
-    func executeAndCacheStatementHandlingErrors(sql: String, arguments: StatementArguments = .init()) {
-        do {
-            let statement = try cachedStatement(sql: sql)
-            try statement.setArguments(arguments)
-            try statement.execute()
-        } catch {
-            handleFatalDatabaseError(error)
-        }
-    }
-}
-
 // MARK: -
 
 public extension SDSAnyReadTransaction {
@@ -255,26 +215,4 @@ public extension SDSAnyWriteTransaction {
             return grdbWrite
         }
     }
-}
-
-// MARK: -
-
-public extension GRDB.Database {
-    final func strictRead<T>(_ criticalSection: (_ database: GRDB.Database) throws -> T) -> T {
-        do {
-            return try criticalSection(self)
-        } catch {
-            handleFatalDatabaseError(error)
-        }
-    }
-}
-
-// MARK: -
-
-private func handleFatalDatabaseError(_ error: Error) -> Never {
-    DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
-        userDefaults: CurrentAppContext().appUserDefaults(),
-        error: error
-    )
-    owsFail("Error: \(error)")
 }

@@ -114,7 +114,7 @@ public class GRDBGroupsV2MessageJobFinder {
             FROM \(IncomingGroupsV2MessageJobRecord.databaseTableName)
             WHERE \(incomingGroupsV2MessageJobColumn: .uniqueId) in (\(commaSeparatedIds))
         """
-        transaction.execute(sql: sql)
+        transaction.database.executeHandlingErrors(sql: sql)
     }
 
     public func jobCount(transaction: SDSAnyReadTransaction) -> UInt {

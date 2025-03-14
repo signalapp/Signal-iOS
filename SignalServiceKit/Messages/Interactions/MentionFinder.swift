@@ -88,7 +88,7 @@ public class MentionFinder {
             DELETE FROM \(TSMention.databaseTableName)
             WHERE \(TSMention.columnName(.uniqueMessageId)) = ?
         """
-        transaction.execute(sql: sql, arguments: [message.uniqueId])
+        transaction.database.executeHandlingErrors(sql: sql, arguments: [message.uniqueId])
     }
 
     public class func mentionedAddresses(for message: TSMessage, transaction: GRDBReadTransaction) -> [SignalServiceAddress] {
