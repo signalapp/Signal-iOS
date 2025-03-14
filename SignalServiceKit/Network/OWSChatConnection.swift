@@ -533,8 +533,6 @@ public class OWSChatConnection {
             throw OWSHTTPError.invalidAppState
         }
 
-        let connectionType = self.type
-
         let requestId = UInt64.random(in: .min ... .max)
         let requestDescription = "\(request) [\(requestId)]"
         do {
