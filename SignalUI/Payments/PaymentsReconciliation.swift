@@ -155,7 +155,7 @@ public class PaymentsReconciliation {
     public func scheduleReconciliationNow(transaction: SDSAnyWriteTransaction) {
         Self.schedulingStore.removeAll(transaction: transaction.asV2Write)
 
-        transaction.addAsyncCompletionOffMain {
+        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
             self.reconcileIfNecessary()
         }
     }

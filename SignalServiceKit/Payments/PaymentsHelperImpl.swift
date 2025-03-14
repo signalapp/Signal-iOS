@@ -229,7 +229,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         // Now that we have activated, they're useless.
         _ = try? TSPaymentsActivationRequestModel.deleteAll(transaction.unwrapGrdbWrite.database)
 
-        transaction.addAsyncCompletionOffMain {
+        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
             NotificationCenter.default.postNotificationNameAsync(PaymentsConstants.arePaymentsEnabledDidChange, object: nil)
 
             SSKEnvironment.shared.paymentsEventsRef.paymentsStateDidChange()

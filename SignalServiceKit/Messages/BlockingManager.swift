@@ -352,7 +352,7 @@ public class BlockingManager {
         tx transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("")
-        transaction.addAsyncCompletionOnMain {
+        transaction.addAsyncCompletion(on: DispatchQueue.main) {
             NotificationCenter.default.post(name: Self.blockedSyncDidComplete, object: nil)
         }
 

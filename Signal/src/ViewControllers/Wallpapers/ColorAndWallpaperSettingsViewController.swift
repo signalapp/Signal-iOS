@@ -295,7 +295,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                     )
                 }
             }
-            tx.addAsyncCompletionOnMain {
+            tx.addAsyncCompletion(on: DispatchQueue.main) {
                 self.updateTableContents()
             }
         }

@@ -1176,7 +1176,7 @@ extension OWSUserProfile {
         }
 
         if let completion {
-            tx.addAsyncCompletionOffMain(completion)
+            tx.addAsyncCompletion(on: DispatchQueue.global(), block: completion)
         }
 
         if case .localUser = internalAddress, case .setTo = changes.badges {
@@ -1237,7 +1237,7 @@ extension OWSUserProfile {
         }()
 
         if shouldUpdateStorageService {
-            tx.addAsyncCompletionOffMain {
+            tx.addAsyncCompletion(on: DispatchQueue.global()) {
                 switch internalAddress {
                 case .localUser:
                     SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
@@ -1250,7 +1250,7 @@ extension OWSUserProfile {
         let oldProfileKey = oldInstance?.profileKey
         let newProfileKey = newInstance.profileKey
 
-        tx.addAsyncCompletionOnMain {
+        tx.addAsyncCompletion(on: DispatchQueue.main) {
             switch internalAddress {
             case .localUser:
                 if oldProfileKey != newProfileKey {

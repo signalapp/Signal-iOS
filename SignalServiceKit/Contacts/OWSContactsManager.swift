@@ -459,7 +459,7 @@ extension OWSContactsManager: ContactManager {
         if let contactThread = TSContactThread.getWithContactAddress(address, transaction: tx) {
             SSKEnvironment.shared.databaseStorageRef.touch(thread: contactThread, shouldReindex: false, transaction: tx)
         }
-        tx.addAsyncCompletionOffMain {
+        tx.addAsyncCompletion(on: DispatchQueue.global()) {
             NotificationCenter.default.postNotificationNameAsync(
                 Self.skipContactAvatarBlurDidChange,
                 object: nil,
@@ -488,7 +488,7 @@ extension OWSContactsManager: ContactManager {
         )
         SSKEnvironment.shared.databaseStorageRef.touch(thread: groupThread, shouldReindex: false, transaction: transaction)
 
-        transaction.addAsyncCompletionOffMain {
+        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
             NotificationCenter.default.postNotificationNameAsync(
                 Self.skipGroupAvatarBlurDidChange,
                 object: nil,

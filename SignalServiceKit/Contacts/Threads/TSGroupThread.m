@@ -11,14 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const TSGroupThreadAvatarChangedNotification = @"TSGroupThreadAvatarChangedNotification";
 NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_NotificationKey_UniqueId";
 
-BOOL areNullableObjectsEqual(NSObject *_Nullable left, NSObject *_Nullable right);
-
-@interface TSGroupThread ()
-
-@property (nonatomic) TSGroupModel *groupModel;
-
-@end
-
 #pragma mark -
 
 @implementation TSGroupThread
@@ -136,81 +128,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 + (NSString *)defaultGroupName
 {
     return OWSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
-}
-
-- (void)updateWithGroupModel:(TSGroupModel *)groupModel transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self updateWithGroupModel:groupModel shouldUpdateChatListUi:YES transaction:transaction];
-}
-
-BOOL areNullableObjectsEqual(NSObject *_Nullable left, NSObject *_Nullable right)
-{
-    // if both are nil, they are equal; if left is nil and right is not, objc runtime will return NO to the isEqual
-    // msgSend.
-    return left == right || [left isEqual:right];
-}
-
-- (void)updateWithGroupModel:(TSGroupModel *)newGroupModel
-      shouldUpdateChatListUi:(BOOL)shouldUpdateChatListUi
-                 transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(newGroupModel);
-    OWSAssertDebug(transaction);
-
-    switch (newGroupModel.groupsVersion) {
-        case GroupsVersionV1:
-            OWSAssertDebug(newGroupModel.groupsVersion == self.groupModel.groupsVersion);
-            break;
-        case GroupsVersionV2:
-            // Group version may be changing due to migration.
-            break;
-    }
-
-    BOOL didAvatarChange = !areNullableObjectsEqual(newGroupModel.avatarHash, self.groupModel.avatarHash);
-    BOOL didNameChange = ![newGroupModel.groupNameOrDefault isEqualToString:self.groupModel.groupNameOrDefault];
-
-    NSArray<SignalServiceAddress *> *oldGroupMembers = self.groupModel.groupMembers;
-
-    [self
-        anyUpdateGroupThreadWithTransaction:transaction
-                                      block:^(TSGroupThread *thread) {
-                                          if ([thread.groupModel isKindOfClass:TSGroupModelV2.class]) {
-                                              if (![newGroupModel isKindOfClass:TSGroupModelV2.class]) {
-                                                  // Can't downgrade a v2 group to a v1 group.
-                                                  OWSFail(@"Invalid group model.");
-                                              } else {
-                                                  // Can't downgrade a v2 group to an earlier revision.
-                                                  TSGroupModelV2 *oldGroupModelV2 = (TSGroupModelV2 *)thread.groupModel;
-                                                  TSGroupModelV2 *newGroupModelV2 = (TSGroupModelV2 *)newGroupModel;
-                                                  OWSPrecondition(oldGroupModelV2.revision <= newGroupModelV2.revision);
-                                              }
-                                          }
-
-                                          thread.groupModel = [newGroupModel copy];
-                                      }];
-    [self updateGroupMemberRecordsWithTransaction:transaction];
-    [self clearGroupSendEndorsementsIfNeededWithOldGroupMembers:oldGroupMembers tx:transaction];
-
-    // We only need to re-index the group if the group name changed.
-    [SSKEnvironment.shared.databaseStorageRef touchThread:self
-                                            shouldReindex:didNameChange
-                                   shouldUpdateChatListUi:shouldUpdateChatListUi
-                                              transaction:transaction];
-
-    if (didAvatarChange) {
-        [transaction addAsyncCompletionOnMain:^{ [self fireAvatarChangedNotification]; }];
-    }
-}
-
-- (void)fireAvatarChangedNotification
-{
-    OWSAssertIsOnMainThread();
-
-    NSDictionary *userInfo = @{ TSGroupThread_NotificationKey_UniqueId : self.uniqueId };
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:TSGroupThreadAvatarChangedNotification
-                                                        object:self.uniqueId
-                                                      userInfo:userInfo];
 }
 
 #pragma mark -

@@ -376,7 +376,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
             let processedUniqueIds = processedJobs.map { $0.uniqueId }
             self.finder.removeJobs(withUniqueIds: processedUniqueIds, transaction: transaction.unwrapGrdbWrite)
 
-            transaction.addAsyncCompletionOffMain {
+            transaction.addAsyncCompletion(on: DispatchQueue.global()) {
                 assert(backgroundTask != nil)
                 backgroundTask = nil
 
@@ -905,7 +905,7 @@ public class GroupsV2MessageProcessor {
 
         // The new envelope won't be visible to the finder until this transaction commits,
         // so drainQueue in the transaction completion.
-        tx.addAsyncCompletionOffMain {
+        tx.addAsyncCompletion(on: DispatchQueue.global()) {
             self.processingQueue.drainQueueWhenReady()
         }
     }

@@ -530,8 +530,10 @@ extension OWSProfileManager: ProfileManager {
                 authedAccount: authedAccount
             ))
         }
-        tx.addAsyncCompletionOnMain {
-            self._updateProfileOnServiceIfNecessary()
+        tx.addSyncCompletion {
+            Task { @MainActor in
+                self._updateProfileOnServiceIfNecessary()
+            }
         }
         return promise
     }
@@ -650,7 +652,7 @@ extension OWSProfileManager: ProfileManager {
                 if -(lastGroupProfileKeyCheckTimestamp?.timeIntervalSinceNow ?? 0) > .week {
                     SSKEnvironment.shared.groupsV2Ref.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: tx)
                     self.setLastGroupProfileKeyCheckTimestamp(tx: tx)
-                    tx.addAsyncCompletionOffMain {
+                    tx.addAsyncCompletion(on: DispatchQueue.global()) {
                         SSKEnvironment.shared.groupsV2Ref.processProfileKeyUpdates()
                     }
                 }

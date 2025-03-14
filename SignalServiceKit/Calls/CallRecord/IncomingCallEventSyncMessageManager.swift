@@ -675,7 +675,7 @@ final class _IncomingCallEventSyncMessageManagerImpl_MarkAsReadImpl: _IncomingCa
             transaction: tx
         )
 
-        tx.addAsyncCompletionOnMain {
+        tx.addAsyncCompletion(on: DispatchQueue.main) {
             self.notificationPresenter.cancelNotificationsForMissedCalls(
                 threadUniqueId: thread.uniqueId
             )

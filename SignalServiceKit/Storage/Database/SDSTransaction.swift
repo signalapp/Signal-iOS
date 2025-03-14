@@ -151,8 +151,7 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
         super.init(readTransaction)
     }
 
-    // NOTE: These completions are performed _after_ the write
-    //       transaction has completed.
+    /// Run the given block synchronously after the transaction is finalized.
     public func addSyncCompletion(_ block: @escaping () -> Void) {
         switch writeTransaction {
         case .grdbWrite(let grdbWrite):
@@ -160,26 +159,8 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
         }
     }
 
-    // Objective-C doesn't honor default arguments.
-    @objc
-    public func addAsyncCompletionOnMain(_ block: @escaping @MainActor () -> Void) {
-        addAsyncCompletion(queue: .main, block: { MainActor.assumeIsolated(block) })
-    }
-
-    // Objective-C doesn't honor default arguments.
-    @objc
-    public func addAsyncCompletionOffMain(_ block: @escaping () -> Void) {
-        addAsyncCompletion(queue: .global(), block: block)
-    }
-
-    @objc
-    public func addAsyncCompletion(queue: DispatchQueue, block: @escaping () -> Void) {
-        switch writeTransaction {
-        case .grdbWrite(let grdbWrite):
-            grdbWrite.addAsyncCompletion(queue: queue, block: block)
-        }
-    }
-
+    /// Schedule the given block to run on `scheduler` after the transaction is
+    /// finalized.
     public func addAsyncCompletion(on scheduler: Scheduler, block: @escaping () -> Void) {
         switch writeTransaction {
         case .grdbWrite(let grdbWrite):

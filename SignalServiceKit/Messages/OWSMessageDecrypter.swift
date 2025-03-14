@@ -65,7 +65,7 @@ public class OWSMessageDecrypter {
         Logger.info("Sending null message to reset session after undecryptable message from: \(senderId)")
         store.setDate(Date(), key: senderId, transaction: transaction.asV2Write)
 
-        transaction.addAsyncCompletionOffMain {
+        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread, transaction: transaction)
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
@@ -490,7 +490,7 @@ public class OWSMessageDecrypter {
 
         // We do this work in an async completion so we don't delay
         // receipt of this message.
-        transaction.addAsyncCompletionOffMain {
+        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
             let needsReactiveProfileKeyMessage: Bool = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 // This user is whitelisted, they should have our profile key / be sending UD messages
                 // Send them our profile key in case they somehow lost it.

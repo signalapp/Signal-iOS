@@ -162,7 +162,7 @@ extension ConversationViewController: ContactShareViewControllerDelegate {
                 setDefaultTimerIfNecessary: true,
                 tx: transaction
             )
-            transaction.addAsyncCompletionOnMain {
+            transaction.addAsyncCompletion(on: DispatchQueue.main) {
                 ThreadUtil.enqueueMessage(withContactShare: contactShareDraft, thread: thread)
                 self.messageWasSent()
 

@@ -70,7 +70,7 @@ class GroupsV2ProfileKeyUpdater {
         }
         self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread, transaction: transaction)
 
-        transaction.addAsyncCompletionOffMain {
+        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
             self.setNeedsUpdate()
         }
     }

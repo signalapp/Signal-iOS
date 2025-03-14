@@ -131,7 +131,7 @@ public class OWSReceiptManager: NSObject {
             }
         case .onThisDevice:
             enqueueLinkedDeviceReadReceipt(forMessage: message, transaction: transaction)
-            transaction.addAsyncCompletionOffMain { self.scheduleProcessing() }
+            transaction.addAsyncCompletion(on: DispatchQueue.global()) { self.scheduleProcessing() }
             if message.authorAddress.isLocalAddress {
                 owsFailDebug("We don't support incoming messages from self.")
                 return
@@ -158,7 +158,7 @@ public class OWSReceiptManager: NSObject {
             }
         case .onThisDevice:
             enqueueLinkedDeviceViewedReceipt(forIncomingMessage: message, transaction: transaction)
-            transaction.addAsyncCompletionOffMain { self.scheduleProcessing() }
+            transaction.addAsyncCompletion(on: DispatchQueue.global()) { self.scheduleProcessing() }
             if message.authorAddress.isLocalAddress {
                 owsFailDebug("We don't support incoming messages from self.")
                 return
@@ -185,7 +185,7 @@ public class OWSReceiptManager: NSObject {
         case .onThisDevice:
             // We only send read receipts to linked devices, not to the author.
             enqueueLinkedDeviceReadReceipt(forStoryMessage: storyMessage, transaction: transaction)
-            transaction.addAsyncCompletionOffMain { self.scheduleProcessing() }
+            transaction.addAsyncCompletion(on: DispatchQueue.global()) { self.scheduleProcessing() }
         }
     }
 
@@ -199,7 +199,7 @@ public class OWSReceiptManager: NSObject {
             owsFailDebug("Unexpectedly had story receipt blocked by message request.")
         case .onThisDevice:
             enqueueLinkedDeviceViewedReceipt(forStoryMessage: storyMessage, transaction: transaction)
-            transaction.addAsyncCompletionOffMain { self.scheduleProcessing() }
+            transaction.addAsyncCompletion(on: DispatchQueue.global()) { self.scheduleProcessing() }
 
             if StoryManager.areViewReceiptsEnabled {
                 enqueueSenderViewedReceipt(forStoryMessage: storyMessage, transaction: transaction)
@@ -209,12 +209,12 @@ public class OWSReceiptManager: NSObject {
 
     public func incomingGiftWasRedeemed(_ incomingMessage: TSIncomingMessage, transaction: SDSAnyWriteTransaction) {
         enqueueLinkedDeviceViewedReceipt(forIncomingMessage: incomingMessage, transaction: transaction)
-        transaction.addAsyncCompletionOffMain { self.scheduleProcessing() }
+        transaction.addAsyncCompletion(on: DispatchQueue.global()) { self.scheduleProcessing() }
     }
 
     public func outgoingGiftWasOpened(_ outgoingMessage: TSOutgoingMessage, transaction: SDSAnyWriteTransaction) {
         enqueueLinkedDeviceViewedReceipt(forOutgoingMessage: outgoingMessage, transaction: transaction)
-        transaction.addAsyncCompletionOffMain { self.scheduleProcessing() }
+        transaction.addAsyncCompletion(on: DispatchQueue.global()) { self.scheduleProcessing() }
     }
 
     // MARK: - Settings

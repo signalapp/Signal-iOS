@@ -145,7 +145,7 @@ extension ThreadUtil {
                 transaction: writeTransaction
             )
             if let persistenceCompletion = persistenceCompletion {
-                writeTransaction.addAsyncCompletionOnMain {
+                writeTransaction.addAsyncCompletion(on: DispatchQueue.main) {
                     persistenceCompletion()
                 }
             }

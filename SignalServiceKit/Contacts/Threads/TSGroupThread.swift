@@ -9,6 +9,52 @@ public import LibSignalClient
 // MARK: -
 
 extension TSGroupThread {
+    func update(
+        with newGroupModel: TSGroupModel,
+        shouldUpdateChatListUi: Bool = true,
+        transaction tx: SDSAnyWriteTransaction
+    ) {
+        let didAvatarChange = newGroupModel.avatarHash == groupModel.avatarHash
+        let didNameChange = newGroupModel.groupNameOrDefault == groupModel.groupNameOrDefault
+
+        let oldGroupMembers = groupModel.groupMembers
+
+        anyUpdateGroupThread(transaction: tx) { groupThread in
+            if let oldGroupModelV2 = groupThread.groupModel as? TSGroupModelV2 {
+                if let newGroupModelV2 = newGroupModel as? TSGroupModelV2 {
+                    owsPrecondition(oldGroupModelV2.revision <= newGroupModelV2.revision)
+                } else {
+                    owsFail("Cannot downgrade a V2 model to a V1 model!")
+                }
+            }
+
+            groupThread.groupModel = newGroupModel.copy() as! TSGroupModel
+        }
+
+        updateGroupMemberRecords(transaction: tx)
+        clearGroupSendEndorsementsIfNeeded(oldGroupMembers: oldGroupMembers, tx: tx)
+
+        SSKEnvironment.shared.databaseStorageRef.touch(
+            thread: self,
+            shouldReindex: didNameChange,
+            transaction: tx
+        )
+
+        if didAvatarChange {
+            tx.addAsyncCompletion(on: DispatchQueue.main) {
+                NotificationCenter.default.post(
+                    name: .TSGroupThreadAvatarChanged,
+                    object: self.uniqueId,
+                    userInfo: [TSGroupThread_NotificationKey_UniqueId: self.uniqueId]
+                )
+            }
+        }
+    }
+}
+
+// MARK: -
+
+extension TSGroupThread {
     public var groupIdentifier: GroupIdentifier {
         get throws {
             return try GroupIdentifier(contents: [UInt8](self.groupId))

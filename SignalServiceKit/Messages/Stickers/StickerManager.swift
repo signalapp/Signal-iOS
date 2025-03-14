@@ -243,7 +243,7 @@ public class StickerManager: NSObject {
             )
         }
 
-        transaction.addAsyncCompletionOffMain {
+        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
             packsDidChangeEvent.requestNotify()
         }
     }
@@ -372,7 +372,7 @@ public class StickerManager: NSObject {
             }
         }
 
-        transaction.addAsyncCompletionOffMain {
+        transaction.addAsyncCompletion(on: DispatchQueue.global()) {
             _ = promise.ensure {
                 packsDidChangeEvent.requestNotify()
             }

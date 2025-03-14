@@ -165,7 +165,7 @@ public class ReceiptSender: NSObject {
         let persistedSet = fetchReceiptSet(receiptType: receiptType, aci: aci, tx: tx.asV2Read)
         persistedSet.insert(timestamp: timestamp, messageUniqueId: messageUniqueId)
         storeReceiptSet(persistedSet, receiptType: receiptType, aci: aci, tx: tx.asV2Write)
-        tx.addAsyncCompletionOffMain {
+        tx.addAsyncCompletion(on: DispatchQueue.global()) {
             self.sendingState.update { $0.mightHavePendingReceipts = true }
             self.sendPendingReceiptsIfNeeded(pendingTask: pendingTask)
         }
