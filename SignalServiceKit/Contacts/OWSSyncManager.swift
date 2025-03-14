@@ -123,19 +123,20 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
     // MARK: - Sync Requests
 
     public func sendAllSyncRequestMessagesIfNecessary() -> Promise<Void> {
-        _sendAllSyncRequestMessages(onlyIfNecessary: true)
+        return Promise.wrapAsync { try await self._sendAllSyncRequestMessages(onlyIfNecessary: true) }
     }
 
     public func sendAllSyncRequestMessages(timeout: TimeInterval) -> Promise<Void> {
-        _sendAllSyncRequestMessages(onlyIfNecessary: false).timeout(seconds: timeout, substituteValue: ())
+        return Promise.wrapAsync { try await self._sendAllSyncRequestMessages(onlyIfNecessary: false) }.timeout(seconds: timeout, substituteValue: ())
     }
 
-    private func _sendAllSyncRequestMessages(onlyIfNecessary: Bool) -> Promise<Void> {
+    private func _sendAllSyncRequestMessages(onlyIfNecessary: Bool) async throws {
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            return Promise(error: OWSAssertionError("Unexpectedly tried to send sync request before registration."))
+            throw OWSAssertionError("Unexpectedly tried to send sync request before registration.")
         }
 
-        return SSKEnvironment.shared.databaseStorageRef.write(.promise) { (transaction) -> Promise<Void> in
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let completionGuarantees = await databaseStorage.awaitableWrite { (transaction) -> [Guarantee<Notification>] in
             let currentAppVersion = AppVersionImpl.shared.currentAppVersion
             let syncRequestedAppVersion = {
                 Self.keyValueStore.getString(
@@ -146,7 +147,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
             // If we don't need to send sync messages, don't send them.
             if onlyIfNecessary, currentAppVersion == syncRequestedAppVersion() {
-                return .value(())
+                return []
             }
 
             // Otherwise, send them & mark that we sent them for this app version.
@@ -161,13 +162,16 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                 transaction: transaction
             )
 
-            return Promise.when(fulfilled: [
-                NotificationCenter.default.observe(once: .incomingContactSyncDidComplete).asVoid(),
-                NotificationCenter.default.observe(once: .syncManagerConfigurationSyncDidComplete).asVoid(),
-                NotificationCenter.default.observe(once: BlockingManager.blockedSyncDidComplete).asVoid(),
-                NotificationCenter.default.observe(once: .syncManagerKeysSyncDidComplete).asVoid()
-            ])
-        }.then(on: DependenciesBridge.shared.schedulers.sync) { $0 }
+            return [
+                NotificationCenter.default.observe(once: .incomingContactSyncDidComplete),
+                NotificationCenter.default.observe(once: .syncManagerConfigurationSyncDidComplete),
+                NotificationCenter.default.observe(once: BlockingManager.blockedSyncDidComplete),
+                NotificationCenter.default.observe(once: .syncManagerKeysSyncDidComplete),
+            ]
+        }
+        for completionGuarantee in completionGuarantees {
+            _ = await completionGuarantee.awaitable()
+        }
     }
 
     public func sendKeysSyncMessage() {

@@ -693,51 +693,45 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         }
 
         // Show an activity indicator to block the UI during the profile upload.
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modalActivityIndicator in
-            SSKEnvironment.shared.databaseStorageRef.write(.promise) { tx in
-                SSKEnvironment.shared.profileManagerRef.updateLocalProfile(
-                    profileGivenName: profileValues.givenName.changedValue,
-                    profileFamilyName: profileValues.familyName.changedValue,
-                    profileBio: profileValues.bio.changedValue,
-                    profileBioEmoji: profileValues.bioEmoji.changedValue,
-                    profileAvatarData: { () -> OptionalAvatarChange<Data?> in
-                        switch profileValues.avatarData.changedValue {
-                        case .noChange:
-                            return .noChange
-                        case .setTo(let newValue):
-                            return .setTo(newValue)
-                        }
-                    }(),
-                    visibleBadgeIds: profileValues.visibleBadgeIds.changedValue,
-                    unsavedRotatedProfileKey: nil,
-                    userProfileWriter: .localUser,
-                    authedAccount: .implicit(),
-                    tx: tx
-                )
-            }.then(on: SyncScheduler()) { (updatePromise: Promise<Void>) in
-                // Run the Promise returned from databaseStorage.write(...).
-                updatePromise
-            }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
-                SSKEnvironment.shared.databaseStorageRef.write(.promise) { transaction in
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false, asyncBlock: { modalActivityIndicator in
+            let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+            do {
+                let updatePromise = await databaseStorage.awaitableWrite { tx in
+                    SSKEnvironment.shared.profileManagerRef.updateLocalProfile(
+                        profileGivenName: profileValues.givenName.changedValue,
+                        profileFamilyName: profileValues.familyName.changedValue,
+                        profileBio: profileValues.bio.changedValue,
+                        profileBioEmoji: profileValues.bioEmoji.changedValue,
+                        profileAvatarData: { () -> OptionalAvatarChange<Data?> in
+                            switch profileValues.avatarData.changedValue {
+                            case .noChange:
+                                return .noChange
+                            case .setTo(let newValue):
+                                return .setTo(newValue)
+                            }
+                        }(),
+                        visibleBadgeIds: profileValues.visibleBadgeIds.changedValue,
+                        unsavedRotatedProfileKey: nil,
+                        userProfileWriter: .localUser,
+                        authedAccount: .implicit(),
+                        tx: tx
+                    )
+                }
+                try await updatePromise.awaitable()
+                await databaseStorage.awaitableWrite { transaction in
                     DonationSubscriptionManager.setDisplayBadgesOnProfile(
                         displayBadgesOnProfile,
                         updateStorageService: true,
                         transaction: transaction
                     )
                 }
-            }.done(on: DispatchQueue.main) {
-                modalActivityIndicator.dismiss { [weak self] in
-                    AssertIsOnMainThread()
-                    self?.profileCompleted()
-                }
-            }.catch(on: DispatchQueue.main) { error in
-                owsFailDebug("Error: \(error)")
-                modalActivityIndicator.dismiss { [weak self] in
-                    AssertIsOnMainThread()
-                    self?.profileCompleted()
-                }
+            } catch {
+                owsFailDebug("\(error)")
             }
-        }
+            modalActivityIndicator.dismiss { [weak self] in
+                self?.profileCompleted()
+            }
+        })
     }
 
     private func profileCompleted() {

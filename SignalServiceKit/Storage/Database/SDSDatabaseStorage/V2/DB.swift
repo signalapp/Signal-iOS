@@ -52,22 +52,6 @@ public protocol DB {
         block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) async -> T
 
-    // MARK: - Promises
-
-    func readPromise<T>(
-        file: String,
-        function: String,
-        line: Int,
-        _ block: @escaping (DBReadTransaction) throws -> T
-    ) -> Promise<T>
-
-    func writePromise<T>(
-        file: String,
-        function: String,
-        line: Int,
-        _ block: @escaping (DBWriteTransaction) throws -> T
-    ) -> Promise<T>
-
     // MARK: - Value Methods
 
     func read<T>(
@@ -165,26 +149,6 @@ extension DB {
         block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) async -> T {
         return await awaitableWriteWithTxCompletion(file: file, function: function, line: line, block: block)
-    }
-
-    // MARK: - Promises
-
-    public func readPromise<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        _ block: @escaping (DBReadTransaction) throws -> T
-    ) -> Promise<T> {
-        return readPromise(file: file, function: function, line: line, block)
-    }
-
-    public func writePromise<T>(
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        _ block: @escaping (DBWriteTransaction) throws -> T
-    ) -> Promise<T> {
-        return writePromise(file: file, function: function, line: line, block)
     }
 
     // MARK: - Value Methods

@@ -523,52 +523,6 @@ public class SDSDatabaseStorage: NSObject, DB {
         }
     }
 
-    // MARK: - Promises
-
-    public func readPromise<T>(file: String, function: String, line: Int, _ block: @escaping (DBReadTransaction) throws -> T) -> Promise<T> {
-        return read(.promise, file: file, function: function, line: line, block)
-    }
-
-    public func read<T>(
-        _: PromiseNamespace,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        _ block: @escaping (DBReadTransaction) throws -> T
-    ) -> Promise<T> {
-        return Promise { future in
-            DispatchQueue.global().async {
-                do {
-                    future.resolve(try self.read(file: file, function: function, line: line, block: block))
-                } catch {
-                    future.reject(error)
-                }
-            }
-        }
-    }
-
-    public func writePromise<T>(file: String, function: String, line: Int, _ block: @escaping (DBWriteTransaction) throws -> T) -> Promise<T> {
-        return write(.promise, file: file, function: function, line: line, block)
-    }
-
-    public func write<T>(
-        _: PromiseNamespace,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line,
-        _ block: @escaping (DBWriteTransaction) throws -> T
-    ) -> Promise<T> {
-        return Promise { future in
-            self.asyncWriteQueue.async {
-                do {
-                    future.resolve(try self.write(file: file, function: function, line: line, block: block))
-                } catch {
-                    future.reject(error)
-                }
-            }
-        }
-    }
-
     // MARK: - Obj-C Bridge
 
     /// NOTE: Do NOT call these methods directly. See SDSDatabaseStorage+Objc.h.

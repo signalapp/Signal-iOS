@@ -2918,7 +2918,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         if !inMemoryState.hasProfileName {
             if let profileInfo = inMemoryState.pendingProfileInfo {
                 let profileManager = deps.profileManager
-                return deps.db.writePromise { tx in
+                db.write { tx in
                     profileManager.updateLocalProfile(
                         givenName: profileInfo.givenName,
                         familyName: profileInfo.familyName,
@@ -2926,10 +2926,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                         authedAccount: accountIdentity.authedAccount,
                         tx: tx
                     )
-                }
-                .then(on: SyncScheduler()) { updatePromise in
-                    // Run the Promise returned from databaseStorage.write(...).
-                    updatePromise
                 }
                 .map(on: schedulers.sync) { return nil }
                 .recover(on: schedulers.sync) { (error) -> Guarantee<Error?> in

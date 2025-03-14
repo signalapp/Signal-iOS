@@ -262,26 +262,30 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             // or show typing indicators for other users.
             guard delegate.areTypingIndicatorsEnabled() else { return }
 
-            SSKEnvironment.shared.databaseStorageRef.write(.promise) { transaction in
-                guard let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: transaction) else {
-                    return Promise<Void>.value(())
+            Task {
+                do {
+                    let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+                    let sendMessagePromise = await databaseStorage.awaitableWrite { transaction -> Promise<Void> in
+                        guard let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: transaction) else {
+                            return .value(())
+                        }
+
+                        let message = TypingIndicatorMessage(thread: thread, action: action, transaction: transaction)
+                        let preparedMessage = PreparedOutgoingMessage.preprepared(
+                            transientMessageWithoutAttachments: message
+                        )
+
+                        return SSKEnvironment.shared.messageSenderJobQueueRef.add(
+                            .promise,
+                            message: preparedMessage,
+                            limitToCurrentProcessLifetime: true,
+                            transaction: transaction
+                        )
+                    }
+                    try await sendMessagePromise.awaitable()
+                } catch {
+                    Logger.warn("\(error)")
                 }
-
-                let message = TypingIndicatorMessage(thread: thread, action: action, transaction: transaction)
-                let preparedMessage = PreparedOutgoingMessage.preprepared(
-                    transientMessageWithoutAttachments: message
-                )
-
-                return SSKEnvironment.shared.messageSenderJobQueueRef.add(
-                    .promise,
-                    message: preparedMessage,
-                    limitToCurrentProcessLifetime: true,
-                    transaction: transaction
-                )
-            }.then(on: SyncScheduler()) { messageSendPromise in
-                return messageSendPromise
-            }.catch { error in
-                Logger.error("Error: \(error)")
             }
         }
     }
