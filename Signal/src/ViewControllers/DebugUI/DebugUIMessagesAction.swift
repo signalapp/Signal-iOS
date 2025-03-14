@@ -90,8 +90,8 @@ class DebugUIMessagesAction {
 
 class DebugUIMessagesSingleAction: DebugUIMessagesAction {
 
-    typealias StaggeredAction = (UInt, SDSAnyWriteTransaction, @escaping Completion) -> Void
-    typealias UnstaggeredAction = (UInt, SDSAnyWriteTransaction) -> Void
+    typealias StaggeredAction = (UInt, DBWriteTransaction, @escaping Completion) -> Void
+    typealias UnstaggeredAction = (UInt, DBWriteTransaction) -> Void
 
     private(set) var prepare: ((@escaping Completion) -> Void)?
     private(set) var staggeredAction: StaggeredAction?

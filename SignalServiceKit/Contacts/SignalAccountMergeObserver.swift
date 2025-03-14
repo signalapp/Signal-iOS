@@ -97,7 +97,7 @@ class SignalAccountMergeObserver: RecipientMergeObserver {
         }
     }
 
-    private func fetch(for phoneNumber: String, tx: SDSAnyReadTransaction) -> SignalAccount? {
+    private func fetch(for phoneNumber: String, tx: DBReadTransaction) -> SignalAccount? {
         return SignalAccountFinder().signalAccount(for: phoneNumber, tx: tx)
     }
 }

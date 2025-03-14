@@ -317,7 +317,7 @@ extension TSPaymentModelSerializer {
 
 @objc
 public extension TSPaymentModel {
-    func anyInsert(transaction: SDSAnyWriteTransaction) {
+    func anyInsert(transaction: DBWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
@@ -329,7 +329,7 @@ public extension TSPaymentModel {
     //
     // For performance, when possible, you should explicitly specify whether
     // you are inserting or updating rather than calling this method.
-    func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    func anyUpsert(transaction: DBWriteTransaction) {
         let isInserting: Bool
         if TSPaymentModel.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
             isInserting = false
@@ -363,7 +363,7 @@ public extension TSPaymentModel {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSPaymentModel) -> Void) {
+    func anyUpdate(transaction: DBWriteTransaction, block: (TSPaymentModel) -> Void) {
 
         block(self)
 
@@ -391,11 +391,11 @@ public extension TSPaymentModel {
     // There are cases when this doesn't make sense, e.g. when  we know we've
     // just loaded the model in the same transaction. In those cases it is
     // safe and faster to do a "overwriting" update
-    func anyOverwritingUpdate(transaction: SDSAnyWriteTransaction) {
+    func anyOverwritingUpdate(transaction: DBWriteTransaction) {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: DBWriteTransaction) {
         sdsRemove(transaction: transaction)
     }
 }
@@ -404,10 +404,10 @@ public extension TSPaymentModel {
 
 @objc
 public class TSPaymentModelCursor: NSObject, SDSCursor {
-    private let transaction: GRDBReadTransaction
+    private let transaction: DBReadTransaction
     private let cursor: RecordCursor<PaymentModelRecord>?
 
-    init(transaction: GRDBReadTransaction, cursor: RecordCursor<PaymentModelRecord>?) {
+    init(transaction: DBReadTransaction, cursor: RecordCursor<PaymentModelRecord>?) {
         self.transaction = transaction
         self.cursor = cursor
     }
@@ -439,7 +439,7 @@ public class TSPaymentModelCursor: NSObject, SDSCursor {
 @objc
 public extension TSPaymentModel {
     @nonobjc
-    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSPaymentModelCursor {
+    class func grdbFetchCursor(transaction: DBReadTransaction) -> TSPaymentModelCursor {
         let database = transaction.database
         do {
             let cursor = try PaymentModelRecord.fetchCursor(database)
@@ -456,20 +456,17 @@ public extension TSPaymentModel {
 
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
-                        transaction: SDSAnyReadTransaction) -> TSPaymentModel? {
+                        transaction: DBReadTransaction) -> TSPaymentModel? {
         assert(!uniqueId.isEmpty)
 
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(PaymentModelRecord.databaseTableName) WHERE \(paymentModelColumn: .uniqueId) = ?"
-            return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
-        }
+        let sql = "SELECT * FROM \(PaymentModelRecord.databaseTableName) WHERE \(paymentModelColumn: .uniqueId) = ?"
+        return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: transaction)
     }
 
     // Traverses all records.
     // Records are not visited in any particular order.
     class func anyEnumerate(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (TSPaymentModel, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         anyEnumerate(transaction: transaction, batched: false, block: block)
@@ -478,7 +475,7 @@ public extension TSPaymentModel {
     // Traverses all records.
     // Records are not visited in any particular order.
     class func anyEnumerate(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batched: Bool = false,
         block: (TSPaymentModel, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
@@ -491,32 +488,29 @@ public extension TSPaymentModel {
     //
     // If batchSize > 0, the enumeration is performed in autoreleased batches.
     class func anyEnumerate(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batchSize: UInt,
         block: (TSPaymentModel, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            let cursor = TSPaymentModel.grdbFetchCursor(transaction: grdbTransaction)
-            Batching.loop(batchSize: batchSize,
-                          loopBlock: { stop in
-                                do {
-                                    guard let value = try cursor.next() else {
-                                        stop.pointee = true
-                                        return
-                                    }
-                                    block(value, stop)
-                                } catch let error {
-                                    owsFailDebug("Couldn't fetch model: \(error)")
+        let cursor = TSPaymentModel.grdbFetchCursor(transaction: transaction)
+        Batching.loop(batchSize: batchSize,
+                        loopBlock: { stop in
+                            do {
+                                guard let value = try cursor.next() else {
+                                    stop.pointee = true
+                                    return
                                 }
-                              })
-        }
+                                block(value, stop)
+                            } catch let error {
+                                owsFailDebug("Couldn't fetch model: \(error)")
+                            }
+                            })
     }
 
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
     class func anyEnumerateUniqueIds(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         anyEnumerateUniqueIds(transaction: transaction, batched: false, block: block)
@@ -525,7 +519,7 @@ public extension TSPaymentModel {
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
     class func anyEnumerateUniqueIds(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batched: Bool = false,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
@@ -538,24 +532,21 @@ public extension TSPaymentModel {
     //
     // If batchSize > 0, the enumeration is performed in autoreleased batches.
     class func anyEnumerateUniqueIds(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batchSize: UInt,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            grdbEnumerateUniqueIds(transaction: grdbTransaction,
-                                   sql: """
-                    SELECT \(paymentModelColumn: .uniqueId)
-                    FROM \(PaymentModelRecord.databaseTableName)
-                """,
-                batchSize: batchSize,
-                block: block)
-        }
+        grdbEnumerateUniqueIds(transaction: transaction,
+                                sql: """
+                SELECT \(paymentModelColumn: .uniqueId)
+                FROM \(PaymentModelRecord.databaseTableName)
+            """,
+            batchSize: batchSize,
+            block: block)
     }
 
     // Does not order the results.
-    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {
+    class func anyFetchAll(transaction: DBReadTransaction) -> [TSPaymentModel] {
         var result = [TSPaymentModel]()
         anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
@@ -564,7 +555,7 @@ public extension TSPaymentModel {
     }
 
     // Does not order the results.
-    class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+    class func anyAllUniqueIds(transaction: DBReadTransaction) -> [String] {
         var result = [String]()
         anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
             result.append(uniqueId)
@@ -572,14 +563,11 @@ public extension TSPaymentModel {
         return result
     }
 
-    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            return PaymentModelRecord.ows_fetchCount(grdbTransaction.database)
-        }
+    class func anyCount(transaction: DBReadTransaction) -> UInt {
+        return PaymentModelRecord.ows_fetchCount(transaction.database)
     }
 
-    class func anyRemoveAllWithInstantiation(transaction: SDSAnyWriteTransaction) {
+    class func anyRemoveAllWithInstantiation(transaction: DBWriteTransaction) {
         // To avoid mutationDuringEnumerationException, we need to remove the
         // instances outside the enumeration.
         let uniqueIds = anyAllUniqueIds(transaction: transaction)
@@ -597,23 +585,20 @@ public extension TSPaymentModel {
 
     class func anyExists(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         assert(!uniqueId.isEmpty)
 
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            let sql = "SELECT EXISTS ( SELECT 1 FROM \(PaymentModelRecord.databaseTableName) WHERE \(paymentModelColumn: .uniqueId) = ? )"
-            let arguments: StatementArguments = [uniqueId]
-            do {
-                return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
-            } catch {
-                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                    userDefaults: CurrentAppContext().appUserDefaults(),
-                    error: error
-                )
-                owsFail("Missing instance.")
-            }
+        let sql = "SELECT EXISTS ( SELECT 1 FROM \(PaymentModelRecord.databaseTableName) WHERE \(paymentModelColumn: .uniqueId) = ? )"
+        let arguments: StatementArguments = [uniqueId]
+        do {
+            return try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Missing instance.")
         }
     }
 }
@@ -623,7 +608,7 @@ public extension TSPaymentModel {
 public extension TSPaymentModel {
     class func grdbFetchCursor(sql: String,
                                arguments: StatementArguments = StatementArguments(),
-                               transaction: GRDBReadTransaction) -> TSPaymentModelCursor {
+                               transaction: DBReadTransaction) -> TSPaymentModelCursor {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try PaymentModelRecord.fetchCursor(transaction.database, sqlRequest)
@@ -640,7 +625,7 @@ public extension TSPaymentModel {
 
     class func grdbFetchOne(sql: String,
                             arguments: StatementArguments = StatementArguments(),
-                            transaction: GRDBReadTransaction) -> TSPaymentModel? {
+                            transaction: DBReadTransaction) -> TSPaymentModel? {
         assert(!sql.isEmpty)
 
         do {

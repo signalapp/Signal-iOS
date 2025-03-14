@@ -63,13 +63,13 @@ extension ConversationViewController {
 
     // MARK: - Verification
 
-    func noLongerVerifiedIdentityKeys(tx: SDSAnyReadTransaction) -> [SignalServiceAddress: Data] {
+    func noLongerVerifiedIdentityKeys(tx: DBReadTransaction) -> [SignalServiceAddress: Data] {
         if let groupThread = thread as? TSGroupThread {
             return OWSRecipientIdentity.noLongerVerifiedIdentityKeys(in: groupThread.uniqueId, tx: tx)
         }
         let identityManager = DependenciesBridge.shared.identityManager
         return thread.recipientAddresses(with: tx).reduce(into: [:]) { result, address in
-            guard let recipientIdentity = identityManager.recipientIdentity(for: address, tx: tx.asV2Read) else {
+            guard let recipientIdentity = identityManager.recipientIdentity(for: address, tx: tx) else {
                 return
             }
             guard recipientIdentity.verificationState == .noLongerVerified else {
@@ -91,7 +91,7 @@ extension ConversationViewController {
                     of: identityKey,
                     for: address,
                     isUserInitiatedChange: true,
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
             }
         }

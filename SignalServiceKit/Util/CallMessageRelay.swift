@@ -37,11 +37,11 @@ public class CallMessageRelay {
         // Process all the pending call messages from the NSE in 1 batch.
         // This should almost always be a batch of one.
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            defer { pendingCallMessageStore.removeAll(transaction: transaction.asV2Write) }
+            defer { pendingCallMessageStore.removeAll(transaction: transaction) }
             let pendingPayloads: [Payload]
 
             do {
-                pendingPayloads = try pendingCallMessageStore.allCodableValues(transaction: transaction.asV2Read).sorted {
+                pendingPayloads = try pendingCallMessageStore.allCodableValues(transaction: transaction).sorted {
                     $0.envelope.timestamp < $1.envelope.timestamp
                 }
             } catch {
@@ -49,7 +49,7 @@ public class CallMessageRelay {
                 return
             }
 
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
                 owsFailDebug("Can't process VoIP payload when not registered.")
                 return
             }
@@ -83,7 +83,7 @@ public class CallMessageRelay {
         plaintextData: Data,
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> CallMessagePushPayload {
         let payload = Payload(
             envelope: envelope,
@@ -93,7 +93,7 @@ public class CallMessageRelay {
             enqueueTimestamp: Date()
         )
 
-        try pendingCallMessageStore.setCodable(payload, key: "\(envelope.timestamp)", transaction: transaction.asV2Write)
+        try pendingCallMessageStore.setCodable(payload, key: "\(envelope.timestamp)", transaction: transaction)
         return CallMessagePushPayload()
     }
 

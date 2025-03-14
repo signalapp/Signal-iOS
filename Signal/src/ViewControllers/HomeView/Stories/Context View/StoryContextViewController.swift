@@ -327,7 +327,7 @@ class StoryContextViewController: OWSViewController {
         }
     }
 
-    private func buildStoryItem(for message: StoryMessage, transaction: SDSAnyReadTransaction) -> StoryItem? {
+    private func buildStoryItem(for message: StoryMessage, transaction: DBReadTransaction) -> StoryItem? {
         let replyCount = message.replyCount
 
         let attachment: ReferencedAttachment?
@@ -336,7 +336,7 @@ class StoryContextViewController: OWSViewController {
             attachment = message.id.map {
                 return DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
                     for: .storyMessageMedia(storyMessageRowId: $0),
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
             } ?? nil
 
@@ -354,7 +354,7 @@ class StoryContextViewController: OWSViewController {
             return nil
         }
         if attachment.attachment.asStream() == nil, let attachmentPointer = attachment.attachment.asAnyPointer() {
-            let downloadState = attachmentPointer.downloadState(tx: transaction.asV2Read)
+            let downloadState = attachmentPointer.downloadState(tx: transaction)
             let pointer = StoryItem.Attachment.Pointer(
                 reference: attachment.reference,
                 attachment: attachmentPointer,

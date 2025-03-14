@@ -10,10 +10,10 @@ import LibSignalClient
 enum ContactSyncAttachmentBuilder {
     static func buildAttachmentFile(
         contactsManager: OWSContactsManager,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> URL? {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard let localAddress = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
+        guard let localAddress = tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
             owsFailDebug("Missing localAddress.")
             return nil
         }
@@ -60,7 +60,7 @@ enum ContactSyncAttachmentBuilder {
         to contactOutputStream: ContactOutputStream,
         localAddress: SignalServiceAddress,
         contactsManager: OWSContactsManager,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws {
         let threadFinder = ThreadFinder()
         var threadPositions = [Int64: Int]()
@@ -81,7 +81,7 @@ enum ContactSyncAttachmentBuilder {
                 guard let phoneNumber = signalAccount.recipientPhoneNumber else {
                     return
                 }
-                let signalRecipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx.asV2Read)
+                let signalRecipient = recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx)
                 guard let signalRecipient else {
                     return
                 }
@@ -121,10 +121,10 @@ enum ContactSyncAttachmentBuilder {
         contactThread: TSContactThread?,
         signalAccount: SignalAccount?,
         inboxPosition: Int?,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws {
         let dmStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let dmConfiguration = contactThread.map { dmStore.fetchOrBuildDefault(for: .thread($0), tx: tx.asV2Read) }
+        let dmConfiguration = contactThread.map { dmStore.fetchOrBuildDefault(for: .thread($0), tx: tx) }
 
         try contactOutputStream.writeContact(
             aci: address.serviceId as? Aci,

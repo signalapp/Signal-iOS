@@ -47,7 +47,7 @@ public class NoOpMessageBackupErrorPresenter: MessageBackupErrorPresenter {
 
     public init() {}
 
-    public func persistErrors(_ errors: [MessageBackup.CollapsedErrorLog], didFail: Bool, tx: any DBWriteTransaction) {
+    public func persistErrors(_ errors: [MessageBackup.CollapsedErrorLog], didFail: Bool, tx: DBWriteTransaction) {
         // do nothing
     }
 

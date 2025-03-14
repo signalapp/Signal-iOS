@@ -74,7 +74,7 @@ public final class TSMention: NSObject, SDSCodableModel, Decodable {
 
     @objc
     public static func anyEnumerateObjc(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batched: Bool,
         block: @escaping (TSMention, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {

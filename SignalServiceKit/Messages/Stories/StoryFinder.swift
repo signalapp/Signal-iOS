@@ -8,8 +8,8 @@ import GRDB
 public import LibSignalClient
 
 public class StoryFinder {
-    public static func unviewedSenderCount(transaction: SDSAnyReadTransaction) -> Int {
-        let ownAciClause = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read).map {
+    public static func unviewedSenderCount(transaction: DBReadTransaction) -> Int {
+        let ownAciClause = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction).map {
             "AND \(StoryContextAssociatedData.columnName(.contactAci)) IS NOT '\($0.aci.serviceIdUppercaseString)'"
         } ?? ""
         let sql = """
@@ -27,7 +27,7 @@ public class StoryFinder {
                 ;
         """
         do {
-            let unviewedStoryCount = try Int.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? 0
+            let unviewedStoryCount = try Int.fetchOne(transaction.database, sql: sql) ?? 0
 
             // Check the system story separately, since its hidden state is kept separately.
             guard !SSKEnvironment.shared.systemStoryManagerRef.areSystemStoriesHidden(transaction: transaction) else {
@@ -44,7 +44,7 @@ public class StoryFinder {
     }
 
     // The list view shows all incoming stories *and* outgoing group stories
-    public static func storiesForListView(transaction: SDSAnyReadTransaction) -> [StoryMessage] {
+    public static func storiesForListView(transaction: DBReadTransaction) -> [StoryMessage] {
         let sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
@@ -56,14 +56,14 @@ public class StoryFinder {
         """
 
         do {
-            return try StoryMessage.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
+            return try StoryMessage.fetchAll(transaction.database, sql: sql)
         } catch {
             owsFailDebug("Failed to fetch incoming stories \(error)")
             return []
         }
     }
 
-    public static func outgoingStories(limit: Int? = nil, transaction: SDSAnyReadTransaction) -> [StoryMessage] {
+    public static func outgoingStories(limit: Int? = nil, transaction: DBReadTransaction) -> [StoryMessage] {
         var sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
@@ -76,14 +76,14 @@ public class StoryFinder {
         }
 
         do {
-            return try StoryMessage.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
+            return try StoryMessage.fetchAll(transaction.database, sql: sql)
         } catch {
             owsFailDebug("Failed to fetch incoming stories \(error)")
             return []
         }
     }
 
-    public static func enumerateOutgoingStories(transaction: SDSAnyReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateOutgoingStories(transaction: DBReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
         let sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
@@ -92,7 +92,7 @@ public class StoryFinder {
         """
 
         do {
-            let cursor = try StoryMessage.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
+            let cursor = try StoryMessage.fetchCursor(transaction.database, sql: sql)
             while let message = try cursor.next() {
                 var stop: ObjCBool = false
                 block(message, &stop)
@@ -106,7 +106,7 @@ public class StoryFinder {
     }
 
     public static func enumerateUnreadIncomingStories(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         let sql = """
@@ -117,7 +117,7 @@ public class StoryFinder {
         """
 
         do {
-            let cursor = try StoryMessage.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
+            let cursor = try StoryMessage.fetchCursor(transaction.database, sql: sql)
             while let message = try cursor.next() {
                 var stop: ObjCBool = false
                 block(message, &stop)
@@ -130,7 +130,7 @@ public class StoryFinder {
         }
     }
 
-    public static func listStoriesWithRowIds(_ rowIds: [Int64], transaction: SDSAnyReadTransaction) -> [StoryMessage] {
+    public static func listStoriesWithRowIds(_ rowIds: [Int64], transaction: DBReadTransaction) -> [StoryMessage] {
         let sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
@@ -143,14 +143,14 @@ public class StoryFinder {
         """
 
         do {
-            return try StoryMessage.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
+            return try StoryMessage.fetchAll(transaction.database, sql: sql)
         } catch {
             owsFailDebug("Failed to fetch incoming stories \(error)")
             return []
         }
     }
 
-    public static func listStoriesWithUniqueIds(_ uniqueIds: [String], transaction: SDSAnyReadTransaction) -> [StoryMessage] {
+    public static func listStoriesWithUniqueIds(_ uniqueIds: [String], transaction: DBReadTransaction) -> [StoryMessage] {
         let sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
@@ -159,18 +159,18 @@ public class StoryFinder {
         """
 
         do {
-            return try StoryMessage.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
+            return try StoryMessage.fetchAll(transaction.database, sql: sql)
         } catch {
             owsFailDebug("Failed to fetch incoming stories \(error)")
             return []
         }
     }
 
-    public static func latestStoryForThread(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> StoryMessage? {
+    public static func latestStoryForThread(_ thread: TSThread, transaction: DBReadTransaction) -> StoryMessage? {
         latestStoryForContext(thread.storyContext, transaction: transaction)
     }
 
-    public static func latestStoryForContext(_ context: StoryContext, transaction: SDSAnyReadTransaction) -> StoryMessage? {
+    public static func latestStoryForContext(_ context: StoryContext, transaction: DBReadTransaction) -> StoryMessage? {
 
         guard let contextQuery = context.query else { return nil }
 
@@ -183,14 +183,14 @@ public class StoryFinder {
         """
 
         do {
-            return try StoryMessage.fetchOne(transaction.unwrapGrdbRead.database, sql: sql)
+            return try StoryMessage.fetchOne(transaction.database, sql: sql)
         } catch {
             owsFailDebug("Failed to fetch incoming stories \(error)")
             return nil
         }
     }
 
-    public static func enumerateStoriesForContext(_ context: StoryContext, transaction: SDSAnyReadTransaction, block: (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateStoriesForContext(_ context: StoryContext, transaction: DBReadTransaction, block: (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
 
         guard let contextQuery = context.query else { return }
 
@@ -202,7 +202,7 @@ public class StoryFinder {
         """
 
         do {
-            let cursor = try StoryMessage.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
+            let cursor = try StoryMessage.fetchCursor(transaction.database, sql: sql)
             while let message = try cursor.next() {
                 var stop: ObjCBool = false
                 block(message, &stop)
@@ -217,7 +217,7 @@ public class StoryFinder {
 
     public static func enumerateStories(
         fromSender senderAci: Aci,
-        tx: SDSAnyReadTransaction,
+        tx: DBReadTransaction,
         block: (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         let sql = """
@@ -227,7 +227,7 @@ public class StoryFinder {
         """
 
         do {
-            let cursor = try StoryMessage.fetchCursor(tx.unwrapGrdbRead.database, sql: sql, arguments: [senderAci.rawUUID.uuidString])
+            let cursor = try StoryMessage.fetchCursor(tx.database, sql: sql, arguments: [senderAci.rawUUID.uuidString])
             while let message = try cursor.next() {
                 var stop: ObjCBool = false
                 block(message, &stop)
@@ -240,7 +240,7 @@ public class StoryFinder {
         }
     }
 
-    public static func enumerateUnviewedIncomingStoriesForContext(_ context: StoryContext, transaction: SDSAnyReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateUnviewedIncomingStoriesForContext(_ context: StoryContext, transaction: DBReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
 
         guard let contextQuery = context.query else { return }
 
@@ -254,7 +254,7 @@ public class StoryFinder {
         """
 
         do {
-            let cursor = try StoryMessage.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
+            let cursor = try StoryMessage.fetchCursor(transaction.database, sql: sql)
             while let message = try cursor.next() {
                 var stop: ObjCBool = false
                 block(message, &stop)
@@ -268,7 +268,7 @@ public class StoryFinder {
     }
 
     // The stories should be enumerated in order from "next to expire" to "last to expire".
-    public static func fetchSomeExpiredStories(now: UInt64, limit: Int, tx: SDSAnyReadTransaction) throws -> [StoryMessage] {
+    public static func fetchSomeExpiredStories(now: UInt64, limit: Int, tx: DBReadTransaction) throws -> [StoryMessage] {
         let sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
@@ -278,7 +278,7 @@ public class StoryFinder {
             LIMIT \(limit)
         """
         do {
-            return try StoryMessage.fetchAll(tx.unwrapGrdbRead.database, sql: sql, arguments: [
+            return try StoryMessage.fetchAll(tx.database, sql: sql, arguments: [
                 now - StoryManager.storyLifetimeMillis,
                 StoryMessage.systemStoryAuthor.serviceIdUppercaseString
             ])
@@ -287,7 +287,7 @@ public class StoryFinder {
         }
     }
 
-    public static func oldestExpirableTimestamp(transaction: SDSAnyReadTransaction) -> UInt64? {
+    public static func oldestExpirableTimestamp(transaction: DBReadTransaction) -> UInt64? {
         let sql = """
             SELECT \(StoryMessage.columnName(.timestamp))
             FROM \(StoryMessage.databaseTableName)
@@ -297,7 +297,7 @@ public class StoryFinder {
         """
 
         do {
-            return try UInt64.fetchOne(transaction.unwrapGrdbRead.database, sql: sql, arguments: [
+            return try UInt64.fetchOne(transaction.database, sql: sql, arguments: [
                 StoryMessage.systemStoryAuthor.serviceIdUppercaseString
             ])
         } catch {
@@ -306,7 +306,7 @@ public class StoryFinder {
         }
     }
 
-    public static func story(timestamp: UInt64, author: Aci, transaction: SDSAnyReadTransaction) -> StoryMessage? {
+    public static func story(timestamp: UInt64, author: Aci, transaction: DBReadTransaction) -> StoryMessage? {
         let sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
@@ -317,14 +317,14 @@ public class StoryFinder {
         """
 
         do {
-            return try StoryMessage.fetchOne(transaction.unwrapGrdbRead.database, sql: sql)
+            return try StoryMessage.fetchOne(transaction.database, sql: sql)
         } catch {
             owsFailDebug("Failed to fetch story \(error)")
             return nil
         }
     }
 
-    public static func enumerateSendingStories(transaction: SDSAnyReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateSendingStories(transaction: DBReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
 
         let sql = """
             SELECT *
@@ -339,7 +339,7 @@ public class StoryFinder {
         """
 
         do {
-            let cursor = try StoryMessage.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
+            let cursor = try StoryMessage.fetchCursor(transaction.database, sql: sql)
             while let message = try cursor.next() {
                 var stop: ObjCBool = false
                 block(message, &stop)
@@ -352,7 +352,7 @@ public class StoryFinder {
         }
     }
 
-    public static func hasFailedStories(transaction: SDSAnyReadTransaction) -> Bool {
+    public static func hasFailedStories(transaction: DBReadTransaction) -> Bool {
         let sql = """
             SELECT EXISTS (
                 SELECT 1 FROM \(StoryMessage.databaseTableName)
@@ -365,7 +365,7 @@ public class StoryFinder {
             )
         """
         do {
-            return try Bool.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? false
+            return try Bool.fetchOne(transaction.database, sql: sql) ?? false
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
                 userDefaults: CurrentAppContext().appUserDefaults(),
@@ -405,29 +405,29 @@ extension StoryFinder {
 
     public static func getAssociatedData(
         forContext source: StoryContextAssociatedData.SourceContext,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> StoryContextAssociatedData? {
         switch source {
         case .contact(let contactAci):
             return try? StoryContextAssociatedData
                 .filter(Column(StoryContextAssociatedData.columnName(.contactAci)) == contactAci.serviceIdUppercaseString)
-                .fetchOne(transaction.unwrapGrdbRead.database)
+                .fetchOne(transaction.database)
 
         case .group(let groupId):
             return try? StoryContextAssociatedData
                 .filter(Column(StoryContextAssociatedData.columnName(.groupId)) == groupId)
-                .fetchOne(transaction.unwrapGrdbRead.database)
+                .fetchOne(transaction.database)
         }
     }
 
     public static func getAssociatedData(
         forAci contactAci: Aci,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> StoryContextAssociatedData? {
         return getAssociatedData(forContext: .contact(contactAci: contactAci), transaction: tx)
     }
 
-    public static func associatedData(for thread: TSThread, transaction: SDSAnyReadTransaction) -> StoryContextAssociatedData? {
+    public static func associatedData(for thread: TSThread, transaction: DBReadTransaction) -> StoryContextAssociatedData? {
         if let contactThread = thread as? TSContactThread, let contactAci = contactThread.contactAddress.serviceId as? Aci {
             return getAssociatedData(forContext: .contact(contactAci: contactAci), transaction: transaction)
         } else if let groupThread = thread as? TSGroupThread {
@@ -437,12 +437,12 @@ extension StoryFinder {
         }
     }
 
-    public static func associatedDatasWithRecentlyViewedStories(limit: Int, transaction: SDSAnyReadTransaction) -> [StoryContextAssociatedData] {
+    public static func associatedDatasWithRecentlyViewedStories(limit: Int, transaction: DBReadTransaction) -> [StoryContextAssociatedData] {
         do {
             return try StoryContextAssociatedData
             .order(Column(StoryContextAssociatedData.columnName(.lastViewedTimestamp)).desc)
             .limit(limit)
-            .fetchAll(transaction.unwrapGrdbRead.database)
+            .fetchAll(transaction.database)
         } catch {
             owsFailDebug("Failed to query recent threads \(error)")
             return []

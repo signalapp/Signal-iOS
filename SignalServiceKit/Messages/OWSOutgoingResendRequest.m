@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithErrorMessageBytes:(NSData *)errorMessageBytes
                                 sourceAci:(AciObjC *)sourceAci
                     failedEnvelopeGroupId:(nullable NSData *)failedEnvelopeGroupId
-                              transaction:(SDSAnyWriteTransaction *)transaction
+                              transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(errorMessageBytes);
     OWSAssertDebug(sourceAci);
@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     return SealedSenderContentHintDefault;
 }
 
-- (nullable NSData *)envelopeGroupIdWithTransaction:(__unused SDSAnyReadTransaction *)transaction
+- (nullable NSData *)envelopeGroupIdWithTransaction:(__unused DBReadTransaction *)transaction
 {
     return self.failedEnvelopeGroupId;
 }

@@ -647,7 +647,7 @@ private extension UsernameSelectionViewController {
                 await self.context.localUsernameManager.updateVisibleCaseOfExistingUsername(newUsername: newUsername.reassembled)
             }.map(on: self.context.schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Void> in
                 let newState = self.context.databaseStorage.read { tx in
-                    return self.context.localUsernameManager.usernameState(tx: tx.asV2Read)
+                    return self.context.localUsernameManager.usernameState(tx: tx)
                 }
 
                 self.usernameChangeDelegate?.usernameStateDidChange(newState: newState)
@@ -707,7 +707,7 @@ private extension UsernameSelectionViewController {
                 await self.context.localUsernameManager.confirmUsername(reservedUsername: reservedUsername)
             }.map(on: self.context.schedulers.main) { remoteMutationResult -> Usernames.RemoteMutationResult<Usernames.ConfirmationResult> in
                 let newState = self.context.databaseStorage.read { tx in
-                    return self.context.localUsernameManager.usernameState(tx: tx.asV2Read)
+                    return self.context.localUsernameManager.usernameState(tx: tx)
                 }
 
                 self.usernameChangeDelegate?.usernameStateDidChange(newState: newState)

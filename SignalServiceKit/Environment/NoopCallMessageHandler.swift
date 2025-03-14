@@ -18,7 +18,7 @@ public class NoopCallMessageHandler: CallMessageHandler {
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         owsFailDebug("")
     }

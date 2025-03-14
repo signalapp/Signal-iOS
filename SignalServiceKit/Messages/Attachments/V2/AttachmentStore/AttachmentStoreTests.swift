@@ -375,7 +375,7 @@ class AttachmentStoreTests: XCTestCase {
                             reference: attachmentReferenceParams,
                             tx: tx
                         )
-                        attachmentRowId = tx.db.lastInsertedRowID
+                        attachmentRowId = tx.database.lastInsertedRowID
                     }
                     return attachmentIdInOwner
                 }
@@ -765,7 +765,7 @@ class AttachmentStoreTests: XCTestCase {
                 ),
                 tx: tx
             )
-            let attachmentId = tx.db.lastInsertedRowID
+            let attachmentId = tx.database.lastInsertedRowID
             try attachmentStore.addOwner(
                 AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                     messageRowId: messageId2,
@@ -837,7 +837,7 @@ class AttachmentStoreTests: XCTestCase {
                 ),
                 tx: tx
             )
-            let attachmentId = tx.db.lastInsertedRowID
+            let attachmentId = tx.database.lastInsertedRowID
             try attachmentStore.addOwner(
                 AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                     messageRowId: messageId1,
@@ -1270,15 +1270,15 @@ class AttachmentStoreTests: XCTestCase {
         }
     }
 
-    private func insertThread(tx: InMemoryDB.WriteTransaction) -> TSThread {
+    private func insertThread(tx: DBWriteTransaction) -> TSThread {
         let thread = TSThread(uniqueId: UUID().uuidString)
-        try! thread.asRecord().insert(tx.db)
+        try! thread.asRecord().insert(tx.database)
         return thread
     }
 
-    private func insertInteraction(thread: TSThread, tx: InMemoryDB.WriteTransaction) -> Int64 {
+    private func insertInteraction(thread: TSThread, tx: DBWriteTransaction) -> Int64 {
         let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
-        try! interaction.asRecord().insert(tx.db)
+        try! interaction.asRecord().insert(tx.database)
         return interaction.sqliteRowId!
     }
 

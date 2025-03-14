@@ -26,7 +26,7 @@ extension TSAttachmentMigration {
     enum StoryMessageMigration {
 
         /// Phase 1
-        static func prepareStoryMessageMigration(tx: GRDBWriteTransaction) throws {
+        static func prepareStoryMessageMigration(tx: DBWriteTransaction) throws {
             let storyMessageCursor = try Row.fetchCursor(
                 tx.database,
                 sql: "SELECT id, attachment FROM model_StoryMessage"
@@ -60,7 +60,7 @@ extension TSAttachmentMigration {
         }
 
         /// Phase 2
-        static func completeStoryMessageMigration(tx: GRDBWriteTransaction) throws {
+        static func completeStoryMessageMigration(tx: DBWriteTransaction) throws {
             let decoder = JSONDecoder()
             let encoder = JSONEncoder()
             let reservedFileIdsCursor = try TSAttachmentMigration.V1AttachmentReservedFileIds
@@ -134,7 +134,7 @@ extension TSAttachmentMigration {
                 .filter(Column("storyMessageRowId") != nil)
                 .deleteAll(tx.database)
 
-            tx.addAsyncCompletion(queue: .global()) {
+            tx.addAsyncCompletion(on: DispatchQueue.global()) {
                 // Delete the files asynchronously after committing the tx. We can't do it
                 // inside the tx because if the tx is rolled back we DON'T want the files gone.
                 // This does mean we might fail to delete the files; we will delete the whole
@@ -149,7 +149,7 @@ extension TSAttachmentMigration {
             storyAttachment: TSAttachmentMigration.SerializedStoryMessageAttachment,
             storyMessageRowId: Int64,
             tsAttachmentUniqueId: String,
-            tx: GRDBWriteTransaction
+            tx: DBWriteTransaction
         ) throws {
             let oldAttachment = try TSAttachmentMigration.V1Attachment
                 .filter(Column("uniqueId") == tsAttachmentUniqueId)

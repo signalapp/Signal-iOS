@@ -186,7 +186,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         SwiftSingletons.register(self)
     }
 
-    func previewType(tx: SDSAnyReadTransaction) -> NotificationType {
+    func previewType(tx: DBReadTransaction) -> NotificationType {
         return preferences.notificationPreviewType(tx: tx)
     }
 
@@ -241,7 +241,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         let shouldShowActions: Bool
     }
 
-    private func fetchCallPreview(thread: TSThread, tx: SDSAnyReadTransaction) -> CallPreview? {
+    private func fetchCallPreview(thread: TSThread, tx: DBReadTransaction) -> CallPreview? {
         let previewType = self.previewType(tx: tx)
         switch previewType {
         case .noNameNoPreview:
@@ -287,7 +287,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         notificationInfo: CallNotificationInfo,
         offerMediaType: TSRecentCallOfferType,
         sentAt timestamp: Date,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) {
         let thread = notificationInfo.thread
         let callPreview = fetchCallPreview(thread: thread, tx: tx)
@@ -377,7 +377,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     public func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(
         notificationInfo: CallNotificationInfo,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) {
         let thread = notificationInfo.thread
         let callPreview = fetchCallPreview(thread: thread, tx: tx)
@@ -404,7 +404,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     public func notifyUserOfMissedCallBecauseOfNewIdentity(
         notificationInfo: CallNotificationInfo,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) {
         let thread = notificationInfo.thread
         let callPreview = fetchCallPreview(thread: thread, tx: tx)
@@ -444,14 +444,14 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     // MARK: - Notify
 
-    public func isThreadMuted(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+    public func isThreadMuted(_ thread: TSThread, transaction: DBReadTransaction) -> Bool {
         ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction).isMuted
     }
 
     public func canNotify(
         for incomingMessage: TSIncomingMessage,
         thread: TSThread,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         if isThreadMuted(thread, transaction: transaction) {
             guard thread.isGroupThread else { return false }
@@ -461,7 +461,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 return false
             }
 
-            let mentionedAddresses = MentionFinder.mentionedAddresses(for: incomingMessage, transaction: transaction.unwrapGrdbRead)
+            let mentionedAddresses = MentionFinder.mentionedAddresses(for: incomingMessage, transaction: transaction)
             let localUserIsQuoted = incomingMessage.quotedMessage?.authorAddress.isEqualToAddress(localAddress) ?? false
             guard mentionedAddresses.contains(localAddress) || localUserIsQuoted else {
                 return false
@@ -481,7 +481,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 return false
             }
 
-            let localAci = tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
+            let localAci = tsAccountManager.localIdentifiers(tx: transaction)?.aci
 
             // Always notify for replies to group stories you sent
             if storyAuthorAci == localAci { return true }
@@ -507,7 +507,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
     public func notifyUser(
         forIncomingMessage incomingMessage: TSIncomingMessage,
         thread: TSThread,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) {
         _notifyUser(
             forIncomingMessage: incomingMessage,
@@ -521,7 +521,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         forIncomingMessage incomingMessage: TSIncomingMessage,
         editTarget: TSIncomingMessage,
         thread: TSThread,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) {
         _notifyUser(
             forIncomingMessage: incomingMessage,
@@ -535,7 +535,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         forIncomingMessage incomingMessage: TSIncomingMessage,
         editTarget: TSIncomingMessage?,
         thread: TSThread,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) {
 
         guard canNotify(for: incomingMessage, thread: thread, transaction: transaction) else {
@@ -594,7 +594,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         // "no longer verified".
         var didIdentityChange = false
         for address in thread.recipientAddresses(with: transaction) {
-            if identityManager.verificationState(for: address, tx: transaction.asV2Read) == .noLongerVerified {
+            if identityManager.verificationState(for: address, tx: transaction) == .noLongerVerified {
                 didIdentityChange = true
                 break
             }
@@ -654,7 +654,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         forReaction reaction: OWSReaction,
         onOutgoingMessage message: TSOutgoingMessage,
         thread: TSThread,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) {
         guard !isThreadMuted(thread, transaction: transaction) else { return }
 
@@ -704,7 +704,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             let mediaAttachments = DependenciesBridge.shared.attachmentStore
                 .fetchReferencedAttachments(
                     for: .messageBodyAttachment(messageRowId: messageRowId),
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
                 .nilIfEmpty,
             let firstAttachment = mediaAttachments.first
@@ -742,7 +742,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         // "no longer verified".
         var didIdentityChange = false
         for address in thread.recipientAddresses(with: transaction) {
-            if identityManager.verificationState(for: address, tx: transaction.asV2Read) == .noLongerVerified {
+            if identityManager.verificationState(for: address, tx: transaction) == .noLongerVerified {
                 didIdentityChange = true
                 break
             }
@@ -916,7 +916,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
     public func notifyUser(
         forErrorMessage errorMessage: TSErrorMessage,
         thread: TSThread,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         guard (errorMessage is OWSRecoverableDecryptionPlaceholder) == false else { return }
 
@@ -947,7 +947,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         forTSMessage message: TSMessage,
         thread: TSThread,
         wantsSound: Bool,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         notifyUser(
             tsInteraction: message,
@@ -964,7 +964,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         forPreviewableInteraction previewableInteraction: TSInteraction & OWSPreviewText,
         thread: TSThread,
         wantsSound: Bool,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         notifyUser(
             tsInteraction: previewableInteraction,
@@ -979,10 +979,10 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     private func notifyUser(
         tsInteraction: TSInteraction,
-        previewProvider: (SDSAnyWriteTransaction) -> String,
+        previewProvider: (DBWriteTransaction) -> String,
         thread: TSThread,
         wantsSound: Bool,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         guard !isThreadMuted(thread, transaction: transaction) else { return }
 
@@ -1030,7 +1030,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
             if let infoMessage = tsInteraction as? TSInfoMessage {
                 guard let localIdentifiers = tsAccountManager.localIdentifiers(
-                    tx: transaction.asV2Read
+                    tx: transaction
                 ) else {
                     owsFailDebug("Missing local identifiers!")
                     return
@@ -1097,7 +1097,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
     public func notifyUser(
         forFailedStorySend storyMessage: StoryMessage,
         to thread: TSThread,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         guard StoryManager.areStoriesEnabled(transaction: transaction) else {
             return
@@ -1309,7 +1309,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     private let mostRecentTask = AtomicValue<Task<Void, Never>?>(nil, lock: .init())
 
-    private func enqueueNotificationAction(afterCommitting tx: SDSAnyWriteTransaction? = nil, _ block: @escaping () async -> Void) {
+    private func enqueueNotificationAction(afterCommitting tx: DBWriteTransaction? = nil, _ block: @escaping () async -> Void) {
         let startTime = CACurrentMediaTime()
         let pendingTask = Self.pendingTasks.buildPendingTask(label: "NotificationAction")
         let commitGuarantee = tx.map {

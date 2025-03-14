@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
     return info.asKey;
 }
 
-- (void)updateWithIsInstalled:(BOOL)isInstalled transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithIsInstalled:(BOOL)isInstalled transaction:(DBWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction block:^(StickerPack *instance) { instance.isInstalled = isInstalled; }];
 }

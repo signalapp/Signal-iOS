@@ -102,7 +102,7 @@ public protocol DeleteForMeOutgoingSyncMessageManager {
         deletedMessages: [TSMessage],
         thread: TSThread,
         localIdentifiers: LocalIdentifiers,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     )
 
     /// Send a sync message that the attachments with the given identifiers were
@@ -113,13 +113,13 @@ public protocol DeleteForMeOutgoingSyncMessageManager {
         deletedAttachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]],
         thread: TSThread,
         localIdentifiers: LocalIdentifiers,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     )
 
     /// Send a sync message for the given thread deletion contexts.
     func send(
         threadDeletionContexts: [Outgoing.ThreadDeletionContext],
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     )
 
     /// Get a deletion context for the given thread. This context should be
@@ -135,7 +135,7 @@ public protocol DeleteForMeOutgoingSyncMessageManager {
         thread: TSThread,
         isFullDelete: Bool,
         localIdentifiers: LocalIdentifiers,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) -> Outgoing.ThreadDeletionContext?
 }
 
@@ -148,7 +148,7 @@ public extension DeleteForMeOutgoingSyncMessageManager {
         deletedAttachments: [TSMessage: [ReferencedAttachment]],
         thread: TSThread,
         localIdentifiers: LocalIdentifiers,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         var deletedAttachmentIdentifiers = [TSMessage: [Outgoing.AttachmentIdentifier]]()
 
@@ -196,7 +196,7 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
         deletedMessages: [TSMessage],
         thread: TSThread,
         localIdentifiers: LocalIdentifiers,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard let conversationIdentifier = conversationIdentifier(thread: thread, tx: tx) else {
             return
@@ -233,7 +233,7 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
         deletedAttachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]],
         thread: TSThread,
         localIdentifiers: LocalIdentifiers,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard let conversationIdentifier = conversationIdentifier(thread: thread, tx: tx) else {
             return
@@ -277,7 +277,7 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
 
     func send(
         threadDeletionContexts: [Outgoing.ThreadDeletionContext],
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         for deletionContextBatch in Batcher().batch(threadDeletionContexts: threadDeletionContexts) {
             var conversationDeletes = [Outgoing.ConversationDelete]()
@@ -320,7 +320,7 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
         thread: TSThread,
         isFullDelete: Bool,
         localIdentifiers: LocalIdentifiers,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) -> Outgoing.ThreadDeletionContext? {
         guard let conversationIdentifier = conversationIdentifier(thread: thread, tx: tx) else {
             return nil
@@ -338,7 +338,7 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
 
     private func conversationIdentifier(
         thread: TSThread,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) -> Outgoing.ConversationIdentifier? {
         if
             let contactThread = thread as? TSContactThread,
@@ -360,7 +360,7 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
 
     private func sendSyncMessage(
         contents: DeleteForMeOutgoingSyncMessage.Contents,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard let localThread = threadStore.getOrCreateLocalThread(tx: tx) else {
             logger.error("Missing local thread!")
@@ -450,7 +450,7 @@ protocol _DeleteForMeOutgoingSyncMessageManagerImpl_SyncMessageSender_Shim {
     func sendSyncMessage(
         contents: DeleteForMeOutgoingSyncMessage.Contents,
         localThread: TSContactThread,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     )
 }
 
@@ -464,7 +464,7 @@ final class _DeleteForMeOutgoingSyncMessageManagerImpl_SyncMessageSender_Wrapper
     func sendSyncMessage(
         contents: DeleteForMeOutgoingSyncMessage.Contents,
         localThread: TSContactThread,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let sdsTx = SDSDB.shimOnlyBridge(tx)
 
@@ -489,25 +489,25 @@ open class MockDeleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMes
     var sendMessagesMock: ((
         _ messages: [TSMessage]
     ) -> Void)!
-    public func send(deletedMessages: [TSMessage], thread: TSThread, localIdentifiers: LocalIdentifiers, tx: any DBWriteTransaction) {
+    public func send(deletedMessages: [TSMessage], thread: TSThread, localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {
         sendMessagesMock(deletedMessages)
     }
 
     var sendAttachmentsMock: ((
         _ attachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]]
     ) -> Void)!
-    public func send(deletedAttachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]], thread: TSThread, localIdentifiers: LocalIdentifiers, tx: any DBWriteTransaction) {
+    public func send(deletedAttachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]], thread: TSThread, localIdentifiers: LocalIdentifiers, tx: DBWriteTransaction) {
         sendAttachmentsMock(deletedAttachmentIdentifiers)
     }
 
     var sendDeletionContextMock: ((
         _ threadContexts: [Outgoing.ThreadDeletionContext]
     ) -> Void)!
-    public func send(threadDeletionContexts: [Outgoing.ThreadDeletionContext], tx: any DBWriteTransaction) {
+    public func send(threadDeletionContexts: [Outgoing.ThreadDeletionContext], tx: DBWriteTransaction) {
         sendDeletionContextMock(threadDeletionContexts)
     }
 
-    public func makeThreadDeletionContext(thread: TSThread, isFullDelete: Bool, localIdentifiers: LocalIdentifiers, tx: any DBReadTransaction) -> Outgoing.ThreadDeletionContext? {
+    public func makeThreadDeletionContext(thread: TSThread, isFullDelete: Bool, localIdentifiers: LocalIdentifiers, tx: DBReadTransaction) -> Outgoing.ThreadDeletionContext? {
         let conversationIdentifier: Outgoing.ConversationIdentifier = if let contactThread = thread as? TSContactThread {
             .threadServiceId(serviceId: contactThread.contactUUID!)
         } else if let groupThread = thread as? TSGroupThread {

@@ -31,7 +31,7 @@ class EmojiReactorsTableView: UITableView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(for reactions: [OWSReaction], transaction: SDSAnyReadTransaction) {
+    func configure(for reactions: [OWSReaction], transaction: DBReadTransaction) {
         reactorItems = reactions.compactMap { reaction in
             let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: reaction.reactor, tx: transaction).resolvedValue()
 

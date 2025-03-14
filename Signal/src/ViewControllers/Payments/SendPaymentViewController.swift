@@ -359,7 +359,7 @@ public class SendPaymentViewController: OWSViewController {
                 message: preparedMessage,
                 transaction: transaction
             )
-            if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci {
+            if let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci {
                 let infoMessage = TSInfoMessage(
                     thread: thread,
                     messageType: .paymentsActivationRequest,
@@ -937,7 +937,7 @@ public class SendPaymentViewController: OWSViewController {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             Self.keyValueStore.getBool(Self.wasLastPaymentInFiatKey,
                                        defaultValue: false,
-                                       transaction: transaction.asV2Read)
+                                       transaction: transaction)
         }
     }
 
@@ -945,7 +945,7 @@ public class SendPaymentViewController: OWSViewController {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             Self.keyValueStore.setBool(value,
                                        key: Self.wasLastPaymentInFiatKey,
-                                       transaction: transaction.asV2Write)
+                                       transaction: transaction)
         }
     }
 

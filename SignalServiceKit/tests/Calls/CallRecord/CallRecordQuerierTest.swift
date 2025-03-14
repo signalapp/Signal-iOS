@@ -46,7 +46,7 @@ final class CallRecordQuerierTest: XCTestCase {
         knownThreadRowId: Int64? = nil
     ) -> Int64 {
         return inMemoryDB.write { tx -> Int64 in
-            let db = tx.db
+            let db = tx.database
 
             let (thread, threadRowId): (TSThread, Int64) = {
                 if let knownThreadRowId {

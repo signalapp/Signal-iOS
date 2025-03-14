@@ -32,7 +32,7 @@ public struct AccountAttributesGenerator {
     ) -> AccountAttributes {
         owsAssertDebug(tsAccountManager.registrationState(tx: tx).isPrimaryDevice == true)
 
-        let sdsTx: SDSAnyWriteTransaction = SDSDB.shimOnlyBridge(tx)
+        let sdsTx: DBWriteTransaction = SDSDB.shimOnlyBridge(tx)
 
         let isManualMessageFetchEnabled = tsAccountManager.isManualMessageFetchEnabled(tx: tx)
 

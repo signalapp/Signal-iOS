@@ -65,7 +65,7 @@ public final class ConversationViewController: OWSViewController {
         threadViewModel: ThreadViewModel,
         action: ConversationViewAction,
         focusMessageId: String?,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> ConversationViewController {
         let thread = threadViewModel.threadRecord
 
@@ -118,14 +118,14 @@ public final class ConversationViewController: OWSViewController {
         return cvc
     }
 
-    static func loadChatColor(for thread: TSThread, tx: SDSAnyReadTransaction) -> ColorOrGradientSetting {
+    static func loadChatColor(for thread: TSThread, tx: DBReadTransaction) -> ColorOrGradientSetting {
         return DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
             for: thread,
-            tx: tx.asV2Read
+            tx: tx
         )
     }
 
-    static func loadWallpaperViewBuilder(for thread: TSThread, tx: SDSAnyReadTransaction) -> WallpaperViewBuilder? {
+    static func loadWallpaperViewBuilder(for thread: TSThread, tx: DBReadTransaction) -> WallpaperViewBuilder? {
         return Wallpaper.viewBuilder(for: thread, tx: tx)
     }
 

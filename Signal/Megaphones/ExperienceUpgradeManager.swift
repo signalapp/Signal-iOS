@@ -18,14 +18,14 @@ class ExperienceUpgradeManager {
         var shouldClearNewDeviceNotification = false
 
         let optionalNext = SSKEnvironment.shared.databaseStorageRef.read { transaction -> ExperienceUpgrade? in
-            let tx = transaction.unwrapGrdbRead.asAnyRead
+            let tx = transaction
 
-            guard let registrationDate = DependenciesBridge.shared.tsAccountManager.registrationDate(tx: tx.asV2Read) else {
+            guard let registrationDate = DependenciesBridge.shared.tsAccountManager.registrationDate(tx: tx) else {
                 return nil
             }
             let timeIntervalSinceRegistration = Date().timeIntervalSince(registrationDate)
 
-            let isRegisteredPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegisteredPrimaryDevice
+            let isRegisteredPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice
 
             return ExperienceUpgradeFinder.allKnownExperienceUpgrades(transaction: tx)
                 .first { upgrade in
@@ -49,7 +49,7 @@ class ExperienceUpgradeManager {
                             .checkPreconditionsForNotificationsPermissionsReminder()
                     case .newLinkedDeviceNotification:
                         let result = ExperienceUpgradeManifest
-                            .checkPreconditionsForNewLinkedDeviceNotification(tx: transaction.asV2Read)
+                            .checkPreconditionsForNewLinkedDeviceNotification(tx: transaction)
                         switch result {
                         case .display:
                             return true
@@ -133,7 +133,7 @@ class ExperienceUpgradeManager {
         // needed to be presented.
         // If it was already marked as viewed, this will do nothing.
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
-            ExperienceUpgradeFinder.markAsViewed(experienceUpgrade: next, transaction: transaction.unwrapGrdbWrite)
+            ExperienceUpgradeFinder.markAsViewed(experienceUpgrade: next, transaction: transaction)
         }
 
         return didPresentView
@@ -151,10 +151,10 @@ class ExperienceUpgradeManager {
     }
 
     /// Marks the given upgrade as complete, and dismisses it if currently presented.
-    static func clearExperienceUpgrade(_ manifest: ExperienceUpgradeManifest, transaction: GRDBWriteTransaction) {
+    static func clearExperienceUpgrade(_ manifest: ExperienceUpgradeManifest, transaction: DBWriteTransaction) {
         ExperienceUpgradeFinder.markAsComplete(experienceUpgradeManifest: manifest, transaction: transaction)
 
-        transaction.addAsyncCompletion(queue: .main) {
+        transaction.addAsyncCompletion(on: DispatchQueue.main) {
             dismissLastPresented(ifMatching: manifest)
         }
     }
@@ -225,7 +225,7 @@ class ExperienceUpgradeManager {
         case .newLinkedDeviceNotification:
             let mostRecentlyLinkedDeviceDetails = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 try? DependenciesBridge.shared.deviceStore
-                    .mostRecentlyLinkedDeviceDetails(tx: tx.asV2Read)
+                    .mostRecentlyLinkedDeviceDetails(tx: tx)
             }
 
             guard let mostRecentlyLinkedDeviceDetails else {
@@ -242,7 +242,7 @@ class ExperienceUpgradeManager {
         case .createUsernameReminder:
             let usernameIsUnset: Bool = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return DependenciesBridge.shared.localUsernameManager
-                    .usernameState(tx: tx.asV2Read).isExplicitlyUnset
+                    .usernameState(tx: tx).isExplicitlyUnset
             }
 
             guard usernameIsUnset else {
@@ -268,7 +268,7 @@ class ExperienceUpgradeManager {
         case .inactiveLinkedDeviceReminder:
             let inactiveLinkedDevice: InactiveLinkedDevice? = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return DependenciesBridge.shared.inactiveLinkedDeviceFinder
-                    .findLeastActiveLinkedDevice(tx: tx.asV2Read)
+                    .findLeastActiveLinkedDevice(tx: tx)
             }
 
             guard let inactiveLinkedDevice else {
@@ -309,7 +309,7 @@ extension ExperienceUpgradeView {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             ExperienceUpgradeFinder.markAsSnoozed(
                 experienceUpgrade: self.experienceUpgrade,
-                transaction: transaction.unwrapGrdbWrite
+                transaction: transaction
             )
         }
     }
@@ -318,7 +318,7 @@ extension ExperienceUpgradeView {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             ExperienceUpgradeFinder.markAsComplete(
                 experienceUpgrade: self.experienceUpgrade,
-                transaction: transaction.unwrapGrdbWrite
+                transaction: transaction
             )
         }
     }

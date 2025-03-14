@@ -28,7 +28,7 @@ private struct CompletionSerializerTest {
         #expect(result == [2, 1])
     }
 
-    private func runTest(enqueueInOrder: @escaping (any DBWriteTransaction, @escaping () -> Void) -> Void) -> [Int] {
+    private func runTest(enqueueInOrder: @escaping (DBWriteTransaction, @escaping () -> Void) -> Void) -> [Int] {
         let inMemoryDb = InMemoryDB()
         let completions = AtomicArray<Int>(lock: .init())
 

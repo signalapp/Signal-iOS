@@ -201,7 +201,7 @@ public class ProfileFetcherJob {
 
     private func readVersionedFetchParameters(
         localIdentifiers: LocalIdentifiers,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) throws -> VersionedFetchParameters? {
         switch self.serviceId.concreteType {
         case .pni(_):
@@ -236,7 +236,7 @@ public class ProfileFetcherJob {
         }
     }
 
-    private func readGroupSendEndorsement(groupId: GroupIdentifier, tx: any DBReadTransaction) throws -> GroupSendFullTokenBuilder? {
+    private func readGroupSendEndorsement(groupId: GroupIdentifier, tx: DBReadTransaction) throws -> GroupSendFullTokenBuilder? {
         let threadStore = DependenciesBridge.shared.threadStore
         guard let groupThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx) else {
             throw OWSAssertionError("Can't find group that should exist.")

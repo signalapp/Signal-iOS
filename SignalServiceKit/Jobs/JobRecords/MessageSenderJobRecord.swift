@@ -95,7 +95,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
     convenience init(
         persistedMessage: PreparedOutgoingMessage.MessageType.Persisted,
         isHighPriority: Bool,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws {
         let messageType = MessageType.persisted(
             messageId: persistedMessage.message.uniqueId,
@@ -113,7 +113,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
     convenience init(
         editMessage: PreparedOutgoingMessage.MessageType.EditMessage,
         isHighPriority: Bool,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws {
         let messageType = MessageType.editMessage(
             editedMessageId: editMessage.editedMessage.uniqueId,

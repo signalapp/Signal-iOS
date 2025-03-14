@@ -94,14 +94,14 @@ public protocol SDSCodableModel: Encodable, FetchableRecord, PersistableRecord, 
 
     var shouldBeSaved: Bool { get }
 
-    func anyWillInsert(transaction: SDSAnyWriteTransaction)
-    func anyDidInsert(transaction: SDSAnyWriteTransaction)
-    func anyWillUpdate(transaction: SDSAnyWriteTransaction)
-    func anyDidUpdate(transaction: SDSAnyWriteTransaction)
-    func anyWillRemove(transaction: SDSAnyWriteTransaction)
-    func anyDidRemove(transaction: SDSAnyWriteTransaction)
-    func anyDidFetchOne(transaction: SDSAnyReadTransaction)
-    func anyDidEnumerateOne(transaction: SDSAnyReadTransaction)
+    func anyWillInsert(transaction: DBWriteTransaction)
+    func anyDidInsert(transaction: DBWriteTransaction)
+    func anyWillUpdate(transaction: DBWriteTransaction)
+    func anyDidUpdate(transaction: DBWriteTransaction)
+    func anyWillRemove(transaction: DBWriteTransaction)
+    func anyDidRemove(transaction: DBWriteTransaction)
+    func anyDidFetchOne(transaction: DBReadTransaction)
+    func anyDidEnumerateOne(transaction: DBReadTransaction)
 }
 
 public extension SDSCodableModel {
@@ -112,14 +112,14 @@ public extension SDSCodableModel {
 
     var sdsTableName: String { Self.databaseTableName }
 
-    func anyWillInsert(transaction: SDSAnyWriteTransaction) {}
-    func anyDidInsert(transaction: SDSAnyWriteTransaction) {}
-    func anyWillUpdate(transaction: SDSAnyWriteTransaction) {}
-    func anyDidUpdate(transaction: SDSAnyWriteTransaction) {}
-    func anyWillRemove(transaction: SDSAnyWriteTransaction) {}
-    func anyDidRemove(transaction: SDSAnyWriteTransaction) {}
-    func anyDidFetchOne(transaction: SDSAnyReadTransaction) {}
-    func anyDidEnumerateOne(transaction: SDSAnyReadTransaction) {}
+    func anyWillInsert(transaction: DBWriteTransaction) {}
+    func anyDidInsert(transaction: DBWriteTransaction) {}
+    func anyWillUpdate(transaction: DBWriteTransaction) {}
+    func anyDidUpdate(transaction: DBWriteTransaction) {}
+    func anyWillRemove(transaction: DBWriteTransaction) {}
+    func anyDidRemove(transaction: DBWriteTransaction) {}
+    func anyDidFetchOne(transaction: DBReadTransaction) {}
+    func anyDidEnumerateOne(transaction: DBReadTransaction) {}
 
     static var databaseUUIDEncodingStrategy: DatabaseUUIDEncodingStrategy { .uppercaseString }
     static var databaseDateEncodingStrategy: DatabaseDateEncodingStrategy { .timeIntervalSince1970 }
@@ -132,11 +132,11 @@ public extension SDSCodableModel {
 
 public extension SDSCodableModel {
     static func anyCount(
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UInt {
         SDSCodableModelDatabaseInterfaceImpl().countAllModels(
             modelType: Self.self,
-            transaction: transaction.asV2Read
+            transaction: transaction
         )
     }
 
@@ -144,12 +144,12 @@ public extension SDSCodableModel {
     /// See that class for details.
     static func anyFetch(
         rowId: Int64,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Self? {
         SDSCodableModelDatabaseInterfaceImpl().fetchModel(
             modelType: Self.self,
             rowId: rowId,
-            tx: transaction.asV2Read
+            tx: transaction
         )
     }
 
@@ -157,79 +157,79 @@ public extension SDSCodableModel {
     /// See that class for details.
     static func anyFetch(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Self? {
         SDSCodableModelDatabaseInterfaceImpl().fetchModel(
             modelType: Self.self,
             uniqueId: uniqueId,
-            transaction: transaction.asV2Read
+            transaction: transaction
         )
     }
 
     static func anyFetch(
         sql: String,
         arguments: StatementArguments = [],
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Self? {
         SDSCodableModelDatabaseInterfaceImpl().fetchModel(
             modelType: Self.self,
             sql: sql,
             arguments: arguments,
-            transaction: transaction.asV2Read
+            transaction: transaction
         )
     }
 
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
     static func anyFetchAll(
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [Self] {
         SDSCodableModelDatabaseInterfaceImpl().fetchAllModels(
             modelType: Self.self,
-            transaction: transaction.asV2Read
+            transaction: transaction
         )
     }
 
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
-    func anyInsert(transaction: SDSAnyWriteTransaction) {
-        SDSCodableModelDatabaseInterfaceImpl().insertModel(self, transaction: transaction.asV2Write)
+    func anyInsert(transaction: DBWriteTransaction) {
+        SDSCodableModelDatabaseInterfaceImpl().insertModel(self, transaction: transaction)
     }
 
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
-    func anyUpsert(transaction: SDSAnyWriteTransaction) {
-        SDSCodableModelDatabaseInterfaceImpl().upsertModel(self, transaction: transaction.asV2Write)
+    func anyUpsert(transaction: DBWriteTransaction) {
+        SDSCodableModelDatabaseInterfaceImpl().upsertModel(self, transaction: transaction)
     }
 
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
-    func anyOverwritingUpdate(transaction: SDSAnyWriteTransaction) {
-        SDSCodableModelDatabaseInterfaceImpl().overwritingUpdateModel(self, transaction: transaction.asV2Write)
+    func anyOverwritingUpdate(transaction: DBWriteTransaction) {
+        SDSCodableModelDatabaseInterfaceImpl().overwritingUpdateModel(self, transaction: transaction)
     }
 
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
-    func anyRemove(transaction: SDSAnyWriteTransaction) {
-        SDSCodableModelDatabaseInterfaceImpl().removeModel(self, transaction: transaction.asV2Write)
+    func anyRemove(transaction: DBWriteTransaction) {
+        SDSCodableModelDatabaseInterfaceImpl().removeModel(self, transaction: transaction)
     }
 }
 
 public extension SDSCodableModel where Self: AnyObject {
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
-    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (Self) -> Void) {
+    func anyUpdate(transaction: DBWriteTransaction, block: (Self) -> Void) {
         SDSCodableModelDatabaseInterfaceImpl().updateModel(
             self,
-            transaction: transaction.asV2Write,
+            transaction: transaction,
             block: block
         )
     }
 
-    static func anyRemoveAllWithInstantiation(transaction: SDSAnyWriteTransaction) {
+    static func anyRemoveAllWithInstantiation(transaction: DBWriteTransaction) {
         SDSCodableModelDatabaseInterfaceImpl().removeAllModelsWithInstantiation(
             modelType: Self.self,
-            transaction: transaction.asV2Write
+            transaction: transaction
         )
     }
 }
@@ -238,13 +238,13 @@ public extension SDSCodableModel {
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
     static func anyEnumerate(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batchingPreference: BatchingPreference = .unbatched,
         block: (Self, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         SDSCodableModelDatabaseInterfaceImpl().enumerateModels(
             modelType: Self.self,
-            transaction: transaction.asV2Read,
+            transaction: transaction,
             batchingPreference: batchingPreference,
             block: block
         )
@@ -253,13 +253,13 @@ public extension SDSCodableModel {
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
     static func anyEnumerateUniqueIds(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batched: Bool = false,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         SDSCodableModelDatabaseInterfaceImpl().enumerateModelUniqueIds(
             modelType: Self.self,
-            transaction: transaction.asV2Read,
+            transaction: transaction,
             batched: batched,
             block: block
         )
@@ -268,14 +268,14 @@ public extension SDSCodableModel {
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
     static func anyEnumerate(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         sql: String,
         arguments: StatementArguments,
         block: (Self, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         SDSCodableModelDatabaseInterfaceImpl().enumerateModels(
             modelType: Self.self,
-            transaction: transaction.asV2Read,
+            transaction: transaction,
             sql: sql,
             arguments: arguments,
             batchingPreference: .unbatched,

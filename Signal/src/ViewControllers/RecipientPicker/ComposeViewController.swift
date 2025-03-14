@@ -82,7 +82,7 @@ extension ComposeViewController: RecipientPickerDelegate, UsernameLinkScanDelega
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         selectionStyleForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UITableViewCell.SelectionStyle {
         return .default
     }
@@ -102,7 +102,7 @@ extension ComposeViewController: RecipientPickerDelegate, UsernameLinkScanDelega
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> String? {
         switch recipient.identifier {
         case .address:
@@ -115,7 +115,7 @@ extension ComposeViewController: RecipientPickerDelegate, UsernameLinkScanDelega
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          attributedSubtitleForRecipient recipient: PickedRecipient,
-                         transaction: SDSAnyReadTransaction) -> NSAttributedString? {
+                         transaction: DBReadTransaction) -> NSAttributedString? {
         switch recipient.identifier {
         case .address(let address):
             guard !address.isLocalAddress else {

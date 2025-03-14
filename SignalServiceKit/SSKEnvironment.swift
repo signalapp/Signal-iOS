@@ -277,7 +277,7 @@ public class SSKEnvironment: NSObject {
     /// always consistent with TSAccountManager's values.
     private func fixLocalRecipientIfNeeded() {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
                 return  // Not registered yet.
             }
             guard let phoneNumber = E164(localIdentifiers.phoneNumber) else {
@@ -288,7 +288,7 @@ public class SSKEnvironment: NSObject {
                 aci: localIdentifiers.aci,
                 phoneNumber: phoneNumber,
                 pni: localIdentifiers.pni,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
     }

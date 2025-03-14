@@ -26,7 +26,7 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
 
     // MARK: -
 
-    public func recordPendingReadReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: GRDBWriteTransaction) {
+    public func recordPendingReadReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction) {
         do {
             try finder.recordPendingReadReceipt(for: message, thread: thread, transaction: transaction)
         } catch {
@@ -34,7 +34,7 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
         }
     }
 
-    public func recordPendingViewedReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: GRDBWriteTransaction) {
+    public func recordPendingViewedReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction) {
         do {
             try finder.recordPendingViewedReceipt(for: message, thread: thread, transaction: transaction)
         } catch {
@@ -74,9 +74,9 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
         }
     }
 
-    private func sendAnyReadyReceipts(threads: [TSThread], transaction: GRDBReadTransaction) throws {
+    private func sendAnyReadyReceipts(threads: [TSThread], transaction: DBReadTransaction) throws {
         let pendingReadReceipts: [PendingReadReceiptRecord] = try threads.flatMap { thread -> [PendingReadReceiptRecord] in
-            guard !thread.hasPendingMessageRequest(transaction: transaction.asAnyRead) else {
+            guard !thread.hasPendingMessageRequest(transaction: transaction) else {
                 return []
             }
 
@@ -84,7 +84,7 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
         }
 
         let pendingViewedReceipts: [PendingViewedReceiptRecord] = try threads.flatMap { thread -> [PendingViewedReceiptRecord] in
-            guard !thread.hasPendingMessageRequest(transaction: transaction.asAnyRead) else {
+            guard !thread.hasPendingMessageRequest(transaction: transaction) else {
                 return []
             }
 
@@ -97,16 +97,16 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
 
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             do {
-                try self.enqueue(pendingReadReceipts: pendingReadReceipts, pendingViewedReceipts: pendingViewedReceipts, transaction: transaction.unwrapGrdbWrite)
+                try self.enqueue(pendingReadReceipts: pendingReadReceipts, pendingViewedReceipts: pendingViewedReceipts, transaction: transaction)
             } catch {
                 owsFailDebug("error: \(error)")
             }
         }
     }
 
-    private func removeAnyReadyReceipts(threads: [TSThread], transaction: GRDBReadTransaction) throws {
+    private func removeAnyReadyReceipts(threads: [TSThread], transaction: DBReadTransaction) throws {
         let pendingReadReceipts: [PendingReadReceiptRecord] = try threads.flatMap { thread -> [PendingReadReceiptRecord] in
-            guard !thread.hasPendingMessageRequest(transaction: transaction.asAnyRead) else {
+            guard !thread.hasPendingMessageRequest(transaction: transaction) else {
                 return []
             }
 
@@ -114,7 +114,7 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
         }
 
         let pendingViewedReceipts: [PendingViewedReceiptRecord] = try threads.flatMap { thread -> [PendingViewedReceiptRecord] in
-            guard !thread.hasPendingMessageRequest(transaction: transaction.asAnyRead) else {
+            guard !thread.hasPendingMessageRequest(transaction: transaction) else {
                 return []
             }
 
@@ -127,15 +127,15 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
 
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             do {
-                try self.finder.delete(pendingReadReceipts: pendingReadReceipts, transaction: transaction.unwrapGrdbWrite)
-                try self.finder.delete(pendingViewedReceipts: pendingViewedReceipts, transaction: transaction.unwrapGrdbWrite)
+                try self.finder.delete(pendingReadReceipts: pendingReadReceipts, transaction: transaction)
+                try self.finder.delete(pendingViewedReceipts: pendingViewedReceipts, transaction: transaction)
             } catch {
                 owsFailDebug("error: \(error)")
             }
         }
     }
 
-    private func enqueue(pendingReadReceipts: [PendingReadReceiptRecord], pendingViewedReceipts: [PendingViewedReceiptRecord], transaction: GRDBWriteTransaction) throws {
+    private func enqueue(pendingReadReceipts: [PendingReadReceiptRecord], pendingViewedReceipts: [PendingViewedReceiptRecord], transaction: DBWriteTransaction) throws {
         guard SSKEnvironment.shared.receiptManagerRef.areReadReceiptsEnabled() else {
             Logger.info("Deleting all pending receipts - user has subsequently disabled read receipts.")
             try finder.deleteAllPendingReceipts(transaction: transaction)
@@ -152,7 +152,7 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
                 for: address,
                 timestamp: UInt64(receipt.messageTimestamp),
                 messageUniqueId: receipt.messageUniqueId,
-                tx: transaction.asAnyWrite
+                tx: transaction
             )
         }
         try finder.delete(pendingReadReceipts: pendingReadReceipts, transaction: transaction)
@@ -167,7 +167,7 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
                 for: address,
                 timestamp: UInt64(receipt.messageTimestamp),
                 messageUniqueId: receipt.messageUniqueId,
-                tx: transaction.asAnyWrite
+                tx: transaction
             )
         }
         try finder.delete(pendingViewedReceipts: pendingViewedReceipts, transaction: transaction)
@@ -177,7 +177,7 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
 // MARK: - Persistence
 
 public class PendingReceiptFinder {
-    public func recordPendingReadReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: GRDBWriteTransaction) throws {
+    public func recordPendingReadReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction) throws {
         guard let threadId = thread.sqliteRowId else {
             throw OWSAssertionError("threadId was unexpectedly nil")
         }
@@ -193,7 +193,7 @@ public class PendingReceiptFinder {
         try record.insert(transaction.database)
     }
 
-    public func recordPendingViewedReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: GRDBWriteTransaction) throws {
+    public func recordPendingViewedReceipt(for message: TSIncomingMessage, thread: TSThread, transaction: DBWriteTransaction) throws {
         guard let threadId = thread.sqliteRowId else {
             throw OWSAssertionError("threadId was unexpectedly nil")
         }
@@ -209,7 +209,7 @@ public class PendingReceiptFinder {
         try record.insert(transaction.database)
     }
 
-    public func pendingReadReceipts(thread: TSThread, transaction: GRDBReadTransaction) throws -> [PendingReadReceiptRecord] {
+    public func pendingReadReceipts(thread: TSThread, transaction: DBReadTransaction) throws -> [PendingReadReceiptRecord] {
         guard let threadId = thread.sqliteRowId else {
             throw OWSAssertionError("threadId was unexpectedly nil")
         }
@@ -221,7 +221,7 @@ public class PendingReceiptFinder {
         return try PendingReadReceiptRecord.fetchAll(transaction.database, sql: sql)
     }
 
-    public func pendingViewedReceipts(thread: TSThread, transaction: GRDBReadTransaction) throws -> [PendingViewedReceiptRecord] {
+    public func pendingViewedReceipts(thread: TSThread, transaction: DBReadTransaction) throws -> [PendingViewedReceiptRecord] {
         guard let threadId = thread.sqliteRowId else {
             throw OWSAssertionError("threadId was unexpectedly nil")
         }
@@ -233,7 +233,7 @@ public class PendingReceiptFinder {
         return try PendingViewedReceiptRecord.fetchAll(transaction.database, sql: sql)
     }
 
-    public func threadsWithPendingReceipts(transaction: GRDBReadTransaction) throws -> [TSThread] {
+    public func threadsWithPendingReceipts(transaction: DBReadTransaction) throws -> [TSThread] {
         let readSql = """
             SELECT DISTINCT model_TSThread.* FROM model_TSThread
             INNER JOIN pending_read_receipts
@@ -251,15 +251,15 @@ public class PendingReceiptFinder {
         return Array(Set(readThreads + viewedThreads))
     }
 
-    public func delete(pendingReadReceipts: [PendingReadReceiptRecord], transaction: GRDBWriteTransaction) throws {
+    public func delete(pendingReadReceipts: [PendingReadReceiptRecord], transaction: DBWriteTransaction) throws {
         try PendingReadReceiptRecord.deleteAll(transaction.database, keys: pendingReadReceipts.compactMap { $0.id })
     }
 
-    public func delete(pendingViewedReceipts: [PendingViewedReceiptRecord], transaction: GRDBWriteTransaction) throws {
+    public func delete(pendingViewedReceipts: [PendingViewedReceiptRecord], transaction: DBWriteTransaction) throws {
         try PendingViewedReceiptRecord.deleteAll(transaction.database, keys: pendingViewedReceipts.compactMap { $0.id })
     }
 
-    public func deleteAllPendingReceipts(transaction: GRDBWriteTransaction) throws {
+    public func deleteAllPendingReceipts(transaction: DBWriteTransaction) throws {
         try PendingReadReceiptRecord.deleteAll(transaction.database)
         try PendingViewedReceiptRecord.deleteAll(transaction.database)
     }
@@ -280,9 +280,9 @@ fileprivate extension Notification {
         return userProfileWriter
     }
 
-    func affectedThread(transaction: GRDBReadTransaction) -> TSThread? {
+    func affectedThread(transaction: DBReadTransaction) -> TSThread? {
         if let address = userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress {
-            guard let contactThread = TSContactThread.getWithContactAddress(address, transaction: transaction.asAnyRead) else {
+            guard let contactThread = TSContactThread.getWithContactAddress(address, transaction: transaction) else {
                 return nil
             }
             return contactThread
@@ -291,7 +291,7 @@ fileprivate extension Notification {
         }
 
         if let groupId = userInfo?[UserProfileNotifications.profileGroupIdKey] as? Data {
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction.asAnyRead) else {
+            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 return nil
             }
             return groupThread

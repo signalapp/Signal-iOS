@@ -498,7 +498,7 @@ public class SignalServiceAddressCache: NSObject {
         SSKEnvironment.shared.databaseStorageRef.read { tx in
             let bulkFetcher: BulkPhoneNumberVisibilityFetcher?
             do {
-                bulkFetcher = try phoneNumberVisibilityFetcher.fetchAll(tx: tx.asV2Read)
+                bulkFetcher = try phoneNumberVisibilityFetcher.fetchAll(tx: tx)
             } catch {
                 Logger.warn("Couldn't fetch visible phone numbers. Hiding all of them…")
                 bulkFetcher = nil

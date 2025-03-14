@@ -29,7 +29,7 @@ final class OWSOutgoingResendResponse: TSOutgoingMessage {
         originalThreadId: String?,
         originalGroupId: Data?,
         derivedContentHint: SealedSenderContentHint,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         super.init(
             outgoingMessageWith: outgoingMessageBuilder,
@@ -49,7 +49,7 @@ final class OWSOutgoingResendResponse: TSOutgoingMessage {
         deviceId: UInt32,
         failedTimestamp: UInt64,
         didResetSession: Bool,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let targetThread = TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(aci), transaction: tx)
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: targetThread)
@@ -117,9 +117,9 @@ final class OWSOutgoingResendResponse: TSOutgoingMessage {
 
     override var contentHint: SealedSenderContentHint { self.derivedContentHint }
 
-    override func envelopeGroupIdWithTransaction(_ transaction: SDSAnyReadTransaction) -> Data? { self.originalGroupId }
+    override func envelopeGroupIdWithTransaction(_ transaction: DBReadTransaction) -> Data? { self.originalGroupId }
 
-    override func buildPlainTextData(_ thread: TSThread, transaction tx: SDSAnyWriteTransaction) -> Data? {
+    override func buildPlainTextData(_ thread: TSThread, transaction tx: DBWriteTransaction) -> Data? {
         owsAssertDebug(self.recipientAddresses().count == 1)
 
         let contentBuilder: SSKProtoContentBuilder = {
@@ -166,7 +166,7 @@ final class OWSOutgoingResendResponse: TSOutgoingMessage {
         return contentBuilder
     }
 
-    func didPerformMessageSend(_ sentMessages: [SentDeviceMessage], to serviceId: ServiceId, tx: SDSAnyWriteTransaction) {
+    func didPerformMessageSend(_ sentMessages: [SentDeviceMessage], to serviceId: ServiceId, tx: DBWriteTransaction) {
         if
             self.didAppendSKDM,
             let originalThreadId,

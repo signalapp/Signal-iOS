@@ -16,7 +16,7 @@ public extension TSUnreadIndicatorInteraction {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetchUnreadIndicatorInteraction(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSUnreadIndicatorInteraction? {
         assert(!uniqueId.isEmpty)
 
@@ -32,7 +32,7 @@ public extension TSUnreadIndicatorInteraction {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateUnreadIndicatorInteraction(transaction: SDSAnyWriteTransaction, block: (TSUnreadIndicatorInteraction) -> Void) {
+    func anyUpdateUnreadIndicatorInteraction(transaction: DBWriteTransaction, block: (TSUnreadIndicatorInteraction) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? TSUnreadIndicatorInteraction else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")

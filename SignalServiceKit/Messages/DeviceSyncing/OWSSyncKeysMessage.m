@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
                  accountEntropyPool:(nullable NSString *)accountEntropyPool
                           masterKey:(nullable NSData *)masterKey
                  mediaRootBackupKey:(nullable NSData *)mediaRootBackupKey
-                        transaction:(SDSAnyReadTransaction *)transaction
+                        transaction:(DBReadTransaction *)transaction
 {
     self = [super initWithLocalThread:localThread transaction:transaction];
     if (!self) {
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction
 {
     SSKProtoSyncMessageKeysBuilder *keysBuilder = [SSKProtoSyncMessageKeys builder];
 

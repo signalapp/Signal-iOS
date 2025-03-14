@@ -13,7 +13,7 @@ public class OutgoingGroupUpdateMessage: TSOutgoingMessage {
         expiresInSeconds: UInt32 = 0,
         groupChangeProtoData: Data? = nil,
         additionalRecipients: some Sequence<SignalServiceAddress>,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) {
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: thread,

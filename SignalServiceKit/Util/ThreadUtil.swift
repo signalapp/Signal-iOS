@@ -15,7 +15,7 @@ public final class ThreadUtil {
     // same order in which they are enqueued.
     public static var enqueueSendQueue: DispatchQueue { .sharedUserInitiated }
 
-    public static func enqueueSendAsyncWrite(_ block: @escaping (SDSAnyWriteTransaction) -> Void) {
+    public static func enqueueSendAsyncWrite(_ block: @escaping (DBWriteTransaction) -> Void) {
         enqueueSendQueue.async {
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 block(transaction)
@@ -34,7 +34,7 @@ public final class ThreadUtil {
         message: PreparedOutgoingMessage,
         limitToCurrentProcessLifetime: Bool = false,
         isHighPriority: Bool = false,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> Promise<Void> {
         let promise = SSKEnvironment.shared.messageSenderJobQueueRef.add(
             .promise,
@@ -65,7 +65,7 @@ public extension ThreadUtil {
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
 
         let message: TSOutgoingMessage = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            applyDisappearingMessagesConfiguration(to: builder, tx: tx.asV2Read)
+            applyDisappearingMessagesConfiguration(to: builder, tx: tx)
             return builder.build(transaction: tx)
         }
 
@@ -112,7 +112,7 @@ public extension ThreadUtil {
 
         let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread)
         let message = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            applyDisappearingMessagesConfiguration(to: builder, tx: tx.asV2Read)
+            applyDisappearingMessagesConfiguration(to: builder, tx: tx)
             return builder.build(transaction: tx)
         }
 
@@ -167,7 +167,7 @@ public extension ThreadUtil {
 
         let builder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread)
         let message = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            applyDisappearingMessagesConfiguration(to: builder, tx: tx.asV2Read)
+            applyDisappearingMessagesConfiguration(to: builder, tx: tx)
             return builder.build(transaction: tx)
         }
 
@@ -200,7 +200,7 @@ public extension ThreadUtil {
         _ message: TSOutgoingMessage,
         stickerDataSource: MessageStickerDataSource,
         thread: TSThread,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         AssertNotOnMainThread()
 
@@ -230,19 +230,19 @@ extension ThreadUtil {
     /// - Note
     /// Group threads never go through this method, and instead have their
     /// disappearing-message timer set during group creation.
-    private static func shouldSetUniversalTimer(contactThread: TSContactThread, tx: SDSAnyReadTransaction) -> Bool {
+    private static func shouldSetUniversalTimer(contactThread: TSContactThread, tx: DBReadTransaction) -> Bool {
         ThreadFinder().shouldSetDefaultDisappearingMessageTimer(
             contactThread: contactThread,
             transaction: tx
         )
     }
 
-    private static func setUniversalTimer(contactThread: TSContactThread, tx: SDSAnyWriteTransaction) {
+    private static func setUniversalTimer(contactThread: TSContactThread, tx: DBWriteTransaction) {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let dmUniversalToken = dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx.asV2Read)
+        let dmUniversalToken = dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx)
         let version = dmConfigurationStore.fetchOrBuildDefault(
             for: .thread(contactThread),
-            tx: tx.asV2Read
+            tx: tx
         ).timerVersion
         let dmResult = dmConfigurationStore.set(
             token: .init(
@@ -251,7 +251,7 @@ extension ThreadUtil {
                 version: version
             ),
             for: .thread(contactThread),
-            tx: tx.asV2Write
+            tx: tx
         )
         OWSDisappearingConfigurationUpdateInfoMessage(
             contactThread: contactThread,
@@ -262,7 +262,7 @@ extension ThreadUtil {
         ).anyInsert(transaction: tx)
     }
 
-    private static func shouldAddThreadToProfileWhitelist(_ thread: TSThread, tx: SDSAnyReadTransaction) -> Bool {
+    private static func shouldAddThreadToProfileWhitelist(_ thread: TSThread, tx: DBReadTransaction) -> Bool {
         let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: tx)
 
         // If we're creating this thread or we have a pending message request,
@@ -304,7 +304,7 @@ extension ThreadUtil {
     public class func addThreadToProfileWhitelistIfEmptyOrPendingRequest(
         _ thread: TSThread,
         setDefaultTimerIfNecessary: Bool,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> Bool {
         if
             setDefaultTimerIfNecessary,
@@ -335,7 +335,7 @@ extension TSThread {
     /// initiates message sending via the UI. It should *not*
     /// be called for messages we send automatically, like
     /// receipts.
-    public func donateSendMessageIntent(for outgoingMessage: TSOutgoingMessage, transaction: SDSAnyReadTransaction) {
+    public func donateSendMessageIntent(for outgoingMessage: TSOutgoingMessage, transaction: DBReadTransaction) {
         // Never donate for story sends or replies, we don't want them as share suggestions
         guard
             !(outgoingMessage is OutgoingStoryMessage),
@@ -362,10 +362,10 @@ extension TSThread {
         case outgoingMessage(TSOutgoingMessage)
     }
 
-    public func generateSendMessageIntent(context: IntentContext, transaction: SDSAnyReadTransaction) -> INSendMessageIntent? {
+    public func generateSendMessageIntent(context: IntentContext, transaction: DBReadTransaction) -> INSendMessageIntent? {
         guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return nil }
 
-        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress else {
             owsFailDebug("Missing local address")
             return nil
         }
@@ -427,7 +427,7 @@ extension TSThread {
             donationMetadata.recipientCount = recipientAddresses(with: transaction).count
 
             if let message = message {
-                let mentionedAddresses = MentionFinder.mentionedAddresses(for: message, transaction: transaction.unwrapGrdbRead)
+                let mentionedAddresses = MentionFinder.mentionedAddresses(for: message, transaction: transaction)
                 donationMetadata.mentionsCurrentUser = mentionedAddresses.contains(localAddress)
                 donationMetadata.isReplyToCurrentUser = message.quotedMessage?.authorAddress.isEqualToAddress(localAddress) ?? false
             }
@@ -442,7 +442,7 @@ extension TSThread {
         return sendMessageIntent
     }
 
-    public func generateIncomingCallIntent(callerAci: Aci, tx: SDSAnyReadTransaction) -> INIntent? {
+    public func generateIncomingCallIntent(callerAci: Aci, tx: DBReadTransaction) -> INIntent? {
         guard !self.isGroupThread else {
             // Fall back to a "send message" intent for group calls,
             // because the "start call" intent makes the notification look too much like a 1:1 call.
@@ -463,7 +463,7 @@ extension TSThread {
 
     private func inPersonForRecipient(
         _ recipient: SignalServiceAddress,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> INPerson {
 
         // Generate recipient name
@@ -507,10 +507,10 @@ extension TSThread {
     // the appropriate pixel size for our avatars.
     private static let intentAvatarDiameterPixels: CGFloat = 56 * SSKEnvironment.shared.preferencesRef.cachedDeviceScale
 
-    public func intentStoryAvatarImage(tx: SDSAnyReadTransaction) -> INImage? {
+    public func intentStoryAvatarImage(tx: DBReadTransaction) -> INImage? {
         if let storyThread = self as? TSPrivateStoryThread {
             if storyThread.isMyStory {
-                guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
+                guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
                     Logger.warn("Missing local address")
                     return nil
                 }
@@ -524,7 +524,7 @@ extension TSThread {
         }
     }
 
-    private func intentRecipientAvatarImage(recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> INImage? {
+    private func intentRecipientAvatarImage(recipient: SignalServiceAddress, transaction: DBReadTransaction) -> INImage? {
         // Generate avatar
         let image: INImage
         if let contactAvatar = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
@@ -541,7 +541,7 @@ extension TSThread {
         return image
     }
 
-    private func intentThreadAvatarImage(transaction: SDSAnyReadTransaction) -> INImage? {
+    private func intentThreadAvatarImage(transaction: DBReadTransaction) -> INImage? {
         let image: INImage
         if let threadAvatar = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
             forThread: self,

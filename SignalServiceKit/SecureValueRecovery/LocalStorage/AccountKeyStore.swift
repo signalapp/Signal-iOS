@@ -54,7 +54,7 @@ public class AccountKeyStore {
         return getMasterKey(tx: tx) ?? masterKeyGenerator()
     }
 
-    public func rotateMasterKey(tx: any DBWriteTransaction) -> (old: MasterKey?, new: MasterKey) {
+    public func rotateMasterKey(tx: DBWriteTransaction) -> (old: MasterKey?, new: MasterKey) {
         let oldValue = getMasterKey(tx: tx)
         let newValue = masterKeyGenerator()
         setMasterKey(newValue, tx: tx)
@@ -119,7 +119,7 @@ public class AccountKeyStore {
         return nil
     }
 
-    public func getOrGenerateAccountEntropyPool(tx: any DBWriteTransaction) -> AccountEntropyPool {
+    public func getOrGenerateAccountEntropyPool(tx: DBWriteTransaction) -> AccountEntropyPool {
         return getAccountEntropyPool(tx: tx) ?? accountEntropyPoolGenerator()
     }
 

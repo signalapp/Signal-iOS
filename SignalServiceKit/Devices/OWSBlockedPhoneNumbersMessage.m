@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
                        phoneNumbers:(NSArray<NSString *> *)phoneNumbers
                          aciStrings:(NSArray<NSString *> *)aciStrings
                            groupIds:(NSArray<NSData *> *)groupIds
-                        transaction:(SDSAnyReadTransaction *)transaction
+                        transaction:(DBReadTransaction *)transaction
 {
     self = [super initWithLocalThread:localThread transaction:transaction];
     if (!self) {
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction
 {
     SSKProtoSyncMessageBlockedBuilder *blockedBuilder = [SSKProtoSyncMessageBlocked builder];
     [blockedBuilder setNumbers:_phoneNumbers];

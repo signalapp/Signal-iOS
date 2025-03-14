@@ -12,7 +12,7 @@ class OutgoingGroupUpdateMessageTest: SSKBaseTest {
         tsAccountManager.registerForTests(withLocalNumber: "+12225550101", uuid: UUID(), pni: UUID())
     }
 
-    func createThread(transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
+    func createThread(transaction: DBWriteTransaction) throws -> TSGroupThread {
         try GroupManager.createGroupForTests(
             members: [],
             name: "Test group",

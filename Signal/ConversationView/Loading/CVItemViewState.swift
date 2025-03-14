@@ -179,7 +179,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                                            threadAssociatedData: ThreadAssociatedData,
                                            threadViewModel: ThreadViewModel,
                                            itemBuildingContext: CVItemBuildingContext,
-                                           transaction: SDSAnyReadTransaction) -> CVItemModel? {
+                                           transaction: DBReadTransaction) -> CVItemModel? {
         AssertIsOnMainThread()
 
         let viewStateSnapshot = itemBuildingContext.viewStateSnapshot
@@ -217,7 +217,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                                                viewStateSnapshot: CVViewStateSnapshot,
                                                groupNameColors: GroupNameColors,
                                                displayNameCache: DisplayNameCache,
-                                               transaction: SDSAnyReadTransaction) {
+                                               transaction: DBReadTransaction) {
         let itemViewState = item.itemViewState
         itemViewState.shouldShowSenderAvatar = false
         itemViewState.shouldHideFooter = false
@@ -476,7 +476,7 @@ struct CVItemModelBuilder: CVItemBuilding {
             let nextMessage = nextItem?.interaction as? TSMessage,
             let rowId = nextMessage.sqliteRowId,
             let attachment = DependenciesBridge.shared.attachmentStore
-                .fetchFirstReferencedAttachment(for: .messageBodyAttachment(messageRowId: rowId), tx: transaction.asV2Read),
+                .fetchFirstReferencedAttachment(for: .messageBodyAttachment(messageRowId: rowId), tx: transaction),
             attachment.attachment.asStream()?.contentType.isAudio
                 ?? MimeTypeUtil.isSupportedAudioMimeType(attachment.attachment.mimeType)
         {
@@ -494,7 +494,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                     owningMessage: nextMessage,
                     metadata: nil,
                     receivedAtDate: nextMessage.receivedAtDate,
-                    downloadState: pointer.attachmentPointer.downloadState(tx: transaction.asV2Read)
+                    downloadState: pointer.attachmentPointer.downloadState(tx: transaction)
                 )
             }
         }
@@ -718,7 +718,7 @@ private extension MessageLoader {
         !canLoadOlder
     }
 
-    func shouldShowDefaultDisappearingMessageTimer(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+    func shouldShowDefaultDisappearingMessageTimer(thread: TSThread, transaction: DBReadTransaction) -> Bool {
         guard let contactThread = thread as? TSContactThread else {
             // Group threads get their initial disappearing message timer during
             // group creation.
@@ -786,7 +786,7 @@ private class ItemBuilder {
 class DisplayNameCache {
     private var displayNameCache = [ServiceId: DisplayName]()
 
-    private func _displayName(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> DisplayName {
+    private func _displayName(for address: SignalServiceAddress, tx: DBReadTransaction) -> DisplayName {
         if let serviceId = address.serviceId, let displayName = displayNameCache[serviceId] {
             return displayName
         }
@@ -797,11 +797,11 @@ class DisplayNameCache {
         return displayName
     }
 
-    func shortDisplayName(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+    func shortDisplayName(address: SignalServiceAddress, transaction: DBReadTransaction) -> String {
         return _displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
     }
 
-    func displayName(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+    func displayName(address: SignalServiceAddress, transaction: DBReadTransaction) -> String {
         return _displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: false)
     }
 }

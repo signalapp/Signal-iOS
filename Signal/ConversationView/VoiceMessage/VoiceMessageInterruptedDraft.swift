@@ -32,7 +32,7 @@ final class VoiceMessageInterruptedDraft: VoiceMessageSendableDraft {
         self.waveformFileUrl = URL(fileURLWithPath: Constants.waveformFilename, relativeTo: directoryUrl)
     }
 
-    public static func currentDraft(for thread: TSThread, transaction: SDSAnyReadTransaction) -> VoiceMessageInterruptedDraft? {
+    public static func currentDraft(for thread: TSThread, transaction: DBReadTransaction) -> VoiceMessageInterruptedDraft? {
         let directoryUrl = VoiceMessageInterruptedDraftStore.directoryUrl(
             threadUniqueId: thread.uniqueId,
             transaction: transaction
@@ -42,7 +42,7 @@ final class VoiceMessageInterruptedDraft: VoiceMessageSendableDraft {
 
     // MARK: -
 
-    func clearDraft(transaction: SDSAnyWriteTransaction) {
+    func clearDraft(transaction: DBWriteTransaction) {
         VoiceMessageInterruptedDraftStore.clearDraft(for: threadUniqueId, transaction: transaction)
     }
 

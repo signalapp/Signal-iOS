@@ -7,12 +7,12 @@ protocol DeleteForMeAddressableMessageFinder {
     func findLocalMessage(
         threadUniqueId: String,
         addressableMessage: DeleteForMeSyncMessage.Incoming.AddressableMessage,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) -> TSMessage?
 
     func threadContainsAnyAddressableMessages(
         threadUniqueId: String,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) -> Bool
 }
 
@@ -28,7 +28,7 @@ final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessa
     func findLocalMessage(
         threadUniqueId: String,
         addressableMessage: DeleteForMeSyncMessage.Incoming.AddressableMessage,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) -> TSMessage? {
         let authorAddress: SignalServiceAddress
         switch addressableMessage.author {
@@ -51,7 +51,7 @@ final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessa
 
     func threadContainsAnyAddressableMessages(
         threadUniqueId: String,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) -> Bool {
         var foundAddressableMessage = false
 
@@ -82,11 +82,11 @@ final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessa
 #if TESTABLE_BUILD
 
 open class MockDeleteForMeAddressableMessageFinder: DeleteForMeAddressableMessageFinder {
-    func findLocalMessage(threadUniqueId: String, addressableMessage: DeleteForMeSyncMessage.Incoming.AddressableMessage, tx: any DBReadTransaction) -> TSMessage? {
+    func findLocalMessage(threadUniqueId: String, addressableMessage: DeleteForMeSyncMessage.Incoming.AddressableMessage, tx: DBReadTransaction) -> TSMessage? {
         return nil
     }
 
-    func threadContainsAnyAddressableMessages(threadUniqueId: String, tx: any DBReadTransaction) -> Bool {
+    func threadContainsAnyAddressableMessages(threadUniqueId: String, tx: DBReadTransaction) -> Bool {
         return false
     }
 }

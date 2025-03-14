@@ -59,7 +59,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
 
         let keyValueStore = KeyValueStore(collection: "test")
         self.write { transaction in
-            keyValueStore.setBool(true, key: "test", transaction: transaction.asV2Write)
+            keyValueStore.setBool(true, key: "test", transaction: transaction)
         }
         waitForRunLoop()
 
@@ -118,7 +118,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
         mockObserver.clear()
 
         self.write { transaction in
-            SSKEnvironment.shared.databaseStorageRef.touch(thread: someThread, shouldReindex: true, transaction: transaction)
+            SSKEnvironment.shared.databaseStorageRef.touch(thread: someThread, shouldReindex: true, tx: transaction)
         }
         waitForRunLoop()
 
@@ -137,7 +137,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
         mockObserver.clear()
 
         self.write { transaction in
-            SSKEnvironment.shared.databaseStorageRef.touch(interaction: lastMessage, shouldReindex: true, transaction: transaction)
+            SSKEnvironment.shared.databaseStorageRef.touch(interaction: lastMessage, shouldReindex: true, tx: transaction)
         }
         waitForRunLoop()
 

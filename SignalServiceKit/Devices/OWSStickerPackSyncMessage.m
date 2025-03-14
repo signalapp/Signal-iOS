@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithLocalThread:(TSContactThread *)localThread
                               packs:(NSArray<StickerPackInfo *> *)packs
                       operationType:(StickerPackOperationType)operationType
-                        transaction:(SDSAnyReadTransaction *)transaction
+                        transaction:(DBReadTransaction *)transaction
 {
     self = [super initWithLocalThread:localThread transaction:transaction];
     if (!self) {
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction
 {
     SSKProtoSyncMessageStickerPackOperationType operationType;
     switch (self.operationType) {

@@ -389,10 +389,10 @@ public extension TSGroupModel {
         return Data(SHA256.hash(data: avatarData)).hexadecimalString
     }
 
-    static func allGroupAvatarFilePaths(transaction: SDSAnyReadTransaction) throws -> Set<String> {
+    static func allGroupAvatarFilePaths(transaction: DBReadTransaction) throws -> Set<String> {
         let cursor = TSThread.grdbFetchCursor(
             sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
 
         var filePaths = Set<String>()

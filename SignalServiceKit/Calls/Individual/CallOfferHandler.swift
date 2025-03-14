@@ -37,7 +37,7 @@ public class CallOfferHandlerImpl {
         outcome: RPRecentCallType,
         callType: TSRecentCallOfferType,
         sentAtTimestamp: UInt64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let callEventInserter = CallEventInserter(
             thread: thread,
@@ -55,7 +55,7 @@ public class CallOfferHandlerImpl {
         callId: UInt64,
         callType: SSKProtoCallMessageOfferType,
         sentAtTimestamp: UInt64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> PartialResult? {
         let thread = TSContactThread.getOrCreateThread(
             withContactAddress: SignalServiceAddress(caller),
@@ -70,7 +70,7 @@ public class CallOfferHandlerImpl {
             offerMediaType = .video
         }
 
-        func insertMissedCallInteraction(outcome: RPRecentCallType, tx: SDSAnyWriteTransaction) {
+        func insertMissedCallInteraction(outcome: RPRecentCallType, tx: DBWriteTransaction) {
             return self.insertMissedCallInteraction(
                 for: callId,
                 in: thread,
@@ -81,7 +81,7 @@ public class CallOfferHandlerImpl {
             )
         }
 
-        guard tsAccountManager.registrationState(tx: tx.asV2Read).isRegistered else {
+        guard tsAccountManager.registrationState(tx: tx).isRegistered else {
             Logger.warn("user is not registered, skipping call.")
             insertMissedCallInteraction(outcome: .incomingMissed, tx: tx)
             return nil
@@ -90,7 +90,7 @@ public class CallOfferHandlerImpl {
         let untrustedIdentity = identityManager.untrustedIdentityForSending(
             to: SignalServiceAddress(caller),
             untrustedThreshold: nil,
-            tx: tx.asV2Read
+            tx: tx
         )
         if let untrustedIdentity {
             Logger.warn("missed a call due to untrusted identity")
@@ -143,7 +143,7 @@ public class CallOfferHandlerImpl {
                     thread: thread,
                     callId: callId,
                     hangupType: .hangupNeedPermission,
-                    localDeviceId: tsAccountManager.storedDeviceId(tx: tx.asV2Read),
+                    localDeviceId: tsAccountManager.storedDeviceId(tx: tx),
                     remoteDeviceId: sourceDevice,
                     tx: tx
                 )
@@ -166,7 +166,7 @@ public class CallOfferHandlerImpl {
         )
     }
 
-    private func allowsInboundCalls(from caller: Aci, tx: SDSAnyReadTransaction) -> Bool {
+    private func allowsInboundCalls(from caller: Aci, tx: DBReadTransaction) -> Bool {
         // If the thread is in our whitelist, then we've either trusted it manually
         // or it's a chat with someone in our system contacts.
         return profileManager.isUser(inProfileWhitelist: SignalServiceAddress(caller), transaction: tx)
@@ -181,13 +181,13 @@ public struct CallIdentityKeys {
 extension OWSIdentityManager {
     public func getCallIdentityKeys(
         remoteAci: Aci,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> CallIdentityKeys? {
-        guard let localIdentityKey = identityKeyPair(for: .aci, tx: tx.asV2Read)?.keyPair.identityKey else {
+        guard let localIdentityKey = identityKeyPair(for: .aci, tx: tx)?.keyPair.identityKey else {
             owsFailDebug("missing localIdentityKey")
             return nil
         }
-        guard let contactIdentityKey = try? identityKey(for: remoteAci, tx: tx.asV2Read) else {
+        guard let contactIdentityKey = try? identityKey(for: remoteAci, tx: tx) else {
             owsFailDebug("missing contactIdentityKey")
             return nil
         }
@@ -202,7 +202,7 @@ public enum CallHangupSender {
         hangupType: SSKProtoCallMessageHangupType,
         localDeviceId: UInt32,
         remoteDeviceId: UInt32?,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> Promise<Void> {
         let hangupBuilder = SSKProtoCallMessageHangup.builder(id: callId)
 

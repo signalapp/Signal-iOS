@@ -7,8 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class DBWriteTransaction;
 @class OWSStorage;
-@class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
 
 @interface IncomingGroupsV2MessageJob : BaseModel

@@ -12,7 +12,7 @@ public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
     public init(
         uploadedAttachment: Upload.Result<Upload.LocalUploadMetadata>,
         localThread: TSContactThread,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) {
         self.uploadedAttachment = uploadedAttachment
         super.init(localThread: localThread, transaction: tx)
@@ -29,7 +29,7 @@ public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
 
     public override var isUrgent: Bool { false }
 
-    public override func syncMessageBuilder(transaction tx: SDSAnyReadTransaction) -> SSKProtoSyncMessageBuilder? {
+    public override func syncMessageBuilder(transaction tx: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
 
         let attachmentBuilder = SSKProtoAttachmentPointer.builder()
 

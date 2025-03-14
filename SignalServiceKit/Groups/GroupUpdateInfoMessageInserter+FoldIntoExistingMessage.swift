@@ -30,7 +30,7 @@ extension GroupUpdateInfoMessageInserterImpl {
         localIdentifiers: LocalIdentifiers,
         groupThread: TSGroupThread,
         newGroupModel: TSGroupModel,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> CollapsibleMembershipChangeResult? {
         guard
             let (mostRecentInfoMsg, secondMostRecentInfoMsgMaybe) =
@@ -82,7 +82,7 @@ extension GroupUpdateInfoMessageInserterImpl {
         mostRecentInfoMsg: TSInfoMessage,
         withNewJoinRequestFrom requestingAci: Aci,
         localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> CollapsibleMembershipChangeResult? {
 
         // For a new join request we always want a new info message. However,
@@ -135,7 +135,7 @@ extension GroupUpdateInfoMessageInserterImpl {
         withCanceledJoinRequestFrom cancelingAci: Aci,
         newGroupModel: TSGroupModel,
         localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> CollapsibleMembershipChangeResult? {
 
         // If the most recent message represents the join request that's being
@@ -185,7 +185,7 @@ extension GroupUpdateInfoMessageInserterImpl {
             cancelingAci == requester
         {
             DependenciesBridge.shared.interactionDeleteManager
-                .delete(mostRecentInfoMsg, sideEffects: .default(), tx: transaction.asV2Write)
+                .delete(mostRecentInfoMsg, sideEffects: .default(), tx: transaction)
 
             secondMostRecentInfoMsg.setSingleUpdateItem(
                 singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(
@@ -213,7 +213,7 @@ extension GroupUpdateInfoMessageInserterImpl {
 
     private static func mostRecentVisibleInteractionsAsInfoMessages(
         forGroupThread groupThread: TSGroupThread,
-        withTransaction transaction: SDSAnyReadTransaction
+        withTransaction transaction: DBReadTransaction
     ) -> (first: TSInfoMessage, second: TSInfoMessage?)? {
         var mostRecentVisibleInteraction: TSInteraction?
         var secondMostRecentVisibleInteraction: TSInteraction?
@@ -267,7 +267,7 @@ private extension TSInfoMessage {
 
     func representsCollapsibleSingleRequestToJoin(
         localIdentifiers: LocalIdentifiers,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> Aci? {
         switch groupUpdateMetadata(localIdentifiers: localIdentifiers) {
         case .newGroup, .nonGroupUpdate, .legacyRawString:

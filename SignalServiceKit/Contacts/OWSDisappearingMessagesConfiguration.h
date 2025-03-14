@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SDSAnyReadTransaction;
+@class DBReadTransaction;
 @class TSThread;
 
 @interface OWSDisappearingMessagesConfiguration : BaseModel

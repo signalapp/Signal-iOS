@@ -17,7 +17,7 @@ final class TSMessageStorageTest: SSKBaseTest {
     var otherAci: Aci { return Aci.parseFrom(aciString: "00000000-0000-4000-8000-000000000001")! }
     var otherAddress: SignalServiceAddress { return SignalServiceAddress(otherAci) }
 
-    private func numberOfInteractions(thread: TSThread, tx: SDSAnyReadTransaction) -> Int {
+    private func numberOfInteractions(thread: TSThread, tx: DBReadTransaction) -> Int {
         return try! InteractionFinder(threadUniqueId: thread.uniqueId).fetchAllInteractions(rowIdFilter: .newest, limit: Int.max, tx: tx).count
     }
 
@@ -27,7 +27,7 @@ final class TSMessageStorageTest: SSKBaseTest {
         write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx.asV2Write
+                tx: tx
             )
 
             self.thread = TSContactThread.getOrCreateThread(
@@ -99,7 +99,7 @@ final class TSMessageStorageTest: SSKBaseTest {
             }
 
             DependenciesBridge.shared.threadSoftDeleteManager
-                .softDelete(threads: [thread], sendDeleteForMeSyncMessage: false, tx: tx.asV2Write)
+                .softDelete(threads: [thread], sendDeleteForMeSyncMessage: false, tx: tx)
 
             for message in messages {
                 XCTAssertNil(TSIncomingMessage.anyFetchIncomingMessage(
@@ -152,7 +152,7 @@ final class TSMessageStorageTest: SSKBaseTest {
             }
 
             DependenciesBridge.shared.threadSoftDeleteManager
-                .softDelete(threads: [groupThread], sendDeleteForMeSyncMessage: false, tx: tx.asV2Write)
+                .softDelete(threads: [groupThread], sendDeleteForMeSyncMessage: false, tx: tx)
 
             for message in messages {
                 XCTAssertNil(TSIncomingMessage.anyFetchIncomingMessage(

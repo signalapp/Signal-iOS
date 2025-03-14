@@ -55,7 +55,7 @@ public class ViewOnceMessages: NSObject {
 
     @objc
     public class func completeIfNecessary(message: TSMessage,
-                                          transaction: SDSAnyWriteTransaction) {
+                                          transaction: DBWriteTransaction) {
 
         guard message.isViewOnceMessage,
             !message.isViewOnceComplete else {
@@ -105,7 +105,7 @@ public class ViewOnceMessages: NSObject {
     @objc
     public class func markAsComplete(message: TSMessage,
                                      sendSyncMessages: Bool,
-                                     transaction: SDSAnyWriteTransaction) {
+                                     transaction: DBWriteTransaction) {
         guard message.isViewOnceMessage else {
             owsFailDebug("Not a view-once message.")
             return
@@ -123,8 +123,8 @@ public class ViewOnceMessages: NSObject {
 
     // MARK: - Sync Messages
 
-    private class func sendSyncMessage(forMessage message: TSMessage, transaction: SDSAnyWriteTransaction) {
-        guard let senderAci = senderAci(forMessage: message, tx: transaction.asV2Read) else {
+    private class func sendSyncMessage(forMessage message: TSMessage, transaction: DBWriteTransaction) {
+        guard let senderAci = senderAci(forMessage: message, tx: transaction) else {
             return
         }
         guard let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
@@ -169,7 +169,7 @@ public class ViewOnceMessages: NSObject {
     public class func processIncomingSyncMessage(
         _ message: SSKProtoSyncMessageViewOnceOpen,
         envelope: SSKProtoEnvelope,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> ViewOnceSyncMessageProcessingResult {
         guard let messageSender = Aci.parseFrom(aciString: message.senderAci) else {
             owsFailDebug("Invalid messageSender.")
@@ -185,7 +185,7 @@ public class ViewOnceMessages: NSObject {
             guard let message = interaction as? TSMessage else {
                 return nil
             }
-            guard let senderAci = senderAci(forMessage: message, tx: transaction.asV2Read) else {
+            guard let senderAci = senderAci(forMessage: message, tx: transaction) else {
                 return nil
             }
             guard senderAci == messageSender else {
@@ -221,7 +221,7 @@ public class ViewOnceMessages: NSObject {
         return .success
     }
 
-    private static func senderAci(forMessage message: TSMessage, tx: any DBReadTransaction) -> Aci? {
+    private static func senderAci(forMessage message: TSMessage, tx: DBReadTransaction) -> Aci? {
         if let incomingMessage = message as? TSIncomingMessage {
             return incomingMessage.authorAddress.aci
         } else if message is TSOutgoingMessage {
@@ -243,7 +243,7 @@ public class ViewOnceMessages: NSObject {
 // MARK: -
 
 private class ViewOnceMessageFinder {
-    func fetchSomeIncompleteViewOnceMessages(after rowId: Int64?, limit: Int, tx: SDSAnyReadTransaction) -> ([TSMessage], mightHaveMoreAfter: Int64?) {
+    func fetchSomeIncompleteViewOnceMessages(after rowId: Int64?, limit: Int, tx: DBReadTransaction) -> ([TSMessage], mightHaveMoreAfter: Int64?) {
         var results: [TSMessage] = []
 
         let cursor: TSInteractionCursor
@@ -259,7 +259,7 @@ private class ViewOnceMessageFinder {
                 ORDER BY \(interactionColumn: .id)
                 """,
                 arguments: [rowId],
-                transaction: tx.unwrapGrdbRead
+                transaction: tx
             )
         } else {
             cursor = TSInteraction.grdbFetchCursor(
@@ -271,7 +271,7 @@ private class ViewOnceMessageFinder {
                 AND \(interactionColumn: .isViewOnceComplete) = 0
                 ORDER BY \(interactionColumn: .id)
                 """,
-                transaction: tx.unwrapGrdbRead
+                transaction: tx
             )
         }
 

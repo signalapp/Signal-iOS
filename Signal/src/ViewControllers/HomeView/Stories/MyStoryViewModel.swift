@@ -24,7 +24,7 @@ struct MyStoryViewModel {
     let secondLatestMessageIdentifier: InteractionSnapshotIdentifier?
     let secondLatestMessageAttachment: StoryThumbnailView.Attachment?
 
-    init(messages: [StoryMessage], transaction: SDSAnyReadTransaction) {
+    init(messages: [StoryMessage], transaction: DBReadTransaction) {
         sendingCount = messages.reduce(0) {
             $0 + ([.sending, .pending].contains($1.sendingState) ? 1 : 0)
         }

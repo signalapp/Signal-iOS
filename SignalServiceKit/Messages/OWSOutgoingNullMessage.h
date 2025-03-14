@@ -62,14 +62,14 @@ NS_ASSUME_NONNULL_BEGIN
                           additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
                             explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
                              skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
-                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+                                   transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
-                          transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
+                          transaction:(DBReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
          verificationStateSyncMessage:(OWSVerificationStateSyncMessage *)verificationStateSyncMessage
-                          transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
+                          transaction:(DBReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 ;
 
 @end

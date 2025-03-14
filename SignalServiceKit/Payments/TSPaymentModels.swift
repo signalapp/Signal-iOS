@@ -88,13 +88,13 @@ extension TSPaymentAddress: TSPaymentBaseModel {
         return SSKEnvironment.shared.mobileCoinHelperRef.isValidMobileCoinPublicAddress(mobileCoinPublicAddressData)
     }
 
-    public func buildProto(tx: SDSAnyReadTransaction) throws -> SSKProtoPaymentAddress {
+    public func buildProto(tx: DBReadTransaction) throws -> SSKProtoPaymentAddress {
         guard isValid, currency == .mobileCoin else {
             throw PaymentsError.invalidModel
         }
         // Sign the MC public address.
         let identityManager = DependenciesBridge.shared.identityManager
-        guard let identityKeyPair: ECKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read) else {
+        guard let identityKeyPair: ECKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx) else {
             throw OWSAssertionError("Missing identityKeyPair")
         }
         let signatureData = try Self.sign(identityKeyPair: identityKeyPair,
@@ -255,7 +255,7 @@ public extension TSPaymentModel {
     // We need to be cautious when updating the state of payment records,
     // to avoid races.
     @objc(isCurrentPaymentState:transaction:)
-    func isCurrentPaymentState(paymentState: TSPaymentState, transaction: SDSAnyReadTransaction) -> Bool {
+    func isCurrentPaymentState(paymentState: TSPaymentState, transaction: DBReadTransaction) -> Bool {
         guard self.paymentState == paymentState else {
             owsFailDebug("Payment model in memory has unexpected state: \(self.paymentState.formatted) != expected: \(paymentState.formatted)")
             return false
@@ -275,7 +275,7 @@ public extension TSPaymentModel {
     // to avoid races.
     func updatePaymentModelState(fromState: TSPaymentState,
                                  toState: TSPaymentState,
-                                 transaction: SDSAnyWriteTransaction) throws {
+                                 transaction: DBWriteTransaction) throws {
         guard isCurrentPaymentState(paymentState: fromState, transaction: transaction) else {
             throw OWSAssertionError("Payment model has unexpected state.")
         }

@@ -9,7 +9,7 @@ extension TSMessage {
 
     /// Dangerous to use for uninserted messages; exposed only in the Signal target because most rendering
     /// uses already-inserted messages, obviating the concern.
-    public func hasRenderableContent(tx: SDSAnyReadTransaction) -> Bool {
+    public func hasRenderableContent(tx: DBReadTransaction) -> Bool {
         guard let rowId = self.sqliteRowId else {
             owsFailDebug("Checking renderable content for uninserted message!")
             return TSMessageBuilder.hasRenderableContent(

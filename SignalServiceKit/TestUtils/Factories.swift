@@ -36,24 +36,24 @@ public import LibSignalClient
 public protocol Factory {
     associatedtype ObjectType: TSYapDatabaseObject
 
-    static func write(block: @escaping (SDSAnyWriteTransaction) -> Void)
-    func write(block: @escaping (SDSAnyWriteTransaction) -> Void)
+    static func write(block: @escaping (DBWriteTransaction) -> Void)
+    func write(block: @escaping (DBWriteTransaction) -> Void)
 
     // MARK: Factory Methods
     func create() -> ObjectType
-    func create(transaction: SDSAnyWriteTransaction) -> ObjectType
+    func create(transaction: DBWriteTransaction) -> ObjectType
 
     func create(count: UInt) -> [ObjectType]
-    func create(count: UInt, transaction: SDSAnyWriteTransaction) -> [ObjectType]
+    func create(count: UInt, transaction: DBWriteTransaction) -> [ObjectType]
 }
 
 public extension Factory {
 
-    static func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+    static func write(block: @escaping (DBWriteTransaction) -> Void) {
         SSKEnvironment.shared.databaseStorageRef.write(block: block)
     }
 
-    func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+    func write(block: @escaping (DBWriteTransaction) -> Void) {
         SSKEnvironment.shared.databaseStorageRef.write(block: block)
     }
 
@@ -75,7 +75,7 @@ public extension Factory {
         return items
     }
 
-    func create(count: UInt, transaction: SDSAnyWriteTransaction) -> [ObjectType] {
+    func create(count: UInt, transaction: DBWriteTransaction) -> [ObjectType] {
         return (0..<count).map { _ in return create(transaction: transaction) }
     }
 }
@@ -86,7 +86,7 @@ public class ContactThreadFactory: Factory {
 
     // MARK: Factory
 
-    public func create(transaction: SDSAnyWriteTransaction) -> TSContactThread {
+    public func create(transaction: DBWriteTransaction) -> TSContactThread {
         let thread = TSContactThread.getOrCreateThread(withContactAddress: contactAddressBuilder(),
                                                        transaction: transaction)
 
@@ -118,7 +118,7 @@ public class OutgoingMessageFactory: Factory {
 
     // MARK: Factory
 
-    public func build(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
+    public func build(transaction: DBWriteTransaction) -> TSOutgoingMessage {
         let message: TSOutgoingMessage = TSOutgoingMessageBuilder(
             thread: threadCreator(transaction),
             timestamp: timestampBuilder(),
@@ -148,7 +148,7 @@ public class OutgoingMessageFactory: Factory {
         return message
     }
 
-    public func create(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
+    public func create(transaction: DBWriteTransaction) -> TSOutgoingMessage {
         let item = self.build(transaction: transaction)
         item.anyInsert(transaction: transaction)
 
@@ -157,7 +157,7 @@ public class OutgoingMessageFactory: Factory {
 
     // MARK: Dependent Factories
 
-    public var threadCreator: (SDSAnyWriteTransaction) -> TSThread = { transaction in
+    public var threadCreator: (DBWriteTransaction) -> TSThread = { transaction in
         ContactThreadFactory().create(transaction: transaction)
     }
 
@@ -257,7 +257,7 @@ public class OutgoingMessageFactory: Factory {
         return item
     }
 
-    public func buildDeliveryReceipt(transaction: SDSAnyWriteTransaction) -> OWSReceiptsForSenderMessage {
+    public func buildDeliveryReceipt(transaction: DBWriteTransaction) -> OWSReceiptsForSenderMessage {
         let item = OWSReceiptsForSenderMessage.deliveryReceiptsForSenderMessage(with: threadCreator(transaction),
                                                                                 receiptSet: receiptSetBuilder(), transaction: transaction)
         return item
@@ -274,7 +274,7 @@ public class IncomingMessageFactory: Factory {
 
     // MARK: Factory
 
-    public func create(transaction: SDSAnyWriteTransaction) -> TSIncomingMessage {
+    public func create(transaction: DBWriteTransaction) -> TSIncomingMessage {
 
         let thread = threadCreator(transaction)
 
@@ -316,7 +316,7 @@ public class IncomingMessageFactory: Factory {
 
     // MARK: Dependent Factories
 
-    public var threadCreator: (SDSAnyWriteTransaction) -> TSThread = { transaction in
+    public var threadCreator: (DBWriteTransaction) -> TSThread = { transaction in
         ContactThreadFactory().create(transaction: transaction)
     }
 
@@ -433,7 +433,7 @@ public class ConversationFactory {
     @discardableResult
     public func createSentMessage(
         bodyAttachmentDataSources: [AttachmentDataSource],
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> TSOutgoingMessage {
         let outgoingFactory = OutgoingMessageFactory()
         outgoingFactory.threadCreator = threadCreator
@@ -464,7 +464,7 @@ public class ConversationFactory {
                 try! (DependenciesBridge.shared.attachmentStore as? AttachmentUploadStore)?.markUploadedToTransitTier(
                     attachmentStream: stream,
                     info: transitTierInfo,
-                    tx: asyncTransaction.asV2Write
+                    tx: asyncTransaction
                 )
             }
 
@@ -474,7 +474,7 @@ public class ConversationFactory {
         return message
     }
 
-    public var threadCreator: (SDSAnyWriteTransaction) -> TSThread = { transaction in
+    public var threadCreator: (DBWriteTransaction) -> TSThread = { transaction in
         ContactThreadFactory().create(transaction: transaction)
     }
 }

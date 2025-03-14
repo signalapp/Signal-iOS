@@ -103,7 +103,7 @@ private extension SDSCodableModelDatabaseInterface {
     /// Get the row ID of this model if it has already been persisted.
     func existingGrdbRowId<Model: SDSCodableModel>(
         forModel model: Model,
-        transaction: GRDBReadTransaction
+        transaction: DBReadTransaction
     ) -> SDSCodableModel.RowId? {
         do {
             let databaseTableName = Model.databaseTableName.quotedDatabaseIdentifier
@@ -133,7 +133,7 @@ private extension SDSCodableModelDatabaseInterface {
     func saveModelToDatabase<Model: SDSCodableModel>(
         _ model: Model,
         saveMode: SDSSaveMode,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         guard model.shouldBeSaved else {
             Logger.warn("Skipping save of: \(Model.self).")
@@ -150,7 +150,7 @@ private extension SDSCodableModelDatabaseInterface {
         faultTolerantSaveModelToDatabase(
             model,
             saveMode: saveMode,
-            transaction: transaction.unwrapGrdbWrite
+            transaction: transaction
         )
 
         switch saveMode {
@@ -168,7 +168,7 @@ private extension SDSCodableModelDatabaseInterface {
     func faultTolerantSaveModelToDatabase<Model: SDSCodableModel>(
         _ model: Model,
         saveMode: SDSSaveMode,
-        transaction: GRDBWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         if let existingGrdbRowId = existingGrdbRowId(forModel: model, transaction: transaction) {
             owsAssertDebug(
@@ -194,7 +194,7 @@ private extension SDSCodableModelDatabaseInterface {
     func updateModelInDatabase<Model: SDSCodableModel>(
         _ model: Model,
         existingGrdbRowId: SDSCodableModel.RowId,
-        transaction: GRDBWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         do {
             var recordCopy = model
@@ -213,7 +213,7 @@ private extension SDSCodableModelDatabaseInterface {
 
     func insertToDatabase<Model: SDSCodableModel>(
         model: Model,
-        transaction: GRDBWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         do {
             try model.insert(transaction.database)

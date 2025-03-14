@@ -36,7 +36,7 @@ public struct KeyValueStore {
                     ORDER BY COUNT(*) DESC
                     LIMIT 10
                 """
-                let cursor = try Row.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
+                let cursor = try Row.fetchCursor(transaction.database, sql: sql)
                 while let row = try cursor.next() {
                     let collection: String = row[0]
                     let count: UInt = row[1]
@@ -53,7 +53,7 @@ public struct KeyValueStore {
     public func hasValue(_ key: String, transaction: DBReadTransaction) -> Bool {
         do {
             let count = try UInt.fetchOne(
-                transaction.databaseConnection,
+                transaction.database,
                 sql: """
                     SELECT
                     COUNT(*)
@@ -138,7 +138,7 @@ public struct KeyValueStore {
     public func getData(_ key: String, transaction: DBReadTransaction) -> Data? {
         do {
             return try Data.fetchOne(
-                transaction.databaseConnection,
+                transaction.database,
                 sql: """
                     SELECT \(TableMetadata.Columns.value)
                     FROM \(TableMetadata.tableName)
@@ -188,7 +188,7 @@ public struct KeyValueStore {
                 arguments = [key, collection]
             }
 
-            let statement = try transaction.databaseConnection.cachedStatement(sql: sql)
+            let statement = try transaction.database.cachedStatement(sql: sql)
             try statement.setArguments(arguments)
 
             do {
@@ -317,7 +317,7 @@ public struct KeyValueStore {
     }
 
     public func removeAll(transaction: DBWriteTransaction) {
-        transaction.databaseConnection.executeAndCacheStatementHandlingErrors(
+        transaction.database.executeAndCacheStatementHandlingErrors(
             sql: """
                 DELETE
                 FROM \(TableMetadata.tableName)
@@ -352,7 +352,7 @@ public struct KeyValueStore {
                 """
 
                 return try PairRecord.fetchAll(
-                    transaction.databaseConnection,
+                    transaction.database,
                     sql: sql,
                     arguments: [collection]
                 )
@@ -394,7 +394,7 @@ public struct KeyValueStore {
             WHERE \(TableMetadata.Columns.collection) == ?
         """
 
-        return transaction.databaseConnection.strictRead { database in
+        return transaction.database.strictRead { database in
             try String.fetchAll(database, sql: sql, arguments: [collection])
         }
     }
@@ -408,7 +408,7 @@ public struct KeyValueStore {
             """
 
             guard let numberOfKeys = try UInt.fetchOne(
-                transaction.databaseConnection,
+                transaction.database,
                 sql: sql,
                 arguments: [collection]
             ) else {
@@ -474,11 +474,11 @@ public struct KeyValueStore {
 
     // MARK: - Archived Values
 
-    public func getObject<ObjectType: NSObject & NSSecureCoding>(_ key: String, ofClass cls: ObjectType.Type, transaction: any DBReadTransaction) -> ObjectType? {
+    public func getObject<ObjectType: NSObject & NSSecureCoding>(_ key: String, ofClass cls: ObjectType.Type, transaction: DBReadTransaction) -> ObjectType? {
         return self.getData(key, transaction: transaction).flatMap { self.parseArchivedValue($0, ofClass: cls) }
     }
 
-    public func getObject(_ key: String, ofClasses classes: [AnyClass], transaction: any DBReadTransaction) -> Any? {
+    public func getObject(_ key: String, ofClasses classes: [AnyClass], transaction: DBReadTransaction) -> Any? {
         return self.getData(key, transaction: transaction).flatMap {
             do {
                 return try NSKeyedUnarchiver.unarchivedObject(ofClasses: classes, from: $0)
@@ -498,7 +498,7 @@ public struct KeyValueStore {
         }
     }
 
-    private func getNSNumber(_ key: String, transaction: any DBReadTransaction) -> NSNumber? {
+    private func getNSNumber(_ key: String, transaction: DBReadTransaction) -> NSNumber? {
         return getObject(key, ofClass: NSNumber.self, transaction: transaction)
     }
 
@@ -506,7 +506,7 @@ public struct KeyValueStore {
         _ key: String,
         keyClass: DecodedKey.Type,
         objectClass: DecodedObject.Type,
-        transaction: any DBReadTransaction
+        transaction: DBReadTransaction
     ) -> [DecodedKey: DecodedObject]? {
         return self.getData(key, transaction: transaction).flatMap {
             do {
@@ -518,7 +518,7 @@ public struct KeyValueStore {
         }
     }
 
-    public func getArray<DecodedObject: NSObject & NSSecureCoding>(_ key: String, ofClass cls: DecodedObject.Type, transaction: any DBReadTransaction) -> [DecodedObject]? {
+    public func getArray<DecodedObject: NSObject & NSSecureCoding>(_ key: String, ofClass cls: DecodedObject.Type, transaction: DBReadTransaction) -> [DecodedObject]? {
         return self.getData(key, transaction: transaction).flatMap {
             do {
                 return try NSKeyedUnarchiver.unarchivedArrayOfObjects(ofClass: cls, from: $0)
@@ -529,11 +529,11 @@ public struct KeyValueStore {
         }
     }
 
-    public func getStringArray(_ key: String, transaction: any DBReadTransaction) -> [String]? {
+    public func getStringArray(_ key: String, transaction: DBReadTransaction) -> [String]? {
         return self.getArray(key, ofClass: NSString.self, transaction: transaction) as [String]?
     }
 
-    public func getSet<DecodedObject: NSObject & NSSecureCoding>(_ key: String, ofClass cls: DecodedObject.Type, transaction: any DBReadTransaction) -> Set<DecodedObject>? {
+    public func getSet<DecodedObject: NSObject & NSSecureCoding>(_ key: String, ofClass cls: DecodedObject.Type, transaction: DBReadTransaction) -> Set<DecodedObject>? {
         return self.getObject(key, ofClasses: [NSSet.self, cls], transaction: transaction) as? Set<DecodedObject>
     }
 

@@ -32,7 +32,7 @@ protocol StorageServiceRecordUpdater {
     func buildRecord(
         for localId: IdType,
         unknownFields: UnknownStorage?,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> RecordType?
 
     func buildStorageItem(for record: RecordType) -> StorageService.StorageItem
@@ -57,7 +57,7 @@ protocol StorageServiceRecordUpdater {
     /// - Returns: A type indicating the result of the merge.
     func mergeRecord(
         _ record: RecordType,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> StorageServiceMergeResult<IdType>
 }
 
@@ -133,7 +133,7 @@ struct StorageServiceContact {
         )
     }
 
-    static func fetch(for recipientUniqueId: RecipientUniqueId, tx: SDSAnyReadTransaction) -> Self? {
+    static func fetch(for recipientUniqueId: RecipientUniqueId, tx: DBReadTransaction) -> Self? {
         SignalRecipient.anyFetch(uniqueId: recipientUniqueId, transaction: tx).flatMap { Self($0) }
     }
 
@@ -230,7 +230,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     func buildRecord(
         for recipientUniqueId: RecipientUniqueId,
         unknownFields: UnknownStorage?,
-        transaction tx: SDSAnyReadTransaction
+        transaction tx: DBReadTransaction
     ) -> StorageServiceProtoContactRecord? {
         guard let recipient = SignalRecipient.anyFetch(uniqueId: recipientUniqueId, transaction: tx) else {
             return nil
@@ -277,15 +277,15 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         builder.setWhitelisted(isInWhitelist)
 
         builder.setBlocked(blockingManager.isAddressBlocked(anyAddress, transaction: tx))
-        builder.setHidden(recipientHidingManager.isHiddenAddress(anyAddress, tx: tx.asV2Read))
+        builder.setHidden(recipientHidingManager.isHiddenAddress(anyAddress, tx: tx))
 
         // Identity
 
-        if let identityKey = try? identityManager.identityKey(for: contact.serviceIds.aciOrElsePni, tx: tx.asV2Read) {
+        if let identityKey = try? identityManager.identityKey(for: contact.serviceIds.aciOrElsePni, tx: tx) {
             builder.setIdentityKey(identityKey.serialize().asData)
         }
 
-        let verificationState = identityManager.verificationState(for: anyAddress, tx: tx.asV2Read)
+        let verificationState = identityManager.verificationState(for: anyAddress, tx: tx)
         builder.setIdentityState(.from(verificationState))
 
         // Profile
@@ -372,7 +372,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             guard let aci = contact.aci, usernameBetterIdentifierChecker.usernameIsBestIdentifier() else {
                 return nil
             }
-            return usernameLookupManager.fetchUsername(forAci: aci, transaction: tx.asV2Read)
+            return usernameLookupManager.fetchUsername(forAci: aci, transaction: tx)
         }()
         if let username {
             builder.setUsername(username)
@@ -380,7 +380,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         // Nickname/note
 
-        if let nicknameRecord = nicknameManager.fetchNickname(for: recipient, tx: tx.asV2Read) {
+        if let nicknameRecord = nicknameManager.fetchNickname(for: recipient, tx: tx) {
             var nicknameBuilder = StorageServiceProtoContactRecordName.builder()
             nicknameRecord.givenName.map { nicknameBuilder.setGiven($0) }
             nicknameRecord.familyName.map { nicknameBuilder.setFamily($0) }
@@ -407,7 +407,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
     func mergeRecord(
         _ record: StorageServiceProtoContactRecord,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> StorageServiceMergeResult<RecipientUniqueId> {
         guard let contact = StorageServiceContact(record) else {
             owsFailDebug("Can't merge record with invalid identifiers: hasAci? \(record.hasAci) hasPni? \(record.hasPni) hasPhoneNumber? \(record.hasE164)")
@@ -424,14 +424,14 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             isPrimaryDevice: isPrimaryDevice,
             serviceIds: contact.serviceIds,
             phoneNumber: contact.phoneNumber,
-            tx: transaction.asV2Write
+            tx: transaction
         )
         if let unregisteredAtTimestamp = contact.unregisteredAtTimestamp {
             recipientManager.markAsUnregisteredAndSave(
                 recipient,
                 unregisteredAt: .specificTimeFromOtherDevice(unregisteredAtTimestamp),
                 shouldUpdateStorageService: false,
-                tx: transaction.asV2Write
+                tx: transaction
             )
             // For Storage Service, we only perform contact splitting if it's an
             // ACI-only recipient. The recipient returned from
@@ -441,14 +441,14 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 recipientMerger.splitUnregisteredRecipientIfNeeded(
                     localIdentifiers: localIdentifiers,
                     unregisteredRecipient: recipient,
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
             }
         } else {
             recipientManager.markAsRegisteredAndSave(
                 recipient,
                 shouldUpdateStorageService: false,
-                tx: transaction.asV2Write
+                tx: transaction
             )
         }
 
@@ -471,7 +471,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 || E164(recipient.phoneNumber?.stringValue) != contact.phoneNumber
                 || recipient.pni != contact.pni
             ),
-            tx: transaction.asV2Write
+            tx: transaction
         )
     }
 
@@ -865,7 +865,7 @@ class StorageServiceGroupV1RecordUpdater: StorageServiceRecordUpdater {
     func buildRecord(
         for groupId: Data,
         unknownFields: UnknownStorage?,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> StorageServiceProtoGroupV1Record? {
         var builder = StorageServiceProtoGroupV1Record.builder(id: groupId)
 
@@ -878,7 +878,7 @@ class StorageServiceGroupV1RecordUpdater: StorageServiceRecordUpdater {
 
     func mergeRecord(
         _ record: StorageServiceProtoGroupV1Record,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> StorageServiceMergeResult<Data> {
         return .merged(needsUpdate: false, record.id)
     }
@@ -916,7 +916,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
     func buildRecord(
         for masterKeyData: Data,
         unknownFields: UnknownStorage?,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> StorageServiceProtoGroupV2Record? {
         let groupContextInfo: GroupV2ContextInfo
         do {
@@ -977,7 +977,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
 
     func mergeRecord(
         _ record: StorageServiceProtoGroupV2Record,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> StorageServiceMergeResult<Data> {
         let masterKey = record.masterKey
 
@@ -1150,7 +1150,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     func buildRecord(
         for ignoredId: Void,
         unknownFields: UnknownStorage?,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> StorageServiceProtoAccountRecord? {
         var builder = StorageServiceProtoAccountRecord.builder()
 
@@ -1162,7 +1162,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             builder.setProfileKey(profileKey.keyData)
         }
 
-        let localUsernameState = localUsernameManager.usernameState(tx: transaction.asV2Read)
+        let localUsernameState = localUsernameManager.usernameState(tx: transaction)
         if let username = localUsernameState.username {
             builder.setUsername(username)
 
@@ -1173,7 +1173,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                 usernameLinkProtoBuilder.setServerID(usernameLink.handle.data)
                 usernameLinkProtoBuilder.setColor(
                     localUsernameManager.usernameLinkQRCodeColor(
-                        tx: transaction.asV2Read
+                        tx: transaction
                     ).asProto
                 )
 
@@ -1213,14 +1213,14 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let proxiedLinkPreviewsEnabled = SSKPreferences.areLegacyLinkPreviewsEnabled(transaction: transaction)
         builder.setProxiedLinkPreviews(proxiedLinkPreviewsEnabled)
 
-        let linkPreviewsEnabled = linkPreviewSettingStore.areLinkPreviewsEnabled(tx: transaction.asV2Read)
+        let linkPreviewsEnabled = linkPreviewSettingStore.areLinkPreviewsEnabled(tx: transaction)
         builder.setLinkPreviews(linkPreviewsEnabled)
 
-        let phoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction.asV2Read)
+        let phoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction)
         builder.setPhoneNumberSharingMode(phoneNumberSharingMode.asProtoMode)
 
         builder.setNotDiscoverableByPhoneNumber(
-            tsAccountManager.phoneNumberDiscoverability(tx: transaction.asV2Read).orDefault.isNotDiscoverableByPhoneNumber
+            tsAccountManager.phoneNumberDiscoverability(tx: transaction).orDefault.isNotDiscoverableByPhoneNumber
         )
 
         let pinnedConversationProtos = self.pinnedConversationProtos(transaction: transaction)
@@ -1241,7 +1241,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             builder.setUnknownFields(unknownFields)
         }
 
-        let dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: transaction.asV2Read)
+        let dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: transaction)
         builder.setUniversalExpireTimer(dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0)
 
         if let customEmojiSet = ReactionManager.customEmojiSet(transaction: transaction) {
@@ -1257,7 +1257,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         }
         builder.setDonorSubscriptionManuallyCancelled(DonationSubscriptionManager.userManuallyCancelledSubscription(transaction: transaction))
 
-        if let backupSubscriberData = backupSubscriptionManager.getIAPSubscriberData(tx: transaction.asV2Read) {
+        if let backupSubscriberData = backupSubscriptionManager.getIAPSubscriberData(tx: transaction) {
             var subscriberDataBuilder = StorageServiceProtoAccountRecordIAPSubscriberData.builder()
             subscriberDataBuilder.setSubscriberID(backupSubscriberData.subscriberId)
 
@@ -1283,7 +1283,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         builder.setStoriesDisabled(!StoryManager.areStoriesEnabled(transaction: transaction))
 
         builder.setCompletedUsernameOnboarding(
-            !usernameEducationManager.shouldShowUsernameEducation(tx: transaction.asV2Read)
+            !usernameEducationManager.shouldShowUsernameEducation(tx: transaction)
         )
 
         return builder.buildInfallibly()
@@ -1291,7 +1291,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
     func mergeRecord(
         _ record: StorageServiceProtoAccountRecord,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> StorageServiceMergeResult<Void> {
         var needsUpdate = false
 
@@ -1315,7 +1315,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                 userProfileWriter: .storageService,
                 localIdentifiers: localIdentifiers,
                 authedAccount: authedAccount,
-                tx: transaction.asV2Write
+                tx: transaction
             )
         } else if localUserProfile?.profileKey != nil && !record.hasProfileKey {
             // If we have a local profile key for this user but the service doesn't, mark it as needing update.
@@ -1395,21 +1395,21 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                 localUsernameManager.setLocalUsername(
                     username: remoteUsername,
                     usernameLink: remoteUsernameLink,
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
 
                 localUsernameManager.setUsernameLinkQRCodeColor(
                     color: QRCodeColor(proto: remoteUsernameLinkProto.color),
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
             } else {
                 localUsernameManager.setLocalUsernameWithCorruptedLink(
                     username: remoteUsername,
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
             }
         } else {
-            localUsernameManager.clearLocalUsername(tx: transaction.asV2Write)
+            localUsernameManager.clearLocalUsername(tx: transaction)
         }
 
         let localThread = TSContactThread.getOrCreateThread(withContactAddress: localAddress, transaction: transaction)
@@ -1447,9 +1447,9 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             typingIndicators.setTypingIndicatorsEnabled(value: record.typingIndicators, transaction: transaction)
         }
 
-        let linkPreviewsEnabled = linkPreviewSettingStore.areLinkPreviewsEnabled(tx: transaction.asV2Read)
+        let linkPreviewsEnabled = linkPreviewSettingStore.areLinkPreviewsEnabled(tx: transaction)
         if record.linkPreviews != linkPreviewsEnabled {
-            linkPreviewSettingStore.setAreLinkPreviewsEnabled(record.linkPreviews, tx: transaction.asV2Write)
+            linkPreviewSettingStore.setAreLinkPreviewsEnabled(record.linkPreviews, tx: transaction)
         }
 
         let proxiedLinkPreviewsEnabled = SSKPreferences.areLegacyLinkPreviewsEnabled(transaction: transaction)
@@ -1457,7 +1457,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             SSKPreferences.setAreLegacyLinkPreviewsEnabled(record.proxiedLinkPreviews, transaction: transaction)
         }
 
-        let localPhoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction.asV2Read)
+        let localPhoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction)
         if record.phoneNumberSharingMode != localPhoneNumberSharingMode.asProtoMode {
             if let localMode = record.phoneNumberSharingMode.asLocalMode {
                 udManager.setPhoneNumberSharingMode(localMode, updateStorageServiceAndProfile: false, tx: transaction)
@@ -1466,14 +1466,14 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             }
         }
 
-        let localPhoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: transaction.asV2Read)
+        let localPhoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: transaction)
         if record.notDiscoverableByPhoneNumber != localPhoneNumberDiscoverability?.isNotDiscoverableByPhoneNumber {
             phoneNumberDiscoverabilityManager.setPhoneNumberDiscoverability(
                 record.notDiscoverableByPhoneNumber ? .nobody : .everybody,
                 updateAccountAttributes: false,
                 updateStorageService: false,
                 authedAccount: authedAccount,
-                tx: transaction.asV2Write
+                tx: transaction
             )
         }
 
@@ -1512,7 +1512,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         }
 
         let remoteExpireToken: DisappearingMessageToken = .token(forProtoExpireTimerSeconds: record.universalExpireTimer)
-        dmConfigurationStore.setUniversalTimer(token: remoteExpireToken, tx: transaction.asV2Write)
+        dmConfigurationStore.setUniversalTimer(token: remoteExpireToken, tx: transaction)
 
         if !record.preferredReactionEmoji.isEmpty {
             // Treat new preferred emoji as a full source of truth (if not empty). Note
@@ -1564,7 +1564,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                     subscriberId: subscriberId,
                     iapSubscriptionId: iapSubscriptionId
                 ),
-                tx: transaction.asV2Write
+                tx: transaction
             )
         }
 
@@ -1602,11 +1602,11 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             StoryManager.setAreStoriesEnabled(!record.storiesDisabled, shouldUpdateStorageService: false, transaction: transaction)
         }
 
-        let hasCompletedUsernameOnboarding = !usernameEducationManager.shouldShowUsernameEducation(tx: transaction.asV2Read)
+        let hasCompletedUsernameOnboarding = !usernameEducationManager.shouldShowUsernameEducation(tx: transaction)
         if !hasCompletedUsernameOnboarding && record.completedUsernameOnboarding {
             usernameEducationManager.setShouldShowUsernameEducation(
                 false,
-                tx: transaction.asV2Write
+                tx: transaction
             )
         }
 
@@ -1645,7 +1645,7 @@ extension StorageServiceAccountRecordUpdater {
 
     fileprivate func processPinnedConversationsProto(
         _ pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation],
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws {
         if pinnedConversations.count > PinnedThreads.maxPinnedThreads {
             Logger.warn("Received unexpected number of pinned threads (\(pinnedConversations.count))")
@@ -1679,13 +1679,13 @@ extension StorageServiceAccountRecordUpdater {
             }
         }
 
-        pinnedThreadManager.updatePinnedThreadIds(pinnedThreadIds, updateStorageService: false, tx: transaction.asV2Write)
+        pinnedThreadManager.updatePinnedThreadIds(pinnedThreadIds, updateStorageService: false, tx: transaction)
     }
 
     fileprivate func pinnedConversationProtos(
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [StorageServiceProtoAccountRecordPinnedConversation] {
-        let pinnedThreads = pinnedThreadManager.pinnedThreads(tx: transaction.asV2Read)
+        let pinnedThreads = pinnedThreadManager.pinnedThreads(tx: transaction)
 
         var pinnedConversationProtos = [StorageServiceProtoAccountRecordPinnedConversation]()
         for pinnedThread in pinnedThreads {
@@ -1750,7 +1750,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
     func buildRecord(
         for distributionListIdentifier: Data,
         unknownFields: UnknownStorage?,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> StorageServiceProtoStoryDistributionListRecord? {
         guard let uniqueId = UUID(data: distributionListIdentifier)?.uuidString else {
             owsFailDebug("Invalid distributionListIdentifier.")
@@ -1762,7 +1762,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
 
         if let deletedAtTimestamp = privateStoryThreadDeletionManager.deletedAtTimestamp(
             forDistributionListIdentifier: distributionListIdentifier,
-            tx: transaction.asV2Read
+            tx: transaction
         ) {
             builder.setDeletedAtTimestamp(deletedAtTimestamp)
         } else if let story = TSPrivateStoryThread.anyFetchPrivateStoryThread(
@@ -1788,7 +1788,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
 
     func mergeRecord(
         _ record: StorageServiceProtoStoryDistributionListRecord,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> StorageServiceMergeResult<Data> {
         guard let identifier = record.identifier, let uniqueId = UUID(data: identifier)?.uuidString else {
             owsFailDebug("identifier unexpectedly missing for distribution list")
@@ -1804,12 +1804,12 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
         // and ensure we don't try and put it back.
         guard record.deletedAtTimestamp == 0 else {
             if let existingStory {
-                threadRemover.remove(existingStory, tx: transaction.asV2Write)
+                threadRemover.remove(existingStory, tx: transaction)
             }
             privateStoryThreadDeletionManager.recordDeletedAtTimestamp(
                 record.deletedAtTimestamp,
                 forDistributionListIdentifier: identifier,
-                tx: transaction.asV2Write
+                tx: transaction
             )
             return .merged(needsUpdate: false, identifier)
         }
@@ -1897,7 +1897,7 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
     func buildRecord(
         for rootKeyData: Data,
         unknownFields: UnknownStorage?,
-        transaction tx: SDSAnyReadTransaction
+        transaction tx: DBReadTransaction
     ) -> StorageServiceProtoCallLinkRecord? {
         guard let rootKey = try? CallLinkRootKey(rootKeyData) else {
             owsFailDebug("Invalid CallLinkRootKey")
@@ -1906,7 +1906,7 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
         let roomId = rootKey.deriveRoomId()
         let callLink: CallLinkRecord?
         do {
-            callLink = try self.callLinkStore.fetch(roomId: roomId, tx: tx.asV2Read)
+            callLink = try self.callLinkStore.fetch(roomId: roomId, tx: tx)
         } catch {
             owsFailDebug("Skipping CallLink that can't be fetched: \(rootKey.description)")
             return nil
@@ -1933,27 +1933,27 @@ class StorageServiceCallLinkRecordUpdater: StorageServiceRecordUpdater {
 
     func mergeRecord(
         _ record: StorageServiceProtoCallLinkRecord,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) -> StorageServiceMergeResult<Data> {
         guard let rootKeyData = record.rootKey, let rootKey = try? CallLinkRootKey(rootKeyData) else {
             owsFailDebug("invalid rootKey")
             return .invalid
         }
         do {
-            var (callLink, _) = try self.callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx.asV2Write)
+            var (callLink, _) = try self.callLinkStore.fetchOrInsert(rootKey: rootKey, tx: tx)
             // The earliest deletion timestamp takes precendence when merging.
             if record.deletedAtTimestampMs > 0 || callLink.adminDeletedAtTimestampMs != nil {
                 self.callRecordDeleteManager.deleteCallRecords(
-                    try self.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: callLink.id), limit: nil, tx: tx.asV2Read),
+                    try self.callRecordStore.fetchExisting(conversationId: .callLink(callLinkRowId: callLink.id), limit: nil, tx: tx),
                     sendSyncMessageOnDelete: false,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
                 callLink.markDeleted(atTimestampMs: [record.deletedAtTimestampMs, callLink.adminDeletedAtTimestampMs].compacted().min()!)
             } else if let adminPasskey = record.adminPasskey?.nilIfEmpty {
                 callLink.adminPasskey = adminPasskey
                 callLink.setNeedsFetch()
             }
-            try self.callLinkStore.update(callLink, tx: tx.asV2Write)
+            try self.callLinkStore.update(callLink, tx: tx)
         } catch {
             owsFailDebug("Couldn't merge CallLink \(rootKey.description): \(error)")
         }

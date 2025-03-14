@@ -43,7 +43,7 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
     public func mediaEncryptionMetadata(
         mediaName: String,
         type: MediaTierEncryptionType,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) throws(MessageBackupKeyMaterialError) -> MediaTierEncryptionMetadata {
         let backupKey = try backupKey(type: .media, tx: tx)
         let mediaId: [UInt8]
@@ -77,7 +77,7 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
 open class MessageBackupKeyMaterialMock: MessageBackupKeyMaterial {
     public func backupKey(
         type: MessageBackupAuthCredentialType,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) throws(MessageBackupKeyMaterialError) -> BackupKey {
         fatalError("Unimplemented")
     }
@@ -85,7 +85,7 @@ open class MessageBackupKeyMaterialMock: MessageBackupKeyMaterial {
     public func mediaEncryptionMetadata(
         mediaName: String,
         type: MediaTierEncryptionType,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) throws(MessageBackupKeyMaterialError) -> MediaTierEncryptionMetadata {
         fatalError("Unimplemented")
     }

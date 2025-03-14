@@ -194,7 +194,7 @@ public class BadgeStore {
 
     // TODO: Badging — Memory warnings?
 
-    func createOrUpdateBadge(_ newBadge: ProfileBadge, transaction writeTx: SDSAnyWriteTransaction) throws {
+    func createOrUpdateBadge(_ newBadge: ProfileBadge, transaction writeTx: DBWriteTransaction) throws {
         try lock.withLock {
             // First, we check to see if we already have a cached badge that's equal to the new version
             // If so, we can just update the assets property and return
@@ -205,7 +205,7 @@ public class BadgeStore {
             }
 
             // Something changed, so we need to update our database copy
-            try newBadge.save(writeTx.unwrapGrdbWrite.database)
+            try newBadge.save(writeTx.database)
 
             // Finally we update our cached badge and start preparing our assets
             let badgeAssets = getBadgetAssets(newBadge)
@@ -222,13 +222,13 @@ public class BadgeStore {
         }
     }
 
-    func fetchBadgeWithId(_ badgeId: String, readTx: SDSAnyReadTransaction) -> ProfileBadge? {
+    func fetchBadgeWithId(_ badgeId: String, readTx: DBReadTransaction) -> ProfileBadge? {
         do {
             return try lock.withLock {
                 if let cachedBadge = badgeCache[badgeId] {
                     owsAssertDebug(cachedBadge.assets != nil)
                     return cachedBadge
-                } else if let fetchedBadge = try ProfileBadge.filter(key: badgeId).fetchOne(readTx.unwrapGrdbRead.database) {
+                } else if let fetchedBadge = try ProfileBadge.filter(key: badgeId).fetchOne(readTx.database) {
                     let badgeAssets = getBadgetAssets(fetchedBadge)
                     Task {
                         do {

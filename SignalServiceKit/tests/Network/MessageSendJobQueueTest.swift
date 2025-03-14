@@ -176,7 +176,7 @@ class MessageSenderJobQueueTest: SSKBaseTest {
 }
 
 private extension MessageSenderJobRecord {
-    func fetchLatest(transaction: SDSAnyReadTransaction) -> Self? {
+    func fetchLatest(transaction: DBReadTransaction) -> Self? {
         return Self.anyFetch(uniqueId: uniqueId, transaction: transaction)
     }
 }

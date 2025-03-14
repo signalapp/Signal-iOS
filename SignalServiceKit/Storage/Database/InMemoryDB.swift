@@ -15,36 +15,9 @@ public final class InMemoryDB: DB {
         self.schedulers = schedulers
     }
 
-    // MARK: - Transactions
-
-    public class ReadTransaction: DBReadTransaction {
-        let db: Database
-        init(db: Database) {
-            self.db = db
-        }
-
-        public var databaseConnection: GRDB.Database { db }
-    }
-
-    public final class WriteTransaction: ReadTransaction, DBWriteTransaction {
-
-        fileprivate var syncCompletions = [() -> Void]()
-        fileprivate var asyncCompletions = [(Scheduler, () -> Void)]()
-
-        public func addFinalization(forKey key: String, block: @escaping () -> Void) {
-            fatalError()
-        }
-        public func addSyncCompletion(_ block: @escaping () -> Void) {
-            syncCompletions.append(block)
-        }
-        public func addAsyncCompletion(on scheduler: Scheduler, _ block: @escaping () -> Void) {
-            asyncCompletions.append((scheduler, block))
-        }
-    }
-
     // MARK: - State
 
-    public let databaseQueue: DatabaseQueue = {
+    let databaseQueue: DatabaseQueue = {
         let result = DatabaseQueue()
         let schemaUrl = Bundle(for: GRDBSchemaMigrator.self).url(forResource: "schema", withExtension: "sql")!
         try! result.write { try $0.execute(sql: try String(contentsOf: schemaUrl)) }
@@ -64,7 +37,7 @@ public final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (ReadTransaction) -> T,
+        block: @escaping (DBReadTransaction) -> T,
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     ) {
@@ -78,7 +51,7 @@ public final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (WriteTransaction) -> T,
+        block: @escaping (DBWriteTransaction) -> T,
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     ) {
@@ -92,7 +65,7 @@ public final class InMemoryDB: DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (WriteTransaction) -> TransactionCompletion<T>,
+        block: @escaping (DBWriteTransaction) -> TransactionCompletion<T>,
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     ) {
@@ -106,7 +79,7 @@ public final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: (WriteTransaction) throws -> T
+        block: (DBWriteTransaction) throws -> T
     ) async rethrows -> T {
         await Task.yield()
         return try write(file: file, function: function, line: line, block: block)
@@ -116,7 +89,7 @@ public final class InMemoryDB: DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (WriteTransaction) -> TransactionCompletion<T>
+        block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) async -> T {
         await Task.yield()
         return writeWithTxCompletion(file: file, function: function, line: line, block: block)
@@ -126,7 +99,7 @@ public final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        _ block: @escaping (ReadTransaction) throws -> T
+        _ block: @escaping (DBReadTransaction) throws -> T
     ) -> Promise<T> {
         return Promise.wrapAsync { try self.read(file: file, function: function, line: line, block: block) }
     }
@@ -135,7 +108,7 @@ public final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        _ block: @escaping (WriteTransaction) throws -> T
+        _ block: @escaping (DBWriteTransaction) throws -> T
     ) -> Promise<T> {
         return Promise.wrapAsync { try await self.awaitableWrite(file: file, function: function, line: line, block: block) }
     }
@@ -146,16 +119,16 @@ public final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: (ReadTransaction) throws -> T
+        block: (DBReadTransaction) throws -> T
     ) rethrows -> T {
         return try _read(block: block, rescue: { throw $0 })
     }
 
-    private func _read<T>(block: (ReadTransaction) throws -> T, rescue: (Error) throws -> Never) rethrows -> T {
+    private func _read<T>(block: (DBReadTransaction) throws -> T, rescue: (Error) throws -> Never) rethrows -> T {
         var thrownError: Error?
         let result: T? = try! databaseQueue.read { db in
             do {
-                return try block(ReadTransaction(db: db))
+                return try block(DBReadTransaction(database: db))
             } catch {
                 thrownError = error
                 return nil
@@ -171,7 +144,7 @@ public final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: (WriteTransaction) throws -> T
+        block: (DBWriteTransaction) throws -> T
     ) rethrows -> T {
         return try _writeCommitIfThrows(block: block, rescue: { throw $0 })
     }
@@ -180,22 +153,23 @@ public final class InMemoryDB: DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (WriteTransaction) -> TransactionCompletion<T>
+        block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) -> T {
         return _writeWithTxCompletion(block: block)
     }
 
     private func _writeCommitIfThrows<T>(
-        block: (WriteTransaction) throws -> T,
+        block: (DBWriteTransaction) throws -> T,
         rescue: (Error) throws -> Never
     ) rethrows -> T {
         var thrownError: Error?
-        var syncCompletions: [() -> Void]!
-        var asyncCompletions: [(Scheduler, () -> Void)]!
+        var syncCompletions: [DBWriteTransaction.SyncCompletion]!
+        var asyncCompletions: [DBWriteTransaction.AsyncCompletion]!
         let result: T? = try! databaseQueue.write { db in
             do {
-                let tx = WriteTransaction(db: db)
+                let tx = DBWriteTransaction(database: db)
                 defer {
+                    tx.finalizeTransaction()
                     syncCompletions = tx.syncCompletions
                     asyncCompletions = tx.asyncCompletions
                 }
@@ -209,7 +183,7 @@ public final class InMemoryDB: DB {
             $0()
         }
         asyncCompletions.forEach {
-            $0.0.async($0.1)
+            $0.scheduler.async($0.block)
         }
         if let thrownError {
             try rescue(thrownError)
@@ -218,15 +192,16 @@ public final class InMemoryDB: DB {
     }
 
     private func _writeWithTxCompletion<T>(
-        block: (WriteTransaction) -> TransactionCompletion<T>
+        block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) -> T {
-        var syncCompletions: [() -> Void]!
-        var asyncCompletions: [(Scheduler, () -> Void)]!
+        var syncCompletions: [DBWriteTransaction.SyncCompletion]!
+        var asyncCompletions: [DBWriteTransaction.AsyncCompletion]!
         let result: T = try! databaseQueue.writeWithoutTransaction { db in
             var result: T!
             try db.inTransaction {
-                let tx = WriteTransaction(db: db)
+                let tx = DBWriteTransaction(database: db)
                 defer {
+                    tx.finalizeTransaction()
                     syncCompletions = tx.syncCompletions
                     asyncCompletions = tx.asyncCompletions
                 }
@@ -245,7 +220,7 @@ public final class InMemoryDB: DB {
             $0()
         }
         asyncCompletions.forEach {
-            $0.0.async($0.1)
+            $0.scheduler.async($0.block)
         }
         return result
     }
@@ -253,32 +228,32 @@ public final class InMemoryDB: DB {
     // MARK: - Helpers
 
     func fetchExactlyOne<T: SDSCodableModel>(modelType: T.Type) -> T? {
-        let all = try! read { tx in try modelType.fetchAll(tx.db) }
+        let all = try! read { tx in try modelType.fetchAll(tx.database) }
         guard all.count == 1 else { return nil }
         return all.first!
     }
 
     func insert<T: PersistableRecord>(record: T) {
-        try! write { tx in try record.insert(tx.db) }
+        try! write { tx in try record.insert(tx.database) }
     }
 
     func update<T: PersistableRecord>(record: T) {
-        try! write { tx in try record.update(tx.db) }
+        try! write { tx in try record.update(tx.database) }
     }
 
     func remove<T: PersistableRecord>(model record: T) {
-        _ = try! write { tx in try record.delete(tx.db) }
+        _ = try! write { tx in try record.delete(tx.database) }
     }
 
-    public func touch(_ interaction: TSInteraction, shouldReindex: Bool, tx: DBWriteTransaction) {
+    public func touch(interaction: TSInteraction, shouldReindex: Bool, tx: DBWriteTransaction) {
         // Do nothing.
     }
 
-    public func touch(_ thread: TSThread, shouldReindex: Bool, shouldUpdateChatListUi: Bool, tx: DBWriteTransaction) {
+    public func touch(thread: TSThread, shouldReindex: Bool, shouldUpdateChatListUi: Bool, tx: DBWriteTransaction) {
         // Do nothing.
     }
 
-    public func touch(_ storyMessage: StoryMessage, tx: DBWriteTransaction) {
+    public func touch(storyMessage: StoryMessage, tx: DBWriteTransaction) {
         // Do nothing.
     }
 }

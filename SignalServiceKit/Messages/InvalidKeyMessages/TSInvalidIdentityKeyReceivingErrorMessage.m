@@ -156,12 +156,12 @@ NS_ASSUME_NONNULL_BEGIN
         return YES;
     }
 
-    DatabaseStorageWrite(SSKEnvironment.shared.databaseStorageRef, ^(SDSAnyWriteTransaction *tx) {
+    DatabaseStorageWrite(SSKEnvironment.shared.databaseStorageRef, ^(DBWriteTransaction *tx) {
         [OWSIdentityManagerObjCBridge saveIdentityKey:newKey forServiceId:serviceId transaction:tx];
     });
 
     __block NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *_Nullable messagesToDecrypt;
-    [SSKEnvironment.shared.databaseStorageRef readWithBlock:^(SDSAnyReadTransaction *tx) {
+    [SSKEnvironment.shared.databaseStorageRef readWithBlock:^(DBReadTransaction *tx) {
         messagesToDecrypt = [[self threadWithTx:tx] receivedMessagesForInvalidKey:newKey tx:tx];
     }];
 

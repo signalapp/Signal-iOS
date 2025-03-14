@@ -61,11 +61,11 @@ public enum CVAttachment: Equatable {
         }
     }
 
-    public static func from(_ attachment: ReferencedAttachment, tx: SDSAnyReadTransaction) -> CVAttachment {
+    public static func from(_ attachment: ReferencedAttachment, tx: DBReadTransaction) -> CVAttachment {
         if let stream = attachment.asReferencedStream {
             return .stream(stream)
         } else if let pointer = attachment.asReferencedAnyPointer {
-            return .pointer(pointer, downloadState: pointer.attachmentPointer.downloadState(tx: tx.asV2Read))
+            return .pointer(pointer, downloadState: pointer.attachmentPointer.downloadState(tx: tx))
         } else if let thumbnail = attachment.asReferencedBackupThumbnail {
             return .backupThumbnail(thumbnail)
         } else {
@@ -1070,7 +1070,7 @@ fileprivate extension CVComponentState.Builder {
                 let archivedPayment = try DependenciesBridge.shared.archivedPaymentStore.fetch(
                     for: archivedPaymentMessage,
                     interactionUniqueId: message.uniqueId,
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
                 return buildArchivedPaymentAttachment(
                     archivedPaymentMessage: archivedPaymentMessage,
@@ -1089,7 +1089,7 @@ fileprivate extension CVComponentState.Builder {
             let bodyAttachments = message.sqliteRowId.map {
                 DependenciesBridge.shared.attachmentStore.fetchReferencedAttachments(
                     for: .messageBodyAttachment(messageRowId: $0),
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
             } ?? []
             let mediaAlbumItems = buildMediaAlbumItems(for: bodyAttachments, message: message)
@@ -1104,7 +1104,7 @@ fileprivate extension CVComponentState.Builder {
                     else {
                         continue
                     }
-                    switch pointer.downloadState(tx: transaction.asV2Read) {
+                    switch pointer.downloadState(tx: transaction) {
                     case .enqueuedOrDownloading:
                         continue
                     case .failed:
@@ -1186,7 +1186,7 @@ fileprivate extension CVComponentState.Builder {
                         .messageOversizeText(messageRowId: $0),
                         .messageBodyAttachment(messageRowId: $0)
                     ],
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
             } ?? []
             let hasMoreThanOneAttachment: Bool = attachmentRefs.count > 1
@@ -1201,7 +1201,7 @@ fileprivate extension CVComponentState.Builder {
                 DependenciesBridge.shared.attachmentStore
                     .fetchReferencedAttachments(
                         for: .messageBodyAttachment(messageRowId: $0),
-                        tx: transaction.asV2Read
+                        tx: transaction
                     )
             } ?? []
             // We currently only support single attachments for view-once messages.
@@ -1224,7 +1224,7 @@ fileprivate extension CVComponentState.Builder {
                     ))
                 }
             } else if let attachmentPointer = mediaAttachment.attachment.asAnyPointer() {
-                switch attachmentPointer.downloadState(tx: transaction.asV2Read) {
+                switch attachmentPointer.downloadState(tx: transaction) {
                 case .enqueuedOrDownloading:
                     return buildViewOnce(viewOnceState: .incomingDownloading(
                         attachmentPointer: attachmentPointer,
@@ -1305,7 +1305,7 @@ fileprivate extension CVComponentState.Builder {
             let rowId = message.sqliteRowId,
             let attachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
                 for: .messageSticker(messageRowId: rowId),
-                tx: transaction.asV2Read
+                tx: transaction
             )
         else {
             throw OWSAssertionError("Missing sticker attachment.")
@@ -1322,7 +1322,7 @@ fileprivate extension CVComponentState.Builder {
             )
             return build()
         } else if let attachmentPointer = attachment.asReferencedAnyPointer {
-            let downloadState = attachmentPointer.attachmentPointer.downloadState(tx: transaction.asV2Read)
+            let downloadState = attachmentPointer.attachmentPointer.downloadState(tx: transaction)
             switch downloadState {
             case .enqueuedOrDownloading:
                 self.sticker = .downloading(attachmentPointer: attachmentPointer)
@@ -1560,7 +1560,7 @@ fileprivate extension CVComponentState.Builder {
                 owningMessage: interaction as? TSMessage,
                 metadata: nil,
                 receivedAtDate: interaction.receivedAtDate,
-                downloadState: attachmentPointer.attachmentPointer.downloadState(tx: transaction.asV2Read)
+                downloadState: attachmentPointer.attachmentPointer.downloadState(tx: transaction)
             )
         } else {
             self.undownloadableAttachment = .audio
@@ -1657,7 +1657,7 @@ fileprivate extension CVComponentState.Builder {
                     let rowId = message.sqliteRowId,
                     let linkPreviewAttachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
                         for: .messageLinkPreview(messageRowId: rowId),
-                        tx: transaction.asV2Read
+                        tx: transaction
                     )
                 else {
                     return nil
@@ -1715,7 +1715,7 @@ public extension CVComponentState {
     static func displayableBodyText(text: String,
                                     ranges: MessageBodyRanges?,
                                     interaction: TSInteraction,
-                                    transaction: SDSAnyReadTransaction) -> DisplayableText {
+                                    transaction: DBReadTransaction) -> DisplayableText {
         return DisplayableText.displayableText(
             withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
             transaction: transaction)
@@ -1725,7 +1725,7 @@ public extension CVComponentState {
         oversizeTextAttachment attachmentStream: AttachmentStream,
         ranges: MessageBodyRanges?,
         interaction: TSInteraction,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> DisplayableText {
 
         let text = { () -> String in
@@ -1752,7 +1752,7 @@ fileprivate extension CVComponentState {
         ranges: MessageBodyRanges?,
         interaction: TSInteraction,
         revealedSpoilerIdsSnapshot: Set<StyleIdType>,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> DisplayableText {
         return DisplayableText.displayableText(
             withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
@@ -1762,7 +1762,7 @@ fileprivate extension CVComponentState {
 
     static func displayableCaption(
         text: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> DisplayableText {
         return DisplayableText.displayableText(
             withMessageBody: MessageBody(text: text, ranges: .empty),

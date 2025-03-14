@@ -33,7 +33,7 @@ class MediaDownloadSettingsViewController: OWSTableViewController2 {
         let currentPreference = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             DependenciesBridge.shared.mediaBandwidthPreferenceStore.preference(
                 for: mediaDownloadType,
-                tx: transaction.asV2Read
+                tx: transaction
             )
         }
         let mediaBandwidthPreferences = MediaBandwidthPreferences.Preference.allCases.sorted {
@@ -47,7 +47,7 @@ class MediaDownloadSettingsViewController: OWSTableViewController2 {
                                 DependenciesBridge.shared.mediaBandwidthPreferenceStore.set(
                                     preference,
                                     for: mediaDownloadType,
-                                    tx: transaction.asV2Write
+                                    tx: transaction
                                 )
                             }
                             self?.navigationController?.popViewController(animated: true)

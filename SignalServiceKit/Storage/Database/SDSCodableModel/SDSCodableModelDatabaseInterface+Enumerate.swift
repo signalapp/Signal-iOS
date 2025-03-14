@@ -84,7 +84,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
     /// If nonzero, enumeration is performed in autoreleased batches.
     private func enumerateModels<Model: SDSCodableModel>(
         modelType: Model.Type,
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         sql: String? = nil,
         arguments: StatementArguments? = nil,
         batchSize: UInt,
@@ -94,12 +94,12 @@ extension SDSCodableModelDatabaseInterfaceImpl {
             var recordCursor: RecordCursor<Model>
             if let sql = sql, let arguments = arguments {
                 recordCursor = try Model.fetchCursor(
-                    transaction.unwrapGrdbRead.database,
+                    transaction.database,
                     sql: sql,
                     arguments: arguments
                 )
             } else {
-                recordCursor = try modelType.fetchCursor(transaction.unwrapGrdbRead.database)
+                recordCursor = try modelType.fetchCursor(transaction.database)
             }
 
             try Batching.loop(batchSize: batchSize) { stop in
@@ -124,13 +124,13 @@ extension SDSCodableModelDatabaseInterfaceImpl {
     /// If nonzero, enumeration is performed in autoreleased batches.
     private func enumerateModelUniqueIds<Model: SDSCodableModel>(
         modelType: Model.Type,
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batchSize: UInt,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         do {
             let cursor = try String.fetchCursor(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: "SELECT uniqueId FROM \(modelType.databaseTableName)"
             )
 

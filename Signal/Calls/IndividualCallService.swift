@@ -172,7 +172,7 @@ final class IndividualCallService: CallServiceStateObserver {
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
         callType: SSKProtoCallMessageOfferType,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         Logger.info("callId: \(callId), \(caller)")
 
@@ -208,7 +208,7 @@ final class IndividualCallService: CallServiceStateObserver {
         )
 
         // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = tsAccountManager.storedDeviceId(tx: tx.asV2Read)
+        let localDeviceId = tsAccountManager.storedDeviceId(tx: tx)
 
         let newCall = SignalCall(individualCall: individualCall)
 
@@ -267,7 +267,7 @@ final class IndividualCallService: CallServiceStateObserver {
         callId: UInt64,
         sourceDevice: UInt32,
         opaque: Data?,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) {
         Logger.info("callId: \(callId), \(caller)")
 
@@ -1310,7 +1310,7 @@ final class IndividualCallService: CallServiceStateObserver {
 
     enum InteractionUpdateMethod {
         case writeAsync
-        case inTransaction(SDSAnyWriteTransaction)
+        case inTransaction(DBWriteTransaction)
     }
 }
 

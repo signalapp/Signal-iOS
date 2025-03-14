@@ -51,10 +51,10 @@ public class NameResolverImpl: NameResolver {
     }
 
 #if DEBUG
-    private weak var expectedTransaction: SDSAnyReadTransaction?
+    private weak var expectedTransaction: DBReadTransaction?
 #endif
 
-    private func checkTransaction(transaction: SDSAnyReadTransaction) {
+    private func checkTransaction(transaction: DBReadTransaction) {
 #if DEBUG
         if expectedTransaction == nil {
             expectedTransaction = transaction

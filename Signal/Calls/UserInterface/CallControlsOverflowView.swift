@@ -258,7 +258,7 @@ extension CallControlsOverflowView: MessageReactionPickerDelegate {
         self.callControlsOverflowPresenter?.willSendReaction()
         self.reactionSender.react(value: reaction)
         let localAci = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
+            DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci
         }
         guard let localAci else {
             owsFailDebug("Local user is in call but doesn't have ACI!")

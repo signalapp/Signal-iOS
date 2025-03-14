@@ -172,7 +172,7 @@ public extension ConversationViewController {
                 messageDraft = self.thread.currentDraft(transaction: transaction)
                 voiceMemoDraft = VoiceMessageInterruptedDraft.currentDraft(for: self.thread, transaction: transaction)
                 if messageDraft != nil || voiceMemoDraft != nil {
-                    replyDraft = DependenciesBridge.shared.threadReplyInfoStore.fetch(for: self.thread.uniqueId, tx: transaction.asV2Read)
+                    replyDraft = DependenciesBridge.shared.threadReplyInfoStore.fetch(for: self.thread.uniqueId, tx: transaction)
                 }
                 editTarget = self.thread.editTarget(transaction: transaction)
             }

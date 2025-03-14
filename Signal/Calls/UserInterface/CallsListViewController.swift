@@ -393,7 +393,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             // because they must first be deleted on the server. (We delete them
             // individually at the end of this method.)
             let callLinksToDelete: [(rootKey: CallLinkRootKey, adminPasskey: Data)]
-            callLinksToDelete = (try? self.deps.callLinkStore.fetchAll(tx: tx.asV2Read).compactMap {
+            callLinksToDelete = (try? self.deps.callLinkStore.fetchAll(tx: tx).compactMap {
                 guard let adminPasskey = $0.adminPasskey else {
                     return nil
                 }
@@ -410,7 +410,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             /// rather than the most recent call matching our UI state – if the
             /// user does delete-all while filtering to Missed, we still want to
             /// actually delete all.
-            let mostRecentCursor = self.deps.callRecordQuerier.fetchCursor(ordering: .descending, tx: tx.asV2Read)
+            let mostRecentCursor = self.deps.callRecordQuerier.fetchCursor(ordering: .descending, tx: tx)
             if let mostRecentCallRecord = try? mostRecentCursor?.next() {
                 /// This will ultimately post "call records deleted"
                 /// notifications that this view is listening to, so we don't
@@ -790,7 +790,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         _ searchTerm: String
     ) async -> [Int64] {
         return self.deps.databaseStorage.read { tx -> [Int64] in
-            guard let localIdentifiers = self.deps.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            guard let localIdentifiers = self.deps.tsAccountManager.localIdentifiers(tx: tx) else {
                 owsFail("Can't search if you've never been registered.")
             }
 
@@ -799,7 +799,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 for: searchTerm,
                 maxResults: Constants.maxSearchResults,
                 localIdentifiers: localIdentifiers,
-                tx: tx.asV2Read,
+                tx: tx,
                 checkCancellation: {},
                 addGroupThread: { groupThread in
                     guard let sqliteRowId = groupThread.sqliteRowId else {
@@ -934,7 +934,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         forCallRecords callRecords: [CallRecord],
         upcomingCallLinkRowId: Int64?,
         deps: Dependencies,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> CallViewModel {
         owsPrecondition(
             Set(callRecords.map(\.conversationId)).count <= 1,
@@ -963,7 +963,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 return nil
             }
             do {
-                return try deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx.asV2Read) ?? {
+                return try deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx) ?? {
                     owsFail("Couldn't load CallLinkRecord that must exist!")
                 }()
             } catch {
@@ -1021,7 +1021,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             case .group:
                 guard
                     let groupCallInteraction: OWSGroupCallMessage = deps.interactionStore
-                        .fetchAssociatedInteraction(callRecord: callRecord, tx: tx.asV2Read)
+                        .fetchAssociatedInteraction(callRecord: callRecord, tx: tx)
                 else {
                     owsFail("Missing interaction for group call. This should be impossible per the DB schema!")
                 }
@@ -1052,7 +1052,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         case .thread(let threadRowId):
             guard let callThread = deps.threadStore.fetchThread(
                 rowId: threadRowId,
-                tx: tx.asV2Read
+                tx: tx
             ) else {
                 owsFail("Missing thread for call record! This should be impossible, per the DB schema.")
             }
@@ -1597,12 +1597,12 @@ private extension SignalCall {
 private extension CallRecordStore {
     func fetch(
         callRecordId: CallRecord.ID,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> CallRecordStore.MaybeDeletedFetchResult {
         return fetch(
             callId: callRecordId.callId,
             conversationId: callRecordId.conversationId,
-            tx: tx.asV2Read
+            tx: tx
         )
     }
 }
@@ -1984,7 +1984,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
                 return false
             }
             do {
-                let callLinkRecord = try self.deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx.asV2Read) ?? {
+                let callLinkRecord = try self.deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx) ?? {
                     throw OWSAssertionError("Couldn't fetch CallLink that must exist.")
                 }()
                 return callLinkRecord.adminPasskey != nil
@@ -2006,13 +2006,13 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             var callRecordIdsWithInteractions = [CallRecord.ID]()
             for modelReferences in modelReferenceses {
                 if let callLinkRowId = modelReferences.callLinkRowId {
-                    let callLinkRecord = try self.deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx.asV2Read) ?? {
+                    let callLinkRecord = try self.deps.callLinkStore.fetch(rowId: callLinkRowId, tx: tx) ?? {
                         throw OWSAssertionError("Couldn't fetch CallLink that must exist.")
                     }()
                     if let adminPasskey = callLinkRecord.adminPasskey {
                         callLinksToDelete.append((callLinkRecord.rootKey, adminPasskey))
                     } else {
-                        try self.deleteCallRecords(forCallLinkRowId: callLinkRecord.id, tx: tx.asV2Write)
+                        try self.deleteCallRecords(forCallLinkRowId: callLinkRecord.id, tx: tx)
                     }
                 } else {
                     callRecordIdsWithInteractions.append(contentsOf: modelReferences.callRecordRowIds)
@@ -2028,7 +2028,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             self.deps.interactionDeleteManager.delete(
                 alongsideAssociatedCallRecords: callRecordsWithInteractions,
                 sideEffects: .default(),
-                tx: tx.asV2Write
+                tx: tx
             )
 
             return callLinksToDelete

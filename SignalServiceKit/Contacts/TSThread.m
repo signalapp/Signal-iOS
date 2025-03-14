@@ -138,7 +138,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     return self;
 }
 
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];
 
@@ -153,7 +153,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     [SSKEnvironment.shared.modelReadCachesRef.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
 }
 
-- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidUpdateWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
 
@@ -181,14 +181,13 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 - (NSArray<SignalServiceAddress *> *)recipientAddressesWithSneakyTransaction
 {
     __block NSArray<SignalServiceAddress *> *recipientAddresses;
-    [SSKEnvironment.shared.databaseStorageRef readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        recipientAddresses = [self recipientAddressesWithTransaction:transaction];
-    }];
+    [SSKEnvironment.shared.databaseStorageRef readWithBlock:^(
+        DBReadTransaction *transaction) { recipientAddresses = [self recipientAddressesWithTransaction:transaction]; }];
     return recipientAddresses;
 }
 
 
-- (NSArray<SignalServiceAddress *> *)recipientAddressesWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSArray<SignalServiceAddress *> *)recipientAddressesWithTransaction:(DBReadTransaction *)transaction
 {
     OWSAbstractMethod();
 
@@ -205,7 +204,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 /**
  * Iterate over this thread's interactions.
  */
-- (void)enumerateRecentInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction
+- (void)enumerateRecentInteractionsWithTransaction:(DBReadTransaction *)transaction
                                         usingBlock:(void (^)(TSInteraction *interaction))block
 {
     NSError *error;
@@ -222,7 +221,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 }
 
 - (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key
-                                                                                     tx:(SDSAnyReadTransaction *)tx
+                                                                                     tx:(DBReadTransaction *)tx
 {
     NSMutableArray *errorMessages = [NSMutableArray new];
     [self enumerateRecentInteractionsWithTransaction:tx
@@ -246,7 +245,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     return errorMessages;
 }
 
-- (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(DBReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     return [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId]
@@ -254,7 +253,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 }
 
 - (nullable TSInteraction *)firstInteractionAtOrAroundSortId:(uint64_t)sortId
-                                                 transaction:(SDSAnyReadTransaction *)transaction
+                                                 transaction:(DBReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     return
@@ -262,12 +261,12 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                                                                                                transaction:transaction];
 }
 
-- (void)updateWithInsertedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithInsertedMessage:(TSInteraction *)message transaction:(DBWriteTransaction *)transaction
 {
     [self updateWithMessage:message wasMessageInserted:YES transaction:transaction];
 }
 
-- (void)updateWithUpdatedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithUpdatedMessage:(TSInteraction *)message transaction:(DBWriteTransaction *)transaction
 {
     [self updateWithMessage:message wasMessageInserted:NO transaction:transaction];
 }
@@ -286,7 +285,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
 - (void)updateWithMessage:(TSInteraction *)message
        wasMessageInserted:(BOOL)wasMessageInserted
-              transaction:(SDSAnyWriteTransaction *)transaction
+              transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(message != nil);
     OWSAssertDebug(transaction != nil);
@@ -331,7 +330,10 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                             transaction:transaction];
         if (needsToMarkAsVisible) {
             // Non-visible threads don't get indexed, so if we're becoming visible for the first time...
-            [SSKEnvironment.shared.databaseStorageRef touchThread:self shouldReindex:YES transaction:transaction];
+            [SSKEnvironment.shared.databaseStorageRef touchWithThread:self
+                                                        shouldReindex:YES
+                                               shouldUpdateChatListUi:YES
+                                                                   tx:transaction];
         }
         if (needsToClearLastVisibleSortId) {
             [self clearLastVisibleInteractionWithTransaction:transaction];
@@ -344,7 +346,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 - (BOOL)shouldClearArchivedStatusWhenUpdatingWithMessage:(TSInteraction *)message
                                       wasMessageInserted:(BOOL)wasMessageInserted
                                     threadAssociatedData:(ThreadAssociatedData *)threadAssociatedData
-                                             transaction:(SDSAnyReadTransaction *)transaction
+                                             transaction:(DBReadTransaction *)transaction
 {
     BOOL needsToClearArchived = threadAssociatedData.isArchived && wasMessageInserted;
 
@@ -406,7 +408,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     return needsToClearArchived;
 }
 
-- (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(message != nil);
     OWSAssertDebug(transaction != nil);
@@ -426,7 +428,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
 - (void)updateOnInteractionsRemovedWithNeedsToUpdateLastInteractionRowId:(BOOL)needsToUpdateLastInteractionRowId
                                           needsToUpdateLastVisibleSortId:(BOOL)needsToUpdateLastVisibleSortId
-                                                             transaction:(SDSAnyWriteTransaction *)transaction
+                                                             transaction:(DBWriteTransaction *)transaction
 {
     NSNumber *_Nullable lastVisibleSortId = [self lastVisibleSortIdWithTransaction:transaction];
 
@@ -439,7 +441,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 - (void)updateOnInteractionsRemovedWithNeedsToUpdateLastInteractionRowId:(BOOL)needsToUpdateLastInteractionRowId
                                           needsToUpdateLastVisibleSortId:(BOOL)needsToUpdateLastVisibleSortId
                                                        lastVisibleSortId:(nullable NSNumber *)lastVisibleSortId
-                                                             transaction:(SDSAnyWriteTransaction *)transaction
+                                                             transaction:(DBWriteTransaction *)transaction
 {
     if (needsToUpdateLastInteractionRowId || needsToUpdateLastVisibleSortId) {
         [self anyUpdateWithTransaction:transaction

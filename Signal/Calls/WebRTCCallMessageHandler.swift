@@ -31,7 +31,7 @@ class WebRTCCallMessageHandler: CallMessageHandler {
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         switch callEnvelope {
         case .offer(let offer):
@@ -104,7 +104,7 @@ class WebRTCCallMessageHandler: CallMessageHandler {
                 messageAgeSec = (serverDeliveryTimestamp - serverReceivedTimestamp) / 1000
             }
 
-            let localDeviceId = tsAccountManager.storedDeviceId(tx: tx.asV2Read)
+            let localDeviceId = tsAccountManager.storedDeviceId(tx: tx)
 
             DispatchQueue.main.async {
                 self.callService.callManager.receivedCallMessage(

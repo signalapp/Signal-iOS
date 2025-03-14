@@ -12,7 +12,7 @@ class StoryThumbnailView: UIView {
         case text(PreloadedTextAttachment)
         case missing
 
-        static func from(_ storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) -> Self {
+        static func from(_ storyMessage: StoryMessage, transaction: DBReadTransaction) -> Self {
             switch storyMessage.attachment {
             case .media:
                 guard

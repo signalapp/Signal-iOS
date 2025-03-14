@@ -56,7 +56,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         albumIndex: Int,
         numItemsInAlbum: Int,
         spoilerState: SpoilerRenderState,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) {
         self.message = message
         self.sender = sender
@@ -73,7 +73,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
                 text: body,
                 ranges: message.bodyRanges ?? .empty
             ).hydrating(
-                mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read)
+                mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction)
             )
             self.captionForDisplay = .messageBody(hydratedMessageBody, .fromInteraction(message))
         } else {
@@ -487,7 +487,7 @@ class MediaGallery {
     private func buildGalleryItem(
         attachment: ReferencedAttachment,
         spoilerState: SpoilerRenderState,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> MediaGalleryItem? {
         guard let attachmentStream = attachment.attachment.asStream() else {
             owsFailDebug("gallery doesn't yet support showing undownloaded attachments")
@@ -506,7 +506,7 @@ class MediaGallery {
                     return incomingMessage.authorAddress
                 }
 
-                return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress
+                return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress
             }()
 
             if let senderAddress {
@@ -536,7 +536,7 @@ class MediaGallery {
         let itemsInAlbum = message.sqliteRowId.map {
             DependenciesBridge.shared.attachmentStore.fetchReferences(
                 owner: .messageBodyAttachment(messageRowId: $0),
-                tx: transaction.asV2Read
+                tx: transaction
             )
         } ?? []
         // Re-normalize the index in the album; albumOrder may have gaps but MediaGalleryItem.albumIndex
@@ -682,7 +682,7 @@ class MediaGallery {
                 of: focusedItem.attachmentStream,
                 in: focusedItem.galleryDate.interval,
                 excluding: deletedAttachmentIds,
-                tx: transaction.asV2Read
+                tx: transaction
             ) else {
                 // The item may have just been deleted.
                 Logger.warn("showing detail for item not in the database")
@@ -858,7 +858,7 @@ class MediaGallery {
 
                     try deps.attachmentManager.removeAttachment(
                         reference: referencedAttachment.reference,
-                        tx: tx.asV2Write
+                        tx: tx
                     )
 
                     attachmentsRemoved.append(
@@ -884,7 +884,7 @@ class MediaGallery {
                 for (message, removedAttachments) in attachmentsRemoved {
                     let noBodyAttachments = message.hasBodyAttachments(transaction: tx).negated
                     let finderIsEmptyOfAttachments = try self.mediaGalleryFinder
-                        .countAllAttachments(of: message, tx: tx.asV2Read) == 0
+                        .countAllAttachments(of: message, tx: tx) == 0
 
                     if noBodyAttachments || finderIsEmptyOfAttachments {
                         messagesWithAllAttachmentsRemoved.append(message)
@@ -893,12 +893,12 @@ class MediaGallery {
                     }
                 }
 
-                if let localIdentifiers = deps.tsAccountManager.localIdentifiers(tx: tx.asV2Read) {
+                if let localIdentifiers = deps.tsAccountManager.localIdentifiers(tx: tx) {
                     deps.deleteForMeOutgoingSyncMessageManager.send(
                         deletedAttachments: messagesWithAttachmentsRemaining,
                         thread: thread,
                         localIdentifiers: localIdentifiers,
-                        tx: tx.asV2Write
+                        tx: tx
                     )
                 }
 
@@ -907,7 +907,7 @@ class MediaGallery {
                     sideEffects: .custom(
                         deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: thread)
                     ),
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             } catch {
                 owsFailDebug("database error: \(error)")
@@ -1063,7 +1063,7 @@ extension MediaGallery {
             for date: GalleryDate,
             offset: Int,
             ascending: Bool,
-            transaction: SDSAnyReadTransaction
+            transaction: DBReadTransaction
         ) -> [DatedAttachmentReferenceId] {
             guard let mediaGallery else {
                 return []
@@ -1073,14 +1073,14 @@ extension MediaGallery {
                 excluding: mediaGallery.deletedAttachmentIds,
                 offset: offset,
                 ascending: ascending,
-                tx: transaction.asV2Read
+                tx: transaction
             )
         }
 
         func enumerateTimestamps(
             before date: Date,
             count: Int,
-            transaction: SDSAnyReadTransaction,
+            transaction: DBReadTransaction,
             block: (DatedAttachmentReferenceId) -> Void
         ) -> EnumerationCompletion {
             guard let mediaGallery else {
@@ -1090,7 +1090,7 @@ extension MediaGallery {
                 before: date,
                 excluding: mediaGallery.deletedAttachmentIds,
                 count: count,
-                tx: transaction.asV2Read,
+                tx: transaction,
                 block: block
             )
         }
@@ -1098,7 +1098,7 @@ extension MediaGallery {
         func enumerateTimestamps(
             after date: Date,
             count: Int,
-            transaction: SDSAnyReadTransaction,
+            transaction: DBReadTransaction,
             block: (DatedAttachmentReferenceId) -> Void
         ) -> EnumerationCompletion {
             guard let mediaGallery else {
@@ -1108,7 +1108,7 @@ extension MediaGallery {
                 after: date,
                 excluding: mediaGallery.deletedAttachmentIds,
                 count: count,
-                tx: transaction.asV2Read,
+                tx: transaction,
                 block: block
             )
         }
@@ -1116,7 +1116,7 @@ extension MediaGallery {
         func enumerateItems(
             in interval: DateInterval,
             range: Range<Int>,
-            transaction: SDSAnyReadTransaction,
+            transaction: DBReadTransaction,
             block: (_ offset: Int, _ attachmentId: AttachmentReferenceId, _ buildItem: () -> MediaGalleryItem) -> Void
         ) {
             guard let mediaGallery else {
@@ -1126,7 +1126,7 @@ extension MediaGallery {
                 in: interval,
                 excluding: mediaGallery.deletedAttachmentIds,
                 range: NSRange(range),
-                tx: transaction.asV2Read
+                tx: transaction
             ) { offset, attachment in
                 block(offset, attachment.reference.referenceId) {
                     guard let item: MediaGalleryItem = mediaGallery.buildGalleryItem(

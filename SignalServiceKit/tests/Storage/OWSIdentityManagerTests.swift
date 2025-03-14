@@ -16,7 +16,7 @@ class OWSIdentityManagerTests: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
     }
@@ -25,18 +25,18 @@ class OWSIdentityManagerTests: SSKBaseTest {
         let newKey = IdentityKeyPair.generate().identityKey
         let aci = Aci.randomForTesting()
         try write { transaction in
-            _ = DependenciesBridge.shared.recipientIdFinder.ensureRecipientUniqueId(for: aci, tx: transaction.asV2Write)
+            _ = DependenciesBridge.shared.recipientIdFinder.ensureRecipientUniqueId(for: aci, tx: transaction)
             XCTAssert(try identityManager.isTrustedIdentityKey(
                 newKey,
                 serviceId: aci,
                 direction: .outgoing,
-                tx: transaction.asV2Read
+                tx: transaction
             ))
             XCTAssert(try identityManager.isTrustedIdentityKey(
                 newKey,
                 serviceId: aci,
                 direction: .incoming,
-                tx: transaction.asV2Read
+                tx: transaction
             ))
         }
     }
@@ -45,18 +45,18 @@ class OWSIdentityManagerTests: SSKBaseTest {
         let newKey = IdentityKeyPair.generate().identityKey
         let aci = Aci.randomForTesting()
         try write { transaction in
-            identityManager.saveIdentityKey(newKey, for: aci, tx: transaction.asV2Write)
+            identityManager.saveIdentityKey(newKey, for: aci, tx: transaction)
             XCTAssert(try identityManager.isTrustedIdentityKey(
                 newKey,
                 serviceId: aci,
                 direction: .outgoing,
-                tx: transaction.asV2Read
+                tx: transaction
             ))
             XCTAssert(try identityManager.isTrustedIdentityKey(
                 newKey,
                 serviceId: aci,
                 direction: .incoming,
-                tx: transaction.asV2Read
+                tx: transaction
             ))
         }
     }
@@ -65,19 +65,19 @@ class OWSIdentityManagerTests: SSKBaseTest {
         let originalKey = IdentityKeyPair.generate().identityKey
         let aci = Aci.randomForTesting()
         try write { transaction in
-            identityManager.saveIdentityKey(originalKey, for: aci, tx: transaction.asV2Write)
+            identityManager.saveIdentityKey(originalKey, for: aci, tx: transaction)
 
             XCTAssert(try identityManager.isTrustedIdentityKey(
                 originalKey,
                 serviceId: aci,
                 direction: .outgoing,
-                tx: transaction.asV2Read
+                tx: transaction
             ))
             XCTAssert(try identityManager.isTrustedIdentityKey(
                 originalKey,
                 serviceId: aci,
                 direction: .incoming,
-                tx: transaction.asV2Read
+                tx: transaction
             ))
 
             let otherKey = IdentityKeyPair.generate().identityKey
@@ -86,7 +86,7 @@ class OWSIdentityManagerTests: SSKBaseTest {
                 otherKey,
                 serviceId: aci,
                 direction: .outgoing,
-                tx: transaction.asV2Read
+                tx: transaction
             ), "", { error in
                 switch error {
                 case IdentityManagerError.identityKeyMismatchForOutgoingMessage:
@@ -100,7 +100,7 @@ class OWSIdentityManagerTests: SSKBaseTest {
                 otherKey,
                 serviceId: aci,
                 direction: .incoming,
-                tx: transaction.asV2Read
+                tx: transaction
             ))
         }
     }
@@ -115,10 +115,10 @@ class OWSIdentityManagerTests: SSKBaseTest {
         XCTAssertEqual(pniKey.publicKey.count, 32)
         XCTAssertNotEqual(pniKey.privateKey, newKey.privateKey)
 
-        let fetchedKey = SSKEnvironment.shared.databaseStorageRef.read { tx in identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)! }
+        let fetchedKey = SSKEnvironment.shared.databaseStorageRef.read { tx in identityManager.identityKeyPair(for: .aci, tx: tx)! }
         XCTAssertEqual(newKey.privateKey, fetchedKey.privateKey)
 
-        let fetchedPniKey = SSKEnvironment.shared.databaseStorageRef.read { tx in identityManager.identityKeyPair(for: .pni, tx: tx.asV2Read)! }
+        let fetchedPniKey = SSKEnvironment.shared.databaseStorageRef.read { tx in identityManager.identityKeyPair(for: .pni, tx: tx)! }
         XCTAssertEqual(pniKey.privateKey, fetchedPniKey.privateKey)
     }
 
@@ -128,40 +128,40 @@ class OWSIdentityManagerTests: SSKBaseTest {
 
         write { transaction in
             // {}
-            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: aliceAci, tx: transaction.asV2Write))
-            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobAci, tx: transaction.asV2Write))
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: aliceAci, tx: transaction))
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobAci, tx: transaction))
 
             // {Alice}
-            identityManager.setShouldSharePhoneNumber(with: aliceAci, tx: transaction.asV2Write)
-            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: aliceAci, tx: transaction.asV2Write))
-            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobAci, tx: transaction.asV2Write))
+            identityManager.setShouldSharePhoneNumber(with: aliceAci, tx: transaction)
+            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: aliceAci, tx: transaction))
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobAci, tx: transaction))
 
             // {Alice}; redundant set shouldn't change anything.
-            identityManager.setShouldSharePhoneNumber(with: aliceAci, tx: transaction.asV2Write)
-            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: aliceAci, tx: transaction.asV2Write))
-            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobAci, tx: transaction.asV2Write))
+            identityManager.setShouldSharePhoneNumber(with: aliceAci, tx: transaction)
+            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: aliceAci, tx: transaction))
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobAci, tx: transaction))
 
             // {Alice, Bob}
-            identityManager.setShouldSharePhoneNumber(with: bobAci, tx: transaction.asV2Write)
-            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: aliceAci, tx: transaction.asV2Write))
-            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: bobAci, tx: transaction.asV2Write))
+            identityManager.setShouldSharePhoneNumber(with: bobAci, tx: transaction)
+            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: aliceAci, tx: transaction))
+            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: bobAci, tx: transaction))
 
             // {Bob}
-            identityManager.clearShouldSharePhoneNumber(with: aliceAci, tx: transaction.asV2Write)
-            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: aliceAci, tx: transaction.asV2Write))
-            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: bobAci, tx: transaction.asV2Write))
+            identityManager.clearShouldSharePhoneNumber(with: aliceAci, tx: transaction)
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: aliceAci, tx: transaction))
+            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: bobAci, tx: transaction))
 
             // {Bob}; redundant clear shouldn't change anything.
-            identityManager.clearShouldSharePhoneNumber(with: aliceAci, tx: transaction.asV2Write)
-            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: aliceAci, tx: transaction.asV2Write))
-            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: bobAci, tx: transaction.asV2Write))
+            identityManager.clearShouldSharePhoneNumber(with: aliceAci, tx: transaction)
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: aliceAci, tx: transaction))
+            XCTAssertTrue(identityManager.shouldSharePhoneNumber(with: bobAci, tx: transaction))
 
             // {Alice, Bob}
-            identityManager.setShouldSharePhoneNumber(with: aliceAci, tx: transaction.asV2Write)
+            identityManager.setShouldSharePhoneNumber(with: aliceAci, tx: transaction)
             // {}
-            identityManager.clearShouldSharePhoneNumberForEveryone(tx: transaction.asV2Write)
-            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: aliceAci, tx: transaction.asV2Write))
-            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobAci, tx: transaction.asV2Write))
+            identityManager.clearShouldSharePhoneNumberForEveryone(tx: transaction)
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: aliceAci, tx: transaction))
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobAci, tx: transaction))
         }
     }
 }

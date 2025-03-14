@@ -124,7 +124,7 @@ extension SelectMyStoryRecipientsViewController: MemberViewDelegate {
 
     public func memberViewMemberCountForDisplay() -> Int { recipientSet.count }
 
-    public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> Bool { false }
+    public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: DBReadTransaction) -> Bool { false }
 
     public func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String? {
         mode == .blockList ? "x-circle-fill" : nil

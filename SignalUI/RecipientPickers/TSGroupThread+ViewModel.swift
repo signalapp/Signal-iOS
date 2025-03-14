@@ -28,9 +28,9 @@ public extension TSGroupThread {
         limit: Int = .max,
         useShortNameIfAvailable: Bool = false,
         nameResolver: NameResolver = NameResolverImpl(contactsManager: SSKEnvironment.shared.contactManagerRef),
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [String] {
-        let tx = transaction.asV2Read
+        let tx = transaction
         let config: DisplayName.ComparableValue.Config = .current()
 
         let members = groupMembership.fullMembers.compactMap { address -> (

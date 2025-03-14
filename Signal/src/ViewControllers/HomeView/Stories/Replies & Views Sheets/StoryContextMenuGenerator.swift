@@ -78,7 +78,7 @@ class StoryContextMenuGenerator {
         sourceView: @escaping () -> UIView?,
         hideSaveAction: Bool = false,
         onlyRenderMyStories: Bool = false,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [UIAction] {
         return [
             deleteAction(for: message, in: thread),
@@ -141,7 +141,7 @@ extension StoryContextMenuGenerator {
     private func hideAction(
         for message: StoryMessage,
         useShortTitle: Bool = false,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> GenericContextAction? {
         if
             message.authorAddress.isLocalAddress,

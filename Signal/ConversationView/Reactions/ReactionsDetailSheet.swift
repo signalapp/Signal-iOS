@@ -69,7 +69,7 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
 
     // MARK: -
 
-    func setReactionState(_ reactionState: InteractionReactionState, transaction: SDSAnyReadTransaction) {
+    func setReactionState(_ reactionState: InteractionReactionState, transaction: DBReadTransaction) {
         self.reactionState = reactionState
 
         buildEmojiCountItems()
@@ -107,7 +107,7 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         SSKEnvironment.shared.databaseStorageRef.read { self.setSelectedEmoji(emoji, transaction: $0) }
     }
 
-    func setSelectedEmoji(_ emoji: Emoji?, transaction: SDSAnyReadTransaction) {
+    func setSelectedEmoji(_ emoji: Emoji?, transaction: DBReadTransaction) {
         let oldValue = selectedEmoji
         selectedEmoji = emoji
         selectedEmojiChanged(oldSelectedEmoji: oldValue, transaction: transaction)
@@ -209,9 +209,9 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         }
     }
 
-    private func reactions(for emoji: Emoji?, transaction: SDSAnyReadTransaction) -> [OWSReaction] {
+    private func reactions(for emoji: Emoji?, transaction: DBReadTransaction) -> [OWSReaction] {
         guard let emoji = emoji else {
-            return reactionFinder.allReactions(transaction: transaction.unwrapGrdbRead)
+            return reactionFinder.allReactions(transaction: transaction)
         }
 
         guard let reactions = reactionState.reactionsByEmoji[emoji] else {
@@ -222,7 +222,7 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         return reactions
     }
 
-    private func selectedEmojiChanged(oldSelectedEmoji: Emoji?, transaction: SDSAnyReadTransaction) {
+    private func selectedEmojiChanged(oldSelectedEmoji: Emoji?, transaction: DBReadTransaction) {
         AssertIsOnMainThread()
 
         // We're paging backwards!

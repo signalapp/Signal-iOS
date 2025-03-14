@@ -11,14 +11,14 @@ import LibSignalClient
 internal class ProtoUtils: NSObject {
 
     @objc
-    internal static func addLocalProfileKeyIfNecessary(_ thread: TSThread, dataMessageBuilder: SSKProtoDataMessageBuilder, transaction: SDSAnyReadTransaction) {
+    internal static func addLocalProfileKeyIfNecessary(_ thread: TSThread, dataMessageBuilder: SSKProtoDataMessageBuilder, transaction: DBReadTransaction) {
         if shouldMessageHaveLocalProfileKey(thread, transaction: transaction) {
             dataMessageBuilder.setProfileKey(localProfileKey(tx: transaction).serialize().asData)
         }
     }
 
     @objc
-    internal static func addLocalProfileKeyIfNecessary(forThread thread: TSThread, profileKeySnapshot: Data?, dataMessageBuilder: SSKProtoDataMessageBuilder, transaction: SDSAnyReadTransaction) {
+    internal static func addLocalProfileKeyIfNecessary(forThread thread: TSThread, profileKeySnapshot: Data?, dataMessageBuilder: SSKProtoDataMessageBuilder, transaction: DBReadTransaction) {
         let profileKey = localProfileKey(tx: transaction)
         let canAddLocalProfileKey: Bool = (
             profileKeySnapshot?.ows_constantTimeIsEqual(to: profileKey.serialize().asData) == true
@@ -30,20 +30,20 @@ internal class ProtoUtils: NSObject {
     }
 
     @objc
-    internal static func addLocalProfileKeyIfNecessary(_ thread: TSThread, callMessageBuilder: SSKProtoCallMessageBuilder, transaction: SDSAnyReadTransaction) {
+    internal static func addLocalProfileKeyIfNecessary(_ thread: TSThread, callMessageBuilder: SSKProtoCallMessageBuilder, transaction: DBReadTransaction) {
         if shouldMessageHaveLocalProfileKey(thread, transaction: transaction) {
             callMessageBuilder.setProfileKey(localProfileKey(tx: transaction).serialize().asData)
         }
     }
 
-    static func localProfileKey(tx: SDSAnyReadTransaction) -> ProfileKey {
+    static func localProfileKey(tx: DBReadTransaction) -> ProfileKey {
         let profileManager = SSKEnvironment.shared.profileManagerRef
         // Force unwrap is from the original ObjC implementation. It is "safe"
         // because we generate missing profile keys in warmCaches.
         return profileManager.localProfileKey(tx: tx)!
     }
 
-    private static func shouldMessageHaveLocalProfileKey(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+    private static func shouldMessageHaveLocalProfileKey(_ thread: TSThread, transaction: DBReadTransaction) -> Bool {
         // Group threads will return YES if the group is in the whitelist
         // Contact threads will return YES if the contact is in the whitelist.
         SSKEnvironment.shared.profileManagerRef.isThread(inProfileWhitelist: thread, transaction: transaction)

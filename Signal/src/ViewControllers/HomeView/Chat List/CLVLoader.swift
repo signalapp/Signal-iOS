@@ -58,7 +58,7 @@ enum CLVLoadResult {
 
 public class CLVLoader {
 
-    static func loadRenderStateForReset(viewInfo: CLVViewInfo, transaction: SDSAnyReadTransaction) -> CLVLoadResult {
+    static func loadRenderStateForReset(viewInfo: CLVViewInfo, transaction: DBReadTransaction) -> CLVLoadResult {
         AssertIsOnMainThread()
 
         do {
@@ -70,12 +70,12 @@ public class CLVLoader {
         }
     }
 
-    private static func loadRenderStateInternal(viewInfo: CLVViewInfo, transaction: SDSAnyReadTransaction) throws -> CLVRenderState {
+    private static func loadRenderStateInternal(viewInfo: CLVViewInfo, transaction: DBReadTransaction) throws -> CLVRenderState {
         let threadFinder = ThreadFinder()
         let isViewingArchive = viewInfo.chatListMode == .archive
 
         let pinnedThreadUniqueIds = DependenciesBridge.shared.pinnedThreadStore
-            .pinnedThreadIds(tx: transaction.asV2Read)
+            .pinnedThreadIds(tx: transaction)
 
         let visibleThreadUniqueIds: [String]
         if isViewingArchive {
@@ -111,7 +111,7 @@ public class CLVLoader {
     static func loadRenderStateAndDiff(viewInfo: CLVViewInfo,
                                        updatedItemIds: Set<String>,
                                        lastRenderState: CLVRenderState,
-                                       transaction: SDSAnyReadTransaction) -> CLVLoadResult {
+                                       transaction: DBReadTransaction) -> CLVLoadResult {
         do {
             return try loadRenderStateAndDiffInternal(
                 viewInfo: viewInfo,
@@ -140,7 +140,7 @@ public class CLVLoader {
     private static func loadRenderStateAndDiffInternal(viewInfo: CLVViewInfo,
                                                        updatedItemIds allUpdatedItemIds: Set<String>,
                                                        lastRenderState: CLVRenderState,
-                                                       transaction: SDSAnyReadTransaction) throws -> CLVLoadResult {
+                                                       transaction: DBReadTransaction) throws -> CLVLoadResult {
 
         // Ignore updates to non-visible threads.
         var updatedItemIds = Set<String>()

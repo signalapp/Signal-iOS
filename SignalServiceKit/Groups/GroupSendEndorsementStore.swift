@@ -8,12 +8,12 @@ import GRDB
 import LibSignalClient
 
 protocol GroupSendEndorsementStore {
-    func fetchCombinedEndorsement(groupThreadId: Int64, tx: any DBReadTransaction) throws -> CombinedGroupSendEndorsementRecord?
-    func fetchIndividualEndorsements(groupThreadId: Int64, tx: any DBReadTransaction) throws -> [IndividualGroupSendEndorsementRecord]
-    func fetchIndividualEndorsement(groupThreadId: Int64, recipientId: SignalRecipient.RowId, tx: any DBReadTransaction) throws -> IndividualGroupSendEndorsementRecord?
-    func deleteEndorsements(groupThreadId: Int64, tx: any DBWriteTransaction)
-    func insertCombinedEndorsement(_ endorsementRecord: CombinedGroupSendEndorsementRecord, tx: any DBWriteTransaction)
-    func insertIndividualEndorsement(_ endorsementRecord: IndividualGroupSendEndorsementRecord, tx: any DBWriteTransaction)
+    func fetchCombinedEndorsement(groupThreadId: Int64, tx: DBReadTransaction) throws -> CombinedGroupSendEndorsementRecord?
+    func fetchIndividualEndorsements(groupThreadId: Int64, tx: DBReadTransaction) throws -> [IndividualGroupSendEndorsementRecord]
+    func fetchIndividualEndorsement(groupThreadId: Int64, recipientId: SignalRecipient.RowId, tx: DBReadTransaction) throws -> IndividualGroupSendEndorsementRecord?
+    func deleteEndorsements(groupThreadId: Int64, tx: DBWriteTransaction)
+    func insertCombinedEndorsement(_ endorsementRecord: CombinedGroupSendEndorsementRecord, tx: DBWriteTransaction)
+    func insertIndividualEndorsement(_ endorsementRecord: IndividualGroupSendEndorsementRecord, tx: DBWriteTransaction)
 }
 
 extension GroupSendEndorsementStore {
@@ -22,7 +22,7 @@ extension GroupSendEndorsementStore {
         expiration: Date,
         combinedEndorsement: GroupSendEndorsement,
         individualEndorsements: [(recipientId: Int64, individualEndorsement: GroupSendEndorsement)],
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         deleteEndorsements(groupThreadId: groupThreadId, tx: tx)
         insertCombinedEndorsement(CombinedGroupSendEndorsementRecord(
@@ -41,54 +41,54 @@ extension GroupSendEndorsementStore {
 }
 
 class GroupSendEndorsementStoreImpl: GroupSendEndorsementStore {
-    func fetchCombinedEndorsement(groupThreadId: Int64, tx: any DBReadTransaction) throws -> CombinedGroupSendEndorsementRecord? {
+    func fetchCombinedEndorsement(groupThreadId: Int64, tx: DBReadTransaction) throws -> CombinedGroupSendEndorsementRecord? {
         do {
-            return try CombinedGroupSendEndorsementRecord.fetchOne(tx.databaseConnection, key: groupThreadId)
+            return try CombinedGroupSendEndorsementRecord.fetchOne(tx.database, key: groupThreadId)
         } catch {
             throw error.grdbErrorForLogging
         }
     }
 
-    func fetchIndividualEndorsements(groupThreadId: Int64, tx: any DBReadTransaction) throws -> [IndividualGroupSendEndorsementRecord] {
+    func fetchIndividualEndorsements(groupThreadId: Int64, tx: DBReadTransaction) throws -> [IndividualGroupSendEndorsementRecord] {
         do {
             return try IndividualGroupSendEndorsementRecord
                 .filter(Column(IndividualGroupSendEndorsementRecord.CodingKeys.threadId) == groupThreadId)
-                .fetchAll(tx.databaseConnection)
+                .fetchAll(tx.database)
         } catch {
             throw error.grdbErrorForLogging
         }
     }
 
-    func fetchIndividualEndorsement(groupThreadId: Int64, recipientId: SignalRecipient.RowId, tx: any DBReadTransaction) throws -> IndividualGroupSendEndorsementRecord? {
+    func fetchIndividualEndorsement(groupThreadId: Int64, recipientId: SignalRecipient.RowId, tx: DBReadTransaction) throws -> IndividualGroupSendEndorsementRecord? {
         do {
             return try IndividualGroupSendEndorsementRecord
                 .filter(Column(IndividualGroupSendEndorsementRecord.CodingKeys.threadId) == groupThreadId)
                 .filter(Column(IndividualGroupSendEndorsementRecord.CodingKeys.recipientId) == recipientId)
-                .fetchOne(tx.databaseConnection)
+                .fetchOne(tx.database)
         } catch {
             throw error.grdbErrorForLogging
         }
     }
 
-    func deleteEndorsements(groupThreadId: Int64, tx: any DBWriteTransaction) {
+    func deleteEndorsements(groupThreadId: Int64, tx: DBWriteTransaction) {
         do {
-            try CombinedGroupSendEndorsementRecord.deleteOne(tx.databaseConnection, key: groupThreadId)
+            try CombinedGroupSendEndorsementRecord.deleteOne(tx.database, key: groupThreadId)
         } catch {
             owsFail("Couldn't delete records: \(error.grdbErrorForLogging)")
         }
     }
 
-    func insertCombinedEndorsement(_ endorsementRecord: CombinedGroupSendEndorsementRecord, tx: any DBWriteTransaction) {
+    func insertCombinedEndorsement(_ endorsementRecord: CombinedGroupSendEndorsementRecord, tx: DBWriteTransaction) {
         do {
-            try endorsementRecord.insert(tx.databaseConnection)
+            try endorsementRecord.insert(tx.database)
         } catch {
             owsFail("Couldn't insert record: \(error.grdbErrorForLogging)")
         }
     }
 
-    func insertIndividualEndorsement(_ endorsementRecord: IndividualGroupSendEndorsementRecord, tx: any DBWriteTransaction) {
+    func insertIndividualEndorsement(_ endorsementRecord: IndividualGroupSendEndorsementRecord, tx: DBWriteTransaction) {
         do {
-            try endorsementRecord.insert(tx.databaseConnection)
+            try endorsementRecord.insert(tx.database)
         } catch {
             owsFail("Couldn't insert record: \(error.grdbErrorForLogging)")
         }

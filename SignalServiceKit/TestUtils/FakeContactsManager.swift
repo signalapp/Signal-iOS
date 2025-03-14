@@ -10,11 +10,11 @@ public import Contacts
 public class FakeContactsManager: ContactManager {
     public var mockSignalAccounts = [String: SignalAccount]()
 
-    public func fetchSignalAccounts(for phoneNumbers: [String], transaction: SDSAnyReadTransaction) -> [SignalAccount?] {
+    public func fetchSignalAccounts(for phoneNumbers: [String], transaction: DBReadTransaction) -> [SignalAccount?] {
         return phoneNumbers.map { mockSignalAccounts[$0] }
     }
 
-    public func displayNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [DisplayName] {
+    public func displayNames(for addresses: [SignalServiceAddress], tx: DBReadTransaction) -> [DisplayName] {
         return addresses.map { address in
             if let phoneNumber = address.e164 {
                 if let signalAccount = mockSignalAccounts[phoneNumber.stringValue] {
@@ -32,11 +32,11 @@ public class FakeContactsManager: ContactManager {
         }
     }
 
-    public func displayNameString(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+    public func displayNameString(for address: SignalServiceAddress, transaction: DBReadTransaction) -> String {
         return displayName(for: address, tx: transaction).resolvedValue(config: DisplayName.Config(shouldUseSystemContactNicknames: false))
     }
 
-    public func shortDisplayNameString(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+    public func shortDisplayNameString(for address: SignalServiceAddress, transaction: DBReadTransaction) -> String {
         return displayNameString(for: address, transaction: transaction)
     }
 

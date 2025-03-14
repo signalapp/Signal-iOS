@@ -34,7 +34,7 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
                 tx: tx
             )
             return try Int64.fetchOne(
-                tx.db,
+                tx.database,
                 sql: "SELECT \(Attachment.Record.CodingKeys.sqliteId.rawValue) from \(Attachment.Record.databaseTableName)"
             )!
         }
@@ -45,18 +45,18 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
             sourceType: .transitTier
         )
         try db.write { tx in
-            try download.insert(tx.db)
+            try download.insert(tx.database)
         }
 
         // Now delete the attachment.
         try db.write { tx in
-            try tx.db.execute(sql: "DELETE FROM \(Attachment.Record.databaseTableName)")
+            try tx.database.execute(sql: "DELETE FROM \(Attachment.Record.databaseTableName)")
         }
 
         // The download should be deleted.
         try db.read { tx in
             XCTAssertNil(try QueuedAttachmentDownloadRecord
-                .fetchOne(tx.db)
+                .fetchOne(tx.database)
             )
         }
 
@@ -65,7 +65,7 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
             XCTAssertEqual(
                 download.partialDownloadRelativeFilePath,
                 try String.fetchOne(
-                    tx.db,
+                    tx.database,
                     sql: "SELECT \(OrphanedAttachmentRecord.CodingKeys.localRelativeFilePath.rawValue) FROM \(OrphanedAttachmentRecord.databaseTableName)"
                 )
             )
@@ -76,7 +76,7 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
         try db.read { tx in
             func getQueryPlan(sql: String) throws -> String {
                 let queryPlan: String = try Row
-                    .fetchAll(tx.db, sql: """
+                    .fetchAll(tx.database, sql: """
                         EXPLAIN QUERY PLAN \(sql)
                     """)
                     .map { row -> String in row["detail"] }

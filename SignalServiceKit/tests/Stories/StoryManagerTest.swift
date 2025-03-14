@@ -17,7 +17,7 @@ class StoryManagerTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
     }
@@ -391,7 +391,7 @@ class StoryManagerTest: SSKBaseTest {
             let count = try StoryMessage
                 .filter(Column(StoryMessage.columnName(.timestamp)) == timestamp)
                 .filter(Column(StoryMessage.columnName(.authorAci)) == author.serviceIdUppercaseString)
-                .fetchCount($0.unwrapGrdbRead.database)
+                .fetchCount($0.database)
             XCTAssertEqual(count, 1)
         }
     }
@@ -433,7 +433,7 @@ class StoryManagerTest: SSKBaseTest {
         announcementOnly: Bool = false,
         members: [Aci] = [],
         admins: [Aci] = [],
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws {
         var membershipBuilder = GroupMembership.Builder()
 
@@ -472,7 +472,7 @@ class StoryManagerTest: SSKBaseTest {
 
         override static func enqueueDownloadOfAttachmentsForStoryMessage(
             _ message: StoryMessage,
-            tx: any DBWriteTransaction
+            tx: DBWriteTransaction
         ) {
             // Do nothing
         }

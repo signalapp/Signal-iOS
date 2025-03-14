@@ -35,8 +35,8 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
     private func loadValues() {
         SSKEnvironment.shared.databaseStorageRef.read { tx in
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            phoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: tx.asV2Read).orDefault
-            phoneNumberSharingMode = SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx.asV2Read).orDefault
+            phoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: tx).orDefault
+            phoneNumberSharingMode = SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx).orDefault
         }
     }
 
@@ -162,7 +162,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
                 updateAccountAttributes: true,
                 updateStorageService: true,
                 authedAccount: .implicit(),
-                tx: transaction.asV2Write
+                tx: transaction
             )
         }) { [weak self] in
             guard let self else { return }
@@ -185,7 +185,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
                     updateAccountAttributes: true,
                     updateStorageService: true,
                     authedAccount: .implicit(),
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
             }
         }) { [weak self] in

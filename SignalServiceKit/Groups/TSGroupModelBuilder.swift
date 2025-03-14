@@ -49,7 +49,7 @@ public struct TSGroupModelBuilder {
         self.didJustAddSelfViaGroupLink = false
     }
 
-    static func builderForSnapshot(groupV2Snapshot: GroupV2Snapshot, transaction: SDSAnyWriteTransaction) throws -> TSGroupModelBuilder {
+    static func builderForSnapshot(groupV2Snapshot: GroupV2Snapshot, transaction: DBWriteTransaction) throws -> TSGroupModelBuilder {
         return try TSGroupModelBuilder(groupV2Snapshot: groupV2Snapshot)
     }
 

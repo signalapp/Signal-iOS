@@ -89,8 +89,8 @@ public class PaymentsReconciliation {
         }
     }
 
-    private static func shouldReconcileByDate(transaction: SDSAnyReadTransaction) -> Bool {
-        guard let date = Self.schedulingStore.getDate(Self.successDateKey, transaction: transaction.asV2Read) else {
+    private static func shouldReconcileByDate(transaction: DBReadTransaction) -> Bool {
+        guard let date = Self.schedulingStore.getDate(Self.successDateKey, transaction: transaction) else {
             return true
         }
         return abs(date.timeIntervalSinceNow) >= .hour
@@ -103,7 +103,7 @@ public class PaymentsReconciliation {
         }
     }
 
-    private static func shouldReconcile(transaction: SDSAnyReadTransaction,
+    private static func shouldReconcile(transaction: DBReadTransaction,
                                         transactionHistory: MCTransactionHistory) -> Bool {
 
         // Ledger state monotonically increases, so its sufficient
@@ -114,25 +114,25 @@ public class PaymentsReconciliation {
 
         guard lastKnownBlockCount == Self.schedulingStore.getUInt64(Self.lastKnownBlockCountKey,
                                                                     defaultValue: 0,
-                                                                    transaction: transaction.asV2Read) else {
+                                                                    transaction: transaction) else {
             return true
         }
         guard spentTXOCount == Self.schedulingStore.getUInt(Self.lastKnownSpentTXOCountKey,
                                                             defaultValue: 0,
-                                                            transaction: transaction.asV2Read) else {
+                                                            transaction: transaction) else {
             return true
         }
         guard receivedTXOCount == Self.schedulingStore.getUInt(Self.lastKnownReceivedTXOCountKey,
                                                                defaultValue: 0,
-                                                               transaction: transaction.asV2Read) else {
+                                                               transaction: transaction) else {
             return true
         }
         return false
     }
 
-    private static func reconciliationDidSucceed(transaction: SDSAnyWriteTransaction,
+    private static func reconciliationDidSucceed(transaction: DBWriteTransaction,
                                                  transactionHistory: MCTransactionHistory) {
-        Self.schedulingStore.setDate(Date(), key: Self.successDateKey, transaction: transaction.asV2Write)
+        Self.schedulingStore.setDate(Date(), key: Self.successDateKey, transaction: transaction)
 
         let lastKnownBlockCount = transactionHistory.blockCount
         let spentItemsCount = transactionHistory.spentItems.count
@@ -140,20 +140,20 @@ public class PaymentsReconciliation {
 
         Self.schedulingStore.setUInt64(lastKnownBlockCount,
                                        key: Self.lastKnownBlockCountKey,
-                                       transaction: transaction.asV2Write)
+                                       transaction: transaction)
         Self.schedulingStore.setInt(spentItemsCount,
                                     key: Self.lastKnownSpentTXOCountKey,
-                                    transaction: transaction.asV2Write)
+                                    transaction: transaction)
         Self.schedulingStore.setInt(receivedItemsCount,
                                     key: Self.lastKnownReceivedTXOCountKey,
-                                    transaction: transaction.asV2Write)
+                                    transaction: transaction)
         Self.schedulingStore.setBool(true,
                                      key: Self.hasReconciledPreviously,
-                                     transaction: transaction.asV2Write)
+                                     transaction: transaction)
     }
 
-    public func scheduleReconciliationNow(transaction: SDSAnyWriteTransaction) {
-        Self.schedulingStore.removeAll(transaction: transaction.asV2Write)
+    public func scheduleReconciliationNow(transaction: DBWriteTransaction) {
+        Self.schedulingStore.removeAll(transaction: transaction)
 
         transaction.addAsyncCompletion(on: DispatchQueue.global()) {
             self.reconcileIfNecessary()
@@ -265,16 +265,16 @@ public class PaymentsReconciliation {
     // NOTE: There's no reliable way to identify defrag transactions.
     internal static func reconcile(transactionHistory: MCTransactionHistory,
                                    databaseState: PaymentsDatabaseState,
-                                   transaction: SDSAnyReadTransaction) throws {
+                                   transaction: DBReadTransaction) throws {
 
         Logger.info("")
 
         let hasReconciledOnce = Self.schedulingStore.getBool(
             Self.hasReconciledPreviously,
             defaultValue: false,
-            transaction: transaction.asV2Read
+            transaction: transaction
         )
-        let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? true
+        let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction).isPrimaryDevice ?? true
 
         // If payments have reconciled once, or if this is a primary device, default to marking
         // newly discovered unidentified payments as unread.
@@ -394,7 +394,7 @@ public class PaymentsReconciliation {
             )
 
             func insert(model: TSPaymentModel) throws {
-                if let transaction = transaction as? SDSAnyWriteTransaction {
+                if let transaction = transaction as? DBWriteTransaction {
                     try SSKEnvironment.shared.paymentsHelperRef.tryToInsertPaymentModel(model, transaction: transaction)
                 } else {
                     throw ReconciliationError.unsavedChanges
@@ -452,7 +452,7 @@ public class PaymentsReconciliation {
                 guard case .model(let paymentModel) = paymentState else { continue }
                 let hasLedgerBlockIndex = (paymentModel.mobileCoin?.ledgerBlockIndex ?? 0) > 0
                 if !hasLedgerBlockIndex {
-                    if let transaction = transaction as? SDSAnyWriteTransaction {
+                    if let transaction = transaction as? DBWriteTransaction {
                         paymentModel.update(mcLedgerBlockTimestamp: ledgerBlockTimestamp,
                                             transaction: transaction)
                     } else {
@@ -629,11 +629,11 @@ public class PaymentsReconciliation {
         return timestampUpperBound - 1
     }
 
-    private static func cleanUpDatabase(transaction: SDSAnyReadTransaction) throws {
+    private static func cleanUpDatabase(transaction: DBReadTransaction) throws {
         try cleanUpDatabaseMobileCoin(transaction: transaction)
     }
 
-    private static func cleanUpDatabaseMobileCoin(transaction: SDSAnyReadTransaction) throws {
+    private static func cleanUpDatabaseMobileCoin(transaction: DBReadTransaction) throws {
 
         var unidentifiedPaymentModelsToCull = [String: TSPaymentModel]()
 
@@ -724,7 +724,7 @@ public class PaymentsReconciliation {
 
         if !unidentifiedPaymentModelsToCull.isEmpty {
             owsFailDebug("Culling payment models: \(unidentifiedPaymentModelsToCull.count)")
-            if let transaction = transaction as? SDSAnyWriteTransaction {
+            if let transaction = transaction as? DBWriteTransaction {
                 for paymentModel in unidentifiedPaymentModelsToCull.values {
                     Logger.info("Culling payment model: \(paymentModel.descriptionForLogs)")
                     paymentModel.anyRemove(transaction: transaction)
@@ -736,7 +736,7 @@ public class PaymentsReconciliation {
     }
 
     public func replaceAsUnidentified(paymentModel oldPaymentModel: TSPaymentModel,
-                                      transaction: SDSAnyWriteTransaction) {
+                                      transaction: DBWriteTransaction) {
         guard !oldPaymentModel.isUnidentified else {
             owsFailDebug("Unexpected payment: \(oldPaymentModel.descriptionForLogs)")
             return
@@ -800,7 +800,7 @@ public class PaymentsReconciliation {
 
     // MARK: -
 
-    internal static func buildPaymentsDatabaseState(transaction: SDSAnyReadTransaction) -> PaymentsDatabaseState {
+    internal static func buildPaymentsDatabaseState(transaction: DBReadTransaction) -> PaymentsDatabaseState {
         let databaseState = PaymentsDatabaseState()
 
         TSPaymentModel.anyEnumerate(transaction: transaction,
@@ -808,7 +808,7 @@ public class PaymentsReconciliation {
             databaseState.add(paymentModel: paymentModel)
         }
 
-        DependenciesBridge.shared.archivedPaymentStore.enumerateAll(tx: transaction.asV2Read) { (archivedPayment, _) in
+        DependenciesBridge.shared.archivedPaymentStore.enumerateAll(tx: transaction) { (archivedPayment, _) in
             databaseState.add(archivedPayment: archivedPayment)
         }
         return databaseState
@@ -816,7 +816,7 @@ public class PaymentsReconciliation {
 
     // MARK: -
 
-    public func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
+    public func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {
         // Cull unidentified payment models which might be replaced by this identified model,
         // then schedule reconciliation pass to create new unidentified payment models if necessary.
         if !paymentModel.isUnidentified,
@@ -825,7 +825,7 @@ public class PaymentsReconciliation {
         }
     }
 
-    public func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
+    public func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {
         // Cull unidentified payment models which might be replaced by this identified model,
         // then schedule reconciliation pass to create new unidentified payment models if necessary.
         if !paymentModel.isUnidentified,
@@ -834,7 +834,7 @@ public class PaymentsReconciliation {
         }
     }
 
-    private func cullUnidentifiedPaymentsInSameBlock(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
+    private func cullUnidentifiedPaymentsInSameBlock(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {
         guard !paymentModel.isUnidentified,
               paymentModel.mcLedgerBlockIndex > 0 else {
             owsFailDebug("Invalid paymentModel.")

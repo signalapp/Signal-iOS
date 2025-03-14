@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSPaymentActivationRequestFinishedMessage
 
-- (instancetype)initWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+- (instancetype)initWithThread:(TSThread *)thread transaction:(DBReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     return [self initOutgoingMessageWithBuilder:messageBuilder
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread
-                                                          transaction:(SDSAnyReadTransaction *)transaction
+                                                          transaction:(DBReadTransaction *)transaction
 {
     SSKProtoDataMessageBuilder *builder = [super dataMessageBuilderWithThread:thread transaction:transaction];
 

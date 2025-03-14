@@ -39,7 +39,7 @@ class OWSRecipientIdentityTest: SSKBaseTest {
                     pni: Pni.randomForTesting(),
                     e164: E164("+16505550100")!
                 ),
-                tx: tx.asV2Write
+                tx: tx
             )
         }
         // Create recipients & identities for them.
@@ -47,9 +47,9 @@ class OWSRecipientIdentityTest: SSKBaseTest {
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             let recipientManager = DependenciesBridge.shared.recipientManager
             for serviceId in recipients {
-                let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
-                recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: false, tx: tx.asV2Write)
-                identityManager.saveIdentityKey(identityKey(serviceId), for: serviceId, tx: tx.asV2Write)
+                let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
+                recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: false, tx: tx)
+                identityManager.saveIdentityKey(identityKey(serviceId), for: serviceId, tx: tx)
             }
 
             // Create a group with our recipients plus us.
@@ -70,7 +70,7 @@ class OWSRecipientIdentityTest: SSKBaseTest {
 
     func testNoneVerified() throws {
         read { tx in
-            XCTAssertTrue(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx.asV2Read))
+            XCTAssertTrue(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx))
         }
     }
 
@@ -82,12 +82,12 @@ class OWSRecipientIdentityTest: SSKBaseTest {
                     of: identityKey(recipient),
                     for: SignalServiceAddress(recipient),
                     isUserInitiatedChange: true,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
         }
         read { tx in
-            XCTAssertFalse(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx.asV2Read))
+            XCTAssertFalse(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx))
         }
     }
 
@@ -99,11 +99,11 @@ class OWSRecipientIdentityTest: SSKBaseTest {
                 of: identityKey(recipient),
                 for: SignalServiceAddress(recipient),
                 isUserInitiatedChange: true,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
         read { tx in
-            XCTAssertTrue(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx.asV2Read))
+            XCTAssertTrue(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx))
         }
     }
 
@@ -116,7 +116,7 @@ class OWSRecipientIdentityTest: SSKBaseTest {
                     of: identityKey(recipient),
                     for: SignalServiceAddress(recipient),
                     isUserInitiatedChange: true,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
         }
@@ -129,12 +129,12 @@ class OWSRecipientIdentityTest: SSKBaseTest {
                     of: identityKey(recipient),
                     for: SignalServiceAddress(recipient),
                     isUserInitiatedChange: false,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
         }
         read { tx in
-            XCTAssertTrue(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx.asV2Read))
+            XCTAssertTrue(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx))
         }
 
         // Check that the list of no-longer-verified addresses is just Alice and Bob.
@@ -159,12 +159,12 @@ class OWSRecipientIdentityTest: SSKBaseTest {
                     of: identityKey(recipient),
                     for: SignalServiceAddress(recipient),
                     isUserInitiatedChange: true,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
         }
         read { tx in
-            XCTAssertFalse(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx.asV2Read))
+            XCTAssertFalse(identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx))
         }
     }
 }

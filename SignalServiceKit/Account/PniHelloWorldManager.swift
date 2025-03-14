@@ -64,7 +64,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         self.tsAccountManager = tsAccountManager
     }
 
-    func markHelloWorldAsUnnecessary(tx: any DBWriteTransaction) {
+    func markHelloWorldAsUnnecessary(tx: DBWriteTransaction) {
         keyValueStore.setBool(true, key: StoreConstants.hasSaidHelloWorldKey, transaction: tx)
     }
 
@@ -107,7 +107,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
         var localDevicePniPqLastResortPreKey: SignalServiceKit.KyberPreKeyRecord
     }
 
-    private func buildAccountState(tx: any DBWriteTransaction) -> PniDistributionAccountState? {
+    private func buildAccountState(tx: DBWriteTransaction) -> PniDistributionAccountState? {
         guard
             let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx),
             let localE164 = E164(localIdentifiers.phoneNumber),
@@ -227,7 +227,7 @@ class _PniHelloWorldManagerImpl_NetworkManager_Wrapper: _PniHelloWorldManagerImp
 #if TESTABLE_BUILD
 
 struct PniHelloWorldManagerMock: PniHelloWorldManager {
-    func markHelloWorldAsUnnecessary(tx: any DBWriteTransaction) {}
+    func markHelloWorldAsUnnecessary(tx: DBWriteTransaction) {}
 
     func sayHelloWorldIfNecessary() async throws {}
 }

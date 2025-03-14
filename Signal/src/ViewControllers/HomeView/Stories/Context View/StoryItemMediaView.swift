@@ -387,7 +387,7 @@ class StoryItemMediaView: UIView {
         updateTimestampText()
     }
 
-    private func buildAvatarView(transaction: SDSAnyReadTransaction) -> UIView {
+    private func buildAvatarView(transaction: DBReadTransaction) -> UIView {
         let authorAvatarView = ConversationAvatarView(
             sizeClass: .twentyEight,
             localUserDisplayMode: .asLocalUser,
@@ -442,7 +442,7 @@ class StoryItemMediaView: UIView {
         }
     }
 
-    private func buildNameLabel(transaction: SDSAnyReadTransaction) -> UIView {
+    private func buildNameLabel(transaction: DBReadTransaction) -> UIView {
         let label = UILabel()
         label.textColor = Theme.darkThemePrimaryColor
         label.font = UIFont.dynamicTypeSubheadline.semibold()
@@ -1092,14 +1092,14 @@ extension StoryItem {
         return SSKEnvironment.shared.databaseStorageRef.write { tx in
             guard
                 case .pointer(let pointer) = attachment,
-                pointer.attachment.downloadState(tx: tx.asV2Read) != .enqueuedOrDownloading
+                pointer.attachment.downloadState(tx: tx) != .enqueuedOrDownloading
             else {
                 return false
             }
             DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
                 message,
                 priority: priority,
-                tx: tx.asV2Write
+                tx: tx
             )
             return true
         }

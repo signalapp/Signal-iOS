@@ -151,7 +151,7 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
     }
 
     /// Removes the ``CallLinkRecord`` if there are no more references.
-    private func deleteCallLinkIfNeeded(conversationId: CallRecord.ConversationID, tx: any DBWriteTransaction) throws {
+    private func deleteCallLinkIfNeeded(conversationId: CallRecord.ConversationID, tx: DBWriteTransaction) throws {
         let callLinkRowId: Int64
         switch conversationId {
         case .thread:

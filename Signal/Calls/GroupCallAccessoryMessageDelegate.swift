@@ -211,7 +211,7 @@ class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
     private func sendGroupCallUpdateMessage(
         groupThread: TSGroupThread,
         eraId: String?,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> OutgoingGroupCallUpdateMessage {
         let updateMessage = OutgoingGroupCallUpdateMessage(
             thread: groupThread,
@@ -243,7 +243,7 @@ private extension GroupCallRecordManager {
         groupThread: TSGroupThread,
         groupCallRingState: GroupThreadCall.GroupCallRingState,
         joinTimestamp: UInt64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard let groupThreadRowId = groupThread.sqliteRowId else {
             logger.error("Missing SQLite row ID for thread!")
@@ -290,7 +290,7 @@ private extension GroupCallRecordManager {
                 groupCallStatus: groupCallStatus,
                 callEventTimestamp: joinTimestamp,
                 shouldSendSyncMessage: true,
-                tx: tx.asV2Write
+                tx: tx
             )
         } catch let error {
             owsFailBeta("Failed to insert call record: \(error)")
@@ -305,7 +305,7 @@ private extension GroupCallRecordManager {
     func createOrUpdateCallRecordForDeclinedRing(
         ringId: Int64,
         groupThread: TSGroupThread,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard let groupThreadRowId = groupThread.sqliteRowId else {
             logger.error("Missing SQLite row ID for thread!")
@@ -322,7 +322,7 @@ private extension GroupCallRecordManager {
                 groupCallStatus: .ringingDeclined,
                 callEventTimestamp: Date().ows_millisecondsSince1970,
                 shouldSendSyncMessage: true,
-                tx: tx.asV2Write
+                tx: tx
             )
         } catch let error {
             owsFailBeta("Failed to insert call record: \(error)")

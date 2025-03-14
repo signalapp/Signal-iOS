@@ -73,7 +73,7 @@ public class PaymentsViewUtils {
         avatarBadge.autoPinEdge(toSuperviewEdge: .trailing, withInset: -3)
     }
 
-    static func markPaymentAsRead(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
+    static func markPaymentAsRead(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {
         owsAssertDebug(paymentModel.isUnread)
         paymentModel.update(withIsUnread: false, transaction: transaction)
     }

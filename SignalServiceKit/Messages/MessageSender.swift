@@ -80,7 +80,7 @@ public class MessageSender {
         sealedSenderParameters: SealedSenderParameters?
     ) async throws {
         let hasSession = try SSKEnvironment.shared.databaseStorageRef.read { tx in
-            try containsValidSession(for: serviceId, deviceId: deviceId, tx: tx.asV2Read)
+            try containsValidSession(for: serviceId, deviceId: deviceId, tx: tx)
         }
         if hasSession {
             return
@@ -183,11 +183,11 @@ public class MessageSender {
         recipientUniqueId: String,
         serviceId: ServiceId,
         deviceId: UInt32,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws {
         assert(!Thread.isMainThread)
 
-        if try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write) {
+        if try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction) {
             Logger.warn("Session already exists for \(serviceId), deviceId: \(deviceId).")
             return
         }
@@ -258,7 +258,7 @@ public class MessageSender {
                 bundle,
                 for: protocolAddress,
                 sessionStore: DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore,
-                identityStore: identityManager.libSignalStore(for: .aci, tx: transaction.asV2Write),
+                identityStore: identityManager.libSignalStore(for: .aci, tx: transaction),
                 context: transaction
             )
         } catch SignalError.untrustedIdentity(_), IdentityManagerError.identityKeyMismatchForOutgoingMessage {
@@ -283,7 +283,7 @@ public class MessageSender {
             hadInvalidKeySignatureError(for: recipientUniqueId)
             throw InvalidKeySignatureError(serviceId: serviceId, isTerminalFailure: false)
         }
-        owsAssertDebug(try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write), "Couldn't create session.")
+        owsAssertDebug(try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction), "Couldn't create session.")
     }
 
     // MARK: - Untrusted Identities
@@ -292,10 +292,10 @@ public class MessageSender {
         serviceId: ServiceId,
         recipientUniqueId: RecipientUniqueId,
         preKeyBundle: SignalServiceKit.PreKeyBundle,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         let identityManager = DependenciesBridge.shared.identityManager
-        identityManager.saveIdentityKey(preKeyBundle.identityKey, for: serviceId, tx: tx.asV2Write)
+        identityManager.saveIdentityKey(preKeyBundle.identityKey, for: serviceId, tx: tx)
     }
 
     /// If true, we expect fetching a bundle will fail no matter what it contains.
@@ -323,7 +323,7 @@ public class MessageSender {
             return identityManager.untrustedIdentityForSending(
                 to: SignalServiceAddress(serviceId),
                 untrustedThreshold: nil,
-                tx: tx.asV2Read
+                tx: tx
             ) != nil
         }
     }
@@ -448,7 +448,7 @@ public class MessageSender {
                 return existingTask
             }
             let shouldRunPreKeyRotation = SSKEnvironment.shared.databaseStorageRef.read { tx in
-                preKeyManager.isAppLockedDueToPreKeyUpdateFailures(tx: tx.asV2Read)
+                preKeyManager.isAppLockedDueToPreKeyUpdateFailures(tx: tx)
             }
             if shouldRunPreKeyRotation {
                 Logger.info("Rotating signed pre-key before sending message.")
@@ -475,7 +475,7 @@ public class MessageSender {
     private func markSkippedRecipients(
         of message: TSOutgoingMessage,
         sendingRecipients: [ServiceId],
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let skippedRecipients = Set(message.sendingRecipientAddresses())
             .subtracting(sendingRecipients.lazy.map { SignalServiceAddress($0) })
@@ -489,7 +489,7 @@ public class MessageSender {
         of message: TSOutgoingMessage,
         in thread: TSThread,
         localIdentifiers: LocalIdentifiers,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> [SignalServiceAddress] {
         if message.isSyncMessage {
             return [localIdentifiers.aciAddress]
@@ -734,7 +734,7 @@ public class MessageSender {
             }
 
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
                 throw OWSAssertionError("Not registered.")
             }
 
@@ -775,7 +775,7 @@ public class MessageSender {
             }
 
             let senderCertificate: SenderCertificate = {
-                switch SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx.asV2Read).orDefault {
+                switch SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx).orDefault {
                 case .everybody:
                     return senderCertificates.defaultCert
                 case .nobody:
@@ -795,7 +795,7 @@ public class MessageSender {
             do {
                 if let secretParams = try? ((thread as? TSGroupThread)?.groupModel as? TSGroupModelV2)?.secretParams() {
                     let threadId = thread.sqliteRowId!
-                    endorsements = try fetchEndorsements(forThreadId: threadId, secretParams: secretParams, tx: tx.asV2Read)
+                    endorsements = try fetchEndorsements(forThreadId: threadId, secretParams: secretParams, tx: tx)
                     if
                         recoveryState.canRefreshExpiringGroupSendEndorsements,
                         endorsements == nil || endorsements!.expiration.timeIntervalSinceNow < 2 * .hour
@@ -966,7 +966,7 @@ public class MessageSender {
         message: TSOutgoingMessage,
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> [ServiceId: OWSUDAccess] {
         if DebugFlags.disableUD.get() {
             return [:]
@@ -981,7 +981,7 @@ public class MessageSender {
         return result
     }
 
-    private func fetchEndorsements(forThreadId threadId: Int64, secretParams: GroupSecretParams, tx: any DBReadTransaction) throws -> GroupSendEndorsements? {
+    private func fetchEndorsements(forThreadId threadId: Int64, secretParams: GroupSecretParams, tx: DBReadTransaction) throws -> GroupSendEndorsements? {
         let combinedRecord = try groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: threadId, tx: tx)
         guard let combinedRecord else {
             return nil
@@ -1057,7 +1057,7 @@ public class MessageSender {
     private func normalizeRecipientStatesIfNeeded(
         message: TSOutgoingMessage,
         recipientErrors: some Sequence<(serviceId: ServiceId, error: Error)>,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard recipientErrors.contains(where: {
             switch $0.error {
@@ -1074,7 +1074,7 @@ public class MessageSender {
             signalServiceAddressCache: SSKEnvironment.shared.signalServiceAddressCacheRef
         )
         message.anyUpdateOutgoingMessage(transaction: tx) { message in
-            recipientStateMerger.normalize(&message.recipientAddressStates, tx: tx.asV2Read)
+            recipientStateMerger.normalize(&message.recipientAddressStates, tx: tx)
         }
     }
 
@@ -1086,7 +1086,7 @@ public class MessageSender {
     /// It is important to be conservative about which messages unhide a
     /// recipient. It is far better to not unhide when should than to
     /// unhide when we should not.
-    private func shouldMessageSendUnhideRecipient(_ message: TSOutgoingMessage, tx: SDSAnyReadTransaction) -> Bool {
+    private func shouldMessageSendUnhideRecipient(_ message: TSOutgoingMessage, tx: DBReadTransaction) -> Bool {
         if
             message.shouldBeSaved,
             let rowId = message.sqliteRowId,
@@ -1117,13 +1117,13 @@ public class MessageSender {
             if
                 let thread = message.thread(tx: tx) as? TSContactThread,
                 self.shouldMessageSendUnhideRecipient(message, tx: tx),
-                let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress,
+                let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress,
                 !localAddress.isEqualToAddress(thread.contactAddress)
             {
                 try DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
                     thread.contactAddress,
                     wasLocallyInitiated: true,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
             if message.shouldBeSaved {
@@ -1151,7 +1151,7 @@ public class MessageSender {
         }
         owsAssertDebug(message.recipientAddresses().count == 1)
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            let deviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx.asV2Read)
+            let deviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx)
             for sendingAddress in message.sendingRecipientAddresses() {
                 message.update(
                     withReadRecipient: sendingAddress,
@@ -1191,7 +1191,7 @@ public class MessageSender {
     func buildAndRecordMessage(
         _ message: TSOutgoingMessage,
         in thread: TSThread,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> SerializedMessage? {
         guard let plaintextData = message.buildPlainTextData(thread, transaction: tx) else {
             return nil
@@ -1317,7 +1317,7 @@ public class MessageSender {
         }
 
         let mightHaveUnknownLinkedDevice = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            DependenciesBridge.shared.deviceManager.mightHaveUnknownLinkedDevice(transaction: tx.asV2Read)
+            DependenciesBridge.shared.deviceManager.mightHaveUnknownLinkedDevice(transaction: tx)
         }
 
         if mightHaveUnknownLinkedDevice {
@@ -1336,7 +1336,7 @@ public class MessageSender {
     ) async throws -> [DeviceMessage] {
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
         let recipient = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return recipientDatabaseTable.fetchRecipient(serviceId: messageSend.serviceId, transaction: tx.asV2Read)
+            return recipientDatabaseTable.fetchRecipient(serviceId: messageSend.serviceId, transaction: tx)
         }
 
         // If we think the recipient isn't registered, don't build any device
@@ -1471,7 +1471,7 @@ public class MessageSender {
                 Logger.warn("Found identity key mismatch on outgoing message to \(serviceId).\(deviceId). Archiving session before retrying...")
                 let signalProtocolStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
                 let aciSessionStore = signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-                aciSessionStore.archiveSession(for: serviceId, deviceId: deviceId, tx: tx.asV2Write)
+                aciSessionStore.archiveSession(for: serviceId, deviceId: deviceId, tx: tx)
                 throw OWSRetryableMessageSenderError()
             } catch SignalError.untrustedIdentity {
                 Logger.warn("Found untrusted identity on outgoing message to \(serviceId). Wrapping error and throwing...")
@@ -1560,7 +1560,7 @@ public class MessageSender {
 
                 DependenciesBridge.shared.deviceManager.setMightHaveUnknownLinkedDevice(
                     false,
-                    transaction: transaction.asV2Write
+                    transaction: transaction
                 )
             }
 
@@ -1594,16 +1594,16 @@ public class MessageSender {
                 let recipientFetcher = DependenciesBridge.shared.recipientFetcher
                 let recipient = recipientFetcher.fetchOrCreate(
                     serviceId: messageSend.serviceId,
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
                 let recipientManager = DependenciesBridge.shared.recipientManager
-                recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: transaction.asV2Write)
+                recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: transaction)
             }
 
             SSKEnvironment.shared.profileManagerRef.didSendOrReceiveMessage(
                 serviceId: messageSend.serviceId,
                 localIdentifiers: messageSend.localIdentifiers,
-                tx: transaction.asV2Write
+                tx: transaction
             )
         }
 
@@ -1698,7 +1698,7 @@ public class MessageSender {
         serviceId: ServiceId,
         message: TSOutgoingMessage,
         thread: TSThread,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         AssertNotOnMainThread()
 
@@ -1708,15 +1708,15 @@ public class MessageSender {
         }
 
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-        guard let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read) else {
+        guard let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx) else {
             return
         }
 
         let recipientManager = DependenciesBridge.shared.recipientManager
-        recipientManager.markAsUnregisteredAndSave(recipient, unregisteredAt: .now, shouldUpdateStorageService: true, tx: tx.asV2Write)
+        recipientManager.markAsUnregisteredAndSave(recipient, unregisteredAt: .now, shouldUpdateStorageService: true, tx: tx)
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
             Logger.warn("Can't split recipient because we're not registered.")
             return
         }
@@ -1725,11 +1725,11 @@ public class MessageSender {
         recipientMerger.splitUnregisteredRecipientIfNeeded(
             localIdentifiers: localIdentifiers,
             unregisteredRecipient: recipient,
-            tx: tx.asV2Write
+            tx: tx
         )
     }
 
-    func handleMismatchedDevices(serviceId: ServiceId, missingDevices: [Int8], extraDevices: [Int8], tx: SDSAnyWriteTransaction) {
+    func handleMismatchedDevices(serviceId: ServiceId, missingDevices: [Int8], extraDevices: [Int8], tx: DBWriteTransaction) {
         Logger.warn("Mismatched devices for \(serviceId): +\(missingDevices) -\(extraDevices)")
         self.updateDevices(
             serviceId: serviceId,
@@ -1739,11 +1739,11 @@ public class MessageSender {
         )
     }
 
-    func handleStaleDevices(serviceId: ServiceId, staleDevices: [Int8], tx: SDSAnyWriteTransaction) {
+    func handleStaleDevices(serviceId: ServiceId, staleDevices: [Int8], tx: DBWriteTransaction) {
         Logger.warn("Stale devices for \(serviceId): \(staleDevices)")
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
         for staleDeviceId in staleDevices.compactMap({ UInt32(exactly: $0) }) {
-            sessionStore.archiveSession(for: serviceId, deviceId: staleDeviceId, tx: tx.asV2Write)
+            sessionStore.archiveSession(for: serviceId, deviceId: staleDeviceId, tx: tx)
         }
     }
 
@@ -1751,27 +1751,27 @@ public class MessageSender {
         serviceId: ServiceId,
         devicesToAdd: [UInt32],
         devicesToRemove: [UInt32],
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         AssertNotOnMainThread()
         owsAssertDebug(Set(devicesToAdd).isDisjoint(with: devicesToRemove))
 
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction.asV2Write)
+        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction)
         let recipientManager = DependenciesBridge.shared.recipientManager
         recipientManager.modifyAndSave(
             recipient,
             deviceIdsToAdd: devicesToAdd,
             deviceIdsToRemove: devicesToRemove,
             shouldUpdateStorageService: true,
-            tx: transaction.asV2Write
+            tx: transaction
         )
 
         if !devicesToRemove.isEmpty {
             Logger.info("Archiving sessions for extra devices: \(devicesToRemove)")
             let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
             for deviceId in devicesToRemove {
-                sessionStore.archiveSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write)
+                sessionStore.archiveSession(for: serviceId, deviceId: deviceId, tx: transaction)
             }
         }
     }
@@ -1783,11 +1783,11 @@ public class MessageSender {
         serviceId: ServiceId,
         deviceId: UInt32,
         sealedSenderParameters: SealedSenderParameters?,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
 
-        guard try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write) else {
+        guard try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction) else {
             throw MessageSendEncryptionError(serviceId: serviceId, deviceId: deviceId)
         }
 
@@ -1806,7 +1806,7 @@ public class MessageSender {
                 preKeyStore: signalProtocolStore.preKeyStore,
                 signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
                 kyberPreKeyStore: signalProtocolStore.kyberPreKeyStore,
-                identityStore: identityManager.libSignalStore(for: .aci, tx: transaction.asV2Write),
+                identityStore: identityManager.libSignalStore(for: .aci, tx: transaction),
                 senderKeyStore: SSKEnvironment.shared.senderKeyStoreRef
             )
 
@@ -1815,7 +1815,7 @@ public class MessageSender {
                 deviceId: deviceId,
                 paddedPlaintext: paddedPlaintext,
                 contentHint: sealedSenderParameters.contentHint.signalClientHint,
-                groupId: sealedSenderParameters.envelopeGroupId(tx: transaction.asV2Read),
+                groupId: sealedSenderParameters.envelopeGroupId(tx: transaction),
                 senderCertificate: sealedSenderParameters.senderCertificate,
                 protocolContext: transaction
             )
@@ -1827,7 +1827,7 @@ public class MessageSender {
                 message: paddedPlaintext,
                 for: protocolAddress,
                 sessionStore: signalProtocolStore.sessionStore,
-                identityStore: identityManager.libSignalStore(for: .aci, tx: transaction.asV2Write),
+                identityStore: identityManager.libSignalStore(for: .aci, tx: transaction),
                 context: transaction
             )
 
@@ -1866,7 +1866,7 @@ public class MessageSender {
         deviceId: UInt32,
         isResendRequestMessage: Bool,
         sealedSenderParameters: SealedSenderParameters?,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
 
@@ -1888,12 +1888,12 @@ public class MessageSender {
                 CiphertextMessage(plaintext),
                 from: sealedSenderParameters.senderCertificate,
                 contentHint: sealedSenderParameters.contentHint.signalClientHint,
-                groupId: sealedSenderParameters.envelopeGroupId(tx: transaction.asV2Read) ?? Data()
+                groupId: sealedSenderParameters.envelopeGroupId(tx: transaction) ?? Data()
             )
             let outerBytes = try sealedSenderEncrypt(
                 usmc,
                 for: protocolAddress,
-                identityStore: identityManager.libSignalStore(for: .aci, tx: transaction.asV2Write),
+                identityStore: identityManager.libSignalStore(for: .aci, tx: transaction),
                 context: transaction
             )
 

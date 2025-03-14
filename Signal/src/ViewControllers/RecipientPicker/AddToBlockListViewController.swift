@@ -55,7 +55,7 @@ extension AddToBlockListViewController: RecipientPickerDelegate, UsernameLinkSca
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         selectionStyleForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UITableViewCell.SelectionStyle {
         let blockingManager = SSKEnvironment.shared.blockingManagerRef
 
@@ -107,7 +107,7 @@ extension AddToBlockListViewController: RecipientPickerDelegate, UsernameLinkSca
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> String? {
         switch recipient.identifier {
         case .address(let address):

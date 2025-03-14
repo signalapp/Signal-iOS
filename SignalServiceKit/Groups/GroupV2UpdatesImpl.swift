@@ -88,7 +88,7 @@ public class GroupV2UpdatesImpl {
                 let storeKey = groupThread.groupId.hexadecimalString
                 guard let lastRefreshDate: Date = Self.groupRefreshStore.getDate(
                     storeKey,
-                    transaction: transaction.asV2Read
+                    transaction: transaction
                 ) else {
                     // If we find a group that we have no record of refreshing,
                     // pick that one immediately.
@@ -138,13 +138,13 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         downloadedAvatars: GroupV2DownloadedAvatars,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> TSGroupThread {
 
         guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
             throw OWSAssertionError("Missing groupThread.")
         }
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
             throw OWSAssertionError("Not registered.")
         }
         let changedGroupModel = try GroupsV2IncomingChanges.applyChangesToGroupModel(
@@ -187,7 +187,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
                 secretParams: try changedGroupModel.newGroupModel.secretParams(),
                 membership: groupThread.groupMembership,
                 localAci: localIdentifiers.aci,
-                tx: transaction.asV2Write
+                tx: transaction
             )
         }
 
@@ -253,7 +253,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
     private func didUpdateGroupToLatestRevision(groupId: Data) async {
         lastSuccessfulRefreshMap[groupId] = Date()
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            Self.groupRefreshStore.setDate(Date(), key: groupId.hexadecimalString, transaction: tx.asV2Write)
+            Self.groupRefreshStore.setDate(Date(), key: groupId.hexadecimalString, transaction: tx)
         }
     }
 
@@ -412,7 +412,7 @@ private extension GroupV2UpdatesImpl {
     ) async throws {
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
 
@@ -519,7 +519,7 @@ private extension GroupV2UpdatesImpl {
                     secretParams: secretParams,
                     membership: groupThread.groupMembership,
                     localAci: localIdentifiers.aci,
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
             }
         }
@@ -540,7 +540,7 @@ private extension GroupV2UpdatesImpl {
         groupChanges: [GroupV2Change],
         groupModelOptions: TSGroupModelOptions,
         localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> (TSGroupThread, addedToNewThreadBy: GroupUpdateSource?) {
         if TSGroupThread.fetch(forGroupId: groupId, tx: transaction) != nil {
             throw OWSAssertionError("Can't insert group thread that already exists.")
@@ -608,7 +608,7 @@ private extension GroupV2UpdatesImpl {
         authoritativeProfileKeysByAci: inout [Aci: Data],
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> ApplySingleChangeFromServiceResult? {
         guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
@@ -714,7 +714,7 @@ private extension GroupV2UpdatesImpl {
         let groupV2Snapshot = snapshotResponse.groupSnapshot
 
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
             let localAci = localIdentifiers.aci
@@ -773,7 +773,7 @@ private extension GroupV2UpdatesImpl {
                     secretParams: secretParams,
                     membership: groupV2Snapshot.groupMembership,
                     localAci: localAci,
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
             }
         }

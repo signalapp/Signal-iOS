@@ -318,7 +318,7 @@ private struct OutgoingStoryItem {
     let attachment: StoryThumbnailView.Attachment
     let thread: TSThread
 
-    static func build(message: StoryMessage, transaction: SDSAnyReadTransaction) -> [OutgoingStoryItem] {
+    static func build(message: StoryMessage, transaction: DBReadTransaction) -> [OutgoingStoryItem] {
         message.threads(transaction: transaction).map {
             .init(
                 message: message,

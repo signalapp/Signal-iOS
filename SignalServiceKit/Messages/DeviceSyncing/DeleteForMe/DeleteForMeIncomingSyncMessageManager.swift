@@ -149,7 +149,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
     func handleMessageDelete(
         conversation: Conversation,
         addressableMessage: AddressableMessage,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard let message = addressableMessageFinder.findLocalMessage(
             threadUniqueId: conversation.threadUniqueId,
@@ -171,7 +171,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         conversation: Conversation,
         targetMessage: AddressableMessage,
         attachmentIdentifier: AttachmentIdentifier,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let logger = logger.suffixed(with: "[\(targetMessage.author):\(targetMessage.sentTimestamp) in \(conversation.threadUniqueId)]")
 
@@ -244,7 +244,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         mostRecentAddressableMessages: [AddressableMessage],
         mostRecentNonExpiringAddressableMessages: [AddressableMessage],
         isFullDelete: Bool,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let potentialAnchorMessages: [TSMessage] = (mostRecentAddressableMessages + mostRecentNonExpiringAddressableMessages)
             .compactMap { addressableMessage in
@@ -297,7 +297,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
 
     func handleLocalOnlyConversationDelete(
         conversation: Conversation,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         if addressableMessageFinder.threadContainsAnyAddressableMessages(
             threadUniqueId: conversation.threadUniqueId,

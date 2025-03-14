@@ -19,9 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
                           additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
                             explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
                              skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
-                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+                                   transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
-- (instancetype)initWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
+- (instancetype)initWithThread:(TSThread *)thread transaction:(DBReadTransaction *)transaction;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 

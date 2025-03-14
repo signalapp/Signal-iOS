@@ -111,9 +111,9 @@ public class StorageServiceUnknownFieldMigrator {
     }
 
     fileprivate enum Actions<RecordType: MigrateableStorageServiceRecordType> {
-        typealias MergeUnknownFields = (_ records: [RecordType], _ isPrimaryDevice: Bool, _ tx: SDSAnyWriteTransaction) -> Void
-        typealias InterceptRemoteManifest = (RecordType, inout RecordType.Builder, _ isPrimaryDevice: Bool, _ tx: SDSAnyReadTransaction) -> Void
-        typealias InterceptLocalManifest = (RecordType, inout RecordType.Builder, _ isPrimaryDevice: Bool, _ tx: SDSAnyReadTransaction) -> Void
+        typealias MergeUnknownFields = (_ records: [RecordType], _ isPrimaryDevice: Bool, _ tx: DBWriteTransaction) -> Void
+        typealias InterceptRemoteManifest = (RecordType, inout RecordType.Builder, _ isPrimaryDevice: Bool, _ tx: DBReadTransaction) -> Void
+        typealias InterceptLocalManifest = (RecordType, inout RecordType.Builder, _ isPrimaryDevice: Bool, _ tx: DBReadTransaction) -> Void
     }
 
     private static func registerMigrations(migrator: Migrator) {
@@ -226,36 +226,36 @@ public class StorageServiceUnknownFieldMigrator {
     // If you are just writing a new migration, you don't need to worry about these.
 
     /// Check this before merging records with unknown fields; if true, call ``runMigrationsForRecordsWithUnknownFields``
-    public static func needsAnyUnknownFieldsMigrations(tx: SDSAnyReadTransaction) -> Bool {
+    public static func needsAnyUnknownFieldsMigrations(tx: DBReadTransaction) -> Bool {
         return necessaryMigrations(forKey: Keys.lastRunUnknownFieldsMerge, tx: tx).isEmpty.negated
     }
 
     /// Check this before merging records from a remote manifest; if true, call ``interceptRemoteManifestBeforeMerging``
-    public static func shouldInterceptRemoteManifestBeforeMerging(tx: SDSAnyReadTransaction) -> Bool {
+    public static func shouldInterceptRemoteManifestBeforeMerging(tx: DBReadTransaction) -> Bool {
         return necessaryMigrations(forKey: Keys.lastSuccessfulStorageServiceWrite, tx: tx).isEmpty.negated
     }
 
     /// Check this before uploading records generated locally; if true, call ``interceptLocalManifestBeforeUploading``
-    public static func shouldInterceptLocalManifestBeforeUploading(tx: SDSAnyReadTransaction) -> Bool {
+    public static func shouldInterceptLocalManifestBeforeUploading(tx: DBReadTransaction) -> Bool {
         return necessaryMigrations(forKey: Keys.lastSuccessfulStorageServiceWrite, tx: tx).isEmpty.negated
     }
 
     /// Call this after every succesful write of a manifest to Storage Service.
-    public static func didWriteToStorageService(tx: SDSAnyWriteTransaction) {
-        kvStore.setUInt(MigrationId.highestKnownValue, key: Keys.lastSuccessfulStorageServiceWrite, transaction: tx.asV2Write)
+    public static func didWriteToStorageService(tx: DBWriteTransaction) {
+        kvStore.setUInt(MigrationId.highestKnownValue, key: Keys.lastSuccessfulStorageServiceWrite, transaction: tx)
     }
 
     /// Given an array of every record from the latest synced manifest known to have unknown fields, runs any necessary migrations.
     public static func runMigrationsForRecordsWithUnknownFields(
         records: [any MigrateableStorageServiceRecordType],
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         return _runMigrationsForRecordsWithUnknownFields(records: records, tx: tx)
     }
 
     public static func interceptRemoteManifestBeforeMerging<RecordType>(
         record: RecordType,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> RecordType {
         guard let recordTypecast = record as? (any MigrateableStorageServiceRecordType) else {
             // Not migrateable. Just no-op.
@@ -266,7 +266,7 @@ public class StorageServiceUnknownFieldMigrator {
 
     public static func interceptLocalManifestBeforeUploading<RecordType>(
         record: RecordType,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> RecordType {
         guard let recordTypecast = record as? (any MigrateableStorageServiceRecordType) else {
             // Not migrateable. Just no-op.
@@ -328,9 +328,9 @@ public class StorageServiceUnknownFieldMigrator {
 
     private static func necessaryMigrations(
         forKey key: String,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> LazyFilterSequence<[MigrationId]> {
-        guard let latestMigrationId = kvStore.getUInt(key, transaction: tx.asV2Read) else {
+        guard let latestMigrationId = kvStore.getUInt(key, transaction: tx) else {
             // We've never run any migrations!
             return MigrationId.allCases.lazy.filter { _ in true }
         }
@@ -339,14 +339,14 @@ public class StorageServiceUnknownFieldMigrator {
 
     private static func _runMigrationsForRecordsWithUnknownFields(
         records: [any MigrateableStorageServiceRecordType],
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let necessaryMigrations = Self.necessaryMigrations(forKey: Keys.lastRunUnknownFieldsMerge, tx: tx)
         if necessaryMigrations.isEmpty {
             return
         }
 
-        guard let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice else {
+        guard let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isPrimaryDevice else {
             // Not registered!
             return
         }
@@ -366,19 +366,19 @@ public class StorageServiceUnknownFieldMigrator {
             doMergeUnknownFields(records: records, migration: migration)
         }
 
-        kvStore.setUInt(MigrationId.highestKnownValue, key: Keys.lastRunUnknownFieldsMerge, transaction: tx.asV2Write)
+        kvStore.setUInt(MigrationId.highestKnownValue, key: Keys.lastRunUnknownFieldsMerge, transaction: tx)
     }
 
     private static func _interceptRemoteManifestBeforeMerging<RecordType: MigrateableStorageServiceRecordType>(
         record: RecordType,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> RecordType {
         let necessaryMigrations = Self.necessaryMigrations(forKey: Keys.lastSuccessfulStorageServiceWrite, tx: tx)
         if necessaryMigrations.isEmpty {
             return record
         }
 
-        guard let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice else {
+        guard let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isPrimaryDevice else {
             // Not registered!
             return record
         }
@@ -414,14 +414,14 @@ public class StorageServiceUnknownFieldMigrator {
 
     private static func _interceptLocalManifestBeforeUploading<RecordType: MigrateableStorageServiceRecordType>(
         record: RecordType,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> RecordType {
         let necessaryMigrations = Self.necessaryMigrations(forKey: Keys.lastSuccessfulStorageServiceWrite, tx: tx)
         if necessaryMigrations.isEmpty {
             return record
         }
 
-        guard let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice else {
+        guard let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isPrimaryDevice else {
             // Not registered!
             return record
         }

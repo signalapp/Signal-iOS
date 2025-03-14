@@ -67,7 +67,7 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate, Username
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         selectionStyleForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UITableViewCell.SelectionStyle {
         // TODO: Nice-to-have: filter out recipients that do not support payments.
         return .default
@@ -88,7 +88,7 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate, Username
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          attributedSubtitleForRecipient recipient: PickedRecipient,
-                         transaction: SDSAnyReadTransaction) -> NSAttributedString? {
+                         transaction: DBReadTransaction) -> NSAttributedString? {
         // TODO: Nice-to-have: filter out recipients that do not support payments.
         switch recipient.identifier {
         case .address(let address):

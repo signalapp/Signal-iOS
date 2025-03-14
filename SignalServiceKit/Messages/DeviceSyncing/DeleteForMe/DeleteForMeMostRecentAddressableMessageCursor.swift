@@ -14,7 +14,7 @@ final class DeleteForMeMostRecentAddressableMessageCursor: InterleavingComposite
 
     /// Construct a highly efficient cursor over the most recent addressable
     /// messages in the thread with the given unique ID.
-    convenience init(threadUniqueId: String, sdsTx: SDSAnyReadTransaction) throws {
+    convenience init(threadUniqueId: String, sdsTx: DBReadTransaction) throws {
         try self.init(addressableMessageCursors: [
             MostRecentIncomingMessageCursor(threadUniqueId: threadUniqueId, sdsTx: sdsTx),
             MostRecentOutgoingMessageCursor(threadUniqueId: threadUniqueId, sdsTx: sdsTx),
@@ -66,7 +66,7 @@ struct DeleteForMeAddressableMessageInterleavableCursor: InterleavableCursor {
 private struct MostRecentIncomingMessageCursor: DeleteForMeAddressableMessageCursor {
     private let interactionCursor: TSInteractionCursor
 
-    init(threadUniqueId: String, sdsTx: SDSAnyReadTransaction) {
+    init(threadUniqueId: String, sdsTx: DBReadTransaction) {
         self.interactionCursor = InteractionFinder(
             threadUniqueId: threadUniqueId
         ).buildIncomingMessagesCursor(
@@ -84,7 +84,7 @@ private struct MostRecentIncomingMessageCursor: DeleteForMeAddressableMessageCur
 private struct MostRecentOutgoingMessageCursor: DeleteForMeAddressableMessageCursor {
     private let interactionCursor: TSInteractionCursor
 
-    init(threadUniqueId: String, sdsTx: SDSAnyReadTransaction) {
+    init(threadUniqueId: String, sdsTx: DBReadTransaction) {
         self.interactionCursor = InteractionFinder(
             threadUniqueId: threadUniqueId
         ).buildOutgoingMessagesCursor(

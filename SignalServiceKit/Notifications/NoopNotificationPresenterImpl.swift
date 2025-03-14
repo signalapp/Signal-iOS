@@ -14,27 +14,27 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
 
     public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,
                            thread: TSThread,
-                           transaction: SDSAnyReadTransaction) {
+                           transaction: DBReadTransaction) {
         Logger.warn("")
     }
 
     public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,
                            editTarget: TSIncomingMessage,
                            thread: TSThread,
-                           transaction: SDSAnyReadTransaction) {
+                           transaction: DBReadTransaction) {
         Logger.warn("")
     }
 
     public func notifyUser(forReaction reaction: OWSReaction,
                            onOutgoingMessage message: TSOutgoingMessage,
                            thread: TSThread,
-                           transaction: SDSAnyReadTransaction) {
+                           transaction: DBReadTransaction) {
         Logger.warn("")
     }
 
     public func notifyUser(forErrorMessage errorMessage: TSErrorMessage,
                            thread: TSThread,
-                           transaction: SDSAnyWriteTransaction) {
+                           transaction: DBWriteTransaction) {
         Logger.warn("")
     }
 
@@ -42,7 +42,7 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         forTSMessage message: TSMessage,
         thread: TSThread,
         wantsSound: Bool,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         Logger.warn("")
     }
@@ -50,7 +50,7 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
     public func notifyUser(forPreviewableInteraction previewableInteraction: TSInteraction & OWSPreviewText,
                            thread: TSThread,
                            wantsSound: Bool,
-                           transaction: SDSAnyWriteTransaction) {
+                           transaction: DBWriteTransaction) {
         Logger.warn("")
     }
 
@@ -59,7 +59,7 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
-    public func notifyUser(forFailedStorySend storyMessage: StoryMessage, to thread: TSThread, transaction: SDSAnyWriteTransaction) {
+    public func notifyUser(forFailedStorySend storyMessage: StoryMessage, to thread: TSThread, transaction: DBWriteTransaction) {
         Logger.warn("")
     }
 
@@ -67,15 +67,15 @@ public class NoopNotificationPresenterImpl: NotificationPresenter {
         Logger.warn("")
     }
 
-    public func notifyUserOfMissedCall(notificationInfo: CallNotificationInfo, offerMediaType: TSRecentCallOfferType, sentAt timestamp: Date, tx: SDSAnyReadTransaction) {
+    public func notifyUserOfMissedCall(notificationInfo: CallNotificationInfo, offerMediaType: TSRecentCallOfferType, sentAt timestamp: Date, tx: DBReadTransaction) {
         Logger.warn("")
     }
 
-    public func notifyUserOfMissedCallBecauseOfNewIdentity(notificationInfo: CallNotificationInfo, tx: SDSAnyReadTransaction) {
+    public func notifyUserOfMissedCallBecauseOfNewIdentity(notificationInfo: CallNotificationInfo, tx: DBReadTransaction) {
         Logger.warn("")
     }
 
-    public func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(notificationInfo: CallNotificationInfo, tx: SDSAnyReadTransaction) {
+    public func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(notificationInfo: CallNotificationInfo, tx: DBReadTransaction) {
         Logger.warn("")
     }
 

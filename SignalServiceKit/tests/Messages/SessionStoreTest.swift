@@ -27,18 +27,18 @@ class SessionStoreTest: SSKBaseTest {
         // because the in-memory one skips the archiving step.
         let sessionStore = SSKSessionStore(for: .aci, recipientIdFinder: DependenciesBridge.shared.recipientIdFinder)
         let recipient = write {
-            DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: Aci.randomForTesting(), tx: $0.asV2Write)
+            DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: Aci.randomForTesting(), tx: $0)
         }
 
         // First make sure that if we write a "valid" session, it can be read.
         let singleValidSessionData = try! NSKeyedArchiver.archivedData(withRootObject: [1: Data()], requiringSecureCoding: true)
         write {
-            sessionStore.keyValueStoreForTesting.setData(singleValidSessionData, key: recipient.uniqueId, transaction: $0.asV2Write)
+            sessionStore.keyValueStoreForTesting.setData(singleValidSessionData, key: recipient.uniqueId, transaction: $0)
         }
 
         read {
-            XCTAssertTrue(sessionStore.mightContainSession(for: recipient, tx: $0.asV2Read))
-            XCTAssertNotNil(try! sessionStore.loadSession(for: recipient.aci!, deviceId: 1, tx: $0.asV2Read))
+            XCTAssertTrue(sessionStore.mightContainSession(for: recipient, tx: $0))
+            XCTAssertNotNil(try! sessionStore.loadSession(for: recipient.aci!, deviceId: 1, tx: $0))
         }
 
         // Then imitate a session store with a mix of legacy and modern sessions.
@@ -48,14 +48,14 @@ class SessionStoreTest: SSKBaseTest {
         archiver.encode(sessions, forKey: NSKeyedArchiveRootObjectKey)
 
         write {
-            sessionStore.keyValueStoreForTesting.setData(archiver.encodedData, key: recipient.uniqueId, transaction: $0.asV2Write)
+            sessionStore.keyValueStoreForTesting.setData(archiver.encodedData, key: recipient.uniqueId, transaction: $0)
         }
 
         read {
             // There's something in the store...
-            XCTAssertTrue(sessionStore.mightContainSession(for: recipient, tx: $0.asV2Read))
+            XCTAssertTrue(sessionStore.mightContainSession(for: recipient, tx: $0))
             // ...but it turns into nil on load.
-            XCTAssertNil(try! sessionStore.loadSession(for: recipient.aci!, deviceId: 2, tx: $0.asV2Read))
+            XCTAssertNil(try! sessionStore.loadSession(for: recipient.aci!, deviceId: 2, tx: $0))
         }
     }
 }

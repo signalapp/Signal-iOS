@@ -114,7 +114,7 @@ class AudioCell: MediaTileListModeCell {
         return view
     }()
 
-    private func createAudioMessageView(transaction: SDSAnyReadTransaction) {
+    private func createAudioMessageView(transaction: DBReadTransaction) {
         owsAssertDebug(audioMessageView == nil)
 
         guard let audioItem, let audioAttachment, let spoilerState else {

@@ -30,7 +30,7 @@ public extension TSInfoMessage {
     }
 
     @objc
-    func sessionSwitchoverDescription(tx: SDSAnyReadTransaction) -> String {
+    func sessionSwitchoverDescription(tx: DBReadTransaction) -> String {
         if let phoneNumber = sessionSwitchoverPhoneNumber {
             let displayName = contactThreadDisplayName(tx: tx)
             let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: phoneNumber)
@@ -45,10 +45,10 @@ public extension TSInfoMessage {
         }
     }
 
-    private func contactThreadDisplayName(tx: SDSAnyReadTransaction) -> String {
+    private func contactThreadDisplayName(tx: DBReadTransaction) -> String {
         guard
             let contactThread = DependenciesBridge.shared.threadStore
-                .fetchThread(uniqueId: uniqueThreadId, tx: tx.asV2Read) as? TSContactThread
+                .fetchThread(uniqueId: uniqueThreadId, tx: tx) as? TSContactThread
         else {
             return CommonStrings.unknownUser
         }

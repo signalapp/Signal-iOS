@@ -25,7 +25,7 @@ public class CVContactShareView: ManualStackView {
         contactShare: ContactShareViewModel,
         isIncoming: Bool,
         conversationStyle: ConversationStyle,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> State {
         let avatar = contactShare.getAvatarImage(diameter: Self.avatarSize,
                                                  transaction: transaction)

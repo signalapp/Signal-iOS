@@ -64,10 +64,10 @@ private extension RemoteMegaphoneFetcher {
 
     private static let delayBetweenSyncs: TimeInterval = 3 * .day
 
-    func shouldSync(transaction: SDSAnyReadTransaction) -> Bool {
+    func shouldSync(transaction: DBReadTransaction) -> Bool {
         guard
-            let appVersionAtLastFetch = Self.fetcherStore.getString(.appVersionAtLastFetchKey, transaction: transaction.asV2Read),
-            let lastFetchDate = Self.fetcherStore.getDate(.lastFetchDateKey, transaction: transaction.asV2Read)
+            let appVersionAtLastFetch = Self.fetcherStore.getString(.appVersionAtLastFetchKey, transaction: transaction),
+            let lastFetchDate = Self.fetcherStore.getDate(.lastFetchDateKey, transaction: transaction)
         else {
             // If we have never recorded last-fetch data, we should sync.
             return true
@@ -79,17 +79,17 @@ private extension RemoteMegaphoneFetcher {
         return hasChangedAppVersion || hasWaitedEnoughSinceLastSync
     }
 
-    func recordCompletedSync(transaction: SDSAnyWriteTransaction) {
+    func recordCompletedSync(transaction: DBWriteTransaction) {
         Self.fetcherStore.setString(
             AppVersionImpl.shared.currentAppVersion,
             key: .appVersionAtLastFetchKey,
-            transaction: transaction.asV2Write
+            transaction: transaction
         )
 
         Self.fetcherStore.setDate(
             Date(),
             key: .lastFetchDateKey,
-            transaction: transaction.asV2Write
+            transaction: transaction
         )
     }
 }
@@ -103,7 +103,7 @@ private extension RemoteMegaphoneFetcher {
     /// megaphones that no longer exist on the service.
     func updatePersistedMegaphones(
         withFetchedMegaphones serviceMegaphones: [RemoteMegaphoneModel],
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         // Get the current remote megaphones.
         var localRemoteMegaphones: [String: ExperienceUpgrade] = [:]

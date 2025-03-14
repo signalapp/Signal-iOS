@@ -19,12 +19,12 @@ class SetWallpaperViewController: OWSTableViewController2 {
         self.presentFullScreen(UINavigationController(rootViewController: vc), animated: true)
     }
 
-    static func load(thread: TSThread?, tx: SDSAnyReadTransaction) -> SetWallpaperViewController {
+    static func load(thread: TSThread?, tx: DBReadTransaction) -> SetWallpaperViewController {
         return SetWallpaperViewController(
             thread: thread,
             shouldDimInDarkMode: DependenciesBridge.shared.wallpaperStore.fetchDimInDarkMode(
                 for: thread?.uniqueId,
-                tx: tx.asV2Read
+                tx: tx
             )
         )
     }

@@ -157,7 +157,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark Thread
 
-- (nullable TSThread *)threadWithTx:(SDSAnyReadTransaction *)tx
+- (nullable TSThread *)threadWithTx:(DBReadTransaction *)tx
 {
     if (self.uniqueThreadId == nil) {
         // This might be true for a few legacy interactions enqueued in the message
@@ -196,7 +196,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark - Any Transaction Hooks
 
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];
 
@@ -207,7 +207,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     // populated yet.
 }
 
-- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidUpdateWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
 
@@ -233,7 +233,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #if TESTABLE_BUILD
 
-- (void)replaceTimestamp:(uint64_t)timestamp transaction:(SDSAnyWriteTransaction *)transaction
+- (void)replaceTimestamp:(uint64_t)timestamp transaction:(DBWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSInteraction *interaction) { interaction.timestamp = timestamp; }];
@@ -244,7 +244,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     self.receivedAtTimestamp = receivedAtTimestamp;
 }
 
-- (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp transaction:(SDSAnyWriteTransaction *)transaction
+- (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp transaction:(DBWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSInteraction *interaction) {

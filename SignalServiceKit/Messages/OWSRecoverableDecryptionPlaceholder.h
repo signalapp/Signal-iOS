@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithFailedEnvelopeTimestamp:(uint64_t)timestamp
                                                sourceAci:(AciObjC *)sourceAci
                                         untrustedGroupId:(nullable NSData *)untrustedGroupId
-                                             transaction:(SDSAnyWriteTransaction *)writeTx NS_DESIGNATED_INITIALIZER;
+                                             transaction:(DBWriteTransaction *)writeTx NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

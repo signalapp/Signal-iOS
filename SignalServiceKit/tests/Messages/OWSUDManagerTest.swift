@@ -24,7 +24,7 @@ class OWSUDManagerTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: localIdentifiers,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 

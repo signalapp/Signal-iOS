@@ -18,12 +18,12 @@ public class ReactionManager: NSObject {
     /// (including on linked devices).
     ///
     /// This is important because we shouldn't ever send the default set of reactions over storage service.
-    public class func customEmojiSet(transaction: SDSAnyReadTransaction) -> [String]? {
-        return emojiSetKVS.getStringArray(emojiSetKey, transaction: transaction.asV2Read)
+    public class func customEmojiSet(transaction: DBReadTransaction) -> [String]? {
+        return emojiSetKVS.getStringArray(emojiSetKey, transaction: transaction)
     }
 
-    public class func setCustomEmojiSet(_ emojis: [String]?, transaction: SDSAnyWriteTransaction) {
-        emojiSetKVS.setObject(emojis, key: emojiSetKey, transaction: transaction.asV2Write)
+    public class func setCustomEmojiSet(_ emojis: [String]?, transaction: DBWriteTransaction) {
+        emojiSetKVS.setObject(emojis, key: emojiSetKey, transaction: transaction)
     }
 
     @discardableResult
@@ -32,7 +32,7 @@ public class ReactionManager: NSObject {
         emoji: String,
         isRemoving: Bool,
         isHighPriority: Bool = false,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> Promise<Void> {
         let outgoingMessage: TSOutgoingMessage
         do {
@@ -56,7 +56,7 @@ public class ReactionManager: NSObject {
         to messageUniqueId: String,
         emoji: String,
         isRemoving: Bool,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws -> OWSOutgoingReactionMessage {
         assert(emoji.isSingleEmoji)
 
@@ -68,12 +68,12 @@ public class ReactionManager: NSObject {
             throw OWSAssertionError("Can't send reaction to thread.")
         }
 
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci else {
             throw OWSAssertionError("missing local address")
         }
 
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: tx.asV2Read)
+        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: tx)
 
         let outgoingMessage = OWSOutgoingReactionMessage(
             thread: thread,
@@ -125,7 +125,7 @@ public class ReactionManager: NSObject {
         expiresInSeconds: UInt32,
         expireTimerVersion: UInt32?,
         sentTranscript: OWSIncomingSentMessageTranscript?,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> ReactionProcessingResult {
         guard let emoji = reaction.emoji.strippedOrNil else {
             owsFailDebug("Received invalid emoji")
@@ -151,7 +151,7 @@ public class ReactionManager: NSObject {
                 // version to ensure the reaction shows up properly.
                 if let latestEdit = DependenciesBridge.shared.editMessageStore.findMessage(
                     fromEdit: message,
-                    tx: transaction.asV2Read) {
+                    tx: transaction) {
                     message = latestEdit
                 } else {
                     Logger.info("Ignoring reaction for missing edit target.")
@@ -178,7 +178,7 @@ public class ReactionManager: NSObject {
                 )
 
                 // If this is a reaction to a message we sent, notify the user.
-                let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
+                let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci
                 if let reaction, let message = message as? TSOutgoingMessage, reactor != localAci {
                     SSKEnvironment.shared.notificationPresenterRef.notifyUser(
                         forReaction: reaction,
@@ -222,7 +222,7 @@ public class ReactionManager: NSObject {
 
             let message: TSMessage
 
-            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
+            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci
             if reactor == localAci {
                 let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
                 populateStoryContext(on: builder)
@@ -262,7 +262,7 @@ public class ReactionManager: NSObject {
         uniqueId: String,
         thresholdDate: Date,
         shouldPerformRemove: Bool,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> Bool {
         guard let reaction = OWSReaction.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
             // This could just be a race condition, but it should be very unlikely.

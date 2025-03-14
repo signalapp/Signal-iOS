@@ -290,7 +290,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
     private func buildAccessoryView(
         text: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> ContactCellAccessoryView {
         let label = CVLabel()
         let labelConfig = CVLabelConfig.unstyledText(

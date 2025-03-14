@@ -97,7 +97,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         )
         let disappearingMessagesConfiguration = SSKEnvironment.shared.databaseStorageRef.read { tx in
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-            return dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx.asV2Read)
+            return dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx)
         }
         disappearingMessagesSection.add(.init(
             customCellBlock: { [weak self] in

@@ -20,7 +20,7 @@ public class StoryManager {
 
                 if CurrentAppContext().isMainApp {
                     DependenciesBridge.shared.privateStoryThreadDeletionManager
-                        .cleanUpDeletedTimestamps(tx: transaction.asV2Write)
+                        .cleanUpDeletedTimestamps(tx: transaction)
                 }
             }
         }
@@ -31,7 +31,7 @@ public class StoryManager {
         timestamp: UInt64,
         author: Aci,
         localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws {
         guard StoryFinder.story(
             timestamp: timestamp,
@@ -47,7 +47,7 @@ public class StoryManager {
             return
         }
 
-        if DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(SignalServiceAddress(author), tx: transaction.asV2Read) {
+        if DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(SignalServiceAddress(author), tx: transaction) {
             Logger.warn("Dropping story message with timestamp \(timestamp) from hidden author \(author)")
             return
         }
@@ -93,7 +93,7 @@ public class StoryManager {
                 userProfileWriter: .localUser,
                 localIdentifiers: localIdentifiers,
                 authedAccount: .implicit(),
-                tx: transaction.asV2Write
+                tx: transaction
             )
         }
 
@@ -122,11 +122,11 @@ public class StoryManager {
 
     public class func processStoryMessageTranscript(
         _ proto: SSKProtoSyncMessageSent,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws {
         let existingStory = StoryFinder.story(
             timestamp: proto.timestamp,
-            author: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aci,
+            author: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)!.aci,
             transaction: transaction
         )
 
@@ -147,7 +147,7 @@ public class StoryManager {
         } else if existingStory == nil {
             let message = try StoryMessage.create(withSentTranscript: proto, transaction: transaction)
 
-            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
+            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction)
 
             SSKEnvironment.shared.disappearingMessagesJobRef.scheduleRun(by: message.timestamp + storyLifetimeMillis)
 
@@ -157,13 +157,13 @@ public class StoryManager {
         }
     }
 
-    public class func deleteAllStories(forSender senderAci: Aci, tx: SDSAnyWriteTransaction) {
+    public class func deleteAllStories(forSender senderAci: Aci, tx: DBWriteTransaction) {
         StoryFinder.enumerateStories(fromSender: senderAci, tx: tx) { storyMessage, _ in
             storyMessage.anyRemove(transaction: tx)
         }
     }
 
-    public class func deleteAllStories(forGroupId groupId: Data, tx: SDSAnyWriteTransaction) {
+    public class func deleteAllStories(forGroupId groupId: Data, tx: DBWriteTransaction) {
         StoryFinder.enumerateStoriesForContext(.groupId(groupId), transaction: tx) { storyMessage, _ in
             storyMessage.anyRemove(transaction: tx)
         }
@@ -171,7 +171,7 @@ public class StoryManager {
 
     /// Removes a given address from any TSPrivateStoryThread(s) that have it as an _explicit_ address, whether by exclusion or
     /// inclusion.
-    public class func removeAddressFromAllPrivateStoryThreads(_ address: SignalServiceAddress, tx: SDSAnyWriteTransaction) {
+    public class func removeAddressFromAllPrivateStoryThreads(_ address: SignalServiceAddress, tx: DBWriteTransaction) {
         // We don't have a mapping from recipient to the set of TSPrivateStoryThreads they
         // are a part of, so the best we can do is index over all of them and find
         // the recipient if present. If this becomes an issue, we can consider adding such a lookup table.
@@ -203,27 +203,27 @@ public class StoryManager {
         }
     }
 
-    public class func nextExpirationTimestamp(transaction: SDSAnyReadTransaction) -> UInt64? {
+    public class func nextExpirationTimestamp(transaction: DBReadTransaction) -> UInt64? {
         guard let timestamp = StoryFinder.oldestExpirableTimestamp(transaction: transaction) else { return nil }
         return timestamp + storyLifetimeMillis
     }
 
     private static let hasSetMyStoriesPrivacyKey = "hasSetMyStoriesPrivacyKey"
 
-    public class func hasSetMyStoriesPrivacy(transaction: SDSAnyReadTransaction) -> Bool {
-        return keyValueStore.getBool(hasSetMyStoriesPrivacyKey, defaultValue: false, transaction: transaction.asV2Read)
+    public class func hasSetMyStoriesPrivacy(transaction: DBReadTransaction) -> Bool {
+        return keyValueStore.getBool(hasSetMyStoriesPrivacyKey, defaultValue: false, transaction: transaction)
     }
 
     public class func setHasSetMyStoriesPrivacy(
         _ hasSet: Bool,
         shouldUpdateStorageService: Bool,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         guard hasSet != hasSetMyStoriesPrivacy(transaction: transaction) else {
             // Don't trigger account record updates unneccesarily!
             return
         }
-        keyValueStore.setBool(hasSet, key: hasSetMyStoriesPrivacyKey, transaction: transaction.asV2Write)
+        keyValueStore.setBool(hasSet, key: hasSetMyStoriesPrivacyKey, transaction: transaction)
         if shouldUpdateStorageService {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
@@ -235,7 +235,7 @@ public class StoryManager {
     /// We automatically download incoming stories IFF:
     /// * The context has been recently interacted with (sent message to group, 1:1, viewed story, etc), is associated with a pinned thread, or has been recently viewed
     /// * We have not already exceeded the limit for how many unviewed stories we should download for this context
-    private class func startAutomaticDownloadIfNecessary(for message: StoryMessage, transaction: SDSAnyWriteTransaction) {
+    private class func startAutomaticDownloadIfNecessary(for message: StoryMessage, transaction: DBWriteTransaction) {
 
         let attachmentPointerToDownload: AttachmentPointer?
         switch message.attachment {
@@ -244,7 +244,7 @@ public class StoryManager {
                 return DependenciesBridge.shared.attachmentStore
                     .fetchFirstReferencedAttachment(
                         for: .storyMessageMedia(storyMessageRowId: rowId),
-                        tx: transaction.asV2Read
+                        tx: transaction
                     )?.attachment
             } ?? nil
             if attachment?.asStream() != nil {
@@ -256,7 +256,7 @@ public class StoryManager {
         case .text:
             // We always auto-download non-file story attachments, this will generally only be link preview thumbnails.
             Logger.info("Automatically enqueueing download of non-file based story with timestamp \(message.timestamp)")
-            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
+            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction)
             return
         }
 
@@ -283,7 +283,7 @@ public class StoryManager {
                     unviewedDownloadedStoriesForContext += 1
                 } else if
                     let pointer = attachment.attachment.asAnyPointer(),
-                    pointer.downloadState(tx: transaction.asV2Read) == .enqueuedOrDownloading
+                    pointer.downloadState(tx: transaction) == .enqueuedOrDownloading
                 {
                     unviewedDownloadedStoriesForContext += 1
                 }
@@ -301,7 +301,7 @@ public class StoryManager {
 
         // See if the context has been recently active
 
-        let pinnedThreads = DependenciesBridge.shared.pinnedThreadManager.pinnedThreads(tx: transaction.asV2Read)
+        let pinnedThreads = DependenciesBridge.shared.pinnedThreadManager.pinnedThreads(tx: transaction)
         let recentlyInteractedThreads = ThreadFinder().threadsWithRecentInteractions(limit: recentContextAutomaticDownloadLimit, transaction: transaction)
         let recentlyViewedContexts = StoryFinder.associatedDatasWithRecentlyViewedStories(
             limit: Int(recentContextAutomaticDownloadLimit),
@@ -312,7 +312,7 @@ public class StoryManager {
         if autoDownloadContexts.contains(message.context) || autoDownloadContexts.contains(.authorAci(message.authorAci)) {
             Logger.info("Automatically downloading attachments for story with timestamp \(message.timestamp) and context \(message.context)")
 
-            Self.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
+            Self.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction)
         } else {
             Logger.info("Skipping automatic download of attachments for story with timestamp \(message.timestamp), context \(message.context) not recently active")
         }
@@ -345,8 +345,8 @@ extension StoryManager {
     /// A cache of if stories are enabled for the local user. For convenience, this also factors in whether the overall feature is available to the user.
     public static var areStoriesEnabled: Bool { areStoriesEnabledCache.get() }
 
-    public static func setAreStoriesEnabled(_ areStoriesEnabled: Bool, shouldUpdateStorageService: Bool = true, transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setBool(areStoriesEnabled, key: areStoriesEnabledKey, transaction: transaction.asV2Write)
+    public static func setAreStoriesEnabled(_ areStoriesEnabled: Bool, shouldUpdateStorageService: Bool = true, transaction: DBWriteTransaction) {
+        keyValueStore.setBool(areStoriesEnabled, key: areStoriesEnabledKey, transaction: transaction)
         areStoriesEnabledCache.set(areStoriesEnabled)
 
         if shouldUpdateStorageService {
@@ -359,8 +359,8 @@ extension StoryManager {
     }
 
     /// Have stories been enabled by the local user. This never factors in any remote information, like is the feature available to the user.
-    public static func areStoriesEnabled(transaction: SDSAnyReadTransaction) -> Bool {
-        keyValueStore.getBool(areStoriesEnabledKey, defaultValue: true, transaction: transaction.asV2Read)
+    public static func areStoriesEnabled(transaction: DBReadTransaction) -> Bool {
+        keyValueStore.getBool(areStoriesEnabledKey, defaultValue: true, transaction: transaction)
     }
 
     private static func cacheAreStoriesEnabled() {
@@ -405,13 +405,13 @@ extension StoryManager {
 
     @Atomic public private(set) static var areViewReceiptsEnabled: Bool = false
 
-    public static func areViewReceiptsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
-        keyValueStore.getBool(areViewReceiptsEnabledKey, transaction: transaction.asV2Read) ?? OWSReceiptManager.areReadReceiptsEnabled(transaction: transaction)
+    public static func areViewReceiptsEnabled(transaction: DBReadTransaction) -> Bool {
+        keyValueStore.getBool(areViewReceiptsEnabledKey, transaction: transaction) ?? OWSReceiptManager.areReadReceiptsEnabled(transaction: transaction)
     }
 
     // TODO: should this live on OWSReceiptManager?
-    public static func setAreViewReceiptsEnabled(_ enabled: Bool, shouldUpdateStorageService: Bool = true, transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setBool(enabled, key: areViewReceiptsEnabledKey, transaction: transaction.asV2Write)
+    public static func setAreViewReceiptsEnabled(_ enabled: Bool, shouldUpdateStorageService: Bool = true, transaction: DBWriteTransaction) {
+        keyValueStore.setBool(enabled, key: areViewReceiptsEnabledKey, transaction: transaction)
         areViewReceiptsEnabled = enabled
 
         if shouldUpdateStorageService {
@@ -462,7 +462,7 @@ public extension StoryContext {
         }
     }
 
-    func threadUniqueId(transaction: SDSAnyReadTransaction) -> String? {
+    func threadUniqueId(transaction: DBReadTransaction) -> String? {
         switch self {
         case .groupId(let data):
             return TSGroupThread.threadId(
@@ -481,7 +481,7 @@ public extension StoryContext {
         }
     }
 
-    func thread(transaction: SDSAnyReadTransaction) -> TSThread? {
+    func thread(transaction: DBReadTransaction) -> TSThread? {
         switch self {
         case .groupId(let data):
             return TSGroupThread.fetch(groupId: data, transaction: transaction)
@@ -499,7 +499,7 @@ public extension StoryContext {
 
     /// Returns nil only for outgoing contexts (private story contexts) which have no associated data.
     /// For valid contact and group contexts where the associated data does not yet exists, creates and returns a default one.
-    func associatedData(transaction: SDSAnyReadTransaction) -> StoryContextAssociatedData? {
+    func associatedData(transaction: DBReadTransaction) -> StoryContextAssociatedData? {
         guard let source = self.asAssociatedDataContext else {
             return nil
         }
@@ -507,7 +507,7 @@ public extension StoryContext {
     }
 
     func isHidden(
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         if self == .authorAci(StoryMessage.systemStoryAuthor) {
             return SSKEnvironment.shared.systemStoryManagerRef.areSystemStoriesHidden(transaction: transaction)

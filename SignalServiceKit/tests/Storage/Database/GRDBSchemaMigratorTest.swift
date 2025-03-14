@@ -22,7 +22,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
         )
 
         databaseStorage.read { transaction in
-            let db = transaction.unwrapGrdbRead.database
+            let db = transaction.database
             let sql = "SELECT name FROM sqlite_schema WHERE type IS 'table'"
             let allTableNames = (try? String.fetchAll(db, sql: sql)) ?? []
 
@@ -72,7 +72,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
             return try copyResults.removeFirst().get()
         }
         try databaseQueue.write { db in
-            let transaction = GRDBWriteTransaction(database: db)
+            let transaction = DBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
             try GRDBSchemaMigrator.migrateVoiceMessageDrafts(
                 transaction: transaction,
@@ -137,7 +137,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
 
         // Run the test.
         try databaseQueue.write { db in
-            let transaction = GRDBWriteTransaction(database: db)
+            let transaction = DBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
             try GRDBSchemaMigrator.migrateThreadReplyInfos(transaction: transaction)
         }
@@ -181,7 +181,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
         )
 
         try databaseQueue.write { db in
-            let tx = GRDBWriteTransaction(database: db)
+            let tx = DBWriteTransaction(database: db)
             defer { tx.finalizeTransaction() }
             try GRDBSchemaMigrator.migrateEditRecordTable(tx: tx)
         }
@@ -207,7 +207,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
         )
 
         try databaseQueue.write { db in
-            let tx = GRDBWriteTransaction(database: db)
+            let tx = DBWriteTransaction(database: db)
             defer { tx.finalizeTransaction() }
             try GRDBSchemaMigrator.migrateEditRecordTable(tx: tx)
         }
@@ -253,7 +253,7 @@ extension GRDBSchemaMigratorTest {
                 )
             }
 
-            let tx = GRDBWriteTransaction(database: db)
+            let tx = DBWriteTransaction(database: db)
             try GRDBSchemaMigrator.createEditRecordTable(tx: tx)
             tx.finalizeTransaction()
 
@@ -438,7 +438,7 @@ extension GRDBSchemaMigratorTest {
             )
 
             do {
-                let tx = GRDBWriteTransaction(database: db)
+                let tx = DBWriteTransaction(database: db)
                 defer { tx.finalizeTransaction() }
                 try GRDBSchemaMigrator.migrateBlockedRecipients(tx: tx)
             }
@@ -506,7 +506,7 @@ extension GRDBSchemaMigratorTest {
             """)
 
             do {
-                let tx = GRDBWriteTransaction(database: db)
+                let tx = DBWriteTransaction(database: db)
                 defer { tx.finalizeTransaction() }
                 try GRDBSchemaMigrator.addCallLinkTable(tx: tx)
             }

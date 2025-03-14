@@ -57,7 +57,7 @@ public final class MessageBackupThreadStore {
     ) throws -> TSContactThread {
         let thread = TSContactThread(contactAddress: context.recipientContext.localIdentifiers.aciAddress)
         let record = thread.asRecord()
-        try record.insert(context.tx.databaseConnection)
+        try record.insert(context.tx.database)
         return thread
     }
 
@@ -67,7 +67,7 @@ public final class MessageBackupThreadStore {
     ) throws -> TSContactThread {
         let thread = TSContactThread(contactAddress: address.asInteropAddress())
         let record = thread.asRecord()
-        try record.insert(context.tx.databaseConnection)
+        try record.insert(context.tx.database)
         return thread
     }
 
@@ -86,7 +86,7 @@ public final class MessageBackupThreadStore {
             groupThread.storyViewMode = .default
         }
         let record = groupThread.asRecord()
-        try record.insert(context.tx.databaseConnection)
+        try record.insert(context.tx.database)
         return groupThread
     }
 
@@ -102,7 +102,7 @@ public final class MessageBackupThreadStore {
                 // This gets updated in post frame restore actions.
                 lastInteractionTimestamp: 0
             )
-            try groupMember.insert(context.tx.databaseConnection)
+            try groupMember.insert(context.tx.database)
         }
     }
 
@@ -123,7 +123,7 @@ public final class MessageBackupThreadStore {
         // in them anyway), but the boolean does exist for them and the backup integration
         // tests have contact threads with muted mentions. So we set for all thread types.
 
-        try context.tx.databaseConnection.execute(
+        try context.tx.database.execute(
             sql: """
             UPDATE \(TSThread.table.tableName)
             SET
@@ -140,7 +140,7 @@ public final class MessageBackupThreadStore {
         lastInteractionRowId: Int64?,
         context: MessageBackup.ChatRestoringContext
     ) throws {
-        try context.tx.databaseConnection.execute(
+        try context.tx.database.execute(
             sql: """
             UPDATE \(TSThread.table.tableName)
             SET
@@ -167,6 +167,6 @@ public final class MessageBackupThreadStore {
             mutedUntilTimestamp: mutedUntilTimestamp ?? 0,
             audioPlaybackRate: 1
         )
-        try threadAssociatedData.insert(context.tx.databaseConnection)
+        try threadAssociatedData.insert(context.tx.database)
     }
 }

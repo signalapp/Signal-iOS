@@ -22,7 +22,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     @objc
     public init(thread: TSThread,
                 action: TypingIndicatorAction,
-                transaction: SDSAnyReadTransaction) {
+                transaction: DBReadTransaction) {
         self.action = action
 
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
@@ -68,7 +68,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     }
 
     public override func contentBuilder(thread: TSThread,
-                                        transaction: SDSAnyReadTransaction) -> SSKProtoContentBuilder? {
+                                        transaction: DBReadTransaction) -> SSKProtoContentBuilder? {
         let typingBuilder = SSKProtoTypingMessage.builder(timestamp: self.timestamp)
         typingBuilder.setAction(protoAction(forAction: action))
 

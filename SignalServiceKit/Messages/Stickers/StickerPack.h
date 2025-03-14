@@ -8,7 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SDSAnyWriteTransaction;
+@class DBWriteTransaction;
 @class StickerPack;
 
 @interface StickerPackItem : MTLModel
@@ -81,7 +81,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:author:cover:dateCr
 
 + (NSString *)uniqueIdForStickerPackInfo:(StickerPackInfo *)info;
 
-- (void)updateWithIsInstalled:(BOOL)isInstalled transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithIsInstalled:(BOOL)isInstalled transaction:(DBWriteTransaction *)transaction;
 
 @end
 

@@ -8,7 +8,7 @@ import LibSignalClient
 protocol DeleteForMeSyncMessageReceiver {
     func handleDeleteForMeProto(
         deleteForMeProto: SSKProtoSyncMessageDeleteForMe,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     )
 }
 
@@ -42,7 +42,7 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
 
     func handleDeleteForMeProto(
         deleteForMeProto: SSKProtoSyncMessageDeleteForMe,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         for messageDeletes in deleteForMeProto.messageDeletes {
             guard let conversation = conversation(

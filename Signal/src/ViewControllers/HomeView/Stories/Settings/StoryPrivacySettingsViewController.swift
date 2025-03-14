@@ -241,7 +241,7 @@ private class StoryThreadCell: ContactTableViewCell {
 
     // MARK: - ContactTableViewCell
 
-    public func configure(conversationItem: StoryConversationItem, transaction: SDSAnyReadTransaction) {
+    public func configure(conversationItem: StoryConversationItem, transaction: DBReadTransaction) {
         let configuration: ContactCellConfiguration
         switch conversationItem.messageRecipient {
         case .contact:

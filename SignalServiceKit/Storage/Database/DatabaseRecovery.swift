@@ -50,7 +50,7 @@ public extension DatabaseRecovery {
             // opening the write throws an error (probably a corruption error).
             try databaseStorage.performWriteWithTxCompletion { tx in
                 do {
-                    try SqliteUtil.reindex(db: tx.unwrapGrdbWrite.database)
+                    try SqliteUtil.reindex(db: tx.database)
                     Logger.info("Reindexed database")
                     return .commit(())
                 } catch {
@@ -509,7 +509,7 @@ public extension DatabaseRecovery {
 
             do {
                 return try from.readThrows { fromTransaction -> TableCopyResult in
-                    let fromDb = fromTransaction.unwrapGrdbRead.database
+                    let fromDb = fromTransaction.database
 
                     let columnNames: [String]
                     let cursor: RowCursor
@@ -524,7 +524,7 @@ public extension DatabaseRecovery {
                     let insertSql = insertSql(tableName: tableName, columnNames: columnNames)
 
                     return to.write { toTransaction in
-                        let toDb = toTransaction.unwrapGrdbWrite.database
+                        let toDb = toTransaction.database
 
                         let insertStatement: Statement
                         do {
@@ -638,7 +638,7 @@ public extension DatabaseRecovery {
             Logger.info("Attempting to recreate media gallery records...")
             databaseStorage.write { transaction in
                 do {
-                    try createInitialGalleryRecords(transaction: transaction.unwrapGrdbWrite)
+                    try createInitialGalleryRecords(transaction: transaction)
                     Logger.info("Recreated media gallery records.")
                 } catch {
                     Logger.warn("Failed to recreate media gallery records, but moving on: \(error)")
@@ -651,7 +651,7 @@ public extension DatabaseRecovery {
 
             databaseStorage.write { tx in
                 let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
-                searchableNameIndexer.indexEverything(tx: tx.asV2Write)
+                searchableNameIndexer.indexEverything(tx: tx)
             }
 
             databaseStorage.write { tx in
@@ -692,7 +692,7 @@ extension DatabaseRecovery {
     public static func integrityCheck(databaseStorage: SDSDatabaseStorage) -> SqliteUtil.IntegrityCheckResult {
         Logger.info("Running integrity check on database...")
         let result = databaseStorage.write { transaction in
-            let db = transaction.unwrapGrdbWrite.database
+            let db = transaction.database
             return SqliteUtil.quickCheck(db: db)
         }
         switch result {

@@ -137,7 +137,7 @@ class MessageRequestView: UIStackView {
     }
 
     public static func messageRequestType(forThread thread: TSThread,
-                                          transaction: SDSAnyReadTransaction) -> MessageRequestType {
+                                          transaction: DBReadTransaction) -> MessageRequestType {
         let isGroupV1Thread = thread.isGroupV1Thread
         let isGroupV2Thread = thread.isGroupV2Thread
         let isThreadBlocked = SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: transaction)
@@ -145,7 +145,7 @@ class MessageRequestView: UIStackView {
         if let thread = thread as? TSContactThread {
             isThreadFromHiddenRecipient = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
                 thread.contactAddress,
-                tx: transaction.asV2Read
+                tx: transaction
             )
         }
         let finder = InteractionFinder(threadUniqueId: thread.uniqueId)

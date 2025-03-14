@@ -23,7 +23,7 @@ class OWSContactsManagerTest: SignalBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 
@@ -62,9 +62,9 @@ class OWSContactsManagerTest: SignalBaseTest {
         write { tx in
             for serviceId in serviceIds {
                 recipientManager.markAsRegisteredAndSave(
-                    recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write),
+                    recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx),
                     shouldUpdateStorageService: false,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
         }

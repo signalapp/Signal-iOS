@@ -12,12 +12,12 @@ extension TSPrivateStoryThread {
         "00000000-0000-0000-0000-000000000000"
     }
 
-    public class func getMyStory(transaction: SDSAnyReadTransaction) -> TSPrivateStoryThread! {
+    public class func getMyStory(transaction: DBReadTransaction) -> TSPrivateStoryThread! {
         anyFetchPrivateStoryThread(uniqueId: myStoryUniqueId, transaction: transaction)
     }
 
     @discardableResult
-    public class func getOrCreateMyStory(transaction: SDSAnyWriteTransaction) -> TSPrivateStoryThread! {
+    public class func getOrCreateMyStory(transaction: DBWriteTransaction) -> TSPrivateStoryThread! {
         if let myStory = getMyStory(transaction: transaction) { return myStory }
 
         let myStory = TSPrivateStoryThread(uniqueId: myStoryUniqueId, name: "", allowsReplies: true, addresses: [], viewMode: .blockList)
@@ -30,7 +30,7 @@ extension TSPrivateStoryThread {
     @objc
     public var distributionListIdentifier: Data? { UUID(uuidString: uniqueId)?.data }
 
-    public override func recipientAddresses(with transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+    public override func recipientAddresses(with transaction: DBReadTransaction) -> [SignalServiceAddress] {
         switch storyViewMode {
         case .default:
             owsFailDebug("Unexpectedly have private story with no view mode")
@@ -44,7 +44,7 @@ extension TSPrivateStoryThread {
 
     // MARK: - updateWith...
 
-    public override func updateWithShouldThreadBeVisible(_ shouldThreadBeVisible: Bool, transaction: SDSAnyWriteTransaction) {
+    public override func updateWithShouldThreadBeVisible(_ shouldThreadBeVisible: Bool, transaction: DBWriteTransaction) {
         super.updateWithShouldThreadBeVisible(shouldThreadBeVisible, transaction: transaction)
         updateWithStoryViewMode(.disabled, transaction: transaction)
     }
@@ -52,7 +52,7 @@ extension TSPrivateStoryThread {
     public func updateWithAllowsReplies(
         _ allowsReplies: Bool,
         updateStorageService: Bool,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         anyUpdatePrivateStoryThread(transaction: tx) { privateStoryThread in
             privateStoryThread.allowsReplies = allowsReplies
@@ -68,7 +68,7 @@ extension TSPrivateStoryThread {
     public func updateWithName(
         _ name: String,
         updateStorageService: Bool,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         anyUpdatePrivateStoryThread(transaction: tx) { privateStoryThread in
             privateStoryThread.name = name
@@ -97,7 +97,7 @@ extension TSPrivateStoryThread {
         addresses: [SignalServiceAddress],
         updateStorageService: Bool,
         updateHasSetMyStoryPrivacyIfNeeded: Bool = true,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         if updateHasSetMyStoryPrivacyIfNeeded, isMyStory {
             StoryManager.setHasSetMyStoriesPrivacy(

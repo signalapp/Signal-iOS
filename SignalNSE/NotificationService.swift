@@ -208,7 +208,7 @@ class NotificationService: UNNotificationServiceExtension {
             // If we're completing normally, try to update the badge on the app icon.
             let badgeCount: BadgeCount = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return DependenciesBridge.shared.badgeCountFetcher
-                    .fetchBadgeCount(tx: tx.asV2Read)
+                    .fetchBadgeCount(tx: tx)
             }
             self?.completeSilently(badgeCount: badgeCount, logger: logger)
         }.catch(on: DispatchQueue.global()) { error in

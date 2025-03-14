@@ -20,7 +20,7 @@ public final class OutgoingGroupCallUpdateMessage: TSOutgoingMessage {
     public init(
         thread: TSGroupThread,
         eraId: String?,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) {
         self.eraId = eraId
 
@@ -47,7 +47,7 @@ public final class OutgoingGroupCallUpdateMessage: TSOutgoingMessage {
 
     override public func dataMessageBuilder(
         with thread: TSThread,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> SSKProtoDataMessageBuilder? {
         guard let dataMessageBuilder = super.dataMessageBuilder(
             with: thread,

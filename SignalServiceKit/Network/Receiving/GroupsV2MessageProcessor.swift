@@ -119,7 +119,7 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
         groupId: Data,
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         // We need to persist the decrypted envelope data ASAP to prevent data loss.
         finder.addJob(
@@ -128,7 +128,7 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
             groupId: groupId,
             wasReceivedByUD: wasReceivedByUD,
             serverDeliveryTimestamp: serverDeliveryTimestamp,
-            transaction: tx.unwrapGrdbWrite
+            transaction: tx
         )
     }
 
@@ -175,7 +175,7 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
 
         // Obtain the list of groups that currently need processing.
         let groupIdsWithJobs = Set(SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            self.finder.allEnqueuedGroupIds(transaction: transaction.unwrapGrdbRead)
+            self.finder.allEnqueuedGroupIds(transaction: transaction)
         })
 
         guard !groupIdsWithJobs.isEmpty else {
@@ -204,11 +204,11 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
         }
     }
 
-    func hasPendingJobs(tx: SDSAnyReadTransaction) -> Bool {
+    func hasPendingJobs(tx: DBReadTransaction) -> Bool {
         self.finder.jobCount(transaction: tx) > 0
     }
 
-    func pendingJobCount(tx: SDSAnyReadTransaction) -> UInt {
+    func pendingJobCount(tx: DBReadTransaction) -> UInt {
         self.finder.jobCount(transaction: tx)
     }
 }
@@ -332,7 +332,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
         processWorkStep(retryDelayAfterFailure: retryDelayAfterFailure)
     }
 
-    private typealias BatchCompletionBlock = ([IncomingGroupsV2MessageJob], Bool, SDSAnyWriteTransaction) -> Void
+    private typealias BatchCompletionBlock = ([IncomingGroupsV2MessageJob], Bool, DBWriteTransaction) -> Void
 
     private func processWorkStep(retryDelayAfterFailure: TimeInterval = 1.0) {
         owsAssertDebug(isDrainingQueue.get())
@@ -356,7 +356,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
         let batchSize: UInt = CurrentAppContext().isInBackground() ? 1 : kIncomingMessageBatchSize
 
         let batchJobs = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            self.finder.nextJobs(forGroupId: self.groupId, batchSize: batchSize, transaction: transaction.unwrapGrdbRead)
+            self.finder.nextJobs(forGroupId: self.groupId, batchSize: batchSize, transaction: transaction)
         }
         guard !batchJobs.isEmpty else {
             future.resolve()
@@ -374,7 +374,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
             }
 
             let processedUniqueIds = processedJobs.map { $0.uniqueId }
-            self.finder.removeJobs(withUniqueIds: processedUniqueIds, transaction: transaction.unwrapGrdbWrite)
+            self.finder.removeJobs(withUniqueIds: processedUniqueIds, transaction: transaction)
 
             transaction.addAsyncCompletion(on: DispatchQueue.global()) {
                 assert(backgroundTask != nil)
@@ -417,7 +417,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
 
     private static func jobInfo(
         forJob job: IncomingGroupsV2MessageJob,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> IncomingGroupsV2MessageJobInfo {
         var jobInfo = IncomingGroupsV2MessageJobInfo(job: job)
         guard let envelope = job.envelope else {
@@ -444,7 +444,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
     internal static func discardMode(
         forMessageFrom sourceAci: Aci,
         groupContext: SSKProtoGroupContextV2,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> GroupsV2MessageProcessor.DiscardMode {
         guard groupContext.hasRevision else {
             Logger.info("Missing revision in group context")
@@ -469,7 +469,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
     private static func discardMode(
         forJobInfo jobInfo: IncomingGroupsV2MessageJobInfo,
         hasGroupBeenUpdated: Bool,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> GroupsV2MessageProcessor.DiscardMode {
         guard let envelope = jobInfo.envelope else {
             owsFailDebug("Missing envelope.")
@@ -507,7 +507,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
     // message at the head of the queue.
     private func canJobBeProcessedWithoutUpdate(
         jobInfo: IncomingGroupsV2MessageJobInfo,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> Bool {
         if .discard == Self.discardMode(forJobInfo: jobInfo, hasGroupBeenUpdated: false, tx: tx) {
             return true
@@ -532,7 +532,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
     //       a subset of the jobs.
     private func processJobs(
         jobs: [IncomingGroupsV2MessageJob],
-        tx: SDSAnyWriteTransaction,
+        tx: DBWriteTransaction,
         completion: @escaping BatchCompletionBlock
     ) {
 
@@ -578,7 +578,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
 
     private func performLocalProcessingSync(
         jobInfos: [IncomingGroupsV2MessageJobInfo],
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> [IncomingGroupsV2MessageJob] {
         guard jobInfos.count > 0 else {
             owsFailDebug("Missing jobInfos.")
@@ -601,7 +601,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage {
                     wasReceivedByUD: job.wasReceivedByUD,
                     serverDeliveryTimestamp: job.serverDeliveryTimestamp,
                     shouldDiscardVisibleMessages: discardMode == .discardVisibleMessages,
-                    localIdentifiers: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)!,
+                    localIdentifiers: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)!,
                     tx: tx
                 )
             }
@@ -876,7 +876,7 @@ public class GroupsV2MessageProcessor {
         plaintextData: Data,
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard !envelopeData.isEmpty else {
             owsFailDebug("Empty envelope.")
@@ -930,7 +930,7 @@ public class GroupsV2MessageProcessor {
 
     public class func canContextBeProcessedImmediately(
         groupContext: SSKProtoGroupContextV2,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> Bool {
         let groupContextInfo: GroupV2ContextInfo
         do {
@@ -944,7 +944,7 @@ public class GroupsV2MessageProcessor {
         // 1. We don't have any other messages queued for this thread
         // 2. The message can be processed without updates
 
-        guard !GRDBGroupsV2MessageJobFinder().existsJob(forGroupId: groupContextInfo.groupId, transaction: tx.unwrapGrdbRead) else {
+        guard !GRDBGroupsV2MessageJobFinder().existsJob(forGroupId: groupContextInfo.groupId, transaction: tx) else {
             Logger.warn("Cannot immediately process GV2 message because there are messages queued")
             return false
         }
@@ -959,7 +959,7 @@ public class GroupsV2MessageProcessor {
     fileprivate class func canContextBeProcessedWithoutUpdate(
         groupContext: SSKProtoGroupContextV2,
         groupContextInfo: GroupV2ContextInfo,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> Bool {
         guard let groupThread = TSGroupThread.fetch(groupId: groupContextInfo.groupId, transaction: tx) else {
             return false
@@ -1010,11 +1010,11 @@ public class GroupsV2MessageProcessor {
         return processingQueue.isActivelyProcessing
     }
 
-    public func hasPendingJobs(tx: SDSAnyReadTransaction) -> Bool {
+    public func hasPendingJobs(tx: DBReadTransaction) -> Bool {
         processingQueue.hasPendingJobs(tx: tx)
     }
 
-    public func pendingJobCount(tx: SDSAnyReadTransaction) -> UInt {
+    public func pendingJobCount(tx: DBReadTransaction) -> UInt {
         processingQueue.pendingJobCount(tx: tx)
     }
 
@@ -1035,7 +1035,7 @@ public class GroupsV2MessageProcessor {
         forMessageFrom sourceAci: Aci,
         groupId: Data,
         shouldCheckGroupModel: Bool = true,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> DiscardMode {
         // We want to discard asap to avoid problems with batching.
 
@@ -1056,7 +1056,7 @@ public class GroupsV2MessageProcessor {
         // processing if they correspond to v2 groups of which we are a
         // non-pending member.
         if shouldCheckGroupModel {
-            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
+            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
                 owsFailDebug("Missing localAddress.")
                 return .discard
             }

@@ -92,7 +92,7 @@ extension NewPrivateStoryRecipientsViewController: MemberViewDelegate {
 
     public func memberViewMemberCountForDisplay() -> Int { recipientSet.count }
 
-    public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> Bool { false }
+    public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: DBReadTransaction) -> Bool { false }
 
     public func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String? { nil }
 

@@ -12,7 +12,7 @@ extension TSGroupThread {
     func update(
         with newGroupModel: TSGroupModel,
         shouldUpdateChatListUi: Bool = true,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         let didAvatarChange = newGroupModel.avatarHash == groupModel.avatarHash
         let didNameChange = newGroupModel.groupNameOrDefault == groupModel.groupNameOrDefault
@@ -37,7 +37,7 @@ extension TSGroupThread {
         SSKEnvironment.shared.databaseStorageRef.touch(
             thread: self,
             shouldReindex: didNameChange,
-            transaction: tx
+            tx: tx
         )
 
         if didAvatarChange {
@@ -61,14 +61,14 @@ extension TSGroupThread {
         }
     }
 
-    public static func fetch(forGroupId groupId: GroupIdentifier, tx: SDSAnyReadTransaction) -> TSGroupThread? {
+    public static func fetch(forGroupId groupId: GroupIdentifier, tx: DBReadTransaction) -> TSGroupThread? {
         return fetch(groupId: groupId.serialize().asData, transaction: tx)
     }
 
     @objc
-    func clearGroupSendEndorsementsIfNeeded(oldGroupMembers: [SignalServiceAddress], tx: SDSAnyWriteTransaction) {
+    func clearGroupSendEndorsementsIfNeeded(oldGroupMembers: [SignalServiceAddress], tx: DBWriteTransaction) {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read)
+        let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
         var oldGroupMembers = Set(oldGroupMembers.compactMap(\.serviceId))
         var newGroupMembers = Set(self.groupModel.groupMembers.compactMap(\.serviceId))
         // We don't have a GSE for ourselves, so ignore our own ACI in this check.
@@ -79,7 +79,7 @@ extension TSGroupThread {
         if oldGroupMembers != newGroupMembers {
             let groupSendEndorsementStore = DependenciesBridge.shared.groupSendEndorsementStore
             Logger.info("Clearing GSEs in \(self.uniqueId) due to membership change.")
-            groupSendEndorsementStore.deleteEndorsements(groupThreadId: self.sqliteRowId!, tx: tx.asV2Write)
+            groupSendEndorsementStore.deleteEndorsements(groupThreadId: self.sqliteRowId!, tx: tx)
         }
     }
 }
@@ -89,7 +89,7 @@ extension TSGroupThread {
 public extension TSGroupThread {
     func updateWithStorySendEnabled(
         _ storySendEnabled: Bool,
-        transaction: SDSAnyWriteTransaction,
+        transaction: DBWriteTransaction,
         updateStorageService: Bool = true
     ) {
         let wasStorySendEnabled = self.isStorySendExplicitlyEnabled
@@ -118,7 +118,7 @@ public extension TSGroupThread {
         storyViewMode == .explicit
     }
 
-    func isStorySendEnabled(transaction: SDSAnyReadTransaction) -> Bool {
+    func isStorySendEnabled(transaction: DBReadTransaction) -> Bool {
         if isStorySendExplicitlyEnabled { return true }
         return StoryFinder.latestStoryForThread(self, transaction: transaction) != nil
     }
@@ -161,13 +161,13 @@ public extension TSThreadStoryViewMode {
 extension TSGroupThread {
     override open func update(
         withInsertedMessage message: TSInteraction,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         super.update(withInsertedMessage: message, transaction: tx)
 
         let senderAddress: SignalServiceAddress? = {
             if message is TSOutgoingMessage {
-                return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
+                return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress
             } else if let incomingMessage = message as? TSIncomingMessage {
                 return incomingMessage.authorAddress
             }

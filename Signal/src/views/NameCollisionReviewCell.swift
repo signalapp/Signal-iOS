@@ -35,7 +35,7 @@ extension NameCollision {
         blockingManager: BlockingManager,
         contactsManager: any ContactManager,
         viewControllerForPresentation: UIViewController,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> [NameCollisionCellModel] {
         elements.map {
             return NameCollisionCellModel(
@@ -46,7 +46,7 @@ extension NameCollision {
                 updateTimestamp: $0.latestUpdateTimestamp,
                 thread: thread,
                 mutualGroups: TSGroupThread.groupThreads(with: $0.address, transaction: tx),
-                isVerified: identityManager.verificationState(for: $0.address, tx: tx.asV2Read) == .verified,
+                isVerified: identityManager.verificationState(for: $0.address, tx: tx) == .verified,
                 isConnection: profileManager.isUser(inProfileWhitelist: $0.address, transaction: tx),
                 isBlocked: blockingManager.isAddressBlocked($0.address, transaction: tx),
                 hasPendingRequest: ContactThreadFinder().contactThread(for: $0.address, tx: tx)?.hasPendingMessageRequest(transaction: tx) ?? false,

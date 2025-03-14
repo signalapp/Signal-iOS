@@ -9,7 +9,7 @@ public class OutgoingEditMessageSyncTranscript: OWSOutgoingSentMessageTranscript
 
     public override func prepareDataSyncMessageContent(
         with sentBuilder: SSKProtoSyncMessageSentBuilder,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> Bool {
         guard let message = message as? OutgoingEditMessage else {
             return false

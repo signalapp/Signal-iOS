@@ -15,7 +15,7 @@ public protocol PrivateStoryThreadDeletionManager {
     /// Storage Service) before being purged from disk.
     func deletedAtTimestamp(
         forDistributionListIdentifier identifier: Data,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) -> UInt64?
 
     /// Marks the story distribution list with the given identifier as deleted
@@ -28,15 +28,15 @@ public protocol PrivateStoryThreadDeletionManager {
     func recordDeletedAtTimestamp(
         _ timestamp: UInt64,
         forDistributionListIdentifier identifier: Data,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     )
 
     /// All distribution list identifiers currently marked as deleted.
-    func allDeletedIdentifiers(tx: any DBReadTransaction) -> [Data]
+    func allDeletedIdentifiers(tx: DBReadTransaction) -> [Data]
 
     /// Purges any distribution list identifiers marked as deleted sufficiently
     /// long ago.
-    func cleanUpDeletedTimestamps(tx: any DBWriteTransaction)
+    func cleanUpDeletedTimestamps(tx: DBWriteTransaction)
 }
 
 // MARK: -
@@ -68,7 +68,7 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
 
     func deletedAtTimestamp(
         forDistributionListIdentifier identifier: Data,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) -> UInt64? {
         guard let uniqueId = identifier.uuidString else { return nil }
         return deletedAtTimestampStore.getUInt64(uniqueId, transaction: tx)
@@ -77,7 +77,7 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
     func recordDeletedAtTimestamp(
         _ timestamp: UInt64,
         forDistributionListIdentifier identifier: Data,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard timeInterval(sinceTimestamp: timestamp) < remoteConfigProvider.currentConfig().messageQueueTime else {
             logger.warn("Ignorning stale deleted at timestamp.")
@@ -88,11 +88,11 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
         deletedAtTimestampStore.setUInt64(timestamp, key: uniqueId, transaction: tx)
     }
 
-    func allDeletedIdentifiers(tx: any DBReadTransaction) -> [Data] {
+    func allDeletedIdentifiers(tx: DBReadTransaction) -> [Data] {
         deletedAtTimestampStore.allKeys(transaction: tx).compactMap { UUID(uuidString: $0)?.data }
     }
 
-    func cleanUpDeletedTimestamps(tx: any DBWriteTransaction) {
+    func cleanUpDeletedTimestamps(tx: DBWriteTransaction) {
         var deletedIdentifiers = [Data]()
         for identifier in deletedAtTimestampStore.allKeys(transaction: tx) {
             guard

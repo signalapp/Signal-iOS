@@ -13,11 +13,11 @@ extension MessageSender {
             return devices.map { ProtocolAddress(serviceId, deviceId: $0) }
         }
 
-        init(serviceId: ServiceId, transaction tx: SDSAnyReadTransaction) {
+        init(serviceId: ServiceId, transaction tx: DBReadTransaction) {
             self.serviceId = serviceId
             self.devices = {
                 let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-                return recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Read)?.deviceIds ?? []
+                return recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx)?.deviceIds ?? []
             }()
         }
     }
@@ -64,7 +64,7 @@ extension MessageSender {
         udAccessMap: [ServiceId: OWSUDAccess],
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> (
         senderKeyRecipients: [ServiceId],
         sendSenderKeyMessage: (@Sendable () async -> [(ServiceId, any Error)])?
@@ -225,15 +225,15 @@ extension MessageSender {
                 // doesn't exist. Therefore, don't use this to mark accounts as registered.
                 if !message.isStorySend {
                     let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-                    let recipient = recipientFetcher.fetchOrCreate(serviceId: recipient.serviceId, tx: tx.asV2Write)
+                    let recipient = recipientFetcher.fetchOrCreate(serviceId: recipient.serviceId, tx: tx)
                     let recipientManager = DependenciesBridge.shared.recipientManager
-                    recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: tx.asV2Write)
+                    recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: true, tx: tx)
                 }
 
                 SSKEnvironment.shared.profileManagerRef.didSendOrReceiveMessage(
                     serviceId: recipient.serviceId,
                     localIdentifiers: localIdentifiers,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
 
                 guard
@@ -272,7 +272,7 @@ extension MessageSender {
         udAccessMap: [ServiceId: OWSUDAccess],
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
-        tx writeTx: SDSAnyWriteTransaction
+        tx writeTx: DBWriteTransaction
     ) throws -> PrepareDistributionResult {
         // Here we fetch all of the recipients that need an SKDM.
         // We then construct an OWSMessageSend for each recipient that needs an SKDM.
@@ -291,7 +291,7 @@ extension MessageSender {
         guard let skdmData = SSKEnvironment.shared.senderKeyStoreRef.skdmBytesForThread(
             thread,
             localAci: localIdentifiers.aci,
-            localDeviceId: DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: writeTx.asV2Read),
+            localDeviceId: DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: writeTx),
             tx: writeTx
         ) else {
             throw OWSAssertionError("Couldn't build SKDM")
@@ -563,7 +563,7 @@ extension MessageSender {
         thread: TSThread,
         recipients: [Recipient],
         senderCertificate: SenderCertificate,
-        transaction writeTx: SDSAnyWriteTransaction
+        transaction writeTx: DBWriteTransaction
     ) throws -> Data {
         let groupIdForSending: Data
         if let groupThread = thread as? TSGroupThread {
@@ -589,7 +589,7 @@ extension MessageSender {
             preKeyStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).preKeyStore,
             signedPreKeyStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).signedPreKeyStore,
             kyberPreKeyStore: signalProtocolStoreManager.signalProtocolStore(for: .aci).kyberPreKeyStore,
-            identityStore: identityManager.libSignalStore(for: .aci, tx: writeTx.asV2Write),
+            identityStore: identityManager.libSignalStore(for: .aci, tx: writeTx),
             senderKeyStore: SSKEnvironment.shared.senderKeyStoreRef)
 
         let distributionId = SSKEnvironment.shared.senderKeyStoreRef.distributionIdForSendingToThread(thread, writeTx: writeTx)
@@ -688,7 +688,7 @@ private extension MessageSender {
     /// Also check for missing sessions (shouldn't happen if we've gotten this far, since
     /// SenderKeyStore already said this address has previous Sender Key sends). We should
     /// investigate how this ever happened, but for now fall back to sending another SKDM.
-    static func registrationIdStatus(for serviceId: ServiceId, transaction tx: SDSAnyReadTransaction) -> RegistrationIdStatus {
+    static func registrationIdStatus(for serviceId: ServiceId, transaction tx: DBReadTransaction) -> RegistrationIdStatus {
         let candidateDevices = MessageSender.Recipient(serviceId: serviceId, transaction: tx).devices
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
         for deviceId in candidateDevices {
@@ -697,7 +697,7 @@ private extension MessageSender {
                     let sessionRecord = try sessionStore.loadSession(
                         for: serviceId,
                         deviceId: deviceId,
-                        tx: tx.asV2Read
+                        tx: tx
                     ),
                     sessionRecord.hasCurrentState
                 else { return .noSession }

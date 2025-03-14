@@ -279,7 +279,7 @@ extension SSKSessionStore {
 
 extension SSKSessionStore: LibSignalClient.SessionStore {
     public func loadSession(for address: ProtocolAddress, context: StoreContext) throws -> SessionRecord? {
-        return try loadSession(for: address.serviceId, deviceId: address.deviceId, tx: context.asTransaction.asV2Read)
+        return try loadSession(for: address.serviceId, deviceId: address.deviceId, tx: context.asTransaction)
     }
 
     public func loadExistingSessions(
@@ -293,7 +293,7 @@ extension SSKSessionStore: LibSignalClient.SessionStore {
     }
 
     public func storeSession(_ record: SessionRecord, for address: ProtocolAddress, context: StoreContext) throws {
-        try storeSession(record, for: address.serviceId, deviceId: address.deviceId, tx: context.asTransaction.asV2Write)
+        try storeSession(record, for: address.serviceId, deviceId: address.deviceId, tx: context.asTransaction)
     }
 }
 

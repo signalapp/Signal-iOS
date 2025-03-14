@@ -32,7 +32,7 @@ public extension TSInfoMessage {
     }
 
     @objc
-    func threadMergeDescription(tx: SDSAnyReadTransaction) -> String {
+    func threadMergeDescription(tx: DBReadTransaction) -> String {
         let displayName = contactThreadDisplayName(tx: tx)
         if let phoneNumber = threadMergePhoneNumber {
             let formatString = OWSLocalizedString(
@@ -50,10 +50,10 @@ public extension TSInfoMessage {
         }
     }
 
-    private func contactThreadDisplayName(tx: SDSAnyReadTransaction) -> String {
+    private func contactThreadDisplayName(tx: DBReadTransaction) -> String {
         guard
             let contactThread = DependenciesBridge.shared.threadStore
-                .fetchThread(uniqueId: uniqueThreadId, tx: tx.asV2Read) as? TSContactThread
+                .fetchThread(uniqueId: uniqueThreadId, tx: tx) as? TSContactThread
         else {
             return CommonStrings.unknownUser
         }

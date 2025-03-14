@@ -32,11 +32,11 @@ public class OWSFingerprintBuilder {
     public func fingerprints(
         theirAci: Aci,
         theirRecipientIdentity: OWSRecipientIdentity,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> FingerprintResult? {
         guard
-            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read),
-            let myAciIdentityKey = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)?.keyPair.identityKey,
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx),
+            let myAciIdentityKey = identityManager.identityKeyPair(for: .aci, tx: tx)?.keyPair.identityKey,
             let theirAciIdentityKey = try? theirRecipientIdentity.identityKeyObject
         else {
             owsFailDebug("Missing local properties!")

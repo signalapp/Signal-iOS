@@ -104,13 +104,13 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         )
     }
 
-    public func clearStorageServiceKeys(_ transaction: any DBWriteTransaction) {
+    public func clearStorageServiceKeys(_ transaction: DBWriteTransaction) {
         svrKvStore.removeValue(forKey: Keys.syncedStorageServiceKey, transaction: transaction)
     }
 
     // MARK: - Cleanup
 
-    func cleanupDeadKeys(_ transaction: any DBWriteTransaction) {
+    func cleanupDeadKeys(_ transaction: DBWriteTransaction) {
         svrKvStore.removeValues(
             forKeys: [
                 Keys.legacy_svr1EnclaveName,
@@ -140,11 +140,11 @@ public class SVRLocalStorageMock: SVRLocalStorage {
 
     var isMasterKeyBackedUp: Bool = false
 
-    public func clearStorageServiceKeys(_ transaction: any DBWriteTransaction) {
+    public func clearStorageServiceKeys(_ transaction: DBWriteTransaction) {
         fatalError("not implemented")
     }
 
-    public func getMessageRootBackupKey(tx: any DBReadTransaction) throws -> BackupKey? {
+    public func getMessageRootBackupKey(tx: DBReadTransaction) throws -> BackupKey? {
         fatalError("not implemented")
     }
 

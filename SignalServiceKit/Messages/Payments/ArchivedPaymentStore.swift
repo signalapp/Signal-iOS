@@ -22,7 +22,7 @@ public struct ArchivedPaymentStoreImpl: ArchivedPaymentStore {
         block: @escaping (ArchivedPayment, _ stop: inout Bool) -> Void
     ) {
         do {
-            let cursor = try ArchivedPayment.fetchCursor(tx.databaseConnection)
+            let cursor = try ArchivedPayment.fetchCursor(tx.database)
             var stop = false
             while let archivedPayment = try cursor.next() {
                 block(archivedPayment, &stop)
@@ -47,7 +47,7 @@ public struct ArchivedPaymentStoreImpl: ArchivedPaymentStore {
         do {
             return try ArchivedPayment
                 .filter(Column(ArchivedPayment.CodingKeys.interactionUniqueId) == interactionUniqueId)
-                .fetchOne(tx.databaseConnection)
+                .fetchOne(tx.database)
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
                 userDefaults: CurrentAppContext().appUserDefaults(),
@@ -58,6 +58,6 @@ public struct ArchivedPaymentStoreImpl: ArchivedPaymentStore {
     }
 
     public func insert(_ archivedPayment: ArchivedPayment, tx: DBWriteTransaction) throws {
-        try archivedPayment.insert(tx.databaseConnection)
+        try archivedPayment.insert(tx.database)
     }
 }

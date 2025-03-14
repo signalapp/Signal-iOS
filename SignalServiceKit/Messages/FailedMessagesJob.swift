@@ -33,7 +33,7 @@ public class FailedMessagesJob {
     private func updateFailedMessageIfNecessary(
         _ uniqueId: String,
         count: inout Int,
-        transaction writeTx: SDSAnyWriteTransaction
+        transaction writeTx: DBWriteTransaction
     ) {
         // Preconditions
         guard let message = TSOutgoingMessage.anyFetchOutgoingMessage(uniqueId: uniqueId, transaction: writeTx) else {

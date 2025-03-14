@@ -28,7 +28,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         storyAllowsReplies: Bool,
         isPrivateStorySend: Bool,
         skipSyncTranscript: Bool,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) {
         self.storyMessageId = storyMessage.uniqueId
         self._storyMessageRowId = NSNumber(value: storyMessageRowId)
@@ -54,7 +54,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         storyMessage: StoryMessage,
         storyMessageRowId: Int64,
         skipSyncTranscript: Bool = false,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) {
         let storyAllowsReplies = (thread as? TSPrivateStoryThread)?.allowsReplies ?? true
         let isPrivateStorySend = thread is TSPrivateStoryThread
@@ -86,7 +86,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
 
     public override func buildTranscriptSyncMessage(
         localThread: TSContactThread,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> OWSOutgoingSyncMessage? {
         guard let storyMessage = StoryMessage.anyFetch(uniqueId: storyMessageId, transaction: transaction) else {
             owsFailDebug("Missing story message")
@@ -106,7 +106,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
 
     public override func contentBuilder(
         thread: TSThread,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> SSKProtoContentBuilder? {
         guard let storyMessage = storyMessageProto(with: thread, transaction: transaction) else {
             owsFailDebug("Missing story message proto")
@@ -118,7 +118,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     }
 
     @objc
-    public func storyMessageProto(with thread: TSThread, transaction: SDSAnyReadTransaction) -> SSKProtoStoryMessage? {
+    public func storyMessageProto(with thread: TSThread, transaction: DBReadTransaction) -> SSKProtoStoryMessage? {
         guard let storyMessageId = storyMessageId,
               let storyMessage = StoryMessage.anyFetch(uniqueId: storyMessageId, transaction: transaction) else {
             Logger.warn("Missing story message for outgoing story.")
@@ -134,7 +134,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
                 let storyMessageRowId = storyMessage.id,
                 let attachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
                     for: .storyMessageMedia(storyMessageRowId: storyMessageRowId),
-                    tx: transaction.asV2Read
+                    tx: transaction
                 ),
                 let pointer = attachment.attachment.asTransitTierPointer()
             else {
@@ -175,7 +175,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         }
     }
 
-    public override func anyUpdateOutgoingMessage(transaction: SDSAnyWriteTransaction, block: (TSOutgoingMessage) -> Void) {
+    public override func anyUpdateOutgoingMessage(transaction: DBWriteTransaction, block: (TSOutgoingMessage) -> Void) {
         super.anyUpdateOutgoingMessage(transaction: transaction, block: block)
 
         guard
@@ -202,7 +202,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     public static func createDedupedOutgoingMessages(
         for storyMessage: StoryMessage,
         sendingTo threads: [TSPrivateStoryThread],
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> [OutgoingStoryMessage] {
 
         class OutgoingMessageBuilder {

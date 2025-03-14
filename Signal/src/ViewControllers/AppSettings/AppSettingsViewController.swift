@@ -28,7 +28,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         SSKEnvironment.shared.databaseStorageRef.read { tx in
             updateLocalUserProfile(tx: tx)
             localUsernameState = DependenciesBridge.shared.localUsernameManager
-                .usernameState(tx: tx.asV2Read)
+                .usernameState(tx: tx)
         }
 
         title = OWSLocalizedString("SETTINGS_NAV_BAR_TITLE", comment: "Title for settings activity")
@@ -76,7 +76,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         )
     }
 
-    private func updateLocalUserProfile(tx: SDSAnyReadTransaction) {
+    private func updateLocalUserProfile(tx: DBReadTransaction) {
         let profileManager = SSKEnvironment.shared.profileManagerRef
         self.localUserProfile = profileManager.localUserProfile(tx: tx)
     }

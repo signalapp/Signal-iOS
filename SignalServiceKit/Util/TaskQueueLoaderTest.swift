@@ -390,7 +390,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             return Array(records.get().prefix(Int(count)))
         }
 
-        func removeRecord(_ record: MockTaskRecord, tx: any DBWriteTransaction) throws {
+        func removeRecord(_ record: MockTaskRecord, tx: DBWriteTransaction) throws {
             records.remove(record)
         }
     }

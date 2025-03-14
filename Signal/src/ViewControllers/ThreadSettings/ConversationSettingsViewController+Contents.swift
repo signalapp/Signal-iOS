@@ -304,7 +304,7 @@ extension ConversationSettingsViewController {
         let (visibleBadges, shortName) = SSKEnvironment.shared.databaseStorageRef.read { tx -> ([OWSUserProfileBadgeInfo], String) in
             let visibleBadges: [OWSUserProfileBadgeInfo] = {
                 let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-                guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+                guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
                     return []
                 }
                 let address = OWSUserProfile.internalAddress(for: contactAddress, localIdentifiers: localIdentifiers)

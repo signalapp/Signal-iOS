@@ -162,7 +162,7 @@ class LinkDeviceViewController: OWSViewController {
             // Optimistically set this flag.
             DependenciesBridge.shared.deviceManager.setMightHaveUnknownLinkedDevice(
                 true,
-                transaction: transaction.asV2Write
+                transaction: transaction
             )
         }
 
@@ -188,34 +188,34 @@ class LinkDeviceViewController: OWSViewController {
         }
 
         let provisioningState = SSKEnvironment.shared.databaseStorageRef.write { tx in
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
                 owsFail("Can't provision without an aci & phone number.")
             }
             let identityManager = DependenciesBridge.shared.identityManager
-            guard let aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read) else {
+            guard let aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx) else {
                 owsFail("Can't provision without an aci identity.")
             }
-            guard let pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx.asV2Read) else {
+            guard let pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx) else {
                 owsFail("Can't provision without a pni identity.")
             }
             let areReadReceiptsEnabled = OWSReceiptManager.areReadReceiptsEnabled(transaction: tx)
             let rootKey: OWSDeviceProvisioner.RootKey
             if FeatureFlags.enableAccountEntropyPool {
-                guard let accountEntropyPool = DependenciesBridge.shared.accountKeyStore.getAccountEntropyPool(tx: tx.asV2Read) else {
+                guard let accountEntropyPool = DependenciesBridge.shared.accountKeyStore.getAccountEntropyPool(tx: tx) else {
                     // This should be impossible; the only times you don't have
                     // a AEP are during registration.
                     owsFail("Can't provision without account entropy pool.")
                 }
                 rootKey = .accountEntropyPool(accountEntropyPool)
             } else {
-                guard let masterKey = DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: tx.asV2Read) else {
+                guard let masterKey = DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: tx) else {
                     // This should be impossible; the only times you don't have
                     // a master key are during registration.
                     owsFail("Can't provision without master key.")
                 }
                 rootKey = .masterKey(masterKey)
             }
-            let mrbk = DependenciesBridge.shared.accountKeyStore.getOrGenerateMediaRootBackupKey(tx: tx.asV2Write)
+            let mrbk = DependenciesBridge.shared.accountKeyStore.getOrGenerateMediaRootBackupKey(tx: tx)
             guard let profileKey = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: tx)?.profileKey else {
                 owsFail("Can't provision without a profile key.")
             }

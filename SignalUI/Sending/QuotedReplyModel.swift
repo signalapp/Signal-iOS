@@ -213,10 +213,10 @@ public class QuotedReplyModel {
     public static func build(
         replyingTo storyMessage: StoryMessage,
         reactionEmoji: String? = nil,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> QuotedReplyModel {
         let isOriginalAuthorLocalUser = DependenciesBridge.shared.tsAccountManager
-            .localIdentifiers(tx: transaction.asV2Read)?
+            .localIdentifiers(tx: transaction)?
             .aciAddress
             .isEqualToAddress(storyMessage.authorAddress)
             ?? false
@@ -240,7 +240,7 @@ public class QuotedReplyModel {
                 return DependenciesBridge.shared.attachmentStore
                     .fetchFirstReferencedAttachment(
                         for: .storyMessageMedia(storyMessageRowId: $0),
-                        tx: transaction.asV2Read
+                        tx: transaction
                     )
             } ?? nil
 
@@ -282,7 +282,7 @@ public class QuotedReplyModel {
         storyReplyMessage message: TSMessage,
         storyTimestamp: UInt64?,
         storyAuthorAci: Aci,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> QuotedReplyModel {
         guard
             let storyTimestamp,
@@ -293,7 +293,7 @@ public class QuotedReplyModel {
             )
         else {
             let isOriginalMessageAuthorLocalUser = DependenciesBridge.shared.tsAccountManager
-                .localIdentifiers(tx: transaction.asV2Read)?
+                .localIdentifiers(tx: transaction)?
                 .aci == storyAuthorAci
             return QuotedReplyModel(
                 originalMessageTimestamp: storyTimestamp,
@@ -315,13 +315,13 @@ public class QuotedReplyModel {
     public static func build(
         replyMessage message: TSMessage,
         quotedMessage: TSQuotedMessage,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> QuotedReplyModel {
         func buildQuotedReplyModel(
             originalContent: OriginalContent
         ) -> QuotedReplyModel {
             let isOriginalAuthorLocalUser = DependenciesBridge.shared.tsAccountManager
-                .localIdentifiers(tx: transaction.asV2Read)?
+                .localIdentifiers(tx: transaction)?
                 .aciAddress
                 .isEqualToAddress(quotedMessage.authorAddress)
                 ?? false
@@ -356,7 +356,7 @@ public class QuotedReplyModel {
 
         let attachmentReference = DependenciesBridge.shared.attachmentStore.quotedAttachmentReference(
             for: message,
-            tx: transaction.asV2Read
+            tx: transaction
         )
 
         switch attachmentReference {
@@ -368,7 +368,7 @@ public class QuotedReplyModel {
             // Fetch the full attachment.
             let thumbnailAttachment = DependenciesBridge.shared.attachmentStore.fetch(
                 id: attachmentRef.attachmentRowId,
-                tx: transaction.asV2Read
+                tx: transaction
             )
             let image: UIImage? = {
                 if
@@ -397,11 +397,11 @@ public class QuotedReplyModel {
                 let originalAttachmentReference = DependenciesBridge.shared.attachmentStore
                     .attachmentToUseInQuote(
                         originalMessageRowId: originalMessage.sqliteRowId!,
-                        tx: transaction.asV2Read
+                        tx: transaction
                     ),
                 let originalAttachment = DependenciesBridge.shared.attachmentStore.fetch(
                     id: originalAttachmentReference.attachmentRowId,
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
             {
                 return buildQuotedReplyModel(originalContent: .attachment(

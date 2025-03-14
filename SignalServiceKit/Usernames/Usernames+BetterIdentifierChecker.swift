@@ -28,7 +28,7 @@ extension Usernames {
             forRecipient recipient: SignalRecipient,
             profileManager: any ProfileManager,
             contactManager: any ContactManager,
-            transaction: SDSAnyReadTransaction
+            transaction: DBReadTransaction
         ) -> BetterIdentifierChecker {
             var checker = BetterIdentifierChecker(forRecipient: recipient)
 

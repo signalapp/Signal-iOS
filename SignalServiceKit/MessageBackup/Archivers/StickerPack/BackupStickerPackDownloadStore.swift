@@ -44,7 +44,7 @@ public class BackupStickerPackDownloadStoreImpl: BackupStickerPackDownloadStore 
     public typealias Record = QueuedBackupStickerPackDownload
 
     public func enqueue(packId: Data, packKey: Data, tx: DBWriteTransaction) throws {
-        let db = tx.databaseConnection
+        let db = tx.database
         var record = Record(packId: packId, packKey: packKey)
 
         // If this record is already in the queue, don't insert a second copy
@@ -62,7 +62,7 @@ public class BackupStickerPackDownloadStoreImpl: BackupStickerPackDownloadStore 
         tx: DBReadTransaction,
         block: (QueuedBackupStickerPackDownload) throws -> Void
     ) throws {
-        let db = tx.databaseConnection
+        let db = tx.database
         let cursor = try Record
             .order([Column(Record.CodingKeys.id).desc])
             .fetchCursor(db)
@@ -76,7 +76,7 @@ public class BackupStickerPackDownloadStoreImpl: BackupStickerPackDownloadStore 
         count: UInt,
         tx: DBReadTransaction
     ) throws -> [QueuedBackupStickerPackDownload] {
-        let db = tx.databaseConnection
+        let db = tx.database
         return try Record
             .order([Column(Record.CodingKeys.id).asc])
             .limit(Int(count))
@@ -87,7 +87,7 @@ public class BackupStickerPackDownloadStoreImpl: BackupStickerPackDownloadStore 
         record: QueuedBackupStickerPackDownload,
         tx: DBWriteTransaction
     ) throws {
-        let db = tx.databaseConnection
+        let db = tx.database
         try Record
             .filter(Column(Record.CodingKeys.id) == record.id)
             .deleteAll(db)

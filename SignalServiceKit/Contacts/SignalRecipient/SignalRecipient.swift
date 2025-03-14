@@ -259,7 +259,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
     // MARK: - Fetching
 
-    public static func fetchAllPhoneNumbers(tx: SDSAnyReadTransaction) -> [String: Bool] {
+    public static func fetchAllPhoneNumbers(tx: DBReadTransaction) -> [String: Bool] {
         var result = [String: Bool]()
         Self.anyEnumerate(transaction: tx) { signalRecipient, _ in
             guard let phoneNumber = signalRecipient.phoneNumber?.stringValue else {
@@ -297,14 +297,14 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         self.id = rowID
     }
 
-    public func anyDidInsert(transaction: SDSAnyWriteTransaction) {
+    public func anyDidInsert(transaction: DBWriteTransaction) {
         let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
-        searchableNameIndexer.insert(self, tx: transaction.asV2Write)
+        searchableNameIndexer.insert(self, tx: transaction)
     }
 
-    public func anyDidUpdate(transaction: SDSAnyWriteTransaction) {
+    public func anyDidUpdate(transaction: DBWriteTransaction) {
         let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
-        searchableNameIndexer.update(self, tx: transaction.asV2Write)
+        searchableNameIndexer.update(self, tx: transaction)
     }
 }
 

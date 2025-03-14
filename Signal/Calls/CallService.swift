@@ -559,7 +559,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
         let (adminPasskey, isDeleted) = try databaseStorage.read { tx -> (Data?, Bool) in
-            let callLinkRecord = try callLinkStore.fetch(roomId: callLink.rootKey.deriveRoomId(), tx: tx.asV2Read)
+            let callLinkRecord = try callLinkStore.fetch(roomId: callLink.rootKey.deriveRoomId(), tx: tx)
             return (callLinkRecord?.adminPasskey, callLinkRecord?.isDeleted == true)
         }
         if isDeleted {
@@ -822,7 +822,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 membershipInfo = try self.databaseStorage.read { tx in
                     try self.groupCallManager.groupCallPeekClient.groupMemberInfo(
                         forGroupId: groupThreadCall.groupId,
-                        tx: tx.asV2Read
+                        tx: tx
                     )
                 }
             } catch {
@@ -840,19 +840,19 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     // This used to be called "high bandwidth", but "data" is more accurate.
     private static nonisolated let highDataPreferenceKey = "HighBandwidthPreferenceKey"
 
-    static nonisolated func setHighDataInterfaces(_ interfaceSet: NetworkInterfaceSet, writeTx: SDSAnyWriteTransaction) {
+    static nonisolated func setHighDataInterfaces(_ interfaceSet: NetworkInterfaceSet, writeTx: DBWriteTransaction) {
         Logger.info("Updating preferred low data interfaces: \(interfaceSet.rawValue)")
 
-        keyValueStore.setUInt(interfaceSet.rawValue, key: highDataPreferenceKey, transaction: writeTx.asV2Write)
+        keyValueStore.setUInt(interfaceSet.rawValue, key: highDataPreferenceKey, transaction: writeTx)
         writeTx.addSyncCompletion {
             NotificationCenter.default.postNotificationNameAsync(callServicePreferencesDidChange, object: nil)
         }
     }
 
-    static nonisolated func highDataNetworkInterfaces(readTx: SDSAnyReadTransaction) -> NetworkInterfaceSet {
+    static nonisolated func highDataNetworkInterfaces(readTx: DBReadTransaction) -> NetworkInterfaceSet {
         guard let highDataPreference = keyValueStore.getUInt(
                 highDataPreferenceKey,
-                transaction: readTx.asV2Read) else { return .wifiAndCellular }
+                transaction: readTx) else { return .wifiAndCellular }
 
         return NetworkInterfaceSet(rawValue: highDataPreference)
     }
@@ -1451,7 +1451,7 @@ extension CallService: CallManagerDelegate {
                 ringId: ringId,
                 ringUpdate: update,
                 ringUpdateSender: senderAci,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 
@@ -1485,7 +1485,7 @@ extension CallService: CallManagerDelegate {
 
             databaseStorage.asyncWrite { transaction in
                 do {
-                    try CancelledGroupRing(id: ringId).insert(transaction.unwrapGrdbWrite.database)
+                    try CancelledGroupRing(id: ringId).insert(transaction.database)
                     try CancelledGroupRing.deleteExpired(expiration: Date().addingTimeInterval(-30 * .minute),
                                                          transaction: transaction)
                 } catch {
@@ -1527,7 +1527,7 @@ extension CallService: CallManagerDelegate {
             }
 
             do {
-                if try CancelledGroupRing.exists(transaction.unwrapGrdbRead.database, key: ringId) {
+                if try CancelledGroupRing.exists(transaction.database, key: ringId) {
                     return .cancel
                 }
             } catch {

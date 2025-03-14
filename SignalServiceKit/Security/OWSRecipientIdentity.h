@@ -25,7 +25,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSVerificationState) {
     OWSVerificationStateDefaultAcknowledged = 3,
 };
 
-@class SDSAnyWriteTransaction;
+@class DBWriteTransaction;
 @class SSKProtoVerified;
 @class SignalServiceAddress;
 
@@ -47,7 +47,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *
 @property (atomic, readonly) OWSVerificationState verificationState;
 
 - (void)updateWithVerificationState:(OWSVerificationState)verificationState
-                        transaction:(SDSAnyWriteTransaction *)transaction;
+                        transaction:(DBWriteTransaction *)transaction;
 
 @property (atomic, readonly) BOOL wasIdentityVerified;
 

@@ -54,7 +54,7 @@ public struct TSPaymentsActivationRequestModel: Codable, FetchableRecord, Persis
     public static func createIfNotExists(
         threadUniqueId: String,
         senderAci: Aci,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         let sql = """
             SELECT EXISTS (
@@ -66,12 +66,12 @@ public struct TSPaymentsActivationRequestModel: Codable, FetchableRecord, Persis
             threadUniqueId
         ]
         do {
-            let exists = try Bool.fetchOne(transaction.unwrapGrdbWrite.database, sql: sql, arguments: arguments) ?? false
+            let exists = try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
             if exists {
                 return
             }
             let model = Self.init(threadUniqueId: threadUniqueId, senderAci: senderAci)
-            try model.insert(transaction.unwrapGrdbWrite.database)
+            try model.insert(transaction.database)
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
                 userDefaults: CurrentAppContext().appUserDefaults(),
@@ -82,12 +82,12 @@ public struct TSPaymentsActivationRequestModel: Codable, FetchableRecord, Persis
     }
 
     public static func allThreadsWithPaymentActivationRequests(
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [TSThread] {
         // This could be a SQL join, but the table is really small
         // so its fine to do an in-memory join.
         do {
-            return try TSPaymentsActivationRequestModel.fetchAll(transaction.unwrapGrdbRead.database)
+            return try TSPaymentsActivationRequestModel.fetchAll(transaction.database)
                 .compactMap { model in
                     return TSThread.anyFetch(uniqueId: model.threadUniqueId, transaction: transaction)
                 }

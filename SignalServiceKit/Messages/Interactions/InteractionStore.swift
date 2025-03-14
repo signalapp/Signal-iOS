@@ -114,11 +114,11 @@ public class InteractionStoreImpl: InteractionStore {
 
     // MARK: -
 
-    public func exists(uniqueId: String, tx: any DBReadTransaction) -> Bool {
+    public func exists(uniqueId: String, tx: DBReadTransaction) -> Bool {
         return TSInteraction.anyExists(uniqueId: uniqueId, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func fetchAllUniqueIds(tx: any DBReadTransaction) -> [String] {
+    public func fetchAllUniqueIds(tx: DBReadTransaction) -> [String] {
         return TSInteraction.anyAllUniqueIds(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
@@ -167,7 +167,7 @@ public class InteractionStoreImpl: InteractionStore {
         block: (TSInteraction) throws -> Bool
     ) throws {
         let cursor = TSInteraction.grdbFetchCursor(
-            transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
+            transaction: SDSDB.shimOnlyBridge(tx)
         )
 
         while
@@ -190,7 +190,7 @@ public class InteractionStoreImpl: InteractionStore {
         if let maxRowIdInclusive {
             query = query.filter(idColumn <= maxRowIdInclusive)
         }
-        let cursor = try query.fetchCursor(tx.databaseConnection)
+        let cursor = try query.fetchCursor(tx.database)
             .map(TSInteraction.fromRecord(_:))
         return AnyCursor(cursor)
     }
@@ -289,11 +289,11 @@ open class MockInteractionStore: InteractionStore {
 
     // MARK: -
 
-    public func exists(uniqueId: String, tx: any DBReadTransaction) -> Bool {
+    public func exists(uniqueId: String, tx: DBReadTransaction) -> Bool {
         return insertedInteractions.contains { $0.uniqueId == uniqueId }
     }
 
-    public func fetchAllUniqueIds(tx: any DBReadTransaction) -> [String] {
+    public func fetchAllUniqueIds(tx: DBReadTransaction) -> [String] {
         return insertedInteractions.map { $0.uniqueId }
     }
 
@@ -469,7 +469,7 @@ open class MockInteractionStore: InteractionStore {
         note: String?,
         tx: DBReadTransaction
     ) -> OWSOutgoingArchivedPaymentMessage {
-        owsFail("Not implemented, because this message type really needs an SDSAnyReadTransaction to be initialized, and at the time of writing no caller cares.")
+        owsFail("Not implemented, because this message type really needs an DBReadTransaction to be initialized, and at the time of writing no caller cares.")
     }
 
     open func insertOrReplacePlaceholder(

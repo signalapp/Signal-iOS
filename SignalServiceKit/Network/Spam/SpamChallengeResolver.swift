@@ -296,7 +296,7 @@ extension SpamChallengeResolver {
             challenges = try SSKEnvironment.shared.databaseStorageRef.read { readTx in
                 try keyValueStore.getCodableValue(
                     forKey: outstandingChallengesKey,
-                    transaction: readTx.asV2Read)
+                    transaction: readTx)
             } ?? []
         } catch {
             owsFailDebug("Failed to fetch saved challenges")
@@ -312,9 +312,9 @@ extension SpamChallengeResolver {
         do {
             try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
                 if let challenges = challenges {
-                    try keyValueStore.setCodable(challenges, key: outstandingChallengesKey, transaction: writeTx.asV2Write)
+                    try keyValueStore.setCodable(challenges, key: outstandingChallengesKey, transaction: writeTx)
                 } else {
-                    keyValueStore.removeValue(forKey: outstandingChallengesKey, transaction: writeTx.asV2Write)
+                    keyValueStore.removeValue(forKey: outstandingChallengesKey, transaction: writeTx)
                 }
             }
         } catch {

@@ -65,19 +65,19 @@ public enum ImageQualityLevel: UInt, Comparable {
     private static let keyValueStore = KeyValueStore(collection: "ImageQualityLevel")
     private static var userSelectedHighQualityKey: String { "defaultQuality" }
 
-    public static func resolvedQuality(tx: SDSAnyReadTransaction) -> ImageQualityLevel {
+    public static func resolvedQuality(tx: DBReadTransaction) -> ImageQualityLevel {
         // If the max quality we allow is less than the stored preference,
         // we have to restrict ourselves to the max allowed.
         return min(_resolvedQuality(tx: tx), maximumForCurrentAppContext)
     }
 
-    private static func _resolvedQuality(tx: SDSAnyReadTransaction) -> ImageQualityLevel {
+    private static func _resolvedQuality(tx: DBReadTransaction) -> ImageQualityLevel {
         let isHighQuality: Bool = {
             // All that matters is "did the user choose high quality explicity?". If
             // they didn't, we always fall back to the current server-provided value
             // for standard quality. In the past, we stored low/medium values
             // explicitly, but this was wrong.
-            guard let rawValue = keyValueStore.getUInt(userSelectedHighQualityKey, transaction: tx.asV2Read) else {
+            guard let rawValue = keyValueStore.getUInt(userSelectedHighQualityKey, transaction: tx) else {
                 return false
             }
             return ImageQualityLevel(rawValue: rawValue) == .high
@@ -86,15 +86,15 @@ public enum ImageQualityLevel: UInt, Comparable {
             return .high
         }
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        let localPhoneNumber = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.phoneNumber
+        let localPhoneNumber = tsAccountManager.localIdentifiers(tx: tx)?.phoneNumber
         return remoteDefault(localPhoneNumber: localPhoneNumber)
     }
 
-    public static func setUserSelectedHighQuality(_ isHighQuality: Bool, tx: SDSAnyWriteTransaction) {
+    public static func setUserSelectedHighQuality(_ isHighQuality: Bool, tx: DBWriteTransaction) {
         if isHighQuality {
-            keyValueStore.setUInt(ImageQualityLevel.three.rawValue, key: userSelectedHighQualityKey, transaction: tx.asV2Write)
+            keyValueStore.setUInt(ImageQualityLevel.three.rawValue, key: userSelectedHighQualityKey, transaction: tx)
         } else {
-            keyValueStore.removeValue(forKey: userSelectedHighQualityKey, transaction: tx.asV2Write)
+            keyValueStore.removeValue(forKey: userSelectedHighQualityKey, transaction: tx)
         }
     }
 

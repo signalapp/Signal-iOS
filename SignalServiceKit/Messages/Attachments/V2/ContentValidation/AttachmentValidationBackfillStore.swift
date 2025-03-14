@@ -13,7 +13,7 @@ public class AttachmentValidationBackfillStore {
     public init() {}
 
     /// If returns true, AttachmentValidationBackfillMigrator should be run.
-    public func needsToRun(tx: any DBReadTransaction) throws -> Bool {
+    public func needsToRun(tx: DBReadTransaction) throws -> Bool {
         if backfillsThatNeedEnqueuing(tx: tx).isEmpty.negated {
             return true
         }
@@ -45,8 +45,8 @@ public class AttachmentValidationBackfillStore {
         kvStore.setInt(newValue.rawValue, key: Constants.enqueuedUpToBackfillKey, transaction: tx)
     }
 
-    internal func enqueue(attachmentId: Attachment.IDType, tx: SDSAnyWriteTransaction) throws {
-        try tx.unwrapGrdbWrite.database.execute(
+    internal func enqueue(attachmentId: Attachment.IDType, tx: DBWriteTransaction) throws {
+        try tx.database.execute(
             sql: "INSERT INTO \(Constants.queueTableName) VALUES(?);",
             arguments: [attachmentId]
         )
@@ -54,9 +54,9 @@ public class AttachmentValidationBackfillStore {
 
     /// Get the next batch of attachment IDs to re-validate.
     /// If returns an empty array, there's nothing left to re-validate and we're done.
-    internal func getNextAttachmentIdBatch(tx: SDSAnyReadTransaction) throws -> [Attachment.IDType] {
+    internal func getNextAttachmentIdBatch(tx: DBReadTransaction) throws -> [Attachment.IDType] {
         return try Attachment.IDType.fetchAll(
-            tx.unwrapGrdbRead.database,
+            tx.database,
             sql: """
                 SELECT \(Constants.queueIdColumn.name)
                 FROM \(Constants.queueTableName)
@@ -67,8 +67,8 @@ public class AttachmentValidationBackfillStore {
         )
     }
 
-    internal func dequeue(attachmentId: Attachment.IDType, tx: SDSAnyWriteTransaction) throws {
-        try tx.unwrapGrdbWrite.database.execute(
+    internal func dequeue(attachmentId: Attachment.IDType, tx: DBWriteTransaction) throws {
+        try tx.database.execute(
             sql: "DELETE FROM \(Constants.queueTableName) WHERE \(Constants.queueIdColumn.name) = ?;",
             arguments: [attachmentId]
         )

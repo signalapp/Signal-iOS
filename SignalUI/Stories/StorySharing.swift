@@ -43,7 +43,7 @@ public enum StorySharing {
         let hydratedBody = SSKEnvironment.shared.databaseStorageRef.read {
             return messageBody
                 .hydrating(
-                    mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: $0.asV2Read)
+                    mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: $0)
                 )
                 .asStyleOnlyBody()
         }

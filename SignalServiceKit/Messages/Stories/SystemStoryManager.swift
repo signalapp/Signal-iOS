@@ -37,7 +37,7 @@ public class OnboardingStoryManagerStoryMessageFactory {
     public class func createFromSystemAuthor(
         attachmentSource: AttachmentDataSource,
         timestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> StoryMessage {
         return try StoryMessage.createFromSystemAuthor(
             attachmentSource: attachmentSource,
@@ -132,7 +132,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         }.asVoid()
     }
 
-    public func isOnboardingStoryRead(transaction: SDSAnyReadTransaction) -> Bool {
+    public func isOnboardingStoryRead(transaction: DBReadTransaction) -> Bool {
         if onboardingStoryReadStatus(transaction: transaction) {
             return true
         }
@@ -140,7 +140,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         return isOnboardingStoryViewed(transaction: transaction)
     }
 
-    public func isOnboardingStoryViewed(transaction: SDSAnyReadTransaction) -> Bool {
+    public func isOnboardingStoryViewed(transaction: DBReadTransaction) -> Bool {
         let status = onboardingStoryViewStatus(transaction: transaction)
         switch status.status {
         case .notViewed:
@@ -150,13 +150,13 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         }
     }
 
-    public func setHasReadOnboardingStory(transaction: SDSAnyWriteTransaction, updateStorageService: Bool) {
+    public func setHasReadOnboardingStory(transaction: DBWriteTransaction, updateStorageService: Bool) {
         try? setOnboardingStoryRead(transaction: transaction, updateStorageService: updateStorageService)
     }
 
     public func setHasViewedOnboardingStory(
         source: OnboardingStoryViewSource,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws {
         switch source {
         case .local(let timestamp, let updateStorageService):
@@ -170,32 +170,32 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         }
     }
 
-    private func setHasViewedOnboardingStoryOnAnotherDevice(transaction: SDSAnyWriteTransaction) {
+    private func setHasViewedOnboardingStoryOnAnotherDevice(transaction: DBWriteTransaction) {
         try? setOnboardingStoryViewedOnAnotherDevice(transaction: transaction)
         self.cleanUpOnboardingStoryIfNeeded()
     }
 
     // MARK: Group story education
 
-    public func isGroupStoryEducationSheetViewed(tx: SDSAnyReadTransaction) -> Bool {
+    public func isGroupStoryEducationSheetViewed(tx: DBReadTransaction) -> Bool {
         return groupStoryEducationStore.hasValue(
             Constants.kvStoreGroupStoryEducationSheetViewedKey,
-            transaction: tx.asV2Read
+            transaction: tx
         )
     }
 
-    public func setGroupStoryEducationSheetViewed(tx: SDSAnyWriteTransaction) {
+    public func setGroupStoryEducationSheetViewed(tx: DBWriteTransaction) {
         groupStoryEducationStore.setBool(
             true,
             key: Constants.kvStoreGroupStoryEducationSheetViewedKey,
-            transaction: tx.asV2Write
+            transaction: tx
         )
     }
 
     // MARK: OnboardingOverlay state
 
-    public func isOnboardingOverlayViewed(transaction: SDSAnyReadTransaction) -> Bool {
-        if overlayKvStore.getBool(Constants.kvStoreOnboardingOverlayViewedKey, defaultValue: false, transaction: transaction.asV2Read) {
+    public func isOnboardingOverlayViewed(transaction: DBReadTransaction) -> Bool {
+        if overlayKvStore.getBool(Constants.kvStoreOnboardingOverlayViewedKey, defaultValue: false, transaction: transaction) {
             return true
         }
 
@@ -208,8 +208,8 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         return false
     }
 
-    public func setOnboardingOverlayViewed(value: Bool, transaction: SDSAnyWriteTransaction) {
-        overlayKvStore.setBool(value, key: Constants.kvStoreOnboardingOverlayViewedKey, transaction: transaction.asV2Write)
+    public func setOnboardingOverlayViewed(value: Bool, transaction: DBWriteTransaction) {
+        overlayKvStore.setBool(value, key: Constants.kvStoreOnboardingOverlayViewedKey, transaction: transaction)
     }
 
     // MARK: Hidden State
@@ -224,7 +224,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         stateChangeObservers.removeAll(where: { $0 == observer })
     }
 
-    public func setSystemStoriesHidden(_ hidden: Bool, transaction: SDSAnyWriteTransaction) {
+    public func setSystemStoriesHidden(_ hidden: Bool, transaction: DBWriteTransaction) {
         var changedRowIds = [Int64]()
         defer {
             schedulers.main.async {
@@ -483,7 +483,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
     private func cleanUpOnboardingStoriesIfNeeded(
         messageUniqueIds: [String]?,
         forceDeleteIfDownloaded: Bool,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws {
         var forceDelete = forceDeleteIfDownloaded
 
@@ -601,7 +601,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
     /// Returns unique Ids for the created messages. Fails if any one message creation fails.
     private func createStoryMessages(
         attachmentSources: [AttachmentDataSource],
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> [String] {
         let baseTimestamp = Date().ows_millisecondsSince1970
         let ids = try attachmentSources.lazy.enumerated().map { (i, attachmentSource) throws -> String in
@@ -620,15 +620,15 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
 
     // MARK: Onboarding Story Read Status
 
-    private func onboardingStoryReadStatus(transaction: SDSAnyReadTransaction) -> Bool {
-        return kvStore.getBool(Constants.kvStoreOnboardingStoryIsReadKey, defaultValue: false, transaction: transaction.asV2Read)
+    private func onboardingStoryReadStatus(transaction: DBReadTransaction) -> Bool {
+        return kvStore.getBool(Constants.kvStoreOnboardingStoryIsReadKey, defaultValue: false, transaction: transaction)
     }
 
-    private func setOnboardingStoryRead(transaction: SDSAnyWriteTransaction, updateStorageService: Bool) throws {
+    private func setOnboardingStoryRead(transaction: DBWriteTransaction, updateStorageService: Bool) throws {
         guard !onboardingStoryReadStatus(transaction: transaction) else {
             return
         }
-        kvStore.setBool(true, key: Constants.kvStoreOnboardingStoryIsReadKey, transaction: transaction.asV2Write)
+        kvStore.setBool(true, key: Constants.kvStoreOnboardingStoryIsReadKey, transaction: transaction)
         if updateStorageService {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
@@ -649,9 +649,9 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         let viewedTimestamp: UInt64?
     }
 
-    private func onboardingStoryViewStatus(transaction: SDSAnyReadTransaction) -> OnboardingStoryViewStatus {
+    private func onboardingStoryViewStatus(transaction: DBReadTransaction) -> OnboardingStoryViewStatus {
         guard
-            let rawStatus = kvStore.getData(Constants.kvStoreOnboardingStoryViewStatusKey, transaction: transaction.asV2Read),
+            let rawStatus = kvStore.getData(Constants.kvStoreOnboardingStoryViewStatusKey, transaction: transaction),
             let status = try? JSONDecoder().decode(OnboardingStoryViewStatus.self, from: rawStatus)
         else {
             return OnboardingStoryViewStatus(status: .notViewed, viewedTimestamp: nil)
@@ -659,11 +659,11 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         return status
     }
 
-    private func setOnboardingStoryViewedOnAnotherDevice(transaction: SDSAnyWriteTransaction) throws {
+    private func setOnboardingStoryViewedOnAnotherDevice(transaction: DBWriteTransaction) throws {
         try kvStore.setData(
             JSONEncoder().encode(OnboardingStoryViewStatus(status: .viewedOnAnotherDevice, viewedTimestamp: nil)),
             key: Constants.kvStoreOnboardingStoryViewStatusKey,
-            transaction: transaction.asV2Write
+            transaction: transaction
         )
         NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
     }
@@ -671,7 +671,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
     private func setOnboardingStoryViewedOnThisDevice(
         atTimestamp timestamp: UInt64,
         shouldUpdateStorageService: Bool,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws {
         let oldStatus = onboardingStoryViewStatus(transaction: transaction)
         guard oldStatus.status == .notViewed else {
@@ -680,7 +680,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         try kvStore.setData(
             JSONEncoder().encode(OnboardingStoryViewStatus(status: .viewedOnThisDevice, viewedTimestamp: timestamp)),
             key: Constants.kvStoreOnboardingStoryViewStatusKey,
-            transaction: transaction.asV2Write
+            transaction: transaction
         )
         if shouldUpdateStorageService {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
@@ -698,9 +698,9 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         static var requiresDownload: Self { return .init(messageUniqueIds: nil) }
     }
 
-    private func onboardingStoryDownloadStatus(transaction: SDSAnyReadTransaction) -> OnboardingStoryDownloadStatus {
+    private func onboardingStoryDownloadStatus(transaction: DBReadTransaction) -> OnboardingStoryDownloadStatus {
         guard
-            let rawStatus = kvStore.getData(Constants.kvStoreOnboardingStoryDownloadStatusKey, transaction: transaction.asV2Read),
+            let rawStatus = kvStore.getData(Constants.kvStoreOnboardingStoryDownloadStatusKey, transaction: transaction),
             let status = try? JSONDecoder().decode(OnboardingStoryDownloadStatus.self, from: rawStatus)
         else {
             return .requiresDownload
@@ -710,13 +710,13 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
 
     internal func markOnboardingStoryDownloaded(
         messageUniqueIds: [String],
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws {
         let status = OnboardingStoryDownloadStatus(messageUniqueIds: messageUniqueIds)
         try kvStore.setData(
             JSONEncoder().encode(status),
             key: Constants.kvStoreOnboardingStoryDownloadStatusKey,
-            transaction: transaction.asV2Write
+            transaction: transaction
         )
         DispatchQueue.main.async {
             self.beginObservingOnboardingStoryEventsIfNeeded(downloadStatus: status)
@@ -726,13 +726,13 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
 
     // MARK: System Story Hidden Status
 
-    public func areSystemStoriesHidden(transaction: SDSAnyReadTransaction) -> Bool {
+    public func areSystemStoriesHidden(transaction: DBReadTransaction) -> Bool {
         // No need to make this serial with the other calls, db transactions cover us.
-        kvStore.getBool(Constants.kvStoreHiddenStateKey, defaultValue: false, transaction: transaction.asV2Read)
+        kvStore.getBool(Constants.kvStoreHiddenStateKey, defaultValue: false, transaction: transaction)
     }
 
-    private func setSystemStoryHidden(_ hidden: Bool, transaction: SDSAnyWriteTransaction) {
-        kvStore.setBool(hidden, key: Constants.kvStoreHiddenStateKey, transaction: transaction.asV2Write)
+    private func setSystemStoryHidden(_ hidden: Bool, transaction: DBWriteTransaction) {
+        kvStore.setBool(hidden, key: Constants.kvStoreHiddenStateKey, transaction: transaction)
         NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
     }
 

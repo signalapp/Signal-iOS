@@ -195,7 +195,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     }
 }
 
-- (void)debugonly_markAsReadNowWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)debugonly_markAsReadNowWithTransaction:(DBWriteTransaction *)transaction
 {
     // In various tests and debug UI we often want to make messages as already read.
     // We want to do this without triggering sending read receipts, so we pretend it was
@@ -211,7 +211,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                        thread:(TSThread *)thread
                  circumstance:(OWSReceiptCircumstance)circumstance
      shouldClearNotifications:(BOOL)shouldClearNotifications
-                  transaction:(SDSAnyWriteTransaction *)transaction
+                  transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -247,7 +247,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 - (void)markAsViewedAtTimestamp:(uint64_t)viewedTimestamp
                          thread:(TSThread *)thread
                    circumstance:(OWSReceiptCircumstance)circumstance
-                    transaction:(SDSAnyWriteTransaction *)transaction
+                    transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 

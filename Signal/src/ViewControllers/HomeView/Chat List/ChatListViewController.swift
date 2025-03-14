@@ -761,19 +761,19 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             mostRecentSubscriptionPaymentMethod,
             probablyHasCurrentSubscription
         ) = SSKEnvironment.shared.databaseStorageRef.read { transaction in (
-            donationReceiptCredentialResultStore.getRedemptionSuccess(successMode: .oneTimeBoost, tx: transaction.asV2Read),
-            donationReceiptCredentialResultStore.getRedemptionSuccess(successMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
+            donationReceiptCredentialResultStore.getRedemptionSuccess(successMode: .oneTimeBoost, tx: transaction),
+            donationReceiptCredentialResultStore.getRedemptionSuccess(successMode: .recurringSubscriptionInitiation, tx: transaction),
 
-            donationReceiptCredentialResultStore.hasPresentedSuccess(successMode: .oneTimeBoost, tx: transaction.asV2Read),
-            donationReceiptCredentialResultStore.hasPresentedSuccess(successMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
+            donationReceiptCredentialResultStore.hasPresentedSuccess(successMode: .oneTimeBoost, tx: transaction),
+            donationReceiptCredentialResultStore.hasPresentedSuccess(successMode: .recurringSubscriptionInitiation, tx: transaction),
 
-            donationReceiptCredentialResultStore.getRequestError(errorMode: .oneTimeBoost, tx: transaction.asV2Read),
-            donationReceiptCredentialResultStore.getRequestError(errorMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
-            donationReceiptCredentialResultStore.getRequestError(errorMode: .recurringSubscriptionRenewal, tx: transaction.asV2Read),
+            donationReceiptCredentialResultStore.getRequestError(errorMode: .oneTimeBoost, tx: transaction),
+            donationReceiptCredentialResultStore.getRequestError(errorMode: .recurringSubscriptionInitiation, tx: transaction),
+            donationReceiptCredentialResultStore.getRequestError(errorMode: .recurringSubscriptionRenewal, tx: transaction),
 
-            donationReceiptCredentialResultStore.hasPresentedError(errorMode: .oneTimeBoost, tx: transaction.asV2Read),
-            donationReceiptCredentialResultStore.hasPresentedError(errorMode: .recurringSubscriptionInitiation, tx: transaction.asV2Read),
-            donationReceiptCredentialResultStore.hasPresentedError(errorMode: .recurringSubscriptionRenewal, tx: transaction.asV2Read),
+            donationReceiptCredentialResultStore.hasPresentedError(errorMode: .oneTimeBoost, tx: transaction),
+            donationReceiptCredentialResultStore.hasPresentedError(errorMode: .recurringSubscriptionInitiation, tx: transaction),
+            donationReceiptCredentialResultStore.hasPresentedError(errorMode: .recurringSubscriptionRenewal, tx: transaction),
 
             DonationSubscriptionManager.getSubscriberID(transaction: transaction),
             DonationSubscriptionManager.mostRecentlyExpiredBadgeID(transaction: transaction),
@@ -855,7 +855,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             SSKEnvironment.shared.databaseStorageRef.write { tx in
                 self.donationReceiptCredentialResultStore.setHasPresentedError(
                     errorMode: errorMode,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
         }
@@ -1051,7 +1051,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
     func configureUnreadPaymentsBannerSingle(_ paymentsReminderView: UIView,
                                              paymentModel: TSPaymentModel,
-                                             transaction: SDSAnyReadTransaction) {
+                                             transaction: DBReadTransaction) {
 
         guard paymentModel.isIncoming,
               !paymentModel.isUnidentified,
@@ -1276,7 +1276,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         let shouldShowPrompt = SSKEnvironment.shared.databaseStorageRef.read { tx in
             // If we've shown the prompt recently, don't show it again.
-            let promptCount = keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx.asV2Read)
+            let promptCount = keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx)
             let promptBackoff: TimeInterval = {
                 switch promptCount {
                 case 0:
@@ -1291,7 +1291,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                     return 96 * .hour
                 }
             }()
-            let mostRecentDate = keyValueStore.getDate(mostRecentDateKey, transaction: tx.asV2Read)
+            let mostRecentDate = keyValueStore.getDate(mostRecentDateKey, transaction: tx)
             if let mostRecentDate, -mostRecentDate.timeIntervalSinceNow < promptBackoff {
                 return false
             }
@@ -1340,11 +1340,11 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         self.present(actionSheet, animated: true)
 
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            keyValueStore.setDate(promptDate, key: mostRecentDateKey, transaction: tx.asV2Write)
+            keyValueStore.setDate(promptDate, key: mostRecentDateKey, transaction: tx)
             keyValueStore.setInt(
-                keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx.asV2Read) + 1,
+                keyValueStore.getInt(promptCountKey, defaultValue: 0, transaction: tx) + 1,
                 key: promptCountKey,
-                transaction: tx.asV2Write
+                transaction: tx
             )
         }
     }
@@ -1620,7 +1620,7 @@ extension ChatListViewController {
                 tx: tx
             )
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
                 return []
             }
             return Array(

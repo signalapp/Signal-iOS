@@ -90,7 +90,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
         }
         try! OrphanedBackupAttachment
             .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
-            .deleteAll(tx.databaseConnection)
+            .deleteAll(tx.database)
         for type in MediaTierEncryptionType.allCases {
             do {
                 let mediaId = try messageBackupKeyMaterial.mediaEncryptionMetadata(
@@ -100,7 +100,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
                 ).mediaId
                 try! OrphanedBackupAttachment
                     .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == mediaId)
-                    .deleteAll(tx.databaseConnection)
+                    .deleteAll(tx.database)
             } catch let messageBackupKeyMaterialError {
                 switch messageBackupKeyMaterialError {
                 case .missingMediaRootBackupKey:
@@ -132,7 +132,7 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
     // MARK: - Observation
 
     private func startObserving() {
-        db.add(transactionObserver: tableObserver)
+        db.add(transactionObserver: tableObserver, extent: .observerLifetime)
 
         NotificationCenter.default.addObserver(
             self,
@@ -387,15 +387,15 @@ public class OrphanedBackupAttachmentManagerImpl: OrphanedBackupAttachmentManage
             return .success
         }
 
-        func didSucceed(record: Store.Record, tx: any DBWriteTransaction) throws {
+        func didSucceed(record: Store.Record, tx: DBWriteTransaction) throws {
             Logger.info("Finished deleting backup attachment \(record.id)")
         }
 
-        func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: any DBWriteTransaction) throws {
+        func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
             Logger.warn("Failed deleting backup attachment \(record.id), isRetryable: \(isRetryable), error: \(error)")
         }
 
-        func didCancel(record: Store.Record, tx: any DBWriteTransaction) throws {
+        func didCancel(record: Store.Record, tx: DBWriteTransaction) throws {
             Logger.info("Cancelled deleting backup attachment \(record.id)")
         }
     }

@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
                           additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
                             explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
                              skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
-                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+                                   transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                           uniqueId:(NSString *)uniqueId
@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        amount:(nullable NSString *)amount
                                                           fee:(nullable NSString *)fee
                                                          note:(nullable NSString *)note
-                                                  transaction:(SDSAnyReadTransaction *)transaction
+                                                  transaction:(DBReadTransaction *)transaction
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initOutgoingArchivedPaymentMessageWithBuilder:(TSOutgoingMessageBuilder *)messageBuilder

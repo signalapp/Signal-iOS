@@ -121,7 +121,7 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
 
     private func _sendSyncMessage(
         outgoingCallEvent: OutgoingCallEvent,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
             owsFailDebug("Missing local thread for sync message!")

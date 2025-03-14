@@ -58,7 +58,7 @@ public struct ReportSpamUIUtils {
         return actionSheet
     }
 
-    public static func blockAndReport(in thread: TSThread, tx: SDSAnyWriteTransaction) {
+    public static func blockAndReport(in thread: TSThread, tx: DBWriteTransaction) {
         SSKEnvironment.shared.blockingManagerRef.addBlockedThread(
             thread,
             blockMode: .localShouldNotLeaveGroups,
@@ -73,7 +73,7 @@ public struct ReportSpamUIUtils {
         )
     }
 
-    public static func report(in thread: TSThread, tx: SDSAnyWriteTransaction) {
+    public static func report(in thread: TSThread, tx: DBWriteTransaction) {
         Self.reportSpam(in: thread, tx: tx)
 
         SSKEnvironment.shared.syncManagerRef.sendMessageRequestResponseSyncMessage(
@@ -82,7 +82,7 @@ public struct ReportSpamUIUtils {
         )
     }
 
-    private static func reportSpam(in thread: TSThread, tx: SDSAnyWriteTransaction) {
+    private static func reportSpam(in thread: TSThread, tx: DBWriteTransaction) {
         var aci: Aci?
         var isGroup = false
         if let contactThread = thread as? TSContactThread {
@@ -90,7 +90,7 @@ public struct ReportSpamUIUtils {
         } else if let groupThread = thread as? TSGroupThread {
             isGroup = true
             let accountManager = DependenciesBridge.shared.tsAccountManager
-            guard let localIdentifiers = accountManager.localIdentifiers(tx: tx.asV2Read) else {
+            guard let localIdentifiers = accountManager.localIdentifiers(tx: tx) else {
                 return owsFailDebug("Missing local identifiers")
             }
             let groupMembership = groupThread.groupModel.groupMembership
@@ -116,7 +116,7 @@ public struct ReportSpamUIUtils {
         do {
             if isGroup {
                 guard let localIdentifiers: LocalIdentifiers =
-                        DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+                        DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
                     owsFailDebug("Unable to find local identifiers")
                     return
                 }
@@ -169,7 +169,7 @@ public struct ReportSpamUIUtils {
         do {
             reportingToken = try SpamReportingTokenRecord.reportingToken(
                 for: aci,
-                database: tx.unwrapGrdbRead.database
+                database: tx.database
             )
         } catch {
             owsFailBeta("Failed to look up spam reporting token. Continuing on, as the parameter is optional. Error: \(error)")

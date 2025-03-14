@@ -75,7 +75,7 @@ public class MessageBackupAvatarFetcher {
             lastVisibleInteractionRowIdInGroupThread: lastVisibleInteractionRowIdInGroupThread,
             localIdentifiers: localIdentifiers
         )
-        try record?.insert(tx.databaseConnection)
+        try record?.insert(tx.database)
     }
 
     internal func enqueueFetchOfUserProfile(
@@ -91,7 +91,7 @@ public class MessageBackupAvatarFetcher {
             lastVisibleInteractionRowIdInContactThread: lastVisibleInteractionRowIdInContactThread,
             localIdentifiers: localIdentifiers
         )
-        try record.insert(tx.databaseConnection)
+        try record.insert(tx.database)
     }
 
     public func runIfNeeded() async throws {
@@ -189,7 +189,7 @@ public class MessageBackupAvatarFetcher {
                     let profile = try db.read { tx in
                         return try OWSUserProfile
                             .filter(Column(OWSUserProfile.CodingKeys.serviceIdString) == serviceId.serviceIdUppercaseString)
-                            .fetchOne(tx.databaseConnection)
+                            .fetchOne(tx.database)
                     }
                     if profile?.avatarFileName != nil {
                         // We already have an avatar for this profile;
@@ -307,7 +307,7 @@ public class MessageBackupAvatarFetcher {
             var record = record
             record.nextRetryTimestamp = dateProvider().addingTimeInterval(retryDelay).ows_millisecondsSince1970
             record.numRetries += 1
-            try record.update(tx.databaseConnection)
+            try record.update(tx.database)
         }
 
         func didCancel(record: Record, tx: DBWriteTransaction) throws {}
@@ -324,11 +324,11 @@ public class MessageBackupAvatarFetcher {
             return try Record
                 .order(Column(Record.CodingKeys.nextRetryTimestamp).asc)
                 .limit(Int(count))
-                .fetchAll(tx.databaseConnection)
+                .fetchAll(tx.database)
         }
 
         func removeRecord(_ record: Record, tx: DBWriteTransaction) throws {
-            try record.delete(tx.databaseConnection)
+            try record.delete(tx.database)
         }
     }
 

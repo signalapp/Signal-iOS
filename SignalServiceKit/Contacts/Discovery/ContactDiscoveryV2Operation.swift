@@ -264,12 +264,12 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
 
     func load() -> (token: Data, e164s: Set<E164>)? {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            guard let existingToken = Self.tokenStore.getData(Self.tokenKey, transaction: transaction.asV2Read) else {
+            guard let existingToken = Self.tokenStore.getData(Self.tokenKey, transaction: transaction) else {
                 return nil
             }
             let validatedE164s: Set<E164>
             do {
-                let prevE164s = try CdsPreviousE164.fetchAll(transaction.unwrapGrdbRead.database).map {
+                let prevE164s = try CdsPreviousE164.fetchAll(transaction.database).map {
                     guard let e164 = E164($0.e164) else {
                         throw OWSAssertionError("Found malformed E164 in database.")
                     }
@@ -289,9 +289,9 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
 
     func save(newToken: Data, clearE164s: Bool, newE164s: Set<E164>) async throws {
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            let database = transaction.unwrapGrdbWrite.database
+            let database = transaction.database
 
-            Self.tokenStore.setData(newToken, key: Self.tokenKey, transaction: transaction.asV2Write)
+            Self.tokenStore.setData(newToken, key: Self.tokenKey, transaction: transaction)
 
             // If we didn't use an old token, clear any local e164s. On the initial
             // request, this should be a no-op. If we're trying to recover from a
@@ -312,7 +312,7 @@ private class ContactDiscoveryV2PersistentStateImpl: ContactDiscoveryV2Persisten
     func reset() async {
         Logger.warn("CDSv2: Resetting token")
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            Self.tokenStore.removeValue(forKey: Self.tokenKey, transaction: transaction.asV2Write)
+            Self.tokenStore.removeValue(forKey: Self.tokenKey, transaction: transaction)
         }
     }
 }

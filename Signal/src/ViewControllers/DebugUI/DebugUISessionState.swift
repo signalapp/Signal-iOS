@@ -26,13 +26,13 @@ class DebugUISessionState: DebugUIPage {
                 OWSTableItem(title: "Delete All Sessions", actionBlock: {
                     SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-                        sessionStore.deleteAllSessions(for: contactThread.contactAddress.serviceId!, tx: transaction.asV2Write)
+                        sessionStore.deleteAllSessions(for: contactThread.contactAddress.serviceId!, tx: transaction)
                     }
                 }),
                 OWSTableItem(title: "Archive All Sessions", actionBlock: {
                     SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-                        sessionStore.archiveAllSessions(for: contactThread.contactAddress.serviceId!, tx: transaction.asV2Write)
+                        sessionStore.archiveAllSessions(for: contactThread.contactAddress.serviceId!, tx: transaction)
                     }
                 }),
                 OWSTableItem(title: "Send Session Reset", actionBlock: {
@@ -61,7 +61,7 @@ class DebugUISessionState: DebugUIPage {
             OWSTableItem(title: "Clear Session Store", actionBlock: {
                 SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-                    sessionStore.resetSessionStore(tx: transaction.asV2Write)
+                    sessionStore.resetSessionStore(tx: transaction)
                 }
             }),
             OWSTableItem(title: "Clear Sender Key Store", actionBlock: {
@@ -85,14 +85,14 @@ class DebugUISessionState: DebugUIPage {
         let identityManager = DependenciesBridge.shared.identityManager
 
         SSKEnvironment.shared.databaseStorageRef.write { tx in
-            guard let currentKey = identityManager.identityKey(for: SignalServiceAddress(serviceId), tx: tx.asV2Read) else { return }
+            guard let currentKey = identityManager.identityKey(for: SignalServiceAddress(serviceId), tx: tx) else { return }
 
             var flippedKey = Data(count: currentKey.count)
             for i in 0..<flippedKey.count {
                 flippedKey[i] = currentKey[i] ^ 0xFF
             }
             owsAssertDebug(flippedKey.count == currentKey.count)
-            identityManager.saveIdentityKey(flippedKey, for: serviceId, tx: tx.asV2Write)
+            identityManager.saveIdentityKey(flippedKey, for: serviceId, tx: tx)
         }
     }
 
@@ -127,7 +127,7 @@ class DebugUISessionState: DebugUIPage {
 
     private static func updateIdentityVerificationForAddress(_ address: SignalServiceAddress) {
         let identityManager = DependenciesBridge.shared.identityManager
-        guard let identity = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in identityManager.recipientIdentity(for: address, tx: tx.asV2Read) }) else {
+        guard let identity = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in identityManager.recipientIdentity(for: address, tx: tx) }) else {
             owsFailDebug("No identity for address \(address)")
             return
         }
@@ -153,7 +153,7 @@ class DebugUISessionState: DebugUIPage {
                             of: identity.identityKey,
                             for: address,
                             isUserInitiatedChange: false,
-                            tx: tx.asV2Write
+                            tx: tx
                         )
                     }
                 }

@@ -52,7 +52,7 @@ public class BlockingManager {
         }
     }
 
-    private func didUpdate(wasLocallyInitiated: Bool, tx: SDSAnyWriteTransaction) {
+    private func didUpdate(wasLocallyInitiated: Bool, tx: DBWriteTransaction) {
         if wasLocallyInitiated {
             setNeedsSync(tx: tx)
         } else {
@@ -63,43 +63,43 @@ public class BlockingManager {
         }
     }
 
-    private func setNeedsSync(tx: SDSAnyWriteTransaction) {
+    private func setNeedsSync(tx: DBWriteTransaction) {
         setChangeToken(fetchChangeToken(tx: tx) + 1, tx: tx)
         tx.addSyncCompletion {
             Task { await self.sendBlockListSyncMessage(force: false) }
         }
     }
 
-    private func clearNeedsSync(tx: SDSAnyWriteTransaction) {
+    private func clearNeedsSync(tx: DBWriteTransaction) {
         setLastSyncedChangeToken(fetchChangeToken(tx: tx), transaction: tx)
     }
 
-    public func isAddressBlocked(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
+    public func isAddressBlocked(_ address: SignalServiceAddress, transaction: DBReadTransaction) -> Bool {
         guard !address.isLocalAddress else {
             return false
         }
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-        guard let recipientId = recipientDatabaseTable.fetchRecipient(address: address, tx: transaction.asV2Read)?.id else {
+        guard let recipientId = recipientDatabaseTable.fetchRecipient(address: address, tx: transaction)?.id else {
             return false
         }
-        return (try? blockedRecipientStore.isBlocked(recipientId: recipientId, tx: transaction.asV2Read)) ?? false
+        return (try? blockedRecipientStore.isBlocked(recipientId: recipientId, tx: transaction)) ?? false
     }
 
-    public func isGroupIdBlocked(_ groupId: Data, transaction: SDSAnyReadTransaction) -> Bool {
-        return (try? blockedGroupStore.isBlocked(groupId: groupId, tx: transaction.asV2Read)) ?? false
+    public func isGroupIdBlocked(_ groupId: Data, transaction: DBReadTransaction) -> Bool {
+        return (try? blockedGroupStore.isBlocked(groupId: groupId, tx: transaction)) ?? false
     }
 
-    public func blockedAddresses(transaction: SDSAnyReadTransaction) -> Set<SignalServiceAddress> {
+    public func blockedAddresses(transaction: DBReadTransaction) -> Set<SignalServiceAddress> {
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
 
-        let blockedRecipientIds = (try? blockedRecipientStore.blockedRecipientIds(tx: transaction.asV2Read)) ?? []
+        let blockedRecipientIds = (try? blockedRecipientStore.blockedRecipientIds(tx: transaction)) ?? []
         return Set(blockedRecipientIds.compactMap {
-            return recipientDatabaseTable.fetchRecipient(rowId: $0, tx: transaction.asV2Read)?.address
+            return recipientDatabaseTable.fetchRecipient(rowId: $0, tx: transaction)?.address
         })
     }
 
-    public func blockedGroupIds(transaction: SDSAnyReadTransaction) throws -> [Data] {
-        return try blockedGroupStore.blockedGroupIds(tx: transaction.asV2Read)
+    public func blockedGroupIds(transaction: DBReadTransaction) throws -> [Data] {
+        return try blockedGroupStore.blockedGroupIds(tx: transaction)
     }
 
     public func addBlockedAci(_ aci: Aci, blockMode: BlockMode, tx: DBWriteTransaction) {
@@ -109,7 +109,7 @@ public class BlockingManager {
     public func addBlockedAddress(
         _ address: SignalServiceAddress,
         blockMode: BlockMode,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         guard !address.isLocalAddress else {
             owsFailDebug("Cannot block the local address")
@@ -119,20 +119,20 @@ public class BlockingManager {
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         let recipient: SignalRecipient
         if let serviceId = address.serviceId {
-            recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
+            recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
         } else if let phoneNumber = E164(address.phoneNumber) {
-            recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx.asV2Write)
+            recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx)
         } else {
             owsFailDebug("Invalid address: \(address).")
             return
         }
 
-        let isBlocked = failIfThrows { try blockedRecipientStore.isBlocked(recipientId: recipient.id!, tx: tx.asV2Read) }
+        let isBlocked = failIfThrows { try blockedRecipientStore.isBlocked(recipientId: recipient.id!, tx: tx) }
         guard !isBlocked else {
             return
         }
         failIfThrows {
-            try blockedRecipientStore.setBlocked(true, recipientId: recipient.id!, tx: tx.asV2Write)
+            try blockedRecipientStore.setBlocked(true, recipientId: recipient.id!, tx: tx)
         }
 
         Logger.info("Added blocked address: \(address)")
@@ -157,10 +157,10 @@ public class BlockingManager {
             // Insert an info message that we blocked this user.
             let threadStore = DependenciesBridge.shared.threadStore
             let interactionStore = DependenciesBridge.shared.interactionStore
-            if let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx.asV2Read) {
+            if let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx) {
                 interactionStore.insertInteraction(
                     TSInfoMessage(thread: contactThread, messageType: .blockedOtherUser),
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
         }
@@ -171,7 +171,7 @@ public class BlockingManager {
     public func removeBlockedAddress(
         _ address: SignalServiceAddress,
         wasLocallyInitiated: Bool,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         guard address.isValid else {
             owsFailDebug("Invalid address: \(address).")
@@ -179,17 +179,17 @@ public class BlockingManager {
         }
 
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-        guard let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx.asV2Read) else {
+        guard let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx) else {
             // No need to unblock non-existent recipients. They can't possibly be blocked.
             return
         }
 
-        let isBlocked = failIfThrows { try blockedRecipientStore.isBlocked(recipientId: recipient.id!, tx: tx.asV2Read) }
+        let isBlocked = failIfThrows { try blockedRecipientStore.isBlocked(recipientId: recipient.id!, tx: tx) }
         guard isBlocked else {
             return
         }
         failIfThrows {
-            try blockedRecipientStore.setBlocked(false, recipientId: recipient.id!, tx: tx.asV2Write)
+            try blockedRecipientStore.setBlocked(false, recipientId: recipient.id!, tx: tx)
         }
 
         Logger.info("Removed blocked address: \(address)")
@@ -201,28 +201,28 @@ public class BlockingManager {
         // Insert an info message that we unblocked this user.
         let threadStore = DependenciesBridge.shared.threadStore
         let interactionStore = DependenciesBridge.shared.interactionStore
-        if let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx.asV2Read) {
+        if let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx) {
             interactionStore.insertInteraction(
                 TSInfoMessage(thread: contactThread, messageType: .unblockedOtherUser),
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 
         didUpdate(wasLocallyInitiated: wasLocallyInitiated, tx: tx)
     }
 
-    public func addBlockedGroupId(_ groupId: Data, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
+    public func addBlockedGroupId(_ groupId: Data, blockMode: BlockMode, transaction: DBWriteTransaction) {
         guard GroupManager.isValidGroupIdOfAnyKind(groupId) else {
             owsFailDebug("Can't block invalid groupId: g\(groupId.base64EncodedString())")
             return
         }
 
-        let isBlocked = failIfThrows { try blockedGroupStore.isBlocked(groupId: groupId, tx: transaction.asV2Read) }
+        let isBlocked = failIfThrows { try blockedGroupStore.isBlocked(groupId: groupId, tx: transaction) }
         guard !isBlocked else {
             return
         }
         failIfThrows {
-            try blockedGroupStore.setBlocked(true, groupId: groupId, tx: transaction.asV2Write)
+            try blockedGroupStore.setBlocked(true, groupId: groupId, tx: transaction)
         }
 
         Logger.info("Added blocked groupId: g\(groupId.base64EncodedString())")
@@ -256,7 +256,7 @@ public class BlockingManager {
                 // Insert an info message that we blocked this group.
                 DependenciesBridge.shared.interactionStore.insertInteraction(
                     TSInfoMessage(thread: groupThread, messageType: .blockedGroup),
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
             }
         }
@@ -264,13 +264,13 @@ public class BlockingManager {
         didUpdate(wasLocallyInitiated: blockMode.locallyInitiated, tx: transaction)
     }
 
-    public func removeBlockedGroup(groupId: Data, wasLocallyInitiated: Bool, transaction: SDSAnyWriteTransaction) {
-        let isBlocked = failIfThrows { try blockedGroupStore.isBlocked(groupId: groupId, tx: transaction.asV2Read) }
+    public func removeBlockedGroup(groupId: Data, wasLocallyInitiated: Bool, transaction: DBWriteTransaction) {
+        let isBlocked = failIfThrows { try blockedGroupStore.isBlocked(groupId: groupId, tx: transaction) }
         guard isBlocked else {
             return
         }
         failIfThrows {
-            try blockedGroupStore.setBlocked(false, groupId: groupId, tx: transaction.asV2Write)
+            try blockedGroupStore.setBlocked(false, groupId: groupId, tx: transaction)
         }
 
         Logger.info("Removed blocked groupId: g\(groupId.base64EncodedString())")
@@ -296,7 +296,7 @@ public class BlockingManager {
             // Insert an info message that we unblocked.
             DependenciesBridge.shared.interactionStore.insertInteraction(
                 TSInfoMessage(thread: groupThread, messageType: .unblockedGroup),
-                tx: transaction.asV2Write
+                tx: transaction
             )
 
             // Refresh unblocked group.
@@ -310,7 +310,7 @@ public class BlockingManager {
 
     // MARK: Other convenience access
 
-    public func isThreadBlocked(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+    public func isThreadBlocked(_ thread: TSThread, transaction: DBReadTransaction) -> Bool {
         if let contactThread = thread as? TSContactThread {
             return isAddressBlocked(contactThread.contactAddress, transaction: transaction)
         } else if let groupThread = thread as? TSGroupThread {
@@ -323,7 +323,7 @@ public class BlockingManager {
         }
     }
 
-    public func addBlockedThread(_ thread: TSThread, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
+    public func addBlockedThread(_ thread: TSThread, blockMode: BlockMode, transaction: DBWriteTransaction) {
         if let contactThread = thread as? TSContactThread {
             addBlockedAddress(contactThread.contactAddress, blockMode: blockMode, transaction: transaction)
         } else if let groupThread = thread as? TSGroupThread {
@@ -333,7 +333,7 @@ public class BlockingManager {
         }
     }
 
-    public func removeBlockedThread(_ thread: TSThread, wasLocallyInitiated: Bool, transaction: SDSAnyWriteTransaction) {
+    public func removeBlockedThread(_ thread: TSThread, wasLocallyInitiated: Bool, transaction: DBWriteTransaction) {
         if let contactThread = thread as? TSContactThread {
             removeBlockedAddress(contactThread.contactAddress, wasLocallyInitiated: wasLocallyInitiated, transaction: transaction)
         } else if let groupThread = thread as? TSGroupThread {
@@ -349,7 +349,7 @@ public class BlockingManager {
         blockedPhoneNumbers: Set<String>,
         blockedAcis: Set<Aci>,
         blockedGroupIds: Set<Data>,
-        tx transaction: SDSAnyWriteTransaction
+        tx transaction: DBWriteTransaction
     ) {
         Logger.info("")
         transaction.addAsyncCompletion(on: DispatchQueue.main) {
@@ -359,37 +359,37 @@ public class BlockingManager {
         var didChange = false
 
         failIfThrows {
-            let oldBlockedGroupIds = Set(try blockedGroupStore.blockedGroupIds(tx: transaction.asV2Read))
+            let oldBlockedGroupIds = Set(try blockedGroupStore.blockedGroupIds(tx: transaction))
             let newBlockedGroupIds = blockedGroupIds
             try oldBlockedGroupIds.subtracting(newBlockedGroupIds).forEach {
                 didChange = true
-                try blockedGroupStore.setBlocked(false, groupId: $0, tx: transaction.asV2Write)
+                try blockedGroupStore.setBlocked(false, groupId: $0, tx: transaction)
             }
             try newBlockedGroupIds.subtracting(oldBlockedGroupIds).forEach {
                 didChange = true
-                try blockedGroupStore.setBlocked(true, groupId: $0, tx: transaction.asV2Write)
+                try blockedGroupStore.setBlocked(true, groupId: $0, tx: transaction)
             }
         }
 
         var blockedRecipientIds = Set<SignalRecipient.RowId>()
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         for blockedAci in blockedAcis {
-            blockedRecipientIds.insert(recipientFetcher.fetchOrCreate(serviceId: blockedAci, tx: transaction.asV2Write).id!)
+            blockedRecipientIds.insert(recipientFetcher.fetchOrCreate(serviceId: blockedAci, tx: transaction).id!)
         }
         for blockedPhoneNumber in blockedPhoneNumbers.compactMap(E164.init) {
-            blockedRecipientIds.insert(recipientFetcher.fetchOrCreate(phoneNumber: blockedPhoneNumber, tx: transaction.asV2Write).id!)
+            blockedRecipientIds.insert(recipientFetcher.fetchOrCreate(phoneNumber: blockedPhoneNumber, tx: transaction).id!)
         }
 
         failIfThrows {
-            let oldBlockedRecipientIds = Set(try blockedRecipientStore.blockedRecipientIds(tx: transaction.asV2Read))
+            let oldBlockedRecipientIds = Set(try blockedRecipientStore.blockedRecipientIds(tx: transaction))
             let newBlockedRecipientIds = blockedRecipientIds
             try oldBlockedRecipientIds.subtracting(newBlockedRecipientIds).forEach {
                 didChange = true
-                try blockedRecipientStore.setBlocked(false, recipientId: $0, tx: transaction.asV2Write)
+                try blockedRecipientStore.setBlocked(false, recipientId: $0, tx: transaction)
             }
             try newBlockedRecipientIds.subtracting(oldBlockedRecipientIds).forEach {
                 didChange = true
-                try blockedRecipientStore.setBlocked(true, recipientId: $0, tx: transaction.asV2Write)
+                try blockedRecipientStore.setBlocked(true, recipientId: $0, tx: transaction)
             }
         }
 
@@ -434,11 +434,11 @@ public class BlockingManager {
             }
 
             let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-            let blockedRecipients = try blockedRecipientStore.blockedRecipientIds(tx: tx.asV2Read).compactMap {
-                return recipientDatabaseTable.fetchRecipient(rowId: $0, tx: tx.asV2Read)
+            let blockedRecipients = try blockedRecipientStore.blockedRecipientIds(tx: tx).compactMap {
+                return recipientDatabaseTable.fetchRecipient(rowId: $0, tx: tx)
             }
 
-            let blockedGroupIds = try blockedGroupStore.blockedGroupIds(tx: tx.asV2Read)
+            let blockedGroupIds = try blockedGroupStore.blockedGroupIds(tx: tx)
 
             let message = OWSBlockedPhoneNumbersMessage(
                 localThread: localThread,
@@ -473,7 +473,7 @@ public class BlockingManager {
         }
     }
 
-    private func shouldSync(changeToken: UInt64, tx: SDSAnyReadTransaction) -> Bool {
+    private func shouldSync(changeToken: UInt64, tx: DBReadTransaction) -> Bool {
         // If we've ever sync'd with this mechanism, we need only sync again if the
         // token has changed.
         if let lastSyncedChangeToken = fetchLastSyncedChangeToken(tx: tx) {
@@ -487,7 +487,7 @@ public class BlockingManager {
         // one of our old KVS keys as a hint that we may need to sync. If they
         // don't exist this is probably a fresh install and we don't need to sync.
         return PersistenceKey.Legacy.allCases.contains { key in
-            return keyValueStore.hasValue(key.rawValue, transaction: tx.asV2Read)
+            return keyValueStore.hasValue(key.rawValue, transaction: tx)
         }
     }
 
@@ -532,20 +532,20 @@ public class BlockingManager {
         }
     }
 
-    func fetchChangeToken(tx: SDSAnyReadTransaction) -> UInt64 {
-        keyValueStore.getUInt64(PersistenceKey.changeTokenKey.rawValue, defaultValue: Constants.initialChangeToken, transaction: tx.asV2Read)
+    func fetchChangeToken(tx: DBReadTransaction) -> UInt64 {
+        keyValueStore.getUInt64(PersistenceKey.changeTokenKey.rawValue, defaultValue: Constants.initialChangeToken, transaction: tx)
     }
 
-    func setChangeToken(_ newValue: UInt64, tx: SDSAnyWriteTransaction) {
-        keyValueStore.setUInt64(newValue, key: PersistenceKey.changeTokenKey.rawValue, transaction: tx.asV2Write)
+    func setChangeToken(_ newValue: UInt64, tx: DBWriteTransaction) {
+        keyValueStore.setUInt64(newValue, key: PersistenceKey.changeTokenKey.rawValue, transaction: tx)
     }
 
-    func fetchLastSyncedChangeToken(tx: SDSAnyReadTransaction) -> UInt64? {
-        keyValueStore.getUInt64(PersistenceKey.lastSyncedChangeTokenKey.rawValue, transaction: tx.asV2Read)
+    func fetchLastSyncedChangeToken(tx: DBReadTransaction) -> UInt64? {
+        keyValueStore.getUInt64(PersistenceKey.lastSyncedChangeTokenKey.rawValue, transaction: tx)
     }
 
-    func setLastSyncedChangeToken(_ newValue: UInt64, transaction writeTx: SDSAnyWriteTransaction) {
-        keyValueStore.setUInt64(newValue, key: PersistenceKey.lastSyncedChangeTokenKey.rawValue, transaction: writeTx.asV2Write)
+    func setLastSyncedChangeToken(_ newValue: UInt64, transaction writeTx: DBWriteTransaction) {
+        keyValueStore.setUInt64(newValue, key: PersistenceKey.lastSyncedChangeTokenKey.rawValue, transaction: writeTx)
     }
 
     // MARK: - Helpers

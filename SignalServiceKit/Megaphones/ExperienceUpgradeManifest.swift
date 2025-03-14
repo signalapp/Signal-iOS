@@ -477,7 +477,7 @@ extension ExperienceUpgradeManifest {
     public func shouldCheckPreconditions(
         timeIntervalSinceRegistration: TimeInterval,
         isRegisteredPrimaryDevice: Bool,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> Bool {
         if timeIntervalSinceRegistration < delayAfterRegistration {
             // We have not waited long enough after registration to show this
@@ -495,12 +495,12 @@ extension ExperienceUpgradeManifest {
 
     // MARK: Local megaphone preconditions
 
-    public static func checkPreconditionsForIntroducingPins(transaction: SDSAnyReadTransaction) -> Bool {
+    public static func checkPreconditionsForIntroducingPins(transaction: DBReadTransaction) -> Bool {
         // The PIN setup flow requires an internet connection and you to not already have a PIN
         if
             SSKEnvironment.shared.reachabilityManagerRef.isReachable,
-            DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegisteredPrimaryDevice,
-            !DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction.asV2Read)
+            DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice,
+            !DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction)
         {
             return true
         }
@@ -557,17 +557,17 @@ extension ExperienceUpgradeManifest {
         }
     }
 
-    public static func checkPreconditionsForCreateUsernameReminder(transaction: SDSAnyReadTransaction) -> Bool {
+    public static func checkPreconditionsForCreateUsernameReminder(transaction: DBReadTransaction) -> Bool {
         guard
             DependenciesBridge.shared.localUsernameManager.usernameState(
-                tx: transaction.asV2Read
+                tx: transaction
             ).isExplicitlyUnset
         else {
             // If we have a username, do not show the reminder.
             return false
         }
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        if tsAccountManager.phoneNumberDiscoverability(tx: transaction.asV2Read).orDefault.isDiscoverable {
+        if tsAccountManager.phoneNumberDiscoverability(tx: transaction).orDefault.isDiscoverable {
             // If phone number discovery is enabled, do not prompt to create a
             // username.
             return false
@@ -577,7 +577,7 @@ extension ExperienceUpgradeManifest {
         /// discovery. Note that we need to invert the sign as this date will
         /// be in the past.
         let timeIntervalSinceDisabledDiscovery = DependenciesBridge.shared.tsAccountManager
-            .lastSetIsDiscoverableByPhoneNumber(tx: transaction.asV2Read)
+            .lastSetIsDiscoverableByPhoneNumber(tx: transaction)
             .timeIntervalSinceNow * -1
 
         let requiredDelayAfterDisablingDiscovery: TimeInterval = 3 * .day
@@ -585,11 +585,11 @@ extension ExperienceUpgradeManifest {
         return timeIntervalSinceDisabledDiscovery > requiredDelayAfterDisablingDiscovery
     }
 
-    public static func checkPreconditionsForInactiveLinkedDeviceReminder(tx: SDSAnyReadTransaction) -> Bool {
-        return DependenciesBridge.shared.inactiveLinkedDeviceFinder.hasInactiveLinkedDevice(tx: tx.asV2Read)
+    public static func checkPreconditionsForInactiveLinkedDeviceReminder(tx: DBReadTransaction) -> Bool {
+        return DependenciesBridge.shared.inactiveLinkedDeviceFinder.hasInactiveLinkedDevice(tx: tx)
     }
 
-    public static func checkPreconditionsForPinReminder(transaction: SDSAnyReadTransaction) -> Bool {
+    public static func checkPreconditionsForPinReminder(transaction: DBReadTransaction) -> Bool {
         return SSKEnvironment.shared.ows2FAManagerRef.isDueForV2Reminder(transaction: transaction)
     }
 
@@ -600,7 +600,7 @@ extension ExperienceUpgradeManifest {
 
     // MARK: Remote megaphone preconditions
 
-    public static func checkPreconditionsForRemoteMegaphone(_ megaphone: RemoteMegaphoneModel, tx: SDSAnyReadTransaction) -> Bool {
+    public static func checkPreconditionsForRemoteMegaphone(_ megaphone: RemoteMegaphoneModel, tx: DBReadTransaction) -> Bool {
         let minimumVersion = AppVersionNumber(megaphone.manifest.minAppVersion)
         let currentVersion = AppVersionNumber(AppVersionImpl.shared.currentAppVersion)
         guard currentVersion >= minimumVersion else {
@@ -612,7 +612,7 @@ extension ExperienceUpgradeManifest {
         }
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
             return false
         }
 
@@ -650,7 +650,7 @@ extension ExperienceUpgradeManifest {
 
     private static func validateRemoteMegaphone(
         conditionalCheck: RemoteMegaphoneModel.Manifest.ConditionalCheck?,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> Bool {
         guard let conditionalCheck else {
             // Having no conditional check is valid.
@@ -664,7 +664,7 @@ extension ExperienceUpgradeManifest {
                 return false
             } else if
                 DependenciesBridge.shared.donationReceiptCredentialResultStore
-                    .hasAnyPaymentsStillProcessing(tx: tx.asV2Read)
+                    .hasAnyPaymentsStillProcessing(tx: tx)
             {
                 // Fail the check if we have any in-progress payments.
                 return false

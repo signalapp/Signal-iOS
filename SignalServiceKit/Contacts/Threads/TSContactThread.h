@@ -87,14 +87,14 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
     NS_SWIFT_NAME(getOrCreateThread(contactAddress:));
 
 + (instancetype)getOrCreateThreadWithContactAddress:(SignalServiceAddress *)contactAddress
-                                        transaction:(SDSAnyWriteTransaction *)transaction;
+                                        transaction:(DBWriteTransaction *)transaction;
 
 // Unlike getOrCreateThreadWithContactAddress, this will _NOT_ create a thread if one does not already exist.
 + (nullable instancetype)getThreadWithContactAddress:(SignalServiceAddress *)contactAddress
-                                         transaction:(SDSAnyReadTransaction *)transaction;
+                                         transaction:(DBReadTransaction *)transaction;
 
 + (nullable SignalServiceAddress *)contactAddressFromThreadId:(NSString *)threadId
-                                                  transaction:(SDSAnyReadTransaction *)transaction;
+                                                  transaction:(DBReadTransaction *)transaction;
 
 // This is only ever used from migration from a pre-UUID world to a UUID world
 + (nullable NSString *)legacyContactPhoneNumberFromThreadId:(NSString *)threadId;

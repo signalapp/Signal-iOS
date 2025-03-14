@@ -61,7 +61,7 @@ class InteractionFinderTest: SSKBaseTest {
     }
 
     func testUnreadInArchiveIsIgnored() {
-        func makeThread(withUnreadMessages unreadCount: UInt, transaction: SDSAnyWriteTransaction) -> TSContactThread {
+        func makeThread(withUnreadMessages unreadCount: UInt, transaction: DBWriteTransaction) -> TSContactThread {
             let thread = ContactThreadFactory().create(transaction: transaction)
 
             if unreadCount > 0 {

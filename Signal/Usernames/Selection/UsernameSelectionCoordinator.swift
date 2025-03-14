@@ -40,7 +40,7 @@ class UsernameSelectionCoordinator {
 
     func present(fromViewController: UIViewController) {
         let shouldShowUsernameEducation: Bool = context.databaseStorage.read { tx in
-            context.usernameEducationManager.shouldShowUsernameEducation(tx: tx.asV2Read)
+            context.usernameEducationManager.shouldShowUsernameEducation(tx: tx)
         }
 
         if shouldShowUsernameEducation {
@@ -60,7 +60,7 @@ class UsernameSelectionCoordinator {
             self.context.databaseStorage.write { tx in
                 self.context.usernameEducationManager.setShouldShowUsernameEducation(
                     false,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
 

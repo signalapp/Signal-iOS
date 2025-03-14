@@ -6,10 +6,10 @@
 // All Obj-c database storage writes should be done using these macros.
 // They capture the logging info.
 
-@class SDSAnyWriteTransaction;
+@class DBWriteTransaction;
 @class SDSDatabaseStorage;
 
-typedef void (^SDSWriteBlock)(SDSAnyWriteTransaction *);
+typedef void (^SDSWriteBlock)(DBWriteTransaction *);
 typedef void (^SDSWriteCompletion)(void);
 
 void __SDSDatabaseStorageWrite(

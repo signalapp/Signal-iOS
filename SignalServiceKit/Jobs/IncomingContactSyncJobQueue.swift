@@ -39,7 +39,7 @@ public class IncomingContactSyncJobQueue {
         digest: Data,
         plaintextLength: UInt32?,
         isComplete: Bool,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let jobRecord = IncomingContactSyncJobRecord(
             cdnNumber: cdnNumber,
@@ -50,7 +50,7 @@ public class IncomingContactSyncJobQueue {
             isCompleteContactSync: isComplete
         )
         jobRecord.anyInsert(transaction: tx)
-        jobSerializer.addOrderedSyncCompletion(tx: tx.asV2Write) {
+        jobSerializer.addOrderedSyncCompletion(tx: tx) {
             self.jobQueueRunner.addPersistedJob(jobRecord)
         }
     }
@@ -149,7 +149,7 @@ private class IncomingContactSyncJobRunner: JobRunner {
                     // once per contact. It's possible that *no* identities actually changed,
                     // but we have no convenient way to track that.
                     let identityManager = DependenciesBridge.shared.identityManager
-                    identityManager.fireIdentityStateChangeNotification(after: transaction.asV2Write)
+                    identityManager.fireIdentityStateChangeNotification(after: transaction)
                 }
             }
         }
@@ -197,10 +197,10 @@ private class IncomingContactSyncJobRunner: JobRunner {
     private func processContactDetails(
         _ contactDetails: ContactDetails,
         insertedThreads: inout [(threadUniqueId: String, sortOrder: UInt32)],
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws -> E164? {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
             throw OWSGenericError("Not registered.")
         }
 
@@ -214,13 +214,13 @@ private class IncomingContactSyncJobRunner: JobRunner {
                 localIdentifiers: localIdentifiers,
                 aci: aci,
                 phoneNumber: contactDetails.phoneNumber,
-                tx: tx.asV2Write
+                tx: tx
             )
             // Mark as registered only if we have a UUID (we always do in this branch).
             // If we don't have a UUID, contacts can't be registered.
-            recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: false, tx: tx.asV2Write)
+            recipientManager.markAsRegisteredAndSave(recipient, shouldUpdateStorageService: false, tx: tx)
         } else if let phoneNumber = contactDetails.phoneNumber {
-            recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx.asV2Write)
+            recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx)
         } else {
             throw OWSAssertionError("No identifier in ContactDetails.")
         }
@@ -279,7 +279,7 @@ private class IncomingContactSyncJobRunner: JobRunner {
             // create a SignalAccount for your own address. (If you're a primary, this
             // is handled by FetchedSystemContacts.phoneNumbers(…).)
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction) else {
                 throw OWSGenericError("Not registered.")
             }
             let setOfPhoneNumbers = Set(phoneNumbers.lazy.filter { !localIdentifiers.contains(phoneNumber: $0) })

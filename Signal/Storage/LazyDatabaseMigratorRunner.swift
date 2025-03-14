@@ -34,7 +34,7 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
         }
         do {
             let indexes = try databaseStorage.read { tx in
-                let db = tx.asV2Read.databaseConnection
+                let db = tx.database
                 return Set(try String.fetchAll(db, sql: "SELECT name FROM sqlite_master WHERE type = 'index'"))
             }
             let lazilyRemovedIndexes = [
@@ -92,61 +92,61 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in
             Logger.info("Rebuilding incomplete view once index.")
-            try! GRDBSchemaMigrator.rebuildIncompleteViewOnceIndex(tx: tx.unwrapGrdbWrite)
+            try! GRDBSchemaMigrator.rebuildIncompleteViewOnceIndex(tx: tx)
         }
 
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in
             Logger.info("Removing threadUniqueId/uniqueId index.")
-            try! GRDBSchemaMigrator.removeInteractionThreadUniqueIdUniqueIdIndex(tx: tx.unwrapGrdbWrite)
+            try! GRDBSchemaMigrator.removeInteractionThreadUniqueIdUniqueIdIndex(tx: tx)
         }
 
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in
             Logger.info("Rebuilding disappearing messages index.")
-            try! GRDBSchemaMigrator.rebuildDisappearingMessagesIndex(tx: tx.unwrapGrdbWrite)
+            try! GRDBSchemaMigrator.rebuildDisappearingMessagesIndex(tx: tx)
         }
 
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in
             Logger.info("Removing attachmentIds index.")
-            try! GRDBSchemaMigrator.removeInteractionAttachmentIdsIndex(tx: tx.unwrapGrdbWrite)
+            try! GRDBSchemaMigrator.removeInteractionAttachmentIdsIndex(tx: tx)
         }
 
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in
             Logger.info("Rebuilding timestamp index.")
-            try! GRDBSchemaMigrator.rebuildInteractionTimestampIndex(tx: tx.unwrapGrdbWrite)
+            try! GRDBSchemaMigrator.rebuildInteractionTimestampIndex(tx: tx)
         }
 
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in
             Logger.info("Rebuilding unended groupCall index.")
-            try! GRDBSchemaMigrator.rebuildInteractionUnendedGroupCallIndex(tx: tx.unwrapGrdbWrite)
+            try! GRDBSchemaMigrator.rebuildInteractionUnendedGroupCallIndex(tx: tx)
         }
 
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in
             Logger.info("Rebuilding groupCall/eraId index.")
-            try! GRDBSchemaMigrator.rebuildInteractionGroupCallEraIdIndex(tx: tx.unwrapGrdbWrite)
+            try! GRDBSchemaMigrator.rebuildInteractionGroupCallEraIdIndex(tx: tx)
         }
 
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in
             Logger.info("Rebuilding story message index.")
-            try! GRDBSchemaMigrator.rebuildInteractionStoryReplyIndex(tx: tx.unwrapGrdbWrite)
+            try! GRDBSchemaMigrator.rebuildInteractionStoryReplyIndex(tx: tx)
         }
 
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in
             Logger.info("Removing conversation load count index.")
-            try! GRDBSchemaMigrator.removeInteractionConversationLoadCountIndex(tx: tx.unwrapGrdbWrite)
+            try! GRDBSchemaMigrator.removeInteractionConversationLoadCountIndex(tx: tx)
         }
 
         try Task.checkCancellation()
         await databaseStorage.awaitableWrite { tx in
             Logger.info("Removing conversation load distance index.")
-            try! GRDBSchemaMigrator.removeInteractionConversationLoadDistanceIndex(tx: tx.unwrapGrdbWrite)
+            try! GRDBSchemaMigrator.removeInteractionConversationLoadDistanceIndex(tx: tx)
         }
 
         #if DEBUG

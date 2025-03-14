@@ -39,7 +39,7 @@ class BadgeThanksSheetPresenter {
         guard let redemptionSuccess = SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
             Deps.donationReceiptCredentialResultStore.getRedemptionSuccess(
                 successMode: successMode,
-                tx: tx.asV2Read
+                tx: tx
             )
         }) else {
             owsFailBeta("[Donations] Missing redemption success while trying to present badge thanks! \(successMode)")
@@ -87,7 +87,7 @@ class BadgeThanksSheetPresenter {
                 self.databaseStorage.write { tx in
                     self.donationReceiptCredentialResultStore.setHasPresentedSuccess(
                         successMode: self.successMode,
-                        tx: tx.asV2Write
+                        tx: tx
                     )
                 }
             }

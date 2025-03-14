@@ -228,7 +228,7 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
                 DependenciesBridge.shared.privateStoryThreadDeletionManager.recordDeletedAtTimestamp(
                     Date.ows_millisecondTimestamp(),
                     forDistributionListIdentifier: dlistIdentifier,
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
 
                 transaction.addAsyncCompletion(on: DispatchQueue.main) {

@@ -138,7 +138,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
         lastReceivedTimestamp: UInt64? = nil,
         lastReadTimestamp: UInt64? = nil,
         lastViewedTimestamp: UInt64? = nil,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         var didTouchStorageServiceProperty = false
 
@@ -165,7 +165,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
             // Update the existing record.
             block(storedCopy)
             do {
-                try storedCopy.update(transaction.unwrapGrdbWrite.database)
+                try storedCopy.update(transaction.database)
             } catch {
                 owsFailDebug("Unexpectedly failed to update \(error)")
             }
@@ -174,7 +174,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
             // Insert this new record.
             block(self)
             do {
-                try self.insert(transaction.unwrapGrdbWrite.database)
+                try self.insert(transaction.database)
             } catch {
                 owsFailDebug("Unexpectedly failed to insert \(error)")
             }
@@ -203,7 +203,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
         }
     }
 
-    public func recomputeLatestUnexpiredTimestamp(transaction: SDSAnyWriteTransaction) {
+    public func recomputeLatestUnexpiredTimestamp(transaction: DBWriteTransaction) {
         var latestUnexpiredTimestamp: UInt64?
         StoryFinder.enumerateStoriesForContext(
             self.sourceContext.asStoryContext,
@@ -226,7 +226,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
             // Update the existing record.
             block(storedCopy)
             do {
-                try storedCopy.update(transaction.unwrapGrdbWrite.database)
+                try storedCopy.update(transaction.database)
             } catch {
                 owsFailDebug("Unexpectedly failed to update \(error)")
             }
@@ -235,7 +235,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
             // Insert this new record.
             block(self)
             do {
-                try self.insert(transaction.unwrapGrdbWrite.database)
+                try self.insert(transaction.database)
             } catch {
                 owsFailDebug("Unexpectedly failed to insert \(error)")
             }
@@ -246,7 +246,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
 
     public static func fetchOrDefault(
         sourceContext: SourceContext,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> StoryContextAssociatedData {
         if let existing = StoryFinder.getAssociatedData(forContext: sourceContext, transaction: transaction) {
             return existing

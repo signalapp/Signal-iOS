@@ -166,7 +166,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         }
 
         raisedHandView.name = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
+            let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)
             if deviceState.aci == localIdentifiers?.aci {
                 return CommonStrings.you
             } else {

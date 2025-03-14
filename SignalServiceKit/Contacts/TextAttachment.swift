@@ -87,14 +87,14 @@ public struct UnsentTextAttachment {
         }
 
         public func buildTextAttachment(
-            transaction: SDSAnyWriteTransaction
+            transaction: DBWriteTransaction
         ) -> OwnedAttachmentBuilder<TextAttachment>? {
             var linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
             if let linkPreview = linkPreviewDraft {
                 do {
                     linkPreviewBuilder = try DependenciesBridge.shared.linkPreviewManager.buildLinkPreview(
                         from: linkPreview,
-                        tx: transaction.asV2Write
+                        tx: transaction
                     )
                 } catch LinkPreviewError.featureDisabled {
                     linkPreviewBuilder = .withoutFinalizer(OWSLinkPreview(urlString: linkPreview.metadata.urlString))
@@ -255,7 +255,7 @@ public struct TextAttachment: Codable, Equatable {
         from proto: SSKProtoTextAttachment,
         bodyRanges: [SSKProtoBodyRange],
         linkPreview: OWSLinkPreview?,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws {
         self.body = proto.text?.nilIfEmpty.map { StyleOnlyMessageBody(text: $0, protos: bodyRanges) }
 
@@ -315,7 +315,7 @@ public struct TextAttachment: Codable, Equatable {
     public func buildProto(
         parentStoryMessage: StoryMessage,
         bodyRangeHandler: ([SSKProtoBodyRange]) -> Void,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> SSKProtoTextAttachment {
         let builder = SSKProtoTextAttachment.builder()
 
@@ -354,7 +354,7 @@ public struct TextAttachment: Codable, Equatable {
             let previewProto = try DependenciesBridge.shared.linkPreviewManager.buildProtoForSending(
                 preview,
                 parentStoryMessage: parentStoryMessage,
-                tx: transaction.asV2Read
+                tx: transaction
             )
             builder.setPreview(previewProto)
         }

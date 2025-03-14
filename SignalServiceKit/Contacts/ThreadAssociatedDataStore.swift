@@ -13,7 +13,7 @@ public protocol ThreadAssociatedDataStore {
 
 class ThreadAssociatedDataStoreImpl: ThreadAssociatedDataStore {
     func fetch(for threadUniqueId: String, tx: DBReadTransaction) -> ThreadAssociatedData? {
-        let db = tx.databaseConnection
+        let db = tx.database
         do {
             return try ThreadAssociatedData.filter(Column("threadUniqueId") == threadUniqueId).fetchOne(db)
         } catch {
@@ -23,7 +23,7 @@ class ThreadAssociatedDataStoreImpl: ThreadAssociatedDataStore {
     }
 
     func remove(for threadUniqueId: String, tx: DBWriteTransaction) {
-        let db = tx.databaseConnection
+        let db = tx.database
         do {
             try ThreadAssociatedData.filter(Column("threadUniqueId") == threadUniqueId).deleteAll(db)
         } catch {

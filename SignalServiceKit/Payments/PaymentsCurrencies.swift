@@ -14,7 +14,7 @@ public protocol PaymentsCurrencies: AnyObject {
 
     var currentCurrencyCode: Currency.Code { get }
 
-    func setCurrentCurrencyCode(_ currencyCode: Currency.Code, transaction: SDSAnyWriteTransaction)
+    func setCurrentCurrencyCode(_ currencyCode: Currency.Code, transaction: DBWriteTransaction)
 
     func updateConversationRatesIfStale()
 
@@ -90,7 +90,7 @@ public class MockPaymentsCurrencies: PaymentsCurrenciesSwift, PaymentsCurrencies
 
     public let currentCurrencyCode: Currency.Code = PaymentsConstants.currencyCodeGBP
 
-    public func setCurrentCurrencyCode(_ currencyCode: Currency.Code, transaction: SDSAnyWriteTransaction) {
+    public func setCurrentCurrencyCode(_ currencyCode: Currency.Code, transaction: DBWriteTransaction) {
         owsFail("Not implemented.")
     }
 

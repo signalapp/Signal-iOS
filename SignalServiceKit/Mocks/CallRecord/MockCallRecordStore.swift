@@ -33,7 +33,7 @@ class MockCallRecordStore: CallRecordStore {
         return .matchNotFound
     }
 
-    func fetchExisting(conversationId: CallRecord.ConversationID, limit: Int?, tx: any DBReadTransaction) throws -> [CallRecord] {
+    func fetchExisting(conversationId: CallRecord.ConversationID, limit: Int?, tx: DBReadTransaction) throws -> [CallRecord] {
         fatalError()
     }
 
@@ -48,7 +48,7 @@ class MockCallRecordStore: CallRecordStore {
         })
     }
 
-    func enumerateAdHocCallRecords(tx: any DBReadTransaction, block: (CallRecord) throws -> Void) throws {
+    func enumerateAdHocCallRecords(tx: DBReadTransaction, block: (CallRecord) throws -> Void) throws {
         try callRecords.forEach { record in
             guard record.callType == .adHocCall else { return }
             try block(record)
@@ -81,7 +81,7 @@ class MockCallRecordStore: CallRecordStore {
     }
 
     var askedToUpdateCallEndedTimestampTo: UInt64?
-    func updateCallEndedTimestamp(callRecord: CallRecord, callEndedTimestamp: UInt64, tx: any DBWriteTransaction) {
+    func updateCallEndedTimestamp(callRecord: CallRecord, callEndedTimestamp: UInt64, tx: DBWriteTransaction) {
         askedToUpdateCallEndedTimestampTo = callEndedTimestamp
     }
 

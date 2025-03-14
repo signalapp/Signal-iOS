@@ -299,10 +299,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     private nonisolated func buildGroupItem(
         _ groupThread: TSGroupThread,
         isBlocked: Bool,
-        transaction tx: SDSAnyReadTransaction
+        transaction tx: DBReadTransaction
     ) -> GroupConversationItem {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: tx.asV2Read)
+        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: tx)
         return GroupConversationItem(
             groupThreadId: groupThread.uniqueId,
             isBlocked: isBlocked,
@@ -313,11 +313,11 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     private nonisolated func buildContactItem(
         _ address: SignalServiceAddress,
         isBlocked: Bool,
-        transaction tx: SDSAnyReadTransaction
+        transaction tx: DBReadTransaction
     ) -> ContactConversationItem {
         let thread = TSContactThread.getWithContactAddress(address, transaction: tx)
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let dmConfig = thread.map { dmConfigurationStore.fetchOrBuildDefault(for: .thread($0), tx: tx.asV2Read) }
+        let dmConfig = thread.map { dmConfigurationStore.fetchOrBuildDefault(for: .thread($0), tx: tx) }
         let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx)
         return ContactConversationItem(
             address: address,
@@ -335,7 +335,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             var groupItems: [GroupConversationItem] = []
             var seenAddresses: Set<SignalServiceAddress> = Set()
 
-            let pinnedThreadIds = DependenciesBridge.shared.pinnedThreadStore.pinnedThreadIds(tx: transaction.asV2Read)
+            let pinnedThreadIds = DependenciesBridge.shared.pinnedThreadStore.pinnedThreadIds(tx: transaction)
 
             // We append any pinned threads at the start of the "recent"
             // section, so we decrease our maximum recent items based
@@ -361,7 +361,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 case let contactThread as TSContactThread:
                     let isThreadHidden = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
                         contactThread.contactAddress,
-                        tx: transaction.asV2Read
+                        tx: transaction
                     )
                     if isThreadHidden {
                         return
@@ -433,7 +433,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
                 let isRecipientHidden = DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(
                     address,
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
                 if isRecipientHidden {
                     return
@@ -1300,7 +1300,7 @@ internal class ConversationPickerCell: ContactTableViewCell {
 
     // MARK: - ContactTableViewCell
 
-    public func configure(conversationItem: ConversationItem, transaction: SDSAnyReadTransaction) {
+    public func configure(conversationItem: ConversationItem, transaction: DBReadTransaction) {
         let configuration: ContactCellConfiguration
         switch conversationItem.messageRecipient {
         case .contact(let address):

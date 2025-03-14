@@ -83,7 +83,7 @@ public class GRDBSchemaMigrator {
             // which won't work because migrations use a barrier block to prevent observing database state
             // before migration.
             try grdbStorageAdapter.read { transaction in
-                _ = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asAnyRead.asV2Read)?.aciAddress
+                _ = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress
             }
 
             // Finally, do data migrations.
@@ -98,7 +98,7 @@ public class GRDBSchemaMigrator {
         return allAppliedMigrations != previouslyAppliedMigrations
     }
 
-    private static func hasCreatedInitialSchema(transaction: GRDBReadTransaction) throws -> Bool {
+    private static func hasCreatedInitialSchema(transaction: DBReadTransaction) throws -> Bool {
         let appliedMigrations = try DatabaseMigrator().appliedIdentifiers(transaction.database)
         return appliedMigrations.contains(MigrationId.createInitialSchema.rawValue)
     }
@@ -395,7 +395,7 @@ public class GRDBSchemaMigrator {
             // Within the transaction this migration opens, check that we haven't already run
             // the initial schema migration, in case we are racing with another process that
             // is also running migrations.
-            guard try hasCreatedInitialSchema(transaction: GRDBReadTransaction(database: db)).negated else {
+            guard try hasCreatedInitialSchema(transaction: DBReadTransaction(database: db)).negated else {
                 // Already done!
                 return
             }
@@ -437,7 +437,7 @@ public class GRDBSchemaMigrator {
          */
         func registerMigration(
             _ identifier: MigrationId,
-            migrate: @escaping (GRDBWriteTransaction) throws -> Result<Void, Error>
+            migrate: @escaping (DBWriteTransaction) throws -> Result<Void, Error>
         ) {
             // Hold onto a reference to the migrator, so we can use its `appliedIdentifiers` method
             // which is really a static method since it uses no instance state, but needs a reference
@@ -479,7 +479,7 @@ public class GRDBSchemaMigrator {
                 }
 
                 Logger.info("Running migration: \(identifier)")
-                let transaction = GRDBWriteTransaction(database: database)
+                let transaction = DBWriteTransaction(database: database)
                 let result = try migrate(transaction)
                 switch result {
                 case .success:
@@ -581,7 +581,7 @@ public class GRDBSchemaMigrator {
             // Creating gallery records here can crash since it's run in the middle of schema migrations.
             // It instead has been moved to a separate Data Migration.
             // see: "dataMigration_populateGalleryItems"
-            // try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
+            // try createInitialGalleryRecords(transaction: DBWriteTransaction(database: db))
             return .success(())
         }
 
@@ -625,7 +625,7 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.dedupeSignalRecipients) { transaction in
             try autoreleasepool {
-                try dedupeSignalRecipients(transaction: transaction.asAnyWrite)
+                try dedupeSignalRecipients(transaction: transaction)
             }
 
             try transaction.database.drop(index: "index_signal_recipients_on_recipientPhoneNumber")
@@ -652,7 +652,7 @@ public class GRDBSchemaMigrator {
         // see: "dataMigration_populateGalleryItems"
         // migrator.registerMigration(.indexMediaGallery2) { db in
         //     // re-index the media gallery for those who failed to create during the initial YDB migration
-        //     try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
+        //     try createInitialGalleryRecords(transaction: DBWriteTransaction(database: db))
         // }
 
         migrator.registerMigration(.unreadThreadInteractions) { transaction in
@@ -873,7 +873,7 @@ public class GRDBSchemaMigrator {
             try transaction.database.drop(table: "model_OWSLinkedDeviceReadReceipt")
 
             let viewOnceStore = KeyValueStore(collection: "viewOnceMessages")
-            viewOnceStore.removeAll(transaction: transaction.asAnyWrite.asV2Write)
+            viewOnceStore.removeAll(transaction: transaction)
             return .success(())
         }
 
@@ -3956,16 +3956,16 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.dataMigration_enableV2RegistrationLockIfNecessary) { transaction in
-            guard DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction.asAnyWrite.asV2Write) else {
+            guard DependenciesBridge.shared.svr.hasMasterKey(transaction: transaction) else {
                 return .success(())
             }
 
-            OWS2FAManager.keyValueStore.setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction.asAnyWrite.asV2Write)
+            OWS2FAManager.keyValueStore.setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction)
             return .success(())
         }
 
         migrator.registerMigration(.dataMigration_resetStorageServiceData) { transaction in
-            SSKEnvironment.shared.storageServiceManagerRef.resetLocalData(transaction: transaction.asAnyWrite.asV2Write)
+            SSKEnvironment.shared.storageServiceManagerRef.resetLocalData(transaction: transaction)
             return .success(())
         }
 
@@ -3997,37 +3997,37 @@ public class GRDBSchemaMigrator {
             let screenSecurityKey = "Screen Security Key"
             guard !preferencesKeyValueStore.hasValue(
                 screenSecurityKey,
-                transaction: transaction.asAnyRead.asV2Read
+                transaction: transaction
             ) else {
                 return .success(())
             }
 
-            preferencesKeyValueStore.setBool(true, key: screenSecurityKey, transaction: transaction.asAnyWrite.asV2Write)
+            preferencesKeyValueStore.setBool(true, key: screenSecurityKey, transaction: transaction)
             return .success(())
         }
 
         migrator.registerMigration(.dataMigration_groupIdMapping) { transaction in
-            TSThread.anyEnumerate(transaction: transaction.asAnyWrite) { (thread: TSThread, _: UnsafeMutablePointer<ObjCBool>) in
+            TSThread.anyEnumerate(transaction: transaction) { (thread: TSThread, _: UnsafeMutablePointer<ObjCBool>) in
                 guard let groupThread = thread as? TSGroupThread else {
                     return
                 }
                 TSGroupThread.setGroupIdMappingForLegacyThread(
                     threadUniqueId: groupThread.uniqueId,
                     groupId: groupThread.groupId,
-                    tx: transaction.asAnyWrite
+                    tx: transaction
                 )
             }
             return .success(())
         }
 
         migrator.registerMigration(.dataMigration_disableSharingSuggestionsForExistingUsers) { transaction in
-            SSKPreferences.setAreIntentDonationsEnabled(false, transaction: transaction.asAnyWrite)
+            SSKPreferences.setAreIntentDonationsEnabled(false, transaction: transaction)
             return .success(())
         }
 
         migrator.registerMigration(.dataMigration_removeOversizedGroupAvatars) { transaction in
             var thrownError: Error?
-            TSGroupThread.anyEnumerate(transaction: transaction.asAnyWrite) { (thread: TSThread, stop: UnsafeMutablePointer<ObjCBool>) in
+            TSGroupThread.anyEnumerate(transaction: transaction) { (thread: TSThread, stop: UnsafeMutablePointer<ObjCBool>) in
                 guard let groupThread = thread as? TSGroupThread else { return }
                 guard let avatarData = groupThread.groupModel.legacyAvatarData else { return }
                 guard !TSGroupModel.isValidGroupAvatarData(avatarData) else { return }
@@ -4038,7 +4038,7 @@ public class GRDBSchemaMigrator {
 
                 do {
                     let newGroupModel = try builder.build()
-                    groupThread.update(with: newGroupModel, transaction: transaction.asAnyWrite)
+                    groupThread.update(with: newGroupModel, transaction: transaction)
                 } catch {
                     thrownError = error
                     stop.pointee = true
@@ -4089,7 +4089,7 @@ public class GRDBSchemaMigrator {
                     // as close to a fully qualified address as we can in the database,
                     // so defer to the address from the signal recipient (if one exists)
                     let recipient = DependenciesBridge.shared.recipientDatabaseTable
-                        .fetchRecipient(address: address, tx: transaction.asAnyRead.asV2Read)
+                        .fetchRecipient(address: address, tx: transaction)
                     let memberAddress = recipient?.address ?? address
 
                     guard let newAddress = NormalizedDatabaseRecordAddress(address: memberAddress) else {
@@ -4099,7 +4099,7 @@ public class GRDBSchemaMigrator {
                     guard TSGroupMember.groupMember(
                         for: memberAddress,
                         in: groupThreadId,
-                        transaction: transaction.asAnyWrite
+                        transaction: transaction
                     ) == nil else {
                         // If we already have a group member populated, for
                         // example from an earlier data migration, we should
@@ -4109,14 +4109,14 @@ public class GRDBSchemaMigrator {
 
                     let latestInteraction = interactionFinder.latestInteraction(
                         from: memberAddress,
-                        transaction: transaction.asAnyWrite
+                        transaction: transaction
                     )
                     let memberRecord = TSGroupMember(
                         address: newAddress,
                         groupThreadId: groupThread.uniqueId,
                         lastInteractionTimestamp: latestInteraction?.timestamp ?? 0
                     )
-                    memberRecord.anyInsert(transaction: transaction.asAnyWrite)
+                    memberRecord.anyInsert(transaction: transaction)
                 }
             }
             return .success(())
@@ -4136,7 +4136,7 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.dataMigration_moveToThreadAssociatedData) { transaction in
             var thrownError: Error?
-            TSThread.anyEnumerate(transaction: transaction.asAnyWrite) { (thread, stop: UnsafeMutablePointer<ObjCBool>) in
+            TSThread.anyEnumerate(transaction: transaction) { (thread, stop: UnsafeMutablePointer<ObjCBool>) in
                 do {
                     try ThreadAssociatedData(
                         threadUniqueId: thread.uniqueId,
@@ -4155,7 +4155,7 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.dataMigration_senderKeyStoreKeyIdMigration) { transaction in
-            SenderKeyStore.performKeyIdMigration(transaction: transaction.asAnyWrite)
+            SenderKeyStore.performKeyIdMigration(transaction: transaction)
             return .success(())
         }
 
@@ -4182,7 +4182,7 @@ public class GRDBSchemaMigrator {
                     try groupModel.persistAvatarData(legacyAvatarData)
                     groupModel.legacyAvatarData = nil
 
-                    thread.anyUpsert(transaction: transaction.asAnyWrite)
+                    thread.anyUpsert(transaction: transaction)
                 }
             }
 
@@ -4197,7 +4197,7 @@ public class GRDBSchemaMigrator {
             // available in SignalMessaging.Preferences.
             let preferencesKeyValueStore = KeyValueStore(collection: Self.migrationSideEffectsCollectionName)
             let key = Self.avatarRepairAttemptCount
-            preferencesKeyValueStore.setInt(0, key: key, transaction: transaction.asAnyWrite.asV2Write)
+            preferencesKeyValueStore.setInt(0, key: key, transaction: transaction)
             return .success(())
         }
 
@@ -4205,8 +4205,8 @@ public class GRDBSchemaMigrator {
             // This is a bit of a layering violation, since these tables were previously managed in the app layer.
             // In the long run we'll have a general "unused KeyValueStore cleaner" migration,
             // but for now this should drop 2000 or so rows for free.
-            KeyValueStore(collection: "Emoji+availableStore").removeAll(transaction: transaction.asAnyWrite.asV2Write)
-            KeyValueStore(collection: "Emoji+metadataStore").removeAll(transaction: transaction.asAnyWrite.asV2Write)
+            KeyValueStore(collection: "Emoji+availableStore").removeAll(transaction: transaction)
+            KeyValueStore(collection: "Emoji+metadataStore").removeAll(transaction: transaction)
             return .success(())
         }
 
@@ -4225,7 +4225,7 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.dataMigration_syncGroupStories) { transaction in
-            for thread in ThreadFinder().storyThreads(includeImplicitGroupThreads: false, transaction: transaction.asAnyRead) {
+            for thread in ThreadFinder().storyThreads(includeImplicitGroupThreads: false, transaction: transaction) {
                 guard let thread = thread as? TSGroupThread else { continue }
                 SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(groupModel: thread.groupModel)
             }
@@ -4292,13 +4292,13 @@ public class GRDBSchemaMigrator {
             // the primary device's system contacts are synced.
 
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard tsAccountManager.registrationState(tx: transaction.asAnyRead.asV2Read).isPrimaryDevice ?? false else {
+            guard tsAccountManager.registrationState(tx: transaction).isPrimaryDevice ?? false else {
                 return .success(())
             }
 
             var accountsToRemove: Set<SignalAccount> = []
 
-            SignalAccount.anyEnumerate(transaction: transaction.asAnyRead) { account, _ in
+            SignalAccount.anyEnumerate(transaction: transaction) { account, _ in
                 guard account.isFromLocalAddressBook else {
                     // Skip any accounts that do not have a system contact
                     return
@@ -4366,7 +4366,7 @@ public class GRDBSchemaMigrator {
             DELETE FROM "\(SearchableNameIndexerImpl.Constants.databaseTableName)"
             """)
             let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
-            searchableNameIndexer.indexEverything(tx: tx.asAnyWrite.asV2Write)
+            searchableNameIndexer.indexEverything(tx: tx)
             return .success(())
         }
 
@@ -4378,7 +4378,7 @@ public class GRDBSchemaMigrator {
             ]
 
             for collection in keyValueCollections {
-                KeyValueStore(collection: collection).removeAll(transaction: transaction.asAnyWrite.asV2Write)
+                KeyValueStore(collection: collection).removeAll(transaction: transaction)
             }
 
             return .success(())
@@ -4391,7 +4391,7 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.dataMigration_resetLinkedDeviceAuthorMergeBuilder) { tx in
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard tsAccountManager.registrationState(tx: tx.asAnyRead.asV2Read).isPrimaryDevice != true else {
+            guard tsAccountManager.registrationState(tx: tx).isPrimaryDevice != true else {
                 return .success(())
             }
 
@@ -4401,7 +4401,7 @@ public class GRDBSchemaMigrator {
             ]
 
             for collection in keyValueCollections {
-                KeyValueStore(collection: collection).removeAll(transaction: tx.asAnyWrite.asV2Write)
+                KeyValueStore(collection: collection).removeAll(transaction: tx)
             }
             return .success(())
         }
@@ -4411,7 +4411,7 @@ public class GRDBSchemaMigrator {
 
     // MARK: - Migrations
 
-    static func migrateThreadReplyInfos(transaction: GRDBWriteTransaction) throws {
+    static func migrateThreadReplyInfos(transaction: DBWriteTransaction) throws {
         let collection = "TSThreadReplyInfo"
         try transaction.database.execute(
             sql: """
@@ -4435,7 +4435,7 @@ public class GRDBSchemaMigrator {
     }
 
     static func migrateVoiceMessageDrafts(
-        transaction: GRDBWriteTransaction,
+        transaction: DBWriteTransaction,
         appSharedDataUrl: URL,
         copyItem: (URL, URL) throws -> Void
     ) throws {
@@ -4480,7 +4480,7 @@ public class GRDBSchemaMigrator {
         }
     }
 
-    internal static func createEditRecordTable(tx: GRDBWriteTransaction) throws {
+    internal static func createEditRecordTable(tx: DBWriteTransaction) throws {
         try tx.database.create(
             table: "EditRecord"
         ) { table in
@@ -4515,7 +4515,7 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    internal static func migrateEditRecordTable(tx: GRDBWriteTransaction) throws {
+    internal static func migrateEditRecordTable(tx: DBWriteTransaction) throws {
         let finalTableName = EditRecord.databaseTableName
         let tempTableName = "\(finalTableName)_temp"
 
@@ -4629,7 +4629,7 @@ public class GRDBSchemaMigrator {
         """)
     }
 
-    static func createV2AttachmentTables(_ tx: GRDBWriteTransaction) throws -> Result<Void, Error> {
+    static func createV2AttachmentTables(_ tx: DBWriteTransaction) throws -> Result<Void, Error> {
 
         // MARK: Attachment table
 
@@ -4999,7 +4999,7 @@ public class GRDBSchemaMigrator {
         return .success(())
     }
 
-    static func addOriginalAttachmentIdForQuotedReplyColumn(_ tx: GRDBWriteTransaction) throws -> Result<Void, Error> {
+    static func addOriginalAttachmentIdForQuotedReplyColumn(_ tx: DBWriteTransaction) throws -> Result<Void, Error> {
         try tx.database.alter(table: "Attachment") { table in
             table.add(column: "originalAttachmentIdForQuotedReply", .integer)
                 .references("Attachment", column: "id", onDelete: .setNull)
@@ -5015,7 +5015,7 @@ public class GRDBSchemaMigrator {
         return .success(())
     }
 
-    static func migrateBlockedRecipients(tx: GRDBWriteTransaction) throws {
+    static func migrateBlockedRecipients(tx: DBWriteTransaction) throws {
         try tx.database.create(table: "BlockedRecipient") { table in
             table.column("recipientId", .integer)
                 .primaryKey()
@@ -5091,7 +5091,7 @@ public class GRDBSchemaMigrator {
         }
     }
 
-    private static func isPhoneNumberVisible(phoneNumber: String, aciString: String, tx: GRDBWriteTransaction) throws -> Bool {
+    private static func isPhoneNumberVisible(phoneNumber: String, aciString: String, tx: DBWriteTransaction) throws -> Bool {
         let isSystemContact = try Int.fetchOne(
             tx.database,
             sql: "SELECT 1 FROM model_SignalAccount WHERE recipientPhoneNumber IS ?",
@@ -5113,7 +5113,7 @@ public class GRDBSchemaMigrator {
         return !isPhoneNumberHidden
     }
 
-    private static func fetchAndClearBlockedIdentifiers(key: String, tx: GRDBWriteTransaction) throws -> [String] {
+    private static func fetchAndClearBlockedIdentifiers(key: String, tx: DBWriteTransaction) throws -> [String] {
         let collection = "kOWSBlockingManager_BlockedPhoneNumbersCollection"
         let dataValue = try Data.fetchOne(
             tx.database,
@@ -5133,7 +5133,7 @@ public class GRDBSchemaMigrator {
         }
     }
 
-    private static func fetchOrCreateRecipientV1(aciString: String, tx: GRDBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func fetchOrCreateRecipientV1(aciString: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
         let db = tx.database
         let existingRecipientId = try Int64.fetchOne(db, sql: "SELECT id FROM model_SignalRecipient WHERE recipientUUID IS ?", arguments: [aciString])
         if let existingRecipientId {
@@ -5142,7 +5142,7 @@ public class GRDBSchemaMigrator {
         return try createRecipientV1(aciString: aciString, phoneNumber: nil, tx: tx)
     }
 
-    private static func fetchOrCreateRecipientV1(phoneNumber: String, tx: GRDBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func fetchOrCreateRecipientV1(phoneNumber: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
         let db = tx.database
         let existingRecipientId = try Int64.fetchOne(db, sql: "SELECT id FROM model_SignalRecipient WHERE recipientPhoneNumber IS ?", arguments: [phoneNumber])
         if let existingRecipientId {
@@ -5151,7 +5151,7 @@ public class GRDBSchemaMigrator {
         return try createRecipientV1(aciString: nil, phoneNumber: phoneNumber, tx: tx)
     }
 
-    private static func createRecipientV1(aciString: String?, phoneNumber: String?, tx: GRDBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func createRecipientV1(aciString: String?, phoneNumber: String?, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
         try tx.database.execute(
             sql: """
             INSERT INTO "model_SignalRecipient" ("recordType", "uniqueId", "devices", "recipientPhoneNumber", "recipientUUID") VALUES (31, ?, ?, ?, ?)
@@ -5166,15 +5166,15 @@ public class GRDBSchemaMigrator {
         return tx.database.lastInsertedRowID
     }
 
-    private static func fetchRecipientAciString(recipientId: SignalRecipient.RowId, tx: GRDBWriteTransaction) throws -> String? {
+    private static func fetchRecipientAciString(recipientId: SignalRecipient.RowId, tx: DBWriteTransaction) throws -> String? {
         return try String.fetchOne(tx.database, sql: "SELECT recipientUUID FROM model_SignalRecipient WHERE id = ?", arguments: [recipientId])
     }
 
-    private static func fetchRecipientUniqueId(recipientId: SignalRecipient.RowId, tx: GRDBWriteTransaction) throws -> String? {
+    private static func fetchRecipientUniqueId(recipientId: SignalRecipient.RowId, tx: DBWriteTransaction) throws -> String? {
         return try String.fetchOne(tx.database, sql: "SELECT uniqueId FROM model_SignalRecipient WHERE id = ?", arguments: [recipientId])
     }
 
-    static func addCallLinkTable(tx: GRDBWriteTransaction) throws {
+    static func addCallLinkTable(tx: DBWriteTransaction) throws {
         try tx.database.create(table: "CallLink") { table in
             table.column("id", .integer).primaryKey()
             table.column("roomId", .blob).notNull().unique()
@@ -5360,7 +5360,7 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    private static func fetchAndClearBlockedGroupIds(tx: GRDBWriteTransaction) throws -> [Data] {
+    private static func fetchAndClearBlockedGroupIds(tx: DBWriteTransaction) throws -> [Data] {
         let collection = "kOWSBlockingManager_BlockedPhoneNumbersCollection"
         let key = "kOWSBlockingManager_BlockedGroupMapKey"
         let dataValue = try Data.fetchOne(
@@ -5397,7 +5397,7 @@ public class GRDBSchemaMigrator {
         return Array(((groupIdMap as? [Data: TSBlockedGroupModel]) ?? [:]).keys)
     }
 
-    public static func rebuildIncompleteViewOnceIndex(tx: GRDBWriteTransaction) throws {
+    public static func rebuildIncompleteViewOnceIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(sql: """
             DROP INDEX IF EXISTS "index_interactions_on_view_once"
             """
@@ -5411,14 +5411,14 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func removeInteractionThreadUniqueIdUniqueIdIndex(tx: GRDBWriteTransaction) throws {
+    public static func removeInteractionThreadUniqueIdUniqueIdIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(sql: """
             DROP INDEX IF EXISTS "index_interactions_on_uniqueId_and_threadUniqueId"
             """
         )
     }
 
-    public static func rebuildDisappearingMessagesIndex(tx: GRDBWriteTransaction) throws {
+    public static func rebuildDisappearingMessagesIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(sql: """
             DROP INDEX IF EXISTS "index_interactions_on_expiresInSeconds_and_expiresAt"
             """
@@ -5432,14 +5432,14 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func removeInteractionAttachmentIdsIndex(tx: GRDBWriteTransaction) throws {
+    public static func removeInteractionAttachmentIdsIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(sql: """
             DROP INDEX IF EXISTS "index_model_TSInteraction_on_uniqueThreadId_and_attachmentIds"
             """
         )
     }
 
-    public static func rebuildInteractionTimestampIndex(tx: GRDBWriteTransaction) throws {
+    public static func rebuildInteractionTimestampIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(sql: """
             DROP INDEX IF EXISTS "index_interactions_on_timestamp_sourceDeviceId_and_authorUUID"
             """
@@ -5456,7 +5456,7 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func rebuildInteractionUnendedGroupCallIndex(tx: GRDBWriteTransaction) throws {
+    public static func rebuildInteractionUnendedGroupCallIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(sql: """
             DROP INDEX IF EXISTS "index_model_TSInteraction_on_uniqueThreadId_and_hasEnded_and_recordType"
             """
@@ -5472,7 +5472,7 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func rebuildInteractionGroupCallEraIdIndex(tx: GRDBWriteTransaction) throws {
+    public static func rebuildInteractionGroupCallEraIdIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(sql: """
             DROP INDEX IF EXISTS "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType"
             """
@@ -5486,7 +5486,7 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func rebuildInteractionStoryReplyIndex(tx: GRDBWriteTransaction) throws {
+    public static func rebuildInteractionStoryReplyIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(sql: """
             DROP INDEX IF EXISTS "index_model_TSInteraction_on_StoryContext"
             """
@@ -5500,14 +5500,14 @@ public class GRDBSchemaMigrator {
         )
     }
 
-    public static func removeInteractionConversationLoadCountIndex(tx: GRDBWriteTransaction) throws {
+    public static func removeInteractionConversationLoadCountIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(sql: """
             DROP INDEX IF EXISTS "index_model_TSInteraction_ConversationLoadInteractionCount"
             """
         )
     }
 
-    public static func removeInteractionConversationLoadDistanceIndex(tx: GRDBWriteTransaction) throws {
+    public static func removeInteractionConversationLoadDistanceIndex(tx: DBWriteTransaction) throws {
         try tx.database.execute(sql: """
             DROP INDEX IF EXISTS "index_model_TSInteraction_ConversationLoadInteractionDistance"
             """
@@ -5517,7 +5517,7 @@ public class GRDBSchemaMigrator {
 
 // MARK: -
 
-public func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throws {
+public func createInitialGalleryRecords(transaction: DBWriteTransaction) throws {
     /// This method used to insert `media_gallery_record` rows for every message attachment.
     /// Since the writing of this method, the table has been obsoleted. In between the original migration and its
     /// obsoletion, no other migration referenced the table. This migration used to reference live application code
@@ -5525,7 +5525,7 @@ public func createInitialGalleryRecords(transaction: GRDBWriteTransaction) throw
     /// will just be removed by a later migration before they're ever used.
 }
 
-private func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
+private func dedupeSignalRecipients(transaction: DBWriteTransaction) throws {
     var recipients: [SignalServiceAddress: [String]] = [:]
 
     SignalRecipient.anyEnumerate(transaction: transaction) { (recipient, _) in
@@ -5554,7 +5554,7 @@ private func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws 
         // accountId finder.
         guard
             let primaryRecipient = DependenciesBridge.shared.recipientDatabaseTable
-                .fetchRecipient(address: address, tx: transaction.asV2Read)
+                .fetchRecipient(address: address, tx: transaction)
         else {
             owsFailDebug("primaryRecipient was unexpectedly nil")
             continue
@@ -5572,7 +5572,7 @@ private func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws 
     }
 }
 
-private func hasRunMigration(_ identifier: String, transaction: GRDBReadTransaction) -> Bool {
+private func hasRunMigration(_ identifier: String, transaction: DBReadTransaction) -> Bool {
     do {
         return try String.fetchOne(
             transaction.database,

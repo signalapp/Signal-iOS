@@ -82,7 +82,7 @@ private final class FakeGalleryStore: MediaGallerySectionLoader {
         for date: GalleryDate,
         offset: Int,
         ascending: Bool,
-        transaction: SignalServiceKit.SDSAnyReadTransaction
+        transaction: SignalServiceKit.DBReadTransaction
     ) -> [DatedAttachmentReferenceId] {
         guard let items = itemsBySection[date] else {
             return []
@@ -141,7 +141,7 @@ private final class FakeGalleryStore: MediaGallerySectionLoader {
     func enumerateTimestamps(
         before date: Date,
         count: Int,
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (DatedAttachmentReferenceId) -> Void
     ) -> EnumerationCompletion {
         // It would be more efficient to binary search here, but this is for testing.
@@ -154,7 +154,7 @@ private final class FakeGalleryStore: MediaGallerySectionLoader {
     func enumerateTimestamps(
         after date: Date,
         count: Int,
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (DatedAttachmentReferenceId) -> Void
     ) -> EnumerationCompletion {
         // It would be more efficient to binary search here, but this is for testing.
@@ -167,7 +167,7 @@ private final class FakeGalleryStore: MediaGallerySectionLoader {
     func enumerateItems(
         in interval: DateInterval,
         range: Range<Int>,
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (_ offset: Int, _ attachmentId: AttachmentReferenceId, _ buildItem: () -> Item) -> Void
     ) {
         // It would be more efficient to binary search here, but this is for testing.

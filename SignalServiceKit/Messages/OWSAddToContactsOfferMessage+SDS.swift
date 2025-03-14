@@ -16,7 +16,7 @@ public extension OWSAddToContactsOfferMessage {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetchAddToContactsOfferMessage(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> OWSAddToContactsOfferMessage? {
         assert(!uniqueId.isEmpty)
 
@@ -32,7 +32,7 @@ public extension OWSAddToContactsOfferMessage {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateAddToContactsOfferMessage(transaction: SDSAnyWriteTransaction, block: (OWSAddToContactsOfferMessage) -> Void) {
+    func anyUpdateAddToContactsOfferMessage(transaction: DBWriteTransaction, block: (OWSAddToContactsOfferMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSAddToContactsOfferMessage else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")

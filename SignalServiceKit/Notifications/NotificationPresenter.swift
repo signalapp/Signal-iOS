@@ -8,21 +8,21 @@ public import LibSignalClient
 public protocol NotificationPresenter {
     func registerNotificationSettings() async
 
-    func notifyUser(forIncomingMessage: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction)
+    func notifyUser(forIncomingMessage: TSIncomingMessage, thread: TSThread, transaction: DBReadTransaction)
 
-    func notifyUser(forIncomingMessage: TSIncomingMessage, editTarget: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction)
+    func notifyUser(forIncomingMessage: TSIncomingMessage, editTarget: TSIncomingMessage, thread: TSThread, transaction: DBReadTransaction)
 
-    func notifyUser(forReaction: OWSReaction, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: SDSAnyReadTransaction)
+    func notifyUser(forReaction: OWSReaction, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: DBReadTransaction)
 
-    func notifyUser(forErrorMessage: TSErrorMessage, thread: TSThread, transaction: SDSAnyWriteTransaction)
+    func notifyUser(forErrorMessage: TSErrorMessage, thread: TSThread, transaction: DBWriteTransaction)
 
-    func notifyUser(forTSMessage: TSMessage, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction)
+    func notifyUser(forTSMessage: TSMessage, thread: TSThread, wantsSound: Bool, transaction: DBWriteTransaction)
 
-    func notifyUser(forPreviewableInteraction: TSInteraction & OWSPreviewText, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction)
+    func notifyUser(forPreviewableInteraction: TSInteraction & OWSPreviewText, thread: TSThread, wantsSound: Bool, transaction: DBWriteTransaction)
 
     func notifyTestPopulation(ofErrorMessage errorString: String)
 
-    func notifyUser(forFailedStorySend: StoryMessage, to: TSThread, transaction: SDSAnyWriteTransaction)
+    func notifyUser(forFailedStorySend: StoryMessage, to: TSThread, transaction: DBWriteTransaction)
 
     func notifyUserOfFailedSend(inThread thread: TSThread)
 
@@ -30,17 +30,17 @@ public protocol NotificationPresenter {
         notificationInfo: CallNotificationInfo,
         offerMediaType: TSRecentCallOfferType,
         sentAt timestamp: Date,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     )
 
     func notifyUserOfMissedCallBecauseOfNewIdentity(
         notificationInfo: CallNotificationInfo,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     )
 
     func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(
         notificationInfo: CallNotificationInfo,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     )
 
     func notifyForGroupCallSafetyNumberChange(

@@ -15,7 +15,7 @@ class UserProfileTest: SignalBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
     }
@@ -71,7 +71,7 @@ final class UserProfile2Test: XCTestCase {
     func testDecodeStableRow() throws {
         let db = InMemoryDB()
         try db.write { tx in
-            try tx.db.execute(sql: """
+            try tx.database.execute(sql: """
                 INSERT INTO "model_OWSUserProfile" (
                     "id","recordType","uniqueId","avatarFileName","avatarUrlPath","profileKey","profileName","recipientPhoneNumber","recipientUUID","familyName","lastFetchDate","lastMessagingDate","bio","bioEmoji","profileBadgeInfo","isStoriesCapable","canReceiveGiftBadges","isPniCapable"
                 ) VALUES (
@@ -117,7 +117,7 @@ final class UserProfile2Test: XCTestCase {
             """)
         }
         try db.read { tx in
-            let userProfiles = try OWSUserProfile.fetchAll(tx.db)
+            let userProfiles = try OWSUserProfile.fetchAll(tx.database)
             XCTAssertEqual(userProfiles.count, 2)
 
             XCTAssertEqual(userProfiles[0].id, 1)

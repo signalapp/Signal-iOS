@@ -167,7 +167,7 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable {
 // MARK: - Update in place
 
 extension SignalAccount {
-    func updateServiceId(_ newServiceId: ServiceId, tx: SDSAnyWriteTransaction) {
+    func updateServiceId(_ newServiceId: ServiceId, tx: DBWriteTransaction) {
         recipientServiceId = newServiceId
         anyOverwritingUpdate(transaction: tx)
     }
@@ -195,14 +195,14 @@ extension SignalAccount {
 // MARK: - DB Operation Hooks
 
 extension SignalAccount {
-    public func anyDidInsert(transaction: SDSAnyWriteTransaction) {
+    public func anyDidInsert(transaction: DBWriteTransaction) {
         let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
-        searchableNameIndexer.insert(self, tx: transaction.asV2Write)
+        searchableNameIndexer.insert(self, tx: transaction)
     }
 
-    public func anyDidUpdate(transaction: SDSAnyWriteTransaction) {
+    public func anyDidUpdate(transaction: DBWriteTransaction) {
         let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
-        searchableNameIndexer.update(self, tx: transaction.asV2Write)
+        searchableNameIndexer.update(self, tx: transaction)
     }
 }
 

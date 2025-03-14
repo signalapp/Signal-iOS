@@ -18,17 +18,17 @@ public class InteractionReactionState: NSObject {
     let emojiCounts: [EmojiCount]
     let localUserEmoji: String?
 
-    init?(interaction: TSInteraction, transaction: SDSAnyReadTransaction) {
+    init?(interaction: TSInteraction, transaction: DBReadTransaction) {
         // No reactions on non-message interactions
         guard let message = interaction as? TSMessage else { return nil }
 
-        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
+        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress else {
             owsFailDebug("missing local address")
             return nil
         }
 
         let finder = ReactionFinder(uniqueMessageId: message.uniqueId)
-        let allReactions = finder.allReactions(transaction: transaction.unwrapGrdbRead)
+        let allReactions = finder.allReactions(transaction: transaction)
         let localUserReaction = allReactions.first(where: { $0.reactor == localAddress })
 
         reactionsByEmoji = allReactions.reduce(

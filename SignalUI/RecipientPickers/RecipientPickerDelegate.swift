@@ -9,7 +9,7 @@ public protocol RecipientPickerDelegate: RecipientContextMenuHelperDelegate {
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         selectionStyleForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UITableViewCell.SelectionStyle
 
     func recipientPicker(
@@ -20,25 +20,25 @@ public protocol RecipientPickerDelegate: RecipientContextMenuHelperDelegate {
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> String?
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryViewForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> ContactCellAccessoryView?
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         attributedSubtitleForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> NSAttributedString?
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         shouldAllowUserInteractionForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController)
@@ -55,24 +55,24 @@ public extension RecipientPickerDelegate {
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction) -> String? { nil }
+        transaction: DBReadTransaction) -> String? { nil }
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryViewForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> ContactCellAccessoryView? { nil }
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         attributedSubtitleForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> NSAttributedString? { nil }
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         shouldAllowUserInteractionForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool { false }
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}

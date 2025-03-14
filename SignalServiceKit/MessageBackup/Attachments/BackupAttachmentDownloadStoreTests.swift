@@ -28,7 +28,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
 
         try db.write { tx in
             try attachmentRecord.insert(
-                tx.db
+                tx.database
             )
             let reference = try insertMessageAttachmentReferenceRecord(
                 attachmentRowId: attachmentRecord.sqliteId!,
@@ -40,7 +40,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
             try store.enqueue(reference, tx: tx)
 
             // Ensure the row exists.
-            let row = try QueuedBackupAttachmentDownload.fetchOne(tx.db)
+            let row = try QueuedBackupAttachmentDownload.fetchOne(tx.database)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
             XCTAssertEqual(row?.timestamp, 1234)
@@ -57,7 +57,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
             )
             try store.enqueue(reference, tx: tx)
 
-            let row = try QueuedBackupAttachmentDownload.fetchOne(tx.db)
+            let row = try QueuedBackupAttachmentDownload.fetchOne(tx.database)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
             XCTAssertEqual(row?.timestamp, 5678)
@@ -71,13 +71,13 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 // for the backup attachment download queue.
                 threadSource: .globalThreadWallpaperImage(creationTimestamp: 1)
             )
-            try referenceRecord.insert(tx.db)
+            try referenceRecord.insert(tx.database)
             try store.enqueue(
                 try AttachmentReference(record: referenceRecord),
                 tx: tx
             )
 
-            let row = try QueuedBackupAttachmentDownload.fetchOne(tx.db)
+            let row = try QueuedBackupAttachmentDownload.fetchOne(tx.database)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
             XCTAssertNil(row?.timestamp)
@@ -94,7 +94,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
             )
             try store.enqueue(reference, tx: tx)
 
-            let row = try QueuedBackupAttachmentDownload.fetchOne(tx.db)
+            let row = try QueuedBackupAttachmentDownload.fetchOne(tx.database)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
             // should not have overriden the nil timestamp
@@ -110,7 +110,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
 
             try db.write { tx in
                 try attachmentRecord.insert(
-                    tx.db
+                    tx.database
                 )
                 let reference = try insertMessageAttachmentReferenceRecord(
                     attachmentRowId: attachmentRecord.sqliteId!,
@@ -126,7 +126,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
         try db.read { tx in
             XCTAssertEqual(
                 timestamps.count,
-                try QueuedBackupAttachmentDownload.fetchCount(tx.db)
+                try QueuedBackupAttachmentDownload.fetchCount(tx.database)
             )
         }
 
@@ -159,15 +159,15 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
         }
     }
 
-    private func insertThread(tx: InMemoryDB.WriteTransaction) -> TSThread {
+    private func insertThread(tx: DBWriteTransaction) -> TSThread {
         let thread = TSThread(uniqueId: UUID().uuidString)
-        try! thread.asRecord().insert(tx.db)
+        try! thread.asRecord().insert(tx.database)
         return thread
     }
 
-    private func insertInteraction(thread: TSThread, tx: InMemoryDB.WriteTransaction) -> Int64 {
+    private func insertInteraction(thread: TSThread, tx: DBWriteTransaction) -> Int64 {
         let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
-        try! interaction.asRecord().insert(tx.db)
+        try! interaction.asRecord().insert(tx.database)
         return interaction.sqliteRowId!
     }
 
@@ -176,7 +176,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
         messageRowId: Int64,
         threadRowId: Int64,
         timestamp: UInt64,
-        tx: InMemoryDB.WriteTransaction
+        tx: DBWriteTransaction
     ) throws -> AttachmentReference {
         let record = AttachmentReference.MessageAttachmentReferenceRecord.init(
             attachmentRowId: attachmentRowId,
@@ -191,7 +191,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 isPastEditRevision: false
             ))
         )
-        try record.insert(tx.db)
+        try record.insert(tx.database)
         return try AttachmentReference(record: record)
     }
 }

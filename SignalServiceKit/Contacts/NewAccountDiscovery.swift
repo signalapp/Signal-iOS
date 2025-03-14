@@ -6,7 +6,7 @@
 import Foundation
 
 public enum NewAccountDiscovery {
-    public static func postNotification(for recipient: SignalRecipient, tx: SDSAnyWriteTransaction) {
+    public static func postNotification(for recipient: SignalRecipient, tx: DBWriteTransaction) {
         if recipient.address.isLocalAddress {
             return
         }

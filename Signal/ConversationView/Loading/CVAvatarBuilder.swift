@@ -17,7 +17,7 @@ import SignalUI
 //       works correctly.
 public class CVAvatarBuilder {
 
-    private let transaction: SDSAnyReadTransaction
+    private let transaction: DBReadTransaction
 
     // We _DO NOT_ want to use LRUCache here; we need to gather
     // all of the avatars for this load and retain them for the
@@ -25,7 +25,7 @@ public class CVAvatarBuilder {
     // TODO: Badges — Key off of avatar size? Badge size? Clear on badge update
     private var cache = [String: ConversationAvatarDataSource]()
 
-    init(transaction: SDSAnyReadTransaction) {
+    init(transaction: DBReadTransaction) {
         self.transaction = transaction
     }
 

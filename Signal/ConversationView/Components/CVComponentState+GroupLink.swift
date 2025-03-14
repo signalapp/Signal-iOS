@@ -107,7 +107,7 @@ extension CVComponentState {
 
         let touchMessage = {
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                SSKEnvironment.shared.databaseStorageRef.touch(interaction: message, shouldReindex: false, transaction: transaction)
+                SSKEnvironment.shared.databaseStorageRef.touch(interaction: message, shouldReindex: false, tx: transaction)
             }
         }
 

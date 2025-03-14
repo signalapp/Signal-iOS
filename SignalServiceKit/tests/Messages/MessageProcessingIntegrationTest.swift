@@ -40,7 +40,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
                     pni: Pni.randomForTesting(),
                     e164: .init(localE164Identifier)!
                 ),
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 
@@ -183,7 +183,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
         read { transaction in
             XCTAssertEqual(0, TSMessage.anyCount(transaction: transaction))
             XCTAssertEqual(0, TSThread.anyCount(transaction: transaction))
-            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobClient.serviceId, tx: transaction.asV2Read))
+            XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: bobClient.serviceId, tx: transaction))
         }
 
         let timestamp = MessageTimestampGenerator.sharedInstance.generateTimestamp()
@@ -217,7 +217,7 @@ class MessageProcessingIntegrationTest: SSKBaseTest {
                 break
             }
             self.read { transaction in
-                XCTAssert(identityManager.shouldSharePhoneNumber(with: self.bobClient.serviceId, tx: transaction.asV2Read))
+                XCTAssert(identityManager.shouldSharePhoneNumber(with: self.bobClient.serviceId, tx: transaction))
             }
         }
         waitForExpectations(timeout: 1.0)

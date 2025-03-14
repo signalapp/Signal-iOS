@@ -91,20 +91,20 @@ public class Preferences {
 
     private func hasValue(forKey key: Key) -> Bool {
         let result = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return keyValueStore.hasValue(key.rawValue, transaction: transaction.asV2Read)
+            return keyValueStore.hasValue(key.rawValue, transaction: transaction)
         }
         return result
     }
 
     private func removeValue(forKey key: Key) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            keyValueStore.removeValue(forKey: key.rawValue, transaction: transaction.asV2Write)
+            keyValueStore.removeValue(forKey: key.rawValue, transaction: transaction)
         }
     }
 
     private func bool(forKey key: Key, defaultValue: Bool) -> Bool {
         let result = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            keyValueStore.getBool(key.rawValue, defaultValue: defaultValue, transaction: transaction.asV2Read)
+            keyValueStore.getBool(key.rawValue, defaultValue: defaultValue, transaction: transaction)
         }
         return result
     }
@@ -115,33 +115,33 @@ public class Preferences {
         }
     }
 
-    private func setBool(_ value: Bool, forKey key: Key, tx: SDSAnyWriteTransaction) {
-        keyValueStore.setBool(value, key: key.rawValue, transaction: tx.asV2Write)
+    private func setBool(_ value: Bool, forKey key: Key, tx: DBWriteTransaction) {
+        keyValueStore.setBool(value, key: key.rawValue, transaction: tx)
     }
 
     private func uint(forKey key: Key, defaultValue: UInt) -> UInt {
         let result = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            keyValueStore.getUInt(key.rawValue, defaultValue: defaultValue, transaction: transaction.asV2Read)
+            keyValueStore.getUInt(key.rawValue, defaultValue: defaultValue, transaction: transaction)
         }
         return result
     }
 
     private func setUInt(_ value: UInt, forKey key: Key) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            keyValueStore.setUInt(value, key: key.rawValue, transaction: transaction.asV2Write)
+            keyValueStore.setUInt(value, key: key.rawValue, transaction: transaction)
         }
     }
 
     private func date(forKey key: Key) -> Date? {
         let date = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            keyValueStore.getDate(key.rawValue, transaction: transaction.asV2Read)
+            keyValueStore.getDate(key.rawValue, transaction: transaction)
         }
         return date
     }
 
     private func setDate(_ value: Date, forKey key: Key) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            keyValueStore.setDate(value, key: key.rawValue, transaction: transaction.asV2Write)
+            keyValueStore.setDate(value, key: key.rawValue, transaction: transaction)
         }
     }
 
@@ -149,16 +149,16 @@ public class Preferences {
         return SSKEnvironment.shared.databaseStorageRef.read { tx in getString(for: key, tx: tx) }
     }
 
-    private func getString(for key: Key, tx: SDSAnyReadTransaction) -> String? {
-        return keyValueStore.getString(key.rawValue, transaction: tx.asV2Read)
+    private func getString(for key: Key, tx: DBReadTransaction) -> String? {
+        return keyValueStore.getString(key.rawValue, transaction: tx)
     }
 
     private func setString(_ value: String?, forKey key: Key) {
         SSKEnvironment.shared.databaseStorageRef.write { tx in setString(value, for: key, tx: tx) }
     }
 
-    private func setString(_ value: String?, for key: Key, tx: SDSAnyWriteTransaction) {
-        keyValueStore.setString(value, key: key.rawValue, transaction: tx.asV2Write)
+    private func setString(_ value: String?, for key: Key, tx: DBWriteTransaction) {
+        keyValueStore.setString(value, key: key.rawValue, transaction: tx)
     }
 
     // MARK: Logging
@@ -210,11 +210,11 @@ public class Preferences {
         bool(forKey: .shouldShowUnidentifiedDeliveryIndicators, defaultValue: false)
     }
 
-    public func shouldShowUnidentifiedDeliveryIndicators(transaction: SDSAnyReadTransaction) -> Bool {
+    public func shouldShowUnidentifiedDeliveryIndicators(transaction: DBReadTransaction) -> Bool {
         keyValueStore.getBool(
             Key.shouldShowUnidentifiedDeliveryIndicators.rawValue,
             defaultValue: false,
-            transaction: transaction.asV2Read
+            transaction: transaction
         )
     }
 
@@ -226,16 +226,16 @@ public class Preferences {
     }
 
     @objc
-    public func setShouldShowUnidentifiedDeliveryIndicators(_ value: Bool, transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setBool(value, key: Key.shouldShowUnidentifiedDeliveryIndicators.rawValue, transaction: transaction.asV2Write)
+    public func setShouldShowUnidentifiedDeliveryIndicators(_ value: Bool, transaction: DBWriteTransaction) {
+        keyValueStore.setBool(value, key: Key.shouldShowUnidentifiedDeliveryIndicators.rawValue, transaction: transaction)
     }
 
-    public func shouldNotifyOfNewAccounts(transaction: SDSAnyReadTransaction) -> Bool {
-        keyValueStore.getBool(Key.shouldNotifyOfNewAccountKey.rawValue, defaultValue: false, transaction: transaction.asV2Read)
+    public func shouldNotifyOfNewAccounts(transaction: DBReadTransaction) -> Bool {
+        keyValueStore.getBool(Key.shouldNotifyOfNewAccountKey.rawValue, defaultValue: false, transaction: transaction)
     }
 
-    public func setShouldNotifyOfNewAccounts(_ value: Bool, transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setBool(value, key: Key.shouldNotifyOfNewAccountKey.rawValue, transaction: transaction.asV2Write)
+    public func setShouldNotifyOfNewAccounts(_ value: Bool, transaction: DBWriteTransaction) {
+        keyValueStore.setBool(value, key: Key.shouldNotifyOfNewAccountKey.rawValue, transaction: transaction)
     }
 
     public var cachedDeviceScale: CGFloat {
@@ -250,8 +250,8 @@ public class Preferences {
 
     // MARK: Calls
 
-    public func isSystemCallLogEnabled(tx: SDSAnyReadTransaction) -> Bool {
-        return keyValueStore.getBool(Key.systemCallLogEnabled.rawValue, defaultValue: true, transaction: tx.asV2Read)
+    public func isSystemCallLogEnabled(tx: DBReadTransaction) -> Bool {
+        return keyValueStore.getBool(Key.systemCallLogEnabled.rawValue, defaultValue: true, transaction: tx)
     }
 
     public func setIsSystemCallLogEnabled(_ value: Bool) {
@@ -277,8 +277,8 @@ public class Preferences {
         setBool(true, forKey: .wasViewOnceTooltipShown)
     }
 
-    public func wasGroupCallTooltipShown(withTransaction transaction: SDSAnyReadTransaction) -> Bool {
-        keyValueStore.getBool(Key.wasGroupCallTooltipShown.rawValue, defaultValue: false, transaction: transaction.asV2Read)
+    public func wasGroupCallTooltipShown(withTransaction transaction: DBReadTransaction) -> Bool {
+        keyValueStore.getBool(Key.wasGroupCallTooltipShown.rawValue, defaultValue: false, transaction: transaction)
     }
 
     public func incrementGroupCallTooltipShownCount() {
@@ -293,7 +293,7 @@ public class Preferences {
         }
     }
 
-    public func setWasGroupCallTooltipShown(tx: SDSAnyWriteTransaction) {
+    public func setWasGroupCallTooltipShown(tx: DBWriteTransaction) {
         setBool(true, forKey: .wasGroupCallTooltipShown, tx: tx)
     }
 
@@ -323,10 +323,10 @@ public class Preferences {
         setBool(value, forKey: .playSoundInForeground)
     }
 
-    public func notificationPreviewType(tx: SDSAnyReadTransaction) -> NotificationType {
+    public func notificationPreviewType(tx: DBReadTransaction) -> NotificationType {
         let rawValue = keyValueStore.getUInt(
             Key.notificationPreviewType.rawValue,
-            transaction: tx.asV2Read
+            transaction: tx
         )
         return rawValue.flatMap(NotificationType.init(rawValue:)) ?? .namePreview
     }
@@ -341,11 +341,11 @@ public class Preferences {
         string(forKey: .lastRecordedPushToken)
     }
 
-    public func getPushToken(tx: SDSAnyReadTransaction) -> String? {
+    public func getPushToken(tx: DBReadTransaction) -> String? {
         return getString(for: .lastRecordedPushToken, tx: tx)
     }
 
-    public func setPushToken(_ value: String, tx: SDSAnyWriteTransaction) {
+    public func setPushToken(_ value: String, tx: DBWriteTransaction) {
         setString(value, for: .lastRecordedPushToken, tx: tx)
     }
 

@@ -43,7 +43,7 @@ extension AttachmentMultisend {
                     // Don't set per-destination message bodies.
                     hydratedMessageBody = nil
                 } else {
-                    hydratedMessageBody = messageBody?.forForwarding(to: thread, transaction: tx.unwrapGrdbRead)
+                    hydratedMessageBody = messageBody?.forForwarding(to: thread, transaction: tx)
                 }
                 return .init(
                     conversationItem: conversation,

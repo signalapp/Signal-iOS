@@ -51,7 +51,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
             let bandwidthPreference = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 DependenciesBridge.shared.mediaBandwidthPreferenceStore.preference(
                     for: mediaDownloadType,
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
             }
             let preferenceName = MediaDownloadSettingsViewController.name(forMediaBandwidthPreference: bandwidthPreference)
@@ -80,7 +80,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
                 accessibilityIdentifier: resetAccessibilityIdentifier
             ) {
                 SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
-                    DependenciesBridge.shared.mediaBandwidthPreferenceStore.resetPreferences(tx: transaction.asV2Write)
+                    DependenciesBridge.shared.mediaBandwidthPreferenceStore.resetPreferences(tx: transaction)
                 }
             })
         } else {

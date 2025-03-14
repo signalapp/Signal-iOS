@@ -9,13 +9,13 @@ public import SignalServiceKit
 
 extension Wallpaper {
 
-    public static func viewBuilder(for thread: TSThread? = nil, tx: SDSAnyReadTransaction) -> WallpaperViewBuilder? {
+    public static func viewBuilder(for thread: TSThread? = nil, tx: DBReadTransaction) -> WallpaperViewBuilder? {
         AssertIsOnMainThread()
 
         let wallpaperStore = DependenciesBridge.shared.wallpaperStore
         guard let resolvedWallpaper = wallpaperStore.fetchWallpaperForRendering(
             for: thread?.uniqueId,
-            tx: tx.asV2Read
+            tx: tx
         ) else {
             return nil
         }
@@ -27,13 +27,13 @@ extension Wallpaper {
                     for: thread,
                     fetchBlock: {
                         if let thread = $0 {
-                            DependenciesBridge.shared.wallpaperImageStore.loadWallpaperImage(for: thread, tx: tx.asV2Read)
+                            DependenciesBridge.shared.wallpaperImageStore.loadWallpaperImage(for: thread, tx: tx)
                         } else {
-                            DependenciesBridge.shared.wallpaperImageStore.loadGlobalThreadWallpaper(tx: tx.asV2Read)
+                            DependenciesBridge.shared.wallpaperImageStore.loadGlobalThreadWallpaper(tx: tx)
                         }
                     })
             },
-            shouldDimInDarkTheme: wallpaperStore.fetchDimInDarkMode(for: thread?.uniqueId, tx: tx.asV2Read)
+            shouldDimInDarkTheme: wallpaperStore.fetchDimInDarkMode(for: thread?.uniqueId, tx: tx)
         )
     }
 

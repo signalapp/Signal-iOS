@@ -165,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (NSString *)infoMessagePreviewTextWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)infoMessagePreviewTextWithTransaction:(DBReadTransaction *)transaction
 {
     DisappearingMessageToken *newToken =
         [[DisappearingMessageToken alloc] initWithIsEnabled:self.configurationIsEnabled

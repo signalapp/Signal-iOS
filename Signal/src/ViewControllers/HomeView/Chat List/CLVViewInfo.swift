@@ -39,7 +39,7 @@ struct CLVViewInfo: Equatable {
         isMultiselectActive: Bool,
         lastSelectedThreadId: String?,
         hasVisibleReminders: Bool,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> CLVViewInfo {
         do {
             let requiredThreadIds: Set<String> = if inboxFilter != .none, let lastSelectedThreadId {

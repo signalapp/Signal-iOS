@@ -158,7 +158,7 @@ public class ContactCellView: ManualStackView {
     }
 
     public func configure(configuration: ContactCellConfiguration,
-                          transaction: SDSAnyReadTransaction) {
+                          transaction: DBReadTransaction) {
         AssertIsOnMainThread()
         owsAssertDebug(!shouldDeactivateConstraints)
 
@@ -280,7 +280,7 @@ public class ContactCellView: ManualStackView {
     }
 
     private func updateNameLabels(configuration: ContactCellConfiguration,
-                                  transaction: SDSAnyReadTransaction) {
+                                  transaction: DBReadTransaction) {
         AssertIsOnMainThread()
 
         let textColor = self.nameLabelColor(forceDarkAppearance: configuration.forceDarkAppearance)

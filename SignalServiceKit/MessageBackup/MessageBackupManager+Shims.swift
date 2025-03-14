@@ -46,7 +46,7 @@ public class _MessageBackup_BlockingManagerWrapper: _MessageBackup_BlockingManag
         return blockingManager.blockedAddresses(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func blockedGroupIds(tx: any DBReadTransaction) throws -> [Data] {
+    public func blockedGroupIds(tx: DBReadTransaction) throws -> [Data] {
         return try blockingManager.blockedGroupIds(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
@@ -74,15 +74,15 @@ public class _MessageBackup_ContactManagerWrapper: _MessageBackup_ContactManager
         self.contactManager = contactManager
     }
 
-    public func displayName(_ address: SignalServiceAddress, tx: any DBWriteTransaction) -> String {
+    public func displayName(_ address: SignalServiceAddress, tx: DBWriteTransaction) -> String {
         return contactManager.displayName(for: address, tx: SDSDB.shimOnlyBridge(tx)).resolvedValue()
     }
 
-    public func fetchSignalAccount(_ address: SignalServiceAddress, tx: any DBReadTransaction) -> SignalAccount? {
+    public func fetchSignalAccount(_ address: SignalServiceAddress, tx: DBReadTransaction) -> SignalAccount? {
         return contactManager.fetchSignalAccount(for: address, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func insertSignalAccount(_ account: SignalAccount, tx: any DBWriteTransaction) {
+    public func insertSignalAccount(_ account: SignalAccount, tx: DBWriteTransaction) {
         account.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
@@ -129,7 +129,7 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         self.profileManager = profileManager
     }
 
-    public func enumerateUserProfiles(tx: any DBReadTransaction, block: (OWSUserProfile) -> Void) {
+    public func enumerateUserProfiles(tx: DBReadTransaction, block: (OWSUserProfile) -> Void) {
         OWSUserProfile.anyEnumerate(transaction: SDSDB.shimOnlyBridge(tx)) { profile, _ in
             block(profile)
         }
@@ -139,11 +139,11 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         profileManager.userProfile(for: address, tx: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func getUserProfileForLocalUser(tx: any DBReadTransaction) -> OWSUserProfile? {
+    public func getUserProfileForLocalUser(tx: DBReadTransaction) -> OWSUserProfile? {
         return OWSUserProfile.getUserProfileForLocalUser(tx: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func allWhitelistedAddresses(tx: any DBReadTransaction) -> [SignalServiceAddress] {
+    public func allWhitelistedAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
         profileManager.allWhitelistedAddresses(tx: SDSDB.shimOnlyBridge(tx))
     }
 
@@ -206,7 +206,7 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
             return
         }
 
-        let sdsTx: SDSAnyWriteTransaction = SDSDB.shimOnlyBridge(tx)
+        let sdsTx: DBWriteTransaction = SDSDB.shimOnlyBridge(tx)
 
         /// We can't simply insert a profile here, because we might have created
         /// a profile through another flow (e.g., by setting a "missing" profile

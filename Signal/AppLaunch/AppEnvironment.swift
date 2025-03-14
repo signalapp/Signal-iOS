@@ -79,7 +79,7 @@ public class AppEnvironment: NSObject {
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             let isPrimaryDevice = SSKEnvironment.shared.databaseStorageRef.read { tx -> Bool in
-                return DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice ?? true
+                return DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? true
             }
 
             let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager

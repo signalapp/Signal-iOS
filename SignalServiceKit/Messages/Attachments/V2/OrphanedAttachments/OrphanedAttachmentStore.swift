@@ -29,7 +29,7 @@ public class OrphanedAttachmentStoreImpl: OrphanedAttachmentStore {
         tx: DBReadTransaction
     ) -> Bool {
         return (try? OrphanedAttachmentRecord.exists(
-            tx.databaseConnection,
+            tx.database,
             key: id
         )) ?? false
     }
@@ -38,6 +38,6 @@ public class OrphanedAttachmentStoreImpl: OrphanedAttachmentStore {
         _ record: inout OrphanedAttachmentRecord,
         tx: DBWriteTransaction
     ) throws {
-        try record.insert(tx.databaseConnection)
+        try record.insert(tx.database)
     }
 }

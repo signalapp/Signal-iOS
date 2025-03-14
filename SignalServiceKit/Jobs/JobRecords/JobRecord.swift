@@ -162,7 +162,7 @@ public class JobRecord: SDSCodableModel {
 // MARK: - Failures
 
 extension JobRecord {
-    public func addFailure(tx: SDSAnyWriteTransaction) {
+    public func addFailure(tx: DBWriteTransaction) {
         anyUpdate(transaction: tx) { record in record.failureCount += 1 }
     }
 }

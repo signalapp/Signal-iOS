@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SDSAnyWriteTransaction;
+@class DBWriteTransaction;
 @class SDSDatabaseStorage;
 
 @protocol SDSRecordDelegate
@@ -61,12 +61,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Data Store Write Hooks
 
-- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction;
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction;
-- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction;
-- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction;
-- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction;
-- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)anyWillInsertWithTransaction:(DBWriteTransaction *)transaction;
+- (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction;
+- (void)anyWillUpdateWithTransaction:(DBWriteTransaction *)transaction;
+- (void)anyDidUpdateWithTransaction:(DBWriteTransaction *)transaction;
+- (void)anyWillRemoveWithTransaction:(DBWriteTransaction *)transaction;
+- (void)anyDidRemoveWithTransaction:(DBWriteTransaction *)transaction;
 
 @end
 

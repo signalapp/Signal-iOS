@@ -271,11 +271,11 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     /// To reduce the occurrence of unnecessary avatar fetches, updates to the view configuration occur in a closure
     /// Configuration updates will be applied all at once
-    public func update(_ transaction: SDSAnyReadTransaction, _ updateBlock: (inout Configuration) -> Void) {
+    public func update(_ transaction: DBReadTransaction, _ updateBlock: (inout Configuration) -> Void) {
         update(optionalTransaction: transaction, updateBlock)
     }
 
-    private func update(optionalTransaction transaction: SDSAnyReadTransaction?, _ updateBlock: (inout Configuration) -> Void) {
+    private func update(optionalTransaction transaction: DBReadTransaction?, _ updateBlock: (inout Configuration) -> Void) {
         AssertIsOnMainThread()
 
         let oldConfiguration = configuration
@@ -291,7 +291,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         updateModel(transaction: nil)
     }
 
-    private func updateModel(transaction readTx: SDSAnyReadTransaction?) {
+    private func updateModel(transaction readTx: DBReadTransaction?) {
         setNeedsModelUpdate()
         updateModelIfNecessary(transaction: readTx)
     }
@@ -299,7 +299,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // If the model has been dirtied, performs an update
     // If an async update is requested, the model is updated immediately with any available cached content
     // followed by enqueueing a full model update on a background thread.
-    private func updateModelIfNecessary(transaction readTx: SDSAnyReadTransaction?) {
+    private func updateModelIfNecessary(transaction readTx: DBReadTransaction?) {
         AssertIsOnMainThread()
 
         guard nextModelGeneration.get() > currentModelGeneration else { return }
@@ -817,7 +817,7 @@ public enum ConversationAvatarDataSource: Equatable, CustomStringConvertible {
         }
     }
 
-    private func performWithTransaction<T>(_ existingTx: SDSAnyReadTransaction?, _ block: (SDSAnyReadTransaction) -> T) -> T {
+    private func performWithTransaction<T>(_ existingTx: DBReadTransaction?, _ block: (DBReadTransaction) -> T) -> T {
         if let transaction = existingTx {
             return block(transaction)
         } else {
@@ -828,7 +828,7 @@ public enum ConversationAvatarDataSource: Equatable, CustomStringConvertible {
     }
 
     // TODO: Badges — Should this be async?
-    fileprivate func fetchBadge(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction?) -> UIImage? {
+    fileprivate func fetchBadge(configuration: ConversationAvatarView.Configuration, transaction: DBReadTransaction?) -> UIImage? {
         guard configuration.addBadgeIfApplicable else { return nil }
         guard configuration.sizeClass.badgeDiameter >= 16 else {
             // We never want to show a badge <= 16pts
@@ -861,7 +861,7 @@ public enum ConversationAvatarDataSource: Equatable, CustomStringConvertible {
         return configuration.sizeClass.fetchImageFromBadgeAssets(badgeAssets)
     }
 
-    fileprivate func buildImage(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction?) -> UIImage? {
+    fileprivate func buildImage(configuration: ConversationAvatarView.Configuration, transaction: DBReadTransaction?) -> UIImage? {
         switch self {
         case .thread(let contactThread as TSContactThread):
             return performWithTransaction(transaction) {
@@ -898,7 +898,7 @@ public enum ConversationAvatarDataSource: Equatable, CustomStringConvertible {
         }
     }
 
-    fileprivate func fetchCachedImage(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction?) -> UIImage? {
+    fileprivate func fetchCachedImage(configuration: ConversationAvatarView.Configuration, transaction: DBReadTransaction?) -> UIImage? {
         switch self {
         case .thread(let contactThread as TSContactThread):
             return performWithTransaction(transaction) {

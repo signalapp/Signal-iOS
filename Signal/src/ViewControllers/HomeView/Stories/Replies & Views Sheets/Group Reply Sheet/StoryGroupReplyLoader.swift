@@ -139,7 +139,7 @@ class StoryGroupReplyLoader {
         canReuseInteractions: Bool = true,
         updatedInteractionIds: Set<String>? = nil,
         deletedInteractionIds: Set<String>? = nil,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) {
         assertOnQueue(mode.queue)
 
@@ -167,25 +167,25 @@ class StoryGroupReplyLoader {
                     focusMessageId: messageBatchFetcher.uniqueIdsAndRowIds.first?.uniqueId,
                     reusableInteractions: reusableInteractions,
                     deletedInteractionIds: deletedInteractionIds,
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
             case .newer:
                 try self.messageLoader.loadNewerMessagePage(
                     reusableInteractions: reusableInteractions,
                     deletedInteractionIds: deletedInteractionIds,
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
             case .older:
                 try self.messageLoader.loadOlderMessagePage(
                     reusableInteractions: reusableInteractions,
                     deletedInteractionIds: deletedInteractionIds,
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
             case .reload:
                 try self.messageLoader.loadSameLocation(
                     reusableInteractions: reusableInteractions,
                     deletedInteractionIds: deletedInteractionIds,
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
             }
         } catch {
@@ -210,7 +210,7 @@ class StoryGroupReplyLoader {
         }
     }
 
-    private func buildItems(reusableInteractionIds: [String], transaction: SDSAnyReadTransaction) -> [String: StoryGroupReplyViewItem] {
+    private func buildItems(reusableInteractionIds: [String], transaction: DBReadTransaction) -> [String: StoryGroupReplyViewItem] {
         guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: threadUniqueId, transaction: transaction) else {
             owsFailDebug("Missing group thread for story")
             return replyItems
@@ -221,7 +221,7 @@ class StoryGroupReplyLoader {
         var messages = [(SignalServiceAddress, TSMessage)]()
         var authorAddresses = Set<SignalServiceAddress>()
 
-        let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress
+        let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)!.aciAddress
 
         for interaction in loadedInteractions {
             if let outgoingMessage = interaction as? TSOutgoingMessage {
@@ -337,7 +337,7 @@ private class StoryGroupReplyBatchFetcher: MessageLoaderBatchFetcher {
         self.storyTimestamp = storyTimestamp
     }
 
-    func refetch(tx: SDSAnyReadTransaction) {
+    func refetch(tx: DBReadTransaction) {
         uniqueIdsAndRowIds = InteractionFinder.groupReplyUniqueIdsAndRowIds(
             storyAuthor: storyAuthor,
             storyTimestamp: storyTimestamp,

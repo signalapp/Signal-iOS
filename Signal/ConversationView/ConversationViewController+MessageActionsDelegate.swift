@@ -49,7 +49,7 @@ extension ConversationViewController: MessageActionsDelegate {
             if let error = context.editManager.validateCanSendEdit(
                 targetMessageTimestamp: message.timestamp,
                 thread: self.thread,
-                tx: transaction.asV2Read
+                tx: transaction
             ) {
                 editValidationError = error
                 return
@@ -79,7 +79,7 @@ extension ConversationViewController: MessageActionsDelegate {
                         quotedReplyMessage: message,
                         quotedReply: quotedMessage,
                         originalMessage: originalMessage,
-                        tx: transaction.asV2Read
+                        tx: transaction
                     )
                 }
             }
@@ -193,7 +193,7 @@ extension ConversationViewController: MessageActionsDelegate {
                 }
                 return DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(
                     originalMessage: message,
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
             }
         }

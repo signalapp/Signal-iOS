@@ -8,14 +8,7 @@ import Foundation
 extension TSInteraction {
 
     @objc
-    public func fillInMissingSortIdForJustInsertedInteraction(transaction: SDSAnyReadTransaction) {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbRead):
-            fillInMissingSortIdForJustInsertedInteraction(transaction: grdbRead)
-        }
-    }
-
-    private func fillInMissingSortIdForJustInsertedInteraction(transaction: GRDBReadTransaction) {
+    public func fillInMissingSortIdForJustInsertedInteraction(transaction: DBReadTransaction) {
         guard self.sortId == 0 else {
             owsFailDebug("Unexpected sortId: \(sortId).")
             return
@@ -39,7 +32,7 @@ extension TSInteraction {
     /// Returns `false` if the receiver needs to be inserted into the database.
     private func updatePlaceholder(
         from sender: SignalServiceAddress,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> Bool {
         let placeholders: [OWSRecoverableDecryptionPlaceholder]
         do {
@@ -72,13 +65,13 @@ extension TSInteraction {
         } else {
             Logger.info("Placeholder not eligible for replacement, deleting.")
             DependenciesBridge.shared.interactionDeleteManager
-                .delete(placeholder, sideEffects: .default(), tx: transaction.asV2Write)
+                .delete(placeholder, sideEffects: .default(), tx: transaction)
             return false
         }
     }
 
     @objc
-    public func insertOrReplacePlaceholder(from sender: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
+    public func insertOrReplacePlaceholder(from sender: SignalServiceAddress, transaction: DBWriteTransaction) {
         if updatePlaceholder(from: sender, transaction: transaction) {
             Logger.info("Successfully replaced placeholder with interaction: \(timestamp)")
         } else {
@@ -105,11 +98,11 @@ extension TSInteraction {
     /// database. If possible, they should also be filtered as part of the database queries in the
     /// `mostRecentInteractionForInbox(transaction:)` implementations in InteractionFinder.swift.
     @objc
-    public func shouldAppearInInbox(transaction: SDSAnyReadTransaction) -> Bool {
+    public func shouldAppearInInbox(transaction: DBReadTransaction) -> Bool {
         return shouldAppearInInbox(groupUpdateItemsBuilder: { infoMessage in
             guard
                 let localIdentifiers = DependenciesBridge.shared.tsAccountManager
-                    .localIdentifiers(tx: transaction.asV2Read),
+                    .localIdentifiers(tx: transaction),
                 let updates = infoMessage.computedGroupUpdateItems(
                     localIdentifiers: localIdentifiers,
                     tx: transaction

@@ -7,9 +7,9 @@ public import Contacts
 import Foundation
 
 public protocol ContactManager: ContactsManagerProtocol {
-    func fetchSignalAccounts(for phoneNumbers: [String], transaction: SDSAnyReadTransaction) -> [SignalAccount?]
+    func fetchSignalAccounts(for phoneNumbers: [String], transaction: DBReadTransaction) -> [SignalAccount?]
 
-    func displayNames(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [DisplayName]
+    func displayNames(for addresses: [SignalServiceAddress], tx: DBReadTransaction) -> [DisplayName]
 
     func cnContactId(for phoneNumber: String) -> String?
 
@@ -17,22 +17,22 @@ public protocol ContactManager: ContactsManagerProtocol {
 }
 
 extension ContactManager {
-    public func fetchSignalAccount(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalAccount? {
+    public func fetchSignalAccount(for address: SignalServiceAddress, transaction: DBReadTransaction) -> SignalAccount? {
         guard let phoneNumber = address.phoneNumber else {
             return nil
         }
         return fetchSignalAccount(forPhoneNumber: phoneNumber, transaction: transaction)
     }
 
-    public func fetchSignalAccount(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> SignalAccount? {
+    public func fetchSignalAccount(forPhoneNumber phoneNumber: String, transaction: DBReadTransaction) -> SignalAccount? {
         return fetchSignalAccounts(for: [phoneNumber], transaction: transaction)[0]
     }
 
-    public func systemContactName(for phoneNumber: String, tx transaction: SDSAnyReadTransaction) -> DisplayName.SystemContactName? {
+    public func systemContactName(for phoneNumber: String, tx transaction: DBReadTransaction) -> DisplayName.SystemContactName? {
         return systemContactNames(for: [phoneNumber], tx: transaction)[0]
     }
 
-    public func systemContactNames(for phoneNumbers: [String], tx: SDSAnyReadTransaction) -> [DisplayName.SystemContactName?] {
+    public func systemContactNames(for phoneNumbers: [String], tx: DBReadTransaction) -> [DisplayName.SystemContactName?] {
         return fetchSignalAccounts(for: phoneNumbers, transaction: tx).map {
             guard let nameComponents = $0?.contactNameComponents() else {
                 return nil
@@ -44,7 +44,7 @@ extension ContactManager {
         }
     }
 
-    public func displayName(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> DisplayName {
+    public func displayName(for address: SignalServiceAddress, tx: DBReadTransaction) -> DisplayName {
         return displayNames(for: [address], tx: tx)[0]
     }
 

@@ -131,7 +131,7 @@ public class StoryStoreImpl: StoryStore {
         )
     }
 
-    public func getOrCreateMyStory(tx: any DBWriteTransaction) -> TSPrivateStoryThread {
+    public func getOrCreateMyStory(tx: DBWriteTransaction) -> TSPrivateStoryThread {
         return TSPrivateStoryThread.getOrCreateMyStory(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
@@ -143,7 +143,7 @@ public class StoryStoreImpl: StoryStore {
         addresses: [SignalServiceAddress],
         updateStorageService: Bool,
         updateHasSetMyStoryPrivacyIfNeeded: Bool,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         storyThread.updateWithName(
             name,

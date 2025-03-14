@@ -187,7 +187,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             SSKEnvironment.shared.databaseStorageRef.write { tx in
                 DependenciesBridge.shared.attachmentDownloadManager.cancelDownload(
                     for: pointerId,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
             return true

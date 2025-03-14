@@ -48,7 +48,7 @@ extension OWSRecipientIdentity {
 
     public class func groupContainsUnverifiedMember(
         _ threadUniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         let identityKeys = groupMemberIdentityKeys(
             in: threadUniqueId,
@@ -62,7 +62,7 @@ extension OWSRecipientIdentity {
 
     public class func noLongerVerifiedIdentityKeys(
         in threadUniqueId: String,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> [SignalServiceAddress: Data] {
         return groupMemberIdentityKeys(in: threadUniqueId, matching: .noLongerVerified, negated: false, tx: tx)
     }
@@ -122,35 +122,32 @@ extension OWSRecipientIdentity {
         matching verificationState: OWSVerificationState,
         negated: Bool,
         limit: Int = Int.max,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> [SignalServiceAddress: Data] {
-        switch tx.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            // There should always be a recipient UUID, but just in case there isn't provide a fake value that won't
-            // affect the results of the query.
-            let localRecipientAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
-            let sql = sqlQueryToFetchIdentityKeys(matching: verificationState, negated: negated, limit: limit)
-            do {
-                let args = [threadUniqueId, localRecipientAci?.serviceIdUppercaseString ?? "fake"]
-                let cursor = try Row.fetchCursor(grdbTransaction.database, sql: sql, arguments: StatementArguments(args))
-                var result = [SignalServiceAddress: Data]()
-                while let row = try cursor.next() {
-                    let normalizedAddress = NormalizedDatabaseRecordAddress(
-                        aci: (row[0] as String?).flatMap { try? Aci.parseFrom(serviceIdString: $0) },
-                        phoneNumber: row[1],
-                        pni: (row[2] as String?).flatMap { try? Pni.parseFrom(serviceIdString: $0) }
-                    )
-                    let address = SignalServiceAddress(
-                        serviceId: normalizedAddress?.serviceId,
-                        phoneNumber: normalizedAddress?.phoneNumber
-                    )
-                    result[address] = row[3]
-                }
-                return result
-            } catch {
-                owsFailDebug("error: \(error)")
-                return [:]
+        // There should always be a recipient UUID, but just in case there isn't provide a fake value that won't
+        // affect the results of the query.
+        let localRecipientAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci
+        let sql = sqlQueryToFetchIdentityKeys(matching: verificationState, negated: negated, limit: limit)
+        do {
+            let args = [threadUniqueId, localRecipientAci?.serviceIdUppercaseString ?? "fake"]
+            let cursor = try Row.fetchCursor(tx.database, sql: sql, arguments: StatementArguments(args))
+            var result = [SignalServiceAddress: Data]()
+            while let row = try cursor.next() {
+                let normalizedAddress = NormalizedDatabaseRecordAddress(
+                    aci: (row[0] as String?).flatMap { try? Aci.parseFrom(serviceIdString: $0) },
+                    phoneNumber: row[1],
+                    pni: (row[2] as String?).flatMap { try? Pni.parseFrom(serviceIdString: $0) }
+                )
+                let address = SignalServiceAddress(
+                    serviceId: normalizedAddress?.serviceId,
+                    phoneNumber: normalizedAddress?.phoneNumber
+                )
+                result[address] = row[3]
             }
+            return result
+        } catch {
+            owsFailDebug("error: \(error)")
+            return [:]
         }
     }
 }

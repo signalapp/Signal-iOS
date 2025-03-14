@@ -752,7 +752,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             DependenciesBridge.shared.accountAttributesUpdater.scheduleAccountAttributesUpdate(authedAccount: .implicit(), tx: $0)
 
             // Clear the experience upgrade if it was pending.
-            ExperienceUpgradeManager.clearExperienceUpgrade(.introducingPins, transaction: SDSDB.shimOnlyBridge($0).unwrapGrdbWrite)
+            ExperienceUpgradeManager.clearExperienceUpgrade(.introducingPins, transaction: SDSDB.shimOnlyBridge($0))
         }
     }
 }

@@ -42,7 +42,7 @@ public protocol PinnedThreadManager {
 public class PinnedThreadManagerObjcBridge: NSObject {
 
     @objc
-    static func handleUpdatedThread(_ thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        DependenciesBridge.shared.pinnedThreadManager.handleUpdatedThread(thread, tx: transaction.asV2Write)
+    static func handleUpdatedThread(_ thread: TSThread, transaction: DBWriteTransaction) {
+        DependenciesBridge.shared.pinnedThreadManager.handleUpdatedThread(thread, tx: transaction)
     }
 }

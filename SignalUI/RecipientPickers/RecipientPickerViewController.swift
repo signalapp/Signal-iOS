@@ -294,10 +294,10 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
             // should include your system contacts and the people you chat with.
             let whitelistedAddresses = Set(SSKEnvironment.shared.profileManagerRef.allWhitelistedRegisteredAddresses(tx: tx))
             let blockedAddresses = SSKEnvironment.shared.blockingManagerRef.blockedAddresses(transaction: tx)
-            let hiddenAddresses = DependenciesBridge.shared.recipientHidingManager.hiddenAddresses(tx: tx.asV2Read)
+            let hiddenAddresses = DependenciesBridge.shared.recipientHidingManager.hiddenAddresses(tx: tx)
 
             var resolvedAddresses = Set(whitelistedAddresses).subtracting(blockedAddresses).subtracting(hiddenAddresses)
-            if shouldHideLocalRecipient, let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) {
+            if shouldHideLocalRecipient, let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) {
                 resolvedAddresses.remove(localIdentifiers.aciAddress)
             }
 
@@ -874,13 +874,13 @@ extension RecipientPickerViewController {
 
     private func shouldShowContactAccessNotAllowedReminderItemWithSneakyTransaction() -> Bool {
         SSKEnvironment.shared.databaseStorageRef.read {
-            Self.keyValueStore.getBool(Self.showNotAllowedReminderKey, defaultValue: true, transaction: $0.asV2Read)
+            Self.keyValueStore.getBool(Self.showNotAllowedReminderKey, defaultValue: true, transaction: $0)
         }
     }
 
     private func hideShowContactAccessNotAllowedReminderItem() {
         SSKEnvironment.shared.databaseStorageRef.write {
-            Self.keyValueStore.setBool(false, key: Self.showNotAllowedReminderKey, transaction: $0.asV2Write)
+            Self.keyValueStore.setBool(false, key: Self.showNotAllowedReminderKey, transaction: $0)
         }
         reloadContent()
     }

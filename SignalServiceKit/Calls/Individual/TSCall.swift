@@ -24,7 +24,7 @@ extension TSCall: OWSReadTracking {
         thread: TSThread,
         circumstance: OWSReceiptCircumstance,
         shouldClearNotifications: Bool,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         if wasRead {
             return
@@ -42,13 +42,13 @@ extension TSCall: OWSReadTracking {
             if
                 let sqliteRowId = sqliteRowId,
                 let associatedCallRecord = callRecordStore.fetch(
-                    interactionRowId: sqliteRowId, tx: tx.asV2Read
+                    interactionRowId: sqliteRowId, tx: tx
                 )
             {
                 missedCallManager.markUnreadCallsInConversationAsRead(
                     beforeCallRecord: associatedCallRecord,
                     sendSyncMessage: true,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
         case .onLinkedDevice, .onLinkedDeviceWhilePendingMessageRequest:

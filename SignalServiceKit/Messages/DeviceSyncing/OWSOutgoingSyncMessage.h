@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SDSAnyReadTransaction;
+@class DBReadTransaction;
 @class SSKProtoSyncMessage;
 @class SSKProtoSyncMessageBuilder;
 @class TSContactThread;
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
                           additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
                             explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
                              skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
-                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+                                   transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                           uniqueId:(NSString *)uniqueId
@@ -71,13 +71,13 @@ NS_ASSUME_NONNULL_BEGIN
               wasNotCreatedLocally:(BOOL)wasNotCreatedLocally NS_UNAVAILABLE;
 
 - (instancetype)initWithLocalThread:(TSContactThread *)localThread
-                        transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
+                        transaction:(DBReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                       localThread:(TSContactThread *)localThread
-                      transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
+                      transaction:(DBReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction
     NS_SWIFT_NAME(syncMessageBuilder(transaction:));
 
 + (nullable SSKProtoSyncMessage *)buildSyncMessageProtoForMessageBuilder:

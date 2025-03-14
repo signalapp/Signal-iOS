@@ -48,7 +48,7 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                 let address = contactThread.contactAddress
 
                 let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-                let signalRecipient = recipientDatabaseTable.fetchRecipient(address: address, tx: transaction.asV2Read)
+                let signalRecipient = recipientDatabaseTable.fetchRecipient(address: address, tx: transaction)
 
                 section.add(.copyableItem(
                     label: "ACI",
@@ -92,7 +92,7 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                 ))
 
                 let identityManager = DependenciesBridge.shared.identityManager
-                let identityKey = identityManager.recipientIdentity(for: address, tx: transaction.asV2Read)?.identityKey
+                let identityKey = identityManager.recipientIdentity(for: address, tx: transaction)?.identityKey
                 section.add(.copyableItem(
                     label: "Identity Key",
                     value: identityKey?.hexadecimalString
@@ -133,7 +133,7 @@ public class ConversationInternalViewController: OWSTableViewController2 {
             sessionSection.add(.actionItem(withText: "Delete Session") {
                 SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     let aciStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci)
-                    aciStore.sessionStore.deleteAllSessions(for: address.serviceId!, tx: transaction.asV2Write)
+                    aciStore.sessionStore.deleteAllSessions(for: address.serviceId!, tx: transaction)
                 }
             })
 

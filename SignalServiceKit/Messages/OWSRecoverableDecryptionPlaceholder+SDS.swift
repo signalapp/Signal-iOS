@@ -16,7 +16,7 @@ public extension OWSRecoverableDecryptionPlaceholder {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetchRecoverableDecryptionPlaceholder(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> OWSRecoverableDecryptionPlaceholder? {
         assert(!uniqueId.isEmpty)
 
@@ -32,7 +32,7 @@ public extension OWSRecoverableDecryptionPlaceholder {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateRecoverableDecryptionPlaceholder(transaction: SDSAnyWriteTransaction, block: (OWSRecoverableDecryptionPlaceholder) -> Void) {
+    func anyUpdateRecoverableDecryptionPlaceholder(transaction: DBWriteTransaction, block: (OWSRecoverableDecryptionPlaceholder) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSRecoverableDecryptionPlaceholder else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")

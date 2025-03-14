@@ -322,7 +322,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     #endif
 
     @discardableResult
-    public func read<T>(block: (GRDBReadTransaction) throws -> T) throws -> T {
+    public func read<T>(block: (DBReadTransaction) throws -> T) throws -> T {
 
         #if TESTABLE_BUILD
         owsAssertDebug(Self.canOpenTransaction)
@@ -340,14 +340,14 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
         return try pool.read { database in
             try autoreleasepool {
-                try block(GRDBReadTransaction(database: database))
+                try block(DBReadTransaction(database: database))
             }
         }
     }
 
     @discardableResult
     public func writeWithTxCompletion<T>(
-        block: (GRDBWriteTransaction) -> TransactionCompletion<T>
+        block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) throws -> T {
 
         var value: T!
@@ -364,7 +364,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         return value
     }
 
-    public func read(block: (GRDBReadTransaction) -> Void) throws {
+    public func read(block: (DBReadTransaction) -> Void) throws {
 
         #if TESTABLE_BUILD
         owsAssertDebug(Self.canOpenTransaction)
@@ -381,12 +381,12 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
         try pool.read { database in
             autoreleasepool {
-                block(GRDBReadTransaction(database: database))
+                block(DBReadTransaction(database: database))
             }
         }
     }
 
-    public func writeWithTxCompletion(block: (GRDBWriteTransaction) -> TransactionCompletion<Void>) throws {
+    public func writeWithTxCompletion(block: (DBWriteTransaction) -> TransactionCompletion<Void>) throws {
         #if TESTABLE_BUILD
         owsAssertDebug(Self.canOpenTransaction)
         // Check for nested tractions.
@@ -401,13 +401,13 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         }
         #endif
 
-        var syncCompletions: [GRDBWriteTransaction.CompletionBlock] = []
-        var asyncCompletions: [GRDBWriteTransaction.AsyncCompletion] = []
+        var syncCompletions: [DBWriteTransaction.SyncCompletion] = []
+        var asyncCompletions: [DBWriteTransaction.AsyncCompletion] = []
 
         try pool.writeWithoutTransaction { database in
             try database.inTransaction {
                 let txCompletion: TransactionCompletion<Void> = autoreleasepool {
-                    let transaction = GRDBWriteTransaction(database: database)
+                    let transaction = DBWriteTransaction(database: database)
                     let txComplection = block(transaction)
                     transaction.finalizeTransaction()
 
@@ -908,10 +908,10 @@ extension GRDBDatabaseStorageAdapter {
     @discardableResult
     public static func checkIntegrity(databaseStorage: SDSDatabaseStorage) -> SqliteUtil.IntegrityCheckResult {
         func read<T>(block: (Database) -> T) -> T {
-            return databaseStorage.read { block($0.unwrapGrdbRead.database) }
+            return databaseStorage.read { block($0.database) }
         }
         func write<T>(block: (Database) -> T) -> T {
-            return databaseStorage.write { block($0.unwrapGrdbWrite.database) }
+            return databaseStorage.write { block($0.database) }
         }
 
         read { db in

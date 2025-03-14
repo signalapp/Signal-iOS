@@ -150,7 +150,7 @@ extension ConversationViewController: CVComponentDelegate {
             DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
                 message,
                 priority: .userInitiated,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
     }
@@ -605,7 +605,7 @@ extension ConversationViewController: CVComponentDelegate {
             // Reload the address from disk if we lack an ACI.
             let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
             return SSKEnvironment.shared.databaseStorageRef.read { tx in
-                return recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx.asV2Read)?.aci
+                return recipientDatabaseTable.fetchRecipient(phoneNumber: phoneNumber, transaction: tx)?.aci
             }
         }()
 
@@ -773,7 +773,7 @@ extension ConversationViewController: CVComponentDelegate {
 
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 DependenciesBridge.shared.interactionDeleteManager
-                    .delete(message, sideEffects: .default(), tx: tx.asV2Write)
+                    .delete(message, sideEffects: .default(), tx: tx)
             }
         }
     }

@@ -595,7 +595,7 @@ extension CVComponentSystemMessage {
     static func buildComponentState(interaction: TSInteraction,
                                     threadViewModel: ThreadViewModel,
                                     currentGroupThreadCallGroupId: GroupIdentifier?,
-                                    transaction: SDSAnyReadTransaction) -> CVComponentState.SystemMessage {
+                                    transaction: DBReadTransaction) -> CVComponentState.SystemMessage {
 
         let title = Self.title(forInteraction: interaction, transaction: transaction)
         let maybeOverrideTitleColor = Self.overrideTextColor(forInteraction: interaction)
@@ -608,7 +608,7 @@ extension CVComponentSystemMessage {
     }
 
     private static func title(forInteraction interaction: TSInteraction,
-                              transaction: SDSAnyReadTransaction) -> NSAttributedString {
+                              transaction: DBReadTransaction) -> NSAttributedString {
 
         let font = Self.textLabelFont
         let labelText = NSMutableAttributedString()
@@ -624,7 +624,7 @@ extension CVComponentSystemMessage {
             let infoMessage = interaction as? TSInfoMessage,
             infoMessage.messageType == .typeGroupUpdate,
             let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(
-                tx: transaction.asV2Read
+                tx: transaction
             ),
             let displayableGroupUpdates = infoMessage.displayableGroupUpdateItems(
                 localIdentifiers: localIdentifiers,
@@ -682,7 +682,7 @@ extension CVComponentSystemMessage {
 
     private static func systemMessageText(
         forInteraction interaction: TSInteraction,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> String {
         if let errorMessage = interaction as? TSErrorMessage {
             return errorMessage.previewText(transaction: transaction)
@@ -1010,10 +1010,10 @@ extension CVComponentSystemMessage {
     static func buildDefaultDisappearingMessageTimerState(
         interaction: TSInteraction,
         threadViewModel: ThreadViewModel,
-        transaction tx: SDSAnyReadTransaction
+        transaction tx: DBReadTransaction
     ) -> CVComponentState.SystemMessage {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let configuration = dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx.asV2Read)
+        let configuration = dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx)
 
         let labelText = NSMutableAttributedString()
         labelText.appendImage(
@@ -1038,7 +1038,7 @@ extension CVComponentSystemMessage {
         forInteraction interaction: TSInteraction,
         threadViewModel: ThreadViewModel,
         currentGroupThreadCallGroupId: GroupIdentifier?,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Action? {
         if let errorMessage = interaction as? TSErrorMessage {
             return action(forErrorMessage: errorMessage)
@@ -1115,7 +1115,7 @@ extension CVComponentSystemMessage {
     }
 
     private static func action(forInfoMessage infoMessage: TSInfoMessage,
-                               transaction: SDSAnyReadTransaction) -> Action? {
+                               transaction: DBReadTransaction) -> Action? {
 
         switch infoMessage.messageType {
         case .userNotRegistered,
@@ -1141,7 +1141,7 @@ extension CVComponentSystemMessage {
             let thread = { infoMessage.thread(tx: transaction) as? TSGroupThread }
             guard
                 let localIdentifiers = DependenciesBridge.shared.tsAccountManager
-                    .localIdentifiers(tx: transaction.asV2Read),
+                    .localIdentifiers(tx: transaction),
                 let items = infoMessage.computedGroupUpdateItems(
                     localIdentifiers: localIdentifiers,
                     tx: transaction

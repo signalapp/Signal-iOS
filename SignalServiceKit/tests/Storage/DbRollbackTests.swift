@@ -30,46 +30,46 @@ class SDSDatabaseStorageRollbackTest: SSKBaseTest {
 
     func test_writeNoRollback() {
         try? databaseStorage.write { tx in
-            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
-            kvStore.setBool(true, key: key, transaction: tx.asV2Write)
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
+            kvStore.setBool(true, key: key, transaction: tx)
             throw SomeError()
         }
 
         // Even though we threw an error, "normal" writes don't rollback.
         databaseStorage.read { tx in
-            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
+            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx))
         }
     }
 
     func test_writeNoRollback_async() async {
         try? await databaseStorage.awaitableWrite { tx in
-            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
-            kvStore.setBool(true, key: key, transaction: tx.asV2Write)
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
+            kvStore.setBool(true, key: key, transaction: tx)
             throw SomeError()
         }
 
         // Even though we threw an error, "normal" writes don't rollback.
         databaseStorage.read { tx in
-            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
+            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx))
         }
     }
 
     func test_writeWithTxCompletionRollback() {
         databaseStorage.writeWithTxCompletion { tx in
-            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Write))
-            kvStore.setBool(true, key: key, transaction: tx.asV2Write)
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
+            kvStore.setBool(true, key: key, transaction: tx)
             return .rollback(())
         }
 
         // Should have rolled back.
         databaseStorage.read { tx in
-            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
         }
 
         // Run it again but don't roll back this time.
         databaseStorage.writeWithTxCompletion { tx in
             do {
-                kvStore.setBool(true, key: key, transaction: tx.asV2Write)
+                kvStore.setBool(true, key: key, transaction: tx)
                 throw SomeError()
             } catch {
                 return .commit(())
@@ -78,26 +78,26 @@ class SDSDatabaseStorageRollbackTest: SSKBaseTest {
 
         // Should NOT have rolled back.
         databaseStorage.read { tx in
-            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
+            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx))
         }
     }
 
     func test_writeWithTxCompletionRollback_async() async {
         await databaseStorage.awaitableWriteWithTxCompletion { tx in
-            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
-            kvStore.setBool(true, key: key, transaction: tx.asV2Write)
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
+            kvStore.setBool(true, key: key, transaction: tx)
             return .rollback(())
         }
 
         // Should have rolled back.
         databaseStorage.read { tx in
-            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
+            XCTAssertFalse(kvStore.getBool(key, defaultValue: false, transaction: tx))
         }
 
         // Run it again but don't roll back this time.
         await databaseStorage.awaitableWriteWithTxCompletion { tx in
             do {
-                kvStore.setBool(true, key: key, transaction: tx.asV2Write)
+                kvStore.setBool(true, key: key, transaction: tx)
                 throw SomeError()
             } catch {
                 return .commit(())
@@ -106,7 +106,7 @@ class SDSDatabaseStorageRollbackTest: SSKBaseTest {
 
         // Should NOT have rolled back.
         databaseStorage.read { tx in
-            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx.asV2Read))
+            XCTAssertTrue(kvStore.getBool(key, defaultValue: false, transaction: tx))
         }
     }
 }
@@ -122,17 +122,17 @@ class InMemoryDBRollbackTest: XCTestCase {
 
         db = InMemoryDB()
         db.write { tx in
-            try! tx.databaseConnection.execute(sql: "CREATE TABLE testTable (value BOOLEAN);")
+            try! tx.database.execute(sql: "CREATE TABLE testTable (value BOOLEAN);")
         }
     }
 
-    func getBool(tx: InMemoryDB.ReadTransaction) -> Bool {
-        return try! Bool.fetchOne(tx.databaseConnection, sql: "SELECT value FROM testTable LIMIT 1;") ?? false
+    func getBool(tx: DBReadTransaction) -> Bool {
+        return try! Bool.fetchOne(tx.database, sql: "SELECT value FROM testTable LIMIT 1;") ?? false
     }
 
-    func setBool(_ newValue: Bool, tx: InMemoryDB.ReadTransaction) {
-        try! tx.databaseConnection.execute(sql: "DELETE FROM testTable;")
-        try! tx.databaseConnection.execute(sql: "INSERT INTO testTable VALUES (?);", arguments: [newValue])
+    func setBool(_ newValue: Bool, tx: DBReadTransaction) {
+        try! tx.database.execute(sql: "DELETE FROM testTable;")
+        try! tx.database.execute(sql: "INSERT INTO testTable VALUES (?);", arguments: [newValue])
     }
 
     // MARK: -
@@ -224,7 +224,7 @@ class InMemoryDBRollbackTest: XCTestCase {
     // MARK: - testing convenience methods
 
     func testConvenience_writeWithTxCompletionRollback() {
-        var writeBlock: (InMemoryDB.WriteTransaction) -> TransactionCompletion<String?> = { tx in
+        var writeBlock: (DBWriteTransaction) -> TransactionCompletion<String?> = { tx in
             return .commit("Hello, World!")
         }
 

@@ -429,7 +429,7 @@ class MediaPageViewController: UIPageViewController {
         let mediaAttachments: [ReferencedAttachment] = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             guard let rowId = messageForCurrentItem.sqliteRowId else { return [] }
             return DependenciesBridge.shared.attachmentStore
-                .fetchReferencedAttachments(for: .messageBodyAttachment(messageRowId: rowId), tx: transaction.asV2Read)
+                .fetchReferencedAttachments(for: .messageBodyAttachment(messageRowId: rowId), tx: transaction)
         }
 
         let mediaAttachmentStreams: [ReferencedAttachmentStream] = mediaAttachments.compactMap { attachment in

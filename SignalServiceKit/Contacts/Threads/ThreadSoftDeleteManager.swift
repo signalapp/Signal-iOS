@@ -23,13 +23,13 @@ public protocol ThreadSoftDeleteManager {
     func softDelete(
         threads: [TSThread],
         sendDeleteForMeSyncMessage: Bool,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     )
 
     func removeAllInteractions(
         thread: TSThread,
         sendDeleteForMeSyncMessage: Bool,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     )
 }
 
@@ -71,7 +71,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
     func softDelete(
         threads: [TSThread],
         sendDeleteForMeSyncMessage: Bool,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         var syncMessageContexts = [SyncMessageContext]()
 
@@ -111,7 +111,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
     func removeAllInteractions(
         thread: TSThread,
         sendDeleteForMeSyncMessage: Bool,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         var syncMessageContext: SyncMessageContext?
         if
@@ -143,7 +143,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
     private func softDelete(
         thread: TSThread,
         syncMessageContext: SyncMessageContext?,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         logger.info("Deleting thread with ID \(thread.uniqueId).")
 
@@ -177,7 +177,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
     private func removeAllInteractions(
         thread: TSThread,
         syncMessageContext: SyncMessageContext?,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let sdsTx = SDSDB.shimOnlyBridge(tx)
 
@@ -249,11 +249,11 @@ protocol _ThreadSoftDeleteManagerImpl_StoryManager_Shim {
 final class _ThreadSoftDeleteManagerImpl_StoryManager_Wrapper: _ThreadSoftDeleteManagerImpl_StoryManager_Shim {
     init() {}
 
-    func deleteAllStories(contactAci: Aci, tx: any DBWriteTransaction) {
+    func deleteAllStories(contactAci: Aci, tx: DBWriteTransaction) {
         StoryManager.deleteAllStories(forSender: contactAci, tx: SDSDB.shimOnlyBridge(tx))
     }
 
-    func deleteAllStories(groupId: Data, tx: any DBWriteTransaction) {
+    func deleteAllStories(groupId: Data, tx: DBWriteTransaction) {
         StoryManager.deleteAllStories(forGroupId: groupId, tx: SDSDB.shimOnlyBridge(tx))
     }
 }
@@ -277,8 +277,8 @@ final class _ThreadSoftDeleteManagerImpl_IntentsManager_Wrapper: _ThreadSoftDele
 #if TESTABLE_BUILD
 
 open class MockThreadSoftDeleteManager: ThreadSoftDeleteManager {
-    open func softDelete(threads: [TSThread], sendDeleteForMeSyncMessage: Bool, tx: any DBWriteTransaction) {}
-    open func removeAllInteractions(thread: TSThread, sendDeleteForMeSyncMessage: Bool, tx: any DBWriteTransaction) {}
+    open func softDelete(threads: [TSThread], sendDeleteForMeSyncMessage: Bool, tx: DBWriteTransaction) {}
+    open func removeAllInteractions(thread: TSThread, sendDeleteForMeSyncMessage: Bool, tx: DBWriteTransaction) {}
 }
 
 #endif

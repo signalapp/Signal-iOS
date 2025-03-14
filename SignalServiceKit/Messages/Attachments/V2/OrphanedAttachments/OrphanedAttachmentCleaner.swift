@@ -123,8 +123,8 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
         return id
     }
 
-    public func releasePendingAttachment(withId id: OrphanedAttachmentRecord.IDType, tx: any DBWriteTransaction) {
-        let db = tx.databaseConnection
+    public func releasePendingAttachment(withId id: OrphanedAttachmentRecord.IDType, tx: DBWriteTransaction) {
+        let db = tx.database
         let foundRecord = try! OrphanedAttachmentRecord.fetchOne(db, key: id)
         guard let foundRecord else {
             owsFailDebug("Pending attachment not marked for deletion")

@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
     showUnidentifiedDeliveryIndicators:(BOOL)showUnidentifiedDeliveryIndicators
                   showTypingIndicators:(BOOL)showTypingIndicators
                       sendLinkPreviews:(BOOL)sendLinkPreviews
-                           transaction:(SDSAnyReadTransaction *)transaction
+                           transaction:(DBReadTransaction *)transaction
 {
     self = [super initWithLocalThread:localThread transaction:transaction];
     if (!self) {
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction
 {
     SSKProtoSyncMessageConfigurationBuilder *configurationBuilder = [SSKProtoSyncMessageConfiguration builder];
     configurationBuilder.readReceipts = self.areReadReceiptsEnabled;

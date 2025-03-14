@@ -64,7 +64,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         displayableQuotedText: DisplayableText?,
         conversationStyle: ConversationStyle,
         isOutgoing: Bool,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> State {
         return State(
             quotedReplyModel: quotedReplyModel,
@@ -82,7 +82,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     static func stateForPreview(
         quotedReplyModel: QuotedReplyModel,
         conversationStyle: ConversationStyle,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> State {
         var displayableQuotedText: DisplayableText?
         if let body = quotedReplyModel.originalMessageBody, !body.text.isEmpty {

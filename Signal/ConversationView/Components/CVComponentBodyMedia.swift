@@ -383,7 +383,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
                     DependenciesBridge.shared.attachmentDownloadManager.cancelDownload(
                         for: pointer.attachment.id,
-                        tx: tx.asV2Write
+                        tx: tx
                     )
                 }
                 return true

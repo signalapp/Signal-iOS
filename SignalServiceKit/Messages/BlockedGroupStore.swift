@@ -7,14 +7,14 @@ import Foundation
 import GRDB
 
 protocol BlockedGroupStore {
-    func blockedGroupIds(tx: any DBReadTransaction) throws -> [Data]
-    func isBlocked(groupId: Data, tx: any DBReadTransaction) throws -> Bool
-    func setBlocked(_ isBlocked: Bool, groupId: Data, tx: any DBWriteTransaction) throws
+    func blockedGroupIds(tx: DBReadTransaction) throws -> [Data]
+    func isBlocked(groupId: Data, tx: DBReadTransaction) throws -> Bool
+    func setBlocked(_ isBlocked: Bool, groupId: Data, tx: DBWriteTransaction) throws
 }
 
 class BlockedGroupStoreImpl: BlockedGroupStore {
-    func blockedGroupIds(tx: any DBReadTransaction) throws -> [Data] {
-        let db = tx.databaseConnection
+    func blockedGroupIds(tx: DBReadTransaction) throws -> [Data] {
+        let db = tx.database
         do {
             return try BlockedGroup.fetchAll(db).map(\.groupId)
         } catch {
@@ -22,8 +22,8 @@ class BlockedGroupStoreImpl: BlockedGroupStore {
         }
     }
 
-    func isBlocked(groupId: Data, tx: any DBReadTransaction) throws -> Bool {
-        let db = tx.databaseConnection
+    func isBlocked(groupId: Data, tx: DBReadTransaction) throws -> Bool {
+        let db = tx.database
         do {
             return try BlockedGroup.filter(key: groupId).fetchOne(db) != nil
         } catch {
@@ -31,8 +31,8 @@ class BlockedGroupStoreImpl: BlockedGroupStore {
         }
     }
 
-    func setBlocked(_ isBlocked: Bool, groupId: Data, tx: any DBWriteTransaction) throws {
-        let db = tx.databaseConnection
+    func setBlocked(_ isBlocked: Bool, groupId: Data, tx: DBWriteTransaction) throws {
+        let db = tx.database
         do {
             if isBlocked {
                 try BlockedGroup(groupId: groupId).insert(db)

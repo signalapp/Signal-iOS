@@ -119,7 +119,7 @@ extension SignalApp {
             Logger.info("Attempting change number registration on app launch")
         }
         let coordinator = SSKEnvironment.shared.databaseStorageRef.write { tx in
-            return loader.coordinator(forDesiredMode: desiredMode, transaction: tx.asV2Write)
+            return loader.coordinator(forDesiredMode: desiredMode, transaction: tx)
         }
         let navController = RegistrationNavigationController.withCoordinator(coordinator, appReadiness: appReadiness)
 

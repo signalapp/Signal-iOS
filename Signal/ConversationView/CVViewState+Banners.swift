@@ -45,7 +45,7 @@ private class BannerHiding {
         self.hideForeverAfterNumberOfHides = hideForeverAfterNumberOfHides
     }
 
-    func isHidden(threadUniqueId threadId: String, transaction: SDSAnyReadTransaction) -> Bool {
+    func isHidden(threadUniqueId threadId: String, transaction: DBReadTransaction) -> Bool {
         guard let hiddenState = getHiddenState(forThreadId: threadId, transaction: transaction) else {
             // We've never hidden this banner before, so no reason to hide it now.
             return false
@@ -68,7 +68,7 @@ private class BannerHiding {
         return false
     }
 
-    func hide(threadUniqueId threadId: String, transaction: SDSAnyWriteTransaction) {
+    func hide(threadUniqueId threadId: String, transaction: DBWriteTransaction) {
         let stateToWrite: HiddenState
 
         if let existingHiddenState = getHiddenState(forThreadId: threadId, transaction: transaction) {
@@ -84,18 +84,18 @@ private class BannerHiding {
             try bannerHidingStore.setCodable(
                 stateToWrite,
                 key: Self.hiddenStateKey(forThreadId: threadId),
-                transaction: transaction.asV2Write
+                transaction: transaction
             )
         } catch let error {
             owsFailDebug("Caught error while encoding banner hiding state: \(error)!")
         }
     }
 
-    private func getHiddenState(forThreadId threadId: String, transaction: SDSAnyReadTransaction) -> HiddenState? {
+    private func getHiddenState(forThreadId threadId: String, transaction: DBReadTransaction) -> HiddenState? {
         do {
             return try bannerHidingStore.getCodableValue(
                 forKey: Self.hiddenStateKey(forThreadId: threadId),
-                transaction: transaction.asV2Read
+                transaction: transaction
             )
         } catch let error {
             owsFailDebug("Caught error while getting banner hiding state: \(error)!")
@@ -121,7 +121,7 @@ private class PendingMemberRequestsBannerHiding: BannerHiding {
     func isHidden(
         currentRequestingMemberAcis: [Aci],
         threadUniqueId threadId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         guard isHidden(threadUniqueId: threadId, transaction: transaction) else {
             return false
@@ -141,7 +141,7 @@ private class PendingMemberRequestsBannerHiding: BannerHiding {
     func hide(
         currentPendingMemberRequestAcis: [Aci],
         threadUniqueId threadId: String,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         super.hide(threadUniqueId: threadId, transaction: transaction)
 
@@ -153,7 +153,7 @@ private class PendingMemberRequestsBannerHiding: BannerHiding {
             try bannerHidingStore.setCodable(
                 newPendingMemberRequestState,
                 key: Self.requestingMembersStateKey(forThreadId: threadId),
-                transaction: transaction.asV2Write
+                transaction: transaction
             )
         } catch let error {
             owsFailDebug("Caught error while encoding banner hiding state: \(error)!")
@@ -162,12 +162,12 @@ private class PendingMemberRequestsBannerHiding: BannerHiding {
 
     private func getRequestingMembersState(
         forThreadId threadId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> RequestingMembersState? {
         do {
             return try bannerHidingStore.getCodableValue(
                 forKey: Self.requestingMembersStateKey(forThreadId: threadId),
-                transaction: transaction.asV2Read
+                transaction: transaction
             )
         } catch let error {
             owsFailDebug("Caught error while getting banner hiding state: \(error)!")
@@ -194,7 +194,7 @@ public extension CVViewState {
 
     func shouldShowPendingMemberRequestsBanner(
         currentPendingMembers: some Sequence<SignalServiceAddress>,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         let currentPendingMemberAcis = currentPendingMembers.compactMap { $0.serviceId as? Aci }
 
@@ -207,7 +207,7 @@ public extension CVViewState {
 
     func hidePendingMemberRequestsBanner(
         currentPendingMembers: some Sequence<SignalServiceAddress>,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         let currentPendingMemberAcis = currentPendingMembers.compactMap { $0.serviceId as? Aci }
 
@@ -218,11 +218,11 @@ public extension CVViewState {
         )
     }
 
-    func shouldShowMessageRequestNameCollisionBanner(transaction: SDSAnyReadTransaction) -> Bool {
+    func shouldShowMessageRequestNameCollisionBanner(transaction: DBReadTransaction) -> Bool {
         !Self.isMessageRequestNameCollisionBannerHiding.isHidden(threadUniqueId: threadUniqueId, transaction: transaction)
     }
 
-    func hideMessageRequestNameCollisionBanner(transaction: SDSAnyWriteTransaction) {
+    func hideMessageRequestNameCollisionBanner(transaction: DBWriteTransaction) {
         Self.isMessageRequestNameCollisionBannerHiding.hide(threadUniqueId: threadUniqueId, transaction: transaction)
     }
 }

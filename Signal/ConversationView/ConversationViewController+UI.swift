@@ -293,7 +293,7 @@ extension ConversationViewController {
                 }
                 if candidate is TSOutgoingMessage {
                     return DependenciesBridge.shared.tsAccountManager
-                        .localIdentifiers(tx: transaction.asV2Read)?.aci == draftReply.author
+                        .localIdentifiers(tx: transaction)?.aci == draftReply.author
                 }
                 return false
             }.first as? TSMessage
@@ -305,7 +305,7 @@ extension ConversationViewController {
             }
             return DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(
                 originalMessage: interaction,
-                tx: transaction.asV2Read
+                tx: transaction
             )
 
         }

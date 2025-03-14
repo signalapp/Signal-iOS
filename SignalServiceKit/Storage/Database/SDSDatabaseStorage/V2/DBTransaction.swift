@@ -3,47 +3,101 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+public import LibSignalClient
 public import GRDB
 
-/// Wrapper around `SDSAnyReadTransaction` that allows the generation
-/// of a "fake" instance in tests without touching existing code.
-///
-/// There should only ever be three concrete implementations of this protocol:
-/// * ``SDSDB.ReadTx``
-/// * ``InMemoryDB.ReadTransaction``
-/// * ``MockTransaction``
-///
-/// Classes wishing to access the database directly (things like FooStore) should
-/// access the database connection directly by using ``databaseConnection``.
-/// Classes that do not directly access the database should not access the database connection.
-///
-/// Shims can bridge to `SDSAnyReadTransaction` by using ``SDSDB.shimOnlyBridge``;
-/// this is made intentionally cumbersome as it should **never** be used in
-/// any concrete class and **only** in shim classes that bridge to old-style code.
-public protocol DBReadTransaction: AnyObject {
-    /// Actual connection to the database; use it to interact with database tables.
-    /// Refrain from reading this and passing it around in lieu of a transaction;
-    /// as much as possible pass transactions and only grab databaseConnection
-    /// directly at its usage site or as close to it as possible.
-    var databaseConnection: GRDB.Database { get }
+@objc
+public class DBReadTransaction: NSObject {
+    public let database: Database
+    public let startDate: Date
+
+    init(database: Database) {
+        self.database = database
+        self.startDate = Date()
+    }
 }
 
-/// Wrapper around `SDSAnyWriteTransaction` that allows the generation
-/// of a "fake" instance in tests without touching existing code.
-///
-/// There should only ever be two concrete implementations of this
-/// protocol: `SDSDB.WriteTx` and `MockWriteTransaction`
-///
-/// Classes wishing to access the database directly (things like FooStore) should
-/// access the database connection directly by using ``databaseConnection``.
-/// Classes that do not directly access the database should not access the database connection.
-///
-/// Shims can bridge to `SDSAnyWriteTransaction` by using ``SDSDB.shimOnlyBridge``;
-/// this is made intentionally cumbersome as it should **never** be used in
-/// any concrete class and **only** in shim classes that bridge to old-style code.
-public protocol DBWriteTransaction: DBReadTransaction {
-    func addFinalization(forKey key: String, block: @escaping () -> Void)
-    func addSyncCompletion(_ block: @escaping () -> Void)
-    func addAsyncCompletion(on scheduler: Scheduler, _ block: @escaping () -> Void)
+@objc
+public class DBWriteTransaction: DBReadTransaction, LibSignalClient.StoreContext {
+    private enum TransactionState {
+        case open
+        case finalizing
+        case finalized
+    }
+
+    typealias FinalizationBlock = (DBWriteTransaction) -> Void
+    typealias SyncCompletion = () -> Void
+    struct AsyncCompletion {
+        let scheduler: Scheduler
+        let block: () -> Void
+    }
+
+    private var transactionState: TransactionState
+    private var finalizationBlocks: [String: FinalizationBlock]
+    private(set) var syncCompletions: [SyncCompletion]
+    private(set) var asyncCompletions: [AsyncCompletion]
+
+    override init(database: Database) {
+        self.transactionState = .open
+        self.finalizationBlocks = [:]
+        self.syncCompletions = []
+        self.asyncCompletions = []
+
+        super.init(database: database)
+    }
+
+    deinit {
+        owsAssertDebug(
+            transactionState == .finalized,
+            "Write transaction deallocated without finalization!"
+        )
+    }
+
+    // MARK: -
+
+    func finalizeTransaction() {
+        guard transactionState == .open else {
+            owsFailDebug("Write transaction finalized multiple times!")
+            return
+        }
+
+        transactionState = .finalizing
+
+        for (_, finalizationBlock) in finalizationBlocks {
+            finalizationBlock(self)
+        }
+
+        finalizationBlocks.removeAll()
+        transactionState = .finalized
+    }
+
+    // MARK: -
+
+    /// Schedule the given block to run when this transaction is finalized.
+    ///
+    /// - Important
+    /// `block` must not capture any database models, as they may no longer be
+    /// valid by time the transaction finalizes.
+    func addFinalizationBlock(key: String, block: @escaping FinalizationBlock) {
+        finalizationBlocks[key] = block
+    }
+
+    /// Run the given block synchronously after the transaction is finalized.
+    public func addSyncCompletion(_ block: @escaping () -> Void) {
+        syncCompletions.append(block)
+    }
+
+    /// Schedule the given block to run on `scheduler` after the transaction is
+    /// finalized.
+    public func addAsyncCompletion(on scheduler: Scheduler, block: @escaping () -> Void) {
+        asyncCompletions.append(AsyncCompletion(scheduler: scheduler, block: block))
+    }
+}
+
+// MARK: -
+
+public extension LibSignalClient.StoreContext {
+    var asTransaction: DBWriteTransaction {
+        return self as! DBWriteTransaction
+    }
 }

@@ -25,7 +25,7 @@ public class MessageRecipientStatusUtils {
     public class func recipientStatusAndStatusMessage(
         outgoingMessage: TSOutgoingMessage,
         recipientState: TSOutgoingMessageRecipientState,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> (status: MessageReceiptStatus, shortStatusMessage: String, longStatusMessage: String) {
         let hasBodyAttachments = outgoingMessage.hasBodyAttachments(transaction: transaction)
         return recipientStatusAndStatusMessage(
@@ -97,7 +97,7 @@ public class MessageRecipientStatusUtils {
     // This method is per-message.
     public class func receiptStatusAndMessage(
         outgoingMessage: TSOutgoingMessage,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> (status: MessageReceiptStatus, message: String) {
         let hasBodyAttachments = outgoingMessage.hasBodyAttachments(transaction: transaction)
         return receiptStatusAndMessage(outgoingMessage: outgoingMessage, hasBodyAttachments: hasBodyAttachments)
@@ -144,7 +144,7 @@ public class MessageRecipientStatusUtils {
     // This method is per-message.
     public class func receiptMessage(
         outgoingMessage: TSOutgoingMessage,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> String {
         let (_, message ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, transaction: transaction)
         return message
@@ -162,7 +162,7 @@ public class MessageRecipientStatusUtils {
     // This method is per-message.
     public class func recipientStatus(
         outgoingMessage: TSOutgoingMessage,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> MessageReceiptStatus {
         let (status, _ ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, transaction: transaction)
         return status

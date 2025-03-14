@@ -16,7 +16,7 @@ public extension TSMessage {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetchMessage(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSMessage? {
         assert(!uniqueId.isEmpty)
 
@@ -32,7 +32,7 @@ public extension TSMessage {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateMessage(transaction: SDSAnyWriteTransaction, block: (TSMessage) -> Void) {
+    func anyUpdateMessage(transaction: DBWriteTransaction, block: (TSMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? TSMessage else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")

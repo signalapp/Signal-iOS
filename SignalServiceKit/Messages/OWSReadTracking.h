@@ -5,7 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SDSAnyWriteTransaction;
+@class DBWriteTransaction;
 @class TSThread;
 
 typedef NS_CLOSED_ENUM(NSInteger, OWSReceiptCircumstance) {
@@ -39,7 +39,7 @@ typedef NS_CLOSED_ENUM(NSInteger, OWSReceiptCircumstance) {
                        thread:(TSThread *)thread
                  circumstance:(OWSReceiptCircumstance)circumstance
      shouldClearNotifications:(BOOL)shouldClearNotifications
-                  transaction:(SDSAnyWriteTransaction *)transaction;
+                  transaction:(DBWriteTransaction *)transaction;
 
 @end
 

@@ -57,7 +57,7 @@ typedef NS_ENUM(NSInteger, EncryptionStyle) {
 
 @protocol DeliveryReceiptContext;
 
-@class SDSAnyWriteTransaction;
+@class DBWriteTransaction;
 @class SSKProtoAttachmentPointer;
 @class SSKProtoContentBuilder;
 @class SSKProtoDataMessageBuilder;
@@ -112,7 +112,7 @@ typedef NS_ENUM(NSInteger, EncryptionStyle) {
                           additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
                             explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
                              skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
-                                   transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
+                                   transaction:(DBReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 /// Create a `TSOutgoingMessage` with precomputed recipient states.
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
@@ -205,14 +205,14 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 /**
  * The data representation of this message, to be encrypted, before being sent.
  */
-- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction;
+- (nullable NSData *)buildPlainTextData:(TSThread *)thread transaction:(DBWriteTransaction *)transaction;
 
 /**
  * Intermediate protobuf representation
  * Subclasses can augment if they want to manipulate the Content message before building.
  */
 - (nullable SSKProtoContentBuilder *)contentBuilderWithThread:(TSThread *)thread
-                                                  transaction:(SDSAnyReadTransaction *)transaction
+                                                  transaction:(DBReadTransaction *)transaction
     NS_SWIFT_NAME(contentBuilder(thread:transaction:));
 
 /**
@@ -220,9 +220,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
  * Subclasses can augment if they want to manipulate the data message before building.
  */
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread
-                                                          transaction:(SDSAnyReadTransaction *)transaction;
+                                                          transaction:(DBReadTransaction *)transaction;
 
-- (nullable SSKProtoDataMessage *)buildDataMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
+- (nullable SSKProtoDataMessage *)buildDataMessage:(TSThread *)thread transaction:(DBReadTransaction *)transaction;
 
 /**
  * Should this message be synced to the users other registered devices? This is
@@ -232,12 +232,12 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (BOOL)shouldSyncTranscript;
 
 - (nullable OWSOutgoingSyncMessage *)buildTranscriptSyncMessageWithLocalThread:(TSContactThread *)localThread
-                                                                   transaction:(SDSAnyWriteTransaction *)transaction
+                                                                   transaction:(DBWriteTransaction *)transaction
     NS_SWIFT_NAME(buildTranscriptSyncMessage(localThread:transaction:));
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript transaction:(DBWriteTransaction *)transaction;
 
 /**
  * Sync the stored message state with the computed message state. Must be run before any insert/update.

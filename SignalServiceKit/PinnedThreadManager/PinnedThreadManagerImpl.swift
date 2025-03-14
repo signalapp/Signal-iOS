@@ -92,7 +92,7 @@ public class PinnedThreadManagerImpl: PinnedThreadManager {
                     )
                     threadStore.update(thread, withShouldThreadBeVisible: true, tx: tx)
                 } else {
-                    self.db.touch(thread, shouldReindex: false, tx: tx)
+                    self.db.touch(thread: thread, shouldReindex: false, shouldUpdateChatListUi: true, tx: tx)
                 }
             }
         }

@@ -150,7 +150,7 @@ private struct ContactMatches {
         rawValue.removeValue(forKey: address)
     }
 
-    func matchedAddresses(contactManager: any ContactManager, tx: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+    func matchedAddresses(contactManager: any ContactManager, tx: DBReadTransaction) -> [SignalServiceAddress] {
         var results = [SignalServiceAddress]()
         for (address, contactMatch) in rawValue {
             let displayName = contactManager.displayName(for: address, tx: tx)

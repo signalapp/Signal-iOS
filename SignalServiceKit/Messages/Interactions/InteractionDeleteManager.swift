@@ -96,14 +96,14 @@ public protocol InteractionDeleteManager {
     func delete(
         interactions: [TSInteraction],
         sideEffects: SideEffects,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     )
 
     /// Deletes the given call records and their associated interactions.
     func delete(
         alongsideAssociatedCallRecords callRecords: [CallRecord],
         sideEffects: SideEffects,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     )
 }
 
@@ -112,7 +112,7 @@ public extension InteractionDeleteManager {
     func delete(
         _ interaction: TSInteraction,
         sideEffects: SideEffects,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         delete(interactions: [interaction], sideEffects: sideEffects, tx: tx)
     }
@@ -151,7 +151,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
     func delete(
         interactions: [TSInteraction],
         sideEffects: SideEffects,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         for interaction in interactions {
             guard interaction.shouldBeSaved else {
@@ -176,7 +176,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
     func delete(
         alongsideAssociatedCallRecords callRecords: [CallRecord],
         sideEffects: SideEffects,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         var deletedInteractions = [TSInteraction]()
         for callRecord in callRecords {
@@ -206,7 +206,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
     private func sendDeleteForMeSyncMessageIfNecessary(
         interactions: [TSInteraction],
         sideEffects: SideEffects,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         switch sideEffects.deleteForMeSyncMessage {
         case .sendSyncMessage(let interactionsThread):
@@ -234,7 +234,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
         interaction: TSInteraction,
         knownAssociatedCallRecord: CallRecord?,
         sideEffects: SideEffects,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         willRemove(
             interaction: interaction,
@@ -243,7 +243,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
             tx: tx
         )
 
-        tx.unwrapGrdbWrite.database.executeAndCacheStatementHandlingErrors(
+        tx.database.executeAndCacheStatementHandlingErrors(
             sql: "DELETE FROM model_TSInteraction WHERE uniqueId = ?",
             arguments: [interaction.uniqueId]
         )
@@ -259,7 +259,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
         interaction: TSInteraction,
         knownAssociatedCallRecord: CallRecord?,
         sideEffects: SideEffects,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         databaseStorage.updateIdMapping(interaction: interaction, transaction: tx)
 
@@ -267,7 +267,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
             let callInteraction = interaction as? CallRecordAssociatedInteraction,
             let interactionRowId = callInteraction.sqliteRowId,
             let associatedCallRecord = knownAssociatedCallRecord ?? callRecordStore.fetch(
-                interactionRowId: interactionRowId, tx: tx.asV2Read
+                interactionRowId: interactionRowId, tx: tx
             )
         {
             let sendSyncMessage = switch sideEffects.associatedCallDelete {
@@ -278,7 +278,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
             callRecordDeleteManager.deleteCallRecords(
                 [associatedCallRecord],
                 sendSyncMessageOnDelete: sendSyncMessage,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 
@@ -291,7 +291,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
     private func didRemove(
         interaction: TSInteraction,
         sideEffects: SideEffects,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         switch sideEffects.updateThreadOnInteractionDelete {
         case .updateOnEachDeletedInteraction:
@@ -329,7 +329,7 @@ open class MockInteractionDeleteManager: InteractionDeleteManager {
         _ interactions: [TSInteraction],
         _ sideEffects: SideEffects
     ) -> Void)?
-    open func delete(interactions: [TSInteraction], sideEffects: SideEffects, tx: any DBWriteTransaction) {
+    open func delete(interactions: [TSInteraction], sideEffects: SideEffects, tx: DBWriteTransaction) {
         deleteInteractionsMock!(interactions, sideEffects)
     }
 
@@ -337,7 +337,7 @@ open class MockInteractionDeleteManager: InteractionDeleteManager {
         _ callRecords: [CallRecord],
         _ sideEffects: SideEffects
     ) -> Void)?
-    open func delete(alongsideAssociatedCallRecords callRecords: [CallRecord], sideEffects: SideEffects, tx: any DBWriteTransaction) {
+    open func delete(alongsideAssociatedCallRecords callRecords: [CallRecord], sideEffects: SideEffects, tx: DBWriteTransaction) {
         deleteAlongsideCallRecordsMock!(callRecords, sideEffects)
     }
 }

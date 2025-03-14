@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        amount:(nullable NSString *)amount
                                                           fee:(nullable NSString *)fee
                                                          note:(nullable NSString *)note
-                                                  transaction:(SDSAnyReadTransaction *)transaction
+                                                  transaction:(DBReadTransaction *)transaction
 {
     self = [super initOutgoingMessageWithBuilder:messageBuilder
                             additionalRecipients:@[]

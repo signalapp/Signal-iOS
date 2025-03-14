@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithLocalThread:(TSContactThread *)localThread
                      viewedReceipts:(NSArray<OWSLinkedDeviceViewedReceipt *> *)viewedReceipts
-                        transaction:(SDSAnyReadTransaction *)transaction
+                        transaction:(DBReadTransaction *)transaction
 {
     self = [super initWithLocalThread:localThread transaction:transaction];
     if (!self) {
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction
 {
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
     for (OWSLinkedDeviceViewedReceipt *viewedReceipt in self.viewedReceipts) {

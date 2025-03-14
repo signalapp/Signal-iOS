@@ -76,7 +76,7 @@ final class DeleteForMeInfoSheetCoordinator {
     }
 
     #if USE_DEBUG_UI
-    func forceEnableInfoSheet(tx: any DBWriteTransaction) {
+    func forceEnableInfoSheet(tx: DBWriteTransaction) {
         keyValueStore.removeValue(
             forKey: StoreKeys.hasShownDeleteForMeInfoSheet,
             transaction: tx

@@ -143,7 +143,7 @@ extension FullTextSearchIndexer {
 
     private static let legacyCollectionName = "TSInteraction"
 
-    private static func indexableContent(for message: TSMessage, tx: SDSAnyReadTransaction) -> String? {
+    private static func indexableContent(for message: TSMessage, tx: DBReadTransaction) -> String? {
         guard !message.isViewOnceMessage else {
             // Don't index "view-once messages".
             return nil
@@ -160,7 +160,7 @@ extension FullTextSearchIndexer {
         return normalizeText(bodyText)
     }
 
-    public static func insert(_ message: TSMessage, tx: SDSAnyWriteTransaction) throws {
+    public static func insert(_ message: TSMessage, tx: DBWriteTransaction) throws {
         guard let ftsContent = indexableContent(for: message, tx: tx) else {
             return
         }
@@ -176,12 +176,12 @@ extension FullTextSearchIndexer {
         )
     }
 
-    public static func update(_ message: TSMessage, tx: SDSAnyWriteTransaction) throws {
+    public static func update(_ message: TSMessage, tx: DBWriteTransaction) throws {
         try delete(message, tx: tx)
         try insert(message, tx: tx)
     }
 
-    public static func delete(_ message: TSMessage, tx: SDSAnyWriteTransaction) throws {
+    public static func delete(_ message: TSMessage, tx: DBWriteTransaction) throws {
         try executeUpdate(
             sql: """
             DELETE FROM \(contentTableName)
@@ -196,9 +196,9 @@ extension FullTextSearchIndexer {
     private static func executeUpdate(
         sql: String,
         arguments: StatementArguments,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws {
-        let database = tx.unwrapGrdbWrite.database
+        let database = tx.database
         do {
             let statement = try database.cachedStatement(sql: sql)
             try statement.setArguments(arguments)
@@ -217,7 +217,7 @@ extension FullTextSearchIndexer {
     public static func search(
         for searchText: String,
         maxResults: Int,
-        tx: SDSAnyReadTransaction,
+        tx: DBReadTransaction,
         block: (_ message: TSMessage, _ snippet: String, _ stop: inout Bool) -> Void
     ) {
         let query = buildQuery(for: searchText)
@@ -248,7 +248,7 @@ extension FullTextSearchIndexer {
             LIMIT \(maxResults)
             """
 
-            let cursor = try Row.fetchCursor(tx.unwrapGrdbRead.database, sql: sql, arguments: [query])
+            let cursor = try Row.fetchCursor(tx.database, sql: sql, arguments: [query])
             while let row = try cursor.next() {
                 let collection: String = row[collectionColumn]
                 guard collection == legacyCollectionName else {

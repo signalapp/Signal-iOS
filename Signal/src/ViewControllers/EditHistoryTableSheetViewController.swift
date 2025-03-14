@@ -58,7 +58,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
                 try self.editManager.markEditRevisionsAsRead(
                     for: self.message,
                     thread: thread,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
         } catch {
@@ -77,7 +77,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
             let edits: [TSMessage] = try DependenciesBridge.shared.editMessageStore.findEditHistory(
                 for: message,
-                tx: tx.asV2Read
+                tx: tx
             ).compactMap { $0.message }
 
             guard let thread = TSThread.anyFetch(
@@ -212,7 +212,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         threadAssociatedData: ThreadAssociatedData,
         message interaction: TSMessage,
         forceDateHeader: Bool = false,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> [CVRenderItem] {
         var results = [CVRenderItem]()
         let cellInsets = tableViewController.cellOuterInsets
@@ -225,7 +225,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
             isWallpaperPhoto: false,
             chatColor: DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
                 for: thread,
-                tx: tx.asV2Read
+                tx: tx
             )
         )
 

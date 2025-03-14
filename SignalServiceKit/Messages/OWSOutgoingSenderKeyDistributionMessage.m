@@ -16,7 +16,7 @@
 
 - (instancetype)initWithThread:(TSContactThread *)destinationThread
     senderKeyDistributionMessageBytes:(NSData *)skdmBytes
-                          transaction:(SDSAnyReadTransaction *)transaction
+                          transaction:(DBReadTransaction *)transaction
 {
     OWSAssertDebug(destinationThread);
     OWSAssertDebug(skdmBytes);
@@ -58,7 +58,7 @@
 }
 
 - (nullable SSKProtoContentBuilder *)contentBuilderWithThread:(TSThread *)thread
-                                                  transaction:(SDSAnyReadTransaction *)transaction
+                                                  transaction:(DBReadTransaction *)transaction
 {
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
     [builder setSenderKeyDistributionMessage:self.serializedSKDM];

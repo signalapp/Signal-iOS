@@ -126,7 +126,7 @@ class LinkedDevicesViewModel: ObservableObject {
                     device: device,
                     displayName: device.displayName(
                         identityManager: identityManager,
-                        tx: transaction.asV2Read
+                        tx: transaction
                     )
                 )
             }
@@ -389,7 +389,7 @@ extension LinkedDevicesViewModel: LinkDeviceViewControllerDelegate {
                 deviceStore.clearMostRecentlyLinkedDeviceDetails(tx: tx)
                 ExperienceUpgradeManager.clearExperienceUpgrade(
                     .newLinkedDeviceNotification,
-                    transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite
+                    transaction: SDSDB.shimOnlyBridge(tx)
                 )
             }
         }

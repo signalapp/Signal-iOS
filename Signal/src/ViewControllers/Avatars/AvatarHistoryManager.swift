@@ -41,7 +41,7 @@ public class AvatarHistoryManager: NSObject {
 
         let allRecords: [[AvatarRecord]] = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             do {
-                return try Self.keyValueStore.allCodableValues(transaction: transaction.asV2Read)
+                return try Self.keyValueStore.allCodableValues(transaction: transaction)
             } catch {
                 owsFailDebug("Failed to decode avatar history for orphan cleanup \(error)")
                 return []
@@ -72,7 +72,7 @@ public class AvatarHistoryManager: NSObject {
         }
     }
 
-    func models(for context: AvatarContext, transaction: SDSAnyReadTransaction) -> [AvatarModel] {
+    func models(for context: AvatarContext, transaction: DBReadTransaction) -> [AvatarModel] {
         var (models, icons) = persisted(for: context, transaction: transaction)
 
         let defaultIcons: [AvatarIcon]
@@ -92,7 +92,7 @@ public class AvatarHistoryManager: NSObject {
         return models
     }
 
-    func touchedModel(_ model: AvatarModel, in context: AvatarContext, transaction: SDSAnyWriteTransaction) {
+    func touchedModel(_ model: AvatarModel, in context: AvatarContext, transaction: DBWriteTransaction) {
         var (models, _) = persisted(for: context, transaction: transaction)
 
         models.removeAll { $0.identifier == model.identifier }
@@ -111,13 +111,13 @@ public class AvatarHistoryManager: NSObject {
         }
 
         do {
-            try Self.keyValueStore.setCodable(records, key: context.key, transaction: transaction.asV2Write)
+            try Self.keyValueStore.setCodable(records, key: context.key, transaction: transaction)
         } catch {
             owsFailDebug("Failed to touch avatar history \(error)")
         }
     }
 
-    func deletedModel(_ model: AvatarModel, in context: AvatarContext, transaction: SDSAnyWriteTransaction) {
+    func deletedModel(_ model: AvatarModel, in context: AvatarContext, transaction: DBWriteTransaction) {
         var (models, _) = persisted(for: context, transaction: transaction)
 
         models.removeAll { $0.identifier == model.identifier }
@@ -139,13 +139,13 @@ public class AvatarHistoryManager: NSObject {
         }
 
         do {
-            try Self.keyValueStore.setCodable(records, key: context.key, transaction: transaction.asV2Write)
+            try Self.keyValueStore.setCodable(records, key: context.key, transaction: transaction)
         } catch {
             owsFailDebug("Failed to touch avatar history \(error)")
         }
     }
 
-    func recordModelForImage(_ image: UIImage, in context: AvatarContext, transaction: SDSAnyWriteTransaction) -> AvatarModel? {
+    func recordModelForImage(_ image: UIImage, in context: AvatarContext, transaction: DBWriteTransaction) -> AvatarModel? {
         OWSFileSystem.ensureDirectoryExists(Self.imageHistoryDirectory.path)
 
         let identifier = UUID().uuidString
@@ -169,12 +169,12 @@ public class AvatarHistoryManager: NSObject {
 
     private func persisted(
         for context: AvatarContext,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> (models: [AvatarModel], persistedIcons: Set<AvatarIcon>) {
         let records: [AvatarRecord]?
 
         do {
-            records = try Self.keyValueStore.getCodableValue(forKey: context.key, transaction: transaction.asV2Read)
+            records = try Self.keyValueStore.getCodableValue(forKey: context.key, transaction: transaction)
         } catch {
             owsFailDebug("Failed to load persisted avatar records \(error)")
             records = nil

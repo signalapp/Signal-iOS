@@ -47,7 +47,7 @@ public class ContactShareDraft {
         profileManager: any ProfileManager,
         recipientManager: any SignalRecipientManager,
         tsAccountManager: any TSAccountManager,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> ContactShareDraft {
         let avatarData = loadAvatarData(
             cnContact: cnContact,
@@ -77,13 +77,13 @@ public class ContactShareDraft {
         profileManager: any ProfileManager,
         recipientManager: any SignalRecipientManager,
         tsAccountManager: any TSAccountManager,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> Data? {
         if let systemAvatarImageData = contactManager.avatarData(for: cnContact) {
             return systemAvatarImageData
         }
 
-        let localPhoneNumber = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.phoneNumber
+        let localPhoneNumber = tsAccountManager.localIdentifiers(tx: tx)?.phoneNumber
         let canonicalPhoneNumbers = FetchedSystemContacts.parsePhoneNumbers(
             for: signalContact(),
             phoneNumberUtil: phoneNumberUtil,
@@ -91,7 +91,7 @@ public class ContactShareDraft {
         )
         for canonicalPhoneNumber in canonicalPhoneNumbers {
             for phoneNumber in [canonicalPhoneNumber.rawValue] + canonicalPhoneNumber.alternatePhoneNumbers() {
-                let recipient = recipientManager.fetchRecipientIfPhoneNumberVisible(phoneNumber.stringValue, tx: tx.asV2Read)
+                let recipient = recipientManager.fetchRecipientIfPhoneNumberVisible(phoneNumber.stringValue, tx: tx)
                 guard let recipient else {
                     continue
                 }

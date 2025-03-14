@@ -163,7 +163,7 @@ public class GroupCallManager {
         peekInfo: PeekInfo,
         groupId: GroupIdentifier,
         triggerEventTimestamp: UInt64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let currentCallId: CallId? = peekInfo.callId
 
@@ -208,7 +208,7 @@ public class GroupCallManager {
             switch self.callRecordStore.fetch(
                 callId: currentCallId.rawValue,
                 conversationId: .thread(threadRowId: groupThreadRowId),
-                tx: tx.asV2Write
+                tx: tx
             ) {
             case .matchNotFound:
                 return .notFound
@@ -218,7 +218,7 @@ public class GroupCallManager {
                 if let associatedInteraction: OWSGroupCallMessage = self.interactionStore
                     .fetchAssociatedInteraction(
                         callRecord: existingCallRecordForCallId,
-                        tx: tx.asV2Read
+                        tx: tx
                     )
                 {
                     return .found(associatedInteraction)
@@ -241,7 +241,7 @@ public class GroupCallManager {
                 callId: currentCallId.rawValue,
                 groupThreadRowId: groupThreadRowId,
                 notificationScheduler: self.schedulers.main,
-                tx: tx.asV2Write
+                tx: tx
             )
 
             if wasOldMessageEmpty {
@@ -263,7 +263,7 @@ public class GroupCallManager {
                 triggerEventTimestamp: triggerEventTimestamp,
                 groupThread: groupThread,
                 groupThreadRowId: groupThreadRowId,
-                tx: tx.asV2Write
+                tx: tx
             )
 
             postUserNotificationIfNecessary(
@@ -323,7 +323,7 @@ public class GroupCallManager {
     private func cleanUpUnendedCallMessagesAsNecessary(
         currentCallId: CallId?,
         groupThread: TSGroupThread,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> OWSGroupCallMessage? {
         enum CallIdProvider {
             case legacyEraId(eraId: String)
@@ -354,7 +354,7 @@ public class GroupCallManager {
                     let callRowId = groupCallInteraction.sqliteRowId,
                     let recordForCall = callRecordStore.fetch(
                         interactionRowId: callRowId,
-                        tx: tx.asV2Write
+                        tx: tx
                     )
                 {
                     return (
@@ -384,7 +384,7 @@ public class GroupCallManager {
                 callId: callIdProvider.callId.rawValue,
                 groupThreadRowId: groupThreadRowId,
                 notificationScheduler: schedulers.main,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 
@@ -433,7 +433,7 @@ public class GroupCallManager {
             switch self.callRecordStore.fetch(
                 callId: callId.rawValue,
                 conversationId: .thread(threadRowId: groupThreadRowId),
-                tx: tx.asV2Read
+                tx: tx
             ) {
             case .matchDeleted:
                 self.logger.warn("Ignoring: call record was deleted!")
@@ -445,7 +445,7 @@ public class GroupCallManager {
                 self.groupCallRecordManager.updateCallBeganTimestampIfEarlier(
                     existingCallRecord: existingCallRecord,
                     callEventTimestamp: triggerEventTimestamp,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             case .matchNotFound:
                 self.logger.info("Inserting placeholder group call message with callId: \(callId)")
@@ -457,7 +457,7 @@ public class GroupCallManager {
                     triggerEventTimestamp: triggerEventTimestamp,
                     groupThread: groupThread,
                     groupThreadRowId: groupThreadRowId,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
         }
@@ -468,7 +468,7 @@ public class GroupCallManager {
         joinedMemberAcis: [Aci],
         creatorAci: Aci,
         groupThread: TSGroupThread,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         AssertNotOnMainThread()
 
@@ -481,7 +481,7 @@ public class GroupCallManager {
         // by the local user.
         guard
             !joinedMemberAcis.isEmpty,
-            let localAci = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci,
+            let localAci = tsAccountManager.localIdentifiers(tx: tx)?.aci,
             creatorAci != localAci
         else {
             return

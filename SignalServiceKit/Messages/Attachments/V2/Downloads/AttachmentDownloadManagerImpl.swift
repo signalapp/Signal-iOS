@@ -391,7 +391,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
 
-        func removeRecord(_ record: DownloadTaskRecord, tx: any DBWriteTransaction) throws {
+        func removeRecord(_ record: DownloadTaskRecord, tx: DBWriteTransaction) throws {
             try store.removeAttachmentFromQueue(
                 withId: record.record.attachmentId,
                 source: record.record.sourceType,
@@ -2349,7 +2349,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 else {
                     break
                 }
-                db.touch(interaction, shouldReindex: false, tx: tx)
+                db.touch(interaction: interaction, shouldReindex: false, tx: tx)
             case .storyMessage(let storyMessageSource):
                 guard
                     let storyMessage = storyStore.fetchStoryMessage(
@@ -2359,7 +2359,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 else {
                     break
                 }
-                db.touch(storyMessage, tx: tx)
+                db.touch(storyMessage: storyMessage, tx: tx)
             }
         }
     }

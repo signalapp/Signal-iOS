@@ -87,7 +87,7 @@ public protocol ThreadStore {
 }
 
 extension ThreadStore {
-    public func fetchGroupThread(groupId: GroupIdentifier, tx: any DBReadTransaction) -> TSGroupThread? {
+    public func fetchGroupThread(groupId: GroupIdentifier, tx: DBReadTransaction) -> TSGroupThread? {
         return fetchGroupThread(groupId: groupId.serialize().asData, tx: tx)
     }
 
@@ -123,7 +123,7 @@ extension ThreadStore {
 
     public func fetchThreadForInteraction(
         _ interaction: TSInteraction,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) -> TSThread? {
         return fetchThread(uniqueId: interaction.uniqueThreadId, tx: tx)
     }
@@ -207,7 +207,7 @@ public class ThreadStoreImpl: ThreadStore {
         let tx = SDSDB.shimOnlyBridge(tx)
 
         let sql = "DELETE FROM \(thread.sdsTableName) WHERE uniqueId = ?"
-        tx.unwrapGrdbWrite.database.executeAndCacheStatementHandlingErrors(sql: sql, arguments: [thread.uniqueId])
+        tx.database.executeAndCacheStatementHandlingErrors(sql: sql, arguments: [thread.uniqueId])
     }
 
     public func updateThread(_ thread: TSThread, tx: DBWriteTransaction) {
@@ -297,7 +297,7 @@ public class MockThreadStore: ThreadStore {
         }
     }
 
-    public func enumerateStoryThreads(tx: any DBReadTransaction, block: (TSPrivateStoryThread) throws -> Bool) throws {
+    public func enumerateStoryThreads(tx: DBReadTransaction, block: (TSPrivateStoryThread) throws -> Bool) throws {
         for thread in threads {
             guard let storyThread = thread as? TSPrivateStoryThread else {
                 continue

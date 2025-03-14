@@ -84,7 +84,7 @@ public class UnpreparedOutgoingMessage {
     /// "Prepares" the outgoing message, inserting it into the database if needed and
     /// returning a ``PreparedOutgoingMessage`` ready to be sent.
     public func prepare(
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws -> PreparedOutgoingMessage {
         return try self._prepare(tx: tx)
     }
@@ -160,7 +160,7 @@ public class UnpreparedOutgoingMessage {
     }
 
     public func _prepare(
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws -> PreparedOutgoingMessage {
         let preparedMessageType: PreparedOutgoingMessage.MessageType
         switch messageType {
@@ -199,7 +199,7 @@ public class UnpreparedOutgoingMessage {
 
     private func preparePersistableMessage(
         _ message: MessageType.Persistable,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws -> PreparedOutgoingMessage.MessageType {
         guard
             let thread = message.message.thread(tx: tx),
@@ -211,7 +211,7 @@ public class UnpreparedOutgoingMessage {
         let linkPreviewBuilder = try message.linkPreviewDraft.map {
             try DependenciesBridge.shared.linkPreviewManager.buildLinkPreview(
                 from: $0,
-                tx: tx.asV2Write
+                tx: tx
             )
         }.map {
             message.message.update(with: $0.info, transaction: tx)
@@ -221,7 +221,7 @@ public class UnpreparedOutgoingMessage {
         let quotedReplyBuilder = message.quotedReplyDraft.map {
             DependenciesBridge.shared.quotedReplyManager.buildQuotedReplyForSending(
                 draft: $0,
-                tx: tx.asV2Write
+                tx: tx
             )
         }.map {
             message.message.update(with: $0.info, transaction: tx)
@@ -229,7 +229,7 @@ public class UnpreparedOutgoingMessage {
         }
 
         let messageStickerBuilder = try message.messageStickerDraft.map {
-            try DependenciesBridge.shared.messageStickerManager.buildValidatedMessageSticker(from: $0, tx: tx.asV2Write)
+            try DependenciesBridge.shared.messageStickerManager.buildValidatedMessageSticker(from: $0, tx: tx)
         }.map {
             message.message.update(with: $0.info, transaction: tx)
             return $0
@@ -238,7 +238,7 @@ public class UnpreparedOutgoingMessage {
         let contactShareBuilder = try message.contactShareDraft.map {
             try DependenciesBridge.shared.contactShareManager.build(
                 draft: $0,
-                tx: tx.asV2Write
+                tx: tx
             )
         }.map {
             message.message.update(withContactShare: $0.info, transaction: tx)
@@ -262,7 +262,7 @@ public class UnpreparedOutgoingMessage {
                         isPastEditRevision: message.message.isPastEditRevision()
                     ))
                 ),
-                tx: tx.asV2Write
+                tx: tx
             )
         }
         if message.unsavedBodyMediaAttachments.count > 0 {
@@ -288,7 +288,7 @@ public class UnpreparedOutgoingMessage {
                         ))
                     )
                 },
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 
@@ -299,7 +299,7 @@ public class UnpreparedOutgoingMessage {
                 threadRowId: threadRowId,
                 isPastEditRevision: message.message.isPastEditRevision()
             )),
-            tx: tx.asV2Write
+            tx: tx
         )
         try quotedReplyBuilder?.finalize(
             owner: .quotedReplyAttachment(.init(
@@ -308,7 +308,7 @@ public class UnpreparedOutgoingMessage {
                 threadRowId: threadRowId,
                 isPastEditRevision: message.message.isPastEditRevision()
             )),
-            tx: tx.asV2Write
+            tx: tx
         )
 
         try messageStickerBuilder.map {
@@ -321,7 +321,7 @@ public class UnpreparedOutgoingMessage {
                     stickerPackId: $0.info.packId,
                     stickerId: $0.info.stickerId
                 )),
-                tx: tx.asV2Write
+                tx: tx
             )
             StickerManager.stickerWasSent($0.info.info, transaction: tx)
         }
@@ -333,7 +333,7 @@ public class UnpreparedOutgoingMessage {
                 threadRowId: threadRowId,
                 isPastEditRevision: message.message.isPastEditRevision()
             )),
-            tx: tx.asV2Write
+            tx: tx
         )
 
         return .persisted(PreparedOutgoingMessage.MessageType.Persisted(
@@ -344,7 +344,7 @@ public class UnpreparedOutgoingMessage {
 
     private func prepareEditMessage(
         _ message: MessageType.EditMessage,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws -> PreparedOutgoingMessage.MessageType {
         guard let thread = message.targetMessage.thread(tx: tx) else {
             throw OWSAssertionError("Outgoing message missing thread.")
@@ -357,7 +357,7 @@ public class UnpreparedOutgoingMessage {
             oversizeText: message.oversizeTextDataSource,
             quotedReplyEdit: message.quotedReplyEdit,
             linkPreview: message.linkPreviewDraft,
-            tx: tx.asV2Write
+            tx: tx
         )
 
         // All editable messages, by definition, should have been inserted.

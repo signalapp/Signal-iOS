@@ -8,7 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SDSAnyWriteTransaction;
+@class DBWriteTransaction;
 @class SignalServiceAddress;
 @class TSContactThread;
 @class TSGroupThread;
@@ -135,10 +135,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (void)markAsViewedAtTimestamp:(uint64_t)viewedTimestamp
                          thread:(TSThread *)thread
                    circumstance:(OWSReceiptCircumstance)circumstance
-                    transaction:(SDSAnyWriteTransaction *)transaction;
+                    transaction:(DBWriteTransaction *)transaction;
 
 // convenience method for expiring a message which was just read
-- (void)debugonly_markAsReadNowWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)debugonly_markAsReadNowWithTransaction:(DBWriteTransaction *)transaction
     NS_SWIFT_NAME(debugonly_markAsReadNow(transaction:));
 
 @end

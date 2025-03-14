@@ -108,7 +108,7 @@ extension ExperienceUpgrade {
 // MARK: - Removal
 
 extension ExperienceUpgrade {
-    public func anyDidRemove(transaction: SDSAnyWriteTransaction) {
+    public func anyDidRemove(transaction: DBWriteTransaction) {
         switch manifest {
         case
                 .introducingPins,
@@ -137,18 +137,18 @@ extension ExperienceUpgrade {
 // MARK: - Mark as <state>
 
 extension ExperienceUpgrade {
-    public func markAsSnoozed(transaction: SDSAnyWriteTransaction) {
+    public func markAsSnoozed(transaction: DBWriteTransaction) {
         upsert(withTransaction: transaction) { upgrade in
             upgrade.lastSnoozedTimestamp = Date().timeIntervalSince1970
             upgrade.snoozeCount += 1
         }
     }
 
-    public func markAsComplete(transaction: SDSAnyWriteTransaction) {
+    public func markAsComplete(transaction: DBWriteTransaction) {
         upsert(withTransaction: transaction) { $0.isComplete = true }
     }
 
-    public func markAsViewed(transaction: SDSAnyWriteTransaction) {
+    public func markAsViewed(transaction: DBWriteTransaction) {
         upsert(withTransaction: transaction) { upgrade in
             guard upgrade.firstViewedTimestamp == 0 else { return }
             upgrade.firstViewedTimestamp = Date().timeIntervalSince1970
@@ -158,7 +158,7 @@ extension ExperienceUpgrade {
     /// If an upgrade is already persisted with our `uniqueId`, performs `block`
     /// on it and updates. Otherwise, performs `block` on ourself and inserts
     /// ourself. Skips calling `block` if this upgrade should not be saved.
-    private func upsert(withTransaction transaction: SDSAnyWriteTransaction, inBlock block: (ExperienceUpgrade) -> Void) {
+    private func upsert(withTransaction transaction: DBWriteTransaction, inBlock block: (ExperienceUpgrade) -> Void) {
         guard manifest.shouldSave else {
             return
         }

@@ -157,7 +157,7 @@ extension TSAttachmentMigration {
             }
         }
 
-        func deleteMediaGalleryRecord(tx: GRDBWriteTransaction) throws {
+        func deleteMediaGalleryRecord(tx: DBWriteTransaction) throws {
             try tx.database.execute(
                 sql: "DELETE FROM media_gallery_items WHERE attachmentId = ?",
                 arguments: [self.id]

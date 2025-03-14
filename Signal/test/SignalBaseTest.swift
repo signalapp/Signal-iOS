@@ -25,11 +25,11 @@ open class SignalBaseTest: XCTestCase {
         super.tearDown()
     }
 
-    func read<T>(block: (SDSAnyReadTransaction) throws -> T) rethrows -> T {
+    func read<T>(block: (DBReadTransaction) throws -> T) rethrows -> T {
         return try SSKEnvironment.shared.databaseStorageRef.read(block: block)
     }
 
-    func write<T>(block: (SDSAnyWriteTransaction) throws -> T) rethrows -> T {
+    func write<T>(block: (DBWriteTransaction) throws -> T) rethrows -> T {
         return try SSKEnvironment.shared.databaseStorageRef.write(block: block)
     }
 }

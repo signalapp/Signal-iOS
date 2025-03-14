@@ -28,7 +28,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
 
     private var navigationBarTopLayoutConstraint: NSLayoutConstraint?
 
-    init?(thread: TSThread, renderLocalUserAsNoteToSelf: Bool, readTx: SDSAnyReadTransaction) {
+    init?(thread: TSThread, renderLocalUserAsNoteToSelf: Bool, readTx: DBReadTransaction) {
         let localUserDisplayMode: LocalUserDisplayMode = (renderLocalUserAsNoteToSelf
                                                             ? .noteToSelf
                                                             : .asUser)
@@ -45,7 +45,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         transitioningDelegate = self
     }
 
-    init?(address: SignalServiceAddress, renderLocalUserAsNoteToSelf: Bool, readTx: SDSAnyReadTransaction) {
+    init?(address: SignalServiceAddress, renderLocalUserAsNoteToSelf: Bool, readTx: DBReadTransaction) {
         let avatarImage = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
             forAddress: address,
             diameterPoints: UInt(UIScreen.main.bounds.size.smallerAxis),

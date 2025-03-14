@@ -16,7 +16,7 @@ public extension TSCall {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetchCall(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSCall? {
         assert(!uniqueId.isEmpty)
 
@@ -32,7 +32,7 @@ public extension TSCall {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateCall(transaction: SDSAnyWriteTransaction, block: (TSCall) -> Void) {
+    func anyUpdateCall(transaction: DBWriteTransaction, block: (TSCall) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? TSCall else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")

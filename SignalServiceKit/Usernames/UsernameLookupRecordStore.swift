@@ -19,7 +19,7 @@ public class UsernameLookupRecordStoreImpl: UsernameLookupRecordStore {
 
     public func fetchOne(forAci aci: Aci, tx: DBReadTransaction) -> UsernameLookupRecord? {
         do {
-            return try UsernameLookupRecord.fetchOne(tx.databaseConnection, key: aci.rawUUID)
+            return try UsernameLookupRecord.fetchOne(tx.database, key: aci.rawUUID)
         } catch let error {
             owsFailDebug("Got error while fetching record by ACI: \(error.grdbErrorForLogging)")
             return nil
@@ -29,7 +29,7 @@ public class UsernameLookupRecordStoreImpl: UsernameLookupRecordStore {
     public func enumerateAll(tx: DBReadTransaction, block: (UsernameLookupRecord) -> Void) {
         do {
             let cursor = try UsernameLookupRecord.fetchCursor(
-                tx.databaseConnection,
+                tx.database,
                 sql: "SELECT * FROM \(UsernameLookupRecord.databaseTableName)"
             )
             while let value = try cursor.next() {
@@ -42,7 +42,7 @@ public class UsernameLookupRecordStoreImpl: UsernameLookupRecordStore {
 
     public func insertOne(_ usernameLookupRecord: UsernameLookupRecord, tx: DBWriteTransaction) {
         do {
-            try usernameLookupRecord.insert(tx.databaseConnection)
+            try usernameLookupRecord.insert(tx.database)
         } catch let error {
             owsFailDebug("Got error while upserting record: \(error.grdbErrorForLogging)")
         }
@@ -50,7 +50,7 @@ public class UsernameLookupRecordStoreImpl: UsernameLookupRecordStore {
 
     public func deleteOne(forAci aci: Aci, tx: DBWriteTransaction) {
         do {
-            try UsernameLookupRecord.deleteOne(tx.databaseConnection, key: aci.rawUUID)
+            try UsernameLookupRecord.deleteOne(tx.database, key: aci.rawUUID)
         } catch let error {
             owsFailDebug("Got error while deleting record by ACI: \(error.grdbErrorForLogging)")
         }

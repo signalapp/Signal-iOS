@@ -94,10 +94,10 @@ enum OWSOrphanDataCleaner {
                 databaseStorage.write { transaction in
                     keyValueStore.setString(AppVersionImpl.shared.currentAppVersion,
                                             key: Constants.lastCleaningVersionKey,
-                                            transaction: transaction.asV2Write)
+                                            transaction: transaction)
                     keyValueStore.setDate(Date(),
                                           key: Constants.lastCleaningDateKey,
-                                          transaction: transaction.asV2Write)
+                                          transaction: transaction)
                 }
 
                 completion?()
@@ -117,13 +117,13 @@ enum OWSOrphanDataCleaner {
 
         return databaseStorage.read { transaction -> Bool in
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered else {
+            guard tsAccountManager.registrationState(tx: transaction).isRegistered else {
                 return false
             }
 
             let lastCleaningVersion = kvs.getString(
                 Constants.lastCleaningVersionKey,
-                transaction: transaction.asV2Read
+                transaction: transaction
             )
             guard let lastCleaningVersion else {
                 Logger.info("Performing orphan data cleanup because we've never done it")
@@ -136,7 +136,7 @@ enum OWSOrphanDataCleaner {
 
             let lastCleaningDate = kvs.getDate(
                 Constants.lastCleaningDateKey,
-                transaction: transaction.asV2Read
+                transaction: transaction
             )
             guard let lastCleaningDate else {
                 owsFailDebug("We have a \"last cleaned version\". Why don't we have a last cleaned date?")
@@ -160,7 +160,7 @@ enum OWSOrphanDataCleaner {
 
     private static func fetchMessage(
         for jobRecord: MessageSenderJobRecord,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSMessage? {
         switch jobRecord.messageType {
         case .none:
@@ -410,7 +410,7 @@ enum OWSOrphanDataCleaner {
     /// Finds paths in `baseUrl` not present in `fetchExpectedRelativePaths()`.
     private static func findOrphanedPaths(
         baseUrl: URL,
-        fetchExpectedRelativePaths: (SDSAnyReadTransaction) -> Set<String>
+        fetchExpectedRelativePaths: (DBReadTransaction) -> Set<String>
     ) -> Set<String> {
         let basePath = baseUrl.path
 
@@ -544,7 +544,7 @@ enum OWSOrphanDataCleaner {
                     continue
                 }
                 DependenciesBridge.shared.interactionDeleteManager
-                    .delete(interaction, sideEffects: .default(), tx: transaction.asV2Write)
+                    .delete(interaction, sideEffects: .default(), tx: transaction)
             }
             Logger.info("Deleted orphan interactions: \(interactionsRemoved)")
 

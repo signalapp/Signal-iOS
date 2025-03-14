@@ -434,7 +434,7 @@ class CustomColorViewController: OWSTableViewController2 {
             usageCountToConfirm = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return DependenciesBridge.shared.chatColorSettingStore.usageCount(
                     of: colorKey,
-                    tx: tx.asV2Read
+                    tx: tx
                 )
             }
             guard usageCountToConfirm > 1 else {
@@ -1368,7 +1368,7 @@ private class CustomColorPreviewView: UIView {
 
     fileprivate func dismissTooltip() {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            Self.keyValueStore.setBool(true, key: Self.tooltipWasDismissedKey, transaction: transaction.asV2Write)
+            Self.keyValueStore.setBool(true, key: Self.tooltipWasDismissedKey, transaction: transaction)
         }
         hideTooltip()
     }
@@ -1380,7 +1380,7 @@ private class CustomColorPreviewView: UIView {
 
     private func ensureTooltip() {
         let shouldShowTooltip = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            !Self.keyValueStore.getBool(Self.tooltipWasDismissedKey, defaultValue: false, transaction: transaction.asV2Read)
+            !Self.keyValueStore.getBool(Self.tooltipWasDismissedKey, defaultValue: false, transaction: transaction)
         }
         let isShowingTooltip = customColorTooltip != nil
         guard shouldShowTooltip != isShowingTooltip else {

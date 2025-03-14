@@ -517,7 +517,7 @@ private enum CrashyMocks {
     }
 
     final class MockCallMessageHandler: CallMessageHandler {
-        func receivedEnvelope(_ envelope: SSKProtoEnvelope, callEnvelope: CallEnvelopeType, from caller: (aci: Aci, deviceId: UInt32), toLocalIdentity localIdentity: OWSIdentity, plaintextData: Data, wasReceivedByUD: Bool, sentAtTimestamp: UInt64, serverReceivedTimestamp: UInt64, serverDeliveryTimestamp: UInt64, tx: SDSAnyWriteTransaction) { failTest(Self.self) }
+        func receivedEnvelope(_ envelope: SSKProtoEnvelope, callEnvelope: CallEnvelopeType, from caller: (aci: Aci, deviceId: UInt32), toLocalIdentity localIdentity: OWSIdentity, plaintextData: Data, wasReceivedByUD: Bool, sentAtTimestamp: UInt64, serverReceivedTimestamp: UInt64, serverDeliveryTimestamp: UInt64, tx: DBWriteTransaction) { failTest(Self.self) }
         func receivedGroupCallUpdateMessage(_ updateMessage: SSKProtoDataMessageGroupCallUpdate, forGroupId groupId: GroupIdentifier, serverReceivedTimestamp: UInt64) async { failTest(Self.self) }
     }
 
@@ -528,22 +528,22 @@ private enum CrashyMocks {
 
     final class MockNotificationPresenter: NotificationPresenter {
         func registerNotificationSettings() async { failTest(Self.self) }
-        func notifyUser(forIncomingMessage: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) { failTest(Self.self) }
-        func notifyUser(forIncomingMessage: TSIncomingMessage, editTarget: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) { failTest(Self.self) }
-        func notifyUser(forReaction: OWSReaction, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) { failTest(Self.self) }
-        func notifyUser(forErrorMessage: TSErrorMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) { failTest(Self.self) }
-        func notifyUser(forTSMessage: TSMessage, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction) { failTest(Self.self) }
-        func notifyUser(forPreviewableInteraction: any TSInteraction & OWSPreviewText, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction) { failTest(Self.self) }
+        func notifyUser(forIncomingMessage: TSIncomingMessage, thread: TSThread, transaction: DBReadTransaction) { failTest(Self.self) }
+        func notifyUser(forIncomingMessage: TSIncomingMessage, editTarget: TSIncomingMessage, thread: TSThread, transaction: DBReadTransaction) { failTest(Self.self) }
+        func notifyUser(forReaction: OWSReaction, onOutgoingMessage: TSOutgoingMessage, thread: TSThread, transaction: DBReadTransaction) { failTest(Self.self) }
+        func notifyUser(forErrorMessage: TSErrorMessage, thread: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
+        func notifyUser(forTSMessage: TSMessage, thread: TSThread, wantsSound: Bool, transaction: DBWriteTransaction) { failTest(Self.self) }
+        func notifyUser(forPreviewableInteraction: any TSInteraction & OWSPreviewText, thread: TSThread, wantsSound: Bool, transaction: DBWriteTransaction) { failTest(Self.self) }
         func notifyTestPopulation(ofErrorMessage errorString: String) { failTest(Self.self) }
-        func notifyUser(forFailedStorySend: StoryMessage, to: TSThread, transaction: SDSAnyWriteTransaction) { failTest(Self.self) }
+        func notifyUser(forFailedStorySend: StoryMessage, to: TSThread, transaction: DBWriteTransaction) { failTest(Self.self) }
         func notifyUserOfFailedSend(inThread thread: TSThread) { failTest(Self.self) }
-        func notifyUserOfMissedCall(notificationInfo: CallNotificationInfo, offerMediaType: TSRecentCallOfferType, sentAt timestamp: Date, tx: SDSAnyReadTransaction) { failTest(Self.self) }
-        func notifyUserOfMissedCallBecauseOfNewIdentity(notificationInfo: CallNotificationInfo, tx: SDSAnyReadTransaction) { failTest(Self.self) }
-        func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(notificationInfo: CallNotificationInfo, tx: SDSAnyReadTransaction) { failTest(Self.self) }
+        func notifyUserOfMissedCall(notificationInfo: CallNotificationInfo, offerMediaType: TSRecentCallOfferType, sentAt timestamp: Date, tx: DBReadTransaction) { failTest(Self.self) }
+        func notifyUserOfMissedCallBecauseOfNewIdentity(notificationInfo: CallNotificationInfo, tx: DBReadTransaction) { failTest(Self.self) }
+        func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(notificationInfo: CallNotificationInfo, tx: DBReadTransaction) { failTest(Self.self) }
         func notifyForGroupCallSafetyNumberChange(callTitle: String, threadUniqueId: String?, roomId: Data?, presentAtJoin: Bool) { failTest(Self.self) }
         func scheduleNotifyForNewLinkedDevice(deviceLinkTimestamp: Date) { failTest(Self.self) }
         func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void) { failTest(Self.self) }
-        func notifyUserOfDeregistration(tx: any DBWriteTransaction) { failTest(Self.self) }
+        func notifyUserOfDeregistration(tx: DBWriteTransaction) { failTest(Self.self) }
         func clearAllNotifications() { failTest(Self.self) }
         func clearAllNotificationsExceptNewLinkedDevices() { failTest(Self.self) }
         static func clearAllNotificationsExceptNewLinkedDevices() { failTest(Self.self) }

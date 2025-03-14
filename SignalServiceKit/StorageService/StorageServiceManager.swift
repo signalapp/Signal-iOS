@@ -613,13 +613,13 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         let deletionThresholdMs = Date.ows_millisecondTimestamp() - RemoteConfig.current.messageQueueTimeMs
         do {
             let callLinkRecords = try SSKEnvironment.shared.databaseStorageRef.read { tx in
-                try callLinkStore.fetchWhere(adminDeletedAtTimestampMsIsLessThan: deletionThresholdMs, tx: tx.asV2Read)
+                try callLinkStore.fetchWhere(adminDeletedAtTimestampMsIsLessThan: deletionThresholdMs, tx: tx)
             }
             if !callLinkRecords.isEmpty {
                 Logger.info("Cleaning up \(callLinkRecords.count) call links that were deleted a while ago.")
                 try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                     for callLinkRecord in callLinkRecords {
-                        try callLinkStore.delete(callLinkRecord, tx: tx.asV2Write)
+                        try callLinkStore.delete(callLinkRecord, tx: tx)
                     }
                 }
                 recordPendingUpdates(callLinkRootKeys: callLinkRecords.map(\.rootKey))
@@ -717,7 +717,7 @@ class StorageServiceOperation {
             case .explicit(let keyData):
                 masterKey = keyData
             case .implicit:
-                masterKey = DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: tx.asV2Read)
+                masterKey = DependenciesBridge.shared.accountKeyStore.getMasterKey(tx: tx)
             }
 
             return (state, masterKey)
@@ -774,7 +774,7 @@ class StorageServiceOperation {
 
     private static func recordPendingMutations(
         _ pendingMutations: PendingMutations,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         var state = State.current(transaction: transaction)
         recordPendingMutations(pendingMutations, in: &state, transaction: transaction)
@@ -784,7 +784,7 @@ class StorageServiceOperation {
     private static func recordPendingMutations(
         _ pendingMutations: PendingMutations,
         in state: inout State,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         // Coalesce addresses to account IDs. There may be duplicates among the
         // addresses and account IDs.
@@ -795,7 +795,7 @@ class StorageServiceOperation {
 
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         allRecipientUniqueIds.formUnion(pendingMutations.updatedServiceIds.lazy.compactMap { (serviceId: ServiceId) -> String? in
-            return recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write).uniqueId
+            return recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx).uniqueId
         })
 
         // Then, update State with all these pending mutations.
@@ -832,7 +832,7 @@ class StorageServiceOperation {
         }
     }
 
-    private func normalizePendingMutations(in state: inout State, transaction: SDSAnyReadTransaction) {
+    private func normalizePendingMutations(in state: inout State, transaction: DBReadTransaction) {
         // If we didn't change any AccountIds, then we definitely don't have a
         // match for the `if` check which follows & can avoid the query.
         if state.accountIdChangeMap.isEmpty {
@@ -840,7 +840,7 @@ class StorageServiceOperation {
         }
         let localAci = localIdentifiers.aci
         let recipientIdFinder = DependenciesBridge.shared.recipientIdFinder
-        let localRecipientUniqueId = try? recipientIdFinder.recipientUniqueId(for: localAci, tx: transaction.asV2Read)?.get()
+        let localRecipientUniqueId = try? recipientIdFinder.recipientUniqueId(for: localAci, tx: transaction)?.get()
         // If we updated a recipient, and if that recipient is ourselves, move the
         // update over to the Account record type.
         if let localRecipientUniqueId, state.accountIdChangeMap.removeValue(forKey: localRecipientUniqueId) != nil {
@@ -860,7 +860,7 @@ class StorageServiceOperation {
             changeState: State.ChangeState,
             stateUpdater: StateUpdater,
             needsInterceptForMigration: Bool,
-            transaction: SDSAnyReadTransaction
+            transaction: DBReadTransaction
         ) {
             let recordUpdater = stateUpdater.recordUpdater
 
@@ -922,7 +922,7 @@ class StorageServiceOperation {
             state: inout State,
             stateUpdater: StateUpdater,
             needsInterceptForMigration: Bool,
-            transaction: SDSAnyReadTransaction
+            transaction: DBReadTransaction
         ) {
             stateUpdater.resetAndEnumerateChangeStates(in: &state) { mutableState, localId, changeState in
                 updateRecord(
@@ -1115,8 +1115,8 @@ class StorageServiceOperation {
                 await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                     // Clear out the key, it's no longer valid. This will prevent us
                     // from trying to backup again until the sync response is received.
-                    DependenciesBridge.shared.svrLocalStorage.clearStorageServiceKeys(transaction.asV2Write)
-                    DependenciesBridge.shared.accountKeyStore.setMasterKey(nil, tx: transaction.asV2Write)
+                    DependenciesBridge.shared.svrLocalStorage.clearStorageServiceKeys(transaction)
+                    DependenciesBridge.shared.accountKeyStore.setMasterKey(nil, tx: transaction)
                     SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
                 }
             }
@@ -1184,7 +1184,7 @@ class StorageServiceOperation {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             if
                 DependenciesBridge.shared.storageServiceRecordIkmCapabilityStore
-                    .isRecordIkmCapable(tx: transaction.asV2Read)
+                    .isRecordIkmCapable(tx: transaction)
             {
                 /// If we are `recordIkm`-capable, we should generate a new one
                 /// each time we create a new manifest. The records recreated
@@ -1264,7 +1264,7 @@ class StorageServiceOperation {
 
             // Deleted Private Stories
             DependenciesBridge.shared.privateStoryThreadDeletionManager
-                .allDeletedIdentifiers(tx: transaction.asV2Read)
+                .allDeletedIdentifiers(tx: transaction)
                 .forEach { deletedDistributionListIdentifier in
                     createRecord(
                         localId: deletedDistributionListIdentifier,
@@ -1275,7 +1275,7 @@ class StorageServiceOperation {
             let callLinkUpdater = buildCallLinkUpdater()
             let callLinkStore = callLinkUpdater.recordUpdater.callLinkStore
             do {
-                try callLinkStore.fetchAll(tx: transaction.asV2Read).forEach {
+                try callLinkStore.fetchAll(tx: transaction).forEach {
                     createRecord(localId: $0.rootKey.bytes, stateUpdater: callLinkUpdater)
                 }
             } catch {
@@ -1597,7 +1597,7 @@ class StorageServiceOperation {
                     let callLinkStore = DependenciesBridge.shared.callLinkStore
                     guard
                         let callLinkRootKey = try? CallLinkRootKey(callLinkRootKeyData),
-                        let callLinkRecord = try? callLinkStore.fetch(roomId: callLinkRootKey.deriveRoomId(), tx: transaction.asV2Read),
+                        let callLinkRecord = try? callLinkStore.fetch(roomId: callLinkRootKey.deriveRoomId(), tx: transaction),
                         callLinkRecord.adminPasskey != nil
                     else {
                         continue
@@ -1666,8 +1666,8 @@ class StorageServiceOperation {
                 await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                     // Clear out the key, it's no longer valid. This will prevent us
                     // from trying to backup again until the sync response is received.
-                    DependenciesBridge.shared.svrLocalStorage.clearStorageServiceKeys(transaction.asV2Write)
-                    DependenciesBridge.shared.accountKeyStore.setMasterKey(nil, tx: transaction.asV2Write)
+                    DependenciesBridge.shared.svrLocalStorage.clearStorageServiceKeys(transaction)
+                    DependenciesBridge.shared.accountKeyStore.setMasterKey(nil, tx: transaction)
                     SSKEnvironment.shared.syncManagerRef.sendKeysSyncRequestMessage(transaction: transaction)
                 }
             } else if
@@ -1733,7 +1733,7 @@ class StorageServiceOperation {
         }
     }
 
-    private func mergeItems(_ items: some Sequence<StorageService.StorageItem>, state: inout State, tx: SDSAnyWriteTransaction) {
+    private func mergeItems(_ items: some Sequence<StorageService.StorageItem>, state: inout State, tx: DBWriteTransaction) {
         let contactUpdater = buildContactUpdater()
         let groupV1Updater = buildGroupV1Updater()
         let groupV2Updater = buildGroupV2Updater()
@@ -1790,7 +1790,7 @@ class StorageServiceOperation {
         var (state, migrationVersion) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             var state = State.current(transaction: tx)
             normalizePendingMutations(in: &state, transaction: tx)
-            return (state, Self.migrationStore.getInt(Self.versionKey, defaultValue: 0, transaction: tx.asV2Read))
+            return (state, Self.migrationStore.getInt(Self.versionKey, defaultValue: 0, transaction: tx))
         }
 
         await self.cleanUpUnknownIdentifiers(in: &state)
@@ -1801,7 +1801,7 @@ class StorageServiceOperation {
         case 0:
             await self.recordPendingMutationsForContactsWithPNIs(in: &state)
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                Self.migrationStore.setInt(1, key: Self.versionKey, transaction: tx.asV2Write)
+                Self.migrationStore.setInt(1, key: Self.versionKey, transaction: tx)
             }
             fallthrough
         default:
@@ -1872,7 +1872,7 @@ class StorageServiceOperation {
 
         func fetchRecordsWithUnknownFields(
             stateUpdater: some StorageServiceStateUpdater,
-            tx: SDSAnyWriteTransaction
+            tx: DBWriteTransaction
         ) -> [any MigrateableStorageServiceRecordType] {
             return stateUpdater.recordsWithUnknownFields(in: state)
                 .lazy
@@ -1889,7 +1889,7 @@ class StorageServiceOperation {
         // merge any values, we might partially merge all the values.
         func mergeRecordsWithUnknownFields(
             stateUpdater: some StorageServiceStateUpdater,
-            tx: SDSAnyWriteTransaction
+            tx: DBWriteTransaction
         ) {
             let recordsWithUnknownFields = stateUpdater.recordsWithUnknownFields(in: state)
             if recordsWithUnknownFields.isEmpty {
@@ -2006,7 +2006,7 @@ class StorageServiceOperation {
         identifier: StorageService.StorageIdentifier,
         state: inout State,
         stateUpdater: StateUpdater,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         var record = record
         // First apply any migrations
@@ -2281,8 +2281,8 @@ class StorageServiceOperation {
 
         private static let stateKey = "state"
 
-        fileprivate static func current(transaction: SDSAnyReadTransaction) -> State {
-            guard let stateData = keyValueStore.getData(stateKey, transaction: transaction.asV2Read) else { return State() }
+        fileprivate static func current(transaction: DBReadTransaction) -> State {
+            guard let stateData = keyValueStore.getData(stateKey, transaction: transaction) else { return State() }
             guard let current = try? JSONDecoder().decode(State.self, from: stateData) else {
                 owsFailDebug("failed to decode state data")
                 return State()
@@ -2290,10 +2290,10 @@ class StorageServiceOperation {
             return current
         }
 
-        fileprivate mutating func save(clearConsecutiveConflicts: Bool = false, transaction: SDSAnyWriteTransaction) {
+        fileprivate mutating func save(clearConsecutiveConflicts: Bool = false, transaction: DBWriteTransaction) {
             if clearConsecutiveConflicts { consecutiveConflicts = 0 }
             guard let stateData = try? JSONEncoder().encode(self) else { return owsFailDebug("failed to encode state data") }
-            keyValueStore.setData(stateData, key: State.stateKey, transaction: transaction.asV2Write)
+            keyValueStore.setData(stateData, key: State.stateKey, transaction: transaction)
         }
 
     }

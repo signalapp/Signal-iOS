@@ -283,7 +283,7 @@ extension SharingThreadPickerViewController {
                         thread: destination.thread,
                         expiresInSeconds: dmConfigurationStore.durationSeconds(
                             for: destination.thread,
-                            tx: tx.asV2Read
+                            tx: tx
                         )
                     )
                     let message = builder.build(transaction: tx)
@@ -363,7 +363,7 @@ extension SharingThreadPickerViewController {
     private nonisolated func sendToOutgoingMessageThreads(
         selectedConversations: [ConversationItem],
         messageBody: MessageBody?,
-        messageBlock: @escaping (AttachmentMultisend.Destination, SDSAnyWriteTransaction) throws -> PreparedOutgoingMessage,
+        messageBlock: @escaping (AttachmentMultisend.Destination, DBWriteTransaction) throws -> PreparedOutgoingMessage,
         storySendBlock: (([ConversationItem]) -> AttachmentMultisend.Result?)?
     ) async -> Result<Void, SendError> {
         let conversations = selectedConversations.filter { $0.outgoingMessageType == .message }
@@ -438,7 +438,7 @@ extension SharingThreadPickerViewController {
         }
     }
 
-    private nonisolated func threads(for conversationItems: [ConversationItem], tx: SDSAnyWriteTransaction) -> [TSThread] {
+    private nonisolated func threads(for conversationItems: [ConversationItem], tx: DBWriteTransaction) -> [TSThread] {
         return conversationItems.compactMap { conversation in
             guard let thread = conversation.getOrCreateThread(transaction: tx) else {
                 owsFailDebug("Missing thread for conversation")
@@ -486,7 +486,7 @@ extension SharingThreadPickerViewController {
             // Capture the identity key before showing the prompt about it.
             let identityKey = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 let identityManager = DependenciesBridge.shared.identityManager
-                return identityManager.identityKey(for: SignalServiceAddress(untrustedServiceId), tx: tx.asV2Read)
+                return identityManager.identityKey(for: SignalServiceAddress(untrustedServiceId), tx: tx)
             }
 
             let confirmAction = ActionSheetAction(
@@ -500,7 +500,7 @@ extension SharingThreadPickerViewController {
                     let identityManager = DependenciesBridge.shared.identityManager
                     let verificationState = identityManager.verificationState(
                         for: SignalServiceAddress(untrustedServiceId),
-                        tx: transaction.asV2Write
+                        tx: transaction
                     )
                     switch verificationState {
                     case .verified:
@@ -516,7 +516,7 @@ extension SharingThreadPickerViewController {
                             of: identityKey,
                             for: SignalServiceAddress(untrustedServiceId),
                             isUserInitiatedChange: true,
-                            tx: transaction.asV2Write
+                            tx: transaction
                         )
                     }
                 }

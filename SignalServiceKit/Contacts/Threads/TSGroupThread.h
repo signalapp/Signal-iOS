@@ -8,9 +8,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class DBReadTransaction;
+@class DBWriteTransaction;
 @class MessageBodyRanges;
-@class SDSAnyReadTransaction;
-@class SDSAnyWriteTransaction;
 @class TSGroupModelV2;
 
 extern NSString *const TSGroupThreadAvatarChangedNotification;
@@ -80,8 +80,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 @property (nonatomic) TSGroupModel *groupModel;
 
 + (nullable instancetype)fetchWithGroupId:(NSData *)groupId
-                              transaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(fetch(groupId:transaction:));
+                              transaction:(DBReadTransaction *)transaction NS_SWIFT_NAME(fetch(groupId:transaction:));
 
 @property (nonatomic, readonly) NSString *groupNameOrDefault;
 @property (nonatomic, readonly, class) NSString *defaultGroupName;

@@ -517,7 +517,7 @@ class MessageSendLogTests: SSKBaseTest {
     // MARK: - Helpers
 
     class MSLTestMessage: TSOutgoingMessage {
-        init(outgoingMessageWithBuilder outgoingMessageBuilder: TSOutgoingMessageBuilder, transaction: SDSAnyReadTransaction) {
+        init(outgoingMessageWithBuilder outgoingMessageBuilder: TSOutgoingMessageBuilder, transaction: DBReadTransaction) {
             super.init(
                 outgoingMessageWith: outgoingMessageBuilder,
                 additionalRecipients: [],
@@ -546,7 +546,7 @@ class MessageSendLogTests: SSKBaseTest {
         date: Date? = nil,
         contentHint: SealedSenderContentHint = .implicit,
         relatedMessageIds: [String] = [],
-        transaction writeTx: SDSAnyWriteTransaction
+        transaction writeTx: DBWriteTransaction
     ) -> TSOutgoingMessage {
 
         let resolvedDate = date ?? {
@@ -565,10 +565,10 @@ class MessageSendLogTests: SSKBaseTest {
         return testMessage
     }
 
-    func isPayloadAlive(index: Int64, transaction tx: SDSAnyReadTransaction) -> Bool {
+    func isPayloadAlive(index: Int64, transaction tx: DBReadTransaction) -> Bool {
         let count = try! MessageSendLog.Payload
             .filter(Column("payloadId") == index)
-            .fetchCount(tx.unwrapGrdbRead.database)
+            .fetchCount(tx.database)
         return count > 0
     }
 }

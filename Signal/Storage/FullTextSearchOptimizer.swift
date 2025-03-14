@@ -70,7 +70,7 @@ final class FullTextSearchOptimizer {
 
         let mergeResult = try await db.awaitableWrite { tx -> SqliteUtil.Fts5.MergeResult in
             return try SqliteUtil.Fts5.merge(
-                db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
+                db: SDSDB.shimOnlyBridge(tx).database,
                 ftsTableName: FullTextSearchIndexer.ftsTableName,
                 numberOfPages: Constants.numberOfPagesToMergeAtATime,
                 isFirstBatch: isFirstBatch

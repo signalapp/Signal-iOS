@@ -9,8 +9,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class AciObjC;
+@class DBWriteTransaction;
 @class MobileCoinPayment;
-@class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
 
 // We store payment records separately from interactions.
@@ -129,28 +129,27 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:addressUuidString:c
 // --- CODE GENERATION MARKER
 
 - (void)updateWithPaymentState:(TSPaymentState)paymentState
-                   transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(update(paymentState:transaction:));
+                   transaction:(DBWriteTransaction *)transaction NS_SWIFT_NAME(update(paymentState:transaction:));
 
 - (void)updateWithMCLedgerBlockIndex:(uint64_t)ledgerBlockIndex
-                         transaction:(SDSAnyWriteTransaction *)transaction
+                         transaction:(DBWriteTransaction *)transaction
     NS_SWIFT_NAME(update(mcLedgerBlockIndex:transaction:));
 
 - (void)updateWithMCLedgerBlockTimestamp:(uint64_t)ledgerBlockTimestamp
-                             transaction:(SDSAnyWriteTransaction *)transaction
+                             transaction:(DBWriteTransaction *)transaction
     NS_SWIFT_NAME(update(mcLedgerBlockTimestamp:transaction:));
 
 - (void)updateWithPaymentFailure:(TSPaymentFailure)paymentFailure
                     paymentState:(TSPaymentState)paymentState
-                     transaction:(SDSAnyWriteTransaction *)transaction
+                     transaction:(DBWriteTransaction *)transaction
     NS_SWIFT_NAME(update(withPaymentFailure:paymentState:transaction:));
 
 - (void)updateWithPaymentAmount:(TSPaymentAmount *)paymentAmount
-                    transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(update(withPaymentAmount:transaction:));
+                    transaction:(DBWriteTransaction *)transaction NS_SWIFT_NAME(update(withPaymentAmount:transaction:));
 
-- (void)updateWithIsUnread:(BOOL)isUnread transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithIsUnread:(BOOL)isUnread transaction:(DBWriteTransaction *)transaction;
 
-- (void)updateWithInteractionUniqueId:(NSString *)interactionUniqueId transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithInteractionUniqueId:(NSString *)interactionUniqueId transaction:(DBWriteTransaction *)transaction;
 
 @end
 

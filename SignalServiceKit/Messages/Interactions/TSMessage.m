@@ -318,7 +318,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 }
 
 
-- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyWillInsertWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyWillInsertWithTransaction:transaction];
 
@@ -327,7 +327,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self updateStoredShouldStartExpireTimer];
 }
 
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];
 
@@ -338,14 +338,14 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self touchStoryMessageIfNecessaryWithReplyCountIncrement:ReplyCountIncrementNewReplyAdded transaction:transaction];
 }
 
-- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyWillUpdateWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyWillUpdateWithTransaction:transaction];
 
     [self updateStoredShouldStartExpireTimer];
 }
 
-- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidUpdateWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
 
@@ -356,7 +356,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self touchStoryMessageIfNecessaryWithReplyCountIncrement:ReplyCountIncrementNoIncrement transaction:transaction];
 }
 
-- (void)ensurePerConversationExpirationWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)ensurePerConversationExpirationWithTransaction:(DBWriteTransaction *)transaction
 {
     if (self.hasPerConversationExpirationStarted) {
         // Expiration already started.
@@ -398,7 +398,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(expireStartedAt > 0);
     OWSAssertDebug(self.expiresInSeconds > 0);
@@ -407,7 +407,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                     block:^(TSMessage *message) { [message setExpireStartedAt:expireStartedAt]; }];
 }
 
-- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(linkPreview);
     OWSAssertDebug(transaction);
@@ -416,7 +416,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                     block:^(TSMessage *message) { [message setLinkPreview:linkPreview]; }];
 }
 
-- (void)updateWithQuotedMessage:(TSQuotedMessage *)quotedMessage transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithQuotedMessage:(TSQuotedMessage *)quotedMessage transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(quotedMessage);
     OWSAssertDebug(transaction);
@@ -425,7 +425,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                     block:^(TSMessage *message) { [message setQuotedMessage:quotedMessage]; }];
 }
 
-- (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(messageSticker);
     OWSAssertDebug(transaction);
@@ -434,7 +434,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                     block:^(TSMessage *message) { message.messageSticker = messageSticker; }];
 }
 
-- (void)updateWithContactShare:(OWSContact *)contactShare transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithContactShare:(OWSContact *)contactShare transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(contactShare);
     OWSAssertDebug(transaction);
@@ -446,7 +446,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 #ifdef TESTABLE_BUILD
 
 // This method is for testing purposes only.
-- (void)updateWithMessageBody:(nullable NSString *)messageBody transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithMessageBody:(nullable NSString *)messageBody transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -457,7 +457,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #pragma mark - View Once
 
-- (void)updateWithViewOnceCompleteAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithViewOnceCompleteAndRemoveRenderableContentWithTransaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(self.isViewOnceMessage);
@@ -469,7 +469,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #pragma mark - Remote Delete
 
-- (void)updateWithRemotelyDeletedAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithRemotelyDeletedAndRemoveRenderableContentWithTransaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(!self.wasRemotelyDeleted);
@@ -482,7 +482,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #pragma mark - Remove Renderable Content
 
-- (void)removeAllRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)removeAllRenderableContentWithTransaction:(DBWriteTransaction *)transaction
                                messageUpdateBlock:(void (^)(TSMessage *message))messageUpdateBlock
 {
     // We call removeAllAttachmentsWithTransaction() before

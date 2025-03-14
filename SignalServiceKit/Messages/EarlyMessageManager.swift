@@ -182,7 +182,7 @@ public class EarlyMessageManager {
         serverDeliveryTimestamp: UInt64,
         associatedMessageTimestamp: UInt64,
         associatedMessageAuthor: Aci?,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         guard plainTextData.count <= Self.maxEarlyEnvelopeSize else {
             return owsFailDebug("unexpectedly tried to record an excessively large early envelope")
@@ -201,7 +201,7 @@ public class EarlyMessageManager {
 
         var envelopes: [EarlyEnvelope]
         do {
-            envelopes = try pendingEnvelopeStore.getCodableValue(forKey: identifier.key, transaction: transaction.asV2Read) ?? []
+            envelopes = try pendingEnvelopeStore.getCodableValue(forKey: identifier.key, transaction: transaction) ?? []
         } catch {
             owsFailDebug("Failed to decode existing early envelopes for message \(identifier) with error \(error)")
             envelopes = []
@@ -220,7 +220,7 @@ public class EarlyMessageManager {
         ))
 
         do {
-            try pendingEnvelopeStore.setCodable(envelopes, key: identifier.key, transaction: transaction.asV2Write)
+            try pendingEnvelopeStore.setCodable(envelopes, key: identifier.key, transaction: transaction)
         } catch {
             owsFailDebug("Failed to persist early envelope \(OWSMessageDecrypter.description(for: envelope)) for message \(identifier) with error \(error)")
         }
@@ -232,9 +232,9 @@ public class EarlyMessageManager {
         senderDeviceId: UInt32,
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci else {
             return owsFailDebug("missing local address")
         }
 
@@ -258,7 +258,7 @@ public class EarlyMessageManager {
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
         associatedMessageAuthor: AciObjC?,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         guard let associatedMessageAuthor else {
             return owsFailDebug("unexpectedly missing associatedMessageAuthor for early read receipt with timestamp \(timestamp)")
@@ -282,7 +282,7 @@ public class EarlyMessageManager {
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
         associatedMessageAuthor: AciObjC?,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         guard let associatedMessageAuthor else {
             return owsFailDebug("unexpectedly missing associatedMessageAuthor for early viewed receipt with timestamp \(timestamp)")
@@ -305,11 +305,11 @@ public class EarlyMessageManager {
     private func recordEarlyReceipt(
         _ earlyReceipt: EarlyReceipt,
         identifier: MessageIdentifier,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         var receipts: [EarlyReceipt]
         do {
-            receipts = try pendingReceiptStore.getCodableValue(forKey: identifier.key, transaction: transaction.asV2Read) ?? []
+            receipts = try pendingReceiptStore.getCodableValue(forKey: identifier.key, transaction: transaction) ?? []
         } catch {
             owsFailDebug("Failed to decode existing early receipts for message \(identifier) with error \(error)")
             receipts = []
@@ -328,13 +328,13 @@ public class EarlyMessageManager {
         receipts.append(earlyReceipt)
 
         do {
-            try pendingReceiptStore.setCodable(receipts, key: identifier.key, transaction: transaction.asV2Write)
+            try pendingReceiptStore.setCodable(receipts, key: identifier.key, transaction: transaction)
         } catch {
             owsFailDebug("Failed to persist early receipt for message \(identifier) with error \(error)")
         }
     }
 
-    public func applyPendingMessages(for message: TSMessage, localIdentifiers: LocalIdentifiers, transaction: SDSAnyWriteTransaction) {
+    public func applyPendingMessages(for message: TSMessage, localIdentifiers: LocalIdentifiers, transaction: DBWriteTransaction) {
         let identifier: MessageIdentifier
         if let message = message as? TSOutgoingMessage {
             identifier = MessageIdentifier(timestamp: message.timestamp, author: localIdentifiers.aci)
@@ -410,13 +410,13 @@ public class EarlyMessageManager {
         }
     }
 
-    public func applyPendingMessages(for storyMessage: StoryMessage, transaction: SDSAnyWriteTransaction) {
+    public func applyPendingMessages(for storyMessage: StoryMessage, transaction: DBWriteTransaction) {
         guard !storyMessage.authorAddress.isSystemStoryAddress else {
             // Don't process read receipts for system stories.
             Logger.info("Not processing viewed receipt for system story")
             return
         }
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
             owsFailDebug("Can't process messages when not registered.")
             return
         }
@@ -462,31 +462,31 @@ public class EarlyMessageManager {
     private func applyPendingMessages(
         for identifier: MessageIdentifier,
         localIdentifiers: LocalIdentifiers,
-        tx transaction: SDSAnyWriteTransaction,
+        tx transaction: DBWriteTransaction,
         earlyReceiptProcessor: (EarlyReceipt) -> Void
     ) {
         let earlyReceipts: [EarlyReceipt]?
         do {
-            earlyReceipts = try pendingReceiptStore.getCodableValue(forKey: identifier.key, transaction: transaction.asV2Read)
+            earlyReceipts = try pendingReceiptStore.getCodableValue(forKey: identifier.key, transaction: transaction)
         } catch {
             owsFailDebug("Failed to decode early receipts for message \(identifier) with error \(error)")
             earlyReceipts = nil
         }
 
-        pendingReceiptStore.removeValue(forKey: identifier.key, transaction: transaction.asV2Write)
+        pendingReceiptStore.removeValue(forKey: identifier.key, transaction: transaction)
 
         // Apply any early receipts for this message
         earlyReceipts?.forEach { earlyReceiptProcessor($0) }
 
         let earlyEnvelopes: [EarlyEnvelope]?
         do {
-            earlyEnvelopes = try pendingEnvelopeStore.getCodableValue(forKey: identifier.key, transaction: transaction.asV2Read)
+            earlyEnvelopes = try pendingEnvelopeStore.getCodableValue(forKey: identifier.key, transaction: transaction)
         } catch {
             owsFailDebug("Failed to decode early envelopes for \(identifier) with error \(error)")
             earlyEnvelopes = nil
         }
 
-        pendingEnvelopeStore.removeValue(forKey: identifier.key, transaction: transaction.asV2Write)
+        pendingEnvelopeStore.removeValue(forKey: identifier.key, transaction: transaction)
 
         // Re-process any early envelopes associated with this message
         for earlyEnvelope in earlyEnvelopes ?? [] {
@@ -513,7 +513,7 @@ public class EarlyMessageManager {
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
             let oldestTimestampToKeep = Date.ows_millisecondTimestamp() - UInt64.weekInMs
 
-            let allEnvelopeKeys = self.pendingEnvelopeStore.allKeys(transaction: transaction.asV2Read)
+            let allEnvelopeKeys = self.pendingEnvelopeStore.allKeys(transaction: transaction)
             let staleEnvelopeKeys = allEnvelopeKeys.filter {
                 guard let timestampString = $0.split(separator: ".")[safe: 1],
                       let timestamp = UInt64(timestampString),
@@ -522,9 +522,9 @@ public class EarlyMessageManager {
                 }
                 return true
             }
-            self.pendingEnvelopeStore.removeValues(forKeys: staleEnvelopeKeys, transaction: transaction.asV2Write)
+            self.pendingEnvelopeStore.removeValues(forKeys: staleEnvelopeKeys, transaction: transaction)
 
-            let allReceiptKeys = self.pendingReceiptStore.allKeys(transaction: transaction.asV2Read)
+            let allReceiptKeys = self.pendingReceiptStore.allKeys(transaction: transaction)
             let staleReceiptKeys = allReceiptKeys.filter {
                 guard let timestampString = $0.split(separator: ".")[safe: 1],
                       let timestamp = UInt64(timestampString),
@@ -533,7 +533,7 @@ public class EarlyMessageManager {
                 }
                 return true
             }
-            self.pendingReceiptStore.removeValues(forKeys: staleReceiptKeys, transaction: transaction.asV2Write)
+            self.pendingReceiptStore.removeValues(forKeys: staleReceiptKeys, transaction: transaction)
 
             let remainingReceiptKeys = Set(allReceiptKeys).subtracting(staleReceiptKeys)
             self.trimEarlyReceiptsIfNecessary(remainingReceiptKeys: remainingReceiptKeys,
@@ -543,7 +543,7 @@ public class EarlyMessageManager {
 
     private func trimEarlyReceiptsIfNecessary(
         remainingReceiptKeys: Set<String>,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         guard CurrentAppContext().isMainApp,
               !CurrentAppContext().isRunningTests else {
@@ -554,16 +554,16 @@ public class EarlyMessageManager {
         let hasTrimmedReceipts = self.metadataStore.getBool(
             trimmedReceiptsKey,
             defaultValue: false,
-            transaction: transaction.asV2Read)
+            transaction: transaction)
         guard !hasTrimmedReceipts else { return }
-        self.metadataStore.setBool(true, key: trimmedReceiptsKey, transaction: transaction.asV2Write)
+        self.metadataStore.setBool(true, key: trimmedReceiptsKey, transaction: transaction)
 
         var removedTotal: Int = 0
         for receiptKey in remainingReceiptKeys {
             autoreleasepool {
                 do {
                     let receipts: [EarlyReceipt] = try self.pendingReceiptStore.getCodableValue(forKey: receiptKey,
-                                                                                                transaction: transaction.asV2Read) ?? []
+                                                                                                transaction: transaction) ?? []
                     var deduplicatedReceipts = OrderedSet(receipts).orderedMembers
                     if deduplicatedReceipts.count != receipts.count {
                         Logger.info("De-duplicated early receipts for message \(receiptKey): \(receipts.count) - \(receipts.count - deduplicatedReceipts.count) -> \(deduplicatedReceipts.count)")
@@ -581,12 +581,12 @@ public class EarlyMessageManager {
                     }
                     try pendingReceiptStore.setCodable(deduplicatedReceipts,
                                                        key: receiptKey,
-                                                       transaction: transaction.asV2Write)
+                                                       transaction: transaction)
                     owsAssertDebug(receipts.count > deduplicatedReceipts.count)
                     removedTotal += receipts.count - deduplicatedReceipts.count
                 } catch {
                     owsFailDebug("Failed to decode early receipts: \(error)")
-                    self.pendingReceiptStore.removeValue(forKey: receiptKey, transaction: transaction.asV2Write)
+                    self.pendingReceiptStore.removeValue(forKey: receiptKey, transaction: transaction)
                 }
             }
         }

@@ -19,7 +19,7 @@ public extension TSInteraction {
         ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return (
                 thread(tx: tx),
-                DependenciesBridge.shared.deviceStore.hasLinkedDevices(tx: tx.asV2Read)
+                DependenciesBridge.shared.deviceStore.hasLinkedDevices(tx: tx)
             )
         }
 
@@ -143,7 +143,7 @@ public extension TSInteraction {
                         // record that it is deleting.
                         latestMessage.updateWithRecipientAddressStates(deleteMessage.recipientAddressStates, tx: tx)
 
-                        if let aci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci {
+                        if let aci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci {
                             _ = TSMessage.tryToRemotelyDeleteMessage(
                                 fromAuthor: aci,
                                 sentAtTimestamp: latestMessage.timestamp,
@@ -207,7 +207,7 @@ public extension TSInteraction {
                     sideEffects: .custom(
                         deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: freshThread)
                     ),
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
         }

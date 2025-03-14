@@ -172,7 +172,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 // with the SignalRecipient and don't need serviceId-based checks.
                 identity = try RecipientIdentityRecord
                     .filter(Column(RecipientIdentityRecord.CodingKeys.uniqueId) == recipient.uniqueId)
-                    .fetchOne(context.tx.databaseConnection)
+                    .fetchOne(context.tx.database)
                     .map { try OWSRecipientIdentity.fromRecord($0) }
             } catch let error {
                 errors.append(.archiveFrameError(
@@ -689,7 +689,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
                 verificationState: verificationState
             )
             do {
-                try identity.asRecord().insert(context.tx.databaseConnection)
+                try identity.asRecord().insert(context.tx.database)
             } catch {
                 return .failure([.restoreFrameError(
                     .databaseInsertionFailed(error),

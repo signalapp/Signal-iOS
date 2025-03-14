@@ -160,7 +160,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
                     ON hiddenRecipient.recipientId = \(signalRecipientColumn: .id)
             """
             return Set(
-                try SignalRecipient.fetchAll(tx.databaseConnection, sql: sql)
+                try SignalRecipient.fetchAll(tx.database, sql: sql)
             )
         } catch {
             Logger.warn("Could not fetch hidden recipient records: \(error.grdbErrorForLogging)")
@@ -176,7 +176,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
             return nil
         }
 
-        let db = tx.databaseConnection
+        let db = tx.database
 
         do {
             return try HiddenRecipient.fetchOne(db, key: signalRecipientRowId)
@@ -288,7 +288,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
             signalRecipientRowId: signalRecipientRowId,
             inKnownMessageRequestState: inKnownMessageRequestState
         )
-        try record.save(tx.databaseConnection)
+        try record.save(tx.database)
 
         didSetAsHidden(recipient: recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
     }
@@ -304,7 +304,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
                 DELETE FROM \(HiddenRecipient.databaseTableName)
                 WHERE \(HiddenRecipient.CodingKeys.signalRecipientRowId.stringValue) = ?
             """
-            try tx.databaseConnection.execute(sql: sql, arguments: [id])
+            try tx.database.execute(sql: sql, arguments: [id])
             didSetAsUnhidden(recipient: recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
         }
     }
@@ -476,7 +476,7 @@ public enum RecipientHidingError: Error, CustomStringConvertible {
 public class RecipientHidingManagerObjcBridge: NSObject {
 
     @objc
-    public static func isHiddenAddress(_ address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> Bool {
-        return DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: tx.asV2Read)
+    public static func isHiddenAddress(_ address: SignalServiceAddress, tx: DBReadTransaction) -> Bool {
+        return DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(address, tx: tx)
     }
 }

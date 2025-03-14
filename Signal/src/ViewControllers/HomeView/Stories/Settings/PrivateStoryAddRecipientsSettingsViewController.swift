@@ -83,7 +83,7 @@ extension PrivateStoryAddRecipientsSettingsViewController: MemberViewDelegate {
 
     public func memberViewMemberCountForDisplay() -> Int { recipientSet.count }
 
-    public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> Bool {
+    public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: DBReadTransaction) -> Bool {
         guard let address = recipient.address else { return false }
         return thread.addresses.contains(address)
     }

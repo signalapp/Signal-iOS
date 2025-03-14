@@ -131,7 +131,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
                     let rowId = storyMessage.id,
                     let referencedStream = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
                         for: .storyMessageMedia(storyMessageRowId: rowId),
-                        tx: tx.asV2Read
+                        tx: tx
                     )?.asReferencedStream
                 else {
                     return nil
@@ -261,12 +261,12 @@ extension ForwardMessageViewController {
 
     private var hasForwardedWithSneakyTransaction: Bool {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            Self.keyValueStore.getBool(Self.hasForwardedKey, defaultValue: false, transaction: transaction.asV2Read)
+            Self.keyValueStore.getBool(Self.hasForwardedKey, defaultValue: false, transaction: transaction)
         }
     }
     private static func markHasForwardedWithSneakyTransaction() {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            Self.keyValueStore.setBool(true, key: Self.hasForwardedKey, transaction: transaction.asV2Write)
+            Self.keyValueStore.setBool(true, key: Self.hasForwardedKey, transaction: transaction)
         }
     }
 
@@ -328,7 +328,7 @@ extension ForwardMessageViewController {
                     )
                 }
 
-                func hasRenderableContent(interaction: TSInteraction, tx: SDSAnyReadTransaction) -> Bool {
+                func hasRenderableContent(interaction: TSInteraction, tx: DBReadTransaction) -> Bool {
                     guard let message = interaction as? TSMessage else {
                         return false
                     }
@@ -458,7 +458,7 @@ extension ForwardMessageViewController {
 
     fileprivate func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft? = nil, recipientThread: TSThread) -> Promise<Void> {
         let body = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return body.forForwarding(to: recipientThread, transaction: transaction.unwrapGrdbRead).asMessageBodyForForwarding()
+            return body.forForwarding(to: recipientThread, transaction: transaction).asMessageBodyForForwarding()
         }
         ThreadUtil.enqueueMessage(
             body: body,
@@ -475,7 +475,7 @@ extension ForwardMessageViewController {
 
     fileprivate func send(body: MessageBody, attachment: SignalAttachment, thread: TSThread) -> Promise<Void> {
         let body = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return body.forForwarding(to: thread, transaction: transaction.unwrapGrdbRead).asMessageBodyForForwarding()
+            return body.forForwarding(to: thread, transaction: transaction).asMessageBodyForForwarding()
         }
         ThreadUtil.enqueueMessage(body: body,
                                   mediaAttachments: [attachment],
@@ -686,7 +686,7 @@ public struct ForwardMessageItem {
         interaction: TSInteraction,
         componentState: CVComponentState,
         selectionType: CVSelectionType,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> Item {
 
         let builder = Builder(interaction: interaction)
@@ -763,7 +763,7 @@ public struct ForwardMessageItem {
     private static func tryToCloneLinkPreview(
         linkPreview: OWSLinkPreview,
         parentMessage: TSMessage,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> OWSLinkPreviewDraft? {
         guard let urlString = linkPreview.urlString,
               let url = URL(string: urlString) else {
@@ -776,11 +776,11 @@ public struct ForwardMessageItem {
 
             static func load(
                 attachmentId: Attachment.IDType,
-                transaction: SDSAnyReadTransaction
+                transaction: DBReadTransaction
             ) -> LinkPreviewImage? {
                 guard
                     let attachment = DependenciesBridge.shared.attachmentStore
-                        .fetch(id: attachmentId, tx: transaction.asV2Read)?
+                        .fetch(id: attachmentId, tx: transaction)?
                         .asStream()
                 else {
                     owsFailDebug("Missing attachment.")
@@ -804,7 +804,7 @@ public struct ForwardMessageItem {
             let parentMessageRowId = parentMessage.sqliteRowId,
             let imageAttachmentId = DependenciesBridge.shared.attachmentStore.fetchFirstReference(
                 owner: .messageLinkPreview(messageRowId: parentMessageRowId),
-                tx: transaction.asV2Read
+                tx: transaction
             )?.attachmentRowId,
             let image = LinkPreviewImage.load(
                 attachmentId: imageAttachmentId,
@@ -869,7 +869,7 @@ private enum ForwardMessageContent {
 
     fileprivate static func build(
         itemViewModels: [CVItemViewModelImpl],
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> ForwardMessageContent {
         let items: [Item] = try itemViewModels.map { itemViewModel in
             try Item.build(interaction: itemViewModel.interaction,
@@ -882,7 +882,7 @@ private enum ForwardMessageContent {
 
     fileprivate static func build(
         selectionItems: [CVSelectionItem],
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> ForwardMessageContent {
         let items: [Item] = try selectionItems.map { selectionItem in
             let interactionId = selectionItem.interactionId
@@ -901,7 +901,7 @@ private enum ForwardMessageContent {
     }
 
     private static func buildComponentState(interaction: TSInteraction,
-                                            transaction: SDSAnyReadTransaction) throws -> CVComponentState {
+                                            transaction: DBReadTransaction) throws -> CVComponentState {
         guard let componentState = CVLoader.buildStandaloneComponentState(
             interaction: interaction,
             spoilerState: SpoilerRenderState(), // Nothing revealed, doesn't matter.

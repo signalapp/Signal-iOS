@@ -120,7 +120,7 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
 
     private(set) var duration: TimeInterval?
 
-    func convertToDraft(transaction: SDSAnyWriteTransaction) -> VoiceMessageInterruptedDraft {
+    func convertToDraft(transaction: DBWriteTransaction) -> VoiceMessageInterruptedDraft {
         let directoryUrl = VoiceMessageInterruptedDraftStore.saveDraft(
             audioFileUrl: audioFileUrl,
             threadUniqueId: threadUniqueId,

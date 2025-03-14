@@ -352,7 +352,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                         SignalServiceAddress(serviceId: self.serviceId, e164: self.e164),
                         inKnownMessageRequestState: false,
                         wasLocallyInitiated: true,
-                        tx: tx.asV2Write
+                        tx: tx
                     )
                     self.displayDeletedContactToast(displayNameForToast: displayNameForToast)
                 } catch {

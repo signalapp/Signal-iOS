@@ -290,9 +290,9 @@ extension ChatListViewController {
     }
 
     /// Update reminder views as appropriate for the current username state.
-    private func updateUsernameStateViews(tx: SDSAnyReadTransaction) {
+    private func updateUsernameStateViews(tx: DBReadTransaction) {
         let currentUsernameState = DependenciesBridge.shared.localUsernameManager
-            .usernameState(tx: tx.asV2Read)
+            .usernameState(tx: tx)
 
         switch currentUsernameState {
         case .unset, .available:

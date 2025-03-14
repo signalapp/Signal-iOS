@@ -131,7 +131,7 @@ public class NotificationActionHandler {
             let optionalDraftModel: DraftQuotedReplyModel? = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                 if
                     let incomingMessage = notificationMessage.interaction as? TSIncomingMessage,
-                    let draftQuotedReplyModel = DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(originalMessage: incomingMessage, tx: transaction.asV2Read) {
+                    let draftQuotedReplyModel = DependenciesBridge.shared.quotedReplyManager.buildDraftQuotedReply(originalMessage: incomingMessage, tx: transaction) {
                     return draftQuotedReplyModel
                 }
                 return nil
@@ -159,7 +159,7 @@ public class NotificationActionHandler {
                         // We only use the thread's DM timer for normal messages & 1:1 story
                         // replies -- group story replies last for the lifetime of the story.
                         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
+                        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction)
                         builder.expiresInSeconds = dmConfig.durationSeconds
                         builder.expireTimerVersion = NSNumber(value: dmConfig.timerVersion)
                     }
@@ -323,7 +323,7 @@ public class NotificationActionHandler {
                     let callLinkStore = DependenciesBridge.shared.callLinkStore
                     if
                         let roomId = Data(base64Encoded: callLinkRoomId),
-                        let callLinkRecord = try? callLinkStore.fetch(roomId: roomId, tx: tx.asV2Read)
+                        let callLinkRecord = try? callLinkStore.fetch(roomId: roomId, tx: tx)
                     {
                         return .callLink(CallLink(rootKey: callLinkRecord.rootKey))
                     }

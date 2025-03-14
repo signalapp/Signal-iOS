@@ -62,7 +62,7 @@ class OWSDeviceStoreImpl: OWSDeviceStore {
         }
     }
 
-    func mostRecentlyLinkedDeviceDetails(tx: any DBReadTransaction) throws -> MostRecentlyLinkedDeviceDetails? {
+    func mostRecentlyLinkedDeviceDetails(tx: DBReadTransaction) throws -> MostRecentlyLinkedDeviceDetails? {
         try keyValueStore.getCodableValue(
             forKey: Constants.mostRecentlyLinkedDeviceDetails,
             transaction: tx
@@ -84,7 +84,7 @@ class OWSDeviceStoreImpl: OWSDeviceStore {
         )
     }
 
-    func clearMostRecentlyLinkedDeviceDetails(tx: any DBWriteTransaction) {
+    func clearMostRecentlyLinkedDeviceDetails(tx: DBWriteTransaction) {
         keyValueStore.removeValue(
             forKey: Constants.mostRecentlyLinkedDeviceDetails,
             transaction: tx

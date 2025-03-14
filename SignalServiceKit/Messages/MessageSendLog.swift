@@ -9,7 +9,7 @@ import GRDB
 class MessageSendLogObjC: NSObject {
     @objc
     @available(swift, obsoleted: 1.0)
-    static func deleteAllPayloads(forInteraction interaction: TSInteraction, tx: SDSAnyWriteTransaction) {
+    static func deleteAllPayloads(forInteraction interaction: TSInteraction, tx: DBWriteTransaction) {
         let messageSendLog = SSKEnvironment.shared.messageSendLogRef
         messageSendLog.deleteAllPayloadsForInteraction(interaction, tx: tx)
     }
@@ -84,7 +84,7 @@ public class MessageSendLog {
         let uniqueId: String
     }
 
-    func recordPayload(_ plaintext: Data, for message: TSOutgoingMessage, tx: SDSAnyWriteTransaction) -> Int64? {
+    func recordPayload(_ plaintext: Data, for message: TSOutgoingMessage, tx: DBWriteTransaction) -> Int64? {
         guard !RemoteConfig.current.messageResendKillSwitch else {
             return nil
         }
@@ -112,7 +112,7 @@ public class MessageSendLog {
                 do {
                     var existingPayload = existingValue.payload
                     existingPayload.sendComplete = false
-                    try existingPayload.update(tx.unwrapGrdbWrite.database)
+                    try existingPayload.update(tx.database)
                 } catch {
                     owsFailDebug("Failed to mark existing payload incomplete.")
                 }
@@ -137,7 +137,7 @@ public class MessageSendLog {
                 uniqueThreadId: message.uniqueThreadId,
                 sendComplete: false
             )
-            try payload.insert(tx.unwrapGrdbWrite.database)
+            try payload.insert(tx.database)
 
             guard let payloadId = payload.payloadId else {
                 throw OWSAssertionError("We must have a payloadId after inserting.")
@@ -146,7 +146,7 @@ public class MessageSendLog {
             // If the payload was successfully recorded, we should also record any
             // interactions related to this payload. This should not fail.
             try message.relatedUniqueIds.forEach { uniqueId in
-                try Message(payloadId: payloadId, uniqueId: uniqueId).insert(tx.unwrapGrdbWrite.database)
+                try Message(payloadId: payloadId, uniqueId: uniqueId).insert(tx.database)
             }
             return payloadId
         } catch {
@@ -155,9 +155,9 @@ public class MessageSendLog {
         }
     }
 
-    func mergePayloads(from fromThreadUniqueId: String, into intoThreadUniqueId: String, tx: SDSAnyWriteTransaction) {
+    func mergePayloads(from fromThreadUniqueId: String, into intoThreadUniqueId: String, tx: DBWriteTransaction) {
         do {
-            let db = tx.unwrapGrdbWrite.database
+            let db = tx.database
             try fetchRequest(threadUniqueId: fromThreadUniqueId).updateAll(db, Column("uniqueThreadId").set(to: intoThreadUniqueId))
         } catch {
             owsFailDebug("Couldn't update MSL entries: \(error)")
@@ -168,7 +168,7 @@ public class MessageSendLog {
         recipientAci: Aci,
         recipientDeviceId: UInt32,
         timestamp: UInt64,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> Payload? {
         guard !RemoteConfig.current.messageResendKillSwitch else {
             return nil
@@ -197,14 +197,14 @@ public class MessageSendLog {
         return existingValue.payload
     }
 
-    public func sendComplete(message: TSOutgoingMessage, tx: SDSAnyWriteTransaction) {
+    public func sendComplete(message: TSOutgoingMessage, tx: DBWriteTransaction) {
         guard !RemoteConfig.current.messageResendKillSwitch else {
             return
         }
         guard message.shouldRecordSendLog else { return }
 
         do {
-            let db = tx.unwrapGrdbWrite.database
+            let db = tx.database
             guard var (_, payload) = try fetchUniquePayload(for: message, tx: tx) else {
                 return
             }
@@ -222,7 +222,7 @@ public class MessageSendLog {
 
     private func fetchUniquePayload(
         for message: TSOutgoingMessage,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> (Int64, Payload)? {
         let query = fetchRequest(threadUniqueId: message.uniqueThreadId).filter(Column("sentTimestamp") == message.timestamp)
         return try fetchUniquePayload(query: query, tx: tx)
@@ -230,9 +230,9 @@ public class MessageSendLog {
 
     private func fetchUniquePayload(
         query: QueryInterfaceRequest<Payload>,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> (Int64, Payload)? {
-        let payloads = try query.fetchAll(tx.unwrapGrdbRead.database)
+        let payloads = try query.fetchAll(tx.database)
         guard let payload = payloads.first else {
             return nil
         }
@@ -246,8 +246,8 @@ public class MessageSendLog {
     }
 
     /// Deletes a payload once it's sent & delivered to everyone.
-    private func deletePayloadIfNecessary(_ payload: Payload, tx: SDSAnyWriteTransaction) throws {
-        let db = tx.unwrapGrdbWrite.database
+    private func deletePayloadIfNecessary(_ payload: Payload, tx: DBWriteTransaction) throws {
+        let db = tx.database
 
         guard payload.sendComplete else {
             return
@@ -264,14 +264,14 @@ public class MessageSendLog {
     func deviceIdsPendingDelivery(
         for payloadId: Int64,
         recipientAci: Aci,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> [UInt32?]? {
         do {
             return try Recipient
                 .filter(Column("payloadId") == payloadId)
                 .filter(Column("recipientUuid") == recipientAci.serviceIdUppercaseString)
                 .select(Column("recipientDeviceId"), as: Int64.self)
-                .fetchAll(tx.unwrapGrdbRead.database)
+                .fetchAll(tx.database)
                 .map { UInt32(exactly: $0) }
         } catch {
             owsFailDebug("\(error)")
@@ -284,7 +284,7 @@ public class MessageSendLog {
         recipientAci: Aci,
         recipientDeviceId: UInt32,
         message: TSOutgoingMessage,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard !RemoteConfig.current.messageResendKillSwitch else {
             return
@@ -294,7 +294,7 @@ public class MessageSendLog {
                 payloadId: payloadId,
                 recipientUUID: recipientAci.serviceIdUppercaseString,
                 recipientDeviceId: Int64(recipientDeviceId)
-            ).insert(tx.unwrapGrdbWrite.database)
+            ).insert(tx.database)
         } catch let error as DatabaseError where error.extendedResultCode == .SQLITE_CONSTRAINT_FOREIGNKEY {
             // There's a tiny race where a recipient could send a delivery receipt before we record an MSL entry
             // This might cause the payload entry to be deleted before we can mark the recipient as sent. This
@@ -318,7 +318,7 @@ public class MessageSendLog {
         message: TSOutgoingMessage,
         recipientAci: Aci,
         recipientDeviceId: UInt32,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard !RemoteConfig.current.messageResendKillSwitch else {
             return
@@ -328,7 +328,7 @@ public class MessageSendLog {
                 return
             }
 
-            let db = tx.unwrapGrdbWrite.database
+            let db = tx.database
             try Recipient
                 .filter(Column("payloadId") == payloadId)
                 .filter(Column("recipientUuid") == recipientAci.serviceIdUppercaseString)
@@ -343,10 +343,10 @@ public class MessageSendLog {
 
     func deleteAllPayloadsForInteraction(
         _ interaction: TSInteraction,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         do {
-            let db = tx.unwrapGrdbWrite.database
+            let db = tx.database
             let messages = try Message.filter(Column("uniqueId") == interaction.uniqueId).fetchAll(db)
             for message in messages {
                 try Payload.filter(Column("payloadId") == message.payloadId).deleteAll(db)
@@ -384,7 +384,7 @@ public class MessageSendLog {
             .limit(Constants.cleanupLimit)
         let count = try TimeGatedBatch.processAll(db: db) { tx in
             do {
-                let db = tx.databaseConnection
+                let db = tx.database
                 let payloadIds = try fetchRequest.fetchAll(db)
                 try Payload.filter(keys: payloadIds).deleteAll(db)
                 return payloadIds.count

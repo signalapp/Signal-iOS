@@ -16,7 +16,7 @@ public extension OWSAddToProfileWhitelistOfferMessage {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetchAddToProfileWhitelistOfferMessage(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> OWSAddToProfileWhitelistOfferMessage? {
         assert(!uniqueId.isEmpty)
 
@@ -32,7 +32,7 @@ public extension OWSAddToProfileWhitelistOfferMessage {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateAddToProfileWhitelistOfferMessage(transaction: SDSAnyWriteTransaction, block: (OWSAddToProfileWhitelistOfferMessage) -> Void) {
+    func anyUpdateAddToProfileWhitelistOfferMessage(transaction: DBWriteTransaction, block: (OWSAddToProfileWhitelistOfferMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSAddToProfileWhitelistOfferMessage else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")

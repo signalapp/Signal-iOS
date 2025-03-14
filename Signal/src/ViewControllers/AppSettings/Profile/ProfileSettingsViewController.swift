@@ -127,9 +127,9 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         SSKEnvironment.shared.databaseStorageRef.read { tx -> Void in
             localUsernameState = context.localUsernameManager
-                .usernameState(tx: tx.asV2Read)
+                .usernameState(tx: tx)
             shouldShowUsernameLinkTooltip = context.usernameEducationManager
-                .shouldShowUsernameLinkTooltip(tx: tx.asV2Read)
+                .shouldShowUsernameLinkTooltip(tx: tx)
         }
 
         updateTableContents()
@@ -636,7 +636,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
             SSKEnvironment.shared.databaseStorageRef.write { tx in
                 context.usernameEducationManager
-                    .setShouldShowUsernameLinkTooltip(false, tx: tx.asV2Write)
+                    .setShouldShowUsernameLinkTooltip(false, tx: tx)
             }
         }
     }
@@ -750,7 +750,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
     private let avatarSizeClass: ConversationAvatarView.Configuration.SizeClass = .eightyEight
 
-    private func avatarImage(transaction tx: SDSAnyReadTransaction) -> UIImage? {
+    private func avatarImage(transaction tx: DBReadTransaction) -> UIImage? {
         if let avatarData = profileValues.avatarData.currentValue {
             return UIImage(data: avatarData)
         } else {

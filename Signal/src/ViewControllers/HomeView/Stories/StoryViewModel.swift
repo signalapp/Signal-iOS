@@ -34,7 +34,7 @@ struct StoryViewModel {
     init(
         messages: [StoryMessage],
         isHidden: Bool? = nil,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws {
         let sortedFilteredMessages = messages.lazy.sorted { $0.timestamp < $1.timestamp }
         self.messages = sortedFilteredMessages
@@ -69,7 +69,7 @@ struct StoryViewModel {
         updatedMessages: [StoryMessage],
         deletedMessageRowIds: [Int64],
         isHidden: Bool,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> Self? {
         var newMessages = updatedMessages
         var messages: [StoryMessage] = self.messages.lazy

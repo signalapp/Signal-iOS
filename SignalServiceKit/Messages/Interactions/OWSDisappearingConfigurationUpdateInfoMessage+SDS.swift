@@ -16,7 +16,7 @@ public extension OWSDisappearingConfigurationUpdateInfoMessage {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetchDisappearingConfigurationUpdateInfoMessage(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> OWSDisappearingConfigurationUpdateInfoMessage? {
         assert(!uniqueId.isEmpty)
 
@@ -32,7 +32,7 @@ public extension OWSDisappearingConfigurationUpdateInfoMessage {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateDisappearingConfigurationUpdateInfoMessage(transaction: SDSAnyWriteTransaction, block: (OWSDisappearingConfigurationUpdateInfoMessage) -> Void) {
+    func anyUpdateDisappearingConfigurationUpdateInfoMessage(transaction: DBWriteTransaction, block: (OWSDisappearingConfigurationUpdateInfoMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSDisappearingConfigurationUpdateInfoMessage else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")

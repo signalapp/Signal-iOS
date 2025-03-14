@@ -90,7 +90,7 @@ class InternalSQLClientViewController: UIViewController {
         let output = DependenciesBridge.shared.db.read { tx in
             do {
                 return try Row
-                    .fetchAll(tx.databaseConnection, sql: query)
+                    .fetchAll(tx.database, sql: query)
                 .map({"\($0)"})
                 .joined(separator: "\n")
             } catch let error {

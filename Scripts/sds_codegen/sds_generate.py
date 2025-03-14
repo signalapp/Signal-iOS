@@ -1872,7 +1872,7 @@ extension %sSerializer {
 
 @objc
 public extension %(class_name)s {
-    func anyInsert(transaction: SDSAnyWriteTransaction) {
+    func anyInsert(transaction: DBWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
@@ -1884,7 +1884,7 @@ public extension %(class_name)s {
     //
     // For performance, when possible, you should explicitly specify whether
     // you are inserting or updating rather than calling this method.
-    func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    func anyUpsert(transaction: DBWriteTransaction) {
         let isInserting: Bool
         if %(class_name)s.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
             isInserting = false
@@ -1918,7 +1918,7 @@ public extension %(class_name)s {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (%(class_name)s) -> Void) {
+    func anyUpdate(transaction: DBWriteTransaction, block: (%(class_name)s) -> Void) {
 
         block(self)
 
@@ -1946,7 +1946,7 @@ public extension %(class_name)s {
     // There are cases when this doesn't make sense, e.g. when  we know we've
     // just loaded the model in the same transaction. In those cases it is
     // safe and faster to do a "overwriting" update
-    func anyOverwritingUpdate(transaction: SDSAnyWriteTransaction) {
+    func anyOverwritingUpdate(transaction: DBWriteTransaction) {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 """ % {
@@ -1955,7 +1955,7 @@ public extension %(class_name)s {
 
         if has_remove_methods:
             swift_body += """
-    func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: DBWriteTransaction) {
         sdsRemove(transaction: transaction)
     }
 """
@@ -1970,10 +1970,10 @@ public extension %(class_name)s {
 
 @objc
 public class %sCursor: NSObject, SDSCursor {
-    private let transaction: GRDBReadTransaction
+    private let transaction: DBReadTransaction
     private let cursor: RecordCursor<%s>?
 
-    init(transaction: GRDBReadTransaction, cursor: RecordCursor<%s>?) {
+    init(transaction: DBReadTransaction, cursor: RecordCursor<%s>?) {
         self.transaction = transaction
         self.cursor = cursor
     }
@@ -2034,8 +2034,8 @@ public class %sCursor: NSObject, SDSCursor {
 @objc
 public extension %(class_name)s {
     @nonobjc
-    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> %(class_name)sCursor {
-        let database = transaction.database
+    class func grdbFetchCursor(transaction: DBReadTransaction) -> %(class_name)sCursor {
+        let database = transaction.databaseConnection
         do {
             let cursor = try %(record_name)s.fetchCursor(database)
             return %(class_name)sCursor(transaction: transaction, cursor: cursor)
@@ -2056,7 +2056,7 @@ public extension %(class_name)s {
         swift_body += """
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
-                        transaction: SDSAnyReadTransaction) -> %(class_name)s? {
+                        transaction: DBReadTransaction) -> %(class_name)s? {
         assert(!uniqueId.isEmpty)
 """ % {
             "class_name": str(clazz.name),
@@ -2072,7 +2072,7 @@ public extension %(class_name)s {
 
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
-                        transaction: SDSAnyReadTransaction,
+                        transaction: DBReadTransaction,
                         ignoreCache: Bool) -> %(class_name)s? {
         assert(!uniqueId.isEmpty)
 
@@ -2086,11 +2086,8 @@ public extension %(class_name)s {
             }
 
         swift_body += """
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \\(%(record_name)s.databaseTableName) WHERE \\(%(record_identifier)sColumn: .uniqueId) = ?"
-            return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
-        }
+        let sql = "SELECT * FROM \\(%(record_name)s.databaseTableName) WHERE \\(%(record_identifier)sColumn: .uniqueId) = ?"
+        return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: transaction)
     }
 """ % {
             "record_name": record_name,
@@ -2101,7 +2098,7 @@ public extension %(class_name)s {
     // Traverses all records.
     // Records are not visited in any particular order.
     class func anyEnumerate(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (%s, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         anyEnumerate(transaction: transaction, batched: false, block: block)
@@ -2110,7 +2107,7 @@ public extension %(class_name)s {
     // Traverses all records.
     // Records are not visited in any particular order.
     class func anyEnumerate(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batched: Bool = false,
         block: (%s, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
@@ -2123,26 +2120,23 @@ public extension %(class_name)s {
     //
     // If batchSize > 0, the enumeration is performed in autoreleased batches.
     class func anyEnumerate(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batchSize: UInt,
         block: (%s, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            let cursor = %s.grdbFetchCursor(transaction: grdbTransaction)
-            Batching.loop(batchSize: batchSize,
-                          loopBlock: { stop in
-                                do {
-                                    guard let value = try cursor.next() else {
-                                        stop.pointee = true
-                                        return
-                                    }
-                                    block(value, stop)
-                                } catch let error {
-                                    owsFailDebug("Couldn't fetch model: \\(error)")
+        let cursor = %s.grdbFetchCursor(transaction: transaction)
+        Batching.loop(batchSize: batchSize,
+                        loopBlock: { stop in
+                            do {
+                                guard let value = try cursor.next() else {
+                                    stop.pointee = true
+                                    return
                                 }
-                              })
-        }
+                                block(value, stop)
+                            } catch let error {
+                                owsFailDebug("Couldn't fetch model: \\(error)")
+                            }
+                            })
     }
 """ % (
             (str(clazz.name),) * 4
@@ -2152,7 +2146,7 @@ public extension %(class_name)s {
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
     class func anyEnumerateUniqueIds(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         anyEnumerateUniqueIds(transaction: transaction, batched: false, block: block)
@@ -2161,7 +2155,7 @@ public extension %(class_name)s {
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
     class func anyEnumerateUniqueIds(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batched: Bool = false,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
@@ -2174,20 +2168,17 @@ public extension %(class_name)s {
     //
     // If batchSize > 0, the enumeration is performed in autoreleased batches.
     class func anyEnumerateUniqueIds(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batchSize: UInt,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            grdbEnumerateUniqueIds(transaction: grdbTransaction,
-                                   sql: """
-                    SELECT \\(%sColumn: .uniqueId)
-                    FROM \\(%s.databaseTableName)
-                """,
-                batchSize: batchSize,
-                block: block)
-        }
+        grdbEnumerateUniqueIds(transaction: transaction,
+                                sql: """
+                SELECT \\(%sColumn: .uniqueId)
+                FROM \\(%s.databaseTableName)
+            """,
+            batchSize: batchSize,
+            block: block)
     }
 ''' % (
             record_identifier(clazz.name),
@@ -2196,7 +2187,7 @@ public extension %(class_name)s {
 
         swift_body += """
     // Does not order the results.
-    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [%s] {
+    class func anyFetchAll(transaction: DBReadTransaction) -> [%s] {
         var result = [%s]()
         anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
@@ -2205,7 +2196,7 @@ public extension %(class_name)s {
     }
 
     // Does not order the results.
-    class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+    class func anyAllUniqueIds(transaction: DBReadTransaction) -> [String] {
         var result = [String]()
         anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
             result.append(uniqueId)
@@ -2219,11 +2210,8 @@ public extension %(class_name)s {
         # ---- Count ----
 
         swift_body += """
-    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            return %s.ows_fetchCount(grdbTransaction.database)
-        }
+    class func anyCount(transaction: DBReadTransaction) -> UInt {
+        return %s.ows_fetchCount(transaction.databaseConnection)
     }
 """ % (
             record_name,
@@ -2233,7 +2221,7 @@ public extension %(class_name)s {
 
         if has_remove_methods:
             swift_body += """
-    class func anyRemoveAllWithInstantiation(transaction: SDSAnyWriteTransaction) {
+    class func anyRemoveAllWithInstantiation(transaction: DBWriteTransaction) {
         // To avoid mutationDuringEnumerationException, we need to remove the
         // instances outside the enumeration.
         let uniqueIds = anyAllUniqueIds(transaction: transaction)
@@ -2255,23 +2243,20 @@ public extension %(class_name)s {
         swift_body += """
     class func anyExists(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         assert(!uniqueId.isEmpty)
 
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            let sql = "SELECT EXISTS ( SELECT 1 FROM \\(%s.databaseTableName) WHERE \\(%sColumn: .uniqueId) = ? )"
-            let arguments: StatementArguments = [uniqueId]
-            do {
-                return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
-            } catch {
-                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                    userDefaults: CurrentAppContext().appUserDefaults(),
-                    error: error
-                )
-                owsFail("Missing instance.")
-            }
+        let sql = "SELECT EXISTS ( SELECT 1 FROM \\(%s.databaseTableName) WHERE \\(%sColumn: .uniqueId) = ? )"
+        let arguments: StatementArguments = [uniqueId]
+        do {
+            return try Bool.fetchOne(transaction.databaseConnection, sql: sql, arguments: arguments) ?? false
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Missing instance.")
         }
     }
 }
@@ -2288,10 +2273,10 @@ public extension %(class_name)s {
 public extension %(class_name)s {
     class func grdbFetchCursor(sql: String,
                                arguments: StatementArguments = StatementArguments(),
-                               transaction: GRDBReadTransaction) -> %(class_name)sCursor {
+                               transaction: DBReadTransaction) -> %(class_name)sCursor {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
-            let cursor = try %(record_name)s.fetchCursor(transaction.database, sqlRequest)
+            let cursor = try %(record_name)s.fetchCursor(transaction.databaseConnection, sqlRequest)
             return %(class_name)sCursor(transaction: transaction, cursor: cursor)
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
@@ -2311,12 +2296,12 @@ public extension %(class_name)s {
         swift_body += """
     class func grdbFetchOne(sql: String,
                             arguments: StatementArguments = StatementArguments(),
-                            transaction: GRDBReadTransaction) -> %s? {
+                            transaction: DBReadTransaction) -> %s? {
         assert(!sql.isEmpty)
 
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
-            guard let record = try %s.fetchOne(transaction.database, sqlRequest) else {
+            guard let record = try %s.fetchOne(transaction.databaseConnection, sqlRequest) else {
                 return nil
             }
 """ % (
@@ -2359,7 +2344,7 @@ public extension %s {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetch%s(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> %s? {
         assert(!uniqueId.isEmpty)
 
@@ -2375,7 +2360,7 @@ public extension %s {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdate%s(transaction: SDSAnyWriteTransaction, block: (%s) -> Void) {
+    func anyUpdate%s(transaction: DBWriteTransaction, block: (%s) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? %s else {
                 owsFailDebug("Object has unexpected type: \\(type(of: object))")

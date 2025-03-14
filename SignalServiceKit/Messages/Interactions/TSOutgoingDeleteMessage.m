@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread
                        message:(TSOutgoingMessage *)message
-                   transaction:(SDSAnyReadTransaction *)transaction
+                   transaction:(DBReadTransaction *)transaction
 {
     OWSAssertDebug([thread.uniqueId isEqualToString:message.uniqueThreadId]);
 
@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
                   storyMessage:(StoryMessage *)storyMessage
              skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
-                   transaction:(SDSAnyReadTransaction *)transaction
+                   transaction:(DBReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     self = [super initOutgoingMessageWithBuilder:messageBuilder
@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread
-                                                          transaction:(SDSAnyReadTransaction *)transaction
+                                                          transaction:(DBReadTransaction *)transaction
 {
     SSKProtoDataMessageDeleteBuilder *deleteBuilder =
         [SSKProtoDataMessageDelete builderWithTargetSentTimestamp:self.messageTimestamp];
@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
     return builder;
 }
 
-- (void)anyUpdateOutgoingMessageWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyUpdateOutgoingMessageWithTransaction:(DBWriteTransaction *)transaction
                                           block:(void(NS_NOESCAPE ^)(TSOutgoingMessage *_Nonnull))block
 {
     [super anyUpdateOutgoingMessageWithTransaction:transaction block:block];

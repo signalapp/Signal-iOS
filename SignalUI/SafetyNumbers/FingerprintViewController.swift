@@ -23,7 +23,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             }
             let identityManager = DependenciesBridge.shared.identityManager
             let theirAddress = SignalServiceAddress(theirAci)
-            guard let theirRecipientIdentity = identityManager.recipientIdentity(for: theirAddress, tx: tx.asV2Read) else {
+            guard let theirRecipientIdentity = identityManager.recipientIdentity(for: theirAddress, tx: tx) else {
                 return nil
             }
             return OWSFingerprintBuilder(
@@ -226,7 +226,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     private func updateVerificationStateLabel() {
         let identityManager = DependenciesBridge.shared.identityManager
         isVerified = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return identityManager.verificationState(for: SignalServiceAddress(recipientAci), tx: tx.asV2Read) == .verified
+            return identityManager.verificationState(for: SignalServiceAddress(recipientAci), tx: tx) == .verified
         }
 
         if isVerified {
@@ -394,13 +394,13 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             let identityManager = DependenciesBridge.shared.identityManager
             let newVerificationState: VerificationState = isVerified ? .implicit(isAcknowledged: false) : .verified
-            identityManager.saveIdentityKey(identityKey, for: recipientAci, tx: tx.asV2Write)
+            identityManager.saveIdentityKey(identityKey, for: recipientAci, tx: tx)
             _ = identityManager.setVerificationState(
                 newVerificationState,
                 of: identityKey,
                 for: SignalServiceAddress(recipientAci),
                 isUserInitiatedChange: true,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 

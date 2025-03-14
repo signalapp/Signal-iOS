@@ -46,8 +46,8 @@ final class CallRecordStoreTest: XCTestCase {
         let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
 
         inMemoryDB.write { tx in
-            try! thread.asRecord().insert(tx.db)
-            try! interaction.asRecord().insert(tx.db)
+            try! thread.asRecord().insert(tx.database)
+            try! interaction.asRecord().insert(tx.database)
         }
 
         return (thread.sqliteRowId!, interaction.sqliteRowId!)
@@ -328,7 +328,7 @@ final class CallRecordStoreTest: XCTestCase {
 
         try inMemoryDB.write { tx in
             XCTAssertThrowsError(
-                try tx.db.execute(
+                try tx.database.execute(
                     sql: "DELETE FROM model_TSInteraction WHERE id = ?",
                     arguments: [callRecord.interactionRowId]
                 )
@@ -362,7 +362,7 @@ final class CallRecordStoreTest: XCTestCase {
             """
 
             XCTAssertThrowsError(
-                try tx.db.execute(sql: deleteThreadSql)
+                try tx.database.execute(sql: deleteThreadSql)
             ) { error in
                 guard let error = error as? GRDB.DatabaseError else {
                     XCTFail("Unexpected error!")
@@ -386,7 +386,7 @@ final class CallRecordStoreTest: XCTestCase {
         let (interaction6, thread6) = insertThreadAndInteraction()
 
         try inMemoryDB.write { tx in
-            try tx.db.execute(sql: """
+            try tx.database.execute(sql: """
                 INSERT INTO "CallRecord"
                 ( "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "callBeganTimestamp", "unreadStatus", "callEndedTimestamp" )
                 VALUES
@@ -396,7 +396,7 @@ final class CallRecordStoreTest: XCTestCase {
         }
 
         try inMemoryDB.write { tx in
-            try tx.db.execute(sql: """
+            try tx.database.execute(sql: """
                 INSERT INTO "CallRecord"
                 ( "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "callBeganTimestamp", "groupCallRingerAci", "unreadStatus", "callEndedTimestamp" )
                 VALUES
@@ -406,7 +406,7 @@ final class CallRecordStoreTest: XCTestCase {
         }
 
         try inMemoryDB.write { tx in
-            try tx.db.execute(sql: """
+            try tx.database.execute(sql: """
                 INSERT INTO "CallRecord"
                 ( "id", "callId", "interactionRowId", "threadRowId", "type", "direction", "status", "callBeganTimestamp", "groupCallRingerAci", "unreadStatus", "callEndedTimestamp" )
                 VALUES
@@ -499,7 +499,7 @@ final class CallRecordStoreTest: XCTestCase {
         ]
 
         try inMemoryDB.read { tx throws in
-            let actualCallRecords = try CallRecord.fetchAll(tx.db)
+            let actualCallRecords = try CallRecord.fetchAll(tx.database)
             XCTAssertEqual(actualCallRecords.count, expectedRecords.count)
 
             for (idx, actualCallRecord) in actualCallRecords.enumerated() {

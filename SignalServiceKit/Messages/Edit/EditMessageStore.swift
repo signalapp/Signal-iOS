@@ -99,7 +99,7 @@ public class EditMessageStoreImpl: EditMessageStore {
         let interaction = TSInteraction.grdbFetchOne(
             sql: sql,
             arguments: [timestamp, authorAci?.serviceIdUppercaseString],
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
         switch (interaction, authorAci) {
         case (let outgoingMessage as TSOutgoingMessage, nil):
@@ -147,7 +147,7 @@ public class EditMessageStoreImpl: EditMessageStore {
         return TSMessage.grdbFetchOne(
             sql: sql,
             arguments: arguments,
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         ) as? TSMessage
     }
 
@@ -165,7 +165,7 @@ public class EditMessageStoreImpl: EditMessageStore {
 
         do {
             return try Int.fetchOne(
-                tx.databaseConnection,
+                tx.database,
                 sql: sql,
                 arguments: arguments
             ) ?? 0
@@ -194,7 +194,7 @@ public class EditMessageStoreImpl: EditMessageStore {
         let arguments: StatementArguments = [message.grdbId]
 
         let records = try EditRecord.fetchAll(
-            tx.databaseConnection,
+            tx.database,
             sql: recordSQL,
             arguments: arguments
         )
@@ -229,7 +229,7 @@ public class EditMessageStoreImpl: EditMessageStore {
         let arguments: StatementArguments = [message.grdbId, message.grdbId]
 
         let records = try EditRecord.fetchAll(
-            tx.databaseConnection,
+            tx.database,
             sql: recordSQL,
             arguments: arguments
         )
@@ -251,13 +251,13 @@ public class EditMessageStoreImpl: EditMessageStore {
         _ editRecord: EditRecord,
         tx: DBWriteTransaction
     ) throws {
-        try editRecord.insert(tx.databaseConnection)
+        try editRecord.insert(tx.database)
     }
 
     public func update(
         _ editRecord: EditRecord,
         tx: DBWriteTransaction
     ) throws {
-        try editRecord.update(tx.databaseConnection)
+        try editRecord.update(tx.database)
     }
 }

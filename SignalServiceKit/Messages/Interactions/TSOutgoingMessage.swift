@@ -110,7 +110,7 @@ public extension TSOutgoingMessage {
     @objc
     func updateWithRecipientAddressStates(
         _ recipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]?,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
             outgoingMessage.recipientAddressStates = recipientAddressStates
@@ -121,7 +121,7 @@ public extension TSOutgoingMessage {
     func updateWithSentRecipient(
         _ serviceId: ServiceId,
         wasSentByUD: Bool,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         let address = SignalServiceAddress(serviceId)
 
@@ -139,7 +139,7 @@ public extension TSOutgoingMessage {
     /// Records a skipped send to one recipient.
     func updateWithSkippedRecipient(
         _ address: SignalServiceAddress,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
             guard let recipientState = outgoingMessage.recipientAddressStates?[address] else {
@@ -161,7 +161,7 @@ public extension TSOutgoingMessage {
     func updateRecipientsFromNonLocalDevice(
         _ nonLocalRecipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState],
         isSentUpdate: Bool,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
             let localRecipientStates = outgoingMessage.recipientAddressStates ?? [:]
@@ -207,7 +207,7 @@ public extension TSOutgoingMessage {
     /// Records failed sends to the given recipients.
     func updateWithFailedRecipients(
         _ recipientErrors: some Collection<(serviceId: ServiceId, error: Error)>,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let fatalErrors = recipientErrors.lazy.filter { !$0.error.isRetryable }
         let retryableErrors = recipientErrors.lazy.filter { $0.error.isRetryable }
@@ -246,7 +246,7 @@ public extension TSOutgoingMessage {
     @objc
     func updateWithAllSendingRecipientsMarkedAsFailed(
         error: (any Error)? = nil,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
             if let error {
@@ -269,7 +269,7 @@ public extension TSOutgoingMessage {
     ///
     /// This should be called when we start a message send.
     func updateAllUnsentRecipientsAsSending(
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
             guard let recipientAddressStates = outgoingMessage.recipientAddressStates else {
@@ -289,7 +289,7 @@ public extension TSOutgoingMessage {
 public extension TSOutgoingMessage {
     func updateWithFakeMessageState(
         _ messageState: TSOutgoingMessageState,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         anyUpdateOutgoingMessage(transaction: tx) { outgoingMessage in
             guard let recipientAddressStates = outgoingMessage.recipientAddressStates else {
@@ -369,7 +369,7 @@ public extension TSOutgoingMessage {
     var isStorySend: Bool { isGroupStoryReply }
 
     @objc(buildPniSignatureMessageIfNeededWithTransaction:)
-    func buildPniSignatureMessageIfNeeded(transaction tx: SDSAnyReadTransaction) -> SSKProtoPniSignatureMessage? {
+    func buildPniSignatureMessageIfNeeded(transaction tx: DBReadTransaction) -> SSKProtoPniSignatureMessage? {
         guard recipientAddressStates?.count == 1 else {
             // This is probably a group message, nothing to be alarmed about.
             return nil
@@ -378,19 +378,19 @@ public extension TSOutgoingMessage {
             return nil
         }
         let identityManager = DependenciesBridge.shared.identityManager
-        guard identityManager.shouldSharePhoneNumber(with: recipientServiceId, tx: tx.asV2Read) else {
+        guard identityManager.shouldSharePhoneNumber(with: recipientServiceId, tx: tx) else {
             // No PNI signature needed.
             return nil
         }
-        guard let pni = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.pni else {
+        guard let pni = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.pni else {
             owsFailDebug("missing PNI")
             return nil
         }
-        guard let pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx.asV2Read) else {
+        guard let pniIdentityKeyPair = identityManager.identityKeyPair(for: .pni, tx: tx) else {
             owsFailDebug("missing PNI identity key")
             return nil
         }
-        guard let aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read) else {
+        guard let aciIdentityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx) else {
             owsFailDebug("missing ACI identity key")
             return nil
         }
@@ -408,7 +408,7 @@ public extension TSOutgoingMessage {
     func addGroupsV2ToDataMessageBuilder(
         _ builder: SSKProtoDataMessageBuilder,
         groupThread: TSGroupThread,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> OutgoingGroupProtoResult {
         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
             owsFailDebug("Invalid group model.")
@@ -431,7 +431,7 @@ public extension TSOutgoingMessage {
     fileprivate func maybeClearShouldSharePhoneNumber(
         for recipientAddress: SignalServiceAddress,
         recipientDeviceId deviceId: UInt32,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         guard let aci = recipientAddress.serviceId as? Aci else {
             // We can't be sharing our phone number b/c there's no ACI.
@@ -445,7 +445,7 @@ public extension TSOutgoingMessage {
         }
 
         let identityManager = DependenciesBridge.shared.identityManager
-        guard identityManager.shouldSharePhoneNumber(with: aci, tx: transaction.asV2Read) else {
+        guard identityManager.shouldSharePhoneNumber(with: aci, tx: transaction) else {
             // Not currently sharing anyway!
             return
         }
@@ -478,13 +478,13 @@ public extension TSOutgoingMessage {
             return
         }
 
-        guard let currentPni = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.pni else {
+        guard let currentPni = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.pni else {
             owsFailDebug("missing local PNI")
             return
         }
 
         if messagePniData == currentPni.rawUUID.data {
-            identityManager.clearShouldSharePhoneNumber(with: aci, tx: transaction.asV2Write)
+            identityManager.clearShouldSharePhoneNumber(with: aci, tx: transaction)
         }
     }
 }
@@ -494,14 +494,14 @@ public extension TSOutgoingMessage {
 extension TSOutgoingMessage {
 
     @objc
-    func buildProtosForBodyAttachments(tx: SDSAnyReadTransaction) throws -> [SSKProtoAttachmentPointer] {
+    func buildProtosForBodyAttachments(tx: DBReadTransaction) throws -> [SSKProtoAttachmentPointer] {
         let attachments = sqliteRowId.map { sqliteRowId in
             return DependenciesBridge.shared.attachmentStore.fetchReferencedAttachments(
                 owners: [
                     .messageOversizeText(messageRowId: sqliteRowId),
                     .messageBodyAttachment(messageRowId: sqliteRowId)
                 ],
-                tx: tx.asV2Read
+                tx: tx
             )
         } ?? []
         return attachments.compactMap { attachment in
@@ -519,48 +519,48 @@ extension TSOutgoingMessage {
     @objc
     func buildLinkPreviewProto(
         linkPreview: OWSLinkPreview,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> SSKProtoPreview {
         return try DependenciesBridge.shared.linkPreviewManager.buildProtoForSending(
             linkPreview,
             parentMessage: self,
-            tx: tx.asV2Read
+            tx: tx
         )
     }
 
     @objc
     func buildContactShareProto(
         _ contact: OWSContact,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> SSKProtoDataMessageContact {
         return try DependenciesBridge.shared.contactShareManager.buildProtoForSending(
             from: contact,
             parentMessage: self,
-            tx: tx.asV2Read
+            tx: tx
         )
     }
 
     @objc
     func buildStickerProto(
         sticker: MessageSticker,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> SSKProtoDataMessageSticker {
         return try DependenciesBridge.shared.messageStickerManager.buildProtoForSending(
             sticker,
             parentMessage: self,
-            tx: tx.asV2Read
+            tx: tx
         )
     }
 
     @objc
     func buildQuoteProto(
         quote: TSQuotedMessage,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> SSKProtoDataMessageQuote {
         return try DependenciesBridge.shared.quotedReplyManager.buildProtoForSending(
             quote,
             parentMessage: self,
-            tx: tx.asV2Read
+            tx: tx
         )
     }
 }
@@ -573,7 +573,7 @@ extension TSOutgoingMessage {
         deviceId: UInt32,
         deliveryTimestamp timestamp: UInt64,
         context: DeliveryReceiptContext,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         handleReceipt(
             from: recipientAddress,
@@ -589,7 +589,7 @@ extension TSOutgoingMessage {
         withReadRecipient recipientAddress: SignalServiceAddress,
         deviceId: UInt32,
         readTimestamp timestamp: UInt64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         handleReceipt(
             from: recipientAddress,
@@ -604,7 +604,7 @@ extension TSOutgoingMessage {
         withViewedRecipient recipientAddress: SignalServiceAddress,
         deviceId: UInt32,
         viewedTimestamp timestamp: UInt64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         handleReceipt(
             from: recipientAddress,
@@ -635,7 +635,7 @@ extension TSOutgoingMessage {
         receiptType: IncomingReceiptType,
         receiptTimestamp: UInt64,
         tryToClearPhoneNumberSharing: Bool = false,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         owsAssertDebug(recipientAddress.isValid)
 
@@ -663,14 +663,14 @@ extension TSOutgoingMessage {
                 if let existingMatch = message.recipientAddressStates?[recipientAddress] {
                     return existingMatch
                 }
-                if let normalizedAddress = recipientStateMerger.normalizedAddressIfNeeded(for: recipientAddress, tx: tx.asV2Read) {
+                if let normalizedAddress = recipientStateMerger.normalizedAddressIfNeeded(for: recipientAddress, tx: tx) {
                     // If we get a receipt from a PNI, then normalizing PNIs -> ACIs won't fix
                     // it, but normalizing the address from a PNI to an ACI might fix it.
                     return message.recipientAddressStates?[normalizedAddress]
                 } else {
                     // If we get a receipt from an ACI, then we might have the PNI stored, and
                     // we need to migrate it to the ACI before we'll be able to find it.
-                    recipientStateMerger.normalize(&message.recipientAddressStates, tx: tx.asV2Read)
+                    recipientStateMerger.normalize(&message.recipientAddressStates, tx: tx)
                     return message.recipientAddressStates?[recipientAddress]
                 }
             }() else {
@@ -721,7 +721,7 @@ extension TSOutgoingMessage {
     /// responses will inherit the groupId of the original message. This probably shouldn't be overridden by anything except
     /// OWSOutgoingMessageResendResponse
     @objc
-    func envelopeGroupIdWithTransaction(_ transaction: SDSAnyReadTransaction) -> Data? {
+    func envelopeGroupIdWithTransaction(_ transaction: DBReadTransaction) -> Data? {
         (thread(tx: transaction) as? TSGroupThread)?.groupId
     }
 
@@ -739,7 +739,7 @@ extension TSOutgoingMessage {
     var encryptionStyle: EncryptionStyle { .whisper }
 
     @objc
-    func clearMessageSendLogEntry(forRecipient address: SignalServiceAddress, deviceId: UInt32, tx: SDSAnyWriteTransaction) {
+    func clearMessageSendLogEntry(forRecipient address: SignalServiceAddress, deviceId: UInt32, tx: DBWriteTransaction) {
         // MSL entries will only exist for addresses with ACIs
         guard let aci = address.serviceId as? Aci else {
             return
@@ -754,7 +754,7 @@ extension TSOutgoingMessage {
     }
 
     @objc
-    func markMessageSendLogEntryCompleteIfNeeded(tx: SDSAnyWriteTransaction) {
+    func markMessageSendLogEntryCompleteIfNeeded(tx: DBWriteTransaction) {
         guard sendingRecipientAddresses().isEmpty else {
             return
         }
@@ -772,7 +772,7 @@ public extension TSOutgoingMessage {
                 throw OWSAssertionError("Missing local thread")
             }
 
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
 

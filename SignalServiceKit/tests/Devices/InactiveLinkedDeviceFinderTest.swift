@@ -198,30 +198,30 @@ private class MockDeviceStore: OWSDeviceStore {
         return devices
     }
 
-    func replaceAll(with newDevices: [OWSDevice], tx: any DBWriteTransaction) -> Bool {
+    func replaceAll(with newDevices: [OWSDevice], tx: DBWriteTransaction) -> Bool {
         let isChanging = devices.count == newDevices.count
         devices = newDevices
         return isChanging
     }
 
-    func remove(_ device: OWSDevice, tx: any DBWriteTransaction) {
+    func remove(_ device: OWSDevice, tx: DBWriteTransaction) {
         devices.removeAll { _device in
             device.deviceId == _device.deviceId
         }
     }
 
-    func setEncryptedName(_ encryptedName: String, for device: OWSDevice, tx: any DBWriteTransaction) {
+    func setEncryptedName(_ encryptedName: String, for device: OWSDevice, tx: DBWriteTransaction) {
         device.encryptedName = encryptedName
     }
 
-    func mostRecentlyLinkedDeviceDetails(tx: any SignalServiceKit.DBReadTransaction) throws -> SignalServiceKit.MostRecentlyLinkedDeviceDetails? {
+    func mostRecentlyLinkedDeviceDetails(tx: DBReadTransaction) throws -> MostRecentlyLinkedDeviceDetails? {
         nil
     }
 
-    func setMostRecentlyLinkedDeviceDetails(linkedTime: Date, notificationDelay: TimeInterval, tx: any SignalServiceKit.DBWriteTransaction) throws {
+    func setMostRecentlyLinkedDeviceDetails(linkedTime: Date, notificationDelay: TimeInterval, tx: DBWriteTransaction) throws {
     }
 
-    func clearMostRecentlyLinkedDeviceDetails(tx: any SignalServiceKit.DBWriteTransaction) {
+    func clearMostRecentlyLinkedDeviceDetails(tx: DBWriteTransaction) {
     }
 }
 
@@ -236,7 +236,7 @@ private class MockDevicesService: OWSDeviceService {
         return true
     }
 
-    func unlinkDevice(deviceId: Int, auth: SignalServiceKit.ChatServiceAuth) async throws {}
+    func unlinkDevice(deviceId: Int, auth: ChatServiceAuth) async throws {}
 
     func renameDevice(device: OWSDevice, toEncryptedName encryptedName: String) async throws {}
 }

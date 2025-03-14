@@ -37,7 +37,7 @@ class NSECallMessageHandler: CallMessageHandler {
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let bufferSecondsForMainAppToAnswerRing: UInt64 = 10
 
@@ -160,7 +160,7 @@ class NSECallMessageHandler: CallMessageHandler {
         plaintextData: Data,
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         do {
             let payload = try CallMessageRelay.enqueueCallMessageForMainApp(

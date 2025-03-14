@@ -110,7 +110,7 @@ public class MessageBackupStickerPackArchiverImpl: MessageBackupStickerPackArchi
         func enumerateStickerPackRecord(tx: DBReadTransaction, block: (StickerPack) throws -> Void) throws {
             let cursor = try StickerPackRecord
                 .filter(Column(StickerPackRecord.CodingKeys.isInstalled) == true)
-                .fetchCursor(tx.databaseConnection)
+                .fetchCursor(tx.database)
             while let next = try cursor.next() {
                 let stickerPack = try StickerPack.fromRecord(next)
                 try block(stickerPack)

@@ -256,7 +256,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     static func buildComponentState(
         message: TSMessage,
         viewStateSnapshot: CVViewStateSnapshot,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> CVComponentState.BodyText? {
 
         func build(displayableText: DisplayableText) -> CVComponentState.BodyText? {

@@ -17,7 +17,7 @@ public protocol ContactsManagerProtocol {
     /// - Phone number
     /// - "Unknown"
     @objc(displayNameStringForAddress:transaction:)
-    func displayNameString(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String
+    func displayNameString(for address: SignalServiceAddress, transaction: DBReadTransaction) -> String
 
     /// Returns the user's nickname / first name, if supported by the name's locale.
     /// If we don't know the user's name components, falls back to displayNameForAddress:
@@ -31,5 +31,5 @@ public protocol ContactsManagerProtocol {
     ///     * Prefer Nicknames
     ///     * Full Names Only
     @objc(shortDisplayNameStringForAddress:transaction:)
-    func shortDisplayNameString(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String
+    func shortDisplayNameString(for address: SignalServiceAddress, transaction: DBReadTransaction) -> String
 }

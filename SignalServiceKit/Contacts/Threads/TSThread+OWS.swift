@@ -99,21 +99,21 @@ public extension TSThread {
         return groupModel.isAnnouncementsOnly
     }
 
-    func hasPendingMessageRequest(transaction: SDSAnyReadTransaction) -> Bool {
+    func hasPendingMessageRequest(transaction: DBReadTransaction) -> Bool {
         return ThreadFinder().hasPendingMessageRequest(thread: self, transaction: transaction)
     }
 
     @nonobjc
-    func isSystemContact(contactsManager: ContactManager, tx: SDSAnyReadTransaction) -> Bool {
+    func isSystemContact(contactsManager: ContactManager, tx: DBReadTransaction) -> Bool {
         guard let contactThread = self as? TSContactThread else { return false }
         return contactsManager.fetchSignalAccount(for: contactThread.contactAddress, transaction: tx) != nil
     }
 
     // MARK: - Database Hooks
 
-    internal func _anyDidInsert(tx: SDSAnyWriteTransaction) {
+    internal func _anyDidInsert(tx: DBWriteTransaction) {
         let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
-        searchableNameIndexer.insert(self, tx: tx.asV2Write)
+        searchableNameIndexer.insert(self, tx: tx)
     }
 }
 
@@ -122,13 +122,13 @@ public extension TSThread {
 extension TSThread {
 
     @objc
-    public func currentDraft(transaction: SDSAnyReadTransaction) -> MessageBody? {
+    public func currentDraft(transaction: DBReadTransaction) -> MessageBody? {
         currentDraft(shouldFetchLatest: true, transaction: transaction)
     }
 
     @objc
     public func currentDraft(shouldFetchLatest: Bool,
-                             transaction: SDSAnyReadTransaction) -> MessageBody? {
+                             transaction: DBReadTransaction) -> MessageBody? {
         if shouldFetchLatest {
             guard let thread = TSThread.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
                 return nil
@@ -148,10 +148,10 @@ extension TSThread {
     }
 
     @objc
-    public func editTarget(transaction: SDSAnyReadTransaction) -> TSOutgoingMessage? {
+    public func editTarget(transaction: DBReadTransaction) -> TSOutgoingMessage? {
         guard
             let editTargetTimestamp = editTargetTimestamp?.uint64Value,
-            let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress
+            let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress
         else {
             return nil
         }

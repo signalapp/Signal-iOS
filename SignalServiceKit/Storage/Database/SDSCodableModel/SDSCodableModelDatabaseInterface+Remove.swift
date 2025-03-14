@@ -19,7 +19,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
 
         model.anyWillRemove(transaction: transaction)
 
-        removeModelFromDatabase(model, transaction: transaction.unwrapGrdbWrite)
+        removeModelFromDatabase(model, transaction: transaction)
 
         model.anyDidRemove(transaction: transaction)
     }
@@ -49,19 +49,19 @@ extension SDSCodableModelDatabaseInterfaceImpl {
             guard let instanceToRemove: Model = fetchModel(
                 modelType: modelType,
                 uniqueId: uniqueIdToRemove,
-                transaction: transaction.asV2Write
+                transaction: transaction
             ) else {
                 owsFailDebug("Missing instance!")
                 return
             }
 
-            removeModel(instanceToRemove, transaction: transaction.asV2Write)
+            removeModel(instanceToRemove, transaction: transaction)
         }
     }
 
     private func removeModelFromDatabase<Model: SDSCodableModel>(
         _ model: Model,
-        transaction: GRDBWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         do {
             let sql: String = """

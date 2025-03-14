@@ -15,7 +15,7 @@ extension TSInfoMessage {
     static func insertLearnedProfileNameMessage(
         serviceId: ServiceId,
         displayNameBefore: DisplayNameBeforeLearningProfileName,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let threadStore = DependenciesBridge.shared.threadStore
         let interactionStore = DependenciesBridge.shared.interactionStore
@@ -65,7 +65,7 @@ public extension TSInfoMessage {
     }
 
     @objc
-    func learnedProfileNameDescription(tx: SDSAnyReadTransaction) -> String {
+    func learnedProfileNameDescription(tx: DBReadTransaction) -> String {
         guard let displayNameBeforeLearningProfileName else {
             return ""
         }

@@ -234,7 +234,7 @@ class DebugUIStress: DebugUIPage {
     }
 
     private func copyToAnotherGroup(_ srcGroupThread: TSGroupThread, fromViewController: UIViewController) {
-        let groupThreads = self.databaseStorage.read { (transaction: SDSAnyReadTransaction) -> [TSGroupThread] in
+        let groupThreads = self.databaseStorage.read { (transaction: DBReadTransaction) -> [TSGroupThread] in
             TSThread.anyFetchAll(transaction: transaction).compactMap { $0 as? TSGroupThread }
         }
         guard !groupThreads.isEmpty else {

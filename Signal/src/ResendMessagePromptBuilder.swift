@@ -68,7 +68,7 @@ class ResendMessagePromptBuilder {
                     ) else { return }
 
                     DependenciesBridge.shared.interactionDeleteManager
-                        .delete(freshInstance, sideEffects: .default(), tx: tx.asV2Write)
+                        .delete(freshInstance, sideEffects: .default(), tx: tx)
                 }
             }
         ))

@@ -7,7 +7,7 @@ import LibSignalClient
 
 extension OWSOutgoingResendRequest {
     @objc
-    open override func buildPlainTextData(_ thread: TSThread, transaction: SDSAnyWriteTransaction) -> Data? {
+    open override func buildPlainTextData(_ thread: TSThread, transaction: DBWriteTransaction) -> Data? {
         do {
             let decryptionErrorMessage = try DecryptionErrorMessage(bytes: decryptionErrorData)
             let plaintextContent = PlaintextContent(decryptionErrorMessage)

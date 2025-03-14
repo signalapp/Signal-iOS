@@ -67,7 +67,7 @@ public class MessageBackupFullTextSearchIndexerImpl: MessageBackupFullTextSearch
     public func scheduleMessagesJob(tx: DBWriteTransaction) throws {
         setMinInteractionRowIdExclusive(nil, tx: tx)
         let maxInteractionRowId = try Int64.fetchOne(
-            tx.databaseConnection,
+            tx.database,
             sql: """
                 SELECT max(\(TSInteractionSerializer.idColumn.columnName))
                 FROM \(TSInteraction.table.tableName);
@@ -174,7 +174,7 @@ public class MessageBackupFullTextSearchIndexerImpl: MessageBackupFullTextSearch
             let uniqueMentionedAcis = Set(bodyRanges.mentions.values)
             for mentionedAci in uniqueMentionedAcis {
                 let mention = TSMention(uniqueMessageId: message.uniqueId, uniqueThreadId: message.uniqueThreadId, aci: mentionedAci)
-                try mention.save(tx.databaseConnection)
+                try mention.save(tx.database)
             }
         }
     }

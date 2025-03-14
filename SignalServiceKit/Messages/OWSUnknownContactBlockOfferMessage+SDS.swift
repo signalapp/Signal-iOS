@@ -16,7 +16,7 @@ public extension OWSUnknownContactBlockOfferMessage {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetchUnknownContactBlockOfferMessage(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> OWSUnknownContactBlockOfferMessage? {
         assert(!uniqueId.isEmpty)
 
@@ -32,7 +32,7 @@ public extension OWSUnknownContactBlockOfferMessage {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateUnknownContactBlockOfferMessage(transaction: SDSAnyWriteTransaction, block: (OWSUnknownContactBlockOfferMessage) -> Void) {
+    func anyUpdateUnknownContactBlockOfferMessage(transaction: DBWriteTransaction, block: (OWSUnknownContactBlockOfferMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSUnknownContactBlockOfferMessage else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")

@@ -73,7 +73,7 @@ public final class OWSDisappearingMessagesJob: NSObject {
     }
 
     @objc(startAnyExpirationForMessage:expirationStartedAt:transaction:)
-    func startAnyExpiration(for message: TSMessage, expirationStartedAt: UInt64, transaction: SDSAnyWriteTransaction) {
+    func startAnyExpiration(for message: TSMessage, expirationStartedAt: UInt64, transaction: DBWriteTransaction) {
         guard message.shouldStartExpireTimer() else { return }
 
         // Don't clobber if multiple actions simultaneously triggered expiration.

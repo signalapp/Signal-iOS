@@ -18,7 +18,7 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
     @objc
     private var isRecipientUpdate: NSNumber!
 
-    public init(localThread: TSContactThread, timestamp: UInt64, recipientStates: [ServiceId: StoryRecipientState], transaction: SDSAnyReadTransaction) {
+    public init(localThread: TSContactThread, timestamp: UInt64, recipientStates: [ServiceId: StoryRecipientState], transaction: DBReadTransaction) {
         // We need to store the encoded data rather than just the uniqueId
         // of the story message as the story message will have been deleted
         // by the time we're sending this transcript.
@@ -27,7 +27,7 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
         super.init(timestamp: timestamp, localThread: localThread, transaction: transaction)
     }
 
-    public init(localThread: TSContactThread, storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) {
+    public init(localThread: TSContactThread, storyMessage: StoryMessage, transaction: DBReadTransaction) {
         self.storyMessageUniqueId = storyMessage.uniqueId
         self.isRecipientUpdate = NSNumber(value: false)
         super.init(timestamp: storyMessage.timestamp, localThread: localThread, transaction: transaction)
@@ -48,12 +48,12 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
 
     public override var isUrgent: Bool { false }
 
-    private func storyMessage(transaction: SDSAnyReadTransaction) -> StoryMessage? {
+    private func storyMessage(transaction: DBReadTransaction) -> StoryMessage? {
         guard let storyMessageUniqueId = storyMessageUniqueId else { return nil }
         return StoryMessage.anyFetch(uniqueId: storyMessageUniqueId, transaction: transaction)
     }
 
-    public override func syncMessageBuilder(transaction: SDSAnyReadTransaction) -> SSKProtoSyncMessageBuilder? {
+    public override func syncMessageBuilder(transaction: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
         let sentBuilder = SSKProtoSyncMessageSent.builder()
         sentBuilder.setTimestamp(timestamp)
         sentBuilder.setIsRecipientUpdate(isRecipientUpdate.boolValue)
@@ -102,7 +102,7 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
         }
     }
 
-    private func storyMessageProto(for storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) -> SSKProtoStoryMessage? {
+    private func storyMessageProto(for storyMessage: StoryMessage, transaction: DBReadTransaction) -> SSKProtoStoryMessage? {
         let builder = SSKProtoStoryMessage.builder()
 
         switch storyMessage.attachment {
@@ -111,7 +111,7 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
                 let storyMessageRowId = storyMessage.id,
                 let attachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
                     for: .storyMessageMedia(storyMessageRowId: storyMessageRowId),
-                    tx: transaction.asV2Read
+                    tx: transaction
                 ),
                 let pointer = attachment.attachment.asTransitTierPointer()
             else {

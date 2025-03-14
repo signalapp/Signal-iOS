@@ -124,7 +124,7 @@ final class AuthorMergeHelperBuilder {
     private func cursorForBatch(table: AuthorDatabaseTable, tx: DBReadTransaction) throws -> RowCursor {
         let nextRowId = authorMergeHelper.nextRowIdStore.getInt64(table.name, transaction: tx)
         let (sqlQuery, sqlArguments) = sqlQueryForBatch(table: table, nextRowId: nextRowId)
-        return try Row.fetchCursor(tx.databaseConnection, sql: sqlQuery, arguments: sqlArguments)
+        return try Row.fetchCursor(tx.database, sql: sqlQuery, arguments: sqlArguments)
     }
 
     private func sqlQueryForBatch(table: AuthorDatabaseTable, nextRowId: Int64?) -> (String, StatementArguments) {
@@ -148,7 +148,7 @@ final class AuthorMergeHelperBuilder {
         let sqlQuery = """
             UPDATE "\(table.name)" SET "\(table.aciColumn)" = ?, "\(table.phoneNumberColumn)" = NULL WHERE "id" = ?
         """
-        try tx.databaseConnection.execute(sql: sqlQuery, arguments: [aciString, rowId])
+        try tx.database.execute(sql: sqlQuery, arguments: [aciString, rowId])
     }
 
 }

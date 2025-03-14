@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithFailedEnvelopeTimestamp:(uint64_t)timestamp
                                                sourceAci:(AciObjC *)sourceAci
                                         untrustedGroupId:(nullable NSData *)untrustedGroupId
-                                             transaction:(SDSAnyWriteTransaction *)writeTx
+                                             transaction:(DBWriteTransaction *)writeTx
 {
     SignalServiceAddress *sender = [[SignalServiceAddress alloc] initWithServiceIdObjC:sourceAci];
     TSThread *thread;
@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.expirationDate isAfterNow] && !self.wasRead;
 }
 
-- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)previewTextWithTransaction:(DBReadTransaction *)transaction
 {
     NSString *_Nullable senderName = nil;
     if (self.sender) {
@@ -158,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
                        thread:(TSThread *)thread
                  circumstance:(OWSReceiptCircumstance)circumstance
      shouldClearNotifications:(BOOL)shouldClearNotifications
-                  transaction:(SDSAnyWriteTransaction *)transaction
+                  transaction:(DBWriteTransaction *)transaction
 {
     OWSLogInfo(@"Marking placeholder as read. No longer eligible for inline replacement.");
     [super markAsReadAtTimestamp:readTimestamp

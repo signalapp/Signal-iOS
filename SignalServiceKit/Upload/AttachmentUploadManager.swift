@@ -978,7 +978,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                         logger.warn("Missing interaction.")
                         return
                     }
-                    self.db.touch(interaction, shouldReindex: false, tx: tx)
+                    self.db.touch(interaction: interaction, shouldReindex: false, tx: tx)
                 case .storyMessage(let storyMessageSource):
                     guard
                         let storyMessage = self.storyStore.fetchStoryMessage(
@@ -989,7 +989,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                         logger.warn("Missing story message.")
                         return
                     }
-                    self.db.touch(storyMessage, tx: tx)
+                    self.db.touch(storyMessage: storyMessage, tx: tx)
                 case .thread:
                     break
                 }

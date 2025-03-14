@@ -144,7 +144,7 @@ public class AppSetup {
             schedulers: schedulers
         )
 
-        let db = SDSDB(databaseStorage: databaseStorage)
+        let db = databaseStorage
         let dbFileSizeProvider = SDSDBFileSizeProvider(databaseStorage: databaseStorage)
 
         let tsAccountManager = TSAccountManagerImpl(
@@ -237,8 +237,8 @@ public class AppSetup {
             signalRecipientStore: recipientDatabaseTable,
             usernameLookupRecordStore: usernameLookupRecordStore,
             nicknameRecordStore: nicknameRecordStore,
-            dbForReadTx: { SDSDB.shimOnlyBridge($0).unwrapGrdbRead.database },
-            dbForWriteTx: { SDSDB.shimOnlyBridge($0).unwrapGrdbWrite.database }
+            dbForReadTx: { SDSDB.shimOnlyBridge($0).database },
+            dbForWriteTx: { SDSDB.shimOnlyBridge($0).database }
         )
         let usernameLookupManager = UsernameLookupManagerImpl(
             searchableNameIndexer: searchableNameIndexer,
@@ -1644,7 +1644,7 @@ extension AppSetup.FinalContinuation {
             tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
             && !willResumeInProgressRegistration
         {
-            let localIdentifiers = databaseStorage.read { tsAccountManager.localIdentifiers(tx: $0.asV2Read) }
+            let localIdentifiers = databaseStorage.read { tsAccountManager.localIdentifiers(tx: $0) }
             guard let localIdentifiers else {
                 return false
             }
@@ -1662,7 +1662,7 @@ extension AppSetup.FinalContinuation {
         let phoneNumberDiscoverabilityManager = DependenciesBridge.shared.phoneNumberDiscoverabilityManager
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        if databaseStorage.read(block: { tsAccountManager.phoneNumberDiscoverability(tx: $0.asV2Read) }) != nil {
+        if databaseStorage.read(block: { tsAccountManager.phoneNumberDiscoverability(tx: $0) }) != nil {
             return
         }
 
@@ -1672,7 +1672,7 @@ extension AppSetup.FinalContinuation {
                 updateAccountAttributes: true,
                 updateStorageService: true,
                 authedAccount: .implicit(),
-                tx: tx.asV2Write
+                tx: tx
             )
         }
     }

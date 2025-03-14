@@ -20,7 +20,7 @@ final class DeletedCallRecordStoreTest: XCTestCase {
         let thread = TSThread(uniqueId: UUID().uuidString)
 
         inMemoryDB.write { tx in
-            try! thread.asRecord().insert(tx.db)
+            try! thread.asRecord().insert(tx.database)
         }
 
         return thread.sqliteRowId!

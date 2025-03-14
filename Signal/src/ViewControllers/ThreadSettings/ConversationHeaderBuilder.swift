@@ -11,7 +11,7 @@ public import UIKit
 @MainActor
 struct ConversationHeaderBuilder {
     weak var delegate: ConversationHeaderDelegate!
-    let transaction: SDSAnyReadTransaction
+    let transaction: DBReadTransaction
     let sizeClass: ConversationAvatarView.Configuration.SizeClass
     let options: Options
 
@@ -80,7 +80,7 @@ struct ConversationHeaderBuilder {
         sizeClass: ConversationAvatarView.Configuration.SizeClass,
         options: Options,
         delegate: ConversationHeaderDelegate,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UIView {
         var builder = ConversationHeaderBuilder(
             delegate: delegate,
@@ -147,7 +147,7 @@ struct ConversationHeaderBuilder {
         sizeClass: ConversationAvatarView.Configuration.SizeClass,
         options: Options,
         delegate: ConversationHeaderDelegate,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UIView {
         var builder = ConversationHeaderBuilder(
             delegate: delegate,
@@ -167,7 +167,7 @@ struct ConversationHeaderBuilder {
         let recipientAddress = contactThread.contactAddress
 
         let identityManager = DependenciesBridge.shared.identityManager
-        let isVerified = identityManager.verificationState(for: recipientAddress, tx: transaction.asV2Read) == .verified
+        let isVerified = identityManager.verificationState(for: recipientAddress, tx: transaction) == .verified
         if isVerified {
             let subtitle = NSMutableAttributedString()
             subtitle.append(SignalSymbol.safetyNumber.attributedString(for: .subheadline, clamped: true))
@@ -184,7 +184,7 @@ struct ConversationHeaderBuilder {
     init(delegate: ConversationHeaderDelegate,
          sizeClass: ConversationAvatarView.Configuration.SizeClass,
          options: Options,
-         transaction: SDSAnyReadTransaction) {
+         transaction: DBReadTransaction) {
 
         self.delegate = delegate
         self.sizeClass = sizeClass
@@ -194,7 +194,7 @@ struct ConversationHeaderBuilder {
         addFirstSubviews(transaction: transaction)
     }
 
-    mutating func addFirstSubviews(transaction: SDSAnyReadTransaction) {
+    mutating func addFirstSubviews(transaction: DBReadTransaction) {
         let avatarView = buildAvatarView(transaction: transaction)
 
         let avatarWrapper = UIView.container()
@@ -387,7 +387,7 @@ struct ConversationHeaderBuilder {
         hasSubtitleLabel = true
     }
 
-    func buildAvatarView(transaction: SDSAnyReadTransaction) -> UIView {
+    func buildAvatarView(transaction: DBReadTransaction) -> UIView {
         let avatarView = ConversationAvatarView(
             sizeClass: sizeClass,
             localUserDisplayMode: options.contains(.renderLocalUserAsNoteToSelf) ? .noteToSelf : .asUser)
@@ -428,7 +428,7 @@ struct ConversationHeaderBuilder {
         isNoteToSelf: Bool,
         isSystemContact: Bool,
         canTap: Bool,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> NSAttributedString {
         let font = UIFont.dynamicTypeFont(ofStandardSize: 26, weight: .semibold)
 
@@ -534,7 +534,7 @@ protocol ConversationHeaderDelegate: UIViewController, ConversationAvatarViewDel
     var thread: TSThread { get }
     var threadViewModel: ThreadViewModel { get }
 
-    func threadName(renderLocalUserAsNoteToSelf: Bool, transaction: SDSAnyReadTransaction) -> String
+    func threadName(renderLocalUserAsNoteToSelf: Bool, transaction: DBReadTransaction) -> String
 
     var avatarView: ConversationAvatarView? { get set }
 
@@ -559,7 +559,7 @@ protocol ConversationHeaderDelegate: UIViewController, ConversationAvatarViewDel
 // MARK: -
 
 extension ConversationHeaderDelegate {
-    func threadName(renderLocalUserAsNoteToSelf: Bool, transaction: SDSAnyReadTransaction) -> String {
+    func threadName(renderLocalUserAsNoteToSelf: Bool, transaction: DBReadTransaction) -> String {
         var threadName: String
         if thread.isNoteToSelf, !renderLocalUserAsNoteToSelf {
             let profileManager = SSKEnvironment.shared.profileManagerRef
@@ -577,7 +577,7 @@ extension ConversationHeaderDelegate {
         return threadName
     }
 
-    func threadAttributedString(renderLocalUserAsNoteToSelf: Bool, tx: SDSAnyReadTransaction) -> NSAttributedString {
+    func threadAttributedString(renderLocalUserAsNoteToSelf: Bool, tx: DBReadTransaction) -> NSAttributedString {
         let threadName = threadName(renderLocalUserAsNoteToSelf: renderLocalUserAsNoteToSelf, transaction: tx)
 
         let isSystemContact =

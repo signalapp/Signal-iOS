@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
  * recipientId is nil when building "sent" sync messages for messages
  * sent to groups.
  */
-- (nullable SSKProtoDataMessage *)buildDataMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
+- (nullable SSKProtoDataMessage *)buildDataMessage:(TSThread *)thread transaction:(DBReadTransaction *)transaction;
 
 @end
 
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
                       messageThread:(TSThread *)messageThread
                     outgoingMessage:(TSOutgoingMessage *)message
                   isRecipientUpdate:(BOOL)isRecipientUpdate
-                        transaction:(SDSAnyReadTransaction *)transaction
+                        transaction:(DBReadTransaction *)transaction
 {
     OWSAssertDebug(message != nil);
     OWSAssertDebug(localThread != nil);
@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction
 {
     SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSent builder];
     [sentBuilder setTimestamp:self.timestamp];

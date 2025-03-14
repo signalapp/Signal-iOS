@@ -48,7 +48,7 @@ extension TSAttachmentMigration {
         // MARK: - Phase 1/2
 
         /// Phases 1 and 2 when applying as a blocking-on-launch GRDB migration.
-        static func prepareBlockingTSMessageMigration(tx: GRDBWriteTransaction) {
+        static func prepareBlockingTSMessageMigration(tx: DBWriteTransaction) {
             // If we finished phase 2, we are done.
             let finished: Bool? = Self.read(key: finishedGoingForwardsKey, tx: tx)
             if finished == true {
@@ -88,7 +88,7 @@ extension TSAttachmentMigration {
         /// Phases 1 and 2 when running as an iterative migration.
         /// - Returns
         /// True if any rows were migrated; callers should keep calling until it returns false.
-        public static func prepareNextIterativeTSMessageMigrationBatch(tx: GRDBWriteTransaction) -> Bool {
+        public static func prepareNextIterativeTSMessageMigrationBatch(tx: DBWriteTransaction) -> Bool {
             // If we finished phase 2, we are done.
             let finished: Bool? = Self.read(key: finishedGoingForwardsKey, tx: tx)
             if finished == true {
@@ -127,7 +127,7 @@ extension TSAttachmentMigration {
         /// True if any rows were migrated.
         private static func prepareNextIterativeBatchPhase1ColdStart(
             batchSize: Int,
-            tx: GRDBWriteTransaction
+            tx: DBWriteTransaction
         ) -> Bool {
             // We've made zero progress. Migrate working backwards from the top (phase 1).
             let maxInteractionRowId: Int64?
@@ -164,7 +164,7 @@ extension TSAttachmentMigration {
         private static func prepareNextIterativeBatchPhase1(
             batchSize: Int,
             maxMigratedRowId: Int64,
-            tx: GRDBWriteTransaction
+            tx: DBWriteTransaction
         ) -> Bool {
             // Proceed going backwards from the min id, continuing our progress on phase 1.
             let minMigratedRowId: Int64? = Self.read(key: minMigratedInteractionRowIdKey, tx: tx)
@@ -189,7 +189,7 @@ extension TSAttachmentMigration {
         private static func prepareNextIteraveBatchPhase2(
             batchSize: Int,
             maxMigratedRowId: Int64,
-            tx: GRDBWriteTransaction
+            tx: DBWriteTransaction
         ) -> Bool {
             let newMaxMigratedId =
                 prepareTSMessageMigrationBatch(batchSize: batchSize, maxRowId: nil, minRowId: maxMigratedRowId, tx: tx)
@@ -221,7 +221,7 @@ extension TSAttachmentMigration {
         // Once phase 2 is done (finishedGoingForwardsKey = true) the value is stale and should be ignored.
         private static let maxMigratedInteractionRowIdKey = "maxMigratedInteractionRowId"
 
-        private static func read<T: DatabaseValueConvertible>(key: String, tx: GRDBWriteTransaction) -> T? {
+        private static func read<T: DatabaseValueConvertible>(key: String, tx: DBWriteTransaction) -> T? {
             do {
                 return try T.fetchOne(
                     tx.database,
@@ -233,7 +233,7 @@ extension TSAttachmentMigration {
             }
         }
 
-        private static func write<T: DatabaseValueConvertible>(_ t: T, key: String, tx: GRDBWriteTransaction) {
+        private static func write<T: DatabaseValueConvertible>(_ t: T, key: String, tx: DBWriteTransaction) {
             do {
                 try tx.database.execute(
                     sql: """
@@ -250,7 +250,7 @@ extension TSAttachmentMigration {
         // MARK: - Phase 3
 
         /// Phase 3 when applying as a blocking-on-launch GRDB migration.
-        static func completeBlockingTSMessageMigration(tx: GRDBWriteTransaction) {
+        static func completeBlockingTSMessageMigration(tx: DBWriteTransaction) {
             _ = Self.completeTSMessageMigrationBatch(batchSize: nil, errorLogger: { _ in }, tx: tx)
         }
 
@@ -263,7 +263,7 @@ extension TSAttachmentMigration {
         public static func completeNextIterativeTSMessageMigrationBatch(
             batchSize: Int = 5,
             errorLogger: (String) -> Void,
-            tx: GRDBWriteTransaction
+            tx: DBWriteTransaction
         ) -> Bool {
             let count = Self.completeTSMessageMigrationBatch(batchSize: batchSize, errorLogger: errorLogger, tx: tx)
             return count > 0
@@ -299,7 +299,7 @@ extension TSAttachmentMigration {
             batchSize: Int?,
             maxRowId: Int64?,
             minRowId: Int64?,
-            tx: GRDBWriteTransaction
+            tx: DBWriteTransaction
         ) -> Int64? {
             var sql = "SELECT * FROM model_TSInteraction"
             var arguments = StatementArguments()
@@ -353,7 +353,7 @@ extension TSAttachmentMigration {
         fileprivate static func prepareTSMessageForMigration(
             messageRow: Row,
             messageRowId: Int64,
-            tx: GRDBWriteTransaction
+            tx: DBWriteTransaction
         ) -> Bool {
             // Check if the message has any attachments.
             let attachmentIds: [String] = (
@@ -399,7 +399,7 @@ extension TSAttachmentMigration {
         private static func completeTSMessageMigrationBatch(
             batchSize: Int?,
             errorLogger: (String) -> Void,
-            tx: GRDBWriteTransaction
+            tx: DBWriteTransaction
         ) -> Int {
             let isRunningIteratively = batchSize != nil
 
@@ -520,7 +520,7 @@ extension TSAttachmentMigration {
                         )
                     }
                 }
-                tx.addAsyncCompletion(queue: .global()) {
+                tx.addAsyncCompletion(on: DispatchQueue.global()) {
                     deletedAttachments.forEach { try? $0.deleteFiles() }
                 }
             }
@@ -540,7 +540,7 @@ extension TSAttachmentMigration {
             messageRowId: Int64,
             isRunningIteratively: Bool,
             errorLogger: (String) -> Void,
-            tx: GRDBWriteTransaction
+            tx: DBWriteTransaction
         ) -> [TSAttachmentMigration.V1Attachment]? {
             // From attachment unique id to the reserved file ids.
             var reservedFileIdsDict = [String: TSAttachmentMigration.V1AttachmentReservedFileIds]()
@@ -847,7 +847,7 @@ extension TSAttachmentMigration {
             isViewOnce: Bool,
             isPastEditRevision: Bool,
             errorLogger: (String) -> Void,
-            tx: GRDBWriteTransaction
+            tx: DBWriteTransaction
         ) -> TSAttachmentMigration.V1Attachment? {
             let oldAttachment: TSAttachmentMigration.V1Attachment?
             do {
@@ -1094,7 +1094,7 @@ extension TSAttachmentMigration {
             messageReceivedAtTimestamp: UInt64,
             isPastEditRevision: Bool,
             errorLogger: (String) -> Void,
-            tx: GRDBWriteTransaction
+            tx: DBWriteTransaction
         ) -> TSAttachmentMigration.TSQuotedMessage {
             let oldAttachment: TSAttachmentMigration.V1Attachment?
             do {
@@ -1356,7 +1356,7 @@ extension TSAttachmentMigration {
             linkPreview: TSAttachmentMigration.OWSLinkPreview?,
             quotedMessage: TSAttachmentMigration.TSQuotedMessage?,
             errorLogger: (String) -> Void,
-            tx: GRDBWriteTransaction
+            tx: DBWriteTransaction
         ) {
             var sql = "UPDATE model_TSInteraction SET "
             var arguments = StatementArguments()

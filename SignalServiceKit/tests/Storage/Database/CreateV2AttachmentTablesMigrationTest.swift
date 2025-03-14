@@ -110,7 +110,7 @@ public class AttachmentV2MigrationTest: XCTestCase {
             XCTAssertEqual([1, 1], references.map { $0["contentType"] })
 
             // Set a new content type on the attachment.
-            try tx.unwrapGrdbWrite.database.execute(
+            try tx.database.execute(
                 sql: """
                     UPDATE Attachment SET contentType = ? WHERE id = ?
                 """,
@@ -321,7 +321,7 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
             // Fetch the second by the first attachment's ID.
             var replyAttachment = try Row.fetchOne(
-                tx.unwrapGrdbRead.database,
+                tx.database,
                 sql: """
                     SELECT * FROM Attachment WHERE originalAttachmentIdForQuotedReply = ?;
                 """,
@@ -330,7 +330,7 @@ public class AttachmentV2MigrationTest: XCTestCase {
             XCTAssertEqual(replyAttachment?["id"], replyAttachmentId)
 
             // Delete the first attachment.
-            try tx.unwrapGrdbWrite.database.execute(
+            try tx.database.execute(
                 sql: """
                     DELETE FROM Attachment WHERE id = ?;
                 """,
@@ -339,7 +339,7 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
             // Should not be able to find the second attachment by the original's id now.
             replyAttachment = try Row.fetchOne(
-                tx.unwrapGrdbRead.database,
+                tx.database,
                 sql: """
                     SELECT * FROM Attachment WHERE originalAttachmentIdForQuotedReply = ?;
                 """,
@@ -349,7 +349,7 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
             // But we can fetch it by its id.
             replyAttachment = try Row.fetchOne(
-                tx.unwrapGrdbRead.database,
+                tx.database,
                 sql: """
                     SELECT * FROM Attachment WHERE id = ?;
                 """,
@@ -422,7 +422,7 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
     private func runMigration() throws {
         try db.write { tx in
-            let tx = tx.unwrapGrdbWrite
+            let tx = tx
 
             // We need a messages and threads table for the foreign keys in
             // the attachments tables.
@@ -451,15 +451,15 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
     private func runOriginalAttachmentIdForQuotedReplyMigration() throws {
         try db.write { tx in
-            let tx = tx.unwrapGrdbWrite
+            let tx = tx
 
             // Create the attachment tables, indexes, triggers.
             _ = try GRDBSchemaMigrator.addOriginalAttachmentIdForQuotedReplyColumn(tx)
         }
     }
 
-    private func assertUsesIndex(sql: String, tx: SDSAnyReadTransaction) throws {
-        let queryPlan: String = try Row.fetchOne(tx.unwrapGrdbRead.database, sql: """
+    private func assertUsesIndex(sql: String, tx: DBReadTransaction) throws {
+        let queryPlan: String = try Row.fetchOne(tx.database, sql: """
             EXPLAIN QUERY PLAN \(sql)
         """)!["detail"]
         XCTAssert(queryPlan.contains("USING COVERING INDEX"))
@@ -470,12 +470,12 @@ public class AttachmentV2MigrationTest: XCTestCase {
     private func insertAttachment(
         filepath: String = UUID().uuidString,
         contentType: Int64 = 0,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws -> Int64 {
         // Only set columns which are relevant to the SQL constraints + triggers.
         // Irrelevant columns with NOT NULL are set to arbitrary values.
         // Other columns that aren't NOT NULL are ignored for this test.
-        try tx.unwrapGrdbWrite.database.execute(
+        try tx.database.execute(
             sql: """
                 INSERT INTO Attachment (
                     mimeType
@@ -494,18 +494,18 @@ public class AttachmentV2MigrationTest: XCTestCase {
                 contentType
             ]
         )
-        return tx.unwrapGrdbWrite.database.lastInsertedRowID
+        return tx.database.lastInsertedRowID
     }
 
     private func insertQuotedReplyAttachment(
         filepath: String = UUID().uuidString,
         originalAttachmentIdForQuotedReply: Attachment.IDType,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws -> Int64 {
         // Only set columns which are relevant to the SQL constraints + triggers.
         // Irrelevant columns with NOT NULL are set to arbitrary values.
         // Other columns that aren't NOT NULL are ignored for this test.
-        try tx.unwrapGrdbWrite.database.execute(
+        try tx.database.execute(
             sql: """
                 INSERT INTO Attachment (
                     mimeType
@@ -526,7 +526,7 @@ public class AttachmentV2MigrationTest: XCTestCase {
                 originalAttachmentIdForQuotedReply
             ]
         )
-        return tx.unwrapGrdbWrite.database.lastInsertedRowID
+        return tx.database.lastInsertedRowID
     }
 
     private func insertMessageAttachmentReference(
@@ -534,12 +534,12 @@ public class AttachmentV2MigrationTest: XCTestCase {
         messageId: Int64,
         attachmentId: Int64,
         contentType: Int64 = 0,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws {
         // Only set columns which are relevant to the SQL constraints + triggers.
         // Irrelevant columns with NOT NULL are set to arbitrary values.
         // Other columns that aren't NOT NULL are ignored for this test.
-        try tx.unwrapGrdbWrite.database.execute(
+        try tx.database.execute(
             sql: """
                 INSERT INTO MessageAttachmentReference (
                     ownerType
@@ -571,12 +571,12 @@ public class AttachmentV2MigrationTest: XCTestCase {
     private func insertStoryMessageAttachmentReference(
         storyMessageId: Int64,
         attachmentId: Int64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws {
         // Only set columns which are relevant to the SQL constraints + triggers.
         // Irrelevant columns with NOT NULL are set to arbitrary values.
         // Other columns that aren't NOT NULL are ignored for this test.
-        try tx.unwrapGrdbWrite.database.execute(
+        try tx.database.execute(
             sql: """
                 INSERT INTO StoryMessageAttachmentReference (
                     ownerType
@@ -600,12 +600,12 @@ public class AttachmentV2MigrationTest: XCTestCase {
     private func insertThreadAttachmentReference(
         threadId: Int64,
         attachmentId: Int64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws {
         // Only set columns which are relevant to the SQL constraints + triggers.
         // Irrelevant columns with NOT NULL are set to arbitrary values.
         // Other columns that aren't NOT NULL are ignored for this test.
-        try tx.unwrapGrdbWrite.database.execute(
+        try tx.database.execute(
             sql: """
                 INSERT INTO ThreadAttachmentReference (
                     ownerRowId
@@ -626,9 +626,9 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
     // MARK: Fetches
 
-    private func fetchAttachment(id: Int64, tx: SDSAnyReadTransaction) throws -> Row? {
+    private func fetchAttachment(id: Int64, tx: DBReadTransaction) throws -> Row? {
         return try Row.fetchOne(
-            tx.unwrapGrdbRead.database,
+            tx.database,
             sql: """
                 SELECT * FROM Attachment WHERE id = ?;
             """,
@@ -636,9 +636,9 @@ public class AttachmentV2MigrationTest: XCTestCase {
         )
     }
 
-    private func fetchOrphanAttachments(tx: SDSAnyReadTransaction) throws -> [Row] {
+    private func fetchOrphanAttachments(tx: DBReadTransaction) throws -> [Row] {
         return try Row.fetchAll(
-            tx.unwrapGrdbRead.database,
+            tx.database,
             sql: """
                 SELECT * FROM OrphanedAttachment;
             """
@@ -647,10 +647,10 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
     private func fetchMessageAttachmentReferences(
         attachmentId: Int64,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> [Row] {
         return try Row.fetchAll(
-            tx.unwrapGrdbRead.database,
+            tx.database,
             sql: """
                 SELECT * FROM MessageAttachmentReference WHERE attachmentRowId = ?;
             """,
@@ -660,10 +660,10 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
     private func fetchMessageAttachmentReferences(
         messageId: Int64,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> [Row] {
         return try Row.fetchAll(
-            tx.unwrapGrdbRead.database,
+            tx.database,
             sql: """
                 SELECT * FROM MessageAttachmentReference WHERE ownerRowId = ?;
             """,
@@ -673,10 +673,10 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
     private func fetchStoryMessageAttachmentReferences(
         attachmentId: Int64,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> [Row] {
         return try Row.fetchAll(
-            tx.unwrapGrdbRead.database,
+            tx.database,
             sql: """
                 SELECT * FROM StoryMessageAttachmentReference WHERE attachmentRowId = ?;
             """,
@@ -686,10 +686,10 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
     private func fetchStoryMessageAttachmentReferences(
         storyMessageId: Int64,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> [Row] {
         return try Row.fetchAll(
-            tx.unwrapGrdbRead.database,
+            tx.database,
             sql: """
                 SELECT * FROM StoryMessageAttachmentReference WHERE ownerRowId = ?;
             """,
@@ -699,10 +699,10 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
     private func fetchThreadAttachmentReferences(
         attachmentId: Int64,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> [Row] {
         return try Row.fetchAll(
-            tx.unwrapGrdbRead.database,
+            tx.database,
             sql: """
                 SELECT * FROM ThreadAttachmentReference WHERE attachmentRowId = ?;
             """,
@@ -712,10 +712,10 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
     private func fetchThreadAttachmentReferences(
         threadId: Int64,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> [Row] {
         return try Row.fetchAll(
-            tx.unwrapGrdbRead.database,
+            tx.database,
             sql: """
                 SELECT * FROM ThreadAttachmentReference WHERE ownerRowId = ?;
             """,
@@ -725,15 +725,15 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
     // MARK: Referenced non-attachment types
 
-    private func insertThread(tx: SDSAnyWriteTransaction) throws -> Int64 {
-        try tx.unwrapGrdbWrite.database.execute(sql: """
+    private func insertThread(tx: DBWriteTransaction) throws -> Int64 {
+        try tx.database.execute(sql: """
           INSERT INTO model_TSThread DEFAULT VALUES;
         """)
-        return tx.unwrapGrdbWrite.database.lastInsertedRowID
+        return tx.database.lastInsertedRowID
     }
 
-    private func deleteThread(id: Int64, tx: SDSAnyWriteTransaction) throws {
-        try tx.unwrapGrdbWrite.database.execute(
+    private func deleteThread(id: Int64, tx: DBWriteTransaction) throws {
+        try tx.database.execute(
             sql: """
                 DELETE FROM model_TSThread WHERE id = ?;
             """,
@@ -741,15 +741,15 @@ public class AttachmentV2MigrationTest: XCTestCase {
         )
     }
 
-    private func insertMessage(tx: SDSAnyWriteTransaction) throws -> Int64 {
-        try tx.unwrapGrdbWrite.database.execute(sql: """
+    private func insertMessage(tx: DBWriteTransaction) throws -> Int64 {
+        try tx.database.execute(sql: """
           INSERT INTO model_TSInteraction DEFAULT VALUES;
         """)
-        return tx.unwrapGrdbWrite.database.lastInsertedRowID
+        return tx.database.lastInsertedRowID
     }
 
-    private func deleteMessage(id: Int64, tx: SDSAnyWriteTransaction) throws {
-        try tx.unwrapGrdbWrite.database.execute(
+    private func deleteMessage(id: Int64, tx: DBWriteTransaction) throws {
+        try tx.database.execute(
             sql: """
                 DELETE FROM model_TSInteraction WHERE id = ?;
             """,
@@ -757,15 +757,15 @@ public class AttachmentV2MigrationTest: XCTestCase {
         )
     }
 
-    private func insertStoryMessage(tx: SDSAnyWriteTransaction) throws -> Int64 {
-        try tx.unwrapGrdbWrite.database.execute(sql: """
+    private func insertStoryMessage(tx: DBWriteTransaction) throws -> Int64 {
+        try tx.database.execute(sql: """
           INSERT INTO model_StoryMessage DEFAULT VALUES;
         """)
-        return tx.unwrapGrdbWrite.database.lastInsertedRowID
+        return tx.database.lastInsertedRowID
     }
 
-    private func deleteStoryMessage(id: Int64, tx: SDSAnyWriteTransaction) throws {
-        try tx.unwrapGrdbWrite.database.execute(
+    private func deleteStoryMessage(id: Int64, tx: DBWriteTransaction) throws {
+        try tx.database.execute(
             sql: """
                 DELETE FROM model_StoryMessage WHERE id = ?;
             """,

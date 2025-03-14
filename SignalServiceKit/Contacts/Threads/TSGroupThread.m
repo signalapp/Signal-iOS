@@ -100,7 +100,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     return self;
 }
 
-+ (nullable instancetype)fetchWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
++ (nullable instancetype)fetchWithGroupId:(NSData *)groupId transaction:(DBReadTransaction *)transaction
 {
     OWSAssertDebug(groupId.length > 0);
 
@@ -108,7 +108,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     return [TSGroupThread anyFetchGroupThreadWithUniqueId:uniqueId transaction:transaction];
 }
 
-- (NSArray<SignalServiceAddress *> *)recipientAddressesWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSArray<SignalServiceAddress *> *)recipientAddressesWithTransaction:(DBReadTransaction *)transaction
 {
     NSMutableArray<SignalServiceAddress *> *groupMembers = [self.groupModel.groupMembers mutableCopy];
     if (groupMembers == nil) {
@@ -132,13 +132,13 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
 #pragma mark -
 
-- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyWillInsertWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyWillInsertWithTransaction:transaction];
     [self updateGroupMemberRecordsWithTransaction:transaction];
 }
 
-- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyWillUpdateWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyWillUpdateWithTransaction:transaction];
 
@@ -146,7 +146,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     // Now it's done explicitly where we update the group model, and not for other updates.
 }
 
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];
 

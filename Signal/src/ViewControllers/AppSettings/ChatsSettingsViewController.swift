@@ -39,7 +39,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                 comment: "Setting for enabling & disabling link previews."
             ),
             isOn: {
-                SSKEnvironment.shared.databaseStorageRef.read { DependenciesBridge.shared.linkPreviewSettingStore.areLinkPreviewsEnabled(tx: $0.asV2Read) }
+                SSKEnvironment.shared.databaseStorageRef.read { DependenciesBridge.shared.linkPreviewSettingStore.areLinkPreviewsEnabled(tx: $0) }
             },
             target: self,
             selector: #selector(didToggleLinkPreviewsEnabled)
@@ -218,7 +218,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             threadSoftDeleteManager.softDelete(
                 threads: TSThread.anyFetchAll(transaction: transaction),
                 sendDeleteForMeSyncMessage: true,
-                tx: transaction.asV2Write
+                tx: transaction
             )
 
             StoryMessage.anyRemoveAllWithInstantiation(transaction: transaction)

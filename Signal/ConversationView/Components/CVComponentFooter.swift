@@ -241,7 +241,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         interaction: TSInteraction,
         paymentNotification: TSPaymentNotification?,
         tapForMoreState: TapForMoreState,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> State {
 
         guard
@@ -373,7 +373,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     static func buildState(
         interaction: TSInteraction,
         tapForMoreState: TapForMoreState,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> State {
 
         let hasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(transaction: transaction) ?? false

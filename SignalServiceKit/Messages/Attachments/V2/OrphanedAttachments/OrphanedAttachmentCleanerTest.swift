@@ -54,7 +54,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         mockTaskScheduler.tasks = []
 
         try db.write { tx in
-            try Attachment.Record.deleteAll(tx.db)
+            try Attachment.Record.deleteAll(tx.database)
 
             // No deletions until the transaction commits!
             XCTAssertEqual(mockTaskScheduler.tasks.count, 0)
@@ -72,7 +72,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
         // And no rows left.
         try db.read { tx in
-            XCTAssertNil(try OrphanedAttachmentRecord.fetchOne(tx.db))
+            XCTAssertNil(try OrphanedAttachmentRecord.fetchOne(tx.database))
         }
     }
 
@@ -87,7 +87,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                     localRelativeFilePathAudioWaveform: nil,
                     localRelativeFilePathVideoStillFrame: nil
                 )
-                try record.insert(tx.db)
+                try record.insert(tx.database)
             }
         }
 
@@ -107,7 +107,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
         // And no rows left.
         try db.read { tx in
-            XCTAssertNil(try OrphanedAttachmentRecord.fetchOne(tx.db))
+            XCTAssertNil(try OrphanedAttachmentRecord.fetchOne(tx.database))
         }
     }
 
@@ -125,7 +125,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                     localRelativeFilePathAudioWaveform: nil,
                     localRelativeFilePathVideoStillFrame: nil
                 )
-                try record.insert(tx.db)
+                try record.insert(tx.database)
             }
         }
 
@@ -166,7 +166,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
         // The first row should still be around.
         try db.read { tx in
-            let record = try OrphanedAttachmentRecord.fetchOne(tx.db)
+            let record = try OrphanedAttachmentRecord.fetchOne(tx.database)
             XCTAssertEqual(record?.localRelativeFilePath, filePath1)
         }
 
@@ -193,7 +193,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                 localRelativeFilePathAudioWaveform: nil,
                 localRelativeFilePathVideoStillFrame: nil
             )
-            try record.insert(tx.db)
+            try record.insert(tx.database)
         }
 
         XCTAssertEqual(mockTaskScheduler.tasks.count, 1)
@@ -208,7 +208,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
         // The first row should still be around.
         try db.read { tx in
-            let record = try OrphanedAttachmentRecord.fetchOne(tx.db)
+            let record = try OrphanedAttachmentRecord.fetchOne(tx.database)
             XCTAssertEqual(record?.localRelativeFilePath, filePath1)
         }
     }
@@ -238,8 +238,8 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         )
 
         try db.write { tx in
-            try record.insert(tx.db)
-            let count = try OrphanedAttachmentRecord.fetchCount(tx.databaseConnection)
+            try record.insert(tx.database)
+            let count = try OrphanedAttachmentRecord.fetchCount(tx.database)
             XCTAssertEqual(count, skippedIds.count + 1)
         }
 
@@ -250,7 +250,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
         // Should have deleted the first record and none of the others.
         try db.read { tx in
-            let count = try OrphanedAttachmentRecord.fetchCount(tx.databaseConnection)
+            let count = try OrphanedAttachmentRecord.fetchCount(tx.database)
             XCTAssertEqual(count, skippedIds.count)
         }
 
@@ -267,7 +267,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
         // Everything should be deleted
         try db.read { tx in
-            let count = try OrphanedAttachmentRecord.fetchCount(tx.databaseConnection)
+            let count = try OrphanedAttachmentRecord.fetchCount(tx.database)
             XCTAssertEqual(count, 0)
         }
     }
@@ -281,7 +281,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         )
 
         try db.write { tx in
-            try record.insert(tx.db)
+            try record.insert(tx.database)
         }
 
         // Should delete all existing rows as soon as we start observing.

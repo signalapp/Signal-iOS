@@ -24,7 +24,7 @@ protocol GroupMemberViewDelegate: AnyObject {
     func groupMemberViewIsGroupFull_RecommendedLimit() -> Bool
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient,
-                                            transaction: SDSAnyReadTransaction) -> Bool
+                                            transaction: DBReadTransaction) -> Bool
 
     func groupMemberViewDismiss()
 
@@ -165,7 +165,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         return groupMemberViewDelegate.groupMemberViewGroupMemberCountForDisplay()
     }
 
-    public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> Bool {
+    public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: DBReadTransaction) -> Bool {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return false

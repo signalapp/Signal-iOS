@@ -29,7 +29,7 @@ public protocol MemberViewDelegate: AnyObject {
     func memberViewMemberCountForDisplay() -> Int
 
     func memberViewIsPreExistingMember(_ recipient: PickedRecipient,
-                                       transaction: SDSAnyReadTransaction) -> Bool
+                                       transaction: DBReadTransaction) -> Bool
 
     func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String?
 
@@ -186,7 +186,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
 
     public class func sortedMemberAddresses(
         recipientSet: OrderedSet<PickedRecipient>,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> [SignalServiceAddress] {
         return SSKEnvironment.shared.contactManagerRef.sortSignalServiceAddresses(
             recipientSet.orderedMembers.compactMap { $0.address },
@@ -255,7 +255,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
     public func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         selectionStyleForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UITableViewCell.SelectionStyle {
         guard let memberViewDelegate = memberViewDelegate else {
             owsFailDebug("Missing memberViewDelegate.")
@@ -357,7 +357,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
     public func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryViewForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> ContactCellAccessoryView? {
         guard let address = recipient.address else {
             owsFailDebug("Missing address.")
@@ -393,7 +393,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
     public func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         attributedSubtitleForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> NSAttributedString? {
         guard let address = recipient.address else {
             owsFailDebug("Recipient missing address.")

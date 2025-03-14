@@ -16,7 +16,7 @@ class GRDBFinderTest: SignalBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
     }
@@ -150,9 +150,9 @@ class GRDBFinderTest: SignalBaseTest {
         /// diff in the code just below, I've recreated a type with the same
         /// name such that the lines below didn't need to change.
         struct SignalRecipientFinder {
-            func signalRecipient(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> SignalRecipient? {
+            func signalRecipient(for address: SignalServiceAddress, tx: DBReadTransaction) -> SignalRecipient? {
                 return DependenciesBridge.shared.recipientDatabaseTable
-                    .fetchRecipient(address: address, tx: tx.asV2Read)
+                    .fetchRecipient(address: address, tx: tx)
             }
         }
 

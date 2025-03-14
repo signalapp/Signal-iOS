@@ -182,7 +182,7 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient,
-                                            transaction: SDSAnyReadTransaction) -> Bool {
+                                            transaction: DBReadTransaction) -> Bool {
         guard let address = recipient.address else {
             owsFailDebug("Invalid recipient.")
             return false

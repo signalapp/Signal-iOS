@@ -11,7 +11,7 @@ extension OWSOutgoingSentMessageTranscript {
     @objc(prepareDataSyncMessageContentWithSentBuilder:tx:)
     func prepareDataSyncMessageContent(
         with sentBuilder: SSKProtoSyncMessageSentBuilder,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> Bool {
 
         let dataMessage: SSKProtoDataMessage
@@ -67,7 +67,7 @@ extension OWSOutgoingSentMessageTranscript {
     @objc(prepareUnidentifiedStatusSyncMessageContentWithSentBuilder:tx:)
     func prepareUnidentifiedStatusSyncMessageContent(
         with sentBuilder: SSKProtoSyncMessageSentBuilder,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) {
         for recipientAddress in message.sentRecipientAddresses() {
             guard let recipientState = message.recipientState(for: recipientAddress) else {

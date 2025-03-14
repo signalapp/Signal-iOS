@@ -20,7 +20,7 @@ struct CompletionSerializer {
     /// Ordered blocks that must be executed.
     private let pendingBlocks = AtomicValue<[(blockNumber: Int, block: () -> Void)]>([], lock: .init())
 
-    mutating func addOrderedSyncCompletion(tx: any DBWriteTransaction, block: @escaping () -> Void) {
+    mutating func addOrderedSyncCompletion(tx: DBWriteTransaction, block: @escaping () -> Void) {
         self.blockCounter += 1
         let blockNumber = self.blockCounter
 

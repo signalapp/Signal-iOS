@@ -40,7 +40,7 @@ public class BadgeManager {
             fetchBadgeCountBlock: {
                 return databaseStorage.read { tx -> BadgeCount in
                     return DependenciesBridge.shared.badgeCountFetcher
-                        .fetchBadgeCount(tx: tx.asV2Read)
+                        .fetchBadgeCount(tx: tx)
                 }
             }
         )

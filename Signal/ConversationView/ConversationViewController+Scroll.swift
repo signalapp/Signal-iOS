@@ -311,7 +311,7 @@ extension ConversationViewController {
                 let currentEdit = SSKEnvironment.shared.databaseStorageRef.read { transaction in
                     DependenciesBridge.shared.editMessageStore.findMessage(
                         fromEdit: quotedMessage,
-                        tx: transaction.asV2Read
+                        tx: transaction
                     )
                 }
                 if let currentEdit {
@@ -645,7 +645,7 @@ extension ConversationViewController {
         public var uniqueId: String { interaction.uniqueId }
     }
 
-    public static func lastVisibleInteractionId(for thread: TSThread, tx: SDSAnyReadTransaction) -> String? {
+    public static func lastVisibleInteractionId(for thread: TSThread, tx: DBReadTransaction) -> String? {
         return lastVisibleInteraction(for: thread, tx: tx)?.uniqueId
     }
 
@@ -653,10 +653,10 @@ extension ConversationViewController {
         return SSKEnvironment.shared.databaseStorageRef.read { tx in Self.lastVisibleInteraction(for: thread, tx: tx) }
     }
 
-    private static func lastVisibleInteraction(for thread: TSThread, tx: SDSAnyReadTransaction) -> LastVisibleInteraction? {
+    private static func lastVisibleInteraction(for thread: TSThread, tx: DBReadTransaction) -> LastVisibleInteraction? {
         guard
             let lastVisibleInteraction = DependenciesBridge.shared.lastVisibleInteractionStore
-                .lastVisibleInteraction(for: thread, tx: tx.asV2Read),
+                .lastVisibleInteraction(for: thread, tx: tx),
             let interaction = thread.firstInteraction(atOrAroundSortId: lastVisibleInteraction.sortId, transaction: tx)
         else {
             return nil

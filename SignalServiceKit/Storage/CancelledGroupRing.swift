@@ -24,8 +24,8 @@ public struct CancelledGroupRing: Identifiable, Codable, FetchableRecord, Persis
         self.timestamp = timestamp
     }
 
-    public static func deleteExpired(expiration: Date, transaction: SDSAnyWriteTransaction) throws {
+    public static func deleteExpired(expiration: Date, transaction: DBWriteTransaction) throws {
         try filter(Column(CodingKeys.timestamp) <= expiration.ows_millisecondsSince1970)
-            .deleteAll(transaction.unwrapGrdbWrite.database)
+            .deleteAll(transaction.database)
     }
 }

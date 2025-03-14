@@ -15,7 +15,7 @@ public class OutgoingDeviceNameChangeSyncMessage: OWSOutgoingSyncMessage {
     init(
         deviceId: UInt32,
         localThread: TSContactThread,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) {
         self.deviceId = NSNumber(value: deviceId)
         super.init(localThread: localThread, transaction: tx)
@@ -31,7 +31,7 @@ public class OutgoingDeviceNameChangeSyncMessage: OWSOutgoingSyncMessage {
 
     override public var isUrgent: Bool { false }
 
-    override public func syncMessageBuilder(transaction: SDSAnyReadTransaction) -> SSKProtoSyncMessageBuilder? {
+    override public func syncMessageBuilder(transaction: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
         let deviceNameChangeBuilder = SSKProtoSyncMessageDeviceNameChange.builder()
         deviceNameChangeBuilder.setDeviceID(deviceId.uint32Value)
 

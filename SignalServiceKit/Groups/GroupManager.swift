@@ -239,7 +239,7 @@ public class GroupManager: NSObject {
                     secretParams: snapshotResponse.groupSnapshot.groupSecretParams,
                     membership: snapshotResponse.groupSnapshot.groupMembership,
                     localAci: localIdentifiers.aci,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
             return thread
@@ -258,9 +258,9 @@ public class GroupManager: NSObject {
     // * We have a profile key credential for them.
     private static func separateInvitedMembersForNewGroup(
         withMembership newGroupMembership: GroupMembership,
-        transaction tx: SDSAnyReadTransaction
+        transaction tx: DBReadTransaction
     ) -> GroupMembership {
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci else {
             owsFailDebug("Missing localAci.")
             return newGroupMembership
         }
@@ -307,9 +307,9 @@ public class GroupManager: NSObject {
                                            name: String? = nil,
                                            descriptionText: String? = nil,
                                            groupId: Data? = nil,
-                                           transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
+                                           transaction: DBWriteTransaction) throws -> TSGroupThread {
 
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
             throw OWSAssertionError("Missing localIdentifiers.")
         }
 
@@ -343,7 +343,7 @@ public class GroupManager: NSObject {
         groupUpdateSource: GroupUpdateSource,
         infoMessagePolicy: InfoMessagePolicy = .always,
         localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> TSGroupThread {
         return try self.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
             newGroupModel: groupModel,
@@ -365,13 +365,13 @@ public class GroupManager: NSObject {
     private static func updateDisappearingMessageConfiguration(
         newToken: DisappearingMessageToken,
         groupThread: TSGroupThread,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> DisappearingMessagesConfigurationStore.SetTokenResult {
         let setTokenResult = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-            .set(token: newToken, for: groupThread, tx: tx.asV2Write)
+            .set(token: newToken, for: groupThread, tx: tx)
 
         if setTokenResult.newConfiguration != setTokenResult.oldConfiguration {
-            SSKEnvironment.shared.databaseStorageRef.touch(thread: groupThread, shouldReindex: false, transaction: tx)
+            SSKEnvironment.shared.databaseStorageRef.touch(thread: groupThread, shouldReindex: false, tx: tx)
         }
 
         return setTokenResult
@@ -384,7 +384,7 @@ public class GroupManager: NSObject {
         disappearingMessageToken: VersionedDisappearingMessageToken,
         changeAuthor: Aci?,
         localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         _ = self.updateDisappearingMessagesInDatabaseAndCreateMessages(
             newToken: disappearingMessageToken,
@@ -398,9 +398,9 @@ public class GroupManager: NSObject {
     public static func localUpdateDisappearingMessageToken(
         _ disappearingMessageToken: VersionedDisappearingMessageToken,
         inContactThread contactThread: TSContactThread,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
-        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
             owsFailDebug("Not registered.")
             return
         }
@@ -423,13 +423,13 @@ public class GroupManager: NSObject {
         contactThread: TSContactThread,
         changeAuthor: Aci?,
         localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> DisappearingMessagesConfigurationStore.SetTokenResult {
         let result = DependenciesBridge.shared.disappearingMessagesConfigurationStore
             .set(
                 token: newToken,
                 for: .thread(contactThread),
-                tx: transaction.asV2Write
+                tx: transaction
             )
 
         // Skip redundant updates.
@@ -457,7 +457,7 @@ public class GroupManager: NSObject {
             )
             infoMessage.anyInsert(transaction: transaction)
 
-            SSKEnvironment.shared.databaseStorageRef.touch(thread: contactThread, shouldReindex: false, transaction: transaction)
+            SSKEnvironment.shared.databaseStorageRef.touch(thread: contactThread, shouldReindex: false, tx: transaction)
         }
 
         return result
@@ -466,7 +466,7 @@ public class GroupManager: NSObject {
     private static func sendDisappearingMessagesConfigurationMessage(
         updateResult: DisappearingMessagesConfigurationStore.SetTokenResult,
         contactThread: TSContactThread,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         guard updateResult.newConfiguration != updateResult.oldConfiguration else {
             // The update was redundant, don't send an update message.
@@ -514,7 +514,7 @@ public class GroupManager: NSObject {
         groupThread: TSGroupThread,
         replacementAdminAci: Aci? = nil,
         waitForMessageProcessing: Bool = false,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> Promise<Void> {
         return SSKEnvironment.shared.localUserLeaveGroupJobQueueRef.addJob(
             groupThread: groupThread,
@@ -524,7 +524,7 @@ public class GroupManager: NSObject {
         )
     }
 
-    public static func leaveGroupOrDeclineInviteAsyncWithoutUI(groupThread: TSGroupThread, tx: SDSAnyWriteTransaction) {
+    public static func leaveGroupOrDeclineInviteAsyncWithoutUI(groupThread: TSGroupThread, tx: DBWriteTransaction) {
         guard groupThread.isLocalUserMemberOfAnyKind else {
             owsFailDebug("unexpectedly trying to leave group for which we're not a member.")
             return
@@ -751,7 +751,7 @@ public class GroupManager: NSObject {
 
         await databaseStorage.awaitableWrite { tx in
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
                 owsFailDebug("Missing localIdentifiers.")
                 return
             }
@@ -810,7 +810,7 @@ public class GroupManager: NSObject {
             let message = OutgoingGroupUpdateMessage(
                 in: thread,
                 groupMetaMessage: .update,
-                expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read),
+                expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: transaction),
                 groupChangeProtoData: groupChangeProtoData,
                 additionalRecipients: Self.invitedMembers(in: thread),
                 transaction: transaction
@@ -835,7 +835,7 @@ public class GroupManager: NSObject {
             let message = OutgoingGroupUpdateMessage(
                 in: thread,
                 groupMetaMessage: .new,
-                expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read),
+                expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: tx),
                 additionalRecipients: Self.invitedMembers(in: thread),
                 transaction: tx
             )
@@ -886,7 +886,7 @@ public class GroupManager: NSObject {
         infoMessagePolicy: InfoMessagePolicy = .always,
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> TSGroupThread {
 
         if let groupThread = TSGroupThread.fetch(groupId: groupModel.groupId, transaction: transaction) {
@@ -894,7 +894,7 @@ public class GroupManager: NSObject {
         }
 
         let groupThread = DependenciesBridge.shared.threadStore.createGroupThread(
-            groupModel: groupModel, tx: transaction.asV2Write
+            groupModel: groupModel, tx: transaction
         )
 
         let newDisappearingMessageToken = disappearingMessageToken ?? DisappearingMessageToken.disabledToken
@@ -950,7 +950,7 @@ public class GroupManager: NSObject {
         infoMessagePolicy: InfoMessagePolicy = .always,
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> TSGroupThread {
         if let groupThread = TSGroupThread.fetch(groupId: newGroupModel.groupId, transaction: transaction) {
             try updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
@@ -1009,7 +1009,7 @@ public class GroupManager: NSObject {
         infoMessagePolicy: InfoMessagePolicy = .always,
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws {
         guard
             let newGroupModel = newGroupModel as? TSGroupModelV2,
@@ -1030,7 +1030,7 @@ public class GroupManager: NSObject {
             )
         } else {
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-            let dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read)
+            let dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction)
 
             updateDMResult = (
                 oldConfiguration: dmConfiguration,
@@ -1055,7 +1055,7 @@ public class GroupManager: NSObject {
             }
 
             if
-                DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? true,
+                DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction).isPrimaryDevice ?? true,
                 oldGroupModel.membership.hasProfileKeyInGroup(serviceId: localIdentifiers.aci),
                 !newGroupModel.membership.hasProfileKeyInGroup(serviceId: localIdentifiers.aci)
             {
@@ -1069,7 +1069,7 @@ public class GroupManager: NSObject {
                     if
                         (
                             SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(memberAddress, transaction: transaction)
-                            || DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(memberAddress, tx: transaction.asV2Read)
+                            || DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(memberAddress, tx: transaction)
                         ),
                         newGroupModel.membership.canViewProfileKeys(serviceId: member)
                     {
@@ -1163,12 +1163,12 @@ public class GroupManager: NSObject {
     private static func mutualGroupThreads(
         with member: ServiceId,
         localAci: Aci,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> [TSGroupThread] {
         return DependenciesBridge.shared.groupMemberStore
             .groupThreadIds(
                 withFullMember: member,
-                tx: tx.asV2Read
+                tx: tx
             )
             .lazy
             .compactMap { groupThreadId in
@@ -1182,7 +1182,7 @@ public class GroupManager: NSObject {
     public static func hasMutualGroupThread(
         with member: ServiceId,
         localAci: Aci,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> Bool {
         let mutualGroupThreads = Self.mutualGroupThreads(
             with: member,
@@ -1195,7 +1195,7 @@ public class GroupManager: NSObject {
     // MARK: - Storage Service
 
     private static func notifyStorageServiceOfInsertedGroup(groupModel: TSGroupModel,
-                                                            transaction: SDSAnyReadTransaction) {
+                                                            transaction: DBReadTransaction) {
         guard let groupModel = groupModel as? TSGroupModelV2 else {
             // We only need to notify the storage service about v2 groups.
             return
@@ -1218,7 +1218,7 @@ public class GroupManager: NSObject {
         newGroupModel: TSGroupModel,
         groupUpdateSource: GroupUpdateSource,
         localIdentifiers: LocalIdentifiers,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let justAdded = wasLocalUserJustAddedToTheGroup(
             oldGroupModel: oldGroupModel,
@@ -1291,7 +1291,7 @@ public class GroupManager: NSObject {
         allProfileKeysByAci: [Aci: Data],
         authoritativeProfileKeysByAci: [Aci: Data] = [:],
         localIdentifiers: LocalIdentifiers,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         // We trust what is locally-stored as the local user's profile key to be
         // more authoritative than what is stored in the group state on the server.
@@ -1302,7 +1302,7 @@ public class GroupManager: NSObject {
             authoritativeProfileKeys: authoritativeProfileKeysByAci,
             userProfileWriter: .groupState,
             localIdentifiers: localIdentifiers,
-            tx: tx.asV2Write
+            tx: tx
         )
     }
 
@@ -1318,10 +1318,10 @@ public class GroupManager: NSObject {
 
         func hasProfileKeyCredential() throws -> Bool {
             return try SSKEnvironment.shared.databaseStorageRef.read { tx in
-                guard accountManager.registrationState(tx: tx.asV2Read).isRegistered else {
+                guard accountManager.registrationState(tx: tx).isRegistered else {
                     return false
                 }
-                guard let localAddress = accountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
+                guard let localAddress = accountManager.localIdentifiers(tx: tx)?.aciAddress else {
                     throw OWSAssertionError("Missing localAddress.")
                 }
                 return SSKEnvironment.shared.groupsV2Ref.hasProfileKeyCredential(for: localAddress, transaction: tx)
@@ -1344,7 +1344,7 @@ public class GroupManager: NSObject {
         guard
             CurrentAppContext().isMainApp,
             SSKEnvironment.shared.databaseStorageRef.read(block: { tx in
-                accountManager.registrationState(tx: tx.asV2Read).isRegisteredPrimaryDevice
+                accountManager.registrationState(tx: tx).isRegisteredPrimaryDevice
             })
         else {
             Logger.warn("Skipping upload of local profile key commitment, not in main app!")
@@ -1358,7 +1358,7 @@ public class GroupManager: NSObject {
                 unsavedRotatedProfileKey: nil,
                 mustReuploadAvatar: false,
                 authedAccount: .implicit(),
-                tx: tx.asV2Write
+                tx: tx
             )
         }
         try await uploadAndFetchPromise.awaitable()

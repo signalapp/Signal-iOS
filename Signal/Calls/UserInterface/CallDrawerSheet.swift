@@ -397,7 +397,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
     func updateMembers() {
         Logger.info("")
         let unsortedMembers: [JoinedMember] = SSKEnvironment.shared.databaseStorageRef.read {
-            callSheetDataSource.unsortedMembers(tx: $0.asV2Read)
+            callSheetDataSource.unsortedMembers(tx: $0)
         }
 
         typealias OrganizedMembers = (joinedMembers: [JoinedMember], unknownMembers: UnknownMembers)

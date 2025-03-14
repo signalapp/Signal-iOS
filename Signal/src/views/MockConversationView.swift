@@ -124,7 +124,7 @@ class MockConversationView: UIView {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let chatColor = self.customChatColor ?? DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
                 for: thread,
-                tx: transaction.asV2Read
+                tx: transaction
             )
             let conversationStyle = ConversationStyle(
                 type: .`default`,
@@ -191,7 +191,7 @@ private class MockThread: TSContactThread {
 
     override var uniqueId: String { "MockThread" }
 
-    override func anyWillInsert(with transaction: SDSAnyWriteTransaction) {
+    override func anyWillInsert(with transaction: DBWriteTransaction) {
         // no - op
         owsFailDebug("shouldn't save mock thread")
     }
@@ -221,7 +221,7 @@ private class MockIncomingMessage: TSIncomingMessage {
         return false
     }
 
-    override func anyWillInsert(with transaction: SDSAnyWriteTransaction) {
+    override func anyWillInsert(with transaction: DBWriteTransaction) {
         owsFailDebug("shouldn't save mock message")
     }
 }
@@ -229,7 +229,7 @@ private class MockIncomingMessage: TSIncomingMessage {
 // MARK: -
 
 private class MockOutgoingMessage: TSOutgoingMessage {
-    init(messageBody: String, thread: TSThread, transaction: SDSAnyReadTransaction) {
+    init(messageBody: String, thread: TSThread, transaction: DBReadTransaction) {
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread, messageBody: messageBody)
         super.init(
             outgoingMessageWith: builder,
@@ -252,7 +252,7 @@ private class MockOutgoingMessage: TSOutgoingMessage {
         return false
     }
 
-    override func anyWillInsert(with transaction: SDSAnyWriteTransaction) {
+    override func anyWillInsert(with transaction: DBWriteTransaction) {
         owsFailDebug("shouldn't save mock message")
     }
 

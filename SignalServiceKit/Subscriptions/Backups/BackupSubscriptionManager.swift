@@ -226,11 +226,11 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
     // MARK: -
 
-    func getIAPSubscriberData(tx: any DBReadTransaction) -> IAPSubscriberData? {
+    func getIAPSubscriberData(tx: DBReadTransaction) -> IAPSubscriberData? {
         store.getIAPSubscriberData(tx: tx)
     }
 
-    func restoreIAPSubscriberData(_ iapSubscriberData: IAPSubscriberData, tx: any DBWriteTransaction) {
+    func restoreIAPSubscriberData(_ iapSubscriberData: IAPSubscriberData, tx: DBWriteTransaction) {
         store.setIAPSubscriberData(iapSubscriberData, tx: tx)
     }
 
@@ -488,15 +488,15 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
         // MARK: - SubscriptionRedemptionNecessityCheckerStore
 
-        func subscriberId(tx: any DBReadTransaction) -> Data? {
+        func subscriberId(tx: DBReadTransaction) -> Data? {
             return getIAPSubscriberData(tx: tx)?.subscriberId
         }
 
-        func getLastRedemptionNecessaryCheck(tx: any DBReadTransaction) -> Date? {
+        func getLastRedemptionNecessaryCheck(tx: DBReadTransaction) -> Date? {
             return kvStore.getDate(Keys.lastRedemptionNecessaryCheck, transaction: tx)
         }
 
-        func setLastRedemptionNecessaryCheck(_ now: Date, tx: any DBWriteTransaction) {
+        func setLastRedemptionNecessaryCheck(_ now: Date, tx: DBWriteTransaction) {
             kvStore.setDate(now, key: Keys.lastRedemptionNecessaryCheck, transaction: tx)
         }
     }

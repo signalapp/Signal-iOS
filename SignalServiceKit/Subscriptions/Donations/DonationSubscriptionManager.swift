@@ -72,7 +72,7 @@ public enum DonationSubscriptionManager {
 
     public static func performMigrationToStorageServiceIfNecessary() async {
         let hasMigratedToStorageService = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            subscriptionKVS.getBool(hasMigratedToStorageServiceKey, defaultValue: false, transaction: transaction.asV2Read)
+            subscriptionKVS.getBool(hasMigratedToStorageServiceKey, defaultValue: false, transaction: transaction)
         }
 
         guard !hasMigratedToStorageService else { return }
@@ -80,7 +80,7 @@ public enum DonationSubscriptionManager {
         Logger.info("[Donations] Migrating to storage service")
 
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            subscriptionKVS.setBool(true, key: hasMigratedToStorageServiceKey, transaction: transaction.asV2Write)
+            subscriptionKVS.setBool(true, key: hasMigratedToStorageServiceKey, transaction: transaction)
 
             let localProfile = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: transaction)
             let displayBadgesOnProfile = localProfile?.badges.count == localProfile?.visibleBadges.count
@@ -118,7 +118,7 @@ public enum DonationSubscriptionManager {
 
     // MARK: Current subscription status
 
-    public static func currentProfileSubscriptionBadges(tx: SDSAnyReadTransaction) -> [OWSUserProfileBadgeInfo] {
+    public static func currentProfileSubscriptionBadges(tx: DBReadTransaction) -> [OWSUserProfileBadgeInfo] {
         let localProfile = SSKEnvironment.shared.profileManagerRef.localUserProfile(tx: tx)
         return (localProfile?.badges ?? []).filter { SubscriptionBadgeIds.contains($0.badgeId) }
     }
@@ -126,7 +126,7 @@ public enum DonationSubscriptionManager {
     /// A low-overhead, synchronous check for whether we *probably* have a
     /// current donation subscription. Callers who need to know precise details
     /// about our subscription should use `getCurrentSubscriptionStatus`.
-    public static func probablyHasCurrentSubscription(tx: SDSAnyReadTransaction) -> Bool {
+    public static func probablyHasCurrentSubscription(tx: DBReadTransaction) -> Bool {
         return !currentProfileSubscriptionBadges(tx: tx).isEmpty
     }
 
@@ -300,9 +300,9 @@ public enum DonationSubscriptionManager {
                 self.setUserManuallyCancelledSubscription(true, transaction: transaction)
 
                 DependenciesBridge.shared.donationReceiptCredentialResultStore
-                    .clearRedemptionSuccessForAnyRecurringSubscription(tx: transaction.asV2Write)
+                    .clearRedemptionSuccessForAnyRecurringSubscription(tx: transaction)
                 DependenciesBridge.shared.donationReceiptCredentialResultStore
-                    .clearRequestErrorForAnyRecurringSubscription(tx: transaction.asV2Write)
+                    .clearRequestErrorForAnyRecurringSubscription(tx: transaction)
             }
 
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
@@ -722,15 +722,15 @@ public enum DonationSubscriptionManager {
         struct CheckerStore: SubscriptionRedemptionNecessityCheckerStore {
             let donationSubscriptionManager: DonationSubscriptionManager.Type
 
-            func subscriberId(tx: any DBReadTransaction) -> Data? {
+            func subscriberId(tx: DBReadTransaction) -> Data? {
                 return donationSubscriptionManager.getSubscriberID(transaction: SDSDB.shimOnlyBridge(tx))
             }
 
-            func getLastRedemptionNecessaryCheck(tx: any DBReadTransaction) -> Date? {
+            func getLastRedemptionNecessaryCheck(tx: DBReadTransaction) -> Date? {
                 return donationSubscriptionManager.subscriptionKVS.getDate(donationSubscriptionManager.lastSubscriptionHeartbeatKey, transaction: tx)
             }
 
-            func setLastRedemptionNecessaryCheck(_ now: Date, tx: any DBWriteTransaction) {
+            func setLastRedemptionNecessaryCheck(_ now: Date, tx: DBWriteTransaction) {
                 donationSubscriptionManager.subscriptionKVS.setDate(now, key: donationSubscriptionManager.lastSubscriptionHeartbeatKey, transaction: tx)
             }
         }
@@ -795,27 +795,27 @@ public enum DonationSubscriptionManager {
 
 extension DonationSubscriptionManager {
 
-    public static func getSubscriberID(transaction: SDSAnyReadTransaction) -> Data? {
+    public static func getSubscriberID(transaction: DBReadTransaction) -> Data? {
         guard let subscriberID = subscriptionKVS.getObject(
             subscriberIDKey,
             ofClass: NSData.self,
-            transaction: transaction.asV2Read
+            transaction: transaction
         ) as Data? else {
             return nil
         }
         return subscriberID
     }
 
-    public static func setSubscriberID(_ subscriberID: Data?, transaction: SDSAnyWriteTransaction) {
+    public static func setSubscriberID(_ subscriberID: Data?, transaction: DBWriteTransaction) {
         subscriptionKVS.setObject(subscriberID,
                                   key: subscriberIDKey,
-                                  transaction: transaction.asV2Write)
+                                  transaction: transaction)
     }
 
-    public static func getSubscriberCurrencyCode(transaction: SDSAnyReadTransaction) -> String? {
+    public static func getSubscriberCurrencyCode(transaction: DBReadTransaction) -> String? {
         guard let subscriberCurrencyCode = subscriptionKVS.getString(
             subscriberCurrencyCodeKey,
-            transaction: transaction.asV2Read
+            transaction: transaction
         ) else {
             return nil
         }
@@ -824,20 +824,20 @@ extension DonationSubscriptionManager {
 
     public static func setSubscriberCurrencyCode(
         _ currencyCode: Currency.Code?,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         subscriptionKVS.setObject(currencyCode,
                                   key: subscriberCurrencyCodeKey,
-                                  transaction: transaction.asV2Write)
+                                  transaction: transaction)
     }
 
-    public static func userManuallyCancelledSubscription(transaction: SDSAnyReadTransaction) -> Bool {
-        return subscriptionKVS.getBool(userManuallyCancelledSubscriptionKey, transaction: transaction.asV2Read) ?? false
+    public static func userManuallyCancelledSubscription(transaction: DBReadTransaction) -> Bool {
+        return subscriptionKVS.getBool(userManuallyCancelledSubscriptionKey, transaction: transaction) ?? false
     }
 
-    public static func setUserManuallyCancelledSubscription(_ value: Bool, updateStorageService: Bool = false, transaction: SDSAnyWriteTransaction) {
+    public static func setUserManuallyCancelledSubscription(_ value: Bool, updateStorageService: Bool = false, transaction: DBWriteTransaction) {
         guard value != userManuallyCancelledSubscription(transaction: transaction) else { return }
-        subscriptionKVS.setBool(value, key: userManuallyCancelledSubscriptionKey, transaction: transaction.asV2Write)
+        subscriptionKVS.setBool(value, key: userManuallyCancelledSubscriptionKey, transaction: transaction)
         if updateStorageService {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
@@ -851,14 +851,14 @@ extension DonationSubscriptionManager {
         displayBadgesOnProfileCache.get()
     }
 
-    public static func displayBadgesOnProfile(transaction: SDSAnyReadTransaction) -> Bool {
-        return subscriptionKVS.getBool(displayBadgesOnProfileKey, transaction: transaction.asV2Read) ?? false
+    public static func displayBadgesOnProfile(transaction: DBReadTransaction) -> Bool {
+        return subscriptionKVS.getBool(displayBadgesOnProfileKey, transaction: transaction) ?? false
     }
 
-    public static func setDisplayBadgesOnProfile(_ value: Bool, updateStorageService: Bool = false, transaction: SDSAnyWriteTransaction) {
+    public static func setDisplayBadgesOnProfile(_ value: Bool, updateStorageService: Bool = false, transaction: DBWriteTransaction) {
         guard value != displayBadgesOnProfile(transaction: transaction) else { return }
         displayBadgesOnProfileCache.set(value)
-        subscriptionKVS.setBool(value, key: displayBadgesOnProfileKey, transaction: transaction.asV2Write)
+        subscriptionKVS.setBool(value, key: displayBadgesOnProfileKey, transaction: transaction)
         if updateStorageService {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
@@ -866,42 +866,42 @@ extension DonationSubscriptionManager {
 
     // MARK: -
 
-    fileprivate static func setKnownUserSubscriptionBadgeIDs(badgeIDs: [String], transaction: SDSAnyWriteTransaction) {
-        subscriptionKVS.setObject(badgeIDs, key: knownUserSubscriptionBadgeIDsKey, transaction: transaction.asV2Write)
+    fileprivate static func setKnownUserSubscriptionBadgeIDs(badgeIDs: [String], transaction: DBWriteTransaction) {
+        subscriptionKVS.setObject(badgeIDs, key: knownUserSubscriptionBadgeIDsKey, transaction: transaction)
     }
 
-    fileprivate static func knownUserSubscriptionBadgeIDs(transaction: SDSAnyReadTransaction) -> [String] {
-        return subscriptionKVS.getStringArray(knownUserSubscriptionBadgeIDsKey, transaction: transaction.asV2Read) ?? []
+    fileprivate static func knownUserSubscriptionBadgeIDs(transaction: DBReadTransaction) -> [String] {
+        return subscriptionKVS.getStringArray(knownUserSubscriptionBadgeIDsKey, transaction: transaction) ?? []
     }
 
-    fileprivate static func setKnownUserBoostBadgeIDs(badgeIDs: [String], transaction: SDSAnyWriteTransaction) {
-        subscriptionKVS.setObject(badgeIDs, key: knownUserBoostBadgeIDsKey, transaction: transaction.asV2Write)
+    fileprivate static func setKnownUserBoostBadgeIDs(badgeIDs: [String], transaction: DBWriteTransaction) {
+        subscriptionKVS.setObject(badgeIDs, key: knownUserBoostBadgeIDsKey, transaction: transaction)
     }
 
-    fileprivate static func knownUserBoostBadgeIDs(transaction: SDSAnyReadTransaction) -> [String] {
-        return subscriptionKVS.getStringArray(knownUserBoostBadgeIDsKey, transaction: transaction.asV2Read) ?? []
+    fileprivate static func knownUserBoostBadgeIDs(transaction: DBReadTransaction) -> [String] {
+        return subscriptionKVS.getStringArray(knownUserBoostBadgeIDsKey, transaction: transaction) ?? []
     }
 
-    fileprivate static func setKnownUserGiftBadgeIDs(badgeIDs: [String], transaction: SDSAnyWriteTransaction) {
-        subscriptionKVS.setObject(badgeIDs, key: knownUserGiftBadgeIDsKey, transaction: transaction.asV2Write)
+    fileprivate static func setKnownUserGiftBadgeIDs(badgeIDs: [String], transaction: DBWriteTransaction) {
+        subscriptionKVS.setObject(badgeIDs, key: knownUserGiftBadgeIDsKey, transaction: transaction)
     }
 
-    fileprivate static func knownUserGiftBadgeIDs(transaction: SDSAnyReadTransaction) -> [String] {
-        return subscriptionKVS.getStringArray(knownUserGiftBadgeIDsKey, transaction: transaction.asV2Read) ?? []
+    fileprivate static func knownUserGiftBadgeIDs(transaction: DBReadTransaction) -> [String] {
+        return subscriptionKVS.getStringArray(knownUserGiftBadgeIDsKey, transaction: transaction) ?? []
     }
 
-    fileprivate static func setMostRecentlyExpiredBadgeID(badgeID: String?, transaction: SDSAnyWriteTransaction) {
+    fileprivate static func setMostRecentlyExpiredBadgeID(badgeID: String?, transaction: DBWriteTransaction) {
         guard let badgeID = badgeID else {
-            subscriptionKVS.removeValue(forKey: mostRecentlyExpiredBadgeIDKey, transaction: transaction.asV2Write)
+            subscriptionKVS.removeValue(forKey: mostRecentlyExpiredBadgeIDKey, transaction: transaction)
             return
         }
 
-        subscriptionKVS.setString(badgeID, key: mostRecentlyExpiredBadgeIDKey, transaction: transaction.asV2Write)
+        subscriptionKVS.setString(badgeID, key: mostRecentlyExpiredBadgeIDKey, transaction: transaction)
 
     }
 
-    public static func mostRecentlyExpiredBadgeID(transaction: SDSAnyReadTransaction) -> String? {
-        subscriptionKVS.getString(mostRecentlyExpiredBadgeIDKey, transaction: transaction.asV2Read)
+    public static func mostRecentlyExpiredBadgeID(transaction: DBReadTransaction) -> String? {
+        subscriptionKVS.getString(mostRecentlyExpiredBadgeIDKey, transaction: transaction)
     }
 
     public static func clearMostRecentlyExpiredBadgeIDWithSneakyTransaction() {
@@ -910,19 +910,19 @@ extension DonationSubscriptionManager {
         }
     }
 
-    fileprivate static func setMostRecentlyExpiredGiftBadgeID(badgeID: String?, transaction: SDSAnyWriteTransaction) {
+    fileprivate static func setMostRecentlyExpiredGiftBadgeID(badgeID: String?, transaction: DBWriteTransaction) {
         if let badgeID = badgeID {
-            subscriptionKVS.setString(badgeID, key: mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction.asV2Write)
+            subscriptionKVS.setString(badgeID, key: mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction)
         } else {
-            subscriptionKVS.removeValue(forKey: mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction.asV2Write)
+            subscriptionKVS.removeValue(forKey: mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction)
         }
         transaction.addAsyncCompletion(on: DispatchQueue.main) {
             NotificationCenter.default.post(name: .hasExpiredGiftBadgeDidChangeNotification, object: nil)
         }
     }
 
-    public static func mostRecentlyExpiredGiftBadgeID(transaction: SDSAnyReadTransaction) -> String? {
-        subscriptionKVS.getString(mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction.asV2Read)
+    public static func mostRecentlyExpiredGiftBadgeID(transaction: DBReadTransaction) -> String? {
+        subscriptionKVS.getString(mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction)
     }
 
     public static func clearMostRecentlyExpiredGiftBadgeIDWithSneakyTransaction() {
@@ -931,24 +931,24 @@ extension DonationSubscriptionManager {
         }
     }
 
-    public static func setShowExpirySheetOnHomeScreenKey(show: Bool, transaction: SDSAnyWriteTransaction) {
+    public static func setShowExpirySheetOnHomeScreenKey(show: Bool, transaction: DBWriteTransaction) {
         Logger.info("\(show)")
-        subscriptionKVS.setBool(show, key: showExpirySheetOnHomeScreenKey, transaction: transaction.asV2Write)
+        subscriptionKVS.setBool(show, key: showExpirySheetOnHomeScreenKey, transaction: transaction)
     }
 
-    public static func showExpirySheetOnHomeScreenKey(transaction: SDSAnyReadTransaction) -> Bool {
-        return subscriptionKVS.getBool(showExpirySheetOnHomeScreenKey, transaction: transaction.asV2Read) ?? false
+    public static func showExpirySheetOnHomeScreenKey(transaction: DBReadTransaction) -> Bool {
+        return subscriptionKVS.getBool(showExpirySheetOnHomeScreenKey, transaction: transaction) ?? false
     }
 
     public static func setMostRecentSubscriptionPaymentMethod(
         paymentMethod: DonationPaymentMethod?,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
-        subscriptionKVS.setString(paymentMethod?.rawValue, key: mostRecentSubscriptionPaymentMethodKey, transaction: transaction.asV2Write)
+        subscriptionKVS.setString(paymentMethod?.rawValue, key: mostRecentSubscriptionPaymentMethodKey, transaction: transaction)
     }
 
-    public static func getMostRecentSubscriptionPaymentMethod(transaction: SDSAnyReadTransaction) -> DonationPaymentMethod? {
-        guard let paymentMethodString = subscriptionKVS.getString(mostRecentSubscriptionPaymentMethodKey, transaction: transaction.asV2Read) else {
+    public static func getMostRecentSubscriptionPaymentMethod(transaction: DBReadTransaction) -> DonationPaymentMethod? {
+        guard let paymentMethodString = subscriptionKVS.getString(mostRecentSubscriptionPaymentMethodKey, transaction: transaction) else {
             return nil
         }
 
@@ -1027,7 +1027,7 @@ extension DonationSubscriptionManager {
 // MARK: -
 
 extension DonationSubscriptionManager {
-    public static func reconcileBadgeStates(transaction: SDSAnyWriteTransaction) {
+    public static func reconcileBadgeStates(transaction: DBWriteTransaction) {
         let currentBadges = SSKEnvironment.shared.profileManagerImplRef.localUserProfile(tx: transaction)?.badges ?? []
 
         let currentSubscriberBadgeIDs = currentBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> String? in

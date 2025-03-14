@@ -92,7 +92,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
 
     public func anyUpdateWith(
         lastInteractionTimestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         anyUpdate(transaction: transaction) { groupMember in
             groupMember.lastInteractionTimestamp = lastInteractionTimestamp
@@ -104,13 +104,13 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
         tx: DBWriteTransaction
     ) throws {
         self.lastInteractionTimestamp = lastInteractionTimestamp
-        try self.update(tx.databaseConnection)
+        try self.update(tx.database)
     }
 
     public class func groupMember(
         for address: SignalServiceAddress,
         in groupThreadId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSGroupMember? {
         let sql = """
             SELECT * FROM \(databaseTableName)
@@ -123,7 +123,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
 
         do {
             return try fetchOne(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: [address.serviceIdUppercaseString, address.phoneNumber, groupThreadId]
             )
@@ -145,12 +145,12 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
         return try TSGroupMember
             .filter(Column(CodingKeys.serviceId) == aci.serviceIdUppercaseString)
             .filter(Column(CodingKeys.groupThreadId) == groupThread.uniqueId)
-            .fetchOne(tx.databaseConnection)
+            .fetchOne(tx.database)
     }
 
     public class func enumerateGroupMembers(
         for address: SignalServiceAddress,
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: @escaping (TSGroupMember, UnsafeMutablePointer<ObjCBool>
     ) -> Void) {
         let sql = """
@@ -162,7 +162,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
 
         do {
             let cursor = try fetchCursor(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: [address.serviceIdUppercaseString, address.phoneNumber]
             )
@@ -187,7 +187,7 @@ public extension TSGroupThread {
     @objc(groupThreadsWithAddress:transaction:)
     class func groupThreads(
         with address: SignalServiceAddress,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [TSGroupThread] {
         let sql = """
             SELECT \(TSGroupMember.columnName(.groupThreadId)) FROM \(TSGroupMember.databaseTableName)
@@ -201,7 +201,7 @@ public extension TSGroupThread {
 
         do {
             let cursor = try String.fetchCursor(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: [address.serviceIdUppercaseString, address.phoneNumber]
             )
@@ -230,7 +230,7 @@ public extension TSGroupThread {
 
     class func enumerateGroupThreads(
         with address: SignalServiceAddress,
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (TSGroupThread, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         let sql = """
@@ -242,7 +242,7 @@ public extension TSGroupThread {
         """
 
         let cursor = try! String.fetchCursor(
-            transaction.unwrapGrdbRead.database,
+            transaction.database,
             sql: sql,
             arguments: [address.serviceIdUppercaseString, address.phoneNumber]
         )
@@ -261,7 +261,7 @@ public extension TSGroupThread {
 
     class func groupThreadIds(
         with address: SignalServiceAddress,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [String] {
         let sql = """
             SELECT \(TSGroupMember.columnName(.groupThreadId))
@@ -272,7 +272,7 @@ public extension TSGroupThread {
             ORDER BY \(TSGroupMember.columnName(.lastInteractionTimestamp)) DESC
         """
 
-        return transaction.unwrapGrdbRead.database.strictRead { database in
+        return transaction.database.strictRead { database in
             try String.fetchAll(
                 database,
                 sql: sql,

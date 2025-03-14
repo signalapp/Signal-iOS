@@ -127,11 +127,11 @@ public struct PaymentsHistoryModelItem: PaymentsHistoryItem {
         paymentModel.statusDescription(isLongForm: isLongForm)
     }
 
-    public func markAsRead(tx: SDSAnyWriteTransaction) {
+    public func markAsRead(tx: DBWriteTransaction) {
         PaymentsViewUtils.markPaymentAsRead(paymentModel, transaction: tx)
     }
 
-    public func reload(tx: SDSAnyReadTransaction) -> Self? {
+    public func reload(tx: DBReadTransaction) -> Self? {
         guard let newPaymentModel = TSPaymentModel.anyFetch(
             uniqueId: paymentModel.uniqueId,
             transaction: tx

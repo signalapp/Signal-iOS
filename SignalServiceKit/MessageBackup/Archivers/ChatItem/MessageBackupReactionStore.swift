@@ -22,7 +22,7 @@ public class MessageBackupReactionStore {
             WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
             ORDER BY \(OWSReaction.columnName(.id)) DESC
         """
-        let statement = try context.tx.databaseConnection.cachedStatement(sql: sql)
+        let statement = try context.tx.database.cachedStatement(sql: sql)
         return try OWSReaction.fetchAll(statement, arguments: [message.uniqueId])
     }
 
@@ -43,7 +43,7 @@ public class MessageBackupReactionStore {
             sentAtTimestamp: sentAtTimestamp,
             sortOrder: sortOrder
         )
-        try reaction.insert(context.tx.databaseConnection)
+        try reaction.insert(context.tx.database)
     }
 
     /// In the olden days before the introduction of Acis, reactions were sent by e164s.
@@ -62,6 +62,6 @@ public class MessageBackupReactionStore {
             sentAtTimestamp: sentAtTimestamp,
             sortOrder: sortOrder
         )
-        try reaction.insert(context.tx.databaseConnection)
+        try reaction.insert(context.tx.database)
     }
 }

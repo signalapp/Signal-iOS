@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
                           additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
                             explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
                              skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
-                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+                                   transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread
                        message:(TSMessage *)message
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
                     isRemoving:(BOOL)isRemoving
               expiresInSeconds:(uint32_t)expiresInSeconds
             expireTimerVersion:(nullable NSNumber *)expireTimerVersion
-                   transaction:(SDSAnyReadTransaction *)transaction;
+                   transaction:(DBReadTransaction *)transaction;
 
 @property (nonatomic, readonly) NSString *messageUniqueId;
 @property (nonatomic, readonly) NSString *emoji;

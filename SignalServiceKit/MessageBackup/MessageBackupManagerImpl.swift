@@ -1157,7 +1157,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         forTable tableName: String,
         tx: DBWriteTransaction
     ) throws -> [SQLiteIndexInfo] {
-        let allIndexesOnTable: [GRDB.IndexInfo] = try tx.databaseConnection.indexes(on: tableName)
+        let allIndexesOnTable: [GRDB.IndexInfo] = try tx.database.indexes(on: tableName)
 
         var sqliteIndexInfos = [SQLiteIndexInfo]()
 
@@ -1169,7 +1169,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             }
 
             guard let sqlThatCreatedIndex = try String.fetchOne(
-                tx.databaseConnection,
+                tx.database,
                 sql: """
                     SELECT sql FROM sqlite_master
                     WHERE type = 'index'
@@ -1184,7 +1184,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 sqlThatCreatedIndex: sqlThatCreatedIndex
             ))
 
-            try tx.databaseConnection.drop(index: index.name)
+            try tx.database.drop(index: index.name)
         }
 
         return sqliteIndexInfos
@@ -1198,7 +1198,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         owsPrecondition(indexInfos.allSatisfy { $0.tableName == tableName })
 
         for indexInfo in indexInfos {
-            try tx.databaseConnection.execute(sql: indexInfo.sqlThatCreatedIndex)
+            try tx.database.execute(sql: indexInfo.sqlThatCreatedIndex)
         }
     }
 

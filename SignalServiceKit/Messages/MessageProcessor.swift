@@ -275,10 +275,10 @@ public class MessageProcessor {
             // This is only called via `drainPendingEnvelopes`, and that confirms that
             // we're registered. If we're registered, we must have `LocalIdentifiers`,
             // so this (generally) shouldn't fail.
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
                 return
             }
-            let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx.asV2Read)
+            let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx)
 
             var remainingEnvelopes = batchEnvelopes
             while !remainingEnvelopes.isEmpty {
@@ -316,7 +316,7 @@ public class MessageProcessor {
         envelopes: inout [ReceivedEnvelope],
         localIdentifiers: LocalIdentifiers,
         localDeviceId: UInt32,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> RelatedProcessingRequests {
         let result = RelatedProcessingRequests()
         while let envelope = envelopes.first {
@@ -337,7 +337,7 @@ public class MessageProcessor {
         return result
     }
 
-    private func handle(combinedRequest: RelatedProcessingRequests, localIdentifiers: LocalIdentifiers, transaction: SDSAnyWriteTransaction) {
+    private func handle(combinedRequest: RelatedProcessingRequests, localIdentifiers: LocalIdentifiers, transaction: DBWriteTransaction) {
         // Efficiently handle delivery receipts for the same message by fetching the sent message only
         // once and only using one updateWith... to update the message with new recipient state.
         BatchingDeliveryReceiptContext.withDeferredUpdates(transaction: transaction) { context in
@@ -351,7 +351,7 @@ public class MessageProcessor {
         _ request: ProcessingRequest,
         context: DeliveryReceiptContext,
         localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> Error? {
         switch request.state {
         case .completed(error: let error):
@@ -384,7 +384,7 @@ public class MessageProcessor {
         _ request: ProcessingRequest,
         context: DeliveryReceiptContext,
         localIdentifiers: LocalIdentifiers,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let error = reallyHandleProcessingRequest(request, context: context, localIdentifiers: localIdentifiers, transaction: tx)
         tx.addSyncCompletion { request.receivedEnvelope.completion(error) }
@@ -496,7 +496,7 @@ private struct ProcessingRequestBuilder {
         self.messageReceiver = messageReceiver
     }
 
-    func build(tx: SDSAnyWriteTransaction) -> ProcessingRequest.State {
+    func build(tx: DBWriteTransaction) -> ProcessingRequest.State {
         do {
             let decryptionResult = try receivedEnvelope.decryptIfNeeded(
                 messageDecrypter: messageDecrypter,
@@ -523,7 +523,7 @@ private struct ProcessingRequestBuilder {
 
     private func processingStep(
         for decryptedEnvelope: DecryptedIncomingEnvelope,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> ProcessingStep {
         guard
             let contentProto = decryptedEnvelope.content,
@@ -561,7 +561,7 @@ private struct ProcessingRequestBuilder {
 
     private func processingRequest(
         for decryptedEnvelope: DecryptedIncomingEnvelope,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> ProcessingRequest.State {
         owsPrecondition(CurrentAppContext().shouldProcessIncomingMessages)
 
@@ -578,7 +578,7 @@ private struct ProcessingRequestBuilder {
 
         if decryptedEnvelope.localIdentity == .pni {
             let identityManager = DependenciesBridge.shared.identityManager
-            identityManager.setShouldSharePhoneNumber(with: decryptedEnvelope.sourceAci, tx: tx.asV2Write)
+            identityManager.setShouldSharePhoneNumber(with: decryptedEnvelope.sourceAci, tx: tx)
         }
 
         switch processingStep(for: decryptedEnvelope, tx: tx) {
@@ -638,7 +638,7 @@ private extension MessageProcessor {
         for envelope: ReceivedEnvelope,
         localIdentifiers: LocalIdentifiers,
         localDeviceId: UInt32,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> ProcessingRequest {
         assertOnQueue(serialQueue)
         let builder = ProcessingRequestBuilder(
@@ -677,7 +677,7 @@ private struct ReceivedEnvelope {
         messageDecrypter: OWSMessageDecrypter,
         localIdentifiers: LocalIdentifiers,
         localDeviceId: UInt32,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws -> DecryptionResult {
         // Figure out what type of envelope we're dealing with.
         let validatedEnvelope = try ValidatedIncomingEnvelope(envelope, localIdentifiers: localIdentifiers)

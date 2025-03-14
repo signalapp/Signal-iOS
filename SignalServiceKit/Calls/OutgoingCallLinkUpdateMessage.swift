@@ -18,7 +18,7 @@ public class OutgoingCallLinkUpdateMessage: OWSOutgoingSyncMessage {
         localThread: TSContactThread,
         rootKey: CallLinkRootKey,
         adminPasskey: Data?,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) {
         self.rootKey = rootKey.bytes
         self.adminPasskey = adminPasskey
@@ -35,7 +35,7 @@ public class OutgoingCallLinkUpdateMessage: OWSOutgoingSyncMessage {
 
     public override var isUrgent: Bool { false }
 
-    public override func syncMessageBuilder(transaction: SDSAnyReadTransaction) -> SSKProtoSyncMessageBuilder? {
+    public override func syncMessageBuilder(transaction: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
         let callLinkUpdateBuilder = SSKProtoSyncMessageCallLinkUpdate.builder()
         callLinkUpdateBuilder.setType(.update)
         callLinkUpdateBuilder.setRootKey(self.rootKey)

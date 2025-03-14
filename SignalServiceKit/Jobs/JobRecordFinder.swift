@@ -46,7 +46,7 @@ public class JobRecordFinderImpl<JobRecordType>: JobRecordFinder where JobRecord
 
     public func fetchJob(rowId: JobRecord.RowId, tx: DBReadTransaction) throws -> JobRecordType? {
         do {
-            let db = tx.databaseConnection
+            let db = tx.database
             return try JobRecordType.fetchOne(db, key: rowId)
         } catch {
             throw error.grdbErrorForLogging
@@ -136,7 +136,7 @@ public class JobRecordFinderImpl<JobRecordType>: JobRecordFinder where JobRecord
             LIMIT \(Constants.batchSize)
         """
         do {
-            let db = tx.databaseConnection
+            let db = tx.database
             let results = try JobRecordType.fetchAll(db, sql: sql, arguments: arguments)
             return (results, results.count == Constants.batchSize)
         } catch {

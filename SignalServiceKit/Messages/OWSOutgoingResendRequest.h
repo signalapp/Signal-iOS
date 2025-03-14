@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithErrorMessageBytes:(NSData *)errorMessageBytes
                                 sourceAci:(AciObjC *)sourceAci
                     failedEnvelopeGroupId:(nullable NSData *)failedEnvelopeGroupId
-                              transaction:(SDSAnyWriteTransaction *)transaction;
+                              transaction:(DBWriteTransaction *)transaction;
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
                         recipientAddressStates:
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
                           additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
                             explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
                              skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
-                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+                                   transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
 @end
 

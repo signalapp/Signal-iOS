@@ -64,7 +64,7 @@ extension DonationPaymentDetailsViewController {
                                 )
                                 SSKEnvironment.shared.databaseStorageRef.write { tx in
                                     do {
-                                        try donationStore.setPendingSubscription(donation: confirmedDonation, tx: tx.asV2Write)
+                                        try donationStore.setPendingSubscription(donation: confirmedDonation, tx: tx)
                                     } catch {
                                         owsFailDebug("[Donations] Failed to persist pending iDEAL subscription.")
                                     }

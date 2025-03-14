@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
                   verificationState:(OWSVerificationState)verificationState
                         identityKey:(NSData *)identityKey
     verificationForRecipientAddress:(SignalServiceAddress *)address
-                        transaction:(SDSAnyReadTransaction *)transaction
+                        transaction:(DBReadTransaction *)transaction
 {
     OWSAssertDebug(identityKey.length == OWSIdentityManagerObjCBridge.identityKeyLength);
     OWSAssertDebug(address.isValid);
@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction
 {
     OWSAssertDebug(self.identityKey.length == OWSIdentityManagerObjCBridge.identityKeyLength);
     OWSAssertDebug(self.verificationForRecipientAddress.isValid);

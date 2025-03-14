@@ -72,18 +72,18 @@ public protocol GroupsV2 {
 
     func hasProfileKeyCredential(
         for address: SignalServiceAddress,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool
 
-    func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction)
+    func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: DBWriteTransaction)
 
     func processProfileKeyUpdates()
 
-    func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction)
+    func updateLocalProfileKeyInGroup(groupId: Data, transaction: DBWriteTransaction)
 
     func isGroupKnownToStorageService(
         groupModel: TSGroupModelV2,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool
 
     typealias ProfileKeyCredentialMap = [Aci: ExpiringProfileKeyCredential]
@@ -156,13 +156,13 @@ public protocol GroupsV2 {
 
     func groupRecordPendingStorageServiceRestore(
         masterKeyData: Data,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> StorageServiceProtoGroupV2Record?
 
     func restoreGroupFromStorageServiceIfNecessary(
         groupRecord: StorageServiceProtoGroupV2Record,
         account: AuthedAccount,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     )
 
     func fetchSomeGroupChangeActions(
@@ -176,7 +176,7 @@ public protocol GroupsV2 {
         secretParams: GroupSecretParams,
         membership: GroupMembership,
         localAci: Aci,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     )
 }
 
@@ -284,7 +284,7 @@ public protocol GroupV2Updates {
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         downloadedAvatars: GroupV2DownloadedAvatars,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> TSGroupThread
 }
 
@@ -529,7 +529,7 @@ public class MockGroupsV2: GroupsV2 {
     }
 
     public func hasProfileKeyCredential(for address: SignalServiceAddress,
-                                        transaction: SDSAnyReadTransaction) -> Bool {
+                                        transaction: DBReadTransaction) -> Bool {
         owsFail("Not implemented.")
     }
 
@@ -562,7 +562,7 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction) {
+    public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: DBWriteTransaction) {
         owsFail("Not implemented.")
     }
 
@@ -570,7 +570,7 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction) {
+    public func updateLocalProfileKeyInGroup(groupId: Data, transaction: DBWriteTransaction) {
         owsFail("Not implemented.")
     }
 
@@ -592,19 +592,19 @@ public class MockGroupsV2: GroupsV2 {
 
     public func isGroupKnownToStorageService(
         groupModel: TSGroupModelV2,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         return true
     }
 
-    public func groupRecordPendingStorageServiceRestore(masterKeyData: Data, transaction: SDSAnyReadTransaction) -> StorageServiceProtoGroupV2Record? {
+    public func groupRecordPendingStorageServiceRestore(masterKeyData: Data, transaction: DBReadTransaction) -> StorageServiceProtoGroupV2Record? {
         return nil
     }
 
     public func restoreGroupFromStorageServiceIfNecessary(
         groupRecord: StorageServiceProtoGroupV2Record,
         account: AuthedAccount,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         owsFail("Not implemented.")
     }
@@ -663,7 +663,7 @@ public class MockGroupsV2: GroupsV2 {
         secretParams: GroupSecretParams,
         membership: GroupMembership,
         localAci: Aci,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         owsFail("Not implemented.")
     }
@@ -687,7 +687,7 @@ public class MockGroupV2Updates: GroupV2Updates {
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         downloadedAvatars: GroupV2DownloadedAvatars,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> TSGroupThread {
         owsFail("Not implemented.")
     }

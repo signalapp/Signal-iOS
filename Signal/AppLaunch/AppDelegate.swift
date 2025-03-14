@@ -520,7 +520,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Before we mark ready, block message processing on any pending change numbers.
         let hasPendingChangeNumber = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            regLoader.hasPendingChangeNumber(transaction: transaction.asV2Read)
+            regLoader.hasPendingChangeNumber(transaction: transaction)
         }
         if hasPendingChangeNumber {
             // The registration loader will clear the suspension later on.
@@ -696,10 +696,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
         let tsRegistrationState: TSRegistrationState = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            let registrationState = tsAccountManager.registrationState(tx: tx.asV2Read)
-            if registrationState.isRegistered, let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) {
-                let deviceId = tsAccountManager.storedDeviceId(tx: tx.asV2Read)
-                let localRecipient = recipientDatabaseTable.fetchRecipient(serviceId: localIdentifiers.aci, transaction: tx.asV2Read)
+            let registrationState = tsAccountManager.registrationState(tx: tx)
+            if registrationState.isRegistered, let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) {
+                let deviceId = tsAccountManager.storedDeviceId(tx: tx)
+                let localRecipient = recipientDatabaseTable.fetchRecipient(serviceId: localIdentifiers.aci, transaction: tx)
                 let deviceCount = localRecipient?.deviceIds.count ?? 0
                 let linkedDeviceMessage = deviceCount > 1 ? "\(deviceCount) devices including the primary" : "no linked devices"
                 Logger.info("localAci: \(localIdentifiers.aci), deviceId: \(deviceId) (\(linkedDeviceMessage))")
@@ -800,8 +800,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             lastMode
         ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return (
-                DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read),
-                regLoader.restoreLastMode(transaction: tx.asV2Read)
+                DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx),
+                regLoader.restoreLastMode(transaction: tx)
             )
         }
 
@@ -1520,10 +1520,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         if isRegistered {
             appReadiness.runNowOrWhenAppDidBecomeReadySync {
                 SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    let localAddress = tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress
+                    let localAddress = tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress
                     Logger.info("localAddress: \(String(describing: localAddress))")
 
-                    ExperienceUpgradeFinder.markAllCompleteForNewUser(transaction: transaction.unwrapGrdbWrite)
+                    ExperienceUpgradeFinder.markAllCompleteForNewUser(transaction: transaction)
                 }
             }
             DependenciesBridge.shared.attachmentDownloadManager.beginDownloadingIfNecessary()

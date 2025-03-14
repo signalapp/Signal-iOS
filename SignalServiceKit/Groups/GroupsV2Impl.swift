@@ -279,7 +279,7 @@ public class GroupsV2Impl: GroupsV2 {
             }
 
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-            let dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: tx.asV2Read)
+            let dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: tx)
 
             return (groupThread, dmConfiguration.asToken)
         }
@@ -650,7 +650,7 @@ public class GroupsV2Impl: GroupsV2 {
         (groupModel, gseExpiration) = databaseStorage.read { tx in
             let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: tx)
             let groupThreadId = groupThread?.sqliteRowId!
-            let endorsementRecord = groupThreadId.flatMap({ try? groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: $0, tx: tx.asV2Read) })
+            let endorsementRecord = groupThreadId.flatMap({ try? groupSendEndorsementStore.fetchCombinedEndorsement(groupThreadId: $0, tx: tx) })
             return (
                 groupThread?.groupModel as? TSGroupModelV2,
                 endorsementRecord?.expirationTimestamp ?? 0
@@ -993,7 +993,7 @@ public class GroupsV2Impl: GroupsV2 {
 
     private let profileKeyUpdater: GroupsV2ProfileKeyUpdater
 
-    public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction) {
+    public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: DBWriteTransaction) {
         profileKeyUpdater.scheduleAllGroupsV2ForProfileKeyUpdate(transaction: transaction)
     }
 
@@ -1001,7 +1001,7 @@ public class GroupsV2Impl: GroupsV2 {
         profileKeyUpdater.processProfileKeyUpdates()
     }
 
-    public func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction) {
+    public func updateLocalProfileKeyInGroup(groupId: Data, transaction: DBWriteTransaction) {
         profileKeyUpdater.updateLocalProfileKeyInGroup(groupId: groupId, transaction: transaction)
     }
 
@@ -1104,7 +1104,7 @@ public class GroupsV2Impl: GroupsV2 {
             case 401:
                 // Retry auth errors after retrieving new temporal credentials.
                 await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-                    self.authCredentialStore.removeAllGroupAuthCredentials(tx: tx.asV2Write)
+                    self.authCredentialStore.removeAllGroupAuthCredentials(tx: tx)
                 }
                 return try await retryBlock(error)
             case 403:
@@ -1265,7 +1265,7 @@ public class GroupsV2Impl: GroupsV2 {
         secretParams: GroupSecretParams,
         membership: GroupMembership,
         localAci: Aci,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) {
         do {
             let fullMembers = membership.fullMembers.compactMap(\.serviceId)
@@ -1383,7 +1383,7 @@ public class GroupsV2Impl: GroupsV2 {
 
     public func hasProfileKeyCredential(
         for address: SignalServiceAddress,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         do {
             guard let serviceId = address.serviceId else {
@@ -1406,14 +1406,14 @@ public class GroupsV2Impl: GroupsV2 {
 
     public func isGroupKnownToStorageService(
         groupModel: TSGroupModelV2,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         GroupsV2Impl.isGroupKnownToStorageService(groupModel: groupModel, transaction: transaction)
     }
 
     public func groupRecordPendingStorageServiceRestore(
         masterKeyData: Data,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> StorageServiceProtoGroupV2Record? {
         GroupsV2Impl.enqueuedGroupRecordForRestore(masterKeyData: masterKeyData, transaction: transaction)
     }
@@ -1421,7 +1421,7 @@ public class GroupsV2Impl: GroupsV2 {
     public func restoreGroupFromStorageServiceIfNecessary(
         groupRecord: StorageServiceProtoGroupV2Record,
         account: AuthedAccount,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         GroupsV2Impl.enqueueGroupRestore(groupRecord: groupRecord, account: account, transaction: transaction)
     }
@@ -1766,7 +1766,7 @@ public class GroupsV2Impl: GroupsV2 {
             throw OWSAssertionError("Missing revisionForPlaceholderModel.")
         }
         return try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (transaction) throws -> TSGroupThread in
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
 
@@ -1793,7 +1793,7 @@ public class GroupsV2Impl: GroupsV2 {
                 groupThread.update(with: newGroupModel, transaction: transaction)
 
                 let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken
+                let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction).asToken
                 GroupManager.insertGroupUpdateInfoMessage(
                     groupThread: groupThread,
                     oldGroupModel: oldGroupModel,
@@ -1835,11 +1835,11 @@ public class GroupsV2Impl: GroupsV2 {
 
                 let groupModel = try builder.buildAsV2()
                 let groupThread = DependenciesBridge.shared.threadStore.createGroupThread(
-                    groupModel: groupModel, tx: transaction.asV2Write
+                    groupModel: groupModel, tx: transaction
                 )
 
                 let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken
+                let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction).asToken
                 GroupManager.insertGroupUpdateInfoMessageForNewGroup(
                     localIdentifiers: localIdentifiers,
                     spamReportingMetadata: .createdByLocalAction,
@@ -1954,7 +1954,7 @@ public class GroupsV2Impl: GroupsV2 {
         newRevision proposedRevision: UInt32?
     ) async throws {
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction -> Void in
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
@@ -1988,7 +1988,7 @@ public class GroupsV2Impl: GroupsV2 {
             groupThread.update(with: newGroupModel, transaction: transaction)
 
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-            let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken
+            let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction).asToken
             GroupManager.insertGroupUpdateInfoMessage(
                 groupThread: groupThread,
                 oldGroupModel: oldGroupModel,
@@ -2072,7 +2072,7 @@ public class GroupsV2Impl: GroupsV2 {
         do {
             let groupId = try groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData
             try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-                guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+                guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else {
                     throw OWSAssertionError("Missing localIdentifiers.")
                 }
                 guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
@@ -2104,7 +2104,7 @@ public class GroupsV2Impl: GroupsV2 {
                 groupThread.update(with: newGroupModel, transaction: transaction)
 
                 let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read).asToken
+                let dmToken = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction).asToken
                 // groupUpdateSource is unknown; we don't know who did the update.
                 GroupManager.insertGroupUpdateInfoMessage(
                     groupThread: groupThread,

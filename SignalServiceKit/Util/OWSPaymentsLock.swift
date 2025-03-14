@@ -43,7 +43,7 @@ public class OWSPaymentsLock {
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getBool(.isPaymentsLockEnabledKey,
                                               defaultValue: false,
-                                              transaction: transaction.asV2Read)
+                                              transaction: transaction)
         }
     }
 
@@ -54,13 +54,13 @@ public class OWSPaymentsLock {
         }
     }
 
-    public func setIsPaymentsLockEnabled(_ value: Bool, transaction: SDSAnyWriteTransaction) {
+    public func setIsPaymentsLockEnabled(_ value: Bool, transaction: DBWriteTransaction) {
         AssertIsOnMainThread()
         assert(appReadiness.isAppReady)
 
         self.keyValueStore.setBool(value,
                                    key: .isPaymentsLockEnabledKey,
-                                   transaction: transaction.asV2Write)
+                                   transaction: transaction)
     }
 
     public func isTimeToShowSuggestion() -> Bool {
@@ -74,13 +74,13 @@ public class OWSPaymentsLock {
         let defaultDate = Date.distantPast
         let date = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getDate(.timeToShowSuggestionKey,
-                                              transaction: transaction.asV2Read) ?? defaultDate
+                                              transaction: transaction) ?? defaultDate
         }
 
         return Date() > date
     }
 
-    public func snoozeSuggestion(transaction: SDSAnyWriteTransaction) {
+    public func snoozeSuggestion(transaction: DBWriteTransaction) {
         AssertIsOnMainThread()
         assert(appReadiness.isAppReady)
 
@@ -92,7 +92,7 @@ public class OWSPaymentsLock {
 
         self.keyValueStore.setDate(nextTimeToShowSuggestion,
                                    key: .timeToShowSuggestionKey,
-                                   transaction: transaction.asV2Write)
+                                   transaction: transaction)
     }
 
     // MARK: - Biometry Types

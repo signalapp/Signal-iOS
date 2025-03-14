@@ -106,7 +106,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                 Self.keyValueStore.getBool(
                     Self.savePassphraseShownKey,
                     defaultValue: false,
-                    transaction: transaction.asV2Read
+                    transaction: transaction
                 )
             }
         }
@@ -115,7 +115,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                 Self.keyValueStore.setBool(
                     newValue,
                     key: Self.savePassphraseShownKey,
-                    transaction: transaction.asV2Write
+                    transaction: transaction
                 )
             }
         }
@@ -128,7 +128,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                 Self.keyValueStore.getBool(
                     Self.savePassphraseHelpCardEnabledKey,
                     defaultValue: false,
-                    transaction: transaction.asV2Read
+                    transaction: transaction
                 )
             }
         }
@@ -137,7 +137,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                 Self.keyValueStore.setBool(
                     newValue,
                     key: Self.savePassphraseHelpCardEnabledKey,
-                    transaction: transaction.asV2Write
+                    transaction: transaction
                 )
             }
             updateTableContents()
@@ -154,7 +154,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     private func clearHelpCardEnabledFromDismissedList() {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            Self.helpCardStore.removeValue(forKey: HelpCard.saveRecoveryPhrase.rawValue, transaction: transaction.asV2Write)
+            Self.helpCardStore.removeValue(forKey: HelpCard.saveRecoveryPhrase.rawValue, transaction: transaction)
         }
     }
 
@@ -222,7 +222,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     private func filterDismissedHelpCards(_ helpCards: [HelpCard]) -> [HelpCard] {
         let dismissedKeys = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            Self.helpCardStore.allKeys(transaction: transaction.asV2Read)
+            Self.helpCardStore.allKeys(transaction: transaction)
         }
         return helpCards.filter { helpCard in !dismissedKeys.contains(helpCard.rawValue) }
     }
@@ -233,7 +233,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             savePassphraseHelpCardEnabled = false
         }
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            Self.helpCardStore.setString(helpCard.rawValue, key: helpCard.rawValue, transaction: transaction.asV2Write)
+            Self.helpCardStore.setString(helpCard.rawValue, key: helpCard.rawValue, transaction: transaction)
         }
         updateTableContents()
     }
@@ -1303,7 +1303,7 @@ extension PaymentsSettingsViewController: PaymentsViewPassphraseDelegate {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             Self.keyValueStore.getBool(Self.hasReviewedPassphraseKey,
                                        defaultValue: false,
-                                       transaction: transaction.asV2Read)
+                                       transaction: transaction)
         }
     }
 
@@ -1311,7 +1311,7 @@ extension PaymentsSettingsViewController: PaymentsViewPassphraseDelegate {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             Self.keyValueStore.setBool(true,
                                        key: Self.hasReviewedPassphraseKey,
-                                       transaction: transaction.asV2Write)
+                                       transaction: transaction)
         }
     }
 

@@ -8,7 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class AciObjC;
-@class SDSAnyReadTransaction;
+@class DBReadTransaction;
 @class SignalServiceAddress;
 
 @interface OWSLinkedDeviceReadReceipt : MTLModel

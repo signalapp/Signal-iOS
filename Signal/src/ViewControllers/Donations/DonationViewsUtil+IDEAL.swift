@@ -21,10 +21,10 @@ extension DonationViewsUtil {
         let (success, intent, localIntent) = databaseStorage.read { tx in
             switch donationType {
             case let .oneTime(didSucceed: success, paymentIntentId: intentId):
-                let localIntentId = donationStore.getPendingOneTimeDonation(tx: tx.asV2Read)
+                let localIntentId = donationStore.getPendingOneTimeDonation(tx: tx)
                 return (success, intentId, localIntentId?.paymentIntentId)
             case let .monthly(didSucceed: success, _, setupIntentId: intentId):
-                let localIntentId = donationStore.getPendingSubscription(tx: tx.asV2Read)
+                let localIntentId = donationStore.getPendingSubscription(tx: tx)
                 return (success, intentId, localIntentId?.setupIntentId)
             }
         }
@@ -187,9 +187,9 @@ extension DonationViewsUtil {
             databaseStorage.write { tx in
                 switch donationType {
                 case .monthly:
-                    idealStore.clearPendingSubscription(tx: tx.asV2Write)
+                    idealStore.clearPendingSubscription(tx: tx)
                 case .oneTime:
-                    idealStore.clearPendingOneTimeDonation(tx: tx.asV2Write)
+                    idealStore.clearPendingOneTimeDonation(tx: tx)
                 }
             }
         }
@@ -247,7 +247,7 @@ extension DonationViewsUtil {
                         }
                     }
             case .monthly:
-                guard let monthlyDonation = donationStore.getPendingSubscription(tx: tx.asV2Read) else {
+                guard let monthlyDonation = donationStore.getPendingSubscription(tx: tx) else {
                     return .value(nil)
                 }
                 return Promise.wrapAsync {

@@ -22,26 +22,26 @@ public protocol SyncManagerProtocolSwift {
     func sendAllSyncRequestMessagesIfNecessary() -> Promise<Void>
     func sendAllSyncRequestMessages(timeout: TimeInterval) -> Promise<Void>
 
-    func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction)
-    func processIncomingContactsSyncMessage(_ syncMessage: SSKProtoSyncMessageContacts, transaction: SDSAnyWriteTransaction)
+    func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: DBWriteTransaction)
+    func processIncomingContactsSyncMessage(_ syncMessage: SSKProtoSyncMessageContacts, transaction: DBWriteTransaction)
 
     func syncAllContacts() -> Promise<Void>
     func syncAllContactsIfFullSyncRequested() -> Promise<Void>
 
-    func sendFetchLatestProfileSyncMessage(tx: SDSAnyWriteTransaction)
+    func sendFetchLatestProfileSyncMessage(tx: DBWriteTransaction)
     func sendFetchLatestStorageManifestSyncMessage() async
     func sendFetchLatestSubscriptionStatusSyncMessage()
 
     func sendKeysSyncMessage()
-    func sendKeysSyncMessage(tx: SDSAnyWriteTransaction)
-    func processIncomingKeysSyncMessage(_ syncMessage: SSKProtoSyncMessageKeys, transaction: SDSAnyWriteTransaction)
-    func sendKeysSyncRequestMessage(transaction: SDSAnyWriteTransaction)
+    func sendKeysSyncMessage(tx: DBWriteTransaction)
+    func processIncomingKeysSyncMessage(_ syncMessage: SSKProtoSyncMessageKeys, transaction: DBWriteTransaction)
+    func sendKeysSyncRequestMessage(transaction: DBWriteTransaction)
 
-    func processIncomingFetchLatestSyncMessage(_ syncMessage: SSKProtoSyncMessageFetchLatest, transaction: SDSAnyWriteTransaction)
+    func processIncomingFetchLatestSyncMessage(_ syncMessage: SSKProtoSyncMessageFetchLatest, transaction: DBWriteTransaction)
     func processIncomingMessageRequestResponseSyncMessage(
         _ syncMessage: SSKProtoSyncMessageMessageRequestResponse,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     )
     func sendMessageRequestResponseSyncMessage(thread: TSThread, responseType: OWSSyncMessageRequestResponseType)
-    func sendMessageRequestResponseSyncMessage(thread: TSThread, responseType: OWSSyncMessageRequestResponseType, transaction: SDSAnyWriteTransaction)
+    func sendMessageRequestResponseSyncMessage(thread: TSThread, responseType: OWSSyncMessageRequestResponseType, transaction: DBWriteTransaction)
 }

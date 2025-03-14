@@ -31,7 +31,7 @@ public protocol TypingIndicators: AnyObject {
 
     func setTypingIndicatorsEnabledAndSendSyncMessage(value: Bool)
 
-    func setTypingIndicatorsEnabled(value: Bool, transaction: SDSAnyWriteTransaction)
+    func setTypingIndicatorsEnabled(value: Bool, transaction: DBWriteTransaction)
 
     func areTypingIndicatorsEnabled() -> Bool
 }
@@ -55,7 +55,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             self.keyValueStore.getBool(
                 self.kDatabaseKey_TypingIndicatorsEnabled,
                 defaultValue: true,
-                transaction: transaction.asV2Read
+                transaction: transaction
             )
         }
 
@@ -69,7 +69,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.keyValueStore.setBool(value,
                                        key: self.kDatabaseKey_TypingIndicatorsEnabled,
-                                       transaction: transaction.asV2Write)
+                                       transaction: transaction)
         }
 
         SSKEnvironment.shared.syncManagerRef.sendConfigurationSyncMessage()
@@ -79,13 +79,13 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
     }
 
-    public func setTypingIndicatorsEnabled(value: Bool, transaction: SDSAnyWriteTransaction) {
+    public func setTypingIndicatorsEnabled(value: Bool, transaction: DBWriteTransaction) {
         Logger.info("\(_areTypingIndicatorsEnabled.get()) -> \(value)")
         _areTypingIndicatorsEnabled.set(value)
 
         keyValueStore.setBool(value,
                               key: kDatabaseKey_TypingIndicatorsEnabled,
-                              transaction: transaction.asV2Write)
+                              transaction: transaction)
 
         NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
     }

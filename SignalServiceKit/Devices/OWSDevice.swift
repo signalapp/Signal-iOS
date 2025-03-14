@@ -138,7 +138,7 @@ public extension OWSDevice {
     /// `true` if any devices were added or removed, and `false` otherwise.
     static func replaceAll(
         with newDevices: [OWSDevice],
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> Bool {
         let existingDevices = anyFetchAll(transaction: transaction)
 

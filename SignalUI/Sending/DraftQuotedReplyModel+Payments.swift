@@ -28,7 +28,7 @@ extension DraftQuotedReplyModel {
 
     public static func fromOriginalPaymentMessage(
         _ message: TSMessage,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> DraftQuotedReplyModel? {
         guard let paymentMessage = message as? OWSPaymentMessage else {
             return nil
@@ -45,7 +45,7 @@ extension DraftQuotedReplyModel {
         originalMessage: TSMessage,
         replyMessage: TSMessage,
         quotedReply: TSQuotedMessage,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> DraftQuotedReplyModel? {
         guard let paymentMessage = originalMessage as? OWSPaymentMessage else {
             return nil
@@ -63,7 +63,7 @@ extension DraftQuotedReplyModel {
     private static func amountString(
         _ paymentMessage: OWSPaymentMessage,
         interactionType: OWSInteractionType,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> String {
         return PaymentsFormat.paymentPreviewText(
             paymentMessage: paymentMessage,

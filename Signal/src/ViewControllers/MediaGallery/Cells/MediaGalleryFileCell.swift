@@ -94,7 +94,7 @@ class MediaGalleryFileCell: MediaTileListModeCell {
         return view
     }()
 
-    private func createGenericAttachmentView(transaction: SDSAnyReadTransaction) {
+    private func createGenericAttachmentView(transaction: DBReadTransaction) {
         owsAssertDebug(genericAttachmentView == nil)
 
         guard let fileItem else {

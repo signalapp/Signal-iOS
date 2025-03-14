@@ -105,7 +105,7 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
         tx: DBWriteTransaction
     ) {
         do {
-            try deletedCallRecord.insert(tx.databaseConnection)
+            try deletedCallRecord.insert(tx.database)
         } catch let error {
             owsFailBeta("Failed to insert deleted call record: \(error)")
         }
@@ -115,7 +115,7 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
 
     func delete(expiredDeletedCallRecord: DeletedCallRecord, tx: DBWriteTransaction) {
         do {
-            try expiredDeletedCallRecord.delete(tx.databaseConnection)
+            try expiredDeletedCallRecord.delete(tx.database)
         } catch let error {
             owsFailBeta("Failed to delete expired deleted call record: \(error)")
         }
@@ -137,7 +137,7 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
         intoThreadRowId intoRowId: Int64,
         tx: DBWriteTransaction
     ) {
-        tx.databaseConnection.executeHandlingErrors(
+        tx.database.executeHandlingErrors(
             sql: """
                 UPDATE "\(DeletedCallRecord.databaseTableName)"
                 SET "\(DeletedCallRecord.CodingKeys.threadRowId.rawValue)" = ?
@@ -156,7 +156,7 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
 
         do {
-            return try DeletedCallRecord.fetchOne(tx.databaseConnection, SQLRequest(
+            return try DeletedCallRecord.fetchOne(tx.database, SQLRequest(
                 sql: sqlString,
                 arguments: StatementArguments(sqlArgs)
             ))
@@ -208,12 +208,6 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
     }
 }
 
-private extension SDSAnyReadTransaction {
-    var database: Database {
-        return unwrapGrdbRead.database
-    }
-}
-
 // MARK: -
 
 #if TESTABLE_BUILD
@@ -228,7 +222,7 @@ final class ExplainingDeletedCallRecordStoreImpl: DeletedCallRecordStoreImpl {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
 
         guard
-            let explanationRow = try? Row.fetchOne(tx.databaseConnection, SQLRequest(
+            let explanationRow = try? Row.fetchOne(tx.database, SQLRequest(
                 sql: "EXPLAIN QUERY PLAN \(sqlString)",
                 arguments: StatementArguments(sqlArgs)
             )),

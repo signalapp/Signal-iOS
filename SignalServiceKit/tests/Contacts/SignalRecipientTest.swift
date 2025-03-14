@@ -24,7 +24,7 @@ class SignalRecipientTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: localIdentifiers,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
     }
@@ -54,7 +54,7 @@ class SignalRecipientTest: SSKBaseTest {
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             let phoneNumber = E164(CommonGenerator.e164())!
-            _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx.asV2Write)
+            _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx)
             XCTAssertNotNil(fetchRecipient(phoneNumber: phoneNumber, transaction: tx))
         }
     }
@@ -64,7 +64,7 @@ class SignalRecipientTest: SSKBaseTest {
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
             let aci = Aci.randomForTesting()
-            _ = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
+            _ = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
             XCTAssertNotNil(fetchRecipient(aci: aci, transaction: tx))
         }
     }
@@ -123,8 +123,8 @@ class SignalRecipientTest: SSKBaseTest {
 
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-            let uuidRecipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx.asV2Write)
-            let phoneNumberRecipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx.asV2Write)
+            let uuidRecipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
+            let phoneNumberRecipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx)
             let mergedRecipient = mergeHighTrust(aci: aci, phoneNumber: phoneNumber, transaction: tx)
 
             XCTAssertEqual(mergedRecipient.uniqueId, uuidRecipient.uniqueId)
@@ -389,7 +389,7 @@ class SignalRecipientTest: SSKBaseTest {
         }
 
         let finalGroupMembers = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
+            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx)
         }
 
         // We should still have two group members: (u1, p2) and (u2, nil).
@@ -436,7 +436,7 @@ class SignalRecipientTest: SSKBaseTest {
         }
 
         let finalGroupMembers = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
+            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx)
         }
 
         // We should now have one group member: (u1, p2).
@@ -483,7 +483,7 @@ class SignalRecipientTest: SSKBaseTest {
         }
 
         let finalGroupMembers = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
+            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx)
         }
 
         // We should still have two group members: (u2, p1) and (u1, nil).
@@ -530,7 +530,7 @@ class SignalRecipientTest: SSKBaseTest {
         }
 
         let finalGroupMembers = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
+            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx)
         }
 
         // We should now have two group members: (u2, p1), (u1, nil).
@@ -560,7 +560,7 @@ class SignalRecipientTest: SSKBaseTest {
 
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-            _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber1, tx: tx.asV2Write)
+            _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber1, tx: tx)
             mergeHighTrust(aci: aci1, phoneNumber: nil, transaction: tx)
             mergeHighTrust(aci: aci1, phoneNumber: phoneNumber1, transaction: tx)
         }
@@ -570,7 +570,7 @@ class SignalRecipientTest: SSKBaseTest {
         }
 
         let finalGroupMembers = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
+            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx)
         }
 
         assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
@@ -595,7 +595,7 @@ class SignalRecipientTest: SSKBaseTest {
 
         write { tx in
             let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-            _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber1, tx: tx.asV2Write)
+            _ = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber1, tx: tx)
             mergeHighTrust(aci: aci1, phoneNumber: nil, transaction: tx)
             mergeHighTrust(aci: aci1, phoneNumber: phoneNumber1, transaction: tx)
             mergeHighTrust(aci: aci2, phoneNumber: phoneNumber1, transaction: tx)
@@ -606,7 +606,7 @@ class SignalRecipientTest: SSKBaseTest {
         }
 
         let finalGroupMembers = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx.asV2Read)
+            GroupMemberStoreImpl().sortedFullGroupMembers(in: groupThread.uniqueId, tx: tx)
         }
 
         assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
@@ -617,24 +617,24 @@ class SignalRecipientTest: SSKBaseTest {
     // MARK: - Helpers
 
     @discardableResult
-    private func mergeHighTrust(aci: Aci, phoneNumber: E164?, transaction tx: SDSAnyWriteTransaction) -> SignalRecipient {
+    private func mergeHighTrust(aci: Aci, phoneNumber: E164?, transaction tx: DBWriteTransaction) -> SignalRecipient {
         let recipientMerger = DependenciesBridge.shared.recipientMerger
         return recipientMerger.applyMergeFromContactSync(
             localIdentifiers: localIdentifiers,
             aci: aci,
             phoneNumber: phoneNumber,
-            tx: tx.asV2Write
+            tx: tx
         )
     }
 
-    private func fetchRecipient(aci: Aci, transaction tx: SDSAnyReadTransaction) -> SignalRecipient? {
+    private func fetchRecipient(aci: Aci, transaction tx: DBReadTransaction) -> SignalRecipient? {
         return DependenciesBridge.shared.recipientDatabaseTable
-            .fetchRecipient(serviceId: aci, transaction: tx.asV2Read)
+            .fetchRecipient(serviceId: aci, transaction: tx)
     }
 
-    private func fetchRecipient(phoneNumber: E164, transaction tx: SDSAnyReadTransaction) -> SignalRecipient? {
+    private func fetchRecipient(phoneNumber: E164, transaction tx: DBReadTransaction) -> SignalRecipient? {
         return DependenciesBridge.shared.recipientDatabaseTable
-            .fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx.asV2Read)
+            .fetchRecipient(phoneNumber: phoneNumber.stringValue, transaction: tx)
     }
 }
 
@@ -646,7 +646,7 @@ final class SignalRecipient2Test: XCTestCase {
     func testDecodeStableRow() throws {
         let inMemoryDB = InMemoryDB()
         try inMemoryDB.write { tx in
-            try tx.db.execute(sql: """
+            try tx.database.execute(sql: """
                 INSERT INTO "model_SignalRecipient" (
                     "id", "recordType", "uniqueId", "devices", "recipientPhoneNumber", "recipientUUID", "unregisteredAtTimestamp"
                 ) VALUES (
@@ -670,7 +670,7 @@ final class SignalRecipient2Test: XCTestCase {
             """)
         }
         inMemoryDB.read { tx in
-            let signalRecipients = try! SignalRecipient.fetchAll(tx.db)
+            let signalRecipients = try! SignalRecipient.fetchAll(tx.database)
             XCTAssertEqual(signalRecipients.count, 2)
 
             XCTAssertEqual(signalRecipients[0].id, 18)
@@ -694,7 +694,7 @@ final class SignalRecipient2Test: XCTestCase {
     func testDecodePni() throws {
         let inMemoryDB = InMemoryDB()
         try inMemoryDB.write { tx in
-            try tx.db.execute(sql: """
+            try tx.database.execute(sql: """
                 INSERT INTO "model_SignalRecipient" (
                     "id", "recordType", "uniqueId", "devices", "pni"
                 ) VALUES (
@@ -707,7 +707,7 @@ final class SignalRecipient2Test: XCTestCase {
             """)
         }
         inMemoryDB.read { tx in
-            let signalRecipients = try! SignalRecipient.fetchAll(tx.db)
+            let signalRecipients = try! SignalRecipient.fetchAll(tx.database)
             XCTAssertEqual(signalRecipients.count, 1)
 
             XCTAssertEqual(signalRecipients[0].id, 1)
@@ -722,7 +722,7 @@ final class SignalRecipient2Test: XCTestCase {
         let pni = Pni.constantForTesting("PNI:30000000-5000-4000-8000-3000000000A9")
         inMemoryDB.insert(record: SignalRecipient(aci: nil, pni: pni, phoneNumber: nil))
         inMemoryDB.read { tx in
-            let db = tx.db
+            let db = tx.database
             let rawPniValue = try! String.fetchOne(db, sql: #"SELECT "pni" FROM "model_SignalRecipient""#)!
             XCTAssertEqual(rawPniValue, pni.serviceIdUppercaseString)
         }

@@ -5209,7 +5209,7 @@ extension TSInteractionSerializer {
 
 @objc
 public extension TSInteraction {
-    func anyInsert(transaction: SDSAnyWriteTransaction) {
+    func anyInsert(transaction: DBWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
@@ -5221,7 +5221,7 @@ public extension TSInteraction {
     //
     // For performance, when possible, you should explicitly specify whether
     // you are inserting or updating rather than calling this method.
-    func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    func anyUpsert(transaction: DBWriteTransaction) {
         let isInserting: Bool
         if TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
             isInserting = false
@@ -5255,7 +5255,7 @@ public extension TSInteraction {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSInteraction) -> Void) {
+    func anyUpdate(transaction: DBWriteTransaction, block: (TSInteraction) -> Void) {
 
         block(self)
 
@@ -5283,7 +5283,7 @@ public extension TSInteraction {
     // There are cases when this doesn't make sense, e.g. when  we know we've
     // just loaded the model in the same transaction. In those cases it is
     // safe and faster to do a "overwriting" update
-    func anyOverwritingUpdate(transaction: SDSAnyWriteTransaction) {
+    func anyOverwritingUpdate(transaction: DBWriteTransaction) {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 }
@@ -5292,10 +5292,10 @@ public extension TSInteraction {
 
 @objc
 public class TSInteractionCursor: NSObject, SDSCursor {
-    private let transaction: GRDBReadTransaction
+    private let transaction: DBReadTransaction
     private let cursor: RecordCursor<InteractionRecord>?
 
-    init(transaction: GRDBReadTransaction, cursor: RecordCursor<InteractionRecord>?) {
+    init(transaction: DBReadTransaction, cursor: RecordCursor<InteractionRecord>?) {
         self.transaction = transaction
         self.cursor = cursor
     }
@@ -5308,7 +5308,7 @@ public class TSInteractionCursor: NSObject, SDSCursor {
             return nil
         }
         let value = try TSInteraction.fromRecord(record)
-        SSKEnvironment.shared.modelReadCachesRef.interactionReadCache.didReadInteraction(value, transaction: transaction.asAnyRead)
+        SSKEnvironment.shared.modelReadCachesRef.interactionReadCache.didReadInteraction(value, transaction: transaction)
         return value
     }
 
@@ -5329,7 +5329,7 @@ public class TSInteractionCursor: NSObject, SDSCursor {
 @objc
 public extension TSInteraction {
     @nonobjc
-    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSInteractionCursor {
+    class func grdbFetchCursor(transaction: DBReadTransaction) -> TSInteractionCursor {
         let database = transaction.database
         do {
             let cursor = try InteractionRecord.fetchCursor(database)
@@ -5346,7 +5346,7 @@ public extension TSInteraction {
 
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
-                        transaction: SDSAnyReadTransaction) -> TSInteraction? {
+                        transaction: DBReadTransaction) -> TSInteraction? {
         assert(!uniqueId.isEmpty)
 
         return anyFetch(uniqueId: uniqueId, transaction: transaction, ignoreCache: false)
@@ -5354,7 +5354,7 @@ public extension TSInteraction {
 
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
-                        transaction: SDSAnyReadTransaction,
+                        transaction: DBReadTransaction,
                         ignoreCache: Bool) -> TSInteraction? {
         assert(!uniqueId.isEmpty)
 
@@ -5363,17 +5363,14 @@ public extension TSInteraction {
             return cachedCopy
         }
 
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(InteractionRecord.databaseTableName) WHERE \(interactionColumn: .uniqueId) = ?"
-            return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
-        }
+        let sql = "SELECT * FROM \(InteractionRecord.databaseTableName) WHERE \(interactionColumn: .uniqueId) = ?"
+        return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: transaction)
     }
 
     // Traverses all records.
     // Records are not visited in any particular order.
     class func anyEnumerate(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         anyEnumerate(transaction: transaction, batched: false, block: block)
@@ -5382,7 +5379,7 @@ public extension TSInteraction {
     // Traverses all records.
     // Records are not visited in any particular order.
     class func anyEnumerate(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batched: Bool = false,
         block: (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
@@ -5395,32 +5392,29 @@ public extension TSInteraction {
     //
     // If batchSize > 0, the enumeration is performed in autoreleased batches.
     class func anyEnumerate(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batchSize: UInt,
         block: (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            let cursor = TSInteraction.grdbFetchCursor(transaction: grdbTransaction)
-            Batching.loop(batchSize: batchSize,
-                          loopBlock: { stop in
-                                do {
-                                    guard let value = try cursor.next() else {
-                                        stop.pointee = true
-                                        return
-                                    }
-                                    block(value, stop)
-                                } catch let error {
-                                    owsFailDebug("Couldn't fetch model: \(error)")
+        let cursor = TSInteraction.grdbFetchCursor(transaction: transaction)
+        Batching.loop(batchSize: batchSize,
+                        loopBlock: { stop in
+                            do {
+                                guard let value = try cursor.next() else {
+                                    stop.pointee = true
+                                    return
                                 }
-                              })
-        }
+                                block(value, stop)
+                            } catch let error {
+                                owsFailDebug("Couldn't fetch model: \(error)")
+                            }
+                            })
     }
 
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
     class func anyEnumerateUniqueIds(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         anyEnumerateUniqueIds(transaction: transaction, batched: false, block: block)
@@ -5429,7 +5423,7 @@ public extension TSInteraction {
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
     class func anyEnumerateUniqueIds(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batched: Bool = false,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
@@ -5442,24 +5436,21 @@ public extension TSInteraction {
     //
     // If batchSize > 0, the enumeration is performed in autoreleased batches.
     class func anyEnumerateUniqueIds(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batchSize: UInt,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            grdbEnumerateUniqueIds(transaction: grdbTransaction,
-                                   sql: """
-                    SELECT \(interactionColumn: .uniqueId)
-                    FROM \(InteractionRecord.databaseTableName)
-                """,
-                batchSize: batchSize,
-                block: block)
-        }
+        grdbEnumerateUniqueIds(transaction: transaction,
+                                sql: """
+                SELECT \(interactionColumn: .uniqueId)
+                FROM \(InteractionRecord.databaseTableName)
+            """,
+            batchSize: batchSize,
+            block: block)
     }
 
     // Does not order the results.
-    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSInteraction] {
+    class func anyFetchAll(transaction: DBReadTransaction) -> [TSInteraction] {
         var result = [TSInteraction]()
         anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
@@ -5468,7 +5459,7 @@ public extension TSInteraction {
     }
 
     // Does not order the results.
-    class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+    class func anyAllUniqueIds(transaction: DBReadTransaction) -> [String] {
         var result = [String]()
         anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
             result.append(uniqueId)
@@ -5476,32 +5467,26 @@ public extension TSInteraction {
         return result
     }
 
-    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            return InteractionRecord.ows_fetchCount(grdbTransaction.database)
-        }
+    class func anyCount(transaction: DBReadTransaction) -> UInt {
+        return InteractionRecord.ows_fetchCount(transaction.database)
     }
 
     class func anyExists(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         assert(!uniqueId.isEmpty)
 
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            let sql = "SELECT EXISTS ( SELECT 1 FROM \(InteractionRecord.databaseTableName) WHERE \(interactionColumn: .uniqueId) = ? )"
-            let arguments: StatementArguments = [uniqueId]
-            do {
-                return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
-            } catch {
-                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                    userDefaults: CurrentAppContext().appUserDefaults(),
-                    error: error
-                )
-                owsFail("Missing instance.")
-            }
+        let sql = "SELECT EXISTS ( SELECT 1 FROM \(InteractionRecord.databaseTableName) WHERE \(interactionColumn: .uniqueId) = ? )"
+        let arguments: StatementArguments = [uniqueId]
+        do {
+            return try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Missing instance.")
         }
     }
 }
@@ -5511,7 +5496,7 @@ public extension TSInteraction {
 public extension TSInteraction {
     class func grdbFetchCursor(sql: String,
                                arguments: StatementArguments = StatementArguments(),
-                               transaction: GRDBReadTransaction) -> TSInteractionCursor {
+                               transaction: DBReadTransaction) -> TSInteractionCursor {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try InteractionRecord.fetchCursor(transaction.database, sqlRequest)
@@ -5528,7 +5513,7 @@ public extension TSInteraction {
 
     class func grdbFetchOne(sql: String,
                             arguments: StatementArguments = StatementArguments(),
-                            transaction: GRDBReadTransaction) -> TSInteraction? {
+                            transaction: DBReadTransaction) -> TSInteraction? {
         assert(!sql.isEmpty)
 
         do {
@@ -5538,7 +5523,7 @@ public extension TSInteraction {
             }
 
             let value = try TSInteraction.fromRecord(record)
-            SSKEnvironment.shared.modelReadCachesRef.interactionReadCache.didReadInteraction(value, transaction: transaction.asAnyRead)
+            SSKEnvironment.shared.modelReadCachesRef.interactionReadCache.didReadInteraction(value, transaction: transaction)
             return value
         } catch {
             owsFailDebug("error: \(error)")

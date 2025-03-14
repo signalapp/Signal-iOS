@@ -77,7 +77,7 @@ public class ContactSearchResult: Comparable {
     private let comparableName: ComparableDisplayName
     private let lastInteractionRowID: UInt64?
 
-    init(recipientAddress: SignalServiceAddress, transaction: SDSAnyReadTransaction) {
+    init(recipientAddress: SignalServiceAddress, transaction: DBReadTransaction) {
         self.recipientAddress = recipientAddress
         self.comparableName = ComparableDisplayName(
             address: recipientAddress,
@@ -185,7 +185,7 @@ public class GroupSearchResult: Comparable {
         sortKey: ConversationSortKey,
         searchText: String,
         nameResolver: NameResolver,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> GroupSearchResult {
         owsAssertDebug(threadViewModel.threadRecord === groupThread)
         let matchedMembers = groupThread.sortedMemberNames(
@@ -294,13 +294,13 @@ public class FullTextSearcher: NSObject {
         includeLocalUser: Bool,
         includeStories: Bool,
         maxResults: Int = kDefaultMaxResults,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> RecipientSearchResultSet {
         var groupResults = [GroupSearchResult]()
         var storyResults = [StorySearchResult]()
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
             owsFail("Can't search if you've never been registered.")
         }
 
@@ -313,7 +313,7 @@ public class FullTextSearcher: NSObject {
             for: searchText,
             maxResults: maxResults,
             localIdentifiers: localIdentifiers,
-            tx: tx.asV2Read,
+            tx: tx,
             checkCancellation: {},
             addGroupThread: { groupThread in
                 let sortKey = ConversationSortKey(
@@ -376,7 +376,7 @@ public class FullTextSearcher: NSObject {
         case none
     }
 
-    private func noteToSelfMatch(searchText: String, localIdentifiers: LocalIdentifiers, tx: SDSAnyReadTransaction) -> NoteToSelfMatch {
+    private func noteToSelfMatch(searchText: String, localIdentifiers: LocalIdentifiers, tx: DBReadTransaction) -> NoteToSelfMatch {
         let searchTerms = searchText.split(separator: " ")
         if searchTerms.contains(where: { localIdentifiers.phoneNumber.contains($0) }) {
             return .nameOrNumber
@@ -395,7 +395,7 @@ public class FullTextSearcher: NSObject {
         searchText: String,
         maxResults: Int = kDefaultMaxResults,
         isCanceled: () -> Bool,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> HomeScreenSearchResultSet? {
         do {
             return try _searchForHomeScreen(
@@ -416,7 +416,7 @@ public class FullTextSearcher: NSObject {
         searchText: String,
         maxResults: Int,
         isCanceled: () -> Bool,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> HomeScreenSearchResultSet? {
         var contactResults = [ContactSearchResult]()
         var contactThreadResults = [ConversationSearchResult<ConversationSortKey>]()
@@ -570,7 +570,7 @@ public class FullTextSearcher: NSObject {
         }
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction) else {
             owsFail("Can't search if you've never been registered.")
         }
 
@@ -583,7 +583,7 @@ public class FullTextSearcher: NSObject {
             for: searchText,
             maxResults: remainingResultCount(),
             localIdentifiers: localIdentifiers,
-            tx: transaction.asV2Read,
+            tx: transaction,
             checkCancellation: { if isCanceled() { throw CancellationError() } },
             addGroupThread: { groupThread in
                 appendGroup(threadUniqueId: groupThread.uniqueId, groupThread: groupThread)
@@ -662,7 +662,7 @@ public class FullTextSearcher: NSObject {
                     mergedMessageBody = MessageBody(text: matchStyleApplied.string, ranges: .init(mentions: [:], styles: singleStyles))
                 }
                 return .messageBody(mergedMessageBody
-                    .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read)))
+                    .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction)))
             }()
             appendMessage(message, snippet: styledSnippet)
         }
@@ -687,7 +687,7 @@ public class FullTextSearcher: NSObject {
         thread: TSThread,
         searchText: String,
         maxResults: Int = kDefaultMaxResults,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> ConversationScreenSearchResultSet {
         var messages: [UInt64: MessageSearchResult] = [:]
 
@@ -714,7 +714,7 @@ public class FullTextSearcher: NSObject {
         let canSearchForMentions: Bool = thread is TSGroupThread
         if canSearchForMentions {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction) else {
                 owsFail("Can't search if you've never been registered.")
             }
             let addresses = SearchableNameFinder(
@@ -726,7 +726,7 @@ public class FullTextSearcher: NSObject {
                 for: searchText,
                 maxResults: maxResults - messages.count,
                 localIdentifiers: localIdentifiers,
-                tx: transaction.asV2Read,
+                tx: transaction,
                 checkCancellation: {},
                 addGroupThread: { _ in },
                 addStoryThread: { _ in }

@@ -30,7 +30,7 @@ class StoryGroupReplyViewItem {
         authorDisplayName: String?,
         authorColor: UIColor,
         recipientStatus: MessageReceiptStatus?,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) {
         self.interactionIdentifier = .fromInteraction(message)
         self.interactionUniqueId = message.uniqueId

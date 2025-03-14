@@ -64,7 +64,7 @@ class RecipientContextMenuHelper {
             }
             let localAddress: SignalServiceAddress? = self.databaseStorage.read { [weak self] tx in
                 guard let self else { return nil }
-                return self.accountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
+                return self.accountManager.localIdentifiers(tx: tx)?.aciAddress
             }
             guard
                 let localAddress,
@@ -208,7 +208,7 @@ class RecipientContextMenuHelper {
             return
         }
         let (localAddress, recipientDisplayName) = databaseStorage.read { tx in
-            let localAddress = accountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
+            let localAddress = accountManager.localIdentifiers(tx: tx)?.aciAddress
             let recipientDisplayName = contactsManager.displayName(for: address, tx: tx)
                 .resolvedValue().formattedForActionSheetTitle()
             return (localAddress, recipientDisplayName)
@@ -247,7 +247,7 @@ class RecipientContextMenuHelper {
                             address,
                             inKnownMessageRequestState: false,
                             wasLocallyInitiated: true,
-                            tx: tx.asV2Write
+                            tx: tx
                         )
                         return .success(())
                     } catch {
@@ -299,11 +299,11 @@ class RecipientContextMenuHelper {
             localAddress,
             recipientDisplayName
         ) = databaseStorage.read { tx in
-            let localAddress = accountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
+            let localAddress = accountManager.localIdentifiers(tx: tx)?.aciAddress
             let recipientDisplayName = contactsManager.displayName(for: address, tx: tx)
                 .resolvedValue().formattedForActionSheetTitle()
             return (
-                accountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice ?? true,
+                accountManager.registrationState(tx: tx).isPrimaryDevice ?? true,
                 localAddress,
                 recipientDisplayName
             )

@@ -58,9 +58,9 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         let appVersionKey = "appVersion"
         let currentAppVersion = AppVersionImpl.shared.currentAppVersion
 
-        let shouldUpdate = SSKEnvironment.shared.databaseStorageRef.read { (transaction: SDSAnyReadTransaction) -> Bool in
+        let shouldUpdate = SSKEnvironment.shared.databaseStorageRef.read { (transaction: DBReadTransaction) -> Bool in
             // Check if the app version has changed.
-            let lastAppVersion = self.keyValueStore.getString(appVersionKey, transaction: transaction.asV2Read)
+            let lastAppVersion = self.keyValueStore.getString(appVersionKey, transaction: transaction)
             guard lastAppVersion == currentAppVersion else {
                 return true
             }
@@ -74,7 +74,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             self.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
 
-            self.keyValueStore.setString(currentAppVersion, key: appVersionKey, transaction: transaction.asV2Write)
+            self.keyValueStore.setString(currentAppVersion, key: appVersionKey, transaction: transaction)
         }
     }
 
@@ -200,7 +200,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         MobileCoinAPI.isValidPassphraseWord(word)
     }
 
-    public func clearState(transaction: SDSAnyWriteTransaction) {
+    public func clearState(transaction: DBWriteTransaction) {
         paymentBalanceCache.set(nil)
 
         discardApiHandle()
@@ -308,7 +308,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
     public func findPaymentModels(withMCLedgerBlockIndex mcLedgerBlockIndex: UInt64,
                                   mcIncomingTransactionPublicKey: Data,
-                                  transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {
+                                  transaction: DBReadTransaction) -> [TSPaymentModel] {
         PaymentFinder.paymentModels(forMcLedgerBlockIndex: mcLedgerBlockIndex,
                                     transaction: transaction).filter {
                                         let publicKeys = $0.mobileCoin?.incomingTransactionPublicKeys ?? []
@@ -462,7 +462,7 @@ public extension PaymentsImpl {
         return Self.formatAsBase58(publicAddress: localAccount.accountKey.publicAddress)
     }
 
-    func localPaymentAddressProtoData(paymentsState: PaymentsState, tx: SDSAnyReadTransaction) -> Data? {
+    func localPaymentAddressProtoData(paymentsState: PaymentsState, tx: DBReadTransaction) -> Data? {
         owsAssertDebug(paymentsState.isEnabled)
 
         guard let localPaymentAddress = buildLocalPaymentAddress(paymentsState: paymentsState) else {
@@ -483,7 +483,7 @@ public extension PaymentsImpl {
         }
     }
 
-    func updateLastKnownLocalPaymentAddressProtoData(transaction: SDSAnyWriteTransaction) {
+    func updateLastKnownLocalPaymentAddressProtoData(transaction: DBWriteTransaction) {
         let data: Data?
         let paymentsState = self.paymentsState
         if paymentsState.isEnabled {
@@ -794,7 +794,7 @@ public extension PaymentsImpl {
     }
 
     class func sendDefragmentationSyncMessage(paymentModel: TSPaymentModel,
-                                              transaction: SDSAnyWriteTransaction) {
+                                              transaction: DBWriteTransaction) {
         guard paymentModel.isDefragmentation else {
             owsFailDebug("Invalid paymentType.")
             return
@@ -866,7 +866,7 @@ public extension PaymentsImpl {
     }
 
     class func sendPaymentNotificationMessage(paymentModel: TSPaymentModel,
-                                              transaction: SDSAnyWriteTransaction) throws -> OWSOutgoingPaymentMessage {
+                                              transaction: DBWriteTransaction) throws -> OWSOutgoingPaymentMessage {
         guard paymentModel.paymentType == .outgoingPayment else {
             owsFailDebug("Invalid paymentType.")
             throw PaymentsError.invalidModel
@@ -918,7 +918,7 @@ public extension PaymentsImpl {
     }
 
     class func sendOutgoingPaymentSyncMessage(paymentModel: TSPaymentModel,
-                                              transaction: SDSAnyWriteTransaction) {
+                                              transaction: DBWriteTransaction) {
 
         guard let recipientAci = paymentModel.senderOrRecipientAci else {
             owsFailDebug("Missing recipientAci.")
@@ -1006,7 +1006,7 @@ public extension PaymentsImpl {
         recipientAci: Aci,
         memoMessage: String?,
         mcReceiptData: Data,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> OWSOutgoingPaymentMessage {
 
         if
@@ -1033,7 +1033,7 @@ public extension PaymentsImpl {
             mcReceiptData: mcReceiptData
         )
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
+        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction)
 
         let messageBody: String? = {
             guard let picoMob = paymentModel.paymentAmount?.picoMob else {
@@ -1079,7 +1079,7 @@ public extension PaymentsImpl {
                                               mcOutputPublicKeys: [Data],
                                               mcReceiptData: Data,
                                               isDefragmentation: Bool,
-                                              transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage? {
+                                              transaction: DBWriteTransaction) -> TSOutgoingMessage? {
 
         guard let thread = TSContactThread.getOrCreateLocalThread(transaction: transaction) else {
             owsFailDebug("Missing local thread.")
@@ -1114,7 +1114,7 @@ public extension PaymentsImpl {
 // MARK: -
 
 public class PaymentsEventsMainApp: NSObject, PaymentsEvents {
-    public func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
+    public func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {
         let payments = SUIEnvironment.shared.paymentsRef as! PaymentsImpl
 
         payments.paymentsReconciliation.willInsertPayment(paymentModel, transaction: transaction)
@@ -1123,12 +1123,12 @@ public class PaymentsEventsMainApp: NSObject, PaymentsEvents {
         payments.updateCurrentPaymentBalance()
     }
 
-    public func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
+    public func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: DBWriteTransaction) {
         let payments = SUIEnvironment.shared.paymentsRef as! PaymentsImpl
         payments.paymentsReconciliation.willUpdatePayment(paymentModel, transaction: transaction)
     }
 
-    public func updateLastKnownLocalPaymentAddressProtoData(transaction: SDSAnyWriteTransaction) {
+    public func updateLastKnownLocalPaymentAddressProtoData(transaction: DBWriteTransaction) {
         SUIEnvironment.shared.paymentsImplRef.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
     }
 
@@ -1136,7 +1136,7 @@ public class PaymentsEventsMainApp: NSObject, PaymentsEvents {
         SUIEnvironment.shared.paymentsImplRef.updateCurrentPaymentBalance()
     }
 
-    public func clearState(transaction: SDSAnyWriteTransaction) {
+    public func clearState(transaction: DBWriteTransaction) {
         SSKEnvironment.shared.paymentsHelperRef.clearState(transaction: transaction)
         SUIEnvironment.shared.paymentsRef.clearState(transaction: transaction)
     }
@@ -1146,12 +1146,12 @@ public class PaymentsEventsMainApp: NSObject, PaymentsEvents {
 
 public extension PaymentsImpl {
 
-    func scheduleReconciliationNow(transaction: SDSAnyWriteTransaction) {
+    func scheduleReconciliationNow(transaction: DBWriteTransaction) {
         paymentsReconciliation.scheduleReconciliationNow(transaction: transaction)
     }
 
     func replaceAsUnidentified(paymentModel oldPaymentModel: TSPaymentModel,
-                               transaction: SDSAnyWriteTransaction) {
+                               transaction: DBWriteTransaction) {
         paymentsReconciliation.replaceAsUnidentified(paymentModel: oldPaymentModel,
                                                      transaction: transaction)
     }

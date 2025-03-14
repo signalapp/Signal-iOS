@@ -276,15 +276,15 @@ public class BackupAttachmentUploadManagerImpl: BackupAttachmentUploadManager {
             return .success
         }
 
-        func didSucceed(record: Store.Record, tx: any DBWriteTransaction) throws {
+        func didSucceed(record: Store.Record, tx: DBWriteTransaction) throws {
             Logger.info("Finished backing up attachment \(record.id)")
         }
 
-        func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: any DBWriteTransaction) throws {
+        func didFail(record: Store.Record, error: any Error, isRetryable: Bool, tx: DBWriteTransaction) throws {
             Logger.warn("Failed backing up attachment \(record.id), isRetryable: \(isRetryable), error: \(error)")
         }
 
-        func didCancel(record: Store.Record, tx: any DBWriteTransaction) throws {
+        func didCancel(record: Store.Record, tx: DBWriteTransaction) throws {
             Logger.warn("Cancelled backing up attachment \(record.id)")
         }
     }

@@ -260,10 +260,10 @@ final class CallLinkViewController: OWSTableViewController2 {
         let rowId = SSKEnvironment.shared.databaseStorageRef.write { tx in
             var callLinkRecord: CallLinkRecord
             do {
-                (callLinkRecord, _) = try callLinkStore.fetchOrInsert(rootKey: callLink.rootKey, tx: tx.asV2Write)
+                (callLinkRecord, _) = try callLinkStore.fetchOrInsert(rootKey: callLink.rootKey, tx: tx)
                 callLinkRecord.adminPasskey = adminPasskey!
                 callLinkRecord.updateState(callLinkState!)
-                try callLinkStore.update(callLinkRecord, tx: tx.asV2Write)
+                try callLinkStore.update(callLinkRecord, tx: tx)
             } catch {
                 owsFail("Couldn't create CallLinkRecord: \(error)")
             }

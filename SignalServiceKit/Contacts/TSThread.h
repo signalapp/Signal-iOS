@@ -7,11 +7,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class DBReadTransaction;
+@class DBWriteTransaction;
 @class MessageBody;
 @class MessageBodyRanges;
 @class OWSDisappearingMessagesConfiguration;
-@class SDSAnyReadTransaction;
-@class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
@@ -113,7 +113,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
  */
 
 @property (nonatomic, readonly) NSArray<SignalServiceAddress *> *recipientAddressesWithSneakyTransaction;
-- (NSArray<SignalServiceAddress *> *)recipientAddressesWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (NSArray<SignalServiceAddress *> *)recipientAddressesWithTransaction:(DBReadTransaction *)transaction;
 
 @property (nonatomic, readonly) BOOL isNoteToSelf;
 
@@ -123,15 +123,15 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
  * Get all messages in the thread we weren't able to decrypt
  */
 - (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key
-                                                                                     tx:(SDSAnyReadTransaction *)tx;
+                                                                                     tx:(DBReadTransaction *)tx;
 
 - (BOOL)hasSafetyNumbers;
 
-- (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(DBReadTransaction *)transaction
     NS_SWIFT_NAME(lastInteractionForInbox(transaction:));
 
 - (nullable TSInteraction *)firstInteractionAtOrAroundSortId:(uint64_t)sortId
-                                                 transaction:(SDSAnyReadTransaction *)transaction
+                                                 transaction:(DBReadTransaction *)transaction
     NS_SWIFT_NAME(firstInteraction(atOrAroundSortId:transaction:));
 
 /**
@@ -140,13 +140,13 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
  *  @param message Latest Interaction to take into consideration.
  *  @param transaction Database transaction.
  */
-- (void)updateWithInsertedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
-- (void)updateWithUpdatedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
-- (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithInsertedMessage:(TSInteraction *)message transaction:(DBWriteTransaction *)transaction;
+- (void)updateWithUpdatedMessage:(TSInteraction *)message transaction:(DBWriteTransaction *)transaction;
+- (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(DBWriteTransaction *)transaction;
 
 - (void)updateOnInteractionsRemovedWithNeedsToUpdateLastInteractionRowId:(BOOL)needsToUpdateLastInteractionRowId
                                           needsToUpdateLastVisibleSortId:(BOOL)needsToUpdateLastVisibleSortId
-                                                             transaction:(SDSAnyWriteTransaction *)transaction
+                                                             transaction:(DBWriteTransaction *)transaction
     NS_SWIFT_NAME(updateOnInteractionsRemoved(needsToUpdateLastInteractionRowId:needsToUpdateLastVisibleSortId:transaction:));
 
 #pragma mark - Merging

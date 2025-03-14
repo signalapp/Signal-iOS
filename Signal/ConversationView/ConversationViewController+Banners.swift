@@ -82,7 +82,7 @@ public extension ConversationViewController {
 
     func fetchAvatar(
         for address: SignalServiceAddress,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> UIImage? {
         return SSKEnvironment.shared.avatarBuilderRef.avatarImage(
             forAddress: address,

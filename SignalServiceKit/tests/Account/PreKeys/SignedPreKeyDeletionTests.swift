@@ -31,7 +31,7 @@ final class SignedPreKeyDeletionTests: SSKBaseTest {
                 signedPreKeyStore.storeSignedPreKey(
                     Int32(daysAgo),
                     signedPreKeyRecord: record,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
 
@@ -41,7 +41,7 @@ final class SignedPreKeyDeletionTests: SSKBaseTest {
         write { tx in
             signedPreKeyStore.cullSignedPreKeyRecords(
                 justUploadedSignedPreKey: justUploadedRecord,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 
@@ -78,7 +78,7 @@ final class SignedPreKeyDeletionTests: SSKBaseTest {
                 signedPreKeyStore.storeSignedPreKey(
                     Int32(idx),
                     signedPreKeyRecord: record,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
 
@@ -88,7 +88,7 @@ final class SignedPreKeyDeletionTests: SSKBaseTest {
         write { tx in
             signedPreKeyStore.cullSignedPreKeyRecords(
                 justUploadedSignedPreKey: justUploadedRecord,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 

@@ -177,7 +177,7 @@ class PreviewWallpaperViewController: UIViewController {
             DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
                 for: thread,
                 previewWallpaper: resolvedWallpaper,
-                tx: tx.asV2Read
+                tx: tx
             )
         }
     }
@@ -331,7 +331,7 @@ private class WallpaperPage: UIViewController {
         let shouldDimInDarkTheme = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             DependenciesBridge.shared.wallpaperStore.fetchDimInDarkMode(
                 for: thread?.uniqueId,
-                tx: transaction.asV2Read
+                tx: transaction
             )
         }
         let wallpaperView = Wallpaper.viewBuilder(

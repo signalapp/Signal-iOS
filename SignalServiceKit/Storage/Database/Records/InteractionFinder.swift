@@ -27,7 +27,7 @@ public class InteractionFinder: NSObject {
 
     public class func fetch(
         rowId: Int64,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSInteraction? {
         guard let interaction = TSInteraction.grdbFetchOne(
             sql: """
@@ -36,7 +36,7 @@ public class InteractionFinder: NSObject {
                 WHERE \(interactionColumn: .id) = ?
                 """,
             arguments: [ rowId ],
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         ) else {
             owsFailDebug("Missing interaction with row ID - how did we get this row ID?")
             return nil
@@ -48,7 +48,7 @@ public class InteractionFinder: NSObject {
     public class func existsIncomingMessage(
         timestamp: UInt64,
         sourceAci: Aci,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         let sql = """
             SELECT 1
@@ -71,7 +71,7 @@ public class InteractionFinder: NSObject {
         ]
         do {
             return try Bool.fetchOne(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
@@ -87,7 +87,7 @@ public class InteractionFinder: NSObject {
     @objc
     public class func fetchInteractions(
         timestamp: UInt64,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> [TSInteraction] {
         let sql = """
             SELECT *
@@ -99,11 +99,11 @@ public class InteractionFinder: NSObject {
         return try TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: [timestamp],
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         ).all()
     }
 
-    public class func incompleteCallIds(transaction: SDSAnyReadTransaction) -> [String] {
+    public class func incompleteCallIds(transaction: DBReadTransaction) -> [String] {
         let sql: String = """
             SELECT \(interactionColumn: .uniqueId)
             FROM \(InteractionRecord.databaseTableName)
@@ -122,7 +122,7 @@ public class InteractionFinder: NSObject {
         var result = [String]()
         do {
             result = try String.fetchAll(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: statementArguments
             )
@@ -133,7 +133,7 @@ public class InteractionFinder: NSObject {
     }
 
     public class func attemptingOutInteractionIds(
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [String] {
         let sql: String = """
             SELECT \(interactionColumn: .uniqueId)
@@ -144,7 +144,7 @@ public class InteractionFinder: NSObject {
         var result = [String]()
         do {
             result = try String.fetchAll(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: [TSOutgoingMessageState.sending.rawValue]
             )
@@ -155,7 +155,7 @@ public class InteractionFinder: NSObject {
     }
 
     public class func pendingInteractionIds(
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [String] {
         let sql: String = """
             SELECT \(interactionColumn: .uniqueId)
@@ -166,7 +166,7 @@ public class InteractionFinder: NSObject {
         var result = [String]()
         do {
             result = try String.fetchAll(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: [TSOutgoingMessageState.pending.rawValue]
             )
@@ -176,7 +176,7 @@ public class InteractionFinder: NSObject {
         return result
     }
 
-    public class func unreadCountInAllThreads(transaction: SDSAnyReadTransaction) -> UInt {
+    public class func unreadCountInAllThreads(transaction: DBReadTransaction) -> UInt {
         do {
             let includeMutedThreads = SSKPreferences.includeMutedThreadsInBadgeCount(transaction: transaction)
 
@@ -196,7 +196,7 @@ public class InteractionFinder: NSObject {
 
             unreadInteractionQuery += " AND \(sqlClauseForUnreadInteractionCounts(interactionsAlias: "interaction")) "
 
-            let unreadInteractionCount = try UInt.fetchOne(transaction.unwrapGrdbRead.database, sql: unreadInteractionQuery)
+            let unreadInteractionCount = try UInt.fetchOne(transaction.database, sql: unreadInteractionQuery)
             owsAssertDebug(unreadInteractionCount != nil, "unreadInteractionCount was unexpectedly nil")
 
             var markedUnreadThreadQuery = """
@@ -213,7 +213,7 @@ public class InteractionFinder: NSObject {
                 markedUnreadThreadQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread(threadAssociatedDataAlias: "associatedData")) "
             }
 
-            let markedUnreadCount = try UInt.fetchOne(transaction.unwrapGrdbRead.database, sql: markedUnreadThreadQuery)
+            let markedUnreadCount = try UInt.fetchOne(transaction.database, sql: markedUnreadThreadQuery)
             owsAssertDebug(markedUnreadCount != nil, "markedUnreadCount was unexpectedly nil")
 
             return (unreadInteractionCount ?? 0) + (markedUnreadCount ?? 0)
@@ -225,7 +225,7 @@ public class InteractionFinder: NSObject {
 
     // The interactions should be enumerated in order from "next to expire" to "last to expire".
     public class func nextMessageWithStartedPerConversationExpirationToExpire(
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSMessage? {
         // NOTE: We DO NOT consult storedShouldStartExpireTimer here;
         //       once expiration has begun we want to see it through.
@@ -238,7 +238,7 @@ public class InteractionFinder: NSObject {
             """
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
         do {
             while let interaction = try cursor.next() {
@@ -254,7 +254,7 @@ public class InteractionFinder: NSObject {
         return nil
     }
 
-    public class func fetchSomeExpiredMessageRowIds(now: UInt64, limit: Int, tx: SDSAnyReadTransaction) throws -> [Int64] {
+    public class func fetchSomeExpiredMessageRowIds(now: UInt64, limit: Int, tx: DBReadTransaction) throws -> [Int64] {
         // NOTE: We DO NOT consult storedShouldStartExpireTimer here;
         //       once expiration has begun we want to see it through.
         let sql = """
@@ -266,14 +266,14 @@ public class InteractionFinder: NSObject {
             LIMIT \(limit)
             """
         do {
-            return try Int64.fetchAll(tx.unwrapGrdbRead.database, sql: sql, arguments: [now])
+            return try Int64.fetchAll(tx.database, sql: sql, arguments: [now])
         } catch {
             throw error.grdbErrorForLogging
         }
     }
 
     public class func fetchAllMessageUniqueIdsWhichFailedToStartExpiring(
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [String] {
         // NOTE: We DO consult storedShouldStartExpireTimer here.
         //       We don't want to start expiration until it is true.
@@ -289,7 +289,7 @@ public class InteractionFinder: NSObject {
             """
         do {
             return try String.fetchAll(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql
             )
         } catch {
@@ -300,7 +300,7 @@ public class InteractionFinder: NSObject {
 
     public class func interactions(
         withInteractionIds interactionIds: Set<String>,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Set<TSInteraction> {
         guard !interactionIds.isEmpty else {
             return []
@@ -314,7 +314,7 @@ public class InteractionFinder: NSObject {
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: arguments,
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
         var interactions = Set<TSInteraction>()
         do {
@@ -329,7 +329,7 @@ public class InteractionFinder: NSObject {
 
     public static func enumerateGroupReplies(
         for storyMessage: StoryMessage,
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: @escaping (TSMessage, inout Bool) -> Void
     ) {
         let sql = """
@@ -343,7 +343,7 @@ public class InteractionFinder: NSObject {
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: [storyMessage.timestamp, storyMessage.authorAci.serviceIdUppercaseString],
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
         do {
             while let interaction = try cursor.next() {
@@ -365,7 +365,7 @@ public class InteractionFinder: NSObject {
     public static func hasLocalUserReplied(
         storyTimestamp: UInt64,
         storyAuthorAci: Aci,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         let sql = """
             SELECT 1
@@ -379,7 +379,7 @@ public class InteractionFinder: NSObject {
             """
         do {
             return try Bool.fetchOne(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: [
                     storyTimestamp,
@@ -394,7 +394,7 @@ public class InteractionFinder: NSObject {
     public static func groupReplyUniqueIdsAndRowIds(
         storyAuthor: Aci,
         storyTimestamp: UInt64,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [(String, Int64)] {
         guard storyAuthor != StoryMessage.systemStoryAuthor else {
             // No replies on system stories.
@@ -411,7 +411,7 @@ public class InteractionFinder: NSObject {
                 ORDER BY \(interactionColumn: .id) ASC
                 """
             return try Row.fetchAll(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: [storyTimestamp, storyAuthor.serviceIdUppercaseString]
             ).map { ($0[0], $0[1]) }
@@ -421,7 +421,7 @@ public class InteractionFinder: NSObject {
     }
 
     static func enumeratePlaceholders(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (OWSRecoverableDecryptionPlaceholder) -> Void
     ) {
         let sql = """
@@ -433,7 +433,7 @@ public class InteractionFinder: NSObject {
         do {
             let cursor = TSInteraction.grdbFetchCursor(
                 sql: sql,
-                transaction: transaction.unwrapGrdbRead
+                transaction: transaction
             )
             while let result = try cursor.next() {
                 if let placeholder = result as? OWSRecoverableDecryptionPlaceholder {
@@ -452,7 +452,7 @@ public class InteractionFinder: NSObject {
         withTimestamp timestamp: UInt64,
         threadId: String,
         author: SignalServiceAddress,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSMessage? {
         guard timestamp > 0 else {
             owsFailDebug("invalid timestamp: \(timestamp)")
@@ -500,7 +500,7 @@ public class InteractionFinder: NSObject {
 
     /// Gets the most recently inserted Interaction of type `incomingMessage`.
     public static func lastInsertedIncomingMessage(
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSIncomingMessage? {
         let sql: String = """
             SELECT *
@@ -517,7 +517,7 @@ public class InteractionFinder: NSObject {
         let result = TSInteraction.grdbFetchOne(
             sql: sql,
             arguments: arguments,
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
         if let result = result as? TSIncomingMessage {
             return result
@@ -533,7 +533,7 @@ public class InteractionFinder: NSObject {
 
     public func profileUpdateInteractions(
         afterSortId sortId: UInt64,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [TSInfoMessage] {
         let cursor = TSInteraction.grdbFetchCursor(
             sql: """
@@ -545,7 +545,7 @@ public class InteractionFinder: NSObject {
                 AND \(interactionColumn: .id) > ?
                 """,
             arguments: [threadUniqueId, TSInfoMessageType.profileUpdate.rawValue, sortId],
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
 
         let allResults: [TSInteraction]
@@ -563,7 +563,7 @@ public class InteractionFinder: NSObject {
 
     func latestInteraction(
         from address: SignalServiceAddress,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSInteraction? {
         let sql = """
             SELECT *
@@ -581,7 +581,7 @@ public class InteractionFinder: NSObject {
         return TSInteraction.grdbFetchOne(
             sql: sql,
             arguments: arguments,
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
     }
 
@@ -609,20 +609,20 @@ public class InteractionFinder: NSObject {
     }
 
     func mostRecentInteraction(
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSInteraction? {
         let (sql, args) = mostRecentInteractionSqlAndArgs
         let firstInteractionSql = sql + " LIMIT 1"
         return TSInteraction.grdbFetchOne(
             sql: firstInteractionSql,
             arguments: args,
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
     }
 
     @objc
     public func mostRecentInteractionForInbox(
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSInteraction? {
         guard let firstInteraction = mostRecentInteraction(transaction: transaction) else {
             return nil
@@ -640,7 +640,7 @@ public class InteractionFinder: NSObject {
             let cursor = TSInteraction.grdbFetchCursor(
                 sql: sql,
                 arguments: args,
-                transaction: transaction.unwrapGrdbRead
+                transaction: transaction
             )
             while let interaction = try cursor.next() {
                 if interaction.shouldAppearInInbox(transaction: transaction) {
@@ -654,7 +654,7 @@ public class InteractionFinder: NSObject {
         }
     }
 
-    public func unreadCount(transaction: SDSAnyReadTransaction) -> UInt {
+    public func unreadCount(transaction: DBReadTransaction) -> UInt {
         do {
             let sql = """
                 SELECT COUNT(*)
@@ -666,7 +666,7 @@ public class InteractionFinder: NSObject {
             let arguments: StatementArguments = [threadUniqueId]
 
             guard let count = try UInt.fetchOne(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: arguments
             ) else {
@@ -682,7 +682,7 @@ public class InteractionFinder: NSObject {
 
     /// Enumerates all the unread interactions in this thread, sorted by sort id.
     public func fetchAllUnreadMessages(
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> SDSMappedCursor<TSInteractionCursor, OWSReadTracking> {
         let sql = """
             SELECT *
@@ -696,7 +696,7 @@ public class InteractionFinder: NSObject {
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: [threadUniqueId],
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
         return cursor.compactMap { interaction -> OWSReadTracking? in
             guard let readTracking = interaction as? OWSReadTracking else {
@@ -716,10 +716,10 @@ public class InteractionFinder: NSObject {
     /// See also: ``fetchUnreadMessages`` and ``fetchMessagesWithUnreadReactions``.
     public func hasMessagesToMarkRead(
         beforeSortId: UInt64,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         let hasUnreadMessages = (try? Bool.fetchOne(
-            transaction.unwrapGrdbRead.database,
+            transaction.database,
             sql: """
                 SELECT 1
                 FROM \(InteractionRecord.databaseTableName)
@@ -737,7 +737,7 @@ public class InteractionFinder: NSObject {
         }
 
         let hasOutgoingMessagesWithUnreadReactions = (try? Bool.fetchOne(
-            transaction.unwrapGrdbRead.database,
+            transaction.database,
             sql: """
                 SELECT 1
                 FROM \(InteractionRecord.databaseTableName) AS interaction
@@ -762,7 +762,7 @@ public class InteractionFinder: NSObject {
     /// See also: ``hasMessagesToMarkRead``.
     public func fetchUnreadMessages(
         beforeSortId: UInt64,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> SDSMappedCursor<TSInteractionCursor, OWSReadTracking> {
         let sql = """
             SELECT *
@@ -777,7 +777,7 @@ public class InteractionFinder: NSObject {
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: [threadUniqueId, beforeSortId],
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
         return cursor.compactMap { interaction -> OWSReadTracking? in
             guard let readTracking = interaction as? OWSReadTracking else {
@@ -798,7 +798,7 @@ public class InteractionFinder: NSObject {
     /// See also: ``hasMessagesToMarkRead``.
     public func fetchMessagesWithUnreadReactions(
         beforeSortId: UInt64,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> SDSMappedCursor<TSInteractionCursor, TSOutgoingMessage> {
         let sql = """
             SELECT interaction.*
@@ -817,12 +817,12 @@ public class InteractionFinder: NSObject {
         let cursor = TSOutgoingMessage.grdbFetchCursor(
             sql: sql,
             arguments: [threadUniqueId, beforeSortId],
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
         return cursor.compactMap { $0 as? TSOutgoingMessage }
     }
 
-    public func oldestUnreadInteraction(transaction: SDSAnyReadTransaction) throws -> TSInteraction? {
+    public func oldestUnreadInteraction(transaction: DBReadTransaction) throws -> TSInteraction? {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
@@ -834,7 +834,7 @@ public class InteractionFinder: NSObject {
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: [threadUniqueId],
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
         return try cursor.next()
     }
@@ -842,7 +842,7 @@ public class InteractionFinder: NSObject {
     @objc
     public func firstInteraction(
         atOrAroundSortId sortId: UInt64,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSInteraction? {
         guard sortId > 0 else { return nil }
 
@@ -863,7 +863,7 @@ public class InteractionFinder: NSObject {
         if let interactionAtOrBeforeSortId = TSInteraction.grdbFetchOne(
             sql: atOrBeforeQuery,
             arguments: arguments,
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         ) {
             return interactionAtOrBeforeSortId
         }
@@ -885,11 +885,11 @@ public class InteractionFinder: NSObject {
         return TSInteraction.grdbFetchOne(
             sql: afterQuery,
             arguments: arguments,
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
     }
 
-    public func existsOutgoingMessage(transaction: SDSAnyReadTransaction) -> Bool {
+    public func existsOutgoingMessage(transaction: DBReadTransaction) -> Bool {
         let sql = """
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
@@ -904,7 +904,7 @@ public class InteractionFinder: NSObject {
         ]
         do {
             return try Bool.fetchOne(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
@@ -917,7 +917,7 @@ public class InteractionFinder: NSObject {
         }
     }
 
-    func hasGroupUpdateInfoMessage(transaction: SDSAnyReadTransaction) -> Bool {
+    func hasGroupUpdateInfoMessage(transaction: DBReadTransaction) -> Bool {
         let sql = """
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
@@ -931,7 +931,7 @@ public class InteractionFinder: NSObject {
         let arguments: StatementArguments = [threadUniqueId]
         do {
             return try Bool.fetchOne(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
@@ -945,7 +945,7 @@ public class InteractionFinder: NSObject {
     }
 
     public func enumerateRecentGroupUpdateMessages(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (TSInfoMessage, UnsafeMutablePointer<ObjCBool>) -> Void
     ) throws {
         let sql = """
@@ -961,7 +961,7 @@ public class InteractionFinder: NSObject {
         let cursor = TSInfoMessage.grdbFetchCursor(
             sql: sql,
             arguments: [threadUniqueId],
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
 
         while let interaction = try cursor.next() {
@@ -974,7 +974,7 @@ public class InteractionFinder: NSObject {
         }
     }
 
-    public func hasUserReportedSpam(transaction: SDSAnyReadTransaction) -> Bool {
+    public func hasUserReportedSpam(transaction: DBReadTransaction) -> Bool {
         let sql = """
             SELECT 1
             FROM \(InteractionRecord.databaseTableName)
@@ -988,7 +988,7 @@ public class InteractionFinder: NSObject {
         let arguments: StatementArguments = [threadUniqueId]
         do {
             return try Bool.fetchOne(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
@@ -1001,7 +1001,7 @@ public class InteractionFinder: NSObject {
         }
     }
 
-    func hasUserInitiatedInteraction(transaction: SDSAnyReadTransaction) -> Bool {
+    func hasUserInitiatedInteraction(transaction: DBReadTransaction) -> Bool {
         let infoMessageTypes: [TSInfoMessageType] = [
             .typeGroupQuit,
             .typeGroupUpdate,
@@ -1059,7 +1059,7 @@ public class InteractionFinder: NSObject {
 
         do {
             return try Bool.fetchOne(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
@@ -1072,7 +1072,7 @@ public class InteractionFinder: NSObject {
         }
     }
 
-    func possiblyHasIncomingMessages(transaction: SDSAnyReadTransaction) -> Bool {
+    func possiblyHasIncomingMessages(transaction: DBReadTransaction) -> Bool {
         // All of these message types could have been triggered by anyone in
         // the conversation. So, if one of them exists we have to assume the conversation
         // *might* have received messages. At some point it'd be nice to refactor this to
@@ -1106,7 +1106,7 @@ public class InteractionFinder: NSObject {
 
         do {
             return try Bool.fetchOne(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
@@ -1119,7 +1119,7 @@ public class InteractionFinder: NSObject {
         }
     }
 
-    public func outgoingMessageCount(transaction: SDSAnyReadTransaction) -> UInt {
+    public func outgoingMessageCount(transaction: DBReadTransaction) -> UInt {
         let sql = """
             SELECT COUNT(*)
             FROM \(InteractionRecord.databaseTableName)
@@ -1134,7 +1134,7 @@ public class InteractionFinder: NSObject {
 
         do {
             return try UInt.fetchOne(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? 0
@@ -1162,7 +1162,7 @@ public class InteractionFinder: NSObject {
     public func fetchUniqueIdsForConversationView(
         rowIdFilter: RowIdFilter,
         limit: Int,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> [String] {
         let (rowIdClause, arguments, isAscending) = sqlClauseForInteractionsByRowId(
             rowIdFilter: rowIdFilter,
@@ -1178,7 +1178,7 @@ public class InteractionFinder: NSObject {
         }
 
         let uniqueIds = try String.fetchAll(
-            tx.unwrapGrdbRead.database,
+            tx.database,
             sql: """
                 SELECT "uniqueId" FROM \(InteractionRecord.databaseTableName)
                 \(indexedBy)
@@ -1193,7 +1193,7 @@ public class InteractionFinder: NSObject {
     @objc
     @available(swift, obsoleted: 1.0)
     public func enumerateRecentInteractionsForConversationView(
-        transaction tx: SDSAnyReadTransaction,
+        transaction tx: DBReadTransaction,
         block: (TSInteraction) -> Bool
     ) throws {
         try enumerateInteractionsForConversationView(
@@ -1211,7 +1211,7 @@ public class InteractionFinder: NSObject {
     /// enumeration should continue, and `false` otherwise.
     public func enumerateInteractionsForConversationView(
         rowIdFilter: RowIdFilter,
-        tx: SDSAnyReadTransaction,
+        tx: DBReadTransaction,
         block: (TSInteraction) -> Bool
     ) throws {
         try buildInteractionCursor(
@@ -1226,7 +1226,7 @@ public class InteractionFinder: NSObject {
     func fetchAllInteractions(
         rowIdFilter: RowIdFilter,
         limit: Int,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> [TSInteraction] {
         var interactions: [TSInteraction] = []
 
@@ -1250,7 +1250,7 @@ public class InteractionFinder: NSObject {
     /// This cursor may not outlive the given transaction!
     func buildIncomingMessagesCursor(
         rowIdFilter: RowIdFilter,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> TSInteractionCursor {
         return buildInteractionCursor(
             rowIdFilter: rowIdFilter,
@@ -1267,7 +1267,7 @@ public class InteractionFinder: NSObject {
     /// This cursor may not outlive the given transaction!
     func buildOutgoingMessagesCursor(
         rowIdFilter: RowIdFilter,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> TSInteractionCursor {
         return buildInteractionCursor(
             rowIdFilter: rowIdFilter,
@@ -1316,7 +1316,7 @@ public class InteractionFinder: NSObject {
         rowIdFilter: RowIdFilter,
         additionalFiltering: InteractionsByRowIdAdditionalFiltering,
         limit: Int?,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> TSInteractionCursor {
         let (rowIdClause, arguments, _) = sqlClauseForInteractionsByRowId(
             rowIdFilter: rowIdFilter,
@@ -1345,7 +1345,7 @@ public class InteractionFinder: NSObject {
                 \(rowIdClause)
                 """,
             arguments: arguments,
-            transaction: tx.unwrapGrdbRead
+            transaction: tx
         )
     }
 
@@ -1415,7 +1415,7 @@ public class InteractionFinder: NSObject {
 
     /// The SQLite row ID of the most-recently inserted interaction covered by
     /// this finder.
-    func mostRecentRowId(tx: SDSAnyReadTransaction) -> Int64 {
+    func mostRecentRowId(tx: DBReadTransaction) -> Int64 {
         var mostRecentRowId: Int64 = 0
 
         try? buildInteractionCursor(

@@ -36,7 +36,7 @@ extension DonationPaymentDetailsViewController {
                             do {
                                 try DependenciesBridge.shared.externalPendingIDEALDonationStore.setPendingOneTimeDonation(
                                     donation: donation,
-                                    tx: transaction.asV2Write
+                                    tx: transaction
                                 )
                             } catch {
                                 owsFailDebug("[Donations] Failed to persist pending One-time iDEAL donation")

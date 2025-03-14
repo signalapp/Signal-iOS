@@ -44,6 +44,6 @@ public protocol MessageBackupKeyMaterial {
     func mediaEncryptionMetadata(
         mediaName: String,
         type: MediaTierEncryptionType,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) throws(MessageBackupKeyMaterialError) -> MediaTierEncryptionMetadata
 }

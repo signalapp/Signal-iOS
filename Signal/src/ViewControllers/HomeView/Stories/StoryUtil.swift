@@ -14,7 +14,7 @@ public enum StoryUtil {
         contactsManager: any ContactManager,
         useFullNameForLocalAddress: Bool = true,
         useShortGroupName: Bool = true,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> String {
         guard !storyMessage.authorAddress.isSystemStoryAddress else {
             return OWSLocalizedString(
@@ -62,7 +62,7 @@ public enum StoryUtil {
     /// Avatar for the _context_ of a story message. e.g. the group avatar if a group thread story, or the author's avatar otherwise.
     static func contextAvatarDataSource(
         for storyMessage: StoryMessage,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> ConversationAvatarDataSource {
         guard let groupId = storyMessage.groupId else {
             return try authorAvatarDataSource(for: storyMessage, transaction: transaction)
@@ -76,7 +76,7 @@ public enum StoryUtil {
     /// Avatar for the author of a story message, regardless of its context.
     static func authorAvatarDataSource(
         for storyMessage: StoryMessage,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> ConversationAvatarDataSource {
         guard !storyMessage.authorAddress.isSystemStoryAddress else {
             return systemStoryAvatar

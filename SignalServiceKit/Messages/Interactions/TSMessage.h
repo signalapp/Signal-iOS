@@ -13,13 +13,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 
 @class AciObjC;
+@class DBReadTransaction;
+@class DBWriteTransaction;
 @class MessageBodyRanges;
 @class MessageSticker;
 @class OWSContact;
 @class OWSGiftBadge;
 @class OWSLinkPreview;
-@class SDSAnyReadTransaction;
-@class SDSAnyWriteTransaction;
 @class TSMessageBuilder;
 @class TSQuotedMessage;
 
@@ -204,30 +204,30 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (void)updateStoredShouldStartExpireTimer;
 
-- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(DBWriteTransaction *)transaction;
 
-- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(DBWriteTransaction *)transaction;
 
-- (void)updateWithQuotedMessage:(TSQuotedMessage *)linkPreview transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithQuotedMessage:(TSQuotedMessage *)linkPreview transaction:(DBWriteTransaction *)transaction;
 
-- (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(DBWriteTransaction *)transaction;
 
-- (void)updateWithContactShare:(OWSContact *)contactShare transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithContactShare:(OWSContact *)contactShare transaction:(DBWriteTransaction *)transaction;
 
 #ifdef TESTABLE_BUILD
 
 // This method is for testing purposes only.
-- (void)updateWithMessageBody:(nullable NSString *)messageBody transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithMessageBody:(nullable NSString *)messageBody transaction:(DBWriteTransaction *)transaction;
 
 #endif
 
 #pragma mark - View Once
 
-- (void)updateWithViewOnceCompleteAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithViewOnceCompleteAndRemoveRenderableContentWithTransaction:(DBWriteTransaction *)transaction;
 
 #pragma mark - Remote Delete
 
-- (void)updateWithRemotelyDeletedAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithRemotelyDeletedAndRemoveRenderableContentWithTransaction:(DBWriteTransaction *)transaction;
 
 @end
 

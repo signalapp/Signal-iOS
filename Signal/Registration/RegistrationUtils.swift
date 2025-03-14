@@ -93,7 +93,7 @@ public class RegistrationUtils {
         let coordinator = SSKEnvironment.shared.databaseStorageRef.write {
             return loader.coordinator(
                 forDesiredMode: desiredMode,
-                transaction: $0.asV2Write
+                transaction: $0
             )
         }
         let navController = RegistrationNavigationController.withCoordinator(coordinator, appReadiness: appReadiness)

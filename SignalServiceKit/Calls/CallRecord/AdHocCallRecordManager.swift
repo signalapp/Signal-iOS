@@ -44,7 +44,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
         status: CallRecord.CallStatus.CallLinkCallStatus,
         timestamp: UInt64,
         shouldSendSyncMessge: Bool,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) throws {
         // This shouldn't happen (we block joining earlier), but race conditions
         // theoretically allow it, and this is the final point at which we can
@@ -104,7 +104,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
     func handlePeekResult(
         eraId: String?,
         rootKey: CallLinkRootKey,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) throws {
         guard var callLinkRecord = try self.callLinkStore.fetch(roomId: rootKey.deriveRoomId(), tx: tx) else {
             return
@@ -146,11 +146,11 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
 #if TESTABLE_BUILD
 
 final class MockAdHocCallRecordManager: AdHocCallRecordManager {
-    func createOrUpdateRecord(callId: UInt64, callLink: CallLinkRecord, status: CallRecord.CallStatus.CallLinkCallStatus, timestamp: UInt64, shouldSendSyncMessge: Bool, tx: any DBWriteTransaction) throws {
+    func createOrUpdateRecord(callId: UInt64, callLink: CallLinkRecord, status: CallRecord.CallStatus.CallLinkCallStatus, timestamp: UInt64, shouldSendSyncMessge: Bool, tx: DBWriteTransaction) throws {
         fatalError()
     }
 
-    func handlePeekResult(eraId: String?, rootKey: CallLinkRootKey, tx: any DBWriteTransaction) throws {
+    func handlePeekResult(eraId: String?, rootKey: CallLinkRootKey, tx: DBWriteTransaction) throws {
         fatalError()
     }
 }

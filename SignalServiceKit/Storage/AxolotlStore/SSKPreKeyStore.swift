@@ -26,7 +26,7 @@ class SSKPreKeyStore: NSObject {
         }
     }
 
-    func generatePreKeyRecords(transaction: SDSAnyWriteTransaction) -> [SignalServiceKit.PreKeyRecord] {
+    func generatePreKeyRecords(transaction: DBWriteTransaction) -> [SignalServiceKit.PreKeyRecord] {
         lock.withLock {
             var preKeyRecords: [SignalServiceKit.PreKeyRecord] = []
             var preKeyId = nextPreKeyId(transaction: transaction)
@@ -39,36 +39,36 @@ class SSKPreKeyStore: NSObject {
                 preKeyId += 1
             }
 
-            metadataStore.setInt(Int(preKeyId), key: tsNextPrekeyIdKey, transaction: transaction.asV2Write)
+            metadataStore.setInt(Int(preKeyId), key: tsNextPrekeyIdKey, transaction: transaction)
             return preKeyRecords
         }
     }
 
-    func storePreKeyRecords(_ preKeyRecords: [SignalServiceKit.PreKeyRecord], transaction: SDSAnyWriteTransaction) {
+    func storePreKeyRecords(_ preKeyRecords: [SignalServiceKit.PreKeyRecord], transaction: DBWriteTransaction) {
         for record in preKeyRecords {
             keyStore.setPreKeyRecord(record, key: keyValueStoreKey(int: Int(record.id)), transaction: transaction)
         }
     }
 
-    func loadPreKey(_ preKeyId: Int32, transaction: SDSAnyReadTransaction) -> SignalServiceKit.PreKeyRecord? {
+    func loadPreKey(_ preKeyId: Int32, transaction: DBReadTransaction) -> SignalServiceKit.PreKeyRecord? {
         keyStore.preKeyRecord(key: keyValueStoreKey(int: Int(preKeyId)), transaction: transaction)
     }
 
-    func storePreKey(_ preKeyId: Int32, preKeyRecord: SignalServiceKit.PreKeyRecord, transaction: SDSAnyWriteTransaction) {
+    func storePreKey(_ preKeyId: Int32, preKeyRecord: SignalServiceKit.PreKeyRecord, transaction: DBWriteTransaction) {
         keyStore.setPreKeyRecord(preKeyRecord, key: keyValueStoreKey(int: Int(preKeyId)), transaction: transaction)
     }
 
-    func removePreKey(_ preKeyId: Int32, transaction: SDSAnyWriteTransaction) {
+    func removePreKey(_ preKeyId: Int32, transaction: DBWriteTransaction) {
         Logger.info("Removing prekeyID: \(preKeyId)")
-        keyStore.removeValue(forKey: keyValueStoreKey(int: Int(preKeyId)), transaction: transaction.asV2Write)
+        keyStore.removeValue(forKey: keyValueStoreKey(int: Int(preKeyId)), transaction: transaction)
     }
 
     private func keyValueStoreKey(int: Int) -> String {
         return NSNumber(value: int).stringValue
     }
 
-    func cullPreKeyRecords(transaction: SDSAnyWriteTransaction) {
-        var keys = keyStore.allKeys(transaction: transaction.asV2Read)
+    func cullPreKeyRecords(transaction: DBWriteTransaction) {
+        var keys = keyStore.allKeys(transaction: transaction)
         var keysToRemove = Set<String>()
 
         Batching.loop(batchSize: Batching.kDefaultBatchSize) { stop in
@@ -77,7 +77,7 @@ class SSKPreKeyStore: NSObject {
                 stop.pointee = true
                 return
             }
-            guard let record = keyStore.getObject(key, ofClass: SignalServiceKit.PreKeyRecord.self, transaction: transaction.asV2Read) else {
+            guard let record = keyStore.getObject(key, ofClass: SignalServiceKit.PreKeyRecord.self, transaction: transaction) else {
                 // TODO: Why this is not being removed is unclear, but the objc code was not removing it so keeping present behavior for now.
                 return
             }
@@ -95,19 +95,19 @@ class SSKPreKeyStore: NSObject {
         guard !keysToRemove.isEmpty else { return }
         Logger.info("Culling prekeys: \(keysToRemove.count)")
         for key in keysToRemove {
-            keyStore.removeValue(forKey: key, transaction: transaction.asV2Write)
+            keyStore.removeValue(forKey: key, transaction: transaction)
         }
     }
 
-    func removeAll(_ transaction: SDSAnyWriteTransaction) {
+    func removeAll(_ transaction: DBWriteTransaction) {
         Logger.warn("")
 
-        keyStore.removeAll(transaction: transaction.asV2Write)
-        metadataStore.removeAll(transaction: transaction.asV2Write)
+        keyStore.removeAll(transaction: transaction)
+        metadataStore.removeAll(transaction: transaction)
     }
 
-    private func nextPreKeyId(transaction: SDSAnyReadTransaction) -> Int32 {
-        var lastPreKeyId = metadataStore.getInt(tsNextPrekeyIdKey, defaultValue: 0, transaction: transaction.asV2Read)
+    private func nextPreKeyId(transaction: DBReadTransaction) -> Int32 {
+        var lastPreKeyId = metadataStore.getInt(tsNextPrekeyIdKey, defaultValue: 0, transaction: transaction)
         if lastPreKeyId < 0 || lastPreKeyId > Int32.max {
             lastPreKeyId = 0
         }
@@ -150,11 +150,11 @@ extension SSKPreKeyStore: LibSignalClient.PreKeyStore {
 }
 
 extension KeyValueStore {
-    fileprivate func preKeyRecord(key: String, transaction: SDSAnyReadTransaction) -> SignalServiceKit.PreKeyRecord? {
-        return getObject(key, ofClass: SignalServiceKit.PreKeyRecord.self, transaction: transaction.asV2Read)
+    fileprivate func preKeyRecord(key: String, transaction: DBReadTransaction) -> SignalServiceKit.PreKeyRecord? {
+        return getObject(key, ofClass: SignalServiceKit.PreKeyRecord.self, transaction: transaction)
     }
 
-    fileprivate func setPreKeyRecord(_ record: SignalServiceKit.PreKeyRecord, key: String, transaction: SDSAnyWriteTransaction) {
-        setObject(record, key: key, transaction: transaction.asV2Write)
+    fileprivate func setPreKeyRecord(_ record: SignalServiceKit.PreKeyRecord, key: String, transaction: DBWriteTransaction) {
+        setObject(record, key: key, transaction: transaction)
     }
 }

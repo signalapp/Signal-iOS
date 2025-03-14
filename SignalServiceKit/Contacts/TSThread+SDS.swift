@@ -666,7 +666,7 @@ extension TSThreadSerializer {
 
 @objc
 public extension TSThread {
-    func anyInsert(transaction: SDSAnyWriteTransaction) {
+    func anyInsert(transaction: DBWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
@@ -678,7 +678,7 @@ public extension TSThread {
     //
     // For performance, when possible, you should explicitly specify whether
     // you are inserting or updating rather than calling this method.
-    func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    func anyUpsert(transaction: DBWriteTransaction) {
         let isInserting: Bool
         if TSThread.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
             isInserting = false
@@ -712,7 +712,7 @@ public extension TSThread {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSThread) -> Void) {
+    func anyUpdate(transaction: DBWriteTransaction, block: (TSThread) -> Void) {
 
         block(self)
 
@@ -740,7 +740,7 @@ public extension TSThread {
     // There are cases when this doesn't make sense, e.g. when  we know we've
     // just loaded the model in the same transaction. In those cases it is
     // safe and faster to do a "overwriting" update
-    func anyOverwritingUpdate(transaction: SDSAnyWriteTransaction) {
+    func anyOverwritingUpdate(transaction: DBWriteTransaction) {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 }
@@ -749,10 +749,10 @@ public extension TSThread {
 
 @objc
 public class TSThreadCursor: NSObject, SDSCursor {
-    private let transaction: GRDBReadTransaction
+    private let transaction: DBReadTransaction
     private let cursor: RecordCursor<ThreadRecord>?
 
-    init(transaction: GRDBReadTransaction, cursor: RecordCursor<ThreadRecord>?) {
+    init(transaction: DBReadTransaction, cursor: RecordCursor<ThreadRecord>?) {
         self.transaction = transaction
         self.cursor = cursor
     }
@@ -765,7 +765,7 @@ public class TSThreadCursor: NSObject, SDSCursor {
             return nil
         }
         let value = try TSThread.fromRecord(record)
-        SSKEnvironment.shared.modelReadCachesRef.threadReadCache.didReadThread(value, transaction: transaction.asAnyRead)
+        SSKEnvironment.shared.modelReadCachesRef.threadReadCache.didReadThread(value, transaction: transaction)
         return value
     }
 
@@ -786,7 +786,7 @@ public class TSThreadCursor: NSObject, SDSCursor {
 @objc
 public extension TSThread {
     @nonobjc
-    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSThreadCursor {
+    class func grdbFetchCursor(transaction: DBReadTransaction) -> TSThreadCursor {
         let database = transaction.database
         do {
             let cursor = try ThreadRecord.fetchCursor(database)
@@ -803,7 +803,7 @@ public extension TSThread {
 
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
-                        transaction: SDSAnyReadTransaction) -> TSThread? {
+                        transaction: DBReadTransaction) -> TSThread? {
         assert(!uniqueId.isEmpty)
 
         return anyFetch(uniqueId: uniqueId, transaction: transaction, ignoreCache: false)
@@ -811,7 +811,7 @@ public extension TSThread {
 
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
-                        transaction: SDSAnyReadTransaction,
+                        transaction: DBReadTransaction,
                         ignoreCache: Bool) -> TSThread? {
         assert(!uniqueId.isEmpty)
 
@@ -820,17 +820,14 @@ public extension TSThread {
             return cachedCopy
         }
 
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            let sql = "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .uniqueId) = ?"
-            return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
-        }
+        let sql = "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .uniqueId) = ?"
+        return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: transaction)
     }
 
     // Traverses all records.
     // Records are not visited in any particular order.
     class func anyEnumerate(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (TSThread, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         anyEnumerate(transaction: transaction, batched: false, block: block)
@@ -839,7 +836,7 @@ public extension TSThread {
     // Traverses all records.
     // Records are not visited in any particular order.
     class func anyEnumerate(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batched: Bool = false,
         block: (TSThread, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
@@ -852,32 +849,29 @@ public extension TSThread {
     //
     // If batchSize > 0, the enumeration is performed in autoreleased batches.
     class func anyEnumerate(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batchSize: UInt,
         block: (TSThread, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            let cursor = TSThread.grdbFetchCursor(transaction: grdbTransaction)
-            Batching.loop(batchSize: batchSize,
-                          loopBlock: { stop in
-                                do {
-                                    guard let value = try cursor.next() else {
-                                        stop.pointee = true
-                                        return
-                                    }
-                                    block(value, stop)
-                                } catch let error {
-                                    owsFailDebug("Couldn't fetch model: \(error)")
+        let cursor = TSThread.grdbFetchCursor(transaction: transaction)
+        Batching.loop(batchSize: batchSize,
+                        loopBlock: { stop in
+                            do {
+                                guard let value = try cursor.next() else {
+                                    stop.pointee = true
+                                    return
                                 }
-                              })
-        }
+                                block(value, stop)
+                            } catch let error {
+                                owsFailDebug("Couldn't fetch model: \(error)")
+                            }
+                            })
     }
 
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
     class func anyEnumerateUniqueIds(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
         anyEnumerateUniqueIds(transaction: transaction, batched: false, block: block)
@@ -886,7 +880,7 @@ public extension TSThread {
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
     class func anyEnumerateUniqueIds(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batched: Bool = false,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
@@ -899,24 +893,21 @@ public extension TSThread {
     //
     // If batchSize > 0, the enumeration is performed in autoreleased batches.
     class func anyEnumerateUniqueIds(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batchSize: UInt,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            grdbEnumerateUniqueIds(transaction: grdbTransaction,
-                                   sql: """
-                    SELECT \(threadColumn: .uniqueId)
-                    FROM \(ThreadRecord.databaseTableName)
-                """,
-                batchSize: batchSize,
-                block: block)
-        }
+        grdbEnumerateUniqueIds(transaction: transaction,
+                                sql: """
+                SELECT \(threadColumn: .uniqueId)
+                FROM \(ThreadRecord.databaseTableName)
+            """,
+            batchSize: batchSize,
+            block: block)
     }
 
     // Does not order the results.
-    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSThread] {
+    class func anyFetchAll(transaction: DBReadTransaction) -> [TSThread] {
         var result = [TSThread]()
         anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
@@ -925,7 +916,7 @@ public extension TSThread {
     }
 
     // Does not order the results.
-    class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+    class func anyAllUniqueIds(transaction: DBReadTransaction) -> [String] {
         var result = [String]()
         anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
             result.append(uniqueId)
@@ -933,32 +924,26 @@ public extension TSThread {
         return result
     }
 
-    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            return ThreadRecord.ows_fetchCount(grdbTransaction.database)
-        }
+    class func anyCount(transaction: DBReadTransaction) -> UInt {
+        return ThreadRecord.ows_fetchCount(transaction.database)
     }
 
     class func anyExists(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         assert(!uniqueId.isEmpty)
 
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbTransaction):
-            let sql = "SELECT EXISTS ( SELECT 1 FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .uniqueId) = ? )"
-            let arguments: StatementArguments = [uniqueId]
-            do {
-                return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
-            } catch {
-                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                    userDefaults: CurrentAppContext().appUserDefaults(),
-                    error: error
-                )
-                owsFail("Missing instance.")
-            }
+        let sql = "SELECT EXISTS ( SELECT 1 FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .uniqueId) = ? )"
+        let arguments: StatementArguments = [uniqueId]
+        do {
+            return try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+        } catch {
+            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
+            owsFail("Missing instance.")
         }
     }
 }
@@ -968,7 +953,7 @@ public extension TSThread {
 public extension TSThread {
     class func grdbFetchCursor(sql: String,
                                arguments: StatementArguments = StatementArguments(),
-                               transaction: GRDBReadTransaction) -> TSThreadCursor {
+                               transaction: DBReadTransaction) -> TSThreadCursor {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try ThreadRecord.fetchCursor(transaction.database, sqlRequest)
@@ -985,7 +970,7 @@ public extension TSThread {
 
     class func grdbFetchOne(sql: String,
                             arguments: StatementArguments = StatementArguments(),
-                            transaction: GRDBReadTransaction) -> TSThread? {
+                            transaction: DBReadTransaction) -> TSThread? {
         assert(!sql.isEmpty)
 
         do {
@@ -995,7 +980,7 @@ public extension TSThread {
             }
 
             let value = try TSThread.fromRecord(record)
-            SSKEnvironment.shared.modelReadCachesRef.threadReadCache.didReadThread(value, transaction: transaction.asAnyRead)
+            SSKEnvironment.shared.modelReadCachesRef.threadReadCache.didReadThread(value, transaction: transaction)
             return value
         } catch {
             owsFailDebug("error: \(error)")

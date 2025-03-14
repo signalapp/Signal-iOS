@@ -18,7 +18,7 @@ public class ThreadFinder {
     }
 
     /// Fetch a thread with the given SQLite row ID, if one exists.
-    public func fetch(rowId: Int64, tx: SDSAnyReadTransaction) -> TSThread? {
+    public func fetch(rowId: Int64, tx: DBReadTransaction) -> TSThread? {
         guard let thread = TSThread.grdbFetchOne(
             sql: """
                 SELECT *
@@ -26,7 +26,7 @@ public class ThreadFinder {
                 WHERE \(threadColumn: .id) = ?
             """,
             arguments: [ rowId ],
-            transaction: tx.unwrapGrdbRead
+            transaction: tx
         ) else {
             owsFailDebug("Missing thread with row ID - how did we get this row ID?")
             return nil
@@ -40,7 +40,7 @@ public class ThreadFinder {
     /// A block executed for each enumerated thread. Returns `true` if
     /// enumeration should continue, and `false` otherwise.
     public func enumerateStoryThreads(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (TSPrivateStoryThread) throws -> Bool
     ) throws {
         let sql = """
@@ -49,7 +49,7 @@ public class ThreadFinder {
             WHERE \(threadColumn: .recordType) = \(SDSRecordType.privateStoryThread.rawValue)
         """
         let cursor = try ThreadRecord.fetchCursor(
-            transaction.unwrapGrdbRead.database,
+            transaction.database,
             sql: sql
         )
         while let threadRecord = try cursor.next() {
@@ -68,7 +68,7 @@ public class ThreadFinder {
     /// A block executed for each enumerated thread. Returns `true` if
     /// enumeration should continue, and `false` otherwise.
     public func enumerateGroupThreads(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (TSGroupThread) throws -> Bool
     ) throws {
         let sql = """
@@ -79,7 +79,7 @@ public class ThreadFinder {
         """
 
         let cursor = try ThreadRecord.fetchCursor(
-            transaction.unwrapGrdbRead.database,
+            transaction.database,
             sql: sql
         )
         while let threadRecord = try cursor.next() {
@@ -98,7 +98,7 @@ public class ThreadFinder {
     /// A block executed for each enumerated thread. Returns `true` if
     /// enumeration should continue, and `false` otherwise.
     public func enumerateNonStoryThreads(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (TSThread) throws -> Bool
     ) throws {
         let sql = """
@@ -108,7 +108,7 @@ public class ThreadFinder {
         """
 
         let cursor = try ThreadRecord.fetchCursor(
-            transaction.unwrapGrdbRead.database,
+            transaction.database,
             sql: sql,
             arguments: [SDSRecordType.privateStoryThread]
         )
@@ -120,7 +120,7 @@ public class ThreadFinder {
 
     public func visibleThreadCount(
         isArchived: Bool,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> UInt {
         let sql = """
             SELECT COUNT(*)
@@ -130,7 +130,7 @@ public class ThreadFinder {
             """
 
         guard let count = try UInt.fetchOne(
-            transaction.unwrapGrdbRead.database,
+            transaction.database,
             sql: sql
         ) else {
             owsFailDebug("count was unexpectedly nil")
@@ -142,7 +142,7 @@ public class ThreadFinder {
 
     public func enumerateVisibleThreads(
         isArchived: Bool,
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         block: (TSThread) -> Void
     ) throws {
         let sql = """
@@ -155,7 +155,7 @@ public class ThreadFinder {
 
         do {
             try ThreadRecord.fetchCursor(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql
             ).forEach { threadRecord in
                 block(try TSThread.fromRecord(threadRecord))
@@ -173,7 +173,7 @@ public class ThreadFinder {
     public func visibleInboxThreadIds(
         filteredBy inboxFilter: InboxFilter? = nil,
         requiredVisibleThreadIds: Set<String> = [],
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> [String] {
         if inboxFilter == .unread {
             let sql = """
@@ -198,7 +198,7 @@ public class ThreadFinder {
                 )
                 ORDER BY \(threadColumnFullyQualified: .lastInteractionRowId) DESC
                 """
-            return try String.fetchAll(transaction.unwrapGrdbRead.database, sql: sql, adapter: RangeRowAdapter(0..<1))
+            return try String.fetchAll(transaction.database, sql: sql, adapter: RangeRowAdapter(0..<1))
         } else {
             let sql = """
                 SELECT \(threadColumn: .uniqueId)
@@ -209,12 +209,12 @@ public class ThreadFinder {
                 WHERE \(threadColumn: .shouldThreadBeVisible) = 1
                 ORDER BY \(threadColumn: .lastInteractionRowId) DESC
                 """
-            return try String.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
+            return try String.fetchAll(transaction.database, sql: sql)
         }
     }
 
     public func visibleArchivedThreadIds(
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> [String] {
         let sql = """
             SELECT \(threadColumn: .uniqueId)
@@ -224,10 +224,10 @@ public class ThreadFinder {
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
             """
 
-        return try String.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
+        return try String.fetchAll(transaction.database, sql: sql)
     }
 
-    public func fetchContactSyncThreadRowIds(tx: SDSAnyReadTransaction) throws -> [Int64] {
+    public func fetchContactSyncThreadRowIds(tx: DBReadTransaction) throws -> [Int64] {
         let sql = """
             SELECT \(threadColumn: .id)
             FROM \(ThreadRecord.databaseTableName)
@@ -235,7 +235,7 @@ public class ThreadFinder {
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
             """
         do {
-            return try Int64.fetchAll(tx.unwrapGrdbRead.database, sql: sql)
+            return try Int64.fetchAll(tx.database, sql: sql)
         } catch {
             throw error.grdbErrorForLogging
         }
@@ -243,7 +243,7 @@ public class ThreadFinder {
 
     public func hasPendingMessageRequest(
         thread: TSThread,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         // TODO: Should we consult isRequestingMember() here?
         if let groupThread = thread as? TSGroupThread, groupThread.isGroupV2Thread, groupThread.isLocalUserInvitedMember {
@@ -277,17 +277,17 @@ public class ThreadFinder {
             let contactThread = thread as? TSContactThread,
             let signalRecipient = recipientDatabaseTable.fetchRecipient(
                 contactThread: contactThread,
-                tx: transaction.asV2Read
+                tx: transaction
             ),
             let hiddenRecipient = recipientHidingManager.fetchHiddenRecipient(
                 signalRecipient: signalRecipient,
-                tx: transaction.asV2Read
+                tx: transaction
             )
         {
             return recipientHidingManager.isHiddenRecipientThreadInMessageRequest(
                 hiddenRecipient: hiddenRecipient,
                 contactThread: contactThread,
-                tx: transaction.asV2Read
+                tx: transaction
             )
         }
 
@@ -319,14 +319,14 @@ public class ThreadFinder {
     /// during group creation.
     public func shouldSetDefaultDisappearingMessageTimer(
         contactThread: TSContactThread,
-        transaction tx: SDSAnyReadTransaction
+        transaction tx: DBReadTransaction
     ) -> Bool {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
 
         // Make sure the universal timer is enabled.
         guard dmConfigurationStore.fetchOrBuildDefault(
             for: .universal,
-            tx: tx.asV2Read
+            tx: tx
         ).isEnabled else {
             return false
         }
@@ -334,7 +334,7 @@ public class ThreadFinder {
         // Make sure the current timer is disabled.
         guard !dmConfigurationStore.fetchOrBuildDefault(
             for: .thread(contactThread),
-            tx: tx.asV2Read
+            tx: tx
         ).isEnabled else {
             return false
         }
@@ -344,7 +344,7 @@ public class ThreadFinder {
             .hasUserInitiatedInteraction(transaction: tx)
     }
 
-    public func threads(withThreadIds threadIds: Set<String>, transaction: SDSAnyReadTransaction) throws -> Set<TSThread> {
+    public func threads(withThreadIds threadIds: Set<String>, transaction: DBReadTransaction) throws -> Set<TSThread> {
         guard !threadIds.isEmpty else {
             return []
         }
@@ -356,7 +356,7 @@ public class ThreadFinder {
         let cursor = TSThread.grdbFetchCursor(
             sql: sql,
             arguments: [],
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
 
         var threads = Set<TSThread>()
@@ -367,7 +367,7 @@ public class ThreadFinder {
         return threads
     }
 
-    public func existsGroupThread(transaction: SDSAnyReadTransaction) -> Bool {
+    public func existsGroupThread(transaction: DBReadTransaction) -> Bool {
         let sql = """
             SELECT EXISTS(
                 SELECT 1
@@ -379,7 +379,7 @@ public class ThreadFinder {
         let arguments: StatementArguments = [SDSRecordType.groupThread.rawValue]
         do {
             return try Bool.fetchOne(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
@@ -394,7 +394,7 @@ public class ThreadFinder {
 
     public func storyThreads(
         includeImplicitGroupThreads: Bool,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [TSThread] {
         var allowedDefaultThreadIds = [String]()
 
@@ -412,7 +412,7 @@ public class ThreadFinder {
 
             do {
                 let groupIdCursor = try Data.fetchCursor(
-                    transaction.unwrapGrdbRead.database,
+                    transaction.database,
                     sql: storyMessageGroupIdsSQL
                 )
 
@@ -442,7 +442,7 @@ public class ThreadFinder {
 
         let cursor = TSThread.grdbFetchCursor(
             sql: sql,
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
 
         var threads = [TSThread]()
@@ -463,7 +463,7 @@ public class ThreadFinder {
 
     public func threadsWithRecentInteractions(
         limit: UInt,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [TSThread] {
         let sql = """
             SELECT *
@@ -474,7 +474,7 @@ public class ThreadFinder {
 
         let cursor = TSThread.grdbFetchCursor(
             sql: sql,
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
 
         var threads = [TSThread]()

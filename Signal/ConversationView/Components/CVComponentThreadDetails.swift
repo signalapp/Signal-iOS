@@ -511,7 +511,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     static func buildComponentState(
         thread: TSThread,
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         avatarBuilder: CVAvatarBuilder
     ) -> CVComponentState.ThreadDetails {
         if let contactThread = thread as? TSContactThread {
@@ -542,7 +542,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     private static func buildComponentState(
         contactThread: TSContactThread,
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         avatarBuilder: CVAvatarBuilder
     ) -> CVComponentState.ThreadDetails {
 
@@ -601,7 +601,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     private static func buildComponentState(
         groupThread: TSGroupThread,
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         avatarBuilder: CVAvatarBuilder
     ) -> CVComponentState.ThreadDetails {
         // If we need to reload this cell to reflect changes to any of the
@@ -918,7 +918,7 @@ extension CVComponentThreadDetails {
 
     private static func buildGroupsSafetySection(
         from groupThread: TSGroupThread,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> CVComponentState.ThreadDetails.SafetySection {
         let memberCount = groupThread.groupModel.groupMembership.fullMembers.count
         let memberCountString = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
@@ -955,7 +955,7 @@ extension CVComponentThreadDetails {
     private static func buildContactSafetySection(
         for displayName: DisplayName,
         in contactThread: TSContactThread,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> CVComponentState.ThreadDetails.SafetySection? {
         switch displayName {
         case .nickname, .systemContactName, .profileName:

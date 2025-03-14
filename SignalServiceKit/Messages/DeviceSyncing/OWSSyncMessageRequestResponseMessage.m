@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithLocalThread:(TSContactThread *)localThread
                messageRequestThread:(TSThread *)thread
                        responseType:(OWSSyncMessageRequestResponseType)responseType
-                        transaction:(SDSAnyReadTransaction *)transaction
+                        transaction:(DBReadTransaction *)transaction
 {
     self = [super initWithLocalThread:localThread transaction:transaction];
 
@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction
 {
     SSKProtoSyncMessageMessageRequestResponseBuilder *messageRequestResponseBuilder =
         [SSKProtoSyncMessageMessageRequestResponse builder];

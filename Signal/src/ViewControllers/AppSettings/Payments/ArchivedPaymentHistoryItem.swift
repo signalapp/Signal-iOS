@@ -127,11 +127,11 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
     }
 
     /// Read status is only tracked on TSPaymentModels, so there's not really anything to do here.
-    public func markAsRead(tx: SignalServiceKit.SDSAnyWriteTransaction) { }
+    public func markAsRead(tx: SignalServiceKit.DBWriteTransaction) { }
 
     /// Reload is used on payment details to track updates to the TSPaymentModel.
     /// Since ArchivedPayments aren't updated, reloading here isn't necessary.
-    public func reload(tx: SignalServiceKit.SDSAnyReadTransaction) -> Self? {
+    public func reload(tx: SignalServiceKit.DBReadTransaction) -> Self? {
         return self
     }
 }

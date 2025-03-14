@@ -133,7 +133,7 @@ extension NewCallViewController: RecipientPickerDelegate, UsernameLinkScanDelega
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         selectionStyleForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UITableViewCell.SelectionStyle {
         return .default
     }
@@ -148,7 +148,7 @@ extension NewCallViewController: RecipientPickerDelegate, UsernameLinkScanDelega
         }
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController, accessoryViewForRecipient recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView? {
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController, accessoryViewForRecipient recipient: PickedRecipient, transaction: DBReadTransaction) -> ContactCellAccessoryView? {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = 20
@@ -177,7 +177,7 @@ extension NewCallViewController: RecipientPickerDelegate, UsernameLinkScanDelega
         return .init(accessoryView: stackView, size: .init(width: 24 * 2 + 20, height: 24))
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController, shouldAllowUserInteractionForRecipient recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> Bool {
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController, shouldAllowUserInteractionForRecipient recipient: PickedRecipient, transaction: DBReadTransaction) -> Bool {
         true
     }
 }

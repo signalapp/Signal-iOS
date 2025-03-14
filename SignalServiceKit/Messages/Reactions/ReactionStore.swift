@@ -49,26 +49,26 @@ public class ReactionStoreImpl: ReactionStore {
         tx: DBReadTransaction
     ) -> OWSReaction? {
         ReactionFinder(uniqueMessageId: messageId)
-            .reaction(for: aci, tx: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead)
+            .reaction(for: aci, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     public func allReactions(messageId: MessageId, tx: DBReadTransaction) -> [OWSReaction] {
         ReactionFinder(uniqueMessageId: messageId)
-            .allReactions(transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead)
+            .allReactions(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func unreadReactions(messageId: MessageId, tx: DBReadTransaction) -> [OWSReaction] {
         ReactionFinder(uniqueMessageId: messageId)
-            .unreadReactions(transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead)
+            .unreadReactions(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func allUniqueIds(messageId: MessageId, tx: DBReadTransaction) -> [String] {
         ReactionFinder(uniqueMessageId: messageId)
-            .allUniqueIds(transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead)
+            .allUniqueIds(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func deleteAllReactions(messageId: MessageId, tx: DBWriteTransaction) {
         ReactionFinder(uniqueMessageId: messageId)
-            .deleteAllReactions(transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite)
+            .deleteAllReactions(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }

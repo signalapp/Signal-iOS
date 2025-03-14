@@ -46,7 +46,7 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
         _ referencedAttachment: ReferencedAttachmentStream,
         tx: DBWriteTransaction
     ) throws {
-        let db = tx.databaseConnection
+        let db = tx.database
         var newRecord = QueuedBackupAttachmentUpload(
             attachmentRowId: referencedAttachment.attachment.id,
             sourceType: try referencedAttachment.reference.owner.asUploadSourceType()
@@ -89,7 +89,7 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
         count: UInt,
         tx: DBReadTransaction
     ) throws -> [QueuedBackupAttachmentUpload] {
-        let db = tx.databaseConnection
+        let db = tx.database
         return try QueuedBackupAttachmentUpload
             .order([
                 Column(QueuedBackupAttachmentUpload.CodingKeys.sourceType).asc,
@@ -103,14 +103,14 @@ public class BackupAttachmentUploadStoreImpl: BackupAttachmentUploadStore {
         for attachmentId: Attachment.IDType,
         tx: DBWriteTransaction
     ) throws {
-        let db = tx.databaseConnection
+        let db = tx.database
         try QueuedBackupAttachmentUpload
             .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.attachmentRowId) == attachmentId)
             .deleteAll(db)
     }
 
     public func removeAll(tx: DBWriteTransaction) throws {
-        try QueuedBackupAttachmentUpload.deleteAll(tx.databaseConnection)
+        try QueuedBackupAttachmentUpload.deleteAll(tx.database)
     }
 }
 

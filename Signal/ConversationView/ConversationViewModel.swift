@@ -12,7 +12,7 @@ class ConversationViewModel {
     let shouldShowVerifiedBadge: Bool
     let unreadMentionMessageIds: [String]
 
-    static func load(for thread: TSThread, tx: SDSAnyReadTransaction) -> ConversationViewModel {
+    static func load(for thread: TSThread, tx: DBReadTransaction) -> ConversationViewModel {
         let groupCallInProgress = GroupCallInteractionFinder().unendedCallsForGroupThread(thread, transaction: tx)
             .filter { !$0.joinedMemberAcis.isEmpty }
             .count > 0
@@ -20,7 +20,7 @@ class ConversationViewModel {
         let isSystemContact = thread.isSystemContact(contactsManager: SSKEnvironment.shared.contactManagerImplRef, tx: tx)
 
         let unreadMentionMessageIds = MentionFinder.messagesMentioning(
-            aci: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)!.aci,
+            aci: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)!.aci,
             in: thread,
             includeReadMessages: false,
             tx: tx
@@ -46,17 +46,17 @@ class ConversationViewModel {
         self.unreadMentionMessageIds = unreadMentionMessageIds
     }
 
-    private static func shouldShowVerifiedBadge(for thread: TSThread, tx: SDSAnyReadTransaction) -> Bool {
+    private static func shouldShowVerifiedBadge(for thread: TSThread, tx: DBReadTransaction) -> Bool {
         let identityManager = DependenciesBridge.shared.identityManager
         switch thread {
         case let groupThread as TSGroupThread:
             if groupThread.groupModel.groupMembers.isEmpty {
                 return false
             }
-            return !identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx.asV2Read)
+            return !identityManager.groupContainsUnverifiedMember(groupThread.uniqueId, tx: tx)
 
         case let contactThread as TSContactThread:
-            return identityManager.verificationState(for: contactThread.contactAddress, tx: tx.asV2Read) == .verified
+            return identityManager.verificationState(for: contactThread.contactAddress, tx: tx) == .verified
 
         default:
             owsFailDebug("Showing conversation for unexpected thread type.")

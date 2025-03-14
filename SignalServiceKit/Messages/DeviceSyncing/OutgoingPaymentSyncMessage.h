@@ -45,14 +45,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithLocalThread:(TSContactThread *)localThread
-                        transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+                        transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                       localThread:(TSContactThread *)localThread
-                      transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+                      transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (instancetype)initWithLocalThread:(TSContactThread *)localThread
                          mobileCoin:(OutgoingPaymentMobileCoin *)mobileCoin
-                        transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
+                        transaction:(DBReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

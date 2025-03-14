@@ -106,7 +106,7 @@ public class _RegistrationCoordinator_ExperienceManagerWrapper: _RegistrationCoo
     public init() {}
 
     public func clearIntroducingPinsExperience(_ tx: DBWriteTransaction) {
-        ExperienceUpgradeManager.clearExperienceUpgrade(.introducingPins, transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite)
+        ExperienceUpgradeManager.clearExperienceUpgrade(.introducingPins, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func enableAllGetStartedCards(_ tx: DBWriteTransaction) {

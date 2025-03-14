@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];
 
@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                           transaction:transaction];
 }
 
-- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidUpdateWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
 
@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                           transaction:transaction];
 }
 
-- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidRemoveWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyDidRemoveWithTransaction:transaction];
 

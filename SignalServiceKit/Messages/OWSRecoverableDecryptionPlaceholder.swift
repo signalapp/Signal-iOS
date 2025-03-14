@@ -8,7 +8,7 @@ extension OWSRecoverableDecryptionPlaceholder {
     /// This method performs an upsert replacement of the placeholder with the provided interaction
     /// Callers should not continue using the placeholder after performing a replacement.
     @objc
-    func replaceWithInteraction(_ interaction: TSInteraction, writeTx: SDSAnyWriteTransaction) {
+    func replaceWithInteraction(_ interaction: TSInteraction, writeTx: DBWriteTransaction) {
         Logger.info("Replacing placeholder with recovered interaction: \(interaction.timestamp)")
         guard let inheritedId = sqliteRowId else { return owsFailDebug("Missing rowId") }
 

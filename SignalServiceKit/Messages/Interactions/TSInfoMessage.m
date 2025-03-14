@@ -205,7 +205,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     return OWSInteractionType_Info;
 }
 
-- (NSString *)conversationSystemMessageComponentTextWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)conversationSystemMessageComponentTextWithTransaction:(DBReadTransaction *)transaction
 {
     switch (self.messageType) {
         case TSInfoMessageSyncedThread:
@@ -220,7 +220,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     }
 }
 
-- (NSString *)infoMessagePreviewTextWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)infoMessagePreviewTextWithTransaction:(DBReadTransaction *)transaction
 {
     switch (_messageType) {
         case TSInfoMessageTypeLocalUserEndedSession:
@@ -350,7 +350,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                        thread:(TSThread *)thread
                  circumstance:(OWSReceiptCircumstance)circumstance
      shouldClearNotifications:(BOOL)shouldClearNotifications
-                  transaction:(SDSAnyWriteTransaction *)transaction
+                  transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 

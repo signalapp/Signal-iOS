@@ -50,7 +50,7 @@ extension DonationViewsUtil {
         /// terminated at the right time and network conditions are right.
         static func throwIfAlreadySendingGift(
             threadId: String,
-            transaction: SDSAnyReadTransaction
+            transaction: DBReadTransaction
         ) throws {
             let isAlreadyGifting = DonationUtilities.sendGiftBadgeJobQueue.alreadyHasJob(
                 threadId: threadId,

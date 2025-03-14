@@ -46,7 +46,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
     ) -> Model? {
         let transaction = SDSDB.shimOnlyBridge(transaction)
 
-        let grdbTransaction = transaction.unwrapGrdbRead
+        let grdbTransaction = transaction
 
         do {
             let model = try modelType.fetchOne(
@@ -79,7 +79,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
             """
 
             return try modelType.fetchAll(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql
             )
         } catch let error {
@@ -99,6 +99,6 @@ extension SDSCodableModelDatabaseInterfaceImpl {
     ) -> UInt {
         let transaction = SDSDB.shimOnlyBridge(transaction)
 
-        return modelType.ows_fetchCount(transaction.unwrapGrdbRead.database)
+        return modelType.ows_fetchCount(transaction.database)
     }
 }

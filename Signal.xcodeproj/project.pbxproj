@@ -1066,7 +1066,6 @@
 		66AAC2C829CB9ED900566AD6 /* RegistrationChangePhoneNumberConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AAC2C729CB9ED900566AD6 /* RegistrationChangePhoneNumberConfirmationViewController.swift */; };
 		66AAC2CA29CBC07300566AD6 /* RegistrationPhoneNumberViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AAC2C929CBC07300566AD6 /* RegistrationPhoneNumberViewState.swift */; };
 		66AE5779298440A100E40CFA /* ViewControllerContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */; };
-		66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE577E2984AB8700E40CFA /* ToyExample.swift */; };
 		66AE8A872C169A900044D388 /* MediaGalleryAttachmentFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE8A852C169A830044D388 /* MediaGalleryAttachmentFinderTest.swift */; };
 		66AEFCA42A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */; };
 		66B1E26C2CB187B3005F43AC /* AttachmentUploadStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B1E26B2CB187A0005F43AC /* AttachmentUploadStoreImpl.swift */; };
@@ -3391,7 +3390,6 @@
 		F9C5CD1E289453B300548EEE /* SDSRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA3F289453B100548EEE /* SDSRecord.swift */; };
 		F9C5CD1F289453B300548EEE /* GRDBDatabaseStorageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */; };
 		F9C5CD20289453B300548EEE /* SDSDatabaseStorage+Objc.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA41289453B100548EEE /* SDSDatabaseStorage+Objc.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CD22289453B300548EEE /* SDSTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA43289453B100548EEE /* SDSTransaction.swift */; };
 		F9C5CD26289453B300548EEE /* GRDBSchemaMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */; };
 		F9C5CD27289453B300548EEE /* DeepCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA48289453B100548EEE /* DeepCopy.swift */; };
 		F9C5CD29289453B300548EEE /* SDSRecordType.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4A289453B100548EEE /* SDSRecordType.swift */; };
@@ -4896,7 +4894,6 @@
 		66AAC2C529CB942F00566AD6 /* RegistrationChangePhoneNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationChangePhoneNumberViewController.swift; sourceTree = "<group>"; };
 		66AAC2C729CB9ED900566AD6 /* RegistrationChangePhoneNumberConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationChangePhoneNumberConfirmationViewController.swift; sourceTree = "<group>"; };
 		66AAC2C929CBC07300566AD6 /* RegistrationPhoneNumberViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationPhoneNumberViewState.swift; sourceTree = "<group>"; };
-		66AE577E2984AB8700E40CFA /* ToyExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToyExample.swift; sourceTree = "<group>"; };
 		66AE8A852C169A830044D388 /* MediaGalleryAttachmentFinderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryAttachmentFinderTest.swift; sourceTree = "<group>"; };
 		66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerableLabelAnimator.swift; sourceTree = "<group>"; };
 		66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+VideoSegmenting.swift"; sourceTree = "<group>"; };
@@ -7260,7 +7257,6 @@
 		F9C5CA3F289453B100548EEE /* SDSRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSRecord.swift; sourceTree = "<group>"; };
 		F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBDatabaseStorageAdapter.swift; sourceTree = "<group>"; };
 		F9C5CA41289453B100548EEE /* SDSDatabaseStorage+Objc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SDSDatabaseStorage+Objc.h"; sourceTree = "<group>"; };
-		F9C5CA43289453B100548EEE /* SDSTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSTransaction.swift; sourceTree = "<group>"; };
 		F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBSchemaMigrator.swift; sourceTree = "<group>"; };
 		F9C5CA48289453B100548EEE /* DeepCopy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepCopy.swift; sourceTree = "<group>"; };
 		F9C5CA4A289453B100548EEE /* SDSRecordType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSRecordType.swift; sourceTree = "<group>"; };
@@ -9123,17 +9119,8 @@
 		66138FAC2982F4A7002E0CFE /* SDSDatabaseStorage */ = {
 			isa = PBXGroup;
 			children = (
-				66138FAD2982F4B3002E0CFE /* V2 */,
 			);
 			path = SDSDatabaseStorage;
-			sourceTree = "<group>";
-		};
-		66138FAD2982F4B3002E0CFE /* V2 */ = {
-			isa = PBXGroup;
-			children = (
-				66AE577E2984AB8700E40CFA /* ToyExample.swift */,
-			);
-			path = V2;
 			sourceTree = "<group>";
 		};
 		66144B3B2BFD22EE00E2C9CD /* Records */ = {
@@ -13755,7 +13742,6 @@
 				F9C5CA4A289453B100548EEE /* SDSRecordType.swift */,
 				F9C5CA4F289453B100548EEE /* SDSSerializable.swift */,
 				F9C5CA39289453B100548EEE /* SDSTableMetadata.swift */,
-				F9C5CA43289453B100548EEE /* SDSTransaction.swift */,
 				F9C5CA4D289453B100548EEE /* SSKAccessors+SDS.h */,
 				66485EB62CD1331700B8613F /* TransactionCompletion.swift */,
 			);
@@ -17910,7 +17896,6 @@
 				F9C5CD29289453B300548EEE /* SDSRecordType.swift in Sources */,
 				F9C5CD2E289453B300548EEE /* SDSSerializable.swift in Sources */,
 				F9C5CD19289453B300548EEE /* SDSTableMetadata.swift in Sources */,
-				F9C5CD22289453B300548EEE /* SDSTransaction.swift in Sources */,
 				5008672F2B91432F00E34B5F /* SearchableNameIndexer.swift in Sources */,
 				66138FB6298326C7002E0CFE /* SecureValueRecovery.swift in Sources */,
 				662C440B2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift in Sources */,
@@ -18426,7 +18411,6 @@
 				6600F38B299016BC00B1EDB7 /* TestSchedulerTest.swift in Sources */,
 				5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */,
 				50C38CAD2A8EB2610030A731 /* TimeGatedBatchTest.swift in Sources */,
-				66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */,
 				C1F09B9F2BB307E100F9E7F5 /* TransformingInputStreamTests.swift in Sources */,
 				C1E307422BA4D388009F015B /* TransformingOutputStreamTests.swift in Sources */,
 				F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */,

@@ -15,7 +15,7 @@ public class MentionFinder {
         aci: Aci,
         in thread: TSThread? = nil,
         includeReadMessages: Bool = true,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> [TSMessage] {
         var filters = [String]()
         var arguments = [aci.serviceIdUppercaseString]
@@ -68,7 +68,7 @@ public class MentionFinder {
             ORDER BY \(interactionColumn: .id)
             """
 
-        let cursor = TSMessage.grdbFetchCursor(sql: sql, arguments: StatementArguments(arguments), transaction: tx.unwrapGrdbRead)
+        let cursor = TSMessage.grdbFetchCursor(sql: sql, arguments: StatementArguments(arguments), transaction: tx)
 
         var messages = [TSMessage]()
 
@@ -83,7 +83,7 @@ public class MentionFinder {
         return messages
     }
 
-    public class func deleteAllMentions(for message: TSMessage, transaction: GRDBWriteTransaction) {
+    public class func deleteAllMentions(for message: TSMessage, transaction: DBWriteTransaction) {
         let sql = """
             DELETE FROM \(TSMention.databaseTableName)
             WHERE \(TSMention.columnName(.uniqueMessageId)) = ?
@@ -91,7 +91,7 @@ public class MentionFinder {
         transaction.database.executeHandlingErrors(sql: sql, arguments: [message.uniqueId])
     }
 
-    public class func mentionedAddresses(for message: TSMessage, transaction: GRDBReadTransaction) -> [SignalServiceAddress] {
+    public class func mentionedAddresses(for message: TSMessage, transaction: DBReadTransaction) -> [SignalServiceAddress] {
         let sql = """
             SELECT *
             FROM \(TSMention.databaseTableName)
@@ -116,7 +116,7 @@ public class MentionFinder {
         uniqueId: String,
         thresholdDate: Date,
         shouldPerformRemove: Bool,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> Bool {
         guard let mention = TSMention.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
             // This could just be a race condition, but it should be very unlikely.

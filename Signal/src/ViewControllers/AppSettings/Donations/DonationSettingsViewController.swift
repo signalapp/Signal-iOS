@@ -157,12 +157,12 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
             return (
                 subscriberID: DonationSubscriptionManager.getSubscriberID(transaction: tx),
-                hasEverRedeemedRecurringSubscriptionBadge: resultStore.getRedemptionSuccessForAnyRecurringSubscription(tx: tx.asV2Read) != nil,
-                recurringSubscriptionReceiptCredentialRequestError: resultStore.getRequestErrorForAnyRecurringSubscription(tx: tx.asV2Read),
-                oneTimeBoostReceiptCredentialRequestError: resultStore.getRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Read),
+                hasEverRedeemedRecurringSubscriptionBadge: resultStore.getRedemptionSuccessForAnyRecurringSubscription(tx: tx) != nil,
+                recurringSubscriptionReceiptCredentialRequestError: resultStore.getRequestErrorForAnyRecurringSubscription(tx: tx),
+                oneTimeBoostReceiptCredentialRequestError: resultStore.getRequestError(errorMode: .oneTimeBoost, tx: tx),
                 hasAnyDonationReceipts: DonationReceiptFinder.hasAny(transaction: tx),
-                idealStore.getPendingOneTimeDonation(tx: tx.asV2Read),
-                idealStore.getPendingSubscription(tx: tx.asV2Read),
+                idealStore.getPendingOneTimeDonation(tx: tx),
+                idealStore.getPendingSubscription(tx: tx),
                 profileManager.localUserProfile(tx: tx)?.hasBadge == true
             )
         }
@@ -257,7 +257,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
     private func setUpAvatarView() {
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             self.avatarView.update(transaction) { config in
-                if let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress {
+                if let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress {
                     config.dataSource = .address(address)
                     config.addBadgeIfApplicable = true
                 }
@@ -568,8 +568,8 @@ class DonationSettingsViewController: OWSTableViewController2 {
         }
 
         let (pendingOneTime, pendingSubscription) = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            let oneTimeDonation = idealStore.getPendingOneTimeDonation(tx: tx.asV2Read)
-            let subscription = idealStore.getPendingSubscription(tx: tx.asV2Read)
+            let oneTimeDonation = idealStore.getPendingOneTimeDonation(tx: tx)
+            let subscription = idealStore.getPendingSubscription(tx: tx)
             return (oneTimeDonation, subscription)
         }
 
@@ -587,7 +587,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
                 // cleanup
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
-                    idealStore.clearPendingOneTimeDonation(tx: tx.asV2Write)
+                    idealStore.clearPendingOneTimeDonation(tx: tx)
                 }
             } else {
                 let title = OWSLocalizedString(
@@ -614,7 +614,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 )
                 showError(title: title, message: message, donationMode: .monthly)
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
-                    idealStore.clearPendingSubscription(tx: tx.asV2Write)
+                    idealStore.clearPendingSubscription(tx: tx)
                 }
             } else {
                 let title = OWSLocalizedString(
@@ -662,10 +662,10 @@ class DonationSettingsViewController: OWSTableViewController2 {
             switch preferredDonateMode {
             case .oneTime:
                 DependenciesBridge.shared.externalPendingIDEALDonationStore
-                    .clearPendingOneTimeDonation(tx: tx.asV2Write)
+                    .clearPendingOneTimeDonation(tx: tx)
             case .monthly:
                 DependenciesBridge.shared.externalPendingIDEALDonationStore
-                    .clearPendingSubscription(tx: tx.asV2Write)
+                    .clearPendingSubscription(tx: tx)
             }
         }
     }
@@ -673,7 +673,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
     func clearErrorAndShowDonateAction(
         title: String,
         donateMode: DonateViewController.DonateMode,
-        clearErrorBlock: @escaping (SDSAnyWriteTransaction) -> Void
+        clearErrorBlock: @escaping (DBWriteTransaction) -> Void
     ) -> ActionSheetAction {
         return ActionSheetAction(title: title) { _ in
             SSKEnvironment.shared.databaseStorageRef.write { tx in

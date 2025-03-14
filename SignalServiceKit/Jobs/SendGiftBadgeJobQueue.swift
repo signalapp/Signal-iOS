@@ -76,7 +76,7 @@ public class SendGiftBadgeJobQueue {
 
     public func addJob(
         _ jobRecord: SendGiftBadgeJobRecord,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> (chargePromise: Promise<Void>, completionPromise: Promise<Void>) {
         let (chargePromise, chargeFuture) = Promise<Void>.pending()
         let (completionPromise, completionFuture) = Promise<Void>.pending()
@@ -89,41 +89,38 @@ public class SendGiftBadgeJobQueue {
         return (chargePromise, completionPromise)
     }
 
-    public func alreadyHasJob(threadId: String, transaction: SDSAnyReadTransaction) -> Bool {
+    public func alreadyHasJob(threadId: String, transaction: DBReadTransaction) -> Bool {
         jobExists(threadId: threadId, transaction: transaction)
     }
 }
 
 // MARK: - Job Finder
 
-private func jobExists(threadId: String, transaction: SDSAnyReadTransaction) -> Bool {
+private func jobExists(threadId: String, transaction: DBReadTransaction) -> Bool {
     assert(!threadId.isEmpty)
 
-    switch transaction.readTransaction {
-    case .grdbRead(let grdbTransaction):
-        let sql = """
-            SELECT EXISTS (
-                SELECT 1 FROM \(SendGiftBadgeJobRecord.databaseTableName)
-                WHERE \(SendGiftBadgeJobRecord.columnName(.threadId)) IS ?
-                AND \(SendGiftBadgeJobRecord.columnName(.recordType)) IS ?
-                AND \(SendGiftBadgeJobRecord.columnName(.status)) NOT IN (?, ?)
-            )
-        """
-        let arguments: StatementArguments = [
-            threadId,
-            SDSRecordType.sendGiftBadgeJobRecord.rawValue,
-            SendGiftBadgeJobRecord.Status.permanentlyFailed.rawValue,
-            SendGiftBadgeJobRecord.Status.obsolete.rawValue
-        ]
-        do {
-            return try Bool.fetchOne(grdbTransaction.database, sql: sql, arguments: arguments) ?? false
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Unable to find job")
-        }
+    let sql = """
+        SELECT EXISTS (
+            SELECT 1 FROM \(SendGiftBadgeJobRecord.databaseTableName)
+            WHERE \(SendGiftBadgeJobRecord.columnName(.threadId)) IS ?
+            AND \(SendGiftBadgeJobRecord.columnName(.recordType)) IS ?
+            AND \(SendGiftBadgeJobRecord.columnName(.status)) NOT IN (?, ?)
+        )
+    """
+    let arguments: StatementArguments = [
+        threadId,
+        SDSRecordType.sendGiftBadgeJobRecord.rawValue,
+        SendGiftBadgeJobRecord.Status.permanentlyFailed.rawValue,
+        SendGiftBadgeJobRecord.Status.obsolete.rawValue
+    ]
+    do {
+        return try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+    } catch {
+        DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
+            userDefaults: CurrentAppContext().appUserDefaults(),
+            error: error
+        )
+        owsFail("Unable to find job")
     }
 }
 
@@ -259,7 +256,7 @@ private class SendGiftBadgeJobRunner: JobRunner {
         }
     }
 
-    private func getValidatedThread(threadUniqueId: String, tx: SDSAnyReadTransaction) throws -> TSContactThread {
+    private func getValidatedThread(threadUniqueId: String, tx: DBReadTransaction) throws -> TSContactThread {
         guard let thread = TSContactThread.anyFetchContactThread(uniqueId: threadUniqueId, transaction: tx) else {
             throw OWSGenericError("Thread for gift badge sending no longer exists")
         }
@@ -269,7 +266,7 @@ private class SendGiftBadgeJobRunner: JobRunner {
         return thread
     }
 
-    private func ensureThatWeCanStillMessageRecipient(threadUniqueId: String, tx: SDSAnyReadTransaction) throws {
+    private func ensureThatWeCanStillMessageRecipient(threadUniqueId: String, tx: DBReadTransaction) throws {
         _ = try getValidatedThread(threadUniqueId: threadUniqueId, tx: tx)
     }
 
@@ -322,7 +319,7 @@ private class SendGiftBadgeJobRunner: JobRunner {
         threadUniqueId: String,
         messageText: String,
         receiptCredentialPresentation: ReceiptCredentialPresentation,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws {
         func send(_ unpreparedMessage: UnpreparedOutgoingMessage) throws {
             let preparedMessage = try unpreparedMessage.prepare(tx: tx)
@@ -349,10 +346,10 @@ extension UnpreparedOutgoingMessage {
     fileprivate static func build(
         giftBadgeReceiptCredentialPresentation: ReceiptCredentialPresentation,
         thread: TSThread,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> UnpreparedOutgoingMessage {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: tx.asV2Read)
+        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: tx)
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: thread,
             expiresInSeconds: dmConfig.durationSeconds,
@@ -365,10 +362,10 @@ extension UnpreparedOutgoingMessage {
     fileprivate static func build(
         messageBody: String,
         thread: TSThread,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> UnpreparedOutgoingMessage {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: tx.asV2Read)
+        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: tx)
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: thread,
             messageBody: messageBody,

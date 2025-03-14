@@ -25,7 +25,7 @@ public final class MessageBackupInteractionStore {
         block: (TSInteraction) throws -> Bool
     ) throws {
         let cursor = try InteractionRecord
-            .fetchCursor(tx.databaseConnection)
+            .fetchCursor(tx.database)
             .map { try TSInteraction.fromRecord($0) }
 
         while
@@ -199,8 +199,8 @@ public final class MessageBackupInteractionStore {
         // and restore, we'll only send back a Null message. (Until such a day
         // when resends use the interactions table and not MSL at all).
 
-        try insertInteractionWithDirectSQLiteCalls(interaction, databaseConnection: context.tx.databaseConnection)
-        interaction.updateRowId(context.tx.databaseConnection.lastInsertedRowID)
+        try insertInteractionWithDirectSQLiteCalls(interaction, database: context.tx.database)
+        interaction.updateRowId(context.tx.database.lastInsertedRowID)
 
         guard let interactionRowId = interaction.sqliteRowId else {
             throw OWSAssertionError("Missing row id after insertion!")
@@ -260,9 +260,9 @@ public final class MessageBackupInteractionStore {
     /// over hundreds of thousands of interaction inserts during a restore are.
     private func insertInteractionWithDirectSQLiteCalls(
         _ interaction: TSInteraction,
-        databaseConnection: GRDB.Database
+        database: GRDB.Database
     ) throws {
-        guard let sqliteConnection = databaseConnection.sqliteConnection else {
+        guard let sqliteConnection = database.sqliteConnection else {
             throw OWSAssertionError("Missing SQLite connection!")
         }
 
@@ -276,7 +276,7 @@ public final class MessageBackupInteractionStore {
         /// tricky pointer math. GRDB then holds a reference to that compiled
         /// statement pointer in a package-level cache, from which we can
         /// retrieve it.
-        let cachedSqliteStatement: GRDB.SQLiteStatement = try databaseConnection.cachedStatement(
+        let cachedSqliteStatement: GRDB.SQLiteStatement = try database.cachedStatement(
             sql: insertInteractionSQL
         ).sqliteStatement
 

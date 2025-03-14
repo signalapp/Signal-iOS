@@ -34,7 +34,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         tx: DBReadTransaction
     ) -> [AttachmentReference] {
         do {
-            let statement = try tx.databaseConnection.cachedStatement(sql: """
+            let statement = try tx.database.cachedStatement(sql: """
                 SELECT *
                 FROM \(MessageAttachmentReferenceRecord.databaseTableName)
                 WHERE \(Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId).name) = ?
@@ -76,7 +76,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
         let sql = "SELECT * FROM \(recordType.databaseTableName) WHERE \(filterClauses.joined(separator: " OR "));"
         do {
-            let statement = try tx.databaseConnection.cachedStatement(sql: sql)
+            let statement = try tx.database.cachedStatement(sql: sql)
             var results = try RecordType.fetchAll(statement, arguments: arguments)
 
             // If we have one owner and are capable of sorting, sort in ascending order.
@@ -110,7 +110,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         do {
             return try Attachment.Record
                 .fetchAll(
-                    tx.databaseConnection,
+                    tx.database,
                     keys: ids
                 )
                 .compactMap { record in
@@ -138,7 +138,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     ) throws -> Attachment? {
         return try Attachment.Record
             .filter(Column(Attachment.Record.CodingKeys.sha256ContentHash) == sha256ContentHash)
-            .fetchOne(tx.databaseConnection)
+            .fetchOne(tx.database)
             .map(Attachment.init(record:))
     }
 
@@ -155,7 +155,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     ) throws -> Attachment? {
         return try Attachment.Record
             .filter(Column(Attachment.Record.CodingKeys.mediaName) == mediaName)
-            .fetchOne(tx.databaseConnection)
+            .fetchOne(tx.database)
             .map(Attachment.init(record:))
     }
 
@@ -165,7 +165,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     ) throws -> [Attachment] {
         return try Attachment.Record
             .filter(Column(Attachment.Record.CodingKeys.originalAttachmentIdForQuotedReply) == originalAttachmentId)
-            .fetchAll(tx.databaseConnection)
+            .fetchAll(tx.database)
             .map(Attachment.init(record:))
     }
 
@@ -190,7 +190,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     ) throws {
         try Attachment.Record
             .filter(Column(Attachment.Record.CodingKeys.mediaName) != nil)
-            .fetchCursor(tx.databaseConnection)
+            .fetchCursor(tx.database)
             .forEach {
                 let attachment = try Attachment(record: $0)
                 try block(attachment)
@@ -205,7 +205,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     ) throws {
         let cursor = try recordType
             .filter(recordType.attachmentRowIdColumn == attachmentId)
-            .fetchCursor(tx.databaseConnection)
+            .fetchCursor(tx.database)
 
         while let record = try cursor.next() {
             let reference = try record.asReference()
@@ -219,7 +219,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         let ownerRowIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId)
         let packIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.stickerPackId)
         return try MessageAttachmentReferenceRecord
-            .fetchAll(tx.databaseConnection, sql: """
+            .fetchAll(tx.database, sql: """
                 SELECT *
                 FROM \(MessageAttachmentReferenceRecord.databaseTableName)
                 WHERE (\(packIdColumn.name), \(ownerRowIdColumn.name)) IN (
@@ -247,7 +247,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         let packIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.stickerPackId)
         let stickerIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.stickerId)
         return try Attachment.IDType.fetchAll(
-            tx.databaseConnection,
+            tx.database,
             sql: """
                 SELECT \(attachmentIdColumn.name)
                 FROM \(MessageAttachmentReferenceRecord.databaseTableName)
@@ -282,7 +282,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
         newRecord.ownerRowId = newOwnerMessageRowId
         newRecord.ownerIsPastEditRevision = newOwnerIsPastEditRevision
-        try newRecord.insert(tx.databaseConnection)
+        try newRecord.insert(tx.database)
     }
 
     public func duplicateExistingThreadOwner(
@@ -296,7 +296,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             threadSource: existingOwnerSource
         )
         newRecord.ownerRowId = newOwnerThreadRowId
-        try newRecord.insert(tx.databaseConnection)
+        try newRecord.insert(tx.database)
     }
 
     public func update(
@@ -315,7 +315,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             let receivedAtTimestampColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.receivedAtTimestamp)
             let ownerTypeColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerType)
             let ownerRowIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId)
-            try tx.databaseConnection.execute(
+            try tx.database.execute(
                 sql:
                     "UPDATE \(MessageAttachmentReferenceRecord.databaseTableName) "
                 + "SET \(receivedAtTimestampColumn.name) = ? "
@@ -399,7 +399,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
         newRecord.sqliteId = id
         try newRecord.checkAllUInt64FieldsFitInInt64()
-        try newRecord.update(tx.databaseConnection)
+        try newRecord.update(tx.database)
     }
 
     public func merge(
@@ -420,7 +420,7 @@ public class AttachmentStoreImpl: AttachmentStore {
 
         newRecord.sqliteId = attachment.id
         try newRecord.checkAllUInt64FieldsFitInInt64()
-        try newRecord.update(tx.databaseConnection)
+        try newRecord.update(tx.database)
     }
 
     public func updateAttachmentAsFailedToDownload(
@@ -463,7 +463,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
         newRecord.sqliteId = id
         try newRecord.checkAllUInt64FieldsFitInInt64()
-        try newRecord.update(tx.databaseConnection)
+        try newRecord.update(tx.database)
     }
 
     public func removeTransitTierInfo(
@@ -480,7 +480,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         )
         newRecord.sqliteId = id
         try newRecord.checkAllUInt64FieldsFitInInt64()
-        try newRecord.update(tx.databaseConnection)
+        try newRecord.update(tx.database)
     }
 
     public func updateAttachment(
@@ -502,7 +502,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         try newRecord.checkAllUInt64FieldsFitInInt64()
         // NOTE: a sqlite trigger handles updating all attachment reference rows
         // with the new content type.
-        try newRecord.update(tx.databaseConnection)
+        try newRecord.update(tx.database)
     }
 
     public func addOwner(
@@ -521,7 +521,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         default:
             let referenceRecord = try referenceParams.buildRecord(attachmentRowId: attachmentRowId)
             try referenceRecord.checkAllUInt64FieldsFitInInt64()
-            try referenceRecord.insert(tx.databaseConnection)
+            try referenceRecord.insert(tx.database)
         }
     }
 
@@ -619,7 +619,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
 
         sql += ";"
-        try tx.databaseConnection.execute(
+        try tx.database.execute(
             sql: sql,
             arguments: arguments
         )
@@ -658,7 +658,7 @@ public class AttachmentStoreImpl: AttachmentStore {
 
         // Note that this will fail if we have collisions in medianame (unique constraint)
         // but thats a hash so we just ignore that possibility.
-        try attachmentRecord.insert(tx.databaseConnection)
+        try attachmentRecord.insert(tx.database)
 
         guard let attachmentRowId = attachmentRecord.sqliteId else {
             throw OWSAssertionError("No sqlite id assigned to inserted attachment")
@@ -673,7 +673,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         } catch let ownerError {
             // We have to delete the ownerless attachment if owner creation failed.
             // Crash if the delete fails; that will certainly roll back the transaction.
-            try! attachmentRecord.delete(tx.databaseConnection)
+            try! attachmentRecord.delete(tx.database)
             throw ownerError
         }
     }
@@ -688,7 +688,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         attachmentRowId: Attachment.IDType,
         tx: DBWriteTransaction
     ) throws {
-        let db = tx.databaseConnection
+        let db = tx.database
         let ownerRowIdColumn = Column(ThreadAttachmentReferenceRecord.CodingKeys.ownerRowId)
         let timestampColumn = Column(ThreadAttachmentReferenceRecord.CodingKeys.creationTimestamp)
         let attachmentRowIdColumn = Column(ThreadAttachmentReferenceRecord.CodingKeys.attachmentRowId)
@@ -739,7 +739,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     }
 
     public func removeAllThreadOwners(tx: DBWriteTransaction) throws {
-        try ThreadAttachmentReferenceRecord.deleteAll(tx.databaseConnection)
+        try ThreadAttachmentReferenceRecord.deleteAll(tx.database)
     }
 
     public func updateMessageAttachmentThreadRowIdsForThreadMerge(
@@ -750,6 +750,6 @@ public class AttachmentStoreImpl: AttachmentStore {
         let threadRowIdColumn = GRDB.Column(AttachmentReference.MessageAttachmentReferenceRecord.CodingKeys.threadRowId)
         try AttachmentReference.MessageAttachmentReferenceRecord
             .filter(threadRowIdColumn == fromThreadRowId)
-            .updateAll(tx.databaseConnection, threadRowIdColumn.set(to: intoThreadRowId))
+            .updateAll(tx.database, threadRowIdColumn.set(to: intoThreadRowId))
     }
 }

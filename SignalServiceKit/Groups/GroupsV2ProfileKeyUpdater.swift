@@ -63,7 +63,7 @@ class GroupsV2ProfileKeyUpdater {
         return groupId.hexadecimalString
     }
 
-    public func updateLocalProfileKeyInGroup(groupId: Data, transaction: SDSAnyWriteTransaction) {
+    public func updateLocalProfileKeyInGroup(groupId: Data, transaction: DBWriteTransaction) {
         guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
             owsFailDebug("Missing groupThread.")
             return
@@ -75,7 +75,7 @@ class GroupsV2ProfileKeyUpdater {
         }
     }
 
-    public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction) {
+    public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: DBWriteTransaction) {
         TSGroupThread.anyEnumerate(transaction: transaction) { (thread, _) in
             guard let groupThread = thread as? TSGroupThread else {
                 return
@@ -90,12 +90,12 @@ class GroupsV2ProfileKeyUpdater {
         // but it helps in the common case.
     }
 
-    private func tryToScheduleGroupForProfileKeyUpdate(groupThread: TSGroupThread, transaction: SDSAnyWriteTransaction) {
+    private func tryToScheduleGroupForProfileKeyUpdate(groupThread: TSGroupThread, transaction: DBWriteTransaction) {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard tsAccountManager.registrationState(tx: transaction.asV2Read).isRegisteredPrimaryDevice else {
+        guard tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice else {
             return
         }
-        guard let localAddress = tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
+        guard let localAddress = tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress else {
             owsFailDebug("missing local address")
             return
         }
@@ -107,7 +107,7 @@ class GroupsV2ProfileKeyUpdater {
         }
         let groupId = groupThread.groupModel.groupId
         let key = self.key(for: groupId)
-        self.keyValueStore.setData(groupId, key: key, transaction: transaction.asV2Write)
+        self.keyValueStore.setData(groupId, key: key, transaction: transaction)
     }
 
     public func processProfileKeyUpdates() {
@@ -169,7 +169,7 @@ class GroupsV2ProfileKeyUpdater {
 
             do {
                 let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-                let groupIdKeys = databaseStorage.read(block: { self.keyValueStore.allKeys(transaction: $0.asV2Read) })
+                let groupIdKeys = databaseStorage.read(block: { self.keyValueStore.allKeys(transaction: $0) })
                 let taskQueue = ConcurrentTaskQueue(concurrentLimit: 16)
                 try await withThrowingTaskGroup(of: Void.self) { taskGroup in
                     for groupIdKey in groupIdKeys {
@@ -192,7 +192,7 @@ class GroupsV2ProfileKeyUpdater {
 
     private func _tryToUpdateNext(groupIdKey: String) async throws {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        guard let groupId = databaseStorage.read(block: { tx in keyValueStore.getData(groupIdKey, transaction: tx.asV2Read) }) else {
+        guard let groupId = databaseStorage.read(block: { tx in keyValueStore.getData(groupIdKey, transaction: tx) }) else {
             return
         }
         do {
@@ -231,7 +231,7 @@ class GroupsV2ProfileKeyUpdater {
 
     private func markAsComplete(groupIdKey: String) async {
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
-            self.keyValueStore.removeValue(forKey: groupIdKey, transaction: transaction.asV2Write)
+            self.keyValueStore.removeValue(forKey: groupIdKey, transaction: transaction)
         }
     }
 

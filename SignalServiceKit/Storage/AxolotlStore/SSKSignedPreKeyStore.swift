@@ -29,26 +29,26 @@ public class SSKSignedPreKeyStore: NSObject {
 
     // MARK: - SignedPreKeyStore transactions
 
-    public func loadSignedPreKey(_ signedPreKeyId: Int32, transaction: SDSAnyReadTransaction) -> SignalServiceKit.SignedPreKeyRecord? {
+    public func loadSignedPreKey(_ signedPreKeyId: Int32, transaction: DBReadTransaction) -> SignalServiceKit.SignedPreKeyRecord? {
         keyStore.signedPreKeyRecord(key: keyValueStoreKey(int: Int(signedPreKeyId)), transaction: transaction)
     }
 
-    public func storeSignedPreKey(_ signedPreKeyId: Int32, signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord, transaction: SDSAnyWriteTransaction) {
+    public func storeSignedPreKey(_ signedPreKeyId: Int32, signedPreKeyRecord: SignalServiceKit.SignedPreKeyRecord, transaction: DBWriteTransaction) {
         keyStore.setSignedPreKeyRecord(signedPreKeyRecord, key: keyValueStoreKey(int: Int(signedPreKeyId)), transaction: transaction)
     }
 
-    public func removeSignedPreKey(_ signedPreKeyId: Int32, transaction: SDSAnyWriteTransaction) {
+    public func removeSignedPreKey(_ signedPreKeyId: Int32, transaction: DBWriteTransaction) {
         Logger.info("Removing signed prekey id: \(signedPreKeyId).")
-        keyStore.removeValue(forKey: keyValueStoreKey(int: Int(signedPreKeyId)), transaction: transaction.asV2Write)
+        keyStore.removeValue(forKey: keyValueStoreKey(int: Int(signedPreKeyId)), transaction: transaction)
     }
 
     private func keyValueStoreKey(int: Int) -> String {
         return NSNumber(value: int).stringValue
     }
 
-    public func cullSignedPreKeyRecords(justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord, transaction: SDSAnyWriteTransaction) {
-        var oldSignedPrekeys = keyStore.allKeys(transaction: transaction.asV2Read).map {
-            let signedPreKeyRecord = keyStore.getObject($0, ofClass: SignalServiceKit.SignedPreKeyRecord.self, transaction: transaction.asV2Read)
+    public func cullSignedPreKeyRecords(justUploadedSignedPreKey: SignalServiceKit.SignedPreKeyRecord, transaction: DBWriteTransaction) {
+        var oldSignedPrekeys = keyStore.allKeys(transaction: transaction).map {
+            let signedPreKeyRecord = keyStore.getObject($0, ofClass: SignalServiceKit.SignedPreKeyRecord.self, transaction: transaction)
             guard let signedPreKeyRecord else {
                 owsFail("Couldn't decode SignedPreKeyRecord.")
             }
@@ -92,7 +92,7 @@ public class SSKSignedPreKeyStore: NSObject {
     // MARK: -
 
     public func generateRandomSignedRecord() -> SignalServiceKit.SignedPreKeyRecord {
-        let identityKeyPair = SSKEnvironment.shared.databaseStorageRef.read { DependenciesBridge.shared.identityManager.identityKeyPair(for: identity, tx: $0.asV2Read) }
+        let identityKeyPair = SSKEnvironment.shared.databaseStorageRef.read { DependenciesBridge.shared.identityManager.identityKeyPair(for: identity, tx: $0) }
         guard let identityKeyPair else {
             owsFail("identity key unexpectedly unavailable")
         }
@@ -101,18 +101,18 @@ public class SSKSignedPreKeyStore: NSObject {
 
     // MARK: - Prekey rotation tracking
 
-    public func setLastSuccessfulRotationDate(_ date: Date, transaction: SDSAnyWriteTransaction) {
-        metadataStore.setDate(date, key: lastPreKeyRotationDate, transaction: transaction.asV2Write)
+    public func setLastSuccessfulRotationDate(_ date: Date, transaction: DBWriteTransaction) {
+        metadataStore.setDate(date, key: lastPreKeyRotationDate, transaction: transaction)
     }
 
-    public func getLastSuccessfulRotationDate(transaction: SDSAnyReadTransaction) -> Date? {
-        metadataStore.getDate(lastPreKeyRotationDate, transaction: transaction.asV2Read)
+    public func getLastSuccessfulRotationDate(transaction: DBReadTransaction) -> Date? {
+        metadataStore.getDate(lastPreKeyRotationDate, transaction: transaction)
     }
 
-    public func removeAll(transaction: SDSAnyWriteTransaction) {
+    public func removeAll(transaction: DBWriteTransaction) {
         Logger.warn("")
-        keyStore.removeAll(transaction: transaction.asV2Write)
-        metadataStore.removeAll(transaction: transaction.asV2Write)
+        keyStore.removeAll(transaction: transaction)
+        metadataStore.removeAll(transaction: transaction)
     }
 }
 
@@ -187,11 +187,11 @@ extension SignalServiceKit.SignedPreKeyRecord {
 }
 
 extension KeyValueStore {
-    fileprivate func signedPreKeyRecord(key: String, transaction: SDSAnyReadTransaction) -> SignalServiceKit.SignedPreKeyRecord? {
-        return getObject(key, ofClass: SignalServiceKit.SignedPreKeyRecord.self, transaction: transaction.asV2Read)
+    fileprivate func signedPreKeyRecord(key: String, transaction: DBReadTransaction) -> SignalServiceKit.SignedPreKeyRecord? {
+        return getObject(key, ofClass: SignalServiceKit.SignedPreKeyRecord.self, transaction: transaction)
     }
 
-    fileprivate func setSignedPreKeyRecord(_ record: SignalServiceKit.SignedPreKeyRecord, key: String, transaction: SDSAnyWriteTransaction) {
-        setObject(record, key: key, transaction: transaction.asV2Write)
+    fileprivate func setSignedPreKeyRecord(_ record: SignalServiceKit.SignedPreKeyRecord, key: String, transaction: DBWriteTransaction) {
+        setObject(record, key: key, transaction: transaction)
     }
 }

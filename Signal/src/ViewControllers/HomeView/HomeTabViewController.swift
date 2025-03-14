@@ -34,7 +34,7 @@ extension HomeTabViewController {
         )
         databaseStorage.read { transaction in
             avatarView.update(transaction) { config in
-                guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else { return }
+                guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction) else { return }
                 config.dataSource = .address(localIdentifiers.aciAddress)
                 config.applyConfigurationSynchronously()
             }

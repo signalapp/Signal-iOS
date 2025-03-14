@@ -7,11 +7,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class DBReadTransaction;
+@class DBWriteTransaction;
 @class DisplayableQuotedThumbnailAttachment;
 @class MessageBodyRanges;
 @class QuotedThumbnailAttachmentMetadata;
-@class SDSAnyReadTransaction;
-@class SDSAnyWriteTransaction;
 @class SSKProtoDataMessage;
 @class SignalServiceAddress;
 @class TSMessage;

@@ -178,8 +178,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // Always check prekeys after app launches, and sometimes check on app activation.
         SSKEnvironment.shared.databaseStorageRef.read { tx in
-            if DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx.asV2Read).isRegistered {
-                DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx.asV2Read)
+            if DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isRegistered {
+                DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx)
             }
         }
 

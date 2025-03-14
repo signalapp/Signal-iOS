@@ -111,7 +111,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         paymentsState.isEnabled
     }
 
-    public func arePaymentsEnabled(tx: SDSAnyReadTransaction) -> Bool {
+    public func arePaymentsEnabled(tx: DBReadTransaction) -> Bool {
         Self.loadPaymentsState(transaction: tx).isEnabled
     }
 
@@ -119,7 +119,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         paymentsState.paymentsEntropy
     }
 
-    public func enablePayments(transaction: SDSAnyWriteTransaction) {
+    public func enablePayments(transaction: DBWriteTransaction) {
         // We must preserve any existing paymentsEntropy, and then prefer "old" entropy, then last resort generate new entropy.
         let existingPaymentsEntropy = self.paymentsEntropy
         let oldPaymentsEntropy = Self.loadPaymentsState(transaction: transaction).paymentsEntropy
@@ -127,7 +127,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         _ = enablePayments(withPaymentsEntropy: paymentsEntropy, transaction: transaction)
     }
 
-    public func enablePayments(withPaymentsEntropy newPaymentsEntropy: Data, transaction: SDSAnyWriteTransaction) -> Bool {
+    public func enablePayments(withPaymentsEntropy newPaymentsEntropy: Data, transaction: DBWriteTransaction) -> Bool {
         let oldPaymentsEntropy = Self.loadPaymentsState(transaction: transaction).paymentsEntropy
         guard oldPaymentsEntropy == nil || oldPaymentsEntropy == newPaymentsEntropy else {
             owsFailDebug("paymentsEntropy is already set.")
@@ -143,7 +143,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         return true
     }
 
-    public func disablePayments(transaction: SDSAnyWriteTransaction) {
+    public func disablePayments(transaction: DBWriteTransaction) {
         switch paymentsState {
         case .enabled(let paymentsEntropy):
             setPaymentsState(.disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy),
@@ -157,7 +157,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
 
     public func setPaymentsState(_ newPaymentsState: PaymentsState,
                                  originatedLocally: Bool,
-                                 transaction: SDSAnyWriteTransaction) {
+                                 transaction: DBWriteTransaction) {
         let oldPaymentsState = self.paymentsState
         var newPaymentsState = newPaymentsState
 
@@ -187,18 +187,18 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
 
         Self.keyValueStore.setBool(newPaymentsState.isEnabled,
                                    key: Self.arePaymentsEnabledKey,
-                                   transaction: transaction.asV2Write)
+                                   transaction: transaction)
         if let paymentsEntropy = newPaymentsState.paymentsEntropy {
             Self.keyValueStore.setData(paymentsEntropy,
                                        key: Self.paymentsEntropyKey,
-                                       transaction: transaction.asV2Write)
+                                       transaction: transaction)
         }
 
         self.paymentStateCache.set(newPaymentsState)
 
         SSKEnvironment.shared.paymentsEventsRef.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
 
-        let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
+        let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci
         TSPaymentsActivationRequestModel
             .allThreadsWithPaymentActivationRequests(transaction: transaction)
             .forEach { thread in
@@ -227,7 +227,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
             }
         // Regardless of where it was originated, wipe the pending activation request state.
         // Now that we have activated, they're useless.
-        _ = try? TSPaymentsActivationRequestModel.deleteAll(transaction.unwrapGrdbWrite.database)
+        _ = try? TSPaymentsActivationRequestModel.deleteAll(transaction.database)
 
         transaction.addAsyncCompletion(on: DispatchQueue.global()) {
             NotificationCenter.default.postNotificationNameAsync(PaymentsConstants.arePaymentsEnabledDidChange, object: nil)
@@ -245,14 +245,14 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         }
     }
 
-    private static func loadPaymentsState(transaction: SDSAnyReadTransaction) -> PaymentsState {
-        guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered else {
+    private static func loadPaymentsState(transaction: DBReadTransaction) -> PaymentsState {
+        guard DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction).isRegistered else {
             return .disabled
         }
-        let paymentsEntropy = keyValueStore.getData(paymentsEntropyKey, transaction: transaction.asV2Read)
+        let paymentsEntropy = keyValueStore.getData(paymentsEntropyKey, transaction: transaction)
         let arePaymentsEnabled = keyValueStore.getBool(Self.arePaymentsEnabledKey,
                                                        defaultValue: false,
-                                                       transaction: transaction.asV2Read)
+                                                       transaction: transaction)
         return PaymentsState.build(arePaymentsEnabled: arePaymentsEnabled,
                                    paymentsEntropy: paymentsEntropy)
     }
@@ -261,30 +261,30 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         Randomness.generateRandomBytes(PaymentsConstants.paymentsEntropyLength)
     }
 
-    public func clearState(transaction: SDSAnyWriteTransaction) {
-        Self.keyValueStore.removeAll(transaction: transaction.asV2Write)
+    public func clearState(transaction: DBWriteTransaction) {
+        Self.keyValueStore.removeAll(transaction: transaction)
 
         paymentStateCache.set(nil)
     }
 
-    public func setLastKnownLocalPaymentAddressProtoData(_ data: Data?, transaction: SDSAnyWriteTransaction) {
-        Self.keyValueStore.setData(data, key: Self.lastKnownLocalPaymentAddressProtoDataKey, transaction: transaction.asV2Write)
+    public func setLastKnownLocalPaymentAddressProtoData(_ data: Data?, transaction: DBWriteTransaction) {
+        Self.keyValueStore.setData(data, key: Self.lastKnownLocalPaymentAddressProtoDataKey, transaction: transaction)
     }
 
-    public func lastKnownLocalPaymentAddressProtoData(transaction: SDSAnyWriteTransaction) -> Data? {
+    public func lastKnownLocalPaymentAddressProtoData(transaction: DBWriteTransaction) -> Data? {
         SSKEnvironment.shared.paymentsEventsRef.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
-        return Self.keyValueStore.getData(Self.lastKnownLocalPaymentAddressProtoDataKey, transaction: transaction.asV2Read)
+        return Self.keyValueStore.getData(Self.lastKnownLocalPaymentAddressProtoDataKey, transaction: transaction)
     }
 
     // MARK: -
 
     private static let arePaymentsEnabledForUserStore = KeyValueStore(collection: "arePaymentsEnabledForUserStore")
 
-    public func setArePaymentsEnabled(for serviceId: ServiceId, hasPaymentsEnabled: Bool, transaction tx: SDSAnyWriteTransaction) {
-        Self.arePaymentsEnabledForUserStore.setBool(hasPaymentsEnabled, key: serviceId.serviceIdUppercaseString, transaction: tx.asV2Write)
+    public func setArePaymentsEnabled(for serviceId: ServiceId, hasPaymentsEnabled: Bool, transaction tx: DBWriteTransaction) {
+        Self.arePaymentsEnabledForUserStore.setBool(hasPaymentsEnabled, key: serviceId.serviceIdUppercaseString, transaction: tx)
     }
 
-    public func arePaymentsEnabled(for address: SignalServiceAddress, transaction tx: SDSAnyReadTransaction) -> Bool {
+    public func arePaymentsEnabled(for address: SignalServiceAddress, transaction tx: DBReadTransaction) -> Bool {
         guard let serviceId = address.serviceId else {
             Logger.warn("User is missing serviceId.")
             return false
@@ -292,7 +292,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         return Self.arePaymentsEnabledForUserStore.getBool(
             serviceId.serviceIdUppercaseString,
             defaultValue: false,
-            transaction: tx.asV2Read
+            transaction: tx
         )
     }
 
@@ -316,7 +316,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         thread: TSThread,
         paymentNotification: TSPaymentNotification,
         senderAci: Aci,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         Logger.info("")
         guard paymentNotification.isValid else {
@@ -332,7 +332,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
     public func processIncomingPaymentsActivationRequest(
         thread: TSThread,
         senderAci: Aci,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         Logger.info("")
 
@@ -342,7 +342,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         if
             Self.loadPaymentsState(transaction: transaction).isEnabled
         {
-            if DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction.asV2Read).isPrimaryDevice ?? false {
+            if DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction).isPrimaryDevice ?? false {
                 let message = OWSPaymentActivationRequestFinishedMessage(thread: thread, transaction: transaction)
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
                     transientMessageWithoutAttachments: message
@@ -371,7 +371,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
     public func processIncomingPaymentsActivatedMessage(
         thread: TSThread,
         senderAci: Aci,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         Logger.info("")
         let infoMessage: TSInfoMessage = .paymentsActivatedMessage(
@@ -391,7 +391,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         thread: TSThread,
         paymentNotification: TSPaymentNotification,
         messageTimestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         Logger.info("Ignoring payment notification from sync transcript.")
     }
@@ -399,7 +399,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
     public func processIncomingPaymentSyncMessage(
         _ paymentProto: SSKProtoSyncMessageOutgoingPayment,
         messageTimestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         Logger.info("")
         do {
@@ -501,7 +501,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
             if
                 paymentType == .outgoingPaymentNotFromLocalDevice,
                 let recipientAci,
-                recipientAci != DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
+                recipientAci != DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci
             {
                 let thread = TSContactThread.getOrCreateThread(
                     withContactAddress: SignalServiceAddress(recipientAci),
@@ -512,7 +512,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
                     mcReceiptData: mcReceiptData
                 )
                 let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
+                let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction)
                 let message = OWSOutgoingPaymentMessage(
                     thread: thread,
                     messageBody: memoMessage,
@@ -533,7 +533,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
     // This method enforces invariants around TSPaymentModel.
     public func tryToInsertPaymentModel(
         _ paymentModel: TSPaymentModel,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws {
 
         Logger.info("Trying to insert: \(paymentModel.descriptionForLogs)")
@@ -554,7 +554,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
     // This method enforces invariants around TSPaymentModel.
     private func isProposedPaymentModelRedundant(
         _ paymentModel: TSPaymentModel,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> Bool {
         guard paymentModel.isValid else {
             throw OWSAssertionError("Invalid paymentModel.")
@@ -636,7 +636,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
     private func upsertPaymentModelForIncomingPaymentNotification(_ paymentNotification: TSPaymentNotification,
                                                                   thread: TSThread,
                                                                   senderAci: Aci,
-                                                                  transaction: SDSAnyWriteTransaction) {
+                                                                  transaction: DBWriteTransaction) {
         do {
             let mcReceiptData = paymentNotification.mcReceiptData
             let receiptInfo = try SSKEnvironment.shared.mobileCoinHelperRef.info(forReceiptData: mcReceiptData)

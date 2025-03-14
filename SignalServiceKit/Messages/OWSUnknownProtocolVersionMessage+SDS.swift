@@ -16,7 +16,7 @@ public extension OWSUnknownProtocolVersionMessage {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetchUnknownProtocolVersionMessage(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> OWSUnknownProtocolVersionMessage? {
         assert(!uniqueId.isEmpty)
 
@@ -32,7 +32,7 @@ public extension OWSUnknownProtocolVersionMessage {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateUnknownProtocolVersionMessage(transaction: SDSAnyWriteTransaction, block: (OWSUnknownProtocolVersionMessage) -> Void) {
+    func anyUpdateUnknownProtocolVersionMessage(transaction: DBWriteTransaction, block: (OWSUnknownProtocolVersionMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSUnknownProtocolVersionMessage else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")

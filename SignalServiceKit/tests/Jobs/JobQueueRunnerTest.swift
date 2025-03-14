@@ -128,7 +128,7 @@ private class MockJobFinder: JobRecordFinder {
         return jobRecords.update { $0[Int(rowId - 1)] }
     }
 
-    func loadRunnableJobs(updateRunnableJobRecord: @escaping (SessionResetJobRecord, any DBWriteTransaction) -> Void) async throws -> [SessionResetJobRecord] {
+    func loadRunnableJobs(updateRunnableJobRecord: @escaping (SessionResetJobRecord, DBWriteTransaction) -> Void) async throws -> [SessionResetJobRecord] {
         return jobRecords.update { $0.compacted() }
     }
 

@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread
             overrideRecipients:(NSArray<AciObjC *> *)overrideRecipients
-                   transaction:(SDSAnyReadTransaction *)transaction
+                   transaction:(DBReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     self = [super initOutgoingMessageWithBuilder:messageBuilder
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
                   offerMessage:(SSKProtoCallMessageOffer *)offerMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
-                   transaction:(SDSAnyReadTransaction *)transaction
+                   transaction:(DBReadTransaction *)transaction
 {
     self = [self initWithThread:thread overrideRecipients:@[] transaction:transaction];
     if (!self) {
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
                  answerMessage:(SSKProtoCallMessageAnswer *)answerMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
-                   transaction:(SDSAnyReadTransaction *)transaction
+                   transaction:(DBReadTransaction *)transaction
 {
     self = [self initWithThread:thread overrideRecipients:@[] transaction:transaction];
     if (!self) {
@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
              iceUpdateMessages:(NSArray<SSKProtoCallMessageIceUpdate *> *)iceUpdateMessages
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
-                   transaction:(SDSAnyReadTransaction *)transaction
+                   transaction:(DBReadTransaction *)transaction
 {
     self = [self initWithThread:thread overrideRecipients:@[] transaction:transaction];
     if (!self) {
@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
                  hangupMessage:(SSKProtoCallMessageHangup *)hangupMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
-                   transaction:(SDSAnyReadTransaction *)transaction
+                   transaction:(DBReadTransaction *)transaction
 {
     self = [self initWithThread:thread overrideRecipients:@[] transaction:transaction];
     if (!self) {
@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
                    busyMessage:(SSKProtoCallMessageBusy *)busyMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
-                   transaction:(SDSAnyReadTransaction *)transaction
+                   transaction:(DBReadTransaction *)transaction
 {
     self = [self initWithThread:thread overrideRecipients:@[] transaction:transaction];
     if (!self) {
@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
                  opaqueMessage:(SSKProtoCallMessageOpaque *)opaqueMessage
             overrideRecipients:(nullable NSArray<AciObjC *> *)overrideRecipients
-                   transaction:(SDSAnyReadTransaction *)transaction
+                   transaction:(DBReadTransaction *)transaction
 {
     self = [self initWithThread:thread overrideRecipients:overrideRecipients transaction:transaction];
     if (!self) {
@@ -131,14 +131,14 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable SSKProtoContentBuilder *)contentBuilderWithThread:(TSThread *)thread
-                                                  transaction:(SDSAnyReadTransaction *)transaction
+                                                  transaction:(DBReadTransaction *)transaction
 {
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
     builder.callMessage = [self buildCallMessage:thread transaction:transaction];
     return builder;
 }
 
-- (nullable SSKProtoCallMessage *)buildCallMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoCallMessage *)buildCallMessage:(TSThread *)thread transaction:(DBReadTransaction *)transaction
 {
     SSKProtoCallMessageBuilder *builder = [SSKProtoCallMessage builder];
 

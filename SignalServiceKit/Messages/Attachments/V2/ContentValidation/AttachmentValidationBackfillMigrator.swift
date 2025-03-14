@@ -137,7 +137,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
             let attachmentIds = try store.getNextAttachmentIdBatch(tx: tx)
 
             let attachments = try Attachment.Record.fetchAll(
-                tx.unwrapGrdbRead.database,
+                tx.database,
                 keys: attachmentIds
             )
             return attachmentIds.dictionaryMappingToValues { id in
@@ -191,7 +191,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
                 try self.updateRevalidatedAttachment(
                     revalidatedAttachment,
                     id: attachmentId,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
         }
@@ -293,19 +293,19 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
     /// Returns true if anything was enqueued.
     private func enqueueForBackfillIfNeeded() async throws -> Bool {
         // Check with a cheap read if we need to do any enqueuing.
-        if databaseStorage.read(block: { tx in self.store.backfillsThatNeedEnqueuing(tx: tx.asV2Read) }).isEmpty {
+        if databaseStorage.read(block: { tx in self.store.backfillsThatNeedEnqueuing(tx: tx) }).isEmpty {
             return false
         }
 
         return try await databaseStorage.awaitableWrite { tx in
-            let backfillsToEnqueue = self.store.backfillsThatNeedEnqueuing(tx: tx.asV2Read)
+            let backfillsToEnqueue = self.store.backfillsThatNeedEnqueuing(tx: tx)
             if backfillsToEnqueue.isEmpty {
                 return false
             }
             try self.enqueueForBackfill(backfillsToEnqueue, tx: tx)
             self.store.setLastEnqueuedBackfill(
                 backfillsToEnqueue.max(by: { $0.rawValue < $1.rawValue })!,
-                tx: tx.asV2Write
+                tx: tx
             )
             return true
         }
@@ -314,7 +314,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
     /// Given a set of backfills that have yet to have the enqueue pass, enqueues all attachments that need re-validation.
     ///
     /// Filters across all the backfills and enqueues any attachment that passes the filter of _any_ of the backfills.
-    private func enqueueForBackfill(_ backfills: [ValidationBackfill], tx: SDSAnyWriteTransaction) throws {
+    private func enqueueForBackfill(_ backfills: [ValidationBackfill], tx: DBWriteTransaction) throws {
         let contentTypeColumn = Column(Attachment.Record.CodingKeys.contentType)
         let mimeTypeColumn = Column(Attachment.Record.CodingKeys.mimeType)
 
@@ -348,7 +348,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
             // OR all the predicates across backfills.
             .filter(perBackfillPredicates.joined(operator: .or))
             .select(Column(Attachment.Record.CodingKeys.sqliteId))
-        let cursor = try Int64.fetchCursor(tx.unwrapGrdbWrite.database, query)
+        let cursor = try Int64.fetchCursor(tx.database, query)
 
         while let nextId = try cursor.next() {
             try self.store.enqueue(attachmentId: nextId, tx: tx)

@@ -30,32 +30,32 @@ NS_ASSUME_NONNULL_BEGIN
                           additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
                             explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
                              skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
-                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+                                   transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread
                   offerMessage:(SSKProtoCallMessageOffer *)offerMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
-                   transaction:(SDSAnyReadTransaction *)transaction;
+                   transaction:(DBReadTransaction *)transaction;
 - (instancetype)initWithThread:(TSThread *)thread
                  answerMessage:(SSKProtoCallMessageAnswer *)answerMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
-                   transaction:(SDSAnyReadTransaction *)transaction;
+                   transaction:(DBReadTransaction *)transaction;
 - (instancetype)initWithThread:(TSThread *)thread
              iceUpdateMessages:(NSArray<SSKProtoCallMessageIceUpdate *> *)iceUpdateMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
-                   transaction:(SDSAnyReadTransaction *)transaction;
+                   transaction:(DBReadTransaction *)transaction;
 - (instancetype)initWithThread:(TSThread *)thread
                  hangupMessage:(SSKProtoCallMessageHangup *)hangupMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
-                   transaction:(SDSAnyReadTransaction *)transaction;
+                   transaction:(DBReadTransaction *)transaction;
 - (instancetype)initWithThread:(TSThread *)thread
                    busyMessage:(SSKProtoCallMessageBusy *)busyMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
-                   transaction:(SDSAnyReadTransaction *)transaction;
+                   transaction:(DBReadTransaction *)transaction;
 - (instancetype)initWithThread:(TSThread *)thread
                  opaqueMessage:(SSKProtoCallMessageOpaque *)opaqueMessage
             overrideRecipients:(nullable NSArray<AciObjC *> *)overrideRecipients
-                   transaction:(SDSAnyReadTransaction *)transaction;
+                   transaction:(DBReadTransaction *)transaction;
 
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageOffer *offerMessage;
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageAnswer *answerMessage;

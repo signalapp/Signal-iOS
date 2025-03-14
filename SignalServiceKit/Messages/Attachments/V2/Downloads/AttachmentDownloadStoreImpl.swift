@@ -22,7 +22,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
         id: QueuedAttachmentDownloadRecord.IDType,
         tx: DBReadTransaction
     ) throws -> QueuedAttachmentDownloadRecord? {
-        return try Record.fetchOne(tx.databaseConnection, key: id)
+        return try Record.fetchOne(tx.database, key: id)
     }
 
     public func enqueuedDownload(
@@ -31,7 +31,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
     ) throws -> QueuedAttachmentDownloadRecord? {
         return try Record
             .filter(Column(.attachmentId) == id)
-            .fetchOne(tx.databaseConnection)
+            .fetchOne(tx.database)
     }
 
     public func peek(
@@ -42,14 +42,14 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
             .filter(Column(.minRetryTimestamp) == nil)
             .order([Column(.priority).desc, Column(.id).asc])
             .limit(Int(count))
-            .fetchAll(tx.databaseConnection)
+            .fetchAll(tx.database)
     }
 
-    public func nextRetryTimestamp(tx: any DBReadTransaction) throws -> UInt64? {
+    public func nextRetryTimestamp(tx: DBReadTransaction) throws -> UInt64? {
         try Record
             .filter(Column(.minRetryTimestamp) != nil)
             .select([min(Column(.minRetryTimestamp))], as: UInt64.self)
-            .fetchOne(tx.databaseConnection)
+            .fetchOne(tx.database)
     }
 
     public func enqueueDownloadOfAttachment(
@@ -62,7 +62,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
         let existingRow = try Record
             .filter(Column(.attachmentId) == attachmentId)
             .filter(Column(.sourceType) == source.rawValue)
-            .fetchOne(tx.databaseConnection)
+            .fetchOne(tx.database)
         if var existingRow {
             try self.updatePriorityIfNeeded(&existingRow, priority: priority, tx: tx)
             return
@@ -73,7 +73,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
             // Only allow a max amount of default enqueued rows.
             let defaultPriorityEnqueuedCount = try Record
                 .filter(Column(.priority) == priority.rawValue)
-                .fetchCount(tx.databaseConnection)
+                .fetchCount(tx.database)
 
             if defaultPriorityEnqueuedCount >= Constants.maxEnqueuedCountDefaultPriority {
                 // Remove the first ones sorted by insertion order.
@@ -81,8 +81,8 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
                     .filter(Column(.priority) == priority.rawValue)
                     .order(Column(.id).asc)
                     .limit(1 + defaultPriorityEnqueuedCount - Constants.maxEnqueuedCountDefaultPriority)
-                    .fetchAll(tx.databaseConnection)
-                    .forEach { try $0.delete(tx.databaseConnection) }
+                    .fetchAll(tx.database)
+                    .forEach { try $0.delete(tx.database) }
             }
 
         case .userInitiated, .localClone, .backupRestoreHigh, .backupRestoreLow:
@@ -94,7 +94,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
             priority: priority,
             sourceType: source
         )
-        try newRecord.insert(tx.databaseConnection)
+        try newRecord.insert(tx.database)
     }
 
     public func removeAttachmentFromQueue(
@@ -105,7 +105,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
         try Record
             .filter(Column(.attachmentId) == attachmentId)
             .filter(Column(.sourceType) == source.rawValue)
-            .deleteAll(tx.databaseConnection)
+            .deleteAll(tx.database)
     }
 
     public func markQueuedDownloadFailed(
@@ -115,7 +115,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
     ) throws {
         try Record
             .filter(key: id)
-            .updateAll(tx.databaseConnection, [
+            .updateAll(tx.database, [
                 Column(.minRetryTimestamp).set(to: minRetryTimestamp),
                 Column(.retryAttempts).set(to: Column(.retryAttempts) + 1)
             ])
@@ -125,7 +125,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
         try Record
             .filter(Column(.minRetryTimestamp) != nil)
             .filter(Column(.minRetryTimestamp) <= dateProvider().ows_millisecondsSince1970)
-            .updateAll(tx.databaseConnection, Column(.minRetryTimestamp).set(to: nil))
+            .updateAll(tx.database, Column(.minRetryTimestamp).set(to: nil))
     }
 
     // MARK: - Private
@@ -139,11 +139,11 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
         if record.priority.rawValue < priority.rawValue {
             record.priority = priority
             record.minRetryTimestamp = nil
-            try record.update(tx.databaseConnection)
+            try record.update(tx.database)
         } else if priority.rawValue >= AttachmentDownloadPriority.userInitiated.rawValue {
             // If we re-bump with user-initiated priority, mark it as needing retry.
             record.minRetryTimestamp = nil
-            try record.update(tx.databaseConnection)
+            try record.update(tx.database)
         }
     }
 
@@ -152,16 +152,6 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
     private enum Constants {
         static let maxEnqueuedCountDefaultPriority = 50
     }
-}
-
-fileprivate extension DBReadTransaction {
-
-    var db: Database { SDSDB.shimOnlyBridge(self).unwrapGrdbRead.database }
-}
-
-fileprivate extension DBWriteTransaction {
-
-    var db: Database { SDSDB.shimOnlyBridge(self).unwrapGrdbWrite.database }
 }
 
 extension Column {

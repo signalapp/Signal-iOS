@@ -83,7 +83,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
     // MARK: -
 
     func fetchLocalUsersProfile(authedAccount: AuthedAccount) async throws -> FetchedProfile
-    func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?]
+    func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: DBReadTransaction) -> [OWSUserProfile?]
 
     func reuploadLocalProfile(authedAccount: AuthedAccount)
 
@@ -117,7 +117,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
         userProfileWriter: UserProfileWriter,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     )
 
     func updateLocalProfile(
@@ -130,7 +130,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
         unsavedRotatedProfileKey: Aes256Key?,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> Promise<Void>
 
     func didSendOrReceiveMessage(
@@ -160,12 +160,12 @@ public protocol ProfileManager: ProfileManagerProtocol {
 
     // MARK: -
 
-    func allWhitelistedAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress]
-    func allWhitelistedRegisteredAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress]
+    func allWhitelistedAddresses(tx: DBReadTransaction) -> [SignalServiceAddress]
+    func allWhitelistedRegisteredAddresses(tx: DBReadTransaction) -> [SignalServiceAddress]
 }
 
 extension ProfileManager {
-    public func localProfileKey(tx: SDSAnyReadTransaction) -> ProfileKey? {
+    public func localProfileKey(tx: DBReadTransaction) -> ProfileKey? {
         return localUserProfile(tx: tx)?.profileKey.map(ProfileKey.init(_:))
     }
 }

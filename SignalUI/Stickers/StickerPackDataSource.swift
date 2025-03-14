@@ -188,7 +188,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
         }
     }
 
-    private static func fetchInstalledState(for stickerPackInfo: StickerPackInfo, readTx: SDSAnyReadTransaction) -> (
+    private static func fetchInstalledState(for stickerPackInfo: StickerPackInfo, readTx: DBReadTransaction) -> (
         stickerPack: StickerPack?,
         installedCoverInfo: StickerInfo?,
         installedStickers: [StickerInfo]) {

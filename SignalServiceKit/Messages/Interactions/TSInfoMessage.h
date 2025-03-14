@@ -171,10 +171,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 // --- CODE GENERATION MARKER
 
-- (NSString *)conversationSystemMessageComponentTextWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (NSString *)conversationSystemMessageComponentTextWithTransaction:(DBReadTransaction *)transaction;
 
 
-- (NSString *)infoMessagePreviewTextWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (NSString *)infoMessagePreviewTextWithTransaction:(DBReadTransaction *)transaction;
 
 @end
 

@@ -59,9 +59,9 @@ public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies
         }
     }
 
-    private static func loadCurrentCurrencyCode(transaction: SDSAnyReadTransaction) -> Currency.Code {
+    private static func loadCurrentCurrencyCode(transaction: DBReadTransaction) -> Currency.Code {
         if let currencyCode = Self.keyValueStore.getString(Self.currentCurrencyCodeKey,
-                                                           transaction: transaction.asV2Read) {
+                                                           transaction: transaction) {
             return currencyCode
         }
         if let localeCurrencyCode = Locale.current.currencyCode,
@@ -76,10 +76,10 @@ public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies
         return Self.defaultCurrencyCode
     }
 
-    public func setCurrentCurrencyCode(_ currencyCode: Currency.Code, transaction: SDSAnyWriteTransaction) {
+    public func setCurrentCurrencyCode(_ currencyCode: Currency.Code, transaction: DBWriteTransaction) {
         self.currentCurrencyCode = currencyCode
 
-        Self.keyValueStore.setString(currencyCode, key: Self.currentCurrencyCodeKey, transaction: transaction.asV2Write)
+        Self.keyValueStore.setString(currencyCode, key: Self.currentCurrencyCodeKey, transaction: transaction)
     }
 
     // Expressed as a ratio:

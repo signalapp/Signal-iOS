@@ -17,20 +17,20 @@ public protocol Payments: AnyObject {
 
     func isValidMobileCoinPublicAddress(_ publicAddressData: Data) -> Bool
 
-    func scheduleReconciliationNow(transaction: SDSAnyWriteTransaction)
+    func scheduleReconciliationNow(transaction: DBWriteTransaction)
 
     func replaceAsUnidentified(paymentModel oldPaymentModel: TSPaymentModel,
-                               transaction: SDSAnyWriteTransaction)
+                               transaction: DBWriteTransaction)
 
     func findPaymentModels(withMCLedgerBlockIndex mcLedgerBlockIndex: UInt64,
                            mcIncomingTransactionPublicKey: Data,
-                           transaction: SDSAnyReadTransaction) -> [TSPaymentModel]
+                           transaction: DBReadTransaction) -> [TSPaymentModel]
 
     func didReceiveMCAuthError()
 
     var isKillSwitchActive: Bool { get }
 
-    func clearState(transaction: SDSAnyWriteTransaction)
+    func clearState(transaction: DBWriteTransaction)
 }
 
 // MARK: -
@@ -144,7 +144,7 @@ extension MockPayments: PaymentsSwift {
         // Do nothing.
     }
 
-    public func clearState(transaction: SDSAnyWriteTransaction) {
+    public func clearState(transaction: DBWriteTransaction) {
         owsFail("Not implemented.")
     }
 
@@ -186,18 +186,18 @@ extension MockPayments: PaymentsSwift {
         owsFail("Not implemented.")
     }
 
-    public func scheduleReconciliationNow(transaction: SDSAnyWriteTransaction) {
+    public func scheduleReconciliationNow(transaction: DBWriteTransaction) {
         owsFail("Not implemented.")
     }
 
     public func replaceAsUnidentified(paymentModel oldPaymentModel: TSPaymentModel,
-                                      transaction: SDSAnyWriteTransaction) {
+                                      transaction: DBWriteTransaction) {
         owsFail("Not implemented.")
     }
 
     public func findPaymentModels(withMCLedgerBlockIndex mcLedgerBlockIndex: UInt64,
                                   mcIncomingTransactionPublicKey: Data,
-                                  transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {
+                                  transaction: DBReadTransaction) -> [TSPaymentModel] {
         owsFail("Not implemented.")
     }
 

@@ -46,11 +46,11 @@ public class OWSUserProfileBadgeInfo: NSObject, Codable {
     }
 
     @objc
-    public func loadBadge(transaction: SDSAnyReadTransaction) {
+    public func loadBadge(transaction: DBReadTransaction) {
         badge = SSKEnvironment.shared.profileManagerRef.badgeStore.fetchBadgeWithId(badgeId, readTx: transaction)
     }
 
-    public func fetchBadgeContent(transaction: SDSAnyReadTransaction) -> ProfileBadge? {
+    public func fetchBadgeContent(transaction: DBReadTransaction) -> ProfileBadge? {
         return badge ?? {
             loadBadge(transaction: transaction)
             return badge
@@ -543,7 +543,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     /// that are about to be referenced.
     static func consumeTemporaryAvatarFileUrl(
         _ avatarFileUrl: OptionalChange<URL?>,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) throws -> OptionalChange<String?> {
         switch avatarFileUrl {
         case .noChange:
@@ -615,7 +615,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     // TODO: We may want to clean up this directory in the "orphan cleanup" logic.
 
     @objc
-    public static func allProfileAvatarFilePaths(tx: SDSAnyReadTransaction) -> Set<String> {
+    public static func allProfileAvatarFilePaths(tx: DBReadTransaction) -> Set<String> {
         var result = Set<String>()
         Self.anyEnumerate(transaction: tx, batchingPreference: .batched(Batching.kDefaultBatchSize)) { userProfile, _ in
             if let avatarFileName = userProfile.avatarFileName {
@@ -639,7 +639,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return visibleBadges.first
     }
 
-    func loadBadgeContent(tx: SDSAnyReadTransaction) {
+    func loadBadgeContent(tx: DBReadTransaction) {
         badges.forEach({ $0.loadBadge(transaction: tx) })
     }
 
@@ -813,17 +813,17 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
     // MARK: - Fetching & Creating
 
-    public static func getUserProfileForLocalUser(tx: SDSAnyReadTransaction) -> OWSUserProfile? {
+    public static func getUserProfileForLocalUser(tx: DBReadTransaction) -> OWSUserProfile? {
         return getUserProfile(for: .localUser, tx: tx)
     }
 
-    public static func getUserProfile(for address: Address, tx: SDSAnyReadTransaction) -> OWSUserProfile? {
+    public static func getUserProfile(for address: Address, tx: DBReadTransaction) -> OWSUserProfile? {
         return UserProfileFinder().userProfile(for: address, transaction: tx)
     }
 
     public class func getOrBuildUserProfileForLocalUser(
         userProfileWriter: UserProfileWriter,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> OWSUserProfile {
         return getOrBuildUserProfile(
             for: .localUser,
@@ -835,7 +835,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     public class func getOrBuildUserProfile(
         for insertableAddress: InsertableAddress,
         userProfileWriter: UserProfileWriter,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> OWSUserProfile {
         // If we already have a profile for this address, return it.
         if let userProfile = fetchAndExpungeUserProfiles(for: insertableAddress, tx: tx) {
@@ -872,7 +872,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     /// remove duplicates.
     private class func fetchAndExpungeUserProfiles(
         for insertableAddress: InsertableAddress,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> OWSUserProfile? {
         let userProfiles: [OWSUserProfile]
         switch insertableAddress {
@@ -897,14 +897,14 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         self.id = rowID
     }
 
-    public func anyDidInsert(transaction: SDSAnyWriteTransaction) {
+    public func anyDidInsert(transaction: DBWriteTransaction) {
         let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
-        searchableNameIndexer.insert(self, tx: transaction.asV2Write)
+        searchableNameIndexer.insert(self, tx: transaction)
     }
 
-    public func anyDidUpdate(transaction: SDSAnyWriteTransaction) {
+    public func anyDidUpdate(transaction: DBWriteTransaction) {
         let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
-        searchableNameIndexer.update(self, tx: transaction.asV2Write)
+        searchableNameIndexer.update(self, tx: transaction)
     }
 
     // MARK: - ObjC Compability
@@ -1118,10 +1118,10 @@ extension OWSUserProfile {
     private func applyChanges(
         _ changes: UserProfileChanges,
         userProfileWriter: UserProfileWriter,
-        tx: SDSAnyWriteTransaction,
+        tx: DBWriteTransaction,
         completion: (() -> Void)?
     ) {
-        let displayNameBeforeLearningProfileName = displayNameBeforeLearningProfileNameIfNecessary(tx: tx.asV2Read)
+        let displayNameBeforeLearningProfileName = displayNameBeforeLearningProfileNameIfNecessary(tx: tx)
 
         let internalAddress = self.internalAddress
 
@@ -1194,7 +1194,7 @@ extension OWSUserProfile {
 
         if
             let displayNameBeforeLearningProfileName,
-            displayNameBeforeLearningProfileNameIfNecessary(tx: tx.asV2Read) == nil
+            displayNameBeforeLearningProfileNameIfNecessary(tx: tx) == nil
         {
             /// We didn't have a pre-profile-key display name for this profile
             /// before applying changes, but we do know. Insert an info message
@@ -1202,14 +1202,14 @@ extension OWSUserProfile {
             TSInfoMessage.insertLearnedProfileNameMessage(
                 serviceId: displayNameBeforeLearningProfileName.serviceId,
                 displayNameBefore: displayNameBeforeLearningProfileName.displayName,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 
         updatePhoneNumberVisibilityIfNeeded(
             oldUserProfile: oldInstance,
             newUserProfile: newInstance,
-            tx: tx.asV2Write
+            tx: tx
         )
 
         if changeResult == .nothing {
@@ -1220,7 +1220,7 @@ extension OWSUserProfile {
         // avatar information on the service except for the local user.
         let shouldUpdateStorageService: Bool = {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard tsAccountManager.registrationState(tx: tx.asV2Read).isRegistered else {
+            guard tsAccountManager.registrationState(tx: tx).isRegistered else {
                 return false
             }
             guard userProfileWriter.shouldUpdateStorageService else {
@@ -1279,7 +1279,7 @@ extension OWSUserProfile {
     /// This implementation deliberately avoids the typical `DisplayName`
     /// calculation in `ContactManager`. See comments inline.
     private func displayNameBeforeLearningProfileNameIfNecessary(
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) -> DisplayNameBeforeLearningProfileName? {
         guard givenName == nil else {
             return nil
@@ -1372,7 +1372,7 @@ extension OWSUserProfile {
         badges: OptionalChange<[OWSUserProfileBadgeInfo]> = .noChange,
         isPhoneNumberShared: OptionalChange<Bool?> = .noChange,
         userProfileWriter: UserProfileWriter,
-        transaction: SDSAnyWriteTransaction,
+        transaction: DBWriteTransaction,
         completion: (() -> Void)?
     ) {
         applyChanges(
@@ -1399,7 +1399,7 @@ extension OWSUserProfile {
     public func clearProfile(
         profileKey: Aes256Key,
         userProfileWriter: UserProfileWriter,
-        transaction: SDSAnyWriteTransaction,
+        transaction: DBWriteTransaction,
         completion: (() -> Void)?
     ) {
         // This is only used for debugging.
@@ -1435,7 +1435,7 @@ extension OWSUserProfile {
         familyName: String?,
         avatarUrlPath: String?,
         profileKey: Aes256Key?,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         self.givenName = givenName
         self.familyName = familyName
@@ -1449,7 +1449,7 @@ extension OWSUserProfile {
 // MARK: -
 
 extension OWSUserProfile {
-    static func getUserProfiles(for addresses: [Address], tx: SDSAnyReadTransaction) -> [OWSUserProfile?] {
+    static func getUserProfiles(for addresses: [Address], tx: DBReadTransaction) -> [OWSUserProfile?] {
         return UserProfileFinder().userProfiles(for: addresses, tx: tx)
     }
 }

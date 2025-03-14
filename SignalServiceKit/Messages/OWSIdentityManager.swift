@@ -122,7 +122,7 @@ public class IdentityStore: IdentityKeyStore {
     }
 
     public func localRegistrationId(context: StoreContext) throws -> UInt32 {
-        return fetchLocalRegistrationId(context.asTransaction.asV2Write)
+        return fetchLocalRegistrationId(context.asTransaction)
     }
 
     public func saveIdentity(
@@ -133,7 +133,7 @@ public class IdentityStore: IdentityKeyStore {
         try identityManager.saveIdentityKey(
             identityKey,
             for: address.serviceId,
-            tx: context.asTransaction.asV2Write
+            tx: context.asTransaction
         ).get()
     }
 
@@ -147,12 +147,12 @@ public class IdentityStore: IdentityKeyStore {
             identityKey,
             serviceId: address.serviceId,
             direction: TSMessageDirection(direction),
-            tx: context.asTransaction.asV2Read
+            tx: context.asTransaction
         )
     }
 
     public func identity(for address: ProtocolAddress, context: StoreContext) throws -> LibSignalClient.IdentityKey? {
-        return try identityManager.identityKey(for: address.serviceId, tx: context.asTransaction.asV2Read)
+        return try identityManager.identityKey(for: address.serviceId, tx: context.asTransaction)
     }
 }
 
@@ -1059,13 +1059,13 @@ class OWSIdentityManagerObjCBridge: NSObject {
     static func identityKey(forAddress address: SignalServiceAddress) -> Data? {
         return SSKEnvironment.shared.databaseStorageRef.read { tx in
             let identityManager = DependenciesBridge.shared.identityManager
-            return identityManager.identityKey(for: address, tx: tx.asV2Read)
+            return identityManager.identityKey(for: address, tx: tx)
         }
     }
 
     @objc
-    static func saveIdentityKey(_ identityKey: Data, forServiceId serviceId: ServiceIdObjC, transaction tx: SDSAnyWriteTransaction) {
-        DependenciesBridge.shared.identityManager.saveIdentityKey(identityKey, for: serviceId.wrappedValue, tx: tx.asV2Write)
+    static func saveIdentityKey(_ identityKey: Data, forServiceId serviceId: ServiceIdObjC, transaction tx: DBWriteTransaction) {
+        DependenciesBridge.shared.identityManager.saveIdentityKey(identityKey, for: serviceId.wrappedValue, tx: tx)
     }
 }
 

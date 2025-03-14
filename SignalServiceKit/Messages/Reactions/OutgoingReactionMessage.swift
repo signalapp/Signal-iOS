@@ -8,7 +8,7 @@ import LibSignalClient
 
 extension OWSOutgoingReactionMessage {
     @objc
-    func buildDataMessageReactionProto(tx: SDSAnyReadTransaction) -> SSKProtoDataMessageReaction? {
+    func buildDataMessageReactionProto(tx: DBReadTransaction) -> SSKProtoDataMessageReaction? {
         guard let message = TSMessage.anyFetchMessage(uniqueId: messageUniqueId, transaction: tx) else {
             owsFailDebug("Missing message for reaction.")
             return nil
@@ -20,7 +20,7 @@ extension OWSOutgoingReactionMessage {
         let messageAuthor: Aci?
         switch message {
         case is TSOutgoingMessage:
-            messageAuthor = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
+            messageAuthor = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci
         case let message as TSIncomingMessage:
             messageAuthor = message.authorAddress.aci
         default:
@@ -42,14 +42,14 @@ extension OWSOutgoingReactionMessage {
 
     public override func updateWithAllSendingRecipientsMarkedAsFailed(
         error: (any Error)? = nil,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         super.updateWithAllSendingRecipientsMarkedAsFailed(error: error, transaction: tx)
 
         revertLocalStateIfFailedForEveryone(tx: tx)
     }
 
-    private func revertLocalStateIfFailedForEveryone(tx: SDSAnyWriteTransaction) {
+    private func revertLocalStateIfFailedForEveryone(tx: DBWriteTransaction) {
         // Do nothing if we successfully delivered to anyone. Only cleanup
         // local state if we fail to deliver to anyone.
         guard sentRecipientAddresses().isEmpty else {
@@ -57,7 +57,7 @@ extension OWSOutgoingReactionMessage {
             return
         }
 
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci else {
             owsFailDebug("Missing localAci.")
             return
         }

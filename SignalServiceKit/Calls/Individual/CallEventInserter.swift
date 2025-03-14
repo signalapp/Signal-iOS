@@ -49,7 +49,7 @@ public class CallEventInserter {
         self.sentAtTimestamp = sentAtTimestamp
     }
 
-    public func setOutgoingCallId(_ callId: UInt64, tx: SDSAnyWriteTransaction) {
+    public func setOutgoingCallId(_ callId: UInt64, tx: DBWriteTransaction) {
         self.callId = callId
         if let callInteraction {
             createOrUpdateCallRecordIfNeeded(for: callInteraction, tx: tx)
@@ -72,7 +72,7 @@ public class CallEventInserter {
     /// therefore canonical.
     public func createOrUpdate(
         callType: RPRecentCallType,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         func updateCallType(existingCall: TSCall) {
             guard shouldUpdateCallType(callType, for: existingCall, tx: tx) else {
@@ -89,7 +89,7 @@ public class CallEventInserter {
                 individualCallInteractionRowId: existingCallRowId,
                 contactThread: thread,
                 newCallInteractionType: callType,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 
@@ -104,7 +104,7 @@ public class CallEventInserter {
             // this happens if a call event sync message creates the record and
             // interaction before callkit callbacks.
             let callRecord = fetchCallRecord(tx: tx),
-            let existingCall = self.interactionStore.fetchAssociatedInteraction(callRecord: callRecord, tx: tx.asV2Read) as TSCall?
+            let existingCall = self.interactionStore.fetchAssociatedInteraction(callRecord: callRecord, tx: tx) as TSCall?
         {
             Logger.info("Existing call interaction found on disk, updating")
             self.callInteraction = existingCall
@@ -139,7 +139,7 @@ public class CallEventInserter {
         }
     }
 
-    private func fetchCallRecord(tx: SDSAnyReadTransaction) -> CallRecord? {
+    private func fetchCallRecord(tx: DBReadTransaction) -> CallRecord? {
         if let callRecord {
             owsAssertDebug(callRecord.callId == callId)
             return callRecord
@@ -156,7 +156,7 @@ public class CallEventInserter {
 
         let callRecord: CallRecord? = {
             switch self.callRecordStore.fetch(
-                callId: callId, conversationId: .thread(threadRowId: threadRowId), tx: tx.asV2Read
+                callId: callId, conversationId: .thread(threadRowId: threadRowId), tx: tx
             ) {
             case .matchFound(let callRecord):
                 return callRecord
@@ -180,7 +180,7 @@ public class CallEventInserter {
     private func shouldUpdateCallType(
         _ callType: RPRecentCallType,
         for callInteraction: TSCall?,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> Bool {
         guard let callInteraction = callInteraction else {
             // No further checks if we are creating a new one.
@@ -217,7 +217,7 @@ public class CallEventInserter {
 
     private func createOrUpdateCallRecordIfNeeded(
         for callInteraction: TSCall,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard let callId else {
             Logger.info("No call id; unable to create call record.")
@@ -240,7 +240,7 @@ public class CallEventInserter {
                 contactThread: thread,
                 contactThreadRowId: threadRowId,
                 callId: callId,
-                tx: tx.asV2Write
+                tx: tx
             )
         } catch let error {
             owsFailBeta("Failed to insert call record: \(error)")

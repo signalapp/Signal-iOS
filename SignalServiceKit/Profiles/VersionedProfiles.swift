@@ -19,9 +19,9 @@ public struct VersionedProfileUpdate {
 
 public protocol VersionedProfiles: AnyObject {
 
-    func clearProfileKeyCredential(for aci: Aci, transaction: SDSAnyWriteTransaction)
+    func clearProfileKeyCredential(for aci: Aci, transaction: DBWriteTransaction)
 
-    func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction)
+    func clearProfileKeyCredentials(transaction: DBWriteTransaction)
 
     func updateProfile(
         profileGivenName: OWSUserProfile.NameComponent?,
@@ -44,7 +44,7 @@ public protocol VersionedProfiles: AnyObject {
 
     func validProfileKeyCredential(
         for aci: Aci,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> ExpiringProfileKeyCredential?
 
     func didFetchProfile(
@@ -70,9 +70,9 @@ public enum VersionedProfileAvatarMutation {
 // MARK: -
 
 public class MockVersionedProfiles: VersionedProfiles {
-    public func clearProfileKeyCredential(for aci: Aci, transaction: SDSAnyWriteTransaction) {}
+    public func clearProfileKeyCredential(for aci: Aci, transaction: DBWriteTransaction) {}
 
-    public func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {}
+    public func clearProfileKeyCredentials(transaction: DBWriteTransaction) {}
 
     var didClearProfileKeyCredentials = false
 
@@ -106,7 +106,7 @@ public class MockVersionedProfiles: VersionedProfiles {
     }
 
     public func validProfileKeyCredential(for aci: Aci,
-                                          transaction: SDSAnyReadTransaction) throws -> ExpiringProfileKeyCredential? {
+                                          transaction: DBReadTransaction) throws -> ExpiringProfileKeyCredential? {
         owsFail("Not implemented")
     }
 }

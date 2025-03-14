@@ -233,13 +233,13 @@ public class DisplayableText: NSObject {
 
     public class func displayableText(
         withMessageBody messageBody: MessageBody,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> DisplayableText {
         let textValue: CVTextValue
         if messageBody.ranges.hasRanges {
             let hydrated = messageBody
                 .hydrating(
-                    mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction.asV2Read)
+                    mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction)
                 )
             textValue = .messageBody(hydrated)
         } else {

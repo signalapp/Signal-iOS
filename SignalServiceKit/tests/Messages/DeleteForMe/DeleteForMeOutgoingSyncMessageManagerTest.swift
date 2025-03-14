@@ -152,7 +152,7 @@ private final class MockSyncMessageSender: DeleteForMeOutgoingSyncMessageManager
     var sendSyncMessageMock: ((
         _ contents: DeleteForMeOutgoingSyncMessage.Contents
     ) -> Void)!
-    func sendSyncMessage(contents: DeleteForMeOutgoingSyncMessage.Contents, localThread: TSContactThread, tx: any DBWriteTransaction) {
+    func sendSyncMessage(contents: DeleteForMeOutgoingSyncMessage.Contents, localThread: TSContactThread, tx: DBWriteTransaction) {
         sendSyncMessageMock(contents)
     }
 }

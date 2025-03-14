@@ -249,12 +249,12 @@ class AccountSettingsViewController: OWSTableViewController2 {
     private func changeNumberState() -> ChangeNumberState {
         return SSKEnvironment.shared.databaseStorageRef.read { transaction -> ChangeNumberState in
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            let tsRegistrationState = tsAccountManager.registrationState(tx: transaction.asV2Read)
+            let tsRegistrationState = tsAccountManager.registrationState(tx: transaction)
             guard tsRegistrationState.isRegistered else {
                 return .disallowed
             }
             let loader = RegistrationCoordinatorLoaderImpl(dependencies: .from(self))
-            switch loader.restoreLastMode(transaction: transaction.asV2Read) {
+            switch loader.restoreLastMode(transaction: transaction) {
             case .none, .changingNumber:
                 break
             case .registering, .reRegistering:
@@ -263,18 +263,18 @@ class AccountSettingsViewController: OWSTableViewController2 {
             }
             let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
             guard
-                let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read),
+                let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction),
                 let localE164 = E164(localIdentifiers.phoneNumber),
-                let authToken = tsAccountManager.storedServerAuthToken(tx: transaction.asV2Read),
+                let authToken = tsAccountManager.storedServerAuthToken(tx: transaction),
                 let localRecipient = recipientDatabaseTable.fetchRecipient(
                     serviceId: localIdentifiers.aci,
-                    transaction: transaction.asV2Read
+                    transaction: transaction
                 )
             else {
                 return .disallowed
             }
             let localRecipientUniqueId = localRecipient.uniqueId
-            let localDeviceId = tsAccountManager.storedDeviceId(tx: transaction.asV2Read)
+            let localDeviceId = tsAccountManager.storedDeviceId(tx: transaction)
             let localUserAllDeviceIds = localRecipient.deviceIds
 
             return .allowed(RegistrationMode.ChangeNumberParams(
@@ -296,7 +296,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
         let coordinator = SSKEnvironment.shared.databaseStorageRef.write {
             return loader.coordinator(
                 forDesiredMode: desiredMode,
-                transaction: $0.asV2Write
+                transaction: $0
             )
         }
         let navController = RegistrationNavigationController.withCoordinator(coordinator, appReadiness: appReadiness)

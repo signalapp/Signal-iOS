@@ -170,7 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self.createdDate;
 }
 
-- (void)updateWithPaymentState:(TSPaymentState)paymentState transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithPaymentState:(TSPaymentState)paymentState transaction:(DBWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSPaymentModel *paymentModel) {
@@ -180,7 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
 }
 
-- (void)updateWithMCLedgerBlockIndex:(uint64_t)ledgerBlockIndex transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithMCLedgerBlockIndex:(uint64_t)ledgerBlockIndex transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(ledgerBlockIndex > 0);
 
@@ -194,8 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
 }
 
-- (void)updateWithMCLedgerBlockTimestamp:(uint64_t)ledgerBlockTimestamp
-                             transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithMCLedgerBlockTimestamp:(uint64_t)ledgerBlockTimestamp transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(ledgerBlockTimestamp > 0);
 
@@ -210,7 +209,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateWithPaymentFailure:(TSPaymentFailure)paymentFailure
                     paymentState:(TSPaymentState)paymentState
-                     transaction:(SDSAnyWriteTransaction *)transaction
+                     transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(paymentFailure != TSPaymentFailureNone);
     OWSAssertDebug(paymentState == TSPaymentStateIncomingFailed || paymentState == TSPaymentStateOutgoingFailed);
@@ -231,7 +230,7 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
 }
 
-- (void)updateWithPaymentAmount:(TSPaymentAmount *)paymentAmount transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithPaymentAmount:(TSPaymentAmount *)paymentAmount transaction:(DBWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSPaymentModel *paymentModel) {
@@ -242,13 +241,13 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
 }
 
-- (void)updateWithIsUnread:(BOOL)isUnread transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithIsUnread:(BOOL)isUnread transaction:(DBWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSPaymentModel *paymentModel) { paymentModel.isUnread = isUnread; }];
 }
 
-- (void)updateWithInteractionUniqueId:(NSString *)interactionUniqueId transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithInteractionUniqueId:(NSString *)interactionUniqueId transaction:(DBWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSPaymentModel *paymentModel) {
@@ -258,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyWillInsertWithTransaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(self.isValid);
 
@@ -267,14 +266,14 @@ NS_ASSUME_NONNULL_BEGIN
     [SSKEnvironment.shared.paymentsEventsRef willInsertPayment:self transaction:transaction];
 }
 
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(self.isValid);
 
     [super anyDidInsertWithTransaction:transaction];
 }
 
-- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyWillUpdateWithTransaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(self.isValid);
 
@@ -283,7 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
     [SSKEnvironment.shared.paymentsEventsRef willUpdatePayment:self transaction:transaction];
 }
 
-- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidUpdateWithTransaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(self.isValid);
 

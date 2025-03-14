@@ -560,7 +560,7 @@ extension DonationSettingsViewController {
     private func showOneTimeDonateAndClearErrorAction(title: ShowDonateActionTitle) -> ActionSheetAction {
         clearErrorAndShowDonateAction(title: title.localizedTitle, donateMode: .oneTime) { tx in
             DependenciesBridge.shared.donationReceiptCredentialResultStore
-                .clearRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Write)
+                .clearRequestError(errorMode: .oneTimeBoost, tx: tx)
         }
     }
 

@@ -188,7 +188,7 @@ class CallRecordStoreImpl: CallRecordStore {
         _delete(callRecords: callRecords, tx: tx)
         deletedCallRecordIds.append(contentsOf: callRecords.map(\.id))
 
-        tx.addFinalization(forKey: "\(#fileID):\(#line)") {
+        tx.addFinalizationBlock(key: "CallRecordStore") { _ in
             let deletedCallRecordIds = self.deletedCallRecordIds
             self.deletedCallRecordIds = []
             self.schedulers.main.async {
@@ -218,7 +218,7 @@ class CallRecordStoreImpl: CallRecordStore {
 
     func markAsRead(callRecord: CallRecord, tx: DBWriteTransaction) throws {
         callRecord.unreadStatus = .read
-        try callRecord.update(tx.databaseConnection)
+        try callRecord.update(tx.database)
     }
 
     func updateDirection(
@@ -228,7 +228,7 @@ class CallRecordStoreImpl: CallRecordStore {
     ) {
         callRecord.callDirection = newCallDirection
         do {
-            try callRecord.update(tx.databaseConnection)
+            try callRecord.update(tx.database)
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
         }
@@ -241,7 +241,7 @@ class CallRecordStoreImpl: CallRecordStore {
     ) {
         callRecord.setGroupCallRingerAci(newGroupCallRingerAci)
         do {
-            try callRecord.update(tx.databaseConnection)
+            try callRecord.update(tx.database)
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
         }
@@ -254,7 +254,7 @@ class CallRecordStoreImpl: CallRecordStore {
     ) {
         callRecord.callBeganTimestamp = callBeganTimestamp
         do {
-            try callRecord.update(tx.databaseConnection)
+            try callRecord.update(tx.database)
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
         }
@@ -266,7 +266,7 @@ class CallRecordStoreImpl: CallRecordStore {
         tx: DBWriteTransaction
     ) throws {
         callRecord.callEndedTimestamp = callEndedTimestamp
-        try callRecord.update(tx.databaseConnection)
+        try callRecord.update(tx.database)
     }
 
     func updateWithMergedThread(
@@ -274,7 +274,7 @@ class CallRecordStoreImpl: CallRecordStore {
         intoThreadRowId intoRowId: Int64,
         tx: DBWriteTransaction
     ) {
-        tx.databaseConnection.executeHandlingErrors(
+        tx.database.executeHandlingErrors(
             sql: """
                 UPDATE "\(CallRecord.databaseTableName)"
                 SET "\(CallRecord.CodingKeys.threadRowId.rawValue)" = ?
@@ -332,13 +332,13 @@ class CallRecordStoreImpl: CallRecordStore {
     // MARK: - Mutations (impl)
 
     func _insert(callRecord: CallRecord, tx: DBWriteTransaction) throws {
-        try callRecord.insert(tx.databaseConnection)
+        try callRecord.insert(tx.database)
     }
 
     func _delete(callRecords: [CallRecord], tx: DBWriteTransaction) {
         for callRecord in callRecords {
             do {
-                try callRecord.delete(tx.databaseConnection)
+                try callRecord.delete(tx.database)
             } catch let error {
                 owsFailBeta("Failed to delete call record: \(error)")
             }
@@ -356,7 +356,7 @@ class CallRecordStoreImpl: CallRecordStore {
         callRecord.callStatus = newCallStatus
         callRecord.unreadStatus = CallRecord.CallUnreadStatus(callStatus: newCallStatus)
         do {
-            try callRecord.update(tx.databaseConnection)
+            try callRecord.update(tx.database)
         } catch let error {
             owsFailBeta("Failed to update call record: \(error)")
         }
@@ -412,7 +412,7 @@ class CallRecordStoreImpl: CallRecordStore {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs, limit: limit)
 
         do {
-            return try CallRecord.fetchAll(tx.databaseConnection, SQLRequest(
+            return try CallRecord.fetchAll(tx.database, SQLRequest(
                 sql: sqlString,
                 arguments: StatementArguments(sqlArgs)
             ))
@@ -428,7 +428,7 @@ class CallRecordStoreImpl: CallRecordStore {
         do {
             let cursor = try CallRecord
                 .filter(Column(CallRecord.CodingKeys.callType) == CallRecord.CallType.adHocCall.rawValue)
-                .fetchCursor(tx.databaseConnection)
+                .fetchCursor(tx.database)
             while let value = try cursor.next() {
                 try block(value)
             }
@@ -458,12 +458,6 @@ class CallRecordStoreImpl: CallRecordStore {
     }
 }
 
-private extension SDSAnyReadTransaction {
-    var database: Database {
-        return unwrapGrdbRead.database
-    }
-}
-
 // MARK: -
 
 #if TESTABLE_BUILD
@@ -478,7 +472,7 @@ final class ExplainingCallRecordStoreImpl: CallRecordStoreImpl {
         let (sqlString, sqlArgs) = compileQuery(columnArgs: columnArgs)
 
         guard
-            let explanationRow = try? Row.fetchOne(tx.databaseConnection, SQLRequest(
+            let explanationRow = try? Row.fetchOne(tx.database, SQLRequest(
                 sql: "EXPLAIN QUERY PLAN \(sqlString)",
                 arguments: StatementArguments(sqlArgs)
             )),

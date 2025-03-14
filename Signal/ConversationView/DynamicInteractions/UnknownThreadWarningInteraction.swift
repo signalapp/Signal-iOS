@@ -40,7 +40,7 @@ public class UnknownThreadWarningInteraction: TSInteraction {
         return false
     }
 
-    public override func anyWillInsert(with transaction: SDSAnyWriteTransaction) {
+    public override func anyWillInsert(with transaction: DBWriteTransaction) {
         owsFailDebug("The transient interaction should not be saved in the database.")
     }
 }

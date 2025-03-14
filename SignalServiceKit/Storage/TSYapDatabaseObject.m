@@ -93,32 +93,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Write Hooks
 
-- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyWillInsertWithTransaction:(DBWriteTransaction *)transaction
 {
     // Do nothing.
 }
 
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction
 {
     // Do nothing.
 }
 
-- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyWillUpdateWithTransaction:(DBWriteTransaction *)transaction
 {
     // Do nothing.
 }
 
-- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidUpdateWithTransaction:(DBWriteTransaction *)transaction
 {
     // Do nothing.
 }
 
-- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyWillRemoveWithTransaction:(DBWriteTransaction *)transaction
 {
     // Do nothing.
 }
 
-- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidRemoveWithTransaction:(DBWriteTransaction *)transaction
 {
     // Do nothing.
 }

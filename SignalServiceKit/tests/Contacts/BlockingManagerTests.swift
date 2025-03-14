@@ -32,7 +32,7 @@ class BlockingManagerTests: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             _ = otherBlockingManager.blockedAddresses(transaction: tx)
             let oldChangeToken = blockingManager.fetchChangeToken(tx: tx)
-            blockingManager.addBlockedAci(aci, blockMode: .localShouldNotLeaveGroups, tx: tx.asV2Write)
+            blockingManager.addBlockedAci(aci, blockMode: .localShouldNotLeaveGroups, tx: tx)
             let newChangeToken = blockingManager.fetchChangeToken(tx: tx)
             // Since this was a local change, we expect to need a sync message
             XCTAssertGreaterThan(newChangeToken, oldChangeToken)
@@ -57,8 +57,8 @@ class BlockingManagerTests: SSKBaseTest {
         let blockedAci = Aci.randomForTesting()
         let unblockedAci = Aci.randomForTesting()
         SSKEnvironment.shared.databaseStorageRef.write { tx in
-            blockingManager.addBlockedAci(blockedAci, blockMode: .localShouldLeaveGroups, tx: tx.asV2Write)
-            blockingManager.addBlockedAci(unblockedAci, blockMode: .localShouldLeaveGroups, tx: tx.asV2Write)
+            blockingManager.addBlockedAci(blockedAci, blockMode: .localShouldLeaveGroups, tx: tx)
+            blockingManager.addBlockedAci(unblockedAci, blockMode: .localShouldLeaveGroups, tx: tx)
             _ = otherBlockingManager.blockedAddresses(transaction: tx)
         }
 
@@ -201,7 +201,7 @@ class BlockingManagerTests: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 
@@ -214,7 +214,7 @@ class BlockingManagerTests: SSKBaseTest {
             messageSender.sendMessageWasCalledBlock = { _ in continuation.resume() }
             // Test
             SSKEnvironment.shared.databaseStorageRef.write { tx in
-                blockingManager.addBlockedAci(Aci.randomForTesting(), blockMode: .localShouldLeaveGroups, tx: tx.asV2Write)
+                blockingManager.addBlockedAci(Aci.randomForTesting(), blockMode: .localShouldLeaveGroups, tx: tx)
             }
         }
 

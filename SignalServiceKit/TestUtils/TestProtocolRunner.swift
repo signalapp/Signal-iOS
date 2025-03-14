@@ -19,7 +19,7 @@ public struct TestProtocolRunner {
     /// Messages from `senderClient` will be PreKey messages.
     public func initializePreKeys(senderClient: TestSignalClient,
                                   recipientClient: TestSignalClient,
-                                  transaction: SDSAnyWriteTransaction) throws {
+                                  transaction: DBWriteTransaction) throws {
         senderClient.ensureRecipientId(tx: transaction)
         recipientClient.ensureRecipientId(tx: transaction)
 
@@ -74,7 +74,7 @@ public struct TestProtocolRunner {
     /// Messages between both clients will be "Whisper" / "ciphertext" / "Signal" messages.
     public func initialize(senderClient: TestSignalClient,
                            recipientClient: TestSignalClient,
-                           transaction: SDSAnyWriteTransaction) throws {
+                           transaction: DBWriteTransaction) throws {
 
         try initializePreKeys(senderClient: senderClient, recipientClient: recipientClient, transaction: transaction)
 
@@ -163,8 +163,8 @@ public extension TestSignalClient {
         return ProtocolAddress(serviceId, deviceId: deviceId)
     }
 
-    func ensureRecipientId(tx: SDSAnyWriteTransaction) {
-        _ = DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write)
+    func ensureRecipientId(tx: DBWriteTransaction) {
+        _ = DependenciesBridge.shared.recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
     }
 }
 
@@ -229,7 +229,7 @@ public struct LocalSignalClient: TestSignalClient {
 
     public var identityKeyPair: ECKeyPair {
         return SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return DependenciesBridge.shared.identityManager.identityKeyPair(for: identity, tx: tx.asV2Read)!
+            return DependenciesBridge.shared.identityManager.identityKeyPair(for: identity, tx: tx)!
         }
     }
 
@@ -265,7 +265,7 @@ public struct LocalSignalClient: TestSignalClient {
 
     public var identityKeyStore: IdentityKeyStore {
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return try! DependenciesBridge.shared.identityManager.libSignalStore(for: identity, tx: transaction.asV2Read)
+            return try! DependenciesBridge.shared.identityManager.libSignalStore(for: identity, tx: transaction)
         }
     }
 

@@ -181,7 +181,7 @@ public final class DonationReceiptCredentialRedemptionJobRecord: JobRecord, Fact
 
     // MARK: Update
 
-    func setReceiptCredential(_ receiptCredential: ReceiptCredential, tx: SDSAnyWriteTransaction) {
+    func setReceiptCredential(_ receiptCredential: ReceiptCredential, tx: DBWriteTransaction) {
         anyUpdate(transaction: tx) { record in
             record._receiptCredential = receiptCredential.serialize().asData
         }

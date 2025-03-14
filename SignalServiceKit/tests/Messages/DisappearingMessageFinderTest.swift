@@ -21,7 +21,7 @@ final class DisappearingMessageFinderTest: SSKBaseTest {
 
     private lazy var otherAddress = SignalServiceAddress(Aci.randomForTesting())
 
-    private func thread(with transaction: SDSAnyWriteTransaction) -> TSThread {
+    private func thread(with transaction: DBWriteTransaction) -> TSThread {
         TSContactThread.getOrCreateThread(
             withContactAddress: otherAddress,
             transaction: transaction

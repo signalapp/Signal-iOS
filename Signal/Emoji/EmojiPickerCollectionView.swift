@@ -26,8 +26,8 @@ class EmojiPickerCollectionView: UICollectionView {
     private static let recentEmojiKey = "recentEmoji"
 
     /// Reads the stored recent emoji and removes duplicates using `removingNonNormalizedDuplicates`.
-    static func getRecentEmoji(tx: SDSAnyReadTransaction) -> [EmojiWithSkinTones] {
-        let recentEmojiStrings = keyValueStore.getStringArray(EmojiPickerCollectionView.recentEmojiKey, transaction: tx.asV2Read) ?? []
+    static func getRecentEmoji(tx: DBReadTransaction) -> [EmojiWithSkinTones] {
+        let recentEmojiStrings = keyValueStore.getStringArray(EmojiPickerCollectionView.recentEmojiKey, transaction: tx) ?? []
 
         return recentEmojiStrings
             .compactMap(EmojiWithSkinTones.init(rawValue:))
@@ -89,7 +89,7 @@ class EmojiPickerCollectionView: UICollectionView {
         (messageReacts, recentEmoji, allSendableEmojiByCategory) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let messageReacts: [OWSReaction]
             if let message {
-                messageReacts = ReactionFinder(uniqueMessageId: message.uniqueId).allReactions(transaction: transaction.unwrapGrdbRead)
+                messageReacts = ReactionFinder(uniqueMessageId: message.uniqueId).allReactions(transaction: transaction)
             } else {
                 messageReacts = []
             }
@@ -263,7 +263,7 @@ class EmojiPickerCollectionView: UICollectionView {
         }
     }
 
-    func recordRecentEmoji(_ emoji: EmojiWithSkinTones, transaction: SDSAnyWriteTransaction) {
+    func recordRecentEmoji(_ emoji: EmojiWithSkinTones, transaction: DBWriteTransaction) {
         guard recentEmoji.first != emoji else { return }
         guard emoji.isNormalized else {
             recordRecentEmoji(emoji.normalized, transaction: transaction)
@@ -282,7 +282,7 @@ class EmojiPickerCollectionView: UICollectionView {
         EmojiPickerCollectionView.keyValueStore.setObject(
             newRecentEmoji.map { $0.rawValue },
             key: EmojiPickerCollectionView.recentEmojiKey,
-            transaction: transaction.asV2Write
+            transaction: transaction
         )
     }
 
@@ -603,8 +603,8 @@ private class EmojiSearchIndex: NSObject {
         var searchIndexVersion: Int = 0
         var searchIndexLocalizations: [String] = []
         (searchIndexVersion, searchIndexLocalizations) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            let version = self.emojiSearchIndexKVS.getInt(emojiSearchIndexVersionKey, transaction: transaction.asV2Read) ?? 0
-            let locs = self.emojiSearchIndexKVS.getStringArray(emojiSearchIndexAvailableLocalizationsKey, transaction: transaction.asV2Read) ?? []
+            let version = self.emojiSearchIndexKVS.getInt(emojiSearchIndexVersionKey, transaction: transaction) ?? 0
+            let locs = self.emojiSearchIndexKVS.getStringArray(emojiSearchIndexAvailableLocalizationsKey, transaction: transaction) ?? []
             return (version, locs)
         }
 
@@ -644,7 +644,7 @@ private class EmojiSearchIndex: NSObject {
         var manifest = searchIndexManifest
         if manifest == nil {
             manifest = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                return self.emojiSearchIndexKVS.getStringArray(emojiSearchIndexAvailableLocalizationsKey, transaction: transaction.asV2Read) ?? []
+                return self.emojiSearchIndexKVS.getStringArray(emojiSearchIndexAvailableLocalizationsKey, transaction: transaction) ?? []
             }
         }
 
@@ -673,7 +673,7 @@ private class EmojiSearchIndex: NSObject {
             return self.emojiSearchIndexKVS.getObject(
                 localization,
                 ofClasses: [NSDictionary.self, NSArray.self, NSString.self],
-                transaction: transaction.asV2Read
+                transaction: transaction
             ) as? [String: [String]]
         }
 
@@ -688,11 +688,11 @@ private class EmojiSearchIndex: NSObject {
     private static func invalidateSearchIndex(newVersion: Int, localizationsToInvalidate: [String], newLocalizations: [String]) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             for localization in localizationsToInvalidate {
-                self.emojiSearchIndexKVS.removeValue(forKey: localization, transaction: transaction.asV2Write)
+                self.emojiSearchIndexKVS.removeValue(forKey: localization, transaction: transaction)
             }
 
-            self.emojiSearchIndexKVS.setObject(newLocalizations, key: emojiSearchIndexAvailableLocalizationsKey, transaction: transaction.asV2Write)
-            self.emojiSearchIndexKVS.setInt(newVersion, key: emojiSearchIndexVersionKey, transaction: transaction.asV2Write)
+            self.emojiSearchIndexKVS.setObject(newLocalizations, key: emojiSearchIndexAvailableLocalizationsKey, transaction: transaction)
+            self.emojiSearchIndexKVS.setInt(newVersion, key: emojiSearchIndexVersionKey, transaction: transaction)
         }
     }
 
@@ -701,7 +701,7 @@ private class EmojiSearchIndex: NSObject {
         var searchIndexVersion = version
         if searchIndexVersion == nil {
             searchIndexVersion = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                return self.emojiSearchIndexKVS.getInt(emojiSearchIndexVersionKey, transaction: transaction.asV2Read) ?? 0
+                return self.emojiSearchIndexKVS.getInt(emojiSearchIndexVersionKey, transaction: transaction) ?? 0
             }
         }
 
@@ -725,7 +725,7 @@ private class EmojiSearchIndex: NSObject {
 
             let index = self.buildSearchIndexMap(for: json)
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                self.emojiSearchIndexKVS.setObject(index, key: localization, transaction: transaction.asV2Write)
+                self.emojiSearchIndexKVS.setObject(index, key: localization, transaction: transaction)
             }
 
             NotificationCenter.default.postNotificationNameAsync(self.EmojiSearchIndexFetchedNotification, object: nil)

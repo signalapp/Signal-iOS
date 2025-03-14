@@ -24,11 +24,11 @@ struct ModelCacheKey<KeyType: Hashable & Equatable> {
 // MARK: -
 
 class ModelCacheAdapter<KeyType: Hashable & Equatable, ValueType> {
-    func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+    func read(key: KeyType, transaction: DBReadTransaction) -> ValueType? {
         fatalError("Unimplemented")
     }
 
-    func read(keys: [KeyType], transaction: SDSAnyReadTransaction) -> [ValueType?] {
+    func read(keys: [KeyType], transaction: DBReadTransaction) -> [ValueType?] {
         return keys.map {
             read(key: $0, transaction: transaction)
         }
@@ -163,14 +163,14 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
 
     #if TESTABLE_BUILD
     // This method should only be called within performSync().
-    private func readValue(for cacheKey: ModelCacheKey<KeyType>, transaction: SDSAnyReadTransaction) -> ValueType? {
+    private func readValue(for cacheKey: ModelCacheKey<KeyType>, transaction: DBReadTransaction) -> ValueType? {
         return readValues(for: AnySequence([cacheKey]), transaction: transaction)[0]
     }
     #endif
 
     // This method should only be called within performSync().
     func readValues(for cacheKeys: AnySequence<ModelCacheKey<KeyType>>,
-                    transaction: SDSAnyReadTransaction) -> [ValueType?] {
+                    transaction: DBReadTransaction) -> [ValueType?] {
         let maybeValues = adapter.read(keys: cacheKeys.map { $0.key },
                                        transaction: transaction)
         return zip(cacheKeys, maybeValues).map { tuple in
@@ -187,7 +187,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
         }
     }
 
-    func didRead(value: ValueType, transaction: SDSAnyReadTransaction) {
+    func didRead(value: ValueType, transaction: DBReadTransaction) {
         let cacheKey = adapter.cacheKey(forValue: value)
         guard canUseCache(cacheKey: cacheKey, transaction: transaction) else {
             return
@@ -201,12 +201,12 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
     }
 
     // This method should only be called within performSync().
-    private func cachedValue(for cacheKey: ModelCacheKey<KeyType>, transaction: SDSAnyReadTransaction) -> ModelCacheValueBox<ValueType>? {
+    private func cachedValue(for cacheKey: ModelCacheKey<KeyType>, transaction: DBReadTransaction) -> ModelCacheValueBox<ValueType>? {
         return cachedValues(for: [cacheKey], transaction: transaction)[0]
     }
 
     // This method should only be called within performSync().
-    private func cachedValues(for cacheKeys: [ModelCacheKey<KeyType>], transaction: SDSAnyReadTransaction) -> [ModelCacheValueBox<ValueType>?] {
+    private func cachedValues(for cacheKeys: [ModelCacheKey<KeyType>], transaction: DBReadTransaction) -> [ModelCacheValueBox<ValueType>?] {
         guard isCacheReady else {
             return Array(repeating: nil, count: cacheKeys.count)
         }
@@ -220,12 +220,12 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
         }.values
     }
 
-    func getValue(for cacheKey: ModelCacheKey<KeyType>, transaction: SDSAnyReadTransaction, returnNilOnCacheMiss: Bool = false) -> ValueType? {
+    func getValue(for cacheKey: ModelCacheKey<KeyType>, transaction: DBReadTransaction, returnNilOnCacheMiss: Bool = false) -> ValueType? {
         return getValues(for: [cacheKey], transaction: transaction, returnNilOnCacheMiss: returnNilOnCacheMiss)[0]
     }
 
     func getValues(for cacheKeys: [ModelCacheKey<KeyType>],
-                   transaction: SDSAnyReadTransaction,
+                   transaction: DBReadTransaction,
                    returnNilOnCacheMiss: Bool = false) -> [ValueType?] {
         // This can be used to verify that cached values exactly
         // align with database contents.
@@ -282,7 +282,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
         }
     }
 
-    func getValuesIfInCache(for keys: [KeyType], transaction: SDSAnyReadTransaction) -> [KeyType: ValueType] {
+    func getValuesIfInCache(for keys: [KeyType], transaction: DBReadTransaction) -> [KeyType: ValueType] {
         var result = [KeyType: ValueType]()
         for key in keys {
             let cacheKey = adapter.cacheKey(forKey: key)
@@ -302,19 +302,19 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
         }
     }
 
-    func didRemove(value: ValueType, transaction: SDSAnyWriteTransaction) {
+    func didRemove(value: ValueType, transaction: DBWriteTransaction) {
         assert(mode == .read)
         let cacheKey = adapter.cacheKey(forValue: value)
         updateCacheForWrite(cacheKey: cacheKey, value: nil, transaction: transaction)
     }
 
-    func didInsertOrUpdate(value: ValueType, transaction: SDSAnyWriteTransaction) {
+    func didInsertOrUpdate(value: ValueType, transaction: DBWriteTransaction) {
         assert(mode == .read)
         let cacheKey = adapter.cacheKey(forValue: value)
         updateCacheForWrite(cacheKey: cacheKey, value: value, transaction: transaction)
     }
 
-    private func updateCacheForWrite(cacheKey: ModelCacheKey<KeyType>, value: ValueType?, transaction: SDSAnyWriteTransaction) {
+    private func updateCacheForWrite(cacheKey: ModelCacheKey<KeyType>, value: ValueType?, transaction: DBWriteTransaction) {
         guard canUseCache(cacheKey: cacheKey, transaction: transaction) else {
             return
         }
@@ -366,7 +366,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
     }
 
     private func canUseCache(cacheKey: ModelCacheKey<KeyType>,
-                             transaction: SDSAnyReadTransaction) -> Bool {
+                             transaction: DBReadTransaction) -> Bool {
         guard isCachable(cacheKey: cacheKey) else {
             return false
         }
@@ -376,10 +376,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
         guard isAppReady else {
             return false
         }
-        switch transaction.readTransaction {
-        case .grdbRead:
-            return true
-        }
+        return true
     }
 
     // MARK: -
@@ -432,7 +429,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
     private var exclusionDateMap = [KeyType: Date]()
 
     // This method should only be called within performSync().
-    private func isExcluded(cacheKey: ModelCacheKey<KeyType>, transaction: SDSAnyReadTransaction) -> Bool {
+    private func isExcluded(cacheKey: ModelCacheKey<KeyType>, transaction: DBReadTransaction) -> Bool {
         guard mode == .read else {
             return false
         }
@@ -504,7 +501,7 @@ public class ThreadReadCache: NSObject {
     typealias ValueType = TSThread
 
     private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
-        override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+        override func read(key: KeyType, transaction: DBReadTransaction) -> ValueType? {
             return TSThread.anyFetch(uniqueId: key,
                                      transaction: transaction,
                                      ignoreCache: true)
@@ -532,13 +529,13 @@ public class ThreadReadCache: NSObject {
     }
 
     @objc(getThreadForUniqueId:transaction:)
-    public func getThread(uniqueId: String, transaction: SDSAnyReadTransaction) -> TSThread? {
+    public func getThread(uniqueId: String, transaction: DBReadTransaction) -> TSThread? {
         let cacheKey = adapter.cacheKey(forKey: uniqueId)
         return cache.getValue(for: cacheKey, transaction: transaction)
     }
 
     @objc(getThreadsIfInCacheForUniqueIds:transaction:)
-    public func getThreadsIfInCache(forUniqueIds uniqueIds: [String], transaction: SDSAnyReadTransaction) -> [String: TSThread] {
+    public func getThreadsIfInCache(forUniqueIds uniqueIds: [String], transaction: DBReadTransaction) -> [String: TSThread] {
         let keys: [String] = uniqueIds.map { $0 }
         let result: [String: TSThread] = cache.getValuesIfInCache(for: keys, transaction: transaction)
         return Dictionary(uniqueKeysWithValues: result.map({ (key, value) in
@@ -547,17 +544,17 @@ public class ThreadReadCache: NSObject {
     }
 
     @objc(didRemoveThread:transaction:)
-    public func didRemove(thread: TSThread, transaction: SDSAnyWriteTransaction) {
+    public func didRemove(thread: TSThread, transaction: DBWriteTransaction) {
         cache.didRemove(value: thread, transaction: transaction)
     }
 
     @objc(didInsertOrUpdateThread:transaction:)
-    public func didInsertOrUpdate(thread: TSThread, transaction: SDSAnyWriteTransaction) {
+    public func didInsertOrUpdate(thread: TSThread, transaction: DBWriteTransaction) {
         cache.didInsertOrUpdate(value: thread, transaction: transaction)
     }
 
     @objc
-    public func didReadThread(_ thread: TSThread, transaction: SDSAnyReadTransaction) {
+    public func didReadThread(_ thread: TSThread, transaction: DBReadTransaction) {
         cache.didRead(value: thread, transaction: transaction)
     }
 }
@@ -570,7 +567,7 @@ public class InteractionReadCache: NSObject {
     typealias ValueType = TSInteraction
 
     private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
-        override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+        override func read(key: KeyType, transaction: DBReadTransaction) -> ValueType? {
             return TSInteraction.anyFetch(uniqueId: key,
                                           transaction: transaction,
                                           ignoreCache: true)
@@ -598,22 +595,22 @@ public class InteractionReadCache: NSObject {
     }
 
     @objc(getInteractionForUniqueId:transaction:)
-    public func getInteraction(uniqueId: String, transaction: SDSAnyReadTransaction) -> TSInteraction? {
+    public func getInteraction(uniqueId: String, transaction: DBReadTransaction) -> TSInteraction? {
         let cacheKey = adapter.cacheKey(forKey: uniqueId)
         return cache.getValue(for: cacheKey, transaction: transaction)
     }
 
-    public func getInteractionsIfInCache(for uniqueIds: [String], transaction: SDSAnyReadTransaction) -> [String: TSInteraction] {
+    public func getInteractionsIfInCache(for uniqueIds: [String], transaction: DBReadTransaction) -> [String: TSInteraction] {
         return cache.getValuesIfInCache(for: uniqueIds, transaction: transaction)
     }
 
     @objc(didRemoveInteraction:transaction:)
-    public func didRemove(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
+    public func didRemove(interaction: TSInteraction, transaction: DBWriteTransaction) {
         cache.didRemove(value: interaction, transaction: transaction)
     }
 
     @objc(didUpdateInteraction:transaction:)
-    public func didUpdate(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
+    public func didUpdate(interaction: TSInteraction, transaction: DBWriteTransaction) {
         guard interaction.sortId > 0 else {
             // Only cache interactions that have been read from the database.
             return
@@ -622,7 +619,7 @@ public class InteractionReadCache: NSObject {
     }
 
     @objc
-    public func didReadInteraction(_ interaction: TSInteraction, transaction: SDSAnyReadTransaction) {
+    public func didReadInteraction(_ interaction: TSInteraction, transaction: DBReadTransaction) {
         cache.didRead(value: interaction, transaction: transaction)
     }
 }
@@ -635,7 +632,7 @@ public class InstalledStickerCache: NSObject {
     typealias ValueType = InstalledSticker
 
     private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
-        override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+        override func read(key: KeyType, transaction: DBReadTransaction) -> ValueType? {
             return InstalledSticker.anyFetch(uniqueId: key,
                                              transaction: transaction,
                                              ignoreCache: true)
@@ -674,23 +671,23 @@ public class InstalledStickerCache: NSObject {
     }
 
     @objc(getInstalledStickerForUniqueId:transaction:)
-    public func getInstalledSticker(uniqueId: String, transaction: SDSAnyReadTransaction) -> InstalledSticker? {
+    public func getInstalledSticker(uniqueId: String, transaction: DBReadTransaction) -> InstalledSticker? {
         let cacheKey = adapter.cacheKey(forKey: uniqueId)
         return cache.getValue(for: cacheKey, transaction: transaction)
     }
 
     @objc(didRemoveInstalledSticker:transaction:)
-    public func didRemove(installedSticker: InstalledSticker, transaction: SDSAnyWriteTransaction) {
+    public func didRemove(installedSticker: InstalledSticker, transaction: DBWriteTransaction) {
         cache.didRemove(value: installedSticker, transaction: transaction)
     }
 
     @objc(didInsertOrUpdateInstalledSticker:transaction:)
-    public func didInsertOrUpdate(installedSticker: InstalledSticker, transaction: SDSAnyWriteTransaction) {
+    public func didInsertOrUpdate(installedSticker: InstalledSticker, transaction: DBWriteTransaction) {
         cache.didInsertOrUpdate(value: installedSticker, transaction: transaction)
     }
 
     @objc
-    public func didReadInstalledSticker(_ installedSticker: InstalledSticker, transaction: SDSAnyReadTransaction) {
+    public func didReadInstalledSticker(_ installedSticker: InstalledSticker, transaction: DBReadTransaction) {
         cache.didRead(value: installedSticker, transaction: transaction)
     }
 }

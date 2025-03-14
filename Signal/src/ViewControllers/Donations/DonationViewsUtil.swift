@@ -241,7 +241,7 @@ public final class DonationViewsUtil {
             )
         }.ensure {
             databaseStorage.write { tx in
-                pendingStore.clearPendingSubscription(tx: tx.asV2Write)
+                pendingStore.clearPendingSubscription(tx: tx)
             }
         }
     }
@@ -264,7 +264,7 @@ public final class DonationViewsUtil {
         }
         .ensure {
             databaseStorage.write { tx in
-                pendingStore.clearPendingOneTimeDonation(tx: tx.asV2Write)
+                pendingStore.clearPendingOneTimeDonation(tx: tx)
             }
         }
     }
@@ -372,7 +372,7 @@ public final class DonationViewsUtil {
         switch donationType {
         case let .monthly(success, clientSecret, intentId):
             guard let monthlyDonation = databaseStorage.read(block: { tx in
-                paymentStore.getPendingSubscription(tx: tx.asV2Read)
+                paymentStore.getPendingSubscription(tx: tx)
             }) else {
                 Logger.error("[Donations] Could not find iDEAL subscription to complete")
                 return Promise.init(error: OWSUnretryableError())
@@ -400,7 +400,7 @@ public final class DonationViewsUtil {
             }
         case let .oneTime(success, intentId):
             guard let oneTimePayment = databaseStorage.read(block: { tx in
-                paymentStore.getPendingOneTimeDonation(tx: tx.asV2Read)
+                paymentStore.getPendingOneTimeDonation(tx: tx)
             }) else {
                 Logger.error("[Donations] Could not find iDEAL payment to complete")
                 return Promise.init(error: OWSUnretryableError())
@@ -488,9 +488,9 @@ public final class DonationViewsUtil {
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
                     switch donateMode {
                     case .oneTime:
-                        idealDonationStore.clearPendingOneTimeDonation(tx: tx.asV2Write)
+                        idealDonationStore.clearPendingOneTimeDonation(tx: tx)
                     case .monthly:
-                        idealDonationStore.clearPendingSubscription(tx: tx.asV2Write)
+                        idealDonationStore.clearPendingSubscription(tx: tx)
                     }
                 }
             case .applePay, .creditOrDebitCard, .paypal, .sepa, .none:
@@ -572,10 +572,10 @@ public final class DonationViewsUtil {
 
             switch donateMode {
             case .oneTime:
-                return resultStore.getRequestError(errorMode: .oneTimeBoost, tx: tx.asV2Read)
+                return resultStore.getRequestError(errorMode: .oneTimeBoost, tx: tx)
             case .monthly:
                 // All subscriptions from this controller are being initiated.
-                return resultStore.getRequestError(errorMode: .recurringSubscriptionInitiation, tx: tx.asV2Read)
+                return resultStore.getRequestError(errorMode: .recurringSubscriptionInitiation, tx: tx)
             }
         }
 

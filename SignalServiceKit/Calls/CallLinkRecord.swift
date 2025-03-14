@@ -106,7 +106,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
     static func insertRecord(rootKey: CallLinkRootKey, tx: DBWriteTransaction) throws -> CallLinkRecord {
         do {
             return try CallLinkRecord.fetchOne(
-                tx.databaseConnection,
+                tx.database,
                 sql: """
                 INSERT INTO "CallLink" ("roomId", "rootKey") VALUES (?, ?) RETURNING *
                 """,
@@ -128,7 +128,7 @@ public struct CallLinkRecord: Codable, PersistableRecord, FetchableRecord {
     ) throws -> CallLinkRecord {
         do {
             return try CallLinkRecord.fetchOne(
-                tx.databaseConnection,
+                tx.database,
                 sql: """
                 INSERT INTO \(CallLinkRecord.databaseTableName) (
                     \(CallLinkRecord.CodingKeys.roomId.rawValue),

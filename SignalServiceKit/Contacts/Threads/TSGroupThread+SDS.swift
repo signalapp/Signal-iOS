@@ -16,7 +16,7 @@ public extension TSGroupThread {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetchGroupThread(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSGroupThread? {
         assert(!uniqueId.isEmpty)
 
@@ -32,7 +32,7 @@ public extension TSGroupThread {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateGroupThread(transaction: SDSAnyWriteTransaction, block: (TSGroupThread) -> Void) {
+    func anyUpdateGroupThread(transaction: DBWriteTransaction, block: (TSGroupThread) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? TSGroupThread else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")

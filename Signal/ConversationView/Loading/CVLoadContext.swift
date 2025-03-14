@@ -19,7 +19,7 @@ struct CVLoadContext: CVItemBuildingContext {
     let spoilerState: SpoilerRenderState
     let messageLoader: MessageLoader
     let prevRenderState: CVRenderState
-    let transaction: SDSAnyReadTransaction
+    let transaction: DBReadTransaction
     let avatarBuilder: CVAvatarBuilder
 
     init(
@@ -29,7 +29,7 @@ struct CVLoadContext: CVItemBuildingContext {
         spoilerState: SpoilerRenderState,
         messageLoader: MessageLoader,
         prevRenderState: CVRenderState,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) {
         self.loadRequest = loadRequest
         self.threadViewModel = threadViewModel
@@ -56,7 +56,7 @@ protocol CVItemBuildingContext {
     // Properties
     var threadViewModel: ThreadViewModel { get }
     var viewStateSnapshot: CVViewStateSnapshot { get }
-    var transaction: SDSAnyReadTransaction { get }
+    var transaction: DBReadTransaction { get }
     var avatarBuilder: CVAvatarBuilder { get }
 }
 
@@ -75,7 +75,7 @@ extension CVItemBuildingContext {
 struct CVItemBuildingContextImpl: CVItemBuildingContext {
     let threadViewModel: ThreadViewModel
     let viewStateSnapshot: CVViewStateSnapshot
-    let transaction: SDSAnyReadTransaction
+    let transaction: DBReadTransaction
     let avatarBuilder: CVAvatarBuilder
 }
 
@@ -95,6 +95,6 @@ extension CVItemBuilding {
     var viewStateSnapshot: CVViewStateSnapshot { itemBuildingContext.viewStateSnapshot }
     var conversationStyle: ConversationStyle { itemBuildingContext.conversationStyle }
     var mediaCache: CVMediaCache { itemBuildingContext.mediaCache }
-    var transaction: SDSAnyReadTransaction { itemBuildingContext.transaction }
+    var transaction: DBReadTransaction { itemBuildingContext.transaction }
     var avatarBuilder: CVAvatarBuilder { itemBuildingContext.avatarBuilder }
 }

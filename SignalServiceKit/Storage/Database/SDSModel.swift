@@ -13,7 +13,7 @@ public protocol SDSModel: TSYapDatabaseObject, SDSIdentifiableModel {
 
     var serializer: SDSSerializer { get }
 
-    func anyInsert(transaction: SDSAnyWriteTransaction)
+    func anyInsert(transaction: DBWriteTransaction)
 
     static var table: SDSTableMetadata { get }
 }
@@ -21,7 +21,7 @@ public protocol SDSModel: TSYapDatabaseObject, SDSIdentifiableModel {
 // MARK: -
 
 public extension SDSModel {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
+    func sdsSave(saveMode: SDSSaveMode, transaction tx: DBWriteTransaction) {
         guard shouldBeSaved else {
             Logger.warn("Skipping save of: \(type(of: self))")
             return
@@ -29,46 +29,40 @@ public extension SDSModel {
 
         switch saveMode {
         case .insert:
-            anyWillInsert(with: transaction)
+            anyWillInsert(with: tx)
         case .update:
-            anyWillUpdate(with: transaction)
+            anyWillUpdate(with: tx)
         }
 
-        switch transaction.writeTransaction {
-        case .grdbWrite(let grdbTransaction):
-            let record = asRecord()
-            record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-        }
+        let record = asRecord()
+        record.sdsSave(saveMode: saveMode, transaction: tx)
 
         switch saveMode {
         case .insert:
-            anyDidInsert(with: transaction)
+            anyDidInsert(with: tx)
         case .update:
-            anyDidUpdate(with: transaction)
+            anyDidUpdate(with: tx)
         }
     }
 
-    func sdsRemove(transaction: SDSAnyWriteTransaction) {
+    func sdsRemove(transaction tx: DBWriteTransaction) {
         guard shouldBeSaved else {
             // Skipping remove.
             return
         }
 
-        anyWillRemove(with: transaction)
+        anyWillRemove(with: tx)
 
-        switch transaction.writeTransaction {
-        case .grdbWrite(let grdbTransaction):
-            // Don't use a record to delete the record;
-            // asRecord() is expensive.
-            let sql = """
-                DELETE
-                FROM \(sdsTableName)
-                WHERE uniqueId == ?
-            """
-            grdbTransaction.database.executeAndCacheStatementHandlingErrors(sql: sql, arguments: [uniqueId])
-        }
+        // Don't use a record to delete the record;
+        // asRecord() is expensive.
+        let sql = """
+            DELETE
+            FROM \(sdsTableName)
+            WHERE uniqueId == ?
+        """
+        tx.database.executeAndCacheStatementHandlingErrors(sql: sql, arguments: [uniqueId])
 
-        anyDidRemove(with: transaction)
+        anyDidRemove(with: tx)
     }
 }
 
@@ -99,7 +93,7 @@ public extension TableRecord {
 public extension SDSModel {
     // If batchSize > 0, the enumeration is performed in autoreleased batches.
     static func grdbEnumerateUniqueIds(
-        transaction: GRDBReadTransaction,
+        transaction: DBReadTransaction,
         sql: String,
         batchSize: UInt,
         block: (String, UnsafeMutablePointer<ObjCBool>) -> Void

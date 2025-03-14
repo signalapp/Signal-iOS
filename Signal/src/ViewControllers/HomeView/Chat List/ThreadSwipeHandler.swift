@@ -183,7 +183,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
                     threadSoftDeleteManager.softDelete(
                         threads: [threadViewModel.threadRecord],
                         sendDeleteForMeSyncMessage: true,
-                        tx: tx.asV2Write
+                        tx: tx
                     )
                 }
 
@@ -260,7 +260,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
                 try DependenciesBridge.shared.pinnedThreadManager.pinThread(
                     threadViewModel.threadRecord,
                     updateStorageService: true,
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
             }
         } catch {
@@ -281,7 +281,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
                 try DependenciesBridge.shared.pinnedThreadManager.unpinThread(
                     threadViewModel.threadRecord,
                     updateStorageService: true,
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
             }
         } catch {

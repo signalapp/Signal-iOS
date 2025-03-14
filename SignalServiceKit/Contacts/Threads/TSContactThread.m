@@ -122,7 +122,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 }
 
 + (instancetype)getOrCreateThreadWithContactAddress:(SignalServiceAddress *)contactAddress
-                                        transaction:(SDSAnyWriteTransaction *)transaction
+                                        transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(contactAddress.isValid);
 
@@ -141,13 +141,13 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     OWSAssertDebug(contactAddress.isValid);
 
     __block TSContactThread *thread;
-    [SSKEnvironment.shared.databaseStorageRef readWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [SSKEnvironment.shared.databaseStorageRef readWithBlock:^(DBReadTransaction *transaction) {
         thread = [self getThreadWithContactAddress:contactAddress transaction:transaction];
     }];
 
     if (thread == nil) {
         // Only open a write transaction if necessary
-        DatabaseStorageWrite(SSKEnvironment.shared.databaseStorageRef, ^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(SSKEnvironment.shared.databaseStorageRef, ^(DBWriteTransaction *transaction) {
             thread = [self getOrCreateThreadWithContactAddress:contactAddress transaction:transaction];
         });
     }
@@ -156,7 +156,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 }
 
 + (nullable instancetype)getThreadWithContactAddress:(SignalServiceAddress *)contactAddress
-                                         transaction:(SDSAnyReadTransaction *)transaction
+                                         transaction:(DBReadTransaction *)transaction
 {
     return [self.threadFinder contactThreadForAddress:contactAddress transaction:transaction];
 }
@@ -166,7 +166,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     return [SignalServiceAddress legacyAddressWithServiceIdString:self.contactUUID phoneNumber:self.contactPhoneNumber];
 }
 
-- (NSArray<SignalServiceAddress *> *)recipientAddressesWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSArray<SignalServiceAddress *> *)recipientAddressesWithTransaction:(DBReadTransaction *)transaction
 {
     return @[ self.contactAddress ];
 }
@@ -192,7 +192,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 }
 
 + (nullable SignalServiceAddress *)contactAddressFromThreadId:(NSString *)threadId
-                                                  transaction:(SDSAnyReadTransaction *)transaction
+                                                  transaction:(DBReadTransaction *)transaction
 {
     return [TSContactThread anyFetchContactThreadWithUniqueId:threadId transaction:transaction].contactAddress;
 }
@@ -206,7 +206,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     return [threadId substringWithRange:NSMakeRange(1, threadId.length - 1)];
 }
 
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];
 

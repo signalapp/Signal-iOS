@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
                           senderAci:(AciObjC *)senderAci
                             message:(TSMessage *)message
                       readTimestamp:(uint64_t)readTimestamp
-                        transaction:(SDSAnyReadTransaction *)transaction
+                        transaction:(DBReadTransaction *)transaction
 {
     OWSAssertDebug(message.timestamp > 0);
 
@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction
 {
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
 

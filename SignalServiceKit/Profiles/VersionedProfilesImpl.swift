@@ -38,17 +38,17 @@ public class VersionedProfilesImpl: VersionedProfiles {
             return aci.serviceIdUppercaseString
         }
 
-        static func dropDeprecatedCredentialsIfNecessary(transaction: SDSAnyWriteTransaction) {
-            deprecatedCredentialStore.removeAll(transaction: transaction.asV2Write)
+        static func dropDeprecatedCredentialsIfNecessary(transaction: DBWriteTransaction) {
+            deprecatedCredentialStore.removeAll(transaction: transaction)
         }
 
         static func getValidCredential(
             for aci: Aci,
-            transaction: SDSAnyReadTransaction
+            transaction: DBReadTransaction
         ) throws -> ExpiringProfileKeyCredential? {
             guard let credentialData = expiringCredentialStore.getData(
                 storeKey(for: aci),
-                transaction: transaction.asV2Read
+                transaction: transaction
             ) else {
                 return nil
             }
@@ -69,7 +69,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
         static func setCredential(
             _ credential: ExpiringProfileKeyCredential,
             for aci: Aci,
-            transaction: SDSAnyWriteTransaction
+            transaction: DBWriteTransaction
         ) throws {
             let credentialData = credential.serialize().asData
 
@@ -80,16 +80,16 @@ public class VersionedProfilesImpl: VersionedProfiles {
             expiringCredentialStore.setData(
                 credentialData,
                 key: storeKey(for: aci),
-                transaction: transaction.asV2Write
+                transaction: transaction
             )
         }
 
-        static func removeValue(for aci: Aci, transaction: SDSAnyWriteTransaction) {
-            expiringCredentialStore.removeValue(forKey: storeKey(for: aci), transaction: transaction.asV2Write)
+        static func removeValue(for aci: Aci, transaction: DBWriteTransaction) {
+            expiringCredentialStore.removeValue(forKey: storeKey(for: aci), transaction: transaction)
         }
 
-        static func removeAll(transaction: SDSAnyWriteTransaction) {
-            expiringCredentialStore.removeAll(transaction: transaction.asV2Write)
+        static func removeAll(transaction: DBWriteTransaction) {
+            expiringCredentialStore.removeAll(transaction: transaction)
         }
     }
 
@@ -191,7 +191,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
         let bioEmojiValue = try encryptOptionalString(profileBioEmoji, paddedLengths: [32])
         let paymentAddressValue = try encryptOptionalData(profilePaymentAddressData, paddedLengths: [554])
         let phoneNumberSharingValue = try encryptBoolean(SSKEnvironment.shared.databaseStorageRef.read { tx in
-            SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx.asV2Read).orDefault == .everybody
+            SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx).orDefault == .everybody
         })
 
         let profileKeyVersion = try localProfileKey.getProfileKeyVersion(userId: localAci)
@@ -346,16 +346,16 @@ public class VersionedProfilesImpl: VersionedProfiles {
 
     public func validProfileKeyCredential(
         for aci: Aci,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) throws -> ExpiringProfileKeyCredential? {
         try CredentialStore.getValidCredential(for: aci, transaction: transaction)
     }
 
-    public func clearProfileKeyCredential(for aci: Aci, transaction: SDSAnyWriteTransaction) {
+    public func clearProfileKeyCredential(for aci: Aci, transaction: DBWriteTransaction) {
         CredentialStore.removeValue(for: aci, transaction: transaction)
     }
 
-    public func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {
+    public func clearProfileKeyCredentials(transaction: DBWriteTransaction) {
         CredentialStore.removeAll(transaction: transaction)
     }
 

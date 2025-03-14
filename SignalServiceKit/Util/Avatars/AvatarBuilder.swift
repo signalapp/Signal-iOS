@@ -107,7 +107,7 @@ public class AvatarBuilder {
         forThread thread: TSThread,
         diameterPoints: UInt,
         localUserDisplayMode: LocalUserDisplayMode,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UIImage? {
         return avatarImage(
             forThread: thread,
@@ -121,7 +121,7 @@ public class AvatarBuilder {
         forThread thread: TSThread,
         diameterPixels: CGFloat,
         localUserDisplayMode: LocalUserDisplayMode,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UIImage? {
         guard let request = buildRequest(
             forThread: thread,
@@ -153,7 +153,7 @@ public class AvatarBuilder {
         forAddress address: SignalServiceAddress,
         diameterPixels: CGFloat,
         localUserDisplayMode: LocalUserDisplayMode,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Request {
         let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef.shouldBlurContactAvatar(address: address, transaction: transaction)
         let requestType: RequestType = .contactAddress(address: address, localUserDisplayMode: localUserDisplayMode)
@@ -164,7 +164,7 @@ public class AvatarBuilder {
         forAddress address: SignalServiceAddress,
         diameterPoints: UInt,
         localUserDisplayMode: LocalUserDisplayMode,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UIImage? {
         let request = request(
             forAddress: address,
@@ -179,7 +179,7 @@ public class AvatarBuilder {
         forAddress address: SignalServiceAddress,
         diameterPixels: CGFloat,
         localUserDisplayMode: LocalUserDisplayMode,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UIImage? {
         let request = request(
             forAddress: address,
@@ -196,7 +196,7 @@ public class AvatarBuilder {
         forAddress address: SignalServiceAddress,
         diameterPoints: UInt,
         localUserDisplayMode: LocalUserDisplayMode,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UIImage? {
         let request = request(
             forAddress: address,
@@ -216,7 +216,7 @@ public class AvatarBuilder {
     private func request(
         forGroupThread groupThread: TSGroupThread,
         diameterPoints: UInt,
-        transaction tx: SDSAnyReadTransaction
+        transaction tx: DBReadTransaction
     ) -> Request {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
         let shouldBlurAvatar = SSKEnvironment.shared.contactManagerImplRef.shouldBlurGroupAvatar(groupThread: groupThread, transaction: tx)
@@ -227,7 +227,7 @@ public class AvatarBuilder {
     public func avatarImage(
         forGroupThread groupThread: TSGroupThread,
         diameterPoints: UInt,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UIImage? {
         let request = request(forGroupThread: groupThread, diameterPoints: diameterPoints, transaction: transaction)
         return avatarImage(forRequest: request, transaction: transaction)
@@ -238,7 +238,7 @@ public class AvatarBuilder {
     public func precachedAvatarImage(
         forGroupThread groupThread: TSGroupThread,
         diameterPoints: UInt,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UIImage? {
         let request = request(forGroupThread: groupThread, diameterPoints: diameterPoints, transaction: transaction)
         guard let requestCacheKey = request.cacheKey else {
@@ -266,10 +266,10 @@ public class AvatarBuilder {
     public func avatarImageForLocalUser(
         diameterPoints: UInt,
         localUserDisplayMode: LocalUserDisplayMode,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        guard let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
+        guard let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress else {
             owsFailDebug("Missing localAddress.")
             return nil
         }
@@ -283,7 +283,7 @@ public class AvatarBuilder {
         personNameComponents: PersonNameComponents,
         address: SignalServiceAddress? = nil,
         diameterPoints: UInt,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
         let shouldBlurAvatar = false
@@ -330,7 +330,7 @@ public class AvatarBuilder {
 
     public func defaultAvatarImageForLocalUser(
         diameterPoints: UInt,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
         return defaultAvatarImageForLocalUser(
@@ -341,10 +341,10 @@ public class AvatarBuilder {
 
     public func defaultAvatarImageForLocalUser(
         diameterPixels: UInt,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UIImage? {
         let requestType: RequestType = {
-            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
+            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress else {
                 return .contactDefaultIcon(theme: .default)
             }
 
@@ -464,7 +464,7 @@ public class AvatarBuilder {
         forThread thread: TSThread,
         diameterPixels: CGFloat,
         localUserDisplayMode: LocalUserDisplayMode,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Request? {
         func buildRequestType() -> (RequestType, Bool)? {
             if let contactThread = thread as? TSContactThread {
@@ -502,7 +502,7 @@ public class AvatarBuilder {
     private func buildRequestType(
         forGroupThread groupThread: TSGroupThread,
         diameterPixels: CGFloat,
-        transaction tx: SDSAnyReadTransaction
+        transaction tx: DBReadTransaction
     ) -> RequestType {
         func requestTypeForGroup(groupThread: TSGroupThread) -> RequestType {
             if let avatarData = groupThread.groupModel.avatarDataState.dataIfPresent {
@@ -631,7 +631,7 @@ public class AvatarBuilder {
 
     // MARK: -
 
-    private func avatarImage(forRequest request: Request, transaction: SDSAnyReadTransaction) -> UIImage? {
+    private func avatarImage(forRequest request: Request, transaction: DBReadTransaction) -> UIImage? {
         let avatarContent = avatarContent(forRequest: request, transaction: transaction)
         return avatarImage(forAvatarContent: avatarContent, transaction: transaction)
     }
@@ -640,7 +640,7 @@ public class AvatarBuilder {
     // would affect AvatarContent for the request changes.
     private let requestToContentCache = LRUCache<String, AvatarContent>(maxSize: 128, nseMaxSize: 0)
 
-    private func avatarContent(forRequest request: Request, transaction: SDSAnyReadTransaction) -> AvatarContent {
+    private func avatarContent(forRequest request: Request, transaction: DBReadTransaction) -> AvatarContent {
         if let cacheKey = request.cacheKey, let avatarContent = requestToContentCache.object(forKey: cacheKey) {
             return avatarContent
         }
@@ -667,7 +667,7 @@ public class AvatarBuilder {
 
     private static let contactCacheKeys = KeyValueStore(collection: "AvatarBuilder.contactCacheKeys")
 
-    private func avatarImage(forAvatarContent avatarContent: AvatarContent, transaction: SDSAnyReadTransaction?) -> UIImage? {
+    private func avatarImage(forAvatarContent avatarContent: AvatarContent, transaction: DBReadTransaction?) -> UIImage? {
         let cacheKey = avatarContent.cacheKey
 
         if let image = contentToImageCache.object(forKey: cacheKey) {
@@ -681,9 +681,9 @@ public class AvatarBuilder {
                 let transaction = transaction
             {
                 let contentCacheKey = avatarContent.contentType.cacheKey
-                if contentCacheKey != Self.contactCacheKeys.getString(serviceIdString, transaction: transaction.asV2Read) {
+                if contentCacheKey != Self.contactCacheKeys.getString(serviceIdString, transaction: transaction) {
                     SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTransaction in
-                        Self.contactCacheKeys.setString(contentCacheKey, key: serviceIdString, transaction: writeTransaction.asV2Write)
+                        Self.contactCacheKeys.setString(contentCacheKey, key: serviceIdString, transaction: writeTransaction)
                     }
                 }
             }
@@ -740,7 +740,7 @@ public class AvatarBuilder {
     // MARK: - Building Content
 
     private func buildAvatarContent(forRequest request: Request,
-                                    transaction: SDSAnyReadTransaction) -> AvatarContent {
+                                    transaction: DBReadTransaction) -> AvatarContent {
         struct AvatarContentTypes {
             let contentType: AvatarContentType
             let failoverContentType: AvatarContentType?
@@ -767,7 +767,7 @@ public class AvatarBuilder {
                     // for someone who's updated theirs. (This is the code path where we discover it's been updated!)
                     if
                         let serviceIdString = address.serviceIdUppercaseString,
-                        let cacheKey = Self.contactCacheKeys.getString(serviceIdString, transaction: transaction.asV2Read)
+                        let cacheKey = Self.contactCacheKeys.getString(serviceIdString, transaction: transaction)
                     {
                         return AvatarContentTypes(
                             contentType: .cachedContact(address: address, cacheKey: cacheKey),
@@ -848,7 +848,7 @@ public class AvatarBuilder {
     //       default avatar.
     private static func buildOrLoadImage(
         forAvatarContent avatarContent: AvatarContent,
-        transaction: SDSAnyReadTransaction?
+        transaction: DBReadTransaction?
     ) -> UIImage? {
         func buildOrLoadWithContentType(_ contentType: AvatarContentType) -> UIImage? {
             switch contentType {

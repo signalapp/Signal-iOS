@@ -64,14 +64,14 @@ public final class RecipientIdFinder {
 public final class OWSAccountIdFinder {
     public class func ensureRecipient(
         forAddress address: SignalServiceAddress,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> SignalRecipient {
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         let recipient: SignalRecipient
         if let serviceId = address.serviceId {
-            recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction.asV2Write)
+            recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction)
         } else if let phoneNumber = address.e164 {
-            recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: transaction.asV2Write)
+            recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: transaction)
         } else {
             // This can happen for historical reasons. It shouldn't happen, but it
             // could. We could return [[NSUUID UUID] UUIDString] and avoid persisting

@@ -144,7 +144,7 @@ private class QuotedMessageViewAdapter: QuotedMessageViewDelegate {
             DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
                 message,
                 priority: .userInitiated,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
     }

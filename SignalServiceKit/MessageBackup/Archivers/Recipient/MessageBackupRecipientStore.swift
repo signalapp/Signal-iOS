@@ -22,7 +22,7 @@ public class MessageBackupRecipientStore {
         tx: DBReadTransaction,
         block: (SignalRecipient) -> Void
     ) throws {
-        let cursor = try SignalRecipient.fetchCursor(tx.databaseConnection)
+        let cursor = try SignalRecipient.fetchCursor(tx.database)
         while let next = try cursor.next() {
             try Task.checkCancellation()
             block(next)
@@ -42,7 +42,7 @@ public class MessageBackupRecipientStore {
         _ recipient: SignalRecipient,
         tx: DBWriteTransaction
     ) throws {
-        try recipient.insert(tx.databaseConnection)
+        try recipient.insert(tx.database)
         // Unlike messages, whose indexing is deferred, we insert
         // into the index immediately within the backup write tx.
         // This is because:

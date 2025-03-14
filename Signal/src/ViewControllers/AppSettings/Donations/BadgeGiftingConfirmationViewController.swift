@@ -190,7 +190,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
             let recipientName = SSKEnvironment.shared.contactManagerRef.displayName(for: thread, transaction: transaction)
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-            let disappearingMessagesDuration = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
+            let disappearingMessagesDuration = dmConfigurationStore.durationSeconds(for: thread, tx: transaction)
             return (recipientName, disappearingMessagesDuration)
         }
 
@@ -382,7 +382,7 @@ extension BadgeGiftingConfirmationViewController: DatabaseChangeDelegate {
     private func updateDisappearingMessagesTimerWithSneakyTransaction() {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         let dmSeconds = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read)
+            dmConfigurationStore.durationSeconds(for: thread, tx: tx)
         }
         if previouslyRenderedDisappearingMessagesDuration != dmSeconds {
             updateTableContents()

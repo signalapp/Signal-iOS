@@ -63,12 +63,12 @@ public protocol DatabaseChangeObserver {
 
 public protocol SDSDatabaseChangeObserver: DatabaseChangeObserver {
 
-    func updateIdMapping(thread: TSThread, transaction: GRDBWriteTransaction)
-    func updateIdMapping(interaction: TSInteraction, transaction: GRDBWriteTransaction)
+    func updateIdMapping(thread: TSThread, transaction: DBWriteTransaction)
+    func updateIdMapping(interaction: TSInteraction, transaction: DBWriteTransaction)
 
-    func didTouch(interaction: TSInteraction, transaction: GRDBWriteTransaction)
-    func didTouch(thread: TSThread, shouldUpdateChatListUi: Bool, transaction: GRDBWriteTransaction)
-    func didTouch(storyMessage: StoryMessage, transaction: GRDBWriteTransaction)
+    func didTouch(interaction: TSInteraction, transaction: DBWriteTransaction)
+    func didTouch(thread: TSThread, shouldUpdateChatListUi: Bool, transaction: DBWriteTransaction)
+    func didTouch(storyMessage: StoryMessage, transaction: DBWriteTransaction)
 }
 
 public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
@@ -210,9 +210,9 @@ public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
         guard isObserving else {
             return try block(tx)
         }
-        tx.databaseConnection.remove(transactionObserver: self.transactionObserver)
+        tx.database.remove(transactionObserver: self.transactionObserver)
         defer {
-            tx.databaseConnection.add(transactionObserver: self, extent: .observerLifetime)
+            tx.database.add(transactionObserver: self, extent: .observerLifetime)
             DispatchQueue.main.async { [weak self] in
                 self?.ensureDisplayLink()
             }
@@ -364,7 +364,7 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
 
     // MARK: - SDSDatabaseChangeObserver
 
-    public func updateIdMapping(thread: TSThread, transaction: GRDBWriteTransaction) {
+    public func updateIdMapping(thread: TSThread, transaction: DBWriteTransaction) {
         AssertHasDatabaseChangeObserverLock()
 
         pendingChanges.insert(thread: thread)
@@ -373,7 +373,7 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
         didModifyPendingChanges()
     }
 
-    public func updateIdMapping(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
+    public func updateIdMapping(interaction: TSInteraction, transaction: DBWriteTransaction) {
         AssertHasDatabaseChangeObserverLock()
 
         pendingChanges.insert(interaction: interaction)
@@ -382,7 +382,7 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
         didModifyPendingChanges()
     }
 
-    public func didTouch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
+    public func didTouch(interaction: TSInteraction, transaction: DBWriteTransaction) {
         AssertHasDatabaseChangeObserverLock()
 
         pendingChanges.insert(interaction: interaction)
@@ -390,7 +390,7 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
 
         if
             let interactionRowId = interaction.sqliteRowId,
-            let thread = interaction.thread(tx: transaction.asAnyRead)
+            let thread = interaction.thread(tx: transaction)
         {
             // Skip updating the chat list if this isn't the last interaction
             // for this thread.
@@ -411,7 +411,7 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
     }
 
     /// See note on `shouldUpdateChatListUi` parameter in docs for ``TSGroupThread.updateWithGroupModel:shouldUpdateChatListUi:transaction``.
-    public func didTouch(thread: TSThread, shouldUpdateChatListUi: Bool = true, transaction: GRDBWriteTransaction) {
+    public func didTouch(thread: TSThread, shouldUpdateChatListUi: Bool = true, transaction: DBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify its observers
         // in the expected way.
@@ -425,7 +425,7 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
         }
     }
 
-    public func didTouch(storyMessage: StoryMessage, transaction: GRDBWriteTransaction) {
+    public func didTouch(storyMessage: StoryMessage, transaction: DBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify its observers
         // in the expected way.

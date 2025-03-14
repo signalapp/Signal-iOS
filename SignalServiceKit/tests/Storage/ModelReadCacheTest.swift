@@ -13,7 +13,7 @@ private class FakeAdapter: ModelCacheAdapter<OWSUserProfile.Address, OWSUserProf
     typealias ValueType = OWSUserProfile
 
     var storage = [KeyType: ValueType]()
-    override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+    override func read(key: KeyType, transaction: DBReadTransaction) -> ValueType? {
         return storage[key]
     }
 
@@ -39,7 +39,7 @@ class ModelReadCacheTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
     }

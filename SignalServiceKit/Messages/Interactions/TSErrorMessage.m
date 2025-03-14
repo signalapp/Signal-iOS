@@ -166,7 +166,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     return OWSInteractionType_Error;
 }
 
-- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)previewTextWithTransaction:(DBReadTransaction *)transaction
 {
     switch (_errorType) {
         case TSErrorMessageNoSession:
@@ -223,7 +223,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                        thread:(TSThread *)thread
                  circumstance:(OWSReceiptCircumstance)circumstance
      shouldClearNotifications:(BOOL)shouldClearNotifications
-                  transaction:(SDSAnyWriteTransaction *)transaction
+                  transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 

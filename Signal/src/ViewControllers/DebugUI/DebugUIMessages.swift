@@ -29,7 +29,7 @@ class DebugUIMessages: DebugUIPage {
                 OWSTableItem(title: "Delete All Messages in Thread", actionBlock: {
                     SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         DependenciesBridge.shared.threadSoftDeleteManager
-                            .removeAllInteractions(thread: thread, sendDeleteForMeSyncMessage: false, tx: transaction.asV2Write)
+                            .removeAllInteractions(thread: thread, sendDeleteForMeSyncMessage: false, tx: transaction)
                     }
                 })
             ]
@@ -597,7 +597,7 @@ class DebugUIMessages: DebugUIPage {
 
     // MARK: Contact Shares
 
-    private typealias CreateContactBlock = (TSMessage, SDSAnyWriteTransaction) -> Void
+    private typealias CreateContactBlock = (TSMessage, DBWriteTransaction) -> Void
 
     private static func fakeAllContactShareAction(thread: TSThread) -> DebugUIMessagesAction {
         return DebugUIMessagesGroupAction.allGroupActionWithLabel(
@@ -1278,7 +1278,7 @@ class DebugUIMessages: DebugUIPage {
     private static func createFakeMessages(
         _ contents: [FakeMessageContent],
         inThread thread: TSThread,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         guard let incomingSenderAci = anyIncomingSenderAddress(forThread: thread)?.aci else {
             owsFailDebug("Missing incomingSenderAci.")
@@ -1328,7 +1328,7 @@ class DebugUIMessages: DebugUIPage {
                             ))
                         )
                     },
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
 
             case .outgoingAttachments(let dataSources):
@@ -1592,10 +1592,10 @@ class DebugUIMessages: DebugUIPage {
 
     private static func performRandomActionInThread(_ thread: TSThread, counter: UInt) {
         let numActions = Int.random(in: 1...4)
-        var actions = [(SDSAnyWriteTransaction) -> Void]()
+        var actions = [(DBWriteTransaction) -> Void]()
         for _ in (0..<numActions) {
             let randomAction = Int.random(in: 0...2)
-            let action: (SDSAnyWriteTransaction) -> Void = {
+            let action: (DBWriteTransaction) -> Void = {
                 switch randomAction {
                 case 0:
                     return { transaction in
@@ -1641,7 +1641,7 @@ class DebugUIMessages: DebugUIPage {
         contactShareBlock: CreateContactBlock? = nil,
         linkPreview: OWSLinkPreview? = nil,
         messageSticker: MessageSticker? = nil,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> TSOutgoingMessage {
         owsAssertDebug(!messageBody.isEmptyOrNil || contactShareBlock != nil)
 
@@ -1667,7 +1667,7 @@ class DebugUIMessages: DebugUIPage {
                 threadRowId: thread.sqliteRowId!,
                 isPastEditRevision: message.isPastEditRevision()
             )),
-            tx: transaction.asV2Write
+            tx: transaction
         )
 
         if isDelivered {
@@ -1735,7 +1735,7 @@ class DebugUIMessages: DebugUIPage {
         filename: String? = nil,
         isAttachmentDownloaded: Bool = false,
         quotedMessage: TSQuotedMessage? = nil,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> TSIncomingMessage {
 
         owsAssertDebug(!messageBody.isEmptyOrNil)
@@ -1761,7 +1761,7 @@ class DebugUIMessages: DebugUIPage {
         messageBody: String?,
         isAttachmentDownloaded: Bool = false,
         quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>? = nil,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> TSIncomingMessage {
         owsAssertDebug(!messageBody.isEmptyOrNil)
 
@@ -1784,7 +1784,7 @@ class DebugUIMessages: DebugUIPage {
                 threadRowId: thread.sqliteRowId!,
                 isPastEditRevision: message.isPastEditRevision()
             )),
-            tx: transaction.asV2Write
+            tx: transaction
         )
 
         return message
@@ -1829,7 +1829,7 @@ class DebugUIMessages: DebugUIPage {
                 wasReceivedByUD: false,
                 serverDeliveryTimestamp: 0,
                 shouldDiscardVisibleMessages: false,
-                localIdentifiers: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)!,
+                localIdentifiers: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)!,
                 tx: tx
             )
         }

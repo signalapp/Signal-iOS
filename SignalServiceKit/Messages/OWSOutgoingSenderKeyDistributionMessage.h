@@ -19,11 +19,11 @@ NS_ASSUME_NONNULL_BEGIN
                           additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
                             explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
                              skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
-                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+                                   transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSContactThread *)destinationThread
     senderKeyDistributionMessageBytes:(NSData *)skdmBytes
-                          transaction:(SDSAnyReadTransaction *)transaction;
+                          transaction:(DBReadTransaction *)transaction;
 
 /// Returns YES if this message is being sent as a precondition to sending an online-only message.
 /// Typing indicators are only delivered to online devices. Since they're ephemeral we just don't bother sending a

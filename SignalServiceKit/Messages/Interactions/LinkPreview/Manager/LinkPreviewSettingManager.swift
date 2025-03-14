@@ -28,7 +28,7 @@ class LinkPreviewSettingManagerImpl: LinkPreviewSettingManager {
         self.syncManager = syncManager
     }
 
-    public func setAreLinkPreviewsEnabled(_ newValue: Bool, shouldSendSyncMessage: Bool, tx: any DBWriteTransaction) {
+    public func setAreLinkPreviewsEnabled(_ newValue: Bool, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {
         self.linkPreviewSettingStore.setAreLinkPreviewsEnabled(newValue, tx: tx)
 
         if shouldSendSyncMessage {

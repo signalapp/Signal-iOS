@@ -18,7 +18,7 @@ extension OWSGroupCallMessage {
         )
     }
 
-    private func participantName(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> String {
+    private func participantName(for address: SignalServiceAddress, tx: DBReadTransaction) -> String {
         if address.isLocalAddress {
             return OWSLocalizedString("YOU", comment: "Second person pronoun to represent the local user.")
         } else {
@@ -26,7 +26,7 @@ extension OWSGroupCallMessage {
         }
     }
 
-    public func systemText(tx: SDSAnyReadTransaction) -> String {
+    public func systemText(tx: DBReadTransaction) -> String {
         if self.hasEnded {
             return self.groupCallEndedMessage
         }
@@ -110,7 +110,7 @@ extension OWSGroupCallMessage {
 // MARK: - OWSPreviewText
 
 extension OWSGroupCallMessage: OWSPreviewText {
-    public func previewText(transaction: SDSAnyReadTransaction) -> String {
+    public func previewText(transaction: DBReadTransaction) -> String {
         if hasEnded {
             return self.groupCallEndedMessage
         }
@@ -145,7 +145,7 @@ extension OWSGroupCallMessage: OWSReadTracking {
         thread: TSThread,
         circumstance: OWSReceiptCircumstance,
         shouldClearNotifications: Bool,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         if wasRead {
             return
@@ -163,13 +163,13 @@ extension OWSGroupCallMessage: OWSReadTracking {
             if
                 let sqliteRowId = sqliteRowId,
                 let associatedCallRecord = callRecordStore.fetch(
-                    interactionRowId: sqliteRowId, tx: tx.asV2Read
+                    interactionRowId: sqliteRowId, tx: tx
                 )
             {
                 missedCallManager.markUnreadCallsInConversationAsRead(
                     beforeCallRecord: associatedCallRecord,
                     sendSyncMessage: true,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
         case .onLinkedDevice, .onLinkedDeviceWhilePendingMessageRequest:

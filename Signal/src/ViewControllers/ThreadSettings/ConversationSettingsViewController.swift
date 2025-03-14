@@ -72,7 +72,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
         disappearingMessagesConfiguration = SSKEnvironment.shared.databaseStorageRef.read { tx in
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-            return dmConfigurationStore.fetchOrBuildDefault(for: .thread(threadViewModel.threadRecord), tx: tx.asV2Read)
+            return dmConfigurationStore.fetchOrBuildDefault(for: .thread(threadViewModel.threadRecord), tx: tx)
         }
 
         super.init()
@@ -242,7 +242,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     private(set) var groupMemberStateMap = [SignalServiceAddress: VerificationState]()
     private(set) var sortedGroupMembers = [SignalServiceAddress]()
-    func updateGroupMembers(transaction tx: SDSAnyReadTransaction) {
+    func updateGroupMembers(transaction tx: DBReadTransaction) {
         guard
             let groupModel = currentGroupModel,
             !groupModel.isPlaceholder,
@@ -260,7 +260,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
         let identityManager = DependenciesBridge.shared.identityManager
         for memberAddress in allMembers {
-            verificationStateMap[memberAddress] = identityManager.verificationState(for: memberAddress, tx: tx.asV2Read)
+            verificationStateMap[memberAddress] = identityManager.verificationState(for: memberAddress, tx: tx)
         }
         allMembersSorted = SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(allMembers, transaction: tx)
 
@@ -892,7 +892,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     func updateRecentAttachments() {
         let recentAttachments = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, tx: transaction.asV2Read)
+            mediaGalleryFinder.recentMediaAttachments(limit: maximumRecentMedia, tx: transaction)
         }
         recentMedia = recentAttachments.reduce(into: OrderedDictionary(), { result, attachment in
             guard let attachmentStream = attachment.asReferencedStream else {

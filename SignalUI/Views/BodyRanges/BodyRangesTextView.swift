@@ -243,7 +243,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate {
         pickerView?.removeFromSuperview()
 
         let mentionableAddresses = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return bodyRangesDelegate.textViewMentionPickerPossibleAddresses(self, tx: tx.asV2Read)
+            return bodyRangesDelegate.textViewMentionPickerPossibleAddresses(self, tx: tx)
         }
 
         guard !mentionableAddresses.isEmpty else { return }

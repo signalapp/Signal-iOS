@@ -21,7 +21,7 @@ public class SessionResetJobQueue {
         jobQueueRunner.start(shouldRestartExistingJobs: true)
     }
 
-    public func add(contactThread: TSContactThread, transaction tx: SDSAnyWriteTransaction) {
+    public func add(contactThread: TSContactThread, transaction tx: DBWriteTransaction) {
         let jobRecord = SessionResetJobRecord(contactThread: contactThread)
         jobRecord.anyInsert(transaction: tx)
         tx.addSyncCompletion { self.jobQueueRunner.addPersistedJob(jobRecord) }
@@ -46,7 +46,7 @@ private class SessionResetJobRunner: JobRunner {
         } catch {
             return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 let result = JobAttemptResult.performDefaultErrorHandler(
-                    error: error, jobRecord: jobRecord, retryLimit: Constants.maxRetries, tx: tx.asV2Write
+                    error: error, jobRecord: jobRecord, retryLimit: Constants.maxRetries, tx: tx
                 )
                 if case .finished(.failure) = result {
                     // Even though this is the failure handler - which means probably the
@@ -96,7 +96,7 @@ private class SessionResetJobRunner: JobRunner {
         }
     }
 
-    private func fetchThread(jobRecord: SessionResetJobRecord, tx: SDSAnyReadTransaction) throws -> TSContactThread {
+    private func fetchThread(jobRecord: SessionResetJobRecord, tx: DBReadTransaction) throws -> TSContactThread {
         let threadId = jobRecord.contactThreadId
         guard let contactThread = TSContactThread.anyFetchContactThread(uniqueId: threadId, transaction: tx) else {
             throw OWSGenericError("thread for session reset no longer exists")
@@ -104,8 +104,8 @@ private class SessionResetJobRunner: JobRunner {
         return contactThread
     }
 
-    private func archiveAllSessions(for contactThread: TSContactThread, tx: SDSAnyWriteTransaction) {
+    private func archiveAllSessions(for contactThread: TSContactThread, tx: DBWriteTransaction) {
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-        sessionStore.archiveAllSessions(for: contactThread.contactAddress, tx: tx.asV2Write)
+        sessionStore.archiveAllSessions(for: contactThread.contactAddress, tx: tx)
     }
 }

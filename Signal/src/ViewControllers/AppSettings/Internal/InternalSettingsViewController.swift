@@ -132,9 +132,9 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 TSThread.anyFetchAll(transaction: tx).filter { !$0.isGroupThread }.count,
                 TSThread.anyFetchAll(transaction: tx).filter { $0.isGroupThread }.count,
                 TSInteraction.anyCount(transaction: tx),
-                try? Attachment.Record.fetchCount(tx.unwrapGrdbRead.database),
+                try? Attachment.Record.fetchCount(tx.database),
                 DonationSubscriptionManager.getSubscriberID(transaction: tx),
-                SSKEnvironment.shared.storageServiceManagerRef.currentManifestVersion(tx: tx.asV2Read)
+                SSKEnvironment.shared.storageServiceManagerRef.currentManifestVersion(tx: tx)
             )
         }
 
@@ -253,14 +253,14 @@ private extension InternalSettingsViewController {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
         guard let localIdentifiers = SSKEnvironment.shared.databaseStorageRef.read(block: {tx in
-            return tsAccountManager.localIdentifiers(tx: tx.asV2Read)
+            return tsAccountManager.localIdentifiers(tx: tx)
         }) else {
             return
         }
         Task {
             do {
                 let backupKey = try SSKEnvironment.shared.databaseStorageRef.read { tx in
-                    try messageBackupKeyMaterial.backupKey(type: .messages, tx: tx.asV2Read)
+                    try messageBackupKeyMaterial.backupKey(type: .messages, tx: tx)
                 }
                 let metadata = try await messageBackupManager.exportEncryptedBackup(
                     localIdentifiers: localIdentifiers,
@@ -364,8 +364,8 @@ private extension InternalSettingsViewController {
 
         let (backupKey, localIdentifiers) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
             (
-                try messageBackupKeyMaterial.backupKey(type: .messages, tx: tx.asV2Read),
-                tsAccountManager.localIdentifiers(tx: tx.asV2Read)
+                try messageBackupKeyMaterial.backupKey(type: .messages, tx: tx),
+                tsAccountManager.localIdentifiers(tx: tx)
             )
         }
 
@@ -407,8 +407,8 @@ private extension InternalSettingsViewController {
 
         let (backupKey, localIdentifiers) = try SSKEnvironment.shared.databaseStorageRef.read { tx in
             (
-                try messageBackupKeyMaterial.backupKey(type: .messages, tx: tx.asV2Read),
-                tsAccountManager.localIdentifiers(tx: tx.asV2Read)
+                try messageBackupKeyMaterial.backupKey(type: .messages, tx: tx),
+                tsAccountManager.localIdentifiers(tx: tx)
             )
         }
 

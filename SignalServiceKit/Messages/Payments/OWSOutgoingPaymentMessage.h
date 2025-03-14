@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
                           additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
                             explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
                              skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
-                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+                                   transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 
@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
            paymentNotification:(TSPaymentNotification *)paymentNotification
               expiresInSeconds:(uint32_t)expiresInSeconds
             expireTimerVersion:(nullable NSNumber *)expireTimerVersion
-                   transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
+                   transaction:(DBReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

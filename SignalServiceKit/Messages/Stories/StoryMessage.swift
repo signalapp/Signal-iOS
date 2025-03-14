@@ -121,12 +121,12 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
     }
 
-    public func fileAttachment(tx: SDSAnyReadTransaction) -> ReferencedAttachment? {
+    public func fileAttachment(tx: DBReadTransaction) -> ReferencedAttachment? {
         guard let id else { return nil }
         return DependenciesBridge.shared.attachmentStore
             .fetchFirstReferencedAttachment(
                 for: .storyMessageMedia(storyMessageRowId: id),
-                tx: tx.asV2Read
+                tx: tx
             )
     }
 
@@ -168,7 +168,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         attachmentBuilder: OwnedAttachmentBuilder<StoryMessageAttachment>,
         mediaCaption: StyleOnlyMessageBody?,
         shouldLoop: Bool,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> StoryMessage {
         let storyMessage = StoryMessage(
             timestamp: timestamp,
@@ -192,7 +192,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         case .text:
             ownerId = .storyMessageLinkPreview(storyMessageRowId: id)
         }
-        try attachmentBuilder.finalize(owner: ownerId, tx: transaction.asV2Write)
+        try attachmentBuilder.finalize(owner: ownerId, tx: transaction)
         return storyMessage
     }
 
@@ -202,7 +202,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         timestamp: UInt64,
         receivedTimestamp: UInt64,
         author: Aci,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> StoryMessage? {
         Logger.info("Processing StoryMessage from \(author) with timestamp \(timestamp)")
 
@@ -222,7 +222,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 Logger.warn("Ignoring StoryMessage from blocked author.")
                 return nil
             }
-            if DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(SignalServiceAddress(author), tx: transaction.asV2Read) {
+            if DependenciesBridge.shared.recipientHidingManager.isHiddenAddress(SignalServiceAddress(author), tx: transaction) {
                 Logger.warn("Ignoring StoryMessage from hidden author.")
                 return nil
             }
@@ -244,7 +244,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         if let fileAttachment = storyMessage.fileAttachment {
             let attachmentBuilder = try DependenciesBridge.shared.attachmentManager.createAttachmentPointerBuilder(
                 from: fileAttachment,
-                tx: transaction.asV2Write
+                tx: transaction
             )
             attachment = .media
             mediaAttachmentBuilder = attachmentBuilder
@@ -254,7 +254,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 do {
                     return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildStoryLinkPreview(
                         from: $0,
-                        tx: transaction.asV2Write
+                        tx: transaction
                     )
                 } catch {
                     Logger.error("Unable to build link preview!")
@@ -296,14 +296,14 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
         try linkPreviewBuilder?.finalize(
             owner: .storyMessageLinkPreview(storyMessageRowId: record.id!),
-            tx: transaction.asV2Write
+            tx: transaction
         )
         try mediaAttachmentBuilder?.finalize(
             owner: .storyMessageMedia(.init(
                 storyMessageRowId: record.id!,
                 caption: caption
             )),
-            tx: transaction.asV2Write
+            tx: transaction
         )
 
         return record
@@ -312,7 +312,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     @discardableResult
     public static func create(
         withSentTranscript proto: SSKProtoSyncMessageSent,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> StoryMessage {
         Logger.info("Processing StoryMessage from transcript with timestamp \(proto.timestamp)")
 
@@ -357,7 +357,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         if let fileAttachment = storyMessage.fileAttachment {
             let attachmentBuilder = try DependenciesBridge.shared.attachmentManager.createAttachmentPointerBuilder(
                 from: fileAttachment,
-                tx: transaction.asV2Write
+                tx: transaction
             )
             attachment = .media
             mediaAttachmentBuilder = attachmentBuilder
@@ -367,7 +367,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 do {
                     return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildStoryLinkPreview(
                         from: $0,
-                        tx: transaction.asV2Write
+                        tx: transaction
                     )
                 } catch {
                     Logger.error("Unable to build link preview!")
@@ -385,7 +385,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             throw OWSAssertionError("Missing attachment for StoryMessage.")
         }
 
-        let authorAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aci
+        let authorAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)!.aci
 
         // Count replies in some recipient replied and sent us the reply
         // before our linked device sent us the transcript.
@@ -417,14 +417,14 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
         try linkPreviewBuilder?.finalize(
             owner: .storyMessageLinkPreview(storyMessageRowId: record.id!),
-            tx: transaction.asV2Write
+            tx: transaction
         )
         try mediaAttachmentBuilder?.finalize(
             owner: .storyMessageMedia(.init(
                 storyMessageRowId: record.id!,
                 caption: caption
             )),
-            tx: transaction.asV2Write
+            tx: transaction
         )
 
         return record
@@ -438,7 +438,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     public static func createFromSystemAuthor(
         attachmentSource: AttachmentDataSource,
         timestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) throws -> StoryMessage {
         Logger.info("Processing StoryMessage for system author")
 
@@ -456,7 +456,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
         let attachmentBuilder = try DependenciesBridge.shared.attachmentManager.createAttachmentStreamBuilder(
             from: attachmentSource,
-            tx: transaction.asV2Write
+            tx: transaction
         )
 
         let record = StoryMessage(
@@ -478,7 +478,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 storyMessageRowId: record.id!,
                 caption: caption
             )),
-            tx: transaction.asV2Write
+            tx: transaction
         )
 
         return record
@@ -486,7 +486,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     // MARK: - (Private) Updating attachment
 
-    private func updateAttachment(_ attachment: StoryMessageAttachment, transaction: SDSAnyWriteTransaction) {
+    private func updateAttachment(_ attachment: StoryMessageAttachment, transaction: DBWriteTransaction) {
         anyUpdate(transaction: transaction) { record in
             record._attachment = attachment.asSerializable
         }
@@ -495,7 +495,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     // MARK: - Marking Read
 
     @objc
-    public func markAsRead(at timestamp: UInt64, circumstance: OWSReceiptCircumstance, transaction: SDSAnyWriteTransaction) {
+    public func markAsRead(at timestamp: UInt64, circumstance: OWSReceiptCircumstance, transaction: DBWriteTransaction) {
         anyUpdate(transaction: transaction) { record in
             guard case .incoming(let receivedState) = record.manifest else {
                 return owsFailDebug("Unexpectedly tried to mark outgoing message as read with wrong method.")
@@ -531,7 +531,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     // MARK: - Marking Viewed
 
     @objc
-    public func markAsViewed(at timestamp: UInt64, circumstance: OWSReceiptCircumstance, transaction: SDSAnyWriteTransaction) {
+    public func markAsViewed(at timestamp: UInt64, circumstance: OWSReceiptCircumstance, transaction: DBWriteTransaction) {
         anyUpdate(transaction: transaction) { record in
             guard case .incoming(let receivedState) = record.manifest else {
                 return owsFailDebug("Unexpectedly tried to mark outgoing message as viewed with wrong method.")
@@ -567,7 +567,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         SSKEnvironment.shared.receiptManagerRef.storyWasViewed(self, circumstance: circumstance, transaction: transaction)
     }
 
-    public func markAsViewed(at timestamp: UInt64, by recipient: Aci, transaction: SDSAnyWriteTransaction) {
+    public func markAsViewed(at timestamp: UInt64, by recipient: Aci, transaction: DBWriteTransaction) {
         anyUpdate(transaction: transaction) { record in
             guard case .outgoing(var recipientStates) = record.manifest else {
                 return owsFailDebug("Unexpectedly tried to mark incoming message as viewed with wrong method.")
@@ -587,13 +587,13 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     // MARK: - Reply Counts
 
-    public func incrementReplyCount(_ tx: SDSAnyWriteTransaction) {
+    public func incrementReplyCount(_ tx: DBWriteTransaction) {
         anyUpdate(transaction: tx) { record in
             record.replyCount += 1
         }
     }
 
-    public func decrementReplyCount(_ tx: SDSAnyWriteTransaction) {
+    public func decrementReplyCount(_ tx: DBWriteTransaction) {
         anyUpdate(transaction: tx) { record in
             record.replyCount = max(0, record.replyCount - 1)
         }
@@ -603,7 +603,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         authorAci: Aci,
         timestamp: UInt64,
         isGroupStory: Bool,
-        _ tx: SDSAnyReadTransaction
+        _ tx: DBReadTransaction
     ) -> UInt64 {
         if authorAci == StoryMessage.systemStoryAuthor {
             // No replies on system stories.
@@ -619,7 +619,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 AND \(interactionColumn: .isGroupStoryReply) = ?
                 """
             guard let count = try UInt64.fetchOne(
-                tx.unwrapGrdbRead.database,
+                tx.database,
                 sql: sql,
                 arguments: [timestamp, authorAci.serviceIdUppercaseString, isGroupStory]
             ) else {
@@ -633,7 +633,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     // MARK: -
 
-    public func updateRecipients(_ recipients: [SSKProtoSyncMessageSentStoryMessageRecipient], transaction: SDSAnyWriteTransaction) {
+    public func updateRecipients(_ recipients: [SSKProtoSyncMessageSentStoryMessageRecipient], transaction: DBWriteTransaction) {
         anyUpdate(transaction: transaction) { message in
             guard case .outgoing(let recipientStates) = message.manifest else {
                 return owsFailDebug("Unexpectedly tried to mark incoming message as viewed with wrong method.")
@@ -668,7 +668,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
     }
 
-    public func updateRecipientStates(_ recipientStates: [ServiceId: StoryRecipientState], transaction: SDSAnyWriteTransaction) {
+    public func updateRecipientStates(_ recipientStates: [ServiceId: StoryRecipientState], transaction: DBWriteTransaction) {
         anyUpdate(transaction: transaction) { message in
             guard case .outgoing = message.manifest else {
                 return owsFailDebug("Unexpectedly tried to update recipient states for a non-outgoing message.")
@@ -680,7 +680,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     public func updateRecipientStatesWithOutgoingMessageStates(
         _ outgoingMessageStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]?,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         guard let outgoingMessageStates = outgoingMessageStates else { return }
 
@@ -716,7 +716,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
     }
 
-    public func updateWithAllSendingRecipientsMarkedAsFailed(transaction: SDSAnyWriteTransaction) {
+    public func updateWithAllSendingRecipientsMarkedAsFailed(transaction: DBWriteTransaction) {
         notifyingOfFailureIfNeeded(transaction: transaction) { firstFailedThread in
             anyUpdate(transaction: transaction) { message in
                 guard case .outgoing(var recipientStates) = message.manifest else {
@@ -745,7 +745,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     }
 
     private func notifyingOfFailureIfNeeded(
-        transaction: SDSAnyWriteTransaction,
+        transaction: DBWriteTransaction,
         _ block: (_ firstFailedThread: inout TSThread?) -> Void
     ) {
         let wasFailedSendBeforeUpdate = sendingState == .failed
@@ -769,7 +769,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     /// story was sent as a private story, or the TSGroupThread if the story was sent to a group.
     /// If the story is outgoing, returns either a single-element array with the TSGroupThread if the story was sent
     /// to a group, or an array of TSPrivateStoryThreads for all the private threads the story was sent to.
-    public func threads(transaction: SDSAnyReadTransaction) -> [TSThread] {
+    public func threads(transaction: DBReadTransaction) -> [TSThread] {
         switch manifest {
         case .incoming:
             if let groupId = groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
@@ -794,22 +794,22 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
     }
 
-    public func downloadIfNecessary(transaction: SDSAnyWriteTransaction) {
+    public func downloadIfNecessary(transaction: DBWriteTransaction) {
         switch attachment {
         case .media:
-            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(self, tx: transaction.asV2Write)
+            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(self, tx: transaction)
         case .text:
             return
         }
     }
 
-    public func remotelyDeleteForAllRecipients(transaction: SDSAnyWriteTransaction) {
+    public func remotelyDeleteForAllRecipients(transaction: DBWriteTransaction) {
         for thread in threads(transaction: transaction) {
             remotelyDelete(for: thread, transaction: transaction)
         }
     }
 
-    public func remotelyDelete(for thread: TSThread, transaction: SDSAnyWriteTransaction) {
+    public func remotelyDelete(for thread: TSThread, transaction: DBWriteTransaction) {
         guard case .outgoing(var recipientStates) = manifest else {
             return owsFailDebug("Cannot remotely delete incoming story.")
         }
@@ -903,7 +903,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }.map { SignalServiceAddress($0.key) }
     }
 
-    public func resendMessageToFailedRecipients(transaction: SDSAnyWriteTransaction) {
+    public func resendMessageToFailedRecipients(transaction: DBWriteTransaction) {
         guard case .outgoing(let recipientStates) = manifest else {
             return owsFailDebug("Cannot resend incoming story.")
         }
@@ -956,11 +956,11 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         self.id = rowID
     }
 
-    public func anyDidRemove(transaction: SDSAnyWriteTransaction) {
+    public func anyDidRemove(transaction: DBWriteTransaction) {
         // Delete all group replies for the message.
         InteractionFinder.enumerateGroupReplies(for: self, transaction: transaction) { reply, _ in
             DependenciesBridge.shared.interactionDeleteManager
-                .delete(reply, sideEffects: .default(), tx: transaction.asV2Write)
+                .delete(reply, sideEffects: .default(), tx: transaction)
         }
 
         // Reload latest unexpired timestamp for the context.
@@ -971,7 +971,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     @objc
     public static func anyEnumerateObjc(
-        transaction: SDSAnyReadTransaction,
+        transaction: DBReadTransaction,
         batched: Bool,
         block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {

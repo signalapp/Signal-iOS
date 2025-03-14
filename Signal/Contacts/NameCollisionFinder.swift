@@ -40,10 +40,10 @@ public protocol NameCollisionFinder {
     var thread: TSThread { get }
 
     /// Finds collections of thread participants that have a colliding display name
-    func findCollisions(transaction: SDSAnyReadTransaction) -> [NameCollision]
+    func findCollisions(transaction: DBReadTransaction) -> [NameCollision]
 
     /// Invoked whenever the user has opted to ignore any remaining collisions
-    func markCollisionsAsResolved(transaction: SDSAnyWriteTransaction)
+    func markCollisionsAsResolved(transaction: DBWriteTransaction)
 }
 
 /// Finds all name collisions for a given contact thread. Compares the contact
@@ -72,7 +72,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder {
 
     public var thread: TSThread { contactThread }
 
-    public func findCollisions(transaction: SDSAnyReadTransaction) -> [NameCollision] {
+    public func findCollisions(transaction: DBReadTransaction) -> [NameCollision] {
         guard let updatedThread = TSContactThread.getWithContactAddress(contactThread.contactAddress, transaction: transaction) else {
             return []
         }
@@ -129,7 +129,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder {
         return [NameCollision(collisionElements)].compacted()
     }
 
-    public func markCollisionsAsResolved(transaction: SDSAnyWriteTransaction) {
+    public func markCollisionsAsResolved(transaction: DBWriteTransaction) {
         // Do nothing
         // Contact threads always display all collisions
     }
@@ -152,7 +152,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
         groupThread = thread
     }
 
-    public func findCollisions(transaction: SDSAnyReadTransaction) -> [NameCollision] {
+    public func findCollisions(transaction: DBReadTransaction) -> [NameCollision] {
         guard let updatedThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThread.uniqueId, transaction: transaction) else {
             return []
         }
@@ -236,7 +236,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
         return (oldProfileName, newProfileName)
     }
 
-    private func fetchRecentProfileUpdates(transaction: SDSAnyReadTransaction) -> [SignalServiceAddress: [TSInfoMessage]] {
+    private func fetchRecentProfileUpdates(transaction: DBReadTransaction) -> [SignalServiceAddress: [TSInfoMessage]] {
         lock.withLock {
             if let cachedResults = recentProfileUpdateMessages { return cachedResults }
 
@@ -256,7 +256,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
         }
     }
 
-    public func markCollisionsAsResolved(transaction: SDSAnyWriteTransaction) {
+    public func markCollisionsAsResolved(transaction: DBWriteTransaction) {
         lock.withLock {
             let allRecentMessages = recentProfileUpdateMessages?.values.flatMap({ $0 })
             guard let newMaxSortId = allRecentMessages?.max(by: { $0.sortId < $1.sortId })?.sortId else { return }
@@ -270,16 +270,16 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
 
     private static var keyValueStore = KeyValueStore(collection: "GroupThreadCollisionFinder")
 
-    private func recentProfileUpdateSearchStartId(transaction: SDSAnyReadTransaction) -> UInt64? {
-        Self.keyValueStore.getUInt64(groupThread.uniqueId, transaction: transaction.asV2Read)
+    private func recentProfileUpdateSearchStartId(transaction: DBReadTransaction) -> UInt64? {
+        Self.keyValueStore.getUInt64(groupThread.uniqueId, transaction: transaction)
     }
 
-    private func setRecentProfileUpdateSearchStartId(newValue: UInt64, transaction: SDSAnyWriteTransaction) {
+    private func setRecentProfileUpdateSearchStartId(newValue: UInt64, transaction: DBWriteTransaction) {
         let existingValue = recentProfileUpdateSearchStartId(transaction: transaction) ?? 0
-        Self.keyValueStore.setUInt64(max(newValue, existingValue), key: groupThread.uniqueId, transaction: transaction.asV2Write)
+        Self.keyValueStore.setUInt64(max(newValue, existingValue), key: groupThread.uniqueId, transaction: transaction)
     }
 
-    private func setRecentProfileUpdateSearchStartIdToMax(transaction: SDSAnyReadTransaction) {
+    private func setRecentProfileUpdateSearchStartIdToMax(transaction: DBReadTransaction) {
         // This is a perf optimization to proactively reduce our search space, so it doesn't need to be exact.
         // `lastInteractionRowId` is the current latest interaction on the thread when we checked for collisions.
         //
@@ -301,7 +301,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
 // MARK: - Helpers
 
 private extension NameCollision {
-    func standardSort(readTx: SDSAnyReadTransaction) -> NameCollision {
+    func standardSort(readTx: DBReadTransaction) -> NameCollision {
         NameCollision(
             elements.sorted { lhs, rhs in
                 // Given two colliding elements, we sort by:
@@ -318,7 +318,7 @@ private extension NameCollision {
 }
 
 private extension Array where Element == NameCollision {
-    func standardSort(readTx: SDSAnyReadTransaction) -> [NameCollision] {
+    func standardSort(readTx: DBReadTransaction) -> [NameCollision] {
         self.map { $0.standardSort(readTx: readTx) }.sorted { lhs, rhs in
             return lhs.elements[0].comparableName < rhs.elements[0].comparableName
         }

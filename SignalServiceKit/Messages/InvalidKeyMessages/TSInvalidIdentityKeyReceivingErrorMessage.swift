@@ -39,7 +39,7 @@ extension TSInvalidIdentityKeyReceivingErrorMessage {
                         uniqueId: errorMessage.uniqueId, transaction: tx
                     ) {
                         DependenciesBridge.shared.interactionDeleteManager
-                            .delete(existingError, sideEffects: .default(), tx: tx.asV2Write)
+                            .delete(existingError, sideEffects: .default(), tx: tx)
                     }
                 }
             }

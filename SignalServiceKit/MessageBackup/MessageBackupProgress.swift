@@ -24,11 +24,11 @@ public struct MessageBackupExportProgress {
             // to be perfect; we'll skip some of these and besides they're
             // all weighted evenly. Its just an estimate.
             return try
-                SignalRecipient.fetchCount(tx.databaseConnection)
-                + ThreadRecord.fetchCount(tx.databaseConnection)
-                + InteractionRecord.fetchCount(tx.databaseConnection)
-                + CallLinkRecord.fetchCount(tx.databaseConnection)
-                + StickerPackRecord.fetchCount(tx.databaseConnection)
+                SignalRecipient.fetchCount(tx.database)
+                + ThreadRecord.fetchCount(tx.database)
+                + InteractionRecord.fetchCount(tx.database)
+                + CallLinkRecord.fetchCount(tx.database)
+                + StickerPackRecord.fetchCount(tx.database)
         }
         // Add a fixed extra amount for:
         // * header frame

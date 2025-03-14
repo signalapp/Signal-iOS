@@ -285,7 +285,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         let priorError = SSKEnvironment.shared.databaseStorageRef.read(block: { tx -> DonationReceiptCredentialRequestError? in
             return donationReceiptCredentialResultStore.getRequestError(
                 errorMode: configuration.paymentType.receiptCredentialResultMode,
-                tx: tx.asV2Read
+                tx: tx
             )
         })
         guard let priorError, priorError.errorCode == .paymentStillProcessing else {
@@ -474,7 +474,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                         configuration: configuration,
                         badge: badge,
                         amount: amount,
-                        tx: tx.asV2Write
+                        tx: tx
                     )
 
                     if errorCode == .paymentStillProcessing {
@@ -508,7 +508,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
         return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             self.donationReceiptCredentialResultStore.clearRequestError(
                 errorMode: configuration.paymentType.receiptCredentialResultMode,
-                tx: tx.asV2Write
+                tx: tx
             )
             self.donationReceiptCredentialResultStore.setRedemptionSuccess(
                 success: DonationReceiptCredentialRedemptionSuccess(
@@ -517,7 +517,7 @@ private class DonationReceiptCredentialRedemptionJobRunner: JobRunner {
                     paymentMethod: configuration.paymentMethod
                 ),
                 successMode: configuration.paymentType.receiptCredentialResultMode,
-                tx: tx.asV2Write
+                tx: tx
             )
 
             DonationReceipt(

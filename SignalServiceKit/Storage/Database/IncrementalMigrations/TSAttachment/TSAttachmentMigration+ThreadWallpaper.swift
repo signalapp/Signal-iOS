@@ -29,7 +29,7 @@ extension TSAttachmentMigration {
     )
 
     /// First pass
-    static func prepareThreadWallpaperMigration(tx: GRDBWriteTransaction) throws {
+    static func prepareThreadWallpaperMigration(tx: DBWriteTransaction) throws {
         let rows = try Row.fetchAll(
             tx.database,
             sql: "SELECT * FROM keyvalue WHERE collection = ?",
@@ -60,7 +60,7 @@ extension TSAttachmentMigration {
     }
 
     /// Second pass
-    static func completeThreadWallpaperMigration(tx: GRDBWriteTransaction) throws {
+    static func completeThreadWallpaperMigration(tx: DBWriteTransaction) throws {
         let reservedFileRows = try Row.fetchAll(
             tx.database,
             sql: "SELECT * FROM keyvalue WHERE collection = ?",
@@ -133,7 +133,7 @@ extension TSAttachmentMigration {
         reservedFileUUID: UUID,
         threadRowId: Int64?,
         wallpaperFilename: String,
-        tx: GRDBWriteTransaction
+        tx: DBWriteTransaction
     ) throws {
         let wallpaperFile = URL(
             fileURLWithPath: wallpaperFilename,

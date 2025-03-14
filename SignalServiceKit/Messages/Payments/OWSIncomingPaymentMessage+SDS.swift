@@ -16,7 +16,7 @@ public extension OWSIncomingPaymentMessage {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetchIncomingPaymentMessage(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> OWSIncomingPaymentMessage? {
         assert(!uniqueId.isEmpty)
 
@@ -32,7 +32,7 @@ public extension OWSIncomingPaymentMessage {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateIncomingPaymentMessage(transaction: SDSAnyWriteTransaction, block: (OWSIncomingPaymentMessage) -> Void) {
+    func anyUpdateIncomingPaymentMessage(transaction: DBWriteTransaction, block: (OWSIncomingPaymentMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSIncomingPaymentMessage else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")

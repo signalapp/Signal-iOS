@@ -48,7 +48,7 @@ public final class MessageBackupStoryStore {
         var record = myStory.asRecord()
 
         let existingMyStoryRowId = try Int64.fetchOne(
-            context.tx.databaseConnection,
+            context.tx.database,
             sql: """
                 SELECT id from model_TSThread WHERE uniqueId = ?
                 """,
@@ -59,7 +59,7 @@ public final class MessageBackupStoryStore {
         }
 
         // Use save to insert or update as my story might already exist.
-        try record.save(context.tx.databaseConnection)
+        try record.save(context.tx.database)
     }
 
     func insert(
@@ -67,7 +67,7 @@ public final class MessageBackupStoryStore {
         context: MessageBackup.RecipientRestoringContext
     ) throws {
         let record = storyThread.asRecord()
-        try record.insert(context.tx.databaseConnection)
+        try record.insert(context.tx.database)
     }
 
     func createStoryContextAssociatedData(
@@ -79,7 +79,7 @@ public final class MessageBackupStoryStore {
             sourceContext: .contact(contactAci: aci),
             isHidden: isHidden
         )
-        try storyContext.insert(context.tx.databaseConnection)
+        try storyContext.insert(context.tx.database)
     }
 
     func createStoryContextAssociatedData(
@@ -91,6 +91,6 @@ public final class MessageBackupStoryStore {
             sourceContext: .group(groupId: groupThread.groupId),
             isHidden: isHidden
         )
-        try storyContext.insert(context.tx.databaseConnection)
+        try storyContext.insert(context.tx.database)
     }
 }

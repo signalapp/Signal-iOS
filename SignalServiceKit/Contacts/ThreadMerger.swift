@@ -328,9 +328,9 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
         SSKEnvironment.shared.modelReadCachesRef.evacuateAllCaches()
     }
 
-    private func mergeInteractions(_ threadPair: MergePair<TSContactThread>, tx: SDSAnyWriteTransaction) {
+    private func mergeInteractions(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
         let uniqueIds = threadPair.map { $0.uniqueId }
-        tx.unwrapGrdbWrite.database.executeHandlingErrors(
+        tx.database.executeHandlingErrors(
             sql: """
                 UPDATE "\(InteractionRecord.databaseTableName)"
                 SET "\(interactionColumn: .threadUniqueId)" = ?
@@ -340,15 +340,15 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
         )
     }
 
-    private func mergeReceiptsPendingMessageRequest(_ threadPair: MergePair<TSContactThread>, tx: SDSAnyWriteTransaction) {
+    private func mergeReceiptsPendingMessageRequest(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
         let threadRowIds = threadPair.map { $0.sqliteRowId! }
-        tx.unwrapGrdbWrite.database.executeHandlingErrors(
+        tx.database.executeHandlingErrors(
             sql: """
                 UPDATE "\(PendingViewedReceiptRecord.databaseTableName)" SET "threadId" = ? WHERE "threadId" = ?
             """,
             arguments: [threadRowIds.intoValue, threadRowIds.fromValue]
         )
-        tx.unwrapGrdbWrite.database.executeHandlingErrors(
+        tx.database.executeHandlingErrors(
             sql: """
                 UPDATE "\(PendingReadReceiptRecord.databaseTableName)" SET "threadId" = ? WHERE "threadId" = ?
             """,
@@ -356,7 +356,7 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
         )
     }
 
-    private func mergeMessageSendLogPayloads(_ threadPair: MergePair<TSContactThread>, tx: SDSAnyWriteTransaction) {
+    private func mergeMessageSendLogPayloads(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
         let threadUniqueIdPair = threadPair.map { $0.uniqueId }
         let messageSendLog = SSKEnvironment.shared.messageSendLogRef
         messageSendLog.mergePayloads(from: threadUniqueIdPair.fromValue, into: threadUniqueIdPair.intoValue, tx: tx)

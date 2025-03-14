@@ -20,7 +20,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
     }
@@ -45,7 +45,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         // As a smoke test, ensure that the database is still empty.
         let finishedDatabaseStorage = try cloneDatabaseStorage(databaseStorage)
         finishedDatabaseStorage.read { transaction in
-            let database = transaction.unwrapGrdbRead.database
+            let database = transaction.database
             for tableName in allNormalTableNames(transaction: transaction) {
                 let sql = "SELECT EXISTS (SELECT 1 FROM \(tableName))"
                 guard let anyRowExists = try? XCTUnwrap(Bool.fetchOne(database, sql: sql)) else {
@@ -116,7 +116,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             keychainStorage: keychainStorage
         )
         finishedDatabaseStorage.read { transaction in
-            let database = transaction.unwrapGrdbRead.database
+            let database = transaction.database
             for tableName in allNormalTableNames(transaction: transaction) {
                 let sql = "SELECT EXISTS (SELECT 1 FROM \(tableName))"
                 guard let anyRowExists = try? XCTUnwrap(Bool.fetchOne(database, sql: sql)) else {
@@ -178,7 +178,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
                 authorPhoneNumber: nil,
                 authorAci: contactAci
             )
-            try pendingReadReceipt.insert(transaction.unwrapGrdbWrite.database)
+            try pendingReadReceipt.insert(transaction.database)
         }
 
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
@@ -229,7 +229,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             // Reaction
             let reactions: [OWSReaction] = {
                 let finder = ReactionFinder(uniqueMessageId: interaction.uniqueId)
-                return finder.allReactions(transaction: transaction.unwrapGrdbRead)
+                return finder.allReactions(transaction: transaction)
             }()
             XCTAssertEqual(reactions.count, 1)
             guard let reaction = reactions.first else {
@@ -239,7 +239,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             XCTAssertEqual(reaction.emoji, "💽")
 
             // Pending read receipts (not copied)
-            let db = transaction.unwrapGrdbRead.database
+            let db = transaction.database
             let pendingReadReceipts: [PendingReadReceiptRecord]
             do {
                 pendingReadReceipts = try PendingReadReceiptRecord.fetchAll(db)
@@ -258,7 +258,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
         databaseStorage.write { transaction in
-            try! transaction.unwrapGrdbWrite.database.drop(table: KeyValueStore.tableName)
+            try! transaction.database.drop(table: KeyValueStore.tableName)
         }
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
@@ -279,7 +279,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage, isMainDatabase: false)
         databaseStorage.write { transaction in
-            try! transaction.unwrapGrdbWrite.database.drop(table: OWSReaction.databaseTableName)
+            try! transaction.database.drop(table: OWSReaction.databaseTableName)
         }
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
@@ -297,7 +297,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         )
         finishedDatabaseStorage.read { transaction in
             let sql = "SELECT EXISTS (SELECT 1 FROM \(OWSReaction.databaseTableName))"
-            let database = transaction.unwrapGrdbRead.database
+            let database = transaction.database
             guard let anyRowExists = try? XCTUnwrap(Bool.fetchOne(database, sql: sql)) else {
                 XCTFail("Could not fetch boolean from test query")
                 return
@@ -378,8 +378,8 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         )
     }
 
-    func allNormalTableNames(transaction: SDSAnyReadTransaction) -> Set<String> {
-        let db = transaction.unwrapGrdbRead.database
+    func allNormalTableNames(transaction: DBReadTransaction) -> Set<String> {
+        let db = transaction.database
         let sql = "SELECT name FROM sqlite_schema WHERE type IS 'table'"
         let allTableNames = Set((try? String.fetchAll(db, sql: sql)) ?? [])
         owsPrecondition(!allTableNames.isEmpty, "No tables were found!")
@@ -394,8 +394,8 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         }
     }
 
-    static func columnNames(transaction: SDSAnyReadTransaction, tableName: String) throws -> [String] {
-        let db = transaction.unwrapGrdbRead.database
+    static func columnNames(transaction: DBReadTransaction, tableName: String) throws -> [String] {
+        let db = transaction.database
         var result = [String]()
         let cursor = try Row.fetchCursor(db, sql: "PRAGMA table_info(\(tableName))")
         try cursor.forEach { row in
@@ -409,7 +409,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
     func insertContactThread(
         contactAddress: SignalServiceAddress,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> TSContactThread {
         TSContactThread.getOrCreateThread(
             withContactAddress: contactAddress,

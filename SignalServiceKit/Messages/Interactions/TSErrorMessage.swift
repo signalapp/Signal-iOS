@@ -41,7 +41,7 @@ extension TSErrorMessage {
         sender: SignalServiceAddress,
         groupId: Data?,
         timestamp: UInt64,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> TSErrorMessage? {
         if
             let groupId,
@@ -72,12 +72,12 @@ extension TSErrorMessage {
 
 extension TSErrorMessage {
 
-    public func plaintextBody(_ tx: SDSAnyReadTransaction) -> String {
+    public func plaintextBody(_ tx: DBReadTransaction) -> String {
         return self.rawBody(transaction: tx) ?? ""
     }
 
     @objc
-    static func safetyNumberChangeDescription(for address: SignalServiceAddress?, tx: SDSAnyReadTransaction) -> String {
+    static func safetyNumberChangeDescription(for address: SignalServiceAddress?, tx: DBReadTransaction) -> String {
         guard let address else {
             // address will be nil for legacy errors
             return OWSLocalizedString(

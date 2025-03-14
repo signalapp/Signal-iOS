@@ -109,7 +109,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 return context.editManager.validateCanSendEdit(
                     targetMessageTimestamp: editTarget.timestamp,
                     thread: self.thread,
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
             }
             return nil
@@ -330,7 +330,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         quotedReply: DraftQuotedReplyModel?,
         editTarget: TSOutgoingMessage?,
         thread: TSThread,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         let currentText = currentDraft?.text ?? ""
         let persistedText = thread.messageDraft ?? ""
@@ -352,7 +352,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         }
 
         let threadReplyInfoStore = DependenciesBridge.shared.threadReplyInfoStore
-        let persistedQuotedReply = threadReplyInfoStore.fetch(for: thread.uniqueId, tx: transaction.asV2Read)
+        let persistedQuotedReply = threadReplyInfoStore.fetch(for: thread.uniqueId, tx: transaction)
         if quotedReply?.originalMessageTimestamp != persistedQuotedReply?.timestamp {
             return true
         }

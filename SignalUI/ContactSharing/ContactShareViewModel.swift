@@ -46,13 +46,13 @@ public class ContactShareViewModel: NSObject {
     public convenience init(
         contactShareRecord: OWSContact,
         parentMessage: TSMessage,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) {
         if
             let parentMessageRowId = parentMessage.sqliteRowId,
             let avatarAttachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
                 for: .messageContactAvatar(messageRowId: parentMessageRowId),
-                tx: transaction.asV2Read
+                tx: transaction
             )?.asReferencedStream
         {
             let avatarImageData: Data?
@@ -82,7 +82,7 @@ public class ContactShareViewModel: NSObject {
         }
     }
 
-    public func getAvatarImage(diameter: CGFloat, transaction: SDSAnyReadTransaction) -> UIImage? {
+    public func getAvatarImage(diameter: CGFloat, transaction: DBReadTransaction) -> UIImage? {
         if let avatarImage = avatarImage {
             return avatarImage
         }

@@ -17,9 +17,9 @@ public class TSAccountManagerObjcBridge: NSObject {
     }
 
     @objc
-    public static func localAciAddress(with tx: SDSAnyReadTransaction) -> SignalServiceAddress? {
+    public static func localAciAddress(with tx: DBReadTransaction) -> SignalServiceAddress? {
         return DependenciesBridge.shared.tsAccountManager
-            .localIdentifiers(tx: tx.asV2Read)?
+            .localIdentifiers(tx: tx)?
             .aciAddress
     }
 

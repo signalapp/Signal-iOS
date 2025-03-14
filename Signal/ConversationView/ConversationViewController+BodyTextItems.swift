@@ -259,7 +259,7 @@ extension ConversationViewController {
 
         let recipient = SSKEnvironment.shared.databaseStorageRef.read { tx in
             let recipientManager = DependenciesBridge.shared.recipientManager
-            return recipientManager.fetchRecipientIfPhoneNumberVisible(phoneNumber, tx: tx.asV2Read)
+            return recipientManager.fetchRecipientIfPhoneNumberVisible(phoneNumber, tx: tx)
         }
 
         if let recipient, recipient.isRegistered {

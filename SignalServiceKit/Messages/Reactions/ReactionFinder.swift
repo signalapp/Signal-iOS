@@ -18,7 +18,7 @@ public class ReactionFinder {
     }
 
     /// Returns the given users reaction if it exists, otherwise nil
-    public func reaction(for aci: Aci, tx: GRDBReadTransaction) -> OWSReaction? {
+    public func reaction(for aci: Aci, tx: DBReadTransaction) -> OWSReaction? {
         // If there is a reaction for the ACI, return it.
         do {
             let sql = """
@@ -60,7 +60,7 @@ public class ReactionFinder {
     }
 
     /// Returns a list of all reactions to this message
-    public func allReactions(transaction: GRDBReadTransaction) -> [OWSReaction] {
+    public func allReactions(transaction: DBReadTransaction) -> [OWSReaction] {
         let sql = """
             SELECT * FROM \(OWSReaction.databaseTableName)
             WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
@@ -83,7 +83,7 @@ public class ReactionFinder {
     }
 
     /// Returns a list of reactions to this message that have yet to be read
-    public func unreadReactions(transaction: GRDBReadTransaction) -> [OWSReaction] {
+    public func unreadReactions(transaction: DBReadTransaction) -> [OWSReaction] {
         let sql = """
             SELECT * FROM \(OWSReaction.databaseTableName)
             WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
@@ -106,7 +106,7 @@ public class ReactionFinder {
     }
 
     /// A list of all the unique reaction IDs linked to this message, ordered by creation from oldest to neweset
-    public func allUniqueIds(transaction: GRDBReadTransaction) -> [String] {
+    public func allUniqueIds(transaction: DBReadTransaction) -> [String] {
         let sql = """
             SELECT \(OWSReaction.columnName(.uniqueId))
             FROM \(OWSReaction.databaseTableName)
@@ -124,7 +124,7 @@ public class ReactionFinder {
     }
 
     /// Delete all reaction records associated with this message
-    public func deleteAllReactions(transaction: GRDBWriteTransaction) {
+    public func deleteAllReactions(transaction: DBWriteTransaction) {
         let sql = """
             DELETE FROM \(OWSReaction.databaseTableName)
             WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?

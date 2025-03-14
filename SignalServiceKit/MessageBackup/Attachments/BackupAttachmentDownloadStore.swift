@@ -48,16 +48,16 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
 
     private let shouldStoreAllMediaLocallyKey = "shouldStoreAllMediaLocallyKey"
 
-    public func getShouldStoreAllMediaLocally(tx: any DBReadTransaction) -> Bool {
+    public func getShouldStoreAllMediaLocally(tx: DBReadTransaction) -> Bool {
         return kvStore.getBool(shouldStoreAllMediaLocallyKey, defaultValue: true, transaction: tx)
     }
 
-    public func setShouldStoreAllMediaLocally(_ newValue: Bool, tx: any DBWriteTransaction) {
+    public func setShouldStoreAllMediaLocally(_ newValue: Bool, tx: DBWriteTransaction) {
         kvStore.setBool(newValue, key: shouldStoreAllMediaLocallyKey, transaction: tx)
     }
 
-    public func enqueue(_ reference: AttachmentReference, tx: any DBWriteTransaction) throws {
-        let db = tx.databaseConnection
+    public func enqueue(_ reference: AttachmentReference, tx: DBWriteTransaction) throws {
+        let db = tx.database
         let timestamp: UInt64? = {
             switch reference.owner {
             case .message(.bodyAttachment(let metadata)):
@@ -106,7 +106,7 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
         count: UInt,
         tx: DBReadTransaction
     ) throws -> [QueuedBackupAttachmentDownload] {
-        let db = tx.databaseConnection
+        let db = tx.database
         return try QueuedBackupAttachmentDownload
             // We want to dequeue in _reverse_ insertion order.
             .order([Column(QueuedBackupAttachmentDownload.CodingKeys.id).desc])
@@ -118,13 +118,13 @@ public class BackupAttachmentDownloadStoreImpl: BackupAttachmentDownloadStore {
         _ record: QueuedBackupAttachmentDownload,
         tx: DBWriteTransaction
     ) throws {
-        let db = tx.databaseConnection
+        let db = tx.database
         try QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.id) == record.id)
             .deleteAll(db)
     }
 
     public func removeAll(tx: DBWriteTransaction) throws {
-        try QueuedBackupAttachmentDownload.deleteAll(tx.databaseConnection)
+        try QueuedBackupAttachmentDownload.deleteAll(tx.database)
     }
 }

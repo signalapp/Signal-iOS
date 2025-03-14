@@ -416,7 +416,7 @@ extension ConversationViewController {
                 sideEffects: .custom(
                     deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: thread)
                 ),
-                tx: tx.asV2Write
+                tx: tx
             )
         }
     }
@@ -424,14 +424,14 @@ extension ConversationViewController {
     private static func deleteSelectedItemsForEveryone(
         selectionItems: [CVSelectionItem],
         thread: TSThread,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard !selectionItems.isEmpty else { return }
         guard let latestThread = TSThread.anyFetch(uniqueId: thread.uniqueId, transaction: tx) else {
             return owsFailDebug("Trying to delete messages without a thread.")
         }
 
-        guard let aci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
+        guard let aci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci else {
             return owsFailDebug("Local ACI missing during message deletion.")
         }
 
@@ -557,7 +557,7 @@ extension ConversationViewController {
                     threadSoftDeleteManager.removeAllInteractions(
                         thread: thread,
                         sendDeleteForMeSyncMessage: true,
-                        tx: $0.asV2Write
+                        tx: $0
                     )
                 }
                 DispatchQueue.main.async {

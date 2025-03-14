@@ -123,7 +123,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
         switch type {
         case .local:
             SSKEnvironment.shared.databaseStorageRef.read { tx in
-                guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
+                guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
                     owsFailDebug("missing local address")
                     return
                 }
@@ -184,7 +184,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
 
     private func updateCircularAvatarIfNecessary(
         address: SignalServiceAddress,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) {
         guard let avatarView else {
             Logger.info("Skipping refresh of avatar view in call member view.")

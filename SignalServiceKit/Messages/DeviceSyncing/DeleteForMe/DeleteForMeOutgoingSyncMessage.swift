@@ -79,7 +79,7 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
     init?(
         contents: Contents,
         localThread: TSContactThread,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) {
         do {
             self.contentsData = try JSONEncoder().encode(contents)
@@ -101,7 +101,7 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
 
     override public var isUrgent: Bool { false }
 
-    override public func syncMessageBuilder(transaction: SDSAnyReadTransaction) -> SSKProtoSyncMessageBuilder? {
+    override public func syncMessageBuilder(transaction: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
         let contents: Contents
         do {
             contents = try JSONDecoder().decode(Contents.self, from: contentsData)

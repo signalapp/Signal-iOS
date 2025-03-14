@@ -19,20 +19,20 @@ NS_ASSUME_NONNULL_BEGIN
                           additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
                             explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
                              skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
-                                   transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+                                   transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
 + (OWSReceiptsForSenderMessage *)deliveryReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                                  receiptSet:(MessageReceiptSet *)receiptSet
-                                                                transaction:(SDSAnyReadTransaction *)transaction;
+                                                                transaction:(DBReadTransaction *)transaction;
 
 + (OWSReceiptsForSenderMessage *)readReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                              receiptSet:(MessageReceiptSet *)receiptSet
-                                                            transaction:(SDSAnyReadTransaction *)transaction
+                                                            transaction:(DBReadTransaction *)transaction
     NS_SWIFT_NAME(readReceiptsForSenderMessage(with:receiptSet:transaction:));
 
 + (OWSReceiptsForSenderMessage *)viewedReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                                receiptSet:(MessageReceiptSet *)receiptSet
-                                                              transaction:(SDSAnyReadTransaction *)transaction;
+                                                              transaction:(DBReadTransaction *)transaction;
 
 @end
 

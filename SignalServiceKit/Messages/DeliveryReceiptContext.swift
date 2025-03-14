@@ -8,11 +8,11 @@ import Foundation
 public protocol DeliveryReceiptContext: AnyObject {
     func addUpdate(
         message: TSOutgoingMessage,
-        transaction: SDSAnyWriteTransaction,
+        transaction: DBWriteTransaction,
         update: @escaping (TSOutgoingMessage) -> Void
     )
 
-    func messages(_ timestamps: UInt64, transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage]
+    func messages(_ timestamps: UInt64, transaction: DBReadTransaction) -> [TSOutgoingMessage]
 }
 
 private struct Update {
@@ -21,7 +21,7 @@ private struct Update {
 }
 
 fileprivate extension TSOutgoingMessage {
-    static func fetch(_ timestamp: UInt64, transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage] {
+    static func fetch(_ timestamp: UInt64, transaction: DBReadTransaction) -> [TSOutgoingMessage] {
         do {
             return try InteractionFinder.fetchInteractions(
                 timestamp: timestamp,
@@ -39,7 +39,7 @@ public class PassthroughDeliveryReceiptContext: DeliveryReceiptContext {
 
     public func addUpdate(
         message: TSOutgoingMessage,
-        transaction: SDSAnyWriteTransaction,
+        transaction: DBWriteTransaction,
         update: @escaping (TSOutgoingMessage) -> Void
     ) {
         let deferredUpdate = Update(message: message, update: update)
@@ -48,7 +48,7 @@ public class PassthroughDeliveryReceiptContext: DeliveryReceiptContext {
         }
     }
 
-    public func messages(_ timestamp: UInt64, transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage] {
+    public func messages(_ timestamp: UInt64, transaction: DBReadTransaction) -> [TSOutgoingMessage] {
         return TSOutgoingMessage.fetch(timestamp, transaction: transaction)
     }
 }
@@ -58,10 +58,10 @@ public class BatchingDeliveryReceiptContext: DeliveryReceiptContext {
     private var deferredUpdates: [Update] = []
 
 #if TESTABLE_BUILD
-    static var didRunDeferredUpdates: ((Int, SDSAnyWriteTransaction) -> Void)?
+    static var didRunDeferredUpdates: ((Int, DBWriteTransaction) -> Void)?
 #endif
 
-    static func withDeferredUpdates(transaction: SDSAnyWriteTransaction, _ closure: (DeliveryReceiptContext) -> Void) {
+    static func withDeferredUpdates(transaction: DBWriteTransaction, _ closure: (DeliveryReceiptContext) -> Void) {
         let instance = BatchingDeliveryReceiptContext()
         closure(instance)
         instance.runDeferredUpdates(transaction: transaction)
@@ -71,13 +71,13 @@ public class BatchingDeliveryReceiptContext: DeliveryReceiptContext {
     // in-memory instance and a second time for the most up-to-date copy in the database.
     public func addUpdate(
         message: TSOutgoingMessage,
-        transaction: SDSAnyWriteTransaction,
+        transaction: DBWriteTransaction,
         update: @escaping (TSOutgoingMessage) -> Void
     ) {
         deferredUpdates.append(Update(message: message, update: update))
     }
 
-    public func messages(_ timestamp: UInt64, transaction: SDSAnyReadTransaction) -> [TSOutgoingMessage] {
+    public func messages(_ timestamp: UInt64, transaction: DBReadTransaction) -> [TSOutgoingMessage] {
         if let result = messages[timestamp] {
             return result
         }
@@ -91,7 +91,7 @@ public class BatchingDeliveryReceiptContext: DeliveryReceiptContext {
         private var closures = [(TSOutgoingMessage) -> Void]()
 
         mutating func addOrExecute(update: Update,
-                                   transaction: SDSAnyWriteTransaction) {
+                                   transaction: DBWriteTransaction) {
             if message?.grdbId != update.message.grdbId {
                 execute(transaction: transaction)
                 message = update.message
@@ -100,7 +100,7 @@ public class BatchingDeliveryReceiptContext: DeliveryReceiptContext {
             closures.append(update.update)
         }
 
-        mutating func execute(transaction: SDSAnyWriteTransaction) {
+        mutating func execute(transaction: DBWriteTransaction) {
             guard let message = message else {
                 owsAssertDebug(closures.isEmpty)
                 return
@@ -115,7 +115,7 @@ public class BatchingDeliveryReceiptContext: DeliveryReceiptContext {
         }
     }
 
-    private func runDeferredUpdates(transaction: SDSAnyWriteTransaction) {
+    private func runDeferredUpdates(transaction: DBWriteTransaction) {
         var updateCollection = UpdateCollection()
 #if TESTABLE_BUILD
         let count = deferredUpdates.count

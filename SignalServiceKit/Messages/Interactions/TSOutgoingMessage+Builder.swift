@@ -141,7 +141,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
 
     private var hasBuilt = false
 
-    public func build(transaction: SDSAnyReadTransaction) -> TSOutgoingMessage {
+    public func build(transaction: DBReadTransaction) -> TSOutgoingMessage {
         if hasBuilt {
             owsFailDebug("Don't build more than once.")
         }

@@ -696,7 +696,7 @@ private class PaymentProcessingOperation {
         }
     }
 
-    private class func markAsFailed(paymentModel: TSPaymentModel, paymentFailure: TSPaymentFailure, paymentState: TSPaymentState, transaction: SDSAnyWriteTransaction) {
+    private class func markAsFailed(paymentModel: TSPaymentModel, paymentFailure: TSPaymentFailure, paymentState: TSPaymentState, transaction: DBWriteTransaction) {
         paymentModel.update(withPaymentFailure: paymentFailure, paymentState: paymentState, transaction: transaction)
     }
 

@@ -50,11 +50,11 @@ public extension TSGroupThread {
     }
 
     private static func existingThreadId(forGroupId groupId: Data,
-                                         transaction: SDSAnyReadTransaction) -> String? {
+                                         transaction: DBReadTransaction) -> String? {
         owsAssertDebug(!groupId.isEmpty)
 
         let mappingKey = self.mappingKey(forGroupId: groupId)
-        return uniqueIdMappingStore.getString(mappingKey, transaction: transaction.asV2Read)
+        return uniqueIdMappingStore.getString(mappingKey, transaction: transaction)
     }
 
     /// Returns the uniqueId for the ``TSGroupThread`` with the given group ID,
@@ -71,7 +71,7 @@ public extension TSGroupThread {
     /// necessary.
     static func threadId(
         forGroupId groupId: Data,
-        transaction tx: SDSAnyReadTransaction
+        transaction tx: DBReadTransaction
     ) -> String {
         owsAssertDebug(!groupId.isEmpty)
 
@@ -100,7 +100,7 @@ public extension TSGroupThread {
     static func setGroupIdMappingForLegacyThread(
         threadUniqueId: String,
         groupId: Data,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         setGroupIdMapping(threadUniqueId: threadUniqueId, groupId: groupId, tx: tx)
 
@@ -136,10 +136,10 @@ public extension TSGroupThread {
     private static func setGroupIdMapping(
         threadUniqueId: String,
         groupId: Data,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let mappingKey = mappingKey(forGroupId: groupId)
-        uniqueIdMappingStore.setString(threadUniqueId, key: mappingKey, transaction: tx.asV2Write)
+        uniqueIdMappingStore.setString(threadUniqueId, key: mappingKey, transaction: tx)
     }
 
     // MARK: -
@@ -151,9 +151,9 @@ public extension TSGroupThread {
     /// changes and then filter the notifications they receive as needed.
     static let membershipDidChange = Notification.Name("TSGroupThread.membershipDidChange")
 
-    func updateGroupMemberRecords(transaction: SDSAnyWriteTransaction) {
+    func updateGroupMemberRecords(transaction: DBWriteTransaction) {
         let groupMemberUpdater = DependenciesBridge.shared.groupMemberUpdater
-        groupMemberUpdater.updateRecords(groupThread: self, transaction: transaction.asV2Write)
+        groupMemberUpdater.updateRecords(groupThread: self, transaction: transaction)
     }
 
 }

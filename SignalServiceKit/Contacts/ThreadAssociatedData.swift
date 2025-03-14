@@ -41,7 +41,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     @objc(fetchOrDefaultForThread:transaction:)
     public static func fetchOrDefault(
         for thread: TSThread,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> ThreadAssociatedData {
         fetchOrDefault(for: thread.uniqueId, ignoreMissing: false, transaction: transaction)
     }
@@ -49,7 +49,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     @objc(fetchOrDefaultForThreadUniqueId:transaction:)
     public static func fetchOrDefault(
         for threadUniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> ThreadAssociatedData {
         fetchOrDefault(for: threadUniqueId, ignoreMissing: false, transaction: transaction)
     }
@@ -58,7 +58,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     public static func fetchOrDefault(
         for thread: TSThread,
         ignoreMissing: Bool,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> ThreadAssociatedData {
         fetchOrDefault(for: thread.uniqueId, ignoreMissing: ignoreMissing, transaction: transaction)
     }
@@ -67,22 +67,22 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     public static func fetchOrDefault(
         for threadUniqueId: String,
         ignoreMissing: Bool,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> ThreadAssociatedData {
         DependenciesBridge.shared.threadAssociatedDataStore.fetchOrDefault(
             for: threadUniqueId,
             ignoreMissing: ignoreMissing || CurrentAppContext().isRunningTests || threadUniqueId == "MockThread",
-            tx: transaction.asV2Read
+            tx: transaction
         )
     }
 
     @objc(fetchForThreadUniqueId:transaction:)
     public static func fetch(
         for threadUniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> ThreadAssociatedData? {
         do {
-            return try Self.filter(Column("threadUniqueId") == threadUniqueId).fetchOne(transaction.unwrapGrdbRead.database)
+            return try Self.filter(Column("threadUniqueId") == threadUniqueId).fetchOne(transaction.database)
         } catch {
             owsFailDebug("Failed to read associated data \(error)")
             return nil
@@ -90,13 +90,13 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     }
 
     @objc
-    public static func create(for threadUniqueId: String, transaction: SDSAnyWriteTransaction) {
+    public static func create(for threadUniqueId: String, transaction: DBWriteTransaction) {
         let threadAssociatedDataStore = DependenciesBridge.shared.threadAssociatedDataStore
-        guard threadAssociatedDataStore.fetch(for: threadUniqueId, tx: transaction.asV2Write) == nil else {
+        guard threadAssociatedDataStore.fetch(for: threadUniqueId, tx: transaction) == nil else {
             return
         }
         do {
-            try ThreadAssociatedData(threadUniqueId: threadUniqueId).insert(transaction.unwrapGrdbWrite.database)
+            try ThreadAssociatedData(threadUniqueId: threadUniqueId).insert(transaction.database)
         } catch {
             owsFailDebug("Unexpectedly failed to insert \(error)")
         }
@@ -133,7 +133,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         mutedUntilTimestamp: UInt64? = nil,
         audioPlaybackRate: Float? = nil,
         updateStorageService: Bool,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         guard
             isArchived != nil
@@ -172,30 +172,30 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func updateWith(isArchived: Bool, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
+    public func updateWith(isArchived: Bool, updateStorageService: Bool, transaction: DBWriteTransaction) {
         updateWith(isArchived: isArchived, updateStorageService: updateStorageService, transaction: transaction)
     }
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func updateWith(isMarkedUnread: Bool, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
+    public func updateWith(isMarkedUnread: Bool, updateStorageService: Bool, transaction: DBWriteTransaction) {
         updateWith(isMarkedUnread: isMarkedUnread, updateStorageService: updateStorageService, transaction: transaction)
     }
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func updateWith(mutedUntilTimestamp: UInt64, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
+    public func updateWith(mutedUntilTimestamp: UInt64, updateStorageService: Bool, transaction: DBWriteTransaction) {
         updateWith(updateStorageService: updateStorageService, transaction: transaction) { $0.mutedUntilTimestamp = mutedUntilTimestamp }
     }
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func updateWith(audioPlaybackRate: Float, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
+    public func updateWith(audioPlaybackRate: Float, updateStorageService: Bool, transaction: DBWriteTransaction) {
         updateWith(updateStorageService: updateStorageService, transaction: transaction) { $0.audioPlaybackRate = audioPlaybackRate }
     }
 
     @objc(clearIsArchived:clearIsMarkedUnread:updateStorageService:transaction:)
-    public func clear(isArchived clearIsArchived: Bool = false, isMarkedUnread clearIsMarkedUnread: Bool = false, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
+    public func clear(isArchived clearIsArchived: Bool = false, isMarkedUnread clearIsMarkedUnread: Bool = false, updateStorageService: Bool, transaction: DBWriteTransaction) {
         guard clearIsArchived || clearIsMarkedUnread else { return }
         updateWith(updateStorageService: updateStorageService, transaction: transaction) { associatedData in
             if clearIsArchived { associatedData.isArchived = false }
@@ -203,11 +203,11 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         }
     }
 
-    private func updateWith(updateStorageService: Bool, transaction: SDSAnyWriteTransaction, block: (ThreadAssociatedData) -> Void) {
+    private func updateWith(updateStorageService: Bool, transaction: DBWriteTransaction, block: (ThreadAssociatedData) -> Void) {
         block(self)
 
         let threadAssociatedDataStore = DependenciesBridge.shared.threadAssociatedDataStore
-        let storedCopy = threadAssociatedDataStore.fetch(for: threadUniqueId, tx: transaction.asV2Read)
+        let storedCopy = threadAssociatedDataStore.fetch(for: threadUniqueId, tx: transaction)
 
         if let storedCopy, storedCopy !== self {
             block(storedCopy)
@@ -215,14 +215,14 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
 
         if let storedCopy {
             do {
-                try storedCopy.update(transaction.unwrapGrdbWrite.database)
+                try storedCopy.update(transaction.database)
             } catch {
                 owsFailDebug("Unexpectedly failed to update \(error)")
             }
         } else {
             do {
                 owsFailDebug("Could not update missing record.")
-                try insert(transaction.unwrapGrdbWrite.database)
+                try insert(transaction.database)
             } catch {
                 owsFailDebug("Unexpectedly failed to insert \(error)")
             }
@@ -230,7 +230,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
 
         // If the thread model exists, make sure the UI is notified that it has changed.
         if let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: transaction) {
-            SSKEnvironment.shared.databaseStorageRef.touch(thread: thread, shouldReindex: false, transaction: transaction)
+            SSKEnvironment.shared.databaseStorageRef.touch(thread: thread, shouldReindex: false, tx: transaction)
         }
 
         if updateStorageService {
@@ -248,7 +248,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         }
     }
 
-    fileprivate func markThreadAsReadIfExists(transaction: SDSAnyWriteTransaction) {
+    fileprivate func markThreadAsReadIfExists(transaction: DBWriteTransaction) {
         guard let thread = TSThread.anyFetch(uniqueId: threadUniqueId, transaction: transaction) else { return }
         thread.markAllAsRead(transaction: transaction)
     }
@@ -256,14 +256,14 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
 
 public extension TSThread {
     @objc(markAllAsReadAndUpdateStorageService:transaction:)
-    func markAllAsRead(updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
+    func markAllAsRead(updateStorageService: Bool, transaction: DBWriteTransaction) {
         markAllAsRead(transaction: transaction)
 
         let associatedData = ThreadAssociatedData.fetchOrDefault(for: self, transaction: transaction)
         associatedData.updateWith(isMarkedUnread: false, updateStorageService: updateStorageService, transaction: transaction)
     }
 
-    fileprivate func markAllAsRead(transaction: SDSAnyWriteTransaction) {
+    fileprivate func markAllAsRead(transaction: DBWriteTransaction) {
         let hasPendingMessageRequest = hasPendingMessageRequest(transaction: transaction)
         let circumstance: OWSReceiptCircumstance = hasPendingMessageRequest
             ? .onThisDeviceWhilePendingMessageRequest

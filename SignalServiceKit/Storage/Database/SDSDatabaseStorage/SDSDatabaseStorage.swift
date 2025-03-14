@@ -3,14 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import GRDB
+public import GRDB
 
 // MARK: -
 
 @objc
-public class SDSDatabaseStorage: NSObject {
-
+public class SDSDatabaseStorage: NSObject, DB {
     private let asyncWriteQueue = DispatchQueue(label: "org.signal.database.write-async", qos: .userInitiated)
     private let awaitableWriteQueue = ConcurrentTaskQueue(concurrentLimit: 1)
 
@@ -117,69 +115,54 @@ public class SDSDatabaseStorage: NSObject {
 
     // MARK: - Id Mapping
 
-    public func updateIdMapping(thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .grdbWrite(let grdb):
-            DatabaseChangeObserverImpl.serializedSync {
-                _databaseChangeObserver.updateIdMapping(thread: thread, transaction: grdb)
-            }
+    public func updateIdMapping(thread: TSThread, transaction tx: DBWriteTransaction) {
+        DatabaseChangeObserverImpl.serializedSync {
+            _databaseChangeObserver.updateIdMapping(thread: thread, transaction: tx)
         }
     }
 
-    public func updateIdMapping(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .grdbWrite(let grdb):
-            DatabaseChangeObserverImpl.serializedSync {
-                _databaseChangeObserver.updateIdMapping(interaction: interaction, transaction: grdb)
-            }
+    public func updateIdMapping(interaction: TSInteraction, transaction tx: DBWriteTransaction) {
+        DatabaseChangeObserverImpl.serializedSync {
+            _databaseChangeObserver.updateIdMapping(interaction: interaction, transaction: tx)
         }
     }
 
     // MARK: - Touch
 
-    public func touch(interaction: TSInteraction, shouldReindex: Bool, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .grdbWrite(let grdb):
-            DatabaseChangeObserverImpl.serializedSync {
-                _databaseChangeObserver.didTouch(interaction: interaction, transaction: grdb)
-            }
+    public func touch(interaction: TSInteraction, shouldReindex: Bool, tx: DBWriteTransaction) {
+        DatabaseChangeObserverImpl.serializedSync {
+            _databaseChangeObserver.didTouch(interaction: interaction, transaction: tx)
         }
         if shouldReindex, let message = interaction as? TSMessage {
             do {
-                try FullTextSearchIndexer.update(message, tx: transaction)
+                try FullTextSearchIndexer.update(message, tx: tx)
             } catch {
                 owsFail("Error: \(error)")
             }
         }
     }
 
-    /// See note on `shouldUpdateChatListUi` parameter in docs for ``TSGroupThread.updateWithGroupModel:shouldUpdateChatListUi:transaction``.
-    @objc(touchThread:shouldReindex:shouldUpdateChatListUi:transaction:)
-    public func touch(thread: TSThread, shouldReindex: Bool, shouldUpdateChatListUi: Bool, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .grdbWrite(let grdb):
-            DatabaseChangeObserverImpl.serializedSync {
-                _databaseChangeObserver.didTouch(thread: thread, shouldUpdateChatListUi: shouldUpdateChatListUi, transaction: grdb)
-            }
+    @objc
+    public func touch(thread: TSThread, shouldReindex: Bool, shouldUpdateChatListUi: Bool = true, tx: DBWriteTransaction) {
+        DatabaseChangeObserverImpl.serializedSync {
+            _databaseChangeObserver.didTouch(thread: thread, shouldUpdateChatListUi: shouldUpdateChatListUi, transaction: tx)
         }
         if shouldReindex {
             let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
-            searchableNameIndexer.update(thread, tx: transaction.asV2Write)
+            searchableNameIndexer.update(thread, tx: tx)
         }
     }
 
-    @objc(touchThread:shouldReindex:transaction:)
-    public func touch(thread: TSThread, shouldReindex: Bool, transaction: SDSAnyWriteTransaction) {
-        touch(thread: thread, shouldReindex: shouldReindex, shouldUpdateChatListUi: true, transaction: transaction)
+    public func touch(storyMessage: StoryMessage, tx: DBWriteTransaction) {
+        DatabaseChangeObserverImpl.serializedSync {
+            _databaseChangeObserver.didTouch(storyMessage: storyMessage, transaction: tx)
+        }
     }
 
-    public func touch(storyMessage: StoryMessage, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .grdbWrite(let grdb):
-            DatabaseChangeObserverImpl.serializedSync {
-                _databaseChangeObserver.didTouch(storyMessage: storyMessage, transaction: grdb)
-            }
-        }
+    // MARK: - Observer
+
+    public func add(transactionObserver: any GRDB.TransactionObserver, extent: GRDB.Database.TransactionObservationExtent) {
+        grdbStorage.pool.add(transactionObserver: transactionObserver, extent: extent)
     }
 
     // MARK: - Cross Process Notifications
@@ -242,16 +225,16 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (SDSAnyReadTransaction) throws -> T
+        block: (DBReadTransaction) throws -> T
     ) throws -> T {
-        try grdbStorage.read { try block($0.asAnyRead) }
+        try grdbStorage.read { try block($0) }
     }
 
     public func read(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (SDSAnyReadTransaction) -> Void
+        block: (DBReadTransaction) -> Void
     ) {
         do {
             try readThrows(file: file, function: function, line: line, block: block)
@@ -265,7 +248,7 @@ public class SDSDatabaseStorage: NSObject {
     }
 
     @objc(readWithBlock:)
-    public func readObjC(block: (SDSAnyReadTransaction) -> Void) {
+    public func readObjC(block: (DBReadTransaction) -> Void) {
         read(file: "objc", function: "block", line: 0, block: block)
     }
 
@@ -274,7 +257,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (SDSAnyReadTransaction) throws -> T
+        block: (DBReadTransaction) throws -> T
     ) rethrows -> T {
         return try _read(file: file, function: function, line: line, block: block, rescue: { throw $0 })
     }
@@ -285,7 +268,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String,
         function: String,
         line: Int,
-        block: (SDSAnyReadTransaction) throws -> T,
+        block: (DBReadTransaction) throws -> T,
         rescue: (Error) throws -> Never
     ) rethrows -> T {
         var value: T!
@@ -308,7 +291,7 @@ public class SDSDatabaseStorage: NSObject {
         function: String = #function,
         line: Int = #line,
         isAwaitableWrite: Bool = false,
-        block: (SDSAnyWriteTransaction) -> TransactionCompletion<T>
+        block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) throws -> T {
         #if DEBUG
         // When running in a Task, we should ensure that callers don't use
@@ -331,7 +314,7 @@ public class SDSDatabaseStorage: NSObject {
 
         return try grdbStorage.writeWithTxCompletion { tx in
             return Bench(title: benchTitle, logIfLongerThan: timeoutThreshold, logInProduction: true) {
-                return block(tx.asAnyWrite)
+                return block(tx)
             }
         }
     }
@@ -341,7 +324,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (SDSAnyWriteTransaction) -> Void
+        block: (DBWriteTransaction) -> Void
     ) {
         do {
             try performWriteWithTxCompletion(
@@ -365,7 +348,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (SDSAnyWriteTransaction) throws -> T
+        block: (DBWriteTransaction) throws -> T
     ) rethrows -> T {
         return try _writeCommitIfThrows(file: file, function: function, line: line, isAwaitableWrite: false, block: block, rescue: { throw $0 })
     }
@@ -375,7 +358,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (SDSAnyWriteTransaction) -> TransactionCompletion<T>
+        block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) -> T {
         do {
             return try performWriteWithTxCompletion(
@@ -397,7 +380,7 @@ public class SDSDatabaseStorage: NSObject {
         function: String,
         line: Int,
         isAwaitableWrite: Bool,
-        block: (SDSAnyWriteTransaction) throws -> T,
+        block: (DBWriteTransaction) throws -> T,
         rescue: (Error) throws -> Never
     ) rethrows -> T {
         var value: T!
@@ -432,7 +415,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (SDSAnyReadTransaction) -> T,
+        block: @escaping (DBReadTransaction) -> T,
         completionQueue: DispatchQueue = .main,
         completion: ((T) -> Void)? = nil
     ) {
@@ -449,7 +432,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (SDSAnyWriteTransaction) -> Void
+        block: @escaping (DBWriteTransaction) -> Void
     ) {
         asyncWrite(file: file, function: function, line: line, block: block, completion: nil)
     }
@@ -458,7 +441,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (SDSAnyWriteTransaction) -> T,
+        block: @escaping (DBWriteTransaction) -> T,
         completion: ((T) -> Void)?
     ) {
         asyncWrite(file: file, function: function, line: line, block: block, completionQueue: .main, completion: completion)
@@ -468,7 +451,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (SDSAnyWriteTransaction) -> TransactionCompletion<T>,
+        block: @escaping (DBWriteTransaction) -> TransactionCompletion<T>,
         completion: ((T) -> Void)?
     ) {
         asyncWriteWithTxCompletion(file: file, function: function, line: line, block: block, completionQueue: .main, completion: completion)
@@ -478,7 +461,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (SDSAnyWriteTransaction) -> T,
+        block: @escaping (DBWriteTransaction) -> T,
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     ) {
@@ -494,7 +477,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (SDSAnyWriteTransaction) -> TransactionCompletion<T>,
+        block: @escaping (DBWriteTransaction) -> TransactionCompletion<T>,
         completionQueue: DispatchQueue,
         completion: ((T) -> Void)?
     ) {
@@ -512,7 +495,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (SDSAnyWriteTransaction) throws -> T
+        block: (DBWriteTransaction) throws -> T
     ) async rethrows -> T {
         return try await self.awaitableWriteQueue.run {
             return try self._writeCommitIfThrows(file: file, function: function, line: line, isAwaitableWrite: true, block: block, rescue: { throw $0 })
@@ -523,7 +506,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (SDSAnyWriteTransaction) -> TransactionCompletion<T>
+        block: (DBWriteTransaction) -> TransactionCompletion<T>
     ) async -> T {
         return await self.awaitableWriteQueue.run {
             do {
@@ -547,7 +530,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        _ block: @escaping (SDSAnyReadTransaction) throws -> T
+        _ block: @escaping (DBReadTransaction) throws -> T
     ) -> Promise<T> {
         return Promise { future in
             DispatchQueue.global().async {
@@ -565,7 +548,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        _ block: @escaping (SDSAnyWriteTransaction) throws -> T
+        _ block: @escaping (DBWriteTransaction) throws -> T
     ) -> Promise<T> {
         return Promise { future in
             self.asyncWriteQueue.async {
@@ -587,7 +570,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (SDSAnyWriteTransaction) -> Void
+        block: (DBWriteTransaction) -> Void
     ) {
         write(file: file, function: function, line: line, block: block)
     }
@@ -599,7 +582,7 @@ public class SDSDatabaseStorage: NSObject {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: @escaping (SDSAnyWriteTransaction) -> Void
+        block: @escaping (DBWriteTransaction) -> Void
     ) {
         asyncWrite(file: file, function: function, line: line, block: block, completion: nil)
     }

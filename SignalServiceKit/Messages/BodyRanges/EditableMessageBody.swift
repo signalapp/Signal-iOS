@@ -994,7 +994,7 @@ extension DB {
 extension SDSDatabaseStorage {
 
     public var readTxProvider: EditableMessageBodyTextStorage.ReadTxProvider {
-        return { block in self.read(block: { block($0.asV2Read) }) }
+        return { block in self.read(block: { block($0) }) }
     }
 }
 

@@ -16,7 +16,7 @@ public extension TSInvalidIdentityKeySendingErrorMessage {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetchInvalidIdentityKeySendingErrorMessage(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSInvalidIdentityKeySendingErrorMessage? {
         assert(!uniqueId.isEmpty)
 
@@ -32,7 +32,7 @@ public extension TSInvalidIdentityKeySendingErrorMessage {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateInvalidIdentityKeySendingErrorMessage(transaction: SDSAnyWriteTransaction, block: (TSInvalidIdentityKeySendingErrorMessage) -> Void) {
+    func anyUpdateInvalidIdentityKeySendingErrorMessage(transaction: DBWriteTransaction, block: (TSInvalidIdentityKeySendingErrorMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? TSInvalidIdentityKeySendingErrorMessage else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")

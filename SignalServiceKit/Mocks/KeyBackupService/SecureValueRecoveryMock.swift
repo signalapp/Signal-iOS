@@ -10,7 +10,7 @@ import Foundation
 public class SecureValueRecoveryMock: SecureValueRecovery {
 
     public var hasAccountEntropyPool = false
-    public func hasAccountEntropyPool(transaction: any DBReadTransaction) -> Bool {
+    public func hasAccountEntropyPool(transaction: DBReadTransaction) -> Bool {
         return hasAccountEntropyPool
     }
 
@@ -77,7 +77,7 @@ public class SecureValueRecoveryMock: SecureValueRecovery {
     public func storeKeys(
         fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
         authedDevice: AuthedDevice,
-        tx: any DBWriteTransaction
+        tx: DBWriteTransaction
     ) throws(SVR.KeysError) {
         syncedMasterKey = syncMessage.master
     }

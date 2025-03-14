@@ -76,7 +76,7 @@ class BlockingAnnouncementOnlyView: UIStackView {
         lineView.autoPinEdge(toSuperviewEdge: .top)
     }
 
-    private func fetchGroupAdminAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+    private func fetchGroupAdminAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
         guard
             let groupThread = thread as? TSGroupThread,
             let groupModel = groupThread.groupModel as? TSGroupModelV2

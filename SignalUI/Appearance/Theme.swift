@@ -175,12 +175,12 @@ final public class Theme: NSObject {
 
         var currentMode: Mode = .system
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            let hasDefinedMode = Theme.keyValueStore.hasValue(KVSKeys.currentMode, transaction: transaction.asV2Read)
+            let hasDefinedMode = Theme.keyValueStore.hasValue(KVSKeys.currentMode, transaction: transaction)
             if hasDefinedMode {
                 let rawMode = Theme.keyValueStore.getUInt(
                     KVSKeys.currentMode,
                     defaultValue: Theme.Mode.system.rawValue,
-                    transaction: transaction.asV2Read
+                    transaction: transaction
                 )
                 if let definedMode = Mode(rawValue: rawMode) {
                     currentMode = definedMode
@@ -189,11 +189,11 @@ final public class Theme: NSObject {
                 // If the theme has not yet been defined, check if the user ever manually changed
                 // themes in a legacy app version. If so, preserve their selection. Otherwise,
                 // default to matching the system theme.
-                if Theme.keyValueStore.hasValue(KVSKeys.legacyThemeEnabled, transaction: transaction.asV2Read) {
+                if Theme.keyValueStore.hasValue(KVSKeys.legacyThemeEnabled, transaction: transaction) {
                     let isLegacyModeDark = Theme.keyValueStore.getBool(
                         KVSKeys.legacyThemeEnabled,
                         defaultValue: false,
-                        transaction: transaction.asV2Read
+                        transaction: transaction
                     )
                     currentMode = isLegacyModeDark ? .dark : .light
                 }
@@ -223,7 +223,7 @@ final public class Theme: NSObject {
 
         // It's safe to do an async write because all accesses check self.cachedCurrentThemeNumber first.
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
-            Theme.keyValueStore.setUInt(mode.rawValue, key: KVSKeys.currentMode, transaction: transaction.asV2Write)
+            Theme.keyValueStore.setUInt(mode.rawValue, key: KVSKeys.currentMode, transaction: transaction)
         }
 
         if previousMode != mode {

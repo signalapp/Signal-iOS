@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SDSAnyReadTransaction;
+@class DBReadTransaction;
 @class TSThread;
 
 typedef NS_CLOSED_ENUM(NSInteger, OWSInteractionType) {
@@ -29,7 +29,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 @protocol OWSPreviewText <NSObject>
 
-- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(previewText(transaction:));
+- (NSString *)previewTextWithTransaction:(DBReadTransaction *)transaction NS_SWIFT_NAME(previewText(transaction:));
 
 @end
 
@@ -110,7 +110,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 @property (nonatomic, readonly) OWSInteractionType interactionType;
 
-- (nullable TSThread *)threadWithTx:(SDSAnyReadTransaction *)tx NS_SWIFT_NAME(thread(tx:));
+- (nullable TSThread *)threadWithTx:(DBReadTransaction *)tx NS_SWIFT_NAME(thread(tx:));
 
 #pragma mark Utility Method
 
@@ -125,9 +125,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (void)replaceSortId:(uint64_t)sortId;
 
 #if TESTABLE_BUILD
-- (void)replaceTimestamp:(uint64_t)timestamp transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)replaceTimestamp:(uint64_t)timestamp transaction:(DBWriteTransaction *)transaction;
 - (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp NS_SWIFT_NAME(replaceReceivedAtTimestamp(_:));
-- (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp transaction:(DBWriteTransaction *)transaction;
 #endif
 
 @end

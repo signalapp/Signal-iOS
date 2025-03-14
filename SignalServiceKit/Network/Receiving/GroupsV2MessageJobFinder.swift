@@ -7,24 +7,24 @@ import Foundation
 import GRDB
 
 public class GRDBGroupsV2MessageJobFinder {
-    typealias ReadTransaction = GRDBReadTransaction
-    typealias WriteTransaction = GRDBWriteTransaction
+    typealias ReadTransaction = DBReadTransaction
+    typealias WriteTransaction = DBWriteTransaction
 
     public func addJob(envelopeData: Data,
                        plaintextData: Data,
                        groupId: Data,
                        wasReceivedByUD: Bool,
                        serverDeliveryTimestamp: UInt64,
-                       transaction: GRDBWriteTransaction) {
+                       transaction: DBWriteTransaction) {
         let job = IncomingGroupsV2MessageJob(envelopeData: envelopeData,
                                              plaintextData: plaintextData,
                                              groupId: groupId,
                                              wasReceivedByUD: wasReceivedByUD,
                                              serverDeliveryTimestamp: serverDeliveryTimestamp)
-        job.anyInsert(transaction: transaction.asAnyWrite)
+        job.anyInsert(transaction: transaction)
     }
 
-    public func allEnqueuedGroupIds(transaction: GRDBReadTransaction) -> [Data] {
+    public func allEnqueuedGroupIds(transaction: DBReadTransaction) -> [Data] {
         let sql = """
             SELECT DISTINCT \(incomingGroupsV2MessageJobColumn: .groupId)
             FROM \(IncomingGroupsV2MessageJobRecord.databaseTableName)
@@ -38,7 +38,7 @@ public class GRDBGroupsV2MessageJobFinder {
         return result
     }
 
-    public func nextJobs(batchSize: UInt, transaction: GRDBReadTransaction) -> [IncomingGroupsV2MessageJob] {
+    public func nextJobs(batchSize: UInt, transaction: DBReadTransaction) -> [IncomingGroupsV2MessageJob] {
         let sql = """
             SELECT *
             FROM \(IncomingGroupsV2MessageJobRecord.databaseTableName)
@@ -53,7 +53,7 @@ public class GRDBGroupsV2MessageJobFinder {
 
     public func nextJobs(forGroupId groupId: Data,
                          batchSize: UInt,
-                         transaction: GRDBReadTransaction) -> [IncomingGroupsV2MessageJob] {
+                         transaction: DBReadTransaction) -> [IncomingGroupsV2MessageJob] {
         let sql = """
             SELECT *
             FROM \(IncomingGroupsV2MessageJobRecord.databaseTableName)
@@ -68,7 +68,7 @@ public class GRDBGroupsV2MessageJobFinder {
         return try! cursor.all()
     }
 
-    public func existsJob(forGroupId groupId: Data, transaction: GRDBReadTransaction) -> Bool {
+    public func existsJob(forGroupId groupId: Data, transaction: DBReadTransaction) -> Bool {
         let sql = """
             SELECT EXISTS (
                 SELECT 1 FROM \(IncomingGroupsV2MessageJobRecord.databaseTableName)
@@ -86,7 +86,7 @@ public class GRDBGroupsV2MessageJobFinder {
         }
     }
 
-    public func jobCount(forGroupId groupId: Data, transaction: GRDBReadTransaction) -> UInt {
+    public func jobCount(forGroupId groupId: Data, transaction: DBReadTransaction) -> UInt {
         let sql = """
             SELECT COUNT(*)
             FROM \(IncomingGroupsV2MessageJobRecord.databaseTableName)
@@ -103,7 +103,7 @@ public class GRDBGroupsV2MessageJobFinder {
         }
     }
 
-    public func removeJobs(withUniqueIds uniqueIds: [String], transaction: GRDBWriteTransaction) {
+    public func removeJobs(withUniqueIds uniqueIds: [String], transaction: DBWriteTransaction) {
         guard uniqueIds.count > 0 else {
             return
         }
@@ -117,7 +117,7 @@ public class GRDBGroupsV2MessageJobFinder {
         transaction.database.executeHandlingErrors(sql: sql)
     }
 
-    public func jobCount(transaction: SDSAnyReadTransaction) -> UInt {
+    public func jobCount(transaction: DBReadTransaction) -> UInt {
         return IncomingGroupsV2MessageJob.anyCount(transaction: transaction)
     }
 }

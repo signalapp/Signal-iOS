@@ -18,7 +18,7 @@ final class OutgoingGroupCallUpdateMessageSerializationTest: SSKBaseTest {
                     pni: .init(fromUUID: UUID()),
                     e164: .init("+17735550199")!
                 ),
-                tx: tx.asV2Write
+                tx: tx
             )
         }
 

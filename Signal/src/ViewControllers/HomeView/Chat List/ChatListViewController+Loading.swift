@@ -41,7 +41,7 @@ extension ChatListViewController {
     // MARK: -
 
     fileprivate func loadRenderStateForReset(viewInfo: CLVViewInfo,
-                                             transaction: SDSAnyReadTransaction) -> CLVLoadResult {
+                                             transaction: DBReadTransaction) -> CLVLoadResult {
         AssertIsOnMainThread()
 
         return CLVLoader.loadRenderStateForReset(viewInfo: viewInfo, transaction: transaction)
@@ -54,7 +54,7 @@ extension ChatListViewController {
 
     fileprivate func loadNewRenderStateWithDiff(viewInfo: CLVViewInfo,
                                                 updatedThreadIds: Set<String>,
-                                                transaction: SDSAnyReadTransaction) -> CLVLoadResult {
+                                                transaction: DBReadTransaction) -> CLVLoadResult {
         AssertIsOnMainThread()
 
         return CLVLoader.loadRenderStateAndDiff(viewInfo: viewInfo,
@@ -279,9 +279,9 @@ public class CLVLoadCoordinator {
             lastSelectedThreadId: String?,
             hasVisibleReminders: Bool,
             lastViewInfo: CLVViewInfo,
-            transaction: SDSAnyReadTransaction
+            transaction: DBReadTransaction
         ) -> CLVLoadInfo {
-            let inboxFilter = inboxFilter ?? loadCoordinator.filterStore.inboxFilter(transaction: transaction.asV2Read) ?? .none
+            let inboxFilter = inboxFilter ?? loadCoordinator.filterStore.inboxFilter(transaction: transaction) ?? .none
 
             let viewInfo = CLVViewInfo.build(
                 chatListMode: chatListMode,
@@ -306,7 +306,7 @@ public class CLVLoadCoordinator {
 
     public func saveInboxFilter(_ inboxFilter: InboxFilter) {
         SSKEnvironment.shared.databaseStorageRef.asyncWrite { [filterStore] transaction in
-            filterStore.setInboxFilter(inboxFilter, transaction: transaction.asV2Write)
+            filterStore.setInboxFilter(inboxFilter, transaction: transaction)
         }
     }
 

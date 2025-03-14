@@ -111,7 +111,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
         localAci: Aci,
         backupKey: BackupKey,
         exportProgress: MessageBackupExportProgress?,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) -> ProtoStream.OpenOutputStreamResult<Upload.EncryptedBackupUploadMetadata> {
         do {
             let messageBackupKey = try backupKey.asMessageBackupKey(for: localAci)
@@ -164,7 +164,7 @@ public class MessageBackupEncryptedProtoStreamProviderImpl: MessageBackupEncrypt
         localAci: Aci,
         backupKey: BackupKey,
         frameRestoreProgress: MessageBackupImportFrameRestoreProgress?,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) -> ProtoStream.OpenInputStreamResult {
         guard validateBackupHMAC(localAci: localAci, backupKey: backupKey, fileUrl: fileUrl, tx: tx) else {
             return .hmacValidationFailedOnEncryptedFile

@@ -70,26 +70,26 @@ public class LastVisibleInteractionStore {
 extension TSThread {
 
     @objc
-    func hasLastVisibleInteraction(transaction: SDSAnyReadTransaction) -> Bool {
+    func hasLastVisibleInteraction(transaction: DBReadTransaction) -> Bool {
         return DependenciesBridge.shared.lastVisibleInteractionStore.hasLastVisibleInteraction(
             for: self,
-            tx: transaction.asV2Read
+            tx: transaction
         )
     }
 
     @objc
-    func clearLastVisibleInteraction(transaction: SDSAnyWriteTransaction) {
+    func clearLastVisibleInteraction(transaction: DBWriteTransaction) {
         return DependenciesBridge.shared.lastVisibleInteractionStore.clearLastVisibleInteraction(
             for: self,
-            tx: transaction.asV2Write
+            tx: transaction
         )
     }
 
     @objc
-    func lastVisibleSortId(transaction: SDSAnyReadTransaction) -> NSNumber? {
+    func lastVisibleSortId(transaction: DBReadTransaction) -> NSNumber? {
         guard
             let lastVisibleInteraction = DependenciesBridge.shared.lastVisibleInteractionStore
-                .lastVisibleInteraction(for: self, tx: transaction.asV2Read)
+                .lastVisibleInteraction(for: self, tx: transaction)
         else {
             return nil
         }
@@ -100,13 +100,13 @@ extension TSThread {
     func setLastVisibleInteraction(
         sortId: UInt64,
         onScreenPercentage: CGFloat,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         let lastVisibleInteraction = LastVisibleInteraction(sortId: sortId, onScreenPercentage: onScreenPercentage)
         DependenciesBridge.shared.lastVisibleInteractionStore.setLastVisibleInteraction(
             lastVisibleInteraction,
             for: self,
-            tx: transaction.asV2Write
+            tx: transaction
         )
     }
 }

@@ -49,7 +49,7 @@ class StaleProfileFetcher {
         }
     }
 
-    static func enumerateMissingAndStaleUserProfiles(now: Date, tx: SDSAnyReadTransaction, block: (OWSUserProfile) -> Void) {
+    static func enumerateMissingAndStaleUserProfiles(now: Date, tx: DBReadTransaction, block: (OWSUserProfile) -> Void) {
         // We are only interested in active users, e.g. users which the local user
         // has sent or received a message from in the last N days.
         let activeTimestamp = now.timeIntervalSince1970 - 30 * TimeInterval.day

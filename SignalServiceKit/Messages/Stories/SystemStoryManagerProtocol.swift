@@ -28,32 +28,32 @@ public protocol SystemStoryManagerProtocol {
     /// "Read" means the user went to the stories tab with the onboarding story available.
     /// If its viewed, its also read.
     /// Reading doesn't cause the story to get cleaned up and deleted.
-    func isOnboardingStoryRead(transaction: SDSAnyReadTransaction) -> Bool
+    func isOnboardingStoryRead(transaction: DBReadTransaction) -> Bool
 
     /// "Viewed" means the user actually opened the onboarding story.
-    func isOnboardingStoryViewed(transaction: SDSAnyReadTransaction) -> Bool
+    func isOnboardingStoryViewed(transaction: DBReadTransaction) -> Bool
 
     /// "Read" means the user went to the stories tab with the onboarding story available.
     /// Reading doesn't cause the story to get cleaned up and deleted.
-    func setHasReadOnboardingStory(transaction: SDSAnyWriteTransaction, updateStorageService: Bool)
+    func setHasReadOnboardingStory(transaction: DBWriteTransaction, updateStorageService: Bool)
 
     /// "Viewed" means the user actually opened the onboarding story.
-    func setHasViewedOnboardingStory(source: OnboardingStoryViewSource, transaction: SDSAnyWriteTransaction) throws
+    func setHasViewedOnboardingStory(source: OnboardingStoryViewSource, transaction: DBWriteTransaction) throws
 
-    func isOnboardingOverlayViewed(transaction: SDSAnyReadTransaction) -> Bool
-    func setOnboardingOverlayViewed(value: Bool, transaction: SDSAnyWriteTransaction)
+    func isOnboardingOverlayViewed(transaction: DBReadTransaction) -> Bool
+    func setOnboardingOverlayViewed(value: Bool, transaction: DBWriteTransaction)
 
     /// Whether the "group story education sheet" has been viewed.
     /// - Note
     /// This feature has not been implemented on iOS, but we can learn about
     /// this property via Storage Service or a Backup and so persist it.
-    func isGroupStoryEducationSheetViewed(tx: SDSAnyReadTransaction) -> Bool
+    func isGroupStoryEducationSheetViewed(tx: DBReadTransaction) -> Bool
 
     /// Mark the "group story education sheet" as having been viewed.
     /// - Note
     /// This feature has not been implemented on iOS, but we can learn about
     /// this property via Storage Service or a Backup and so persist it.
-    func setGroupStoryEducationSheetViewed(tx: SDSAnyWriteTransaction)
+    func setGroupStoryEducationSheetViewed(tx: DBWriteTransaction)
 
     // MARK: Hidden State
 
@@ -61,10 +61,10 @@ public protocol SystemStoryManagerProtocol {
 
     func removeStateChangedObserver(_ observer: SystemStoryStateChangeObserver)
 
-    func areSystemStoriesHidden(transaction: SDSAnyReadTransaction) -> Bool
+    func areSystemStoriesHidden(transaction: DBReadTransaction) -> Bool
 
     /// Sets system stories hidden state. If hiding, marks the onboarding story as viewed.
-    func setSystemStoriesHidden(_ hidden: Bool, transaction: SDSAnyWriteTransaction)
+    func setSystemStoriesHidden(_ hidden: Bool, transaction: DBWriteTransaction)
 }
 
 public protocol SystemStoryStateChangeObserver: NSObject {

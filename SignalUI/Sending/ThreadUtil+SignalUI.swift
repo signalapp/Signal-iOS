@@ -184,7 +184,7 @@ extension UnpreparedOutgoingMessage {
         mediaAttachments: [SignalAttachment.ForSending] = [],
         quotedReplyDraft: DraftQuotedReplyModel.ForSending?,
         linkPreviewDataSource: LinkPreviewDataSource?,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UnpreparedOutgoingMessage {
 
         let truncatedBody: MessageBody?
@@ -202,7 +202,7 @@ extension UnpreparedOutgoingMessage {
         }
 
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
+        let dmConfig = dmConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction)
 
         let isVoiceMessage = mediaAttachments.count == 1
             && oversizeTextDataSource == nil

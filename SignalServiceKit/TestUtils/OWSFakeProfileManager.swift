@@ -17,31 +17,31 @@ class OWSFakeProfileManager {
 }
 
 extension OWSFakeProfileManager: ProfileManagerProtocol {
-    func localUserProfile(tx: SDSAnyReadTransaction) -> OWSUserProfile? {
+    func localUserProfile(tx: DBReadTransaction) -> OWSUserProfile? {
         owsFail("Not implemented.")
     }
 
-    func userProfile(for addressParam: SignalServiceAddress, tx: SDSAnyReadTransaction) -> OWSUserProfile? {
+    func userProfile(for addressParam: SignalServiceAddress, tx: DBReadTransaction) -> OWSUserProfile? {
         owsPrecondition(!addressParam.isLocalAddress)
         return fakeUserProfiles![addressParam]
     }
 
-    func normalizeRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: SDSAnyWriteTransaction) {
+    func normalizeRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: DBWriteTransaction) {
     }
 
-    func isUser(inProfileWhitelist address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
+    func isUser(inProfileWhitelist address: SignalServiceAddress, transaction: DBReadTransaction) -> Bool {
         recipientWhitelist.contains(address)
     }
 
-    func isThread(inProfileWhitelist thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
+    func isThread(inProfileWhitelist thread: TSThread, transaction: DBReadTransaction) -> Bool {
         threadWhitelist.contains(thread.uniqueId)
     }
 
-    func addUser(toProfileWhitelist address: SignalServiceAddress, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+    func addUser(toProfileWhitelist address: SignalServiceAddress, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
         recipientWhitelist.insert(address)
     }
 
-    func addUsers(toProfileWhitelist addresses: [SignalServiceAddress], userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+    func addUsers(toProfileWhitelist addresses: [SignalServiceAddress], userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
         recipientWhitelist.formUnion(addresses)
     }
 
@@ -49,23 +49,23 @@ extension OWSFakeProfileManager: ProfileManagerProtocol {
         recipientWhitelist.remove(address)
     }
 
-    func removeUser(fromProfileWhitelist address: SignalServiceAddress, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+    func removeUser(fromProfileWhitelist address: SignalServiceAddress, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
         recipientWhitelist.remove(address)
     }
 
-    func isGroupId(inProfileWhitelist groupId: Data, transaction: SDSAnyReadTransaction) -> Bool {
+    func isGroupId(inProfileWhitelist groupId: Data, transaction: DBReadTransaction) -> Bool {
         threadWhitelist.contains(groupId.hexadecimalString)
     }
 
-    func addGroupId(toProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+    func addGroupId(toProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
         threadWhitelist.insert(groupId.hexadecimalString)
     }
 
-    func removeGroupId(fromProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+    func removeGroupId(fromProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
         threadWhitelist.remove(groupId.hexadecimalString)
     }
 
-    func addThread(toProfileWhitelist thread: TSThread, userProfileWriter: UserProfileWriter, transaction: SDSAnyWriteTransaction) {
+    func addThread(toProfileWhitelist thread: TSThread, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
         if thread.isGroupThread, let groupThread = thread as? TSGroupThread {
             addGroupId(toProfileWhitelist: groupThread.groupModel.groupId, userProfileWriter: userProfileWriter, transaction: transaction)
         } else if !thread.isGroupThread, let contactThread = thread as? TSContactThread {
@@ -73,10 +73,10 @@ extension OWSFakeProfileManager: ProfileManagerProtocol {
         }
     }
 
-    func rotateProfileKeyUponRecipientHide(withTx tx: SDSAnyWriteTransaction) {
+    func rotateProfileKeyUponRecipientHide(withTx tx: DBWriteTransaction) {
     }
 
-    func forceRotateLocalProfileKeyForGroupDeparture(with transaction: SDSAnyWriteTransaction) {
+    func forceRotateLocalProfileKeyForGroupDeparture(with transaction: DBWriteTransaction) {
     }
 }
 
@@ -88,7 +88,7 @@ extension OWSFakeProfileManager: ProfileManager {
         throw OWSGenericError("Not supported.")
     }
 
-    public func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?] {
+    public func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: DBReadTransaction) -> [OWSUserProfile?] {
         return addresses.map { fakeUserProfiles?[$0] }
     }
 
@@ -108,7 +108,7 @@ extension OWSFakeProfileManager: ProfileManager {
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
         userProfileWriter: UserProfileWriter,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
     }
 
@@ -122,7 +122,7 @@ extension OWSFakeProfileManager: ProfileManager {
         unsavedRotatedProfileKey: Aes256Key?,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> Promise<Void> {
         return Promise(error: OWSGenericError("Not supported."))
     }
@@ -187,8 +187,8 @@ extension OWSFakeProfileManager: ProfileManager {
     ) {
     }
 
-    public func allWhitelistedAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress] { [] }
-    public func allWhitelistedRegisteredAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress] { [] }
+    public func allWhitelistedAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] { [] }
+    public func allWhitelistedRegisteredAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] { [] }
 }
 
 #endif

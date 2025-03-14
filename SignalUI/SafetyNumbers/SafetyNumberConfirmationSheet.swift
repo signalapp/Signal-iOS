@@ -64,11 +64,11 @@ public class SafetyNumberConfirmationSheet: UIViewController {
 
     fileprivate static func buildConfirmationItems(
         addressesToConfirm: [SignalServiceAddress],
-        transaction tx: SDSAnyReadTransaction
+        transaction tx: DBReadTransaction
     ) -> [Item] {
         let identityManager = DependenciesBridge.shared.identityManager
         return addressesToConfirm.map { address in
-            let recipientIdentity = identityManager.recipientIdentity(for: address, tx: tx.asV2Read)
+            let recipientIdentity = identityManager.recipientIdentity(for: address, tx: tx)
             return Item(
                 address: address,
                 displayName: SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue(),
@@ -189,7 +189,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         let identityManager = DependenciesBridge.shared.identityManager
         let untrustedAddresses = SSKEnvironment.shared.databaseStorageRef.read { tx in
             addresses.filter { address in
-                identityManager.untrustedIdentityForSending(to: address, untrustedThreshold: untrustedThreshold, tx: tx.asV2Read) != nil
+                identityManager.untrustedIdentityForSending(to: address, untrustedThreshold: untrustedThreshold, tx: tx) != nil
             }
         }
 
@@ -295,7 +295,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
                     guard let identityKey = item.identityKey else {
                         return
                     }
-                    switch identityManager.verificationState(for: item.address, tx: tx.asV2Read) {
+                    switch identityManager.verificationState(for: item.address, tx: tx) {
                     case .verified:
                         // We don't want to overwrite any addresses that have been verified since
                         // we last checked.
@@ -308,7 +308,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
                         of: identityKey,
                         for: item.address,
                         isUserInitiatedChange: true,
-                        tx: tx.asV2Write
+                        tx: tx
                     )
                 }
             }, completionQueue: .main) {
@@ -697,7 +697,7 @@ private class SafetyNumberCell: ContactTableViewCell {
         }
     }
 
-    override func configure(configuration: ContactCellConfiguration, transaction: SDSAnyReadTransaction) {
+    override func configure(configuration: ContactCellConfiguration, transaction: DBReadTransaction) {
         super.configure(configuration: configuration, transaction: transaction)
         let theme: Theme.ActionSheet = (configuration.forceDarkAppearance) ? .translucentDark : .default
 

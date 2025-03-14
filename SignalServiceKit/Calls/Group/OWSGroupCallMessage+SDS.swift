@@ -16,7 +16,7 @@ public extension OWSGroupCallMessage {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetchGroupCallMessage(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> OWSGroupCallMessage? {
         assert(!uniqueId.isEmpty)
 
@@ -32,7 +32,7 @@ public extension OWSGroupCallMessage {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateGroupCallMessage(transaction: SDSAnyWriteTransaction, block: (OWSGroupCallMessage) -> Void) {
+    func anyUpdateGroupCallMessage(transaction: DBWriteTransaction, block: (OWSGroupCallMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSGroupCallMessage else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")

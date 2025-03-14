@@ -127,11 +127,11 @@ public class DraftQuotedReplyModel {
     public static func fromOriginalPaymentMessage(
         _ originalMessage: TSMessage,
         amountString: String,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> DraftQuotedReplyModel? {
         let authorAddress: SignalServiceAddress? = {
             if originalMessage.isOutgoing {
-                return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
+                return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress
             } else if let incomingMessage = originalMessage as? TSIncomingMessage {
                 return incomingMessage.authorAddress
             } else {
@@ -157,11 +157,11 @@ public class DraftQuotedReplyModel {
         replyMessage: TSMessage,
         quotedReply: TSQuotedMessage,
         amountString: String,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> DraftQuotedReplyModel? {
         let authorAddress: SignalServiceAddress? = {
             if originalMessage.isOutgoing {
-                return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress
+                return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress
             } else if let incomingMessage = originalMessage as? TSIncomingMessage {
                 return incomingMessage.authorAddress
             } else {

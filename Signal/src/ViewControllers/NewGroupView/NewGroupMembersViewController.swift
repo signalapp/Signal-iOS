@@ -101,7 +101,7 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient,
-                                            transaction: SDSAnyReadTransaction) -> Bool {
+                                            transaction: DBReadTransaction) -> Bool {
         false
     }
 

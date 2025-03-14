@@ -34,7 +34,7 @@ public extension SDSRecord {
     // In DEBUG builds it will fail if the intention (insert v. update)
     // doesn't match the database contents.
     func sdsSave(saveMode: SDSSaveMode,
-                 transaction: GRDBWriteTransaction) {
+                 transaction: DBWriteTransaction) {
         // GRDB TODO: the record has an id property, but we can't use it here
         //            until we modify the upsert logic.
         //            grdbIdByUniqueId() verifies that the model hasn't been
@@ -52,7 +52,7 @@ public extension SDSRecord {
         }
     }
 
-    private func sdsUpdate(grdbId: Int64, transaction: GRDBWriteTransaction) {
+    private func sdsUpdate(grdbId: Int64, transaction: DBWriteTransaction) {
         do {
             var recordCopy = self
             recordCopy.id = grdbId
@@ -66,7 +66,7 @@ public extension SDSRecord {
         }
     }
 
-    private func sdsInsert(transaction: GRDBWriteTransaction) {
+    private func sdsInsert(transaction: DBWriteTransaction) {
         do {
             try self.insert(transaction.database)
         } catch {
@@ -78,7 +78,7 @@ public extension SDSRecord {
         }
     }
 
-    func sdsRemove(transaction: GRDBWriteTransaction) {
+    func sdsRemove(transaction: DBWriteTransaction) {
         do {
             let tableName = tableMetadata.tableName
             let whereSQL = "\(uniqueIdColumnName.quotedDatabaseIdentifier)=?"
@@ -101,7 +101,7 @@ public extension SDSRecord {
 
 fileprivate extension SDSRecord {
 
-    func grdbIdByUniqueId(transaction: GRDBReadTransaction) -> Int64? {
+    func grdbIdByUniqueId(transaction: DBReadTransaction) -> Int64? {
         BaseModel.grdbIdByUniqueId(tableMetadata: tableMetadata,
                                    uniqueIdColumnName: uniqueIdColumnName,
                                    uniqueIdColumnValue: uniqueIdColumnValue,
@@ -115,7 +115,7 @@ extension BaseModel {
     static func grdbIdByUniqueId(tableMetadata: SDSTableMetadata,
                                  uniqueIdColumnName: String,
                                  uniqueIdColumnValue: String,
-                                 transaction: GRDBReadTransaction) -> Int64? {
+                                 transaction: DBReadTransaction) -> Int64? {
         do {
             let tableName = tableMetadata.tableName
             let sql = "SELECT id FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier)=?"

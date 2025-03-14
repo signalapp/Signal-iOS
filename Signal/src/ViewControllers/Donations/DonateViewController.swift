@@ -780,11 +780,11 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 DonationSubscriptionManager.getSubscriberCurrencyCode(transaction: $0),
                 DonationSubscriptionManager.getMostRecentSubscriptionPaymentMethod(transaction: $0),
                 DependenciesBridge.shared.donationReceiptCredentialResultStore
-                    .getRequestError(errorMode: .oneTimeBoost, tx: $0.asV2Read),
+                    .getRequestError(errorMode: .oneTimeBoost, tx: $0),
                 DependenciesBridge.shared.donationReceiptCredentialResultStore
-                    .getRequestErrorForAnyRecurringSubscription(tx: $0.asV2Read),
-                DependenciesBridge.shared.externalPendingIDEALDonationStore.getPendingOneTimeDonation(tx: $0.asV2Read),
-                DependenciesBridge.shared.externalPendingIDEALDonationStore.getPendingSubscription(tx: $0.asV2Read)
+                    .getRequestErrorForAnyRecurringSubscription(tx: $0),
+                DependenciesBridge.shared.externalPendingIDEALDonationStore.getPendingOneTimeDonation(tx: $0),
+                DependenciesBridge.shared.externalPendingIDEALDonationStore.getPendingSubscription(tx: $0)
             )
         }
 
@@ -883,7 +883,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         SSKEnvironment.shared.databaseStorageRef.read { [weak self] transaction in
             self?.avatarView.update(transaction) { config in
-                guard let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aciAddress else {
+                guard let address = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress else {
                     return
                 }
                 config.dataSource = .address(address)

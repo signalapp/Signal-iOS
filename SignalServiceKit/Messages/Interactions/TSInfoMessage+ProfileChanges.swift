@@ -9,7 +9,7 @@ public extension TSInfoMessage {
     class func insertProfileChangeMessagesIfNecessary(
         oldProfile: OWSUserProfile,
         newProfile: OWSUserProfile,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         let address: SignalServiceAddress
         switch oldProfile.internalAddress {
@@ -71,7 +71,7 @@ public extension TSInfoMessage {
 
 public extension TSInfoMessage {
     @objc
-    func profileChangeDescription(transaction tx: SDSAnyReadTransaction) -> String {
+    func profileChangeDescription(transaction tx: DBReadTransaction) -> String {
         guard
             let profileChanges = profileChanges,
             let updateDescription = profileChanges.descriptionForUpdate(tx: tx)
@@ -187,7 +187,7 @@ public class ProfileChanges: MTLModel {
         try super.init(dictionary: dictionaryValue)
     }
 
-    func descriptionForUpdate(tx: SDSAnyReadTransaction) -> String? {
+    func descriptionForUpdate(tx: DBReadTransaction) -> String? {
         guard let address = address else {
             owsFailDebug("Unexpectedly missing address for profile change")
             return nil

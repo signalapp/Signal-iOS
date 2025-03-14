@@ -96,7 +96,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         )
 
         var results = try db.read { tx in
-            return try query.fetchAll(tx.db)
+            return try query.fetchAll(tx.database)
         }
 
         XCTAssertEqual(results.count, 2)
@@ -117,7 +117,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         )
 
         results = try db.read { tx in
-            return try query.fetchAll(tx.db)
+            return try query.fetchAll(tx.database)
         }
 
         XCTAssertEqual(results.count, 1)
@@ -216,9 +216,9 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
 
             try db.read { tx in
                 for query in queries {
-                    let preparedStatement = try query.makePreparedRequest(tx.db).statement
+                    let preparedStatement = try query.makePreparedRequest(tx.database).statement
                     let queryPlan: [String] = try Row.fetchAll(
-                        tx.db,
+                        tx.database,
                         sql: "EXPLAIN QUERY PLAN \(preparedStatement.sql);",
                         arguments: preparedStatement.arguments
                     ).map{ $0["detail"] }
@@ -255,8 +255,8 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
 
         db.write { tx in
-            try! thread.asRecord().insert(tx.db)
-            try! interaction.asRecord().insert(tx.db)
+            try! thread.asRecord().insert(tx.database)
+            try! interaction.asRecord().insert(tx.database)
         }
 
         return (thread, interaction.sqliteRowId!)
@@ -295,9 +295,9 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         attachmentRecord.contentType = UInt32(contentType.rawValue)
 
         try db.write { tx in
-            try attachmentRecord.insert(tx.db)
+            try attachmentRecord.insert(tx.database)
             let referenceRecord = try referenceParams.buildRecord(attachmentRowId: attachmentRecord.sqliteId!)
-            try referenceRecord.insert(tx.db)
+            try referenceRecord.insert(tx.database)
         }
 
         return attachmentRecord.sqliteId!

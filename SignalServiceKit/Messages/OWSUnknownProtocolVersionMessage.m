@@ -159,12 +159,12 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
 
 // --- CODE GENERATION MARKER
 
-- (NSString *)infoMessagePreviewTextWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)infoMessagePreviewTextWithTransaction:(DBReadTransaction *)transaction
 {
     return [self messageTextWithTransaction:transaction];
 }
 
-- (NSString *)messageTextWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)messageTextWithTransaction:(DBReadTransaction *)transaction
 {
     if (!self.sender.isValid) {
         // This was sent from a linked device.

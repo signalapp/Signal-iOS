@@ -396,7 +396,7 @@ public class Sounds {
 
     public static var globalNotificationSound: Sound {
         let soundId = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return keyValueStore.getUInt(soundsStorageGlobalNotificationKey, transaction: transaction.asV2Read)
+            return keyValueStore.getUInt(soundsStorageGlobalNotificationKey, transaction: transaction)
         }
         guard let soundId else { return defaultNotificationSound }
         return soundForId(soundId)
@@ -408,7 +408,7 @@ public class Sounds {
         }
     }
 
-    private static func setGlobalNotificationSound(_ sound: Sound, transaction: SDSAnyWriteTransaction) {
+    private static func setGlobalNotificationSound(_ sound: Sound, transaction: DBWriteTransaction) {
         Logger.info("Setting global notification sound to: \(sound.displayName)")
 
         // Fallback push notifications play a sound specified by the server, but we don't want to store this configuration
@@ -442,12 +442,12 @@ public class Sounds {
         // user hasn't authenticated after power-cycling their device.
         OWSFileSystem.protectFileOrFolder(atPath: defaultSoundUrl.path, fileProtectionType: .none)
 
-        keyValueStore.setUInt(sound.id, key: soundsStorageGlobalNotificationKey, transaction: transaction.asV2Write)
+        keyValueStore.setUInt(sound.id, key: soundsStorageGlobalNotificationKey, transaction: transaction)
     }
 
     public static func notificationSoundWithSneakyTransaction(forThreadUniqueId threadUniqueId: String) -> Sound {
         let soundId = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return keyValueStore.getUInt(threadUniqueId, transaction: transaction.asV2Read)
+            return keyValueStore.getUInt(threadUniqueId, transaction: transaction)
         }
         guard let soundId else { return globalNotificationSound }
         return soundForId(soundId)
@@ -455,7 +455,7 @@ public class Sounds {
 
     public static func setNotificationSound(_ sound: Sound, forThread thread: TSThread) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            keyValueStore.setUInt(sound.id, key: thread.uniqueId, transaction: transaction.asV2Write)
+            keyValueStore.setUInt(sound.id, key: thread.uniqueId, transaction: transaction)
         }
     }
 
@@ -505,8 +505,8 @@ public class Sounds {
         guard !allCustomSounds.isEmpty else { return }
 
         let allInUseSoundIds = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return Set(keyValueStore.allKeys(transaction: transaction.asV2Read).compactMap {
-                return keyValueStore.getUInt($0, transaction: transaction.asV2Read)
+            return Set(keyValueStore.allKeys(transaction: transaction).compactMap {
+                return keyValueStore.getUInt($0, transaction: transaction)
             })
         }
 

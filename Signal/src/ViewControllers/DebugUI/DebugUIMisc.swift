@@ -26,7 +26,7 @@ class DebugUIMisc: NSObject, DebugUIPage {
             items.append(OWSTableItem(title: "Delete disappearing messages config", actionBlock: {
                 SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                    dmConfigurationStore.remove(for: thread, tx: transaction.asV2Write)
+                    dmConfigurationStore.remove(for: thread, tx: transaction)
                 }
             }))
         }
@@ -34,14 +34,14 @@ class DebugUIMisc: NSObject, DebugUIPage {
         items += [
             OWSTableItem(title: "Corrupt username", actionBlock: {
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
-                    DependenciesBridge.shared.localUsernameManager.setLocalUsernameCorrupted(tx: tx.asV2Write)
+                    DependenciesBridge.shared.localUsernameManager.setLocalUsernameCorrupted(tx: tx)
                 }
             }),
 
             OWSTableItem(title: "Reenable disabled inactive linked device reminder megaphones", actionBlock: {
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
                     DependenciesBridge.shared.inactiveLinkedDeviceFinder
-                        .reenablePermanentlyDisabledFinders(tx: tx.asV2Write)
+                        .reenablePermanentlyDisabledFinders(tx: tx)
                 }
             })
         ]
@@ -125,7 +125,7 @@ class DebugUIMisc: NSObject, DebugUIPage {
                     return
                 }
                 SSKEnvironment.shared.databaseStorageRef.read { tx in
-                    preKeyManagerImpl.checkPreKeysImmediately(tx: tx.asV2Read)
+                    preKeyManagerImpl.checkPreKeysImmediately(tx: tx)
                 }
             }),
             OWSTableItem(title: "Remove All Prekeys", actionBlock: {
@@ -186,13 +186,13 @@ class DebugUIMisc: NSObject, DebugUIPage {
             OWSTableItem(title: "Enable DeleteForMeSyncMessage info sheet", actionBlock: {
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
                     DeleteForMeInfoSheetCoordinator.fromGlobals()
-                        .forceEnableInfoSheet(tx: tx.asV2Write)
+                        .forceEnableInfoSheet(tx: tx)
                 }
             }),
 
             OWSTableItem(title: "Clear AEP", actionBlock: {
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
-                    DependenciesBridge.shared.accountKeyStore.setAccountEntropyPool(nil, tx: tx.asV2Write)
+                    DependenciesBridge.shared.accountKeyStore.setAccountEntropyPool(nil, tx: tx)
                 }
             })
         ]
@@ -281,9 +281,9 @@ class DebugUIMisc: NSObject, DebugUIPage {
                     // Set three values at a time.
                     for _ in 0..<kBatchSize / 3 {
                         let value = Randomness.generateRandomBytes(4096)
-                        store.setData(value, key: UUID().uuidString, transaction: transaction.asV2Write)
-                        store.setString(UUID().uuidString, key: UUID().uuidString, transaction: transaction.asV2Write)
-                        store.setBool(Bool.random(), key: UUID().uuidString, transaction: transaction.asV2Write)
+                        store.setData(value, key: UUID().uuidString, transaction: transaction)
+                        store.setString(UUID().uuidString, key: UUID().uuidString, transaction: transaction)
+                        store.setBool(Bool.random(), key: UUID().uuidString, transaction: transaction)
                     }
                 }
             }
@@ -293,7 +293,7 @@ class DebugUIMisc: NSObject, DebugUIPage {
     private static func clearRandomKeyValueStores() {
         let store = randomKeyValueStore()
         SSKEnvironment.shared.databaseStorageRef.write { transcation in
-            store.removeAll(transaction: transcation.asV2Write)
+            store.removeAll(transaction: transcation)
         }
     }
 
@@ -343,12 +343,12 @@ class DebugUIMisc: NSObject, DebugUIPage {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             let signalProtoclStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
             let signalProtocolStoreACI = signalProtoclStoreManager.signalProtocolStore(for: .aci)
-            signalProtocolStoreACI.signedPreKeyStore.removeAll(tx: transaction.asV2Write)
-            signalProtocolStoreACI.preKeyStore.removeAll(tx: transaction.asV2Write)
+            signalProtocolStoreACI.signedPreKeyStore.removeAll(tx: transaction)
+            signalProtocolStoreACI.preKeyStore.removeAll(tx: transaction)
 
             let signalProtocolStorePNI = signalProtoclStoreManager.signalProtocolStore(for: .pni)
-            signalProtocolStorePNI.signedPreKeyStore.removeAll(tx: transaction.asV2Write)
-            signalProtocolStorePNI.preKeyStore.removeAll(tx: transaction.asV2Write)
+            signalProtocolStorePNI.signedPreKeyStore.removeAll(tx: transaction)
+            signalProtocolStorePNI.preKeyStore.removeAll(tx: transaction)
         }
     }
 
@@ -357,23 +357,23 @@ class DebugUIMisc: NSObject, DebugUIPage {
             let signalProtoclStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
 
             let signalProtocolStoreACI = signalProtoclStoreManager.signalProtocolStore(for: .aci)
-            signalProtocolStoreACI.sessionStore.removeAll(tx: transaction.asV2Write)
-            signalProtocolStoreACI.signedPreKeyStore.removeAll(tx: transaction.asV2Write)
-            signalProtocolStoreACI.preKeyStore.removeAll(tx: transaction.asV2Write)
-            signalProtocolStoreACI.kyberPreKeyStore.removeAll(tx: transaction.asV2Write)
+            signalProtocolStoreACI.sessionStore.removeAll(tx: transaction)
+            signalProtocolStoreACI.signedPreKeyStore.removeAll(tx: transaction)
+            signalProtocolStoreACI.preKeyStore.removeAll(tx: transaction)
+            signalProtocolStoreACI.kyberPreKeyStore.removeAll(tx: transaction)
 
             let signalProtocolStorePNI = signalProtoclStoreManager.signalProtocolStore(for: .pni)
-            signalProtocolStorePNI.sessionStore.removeAll(tx: transaction.asV2Write)
-            signalProtocolStorePNI.signedPreKeyStore.removeAll(tx: transaction.asV2Write)
-            signalProtocolStorePNI.preKeyStore.removeAll(tx: transaction.asV2Write)
-            signalProtocolStorePNI.kyberPreKeyStore.removeAll(tx: transaction.asV2Write)
+            signalProtocolStorePNI.sessionStore.removeAll(tx: transaction)
+            signalProtocolStorePNI.signedPreKeyStore.removeAll(tx: transaction)
+            signalProtocolStorePNI.preKeyStore.removeAll(tx: transaction)
+            signalProtocolStorePNI.kyberPreKeyStore.removeAll(tx: transaction)
         }
     }
 
     private static func removeLocalPniIdentityKey() {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             let identityManager = DependenciesBridge.shared.identityManager
-            identityManager.setIdentityKeyPair(nil, for: .pni, tx: transaction.asV2Write)
+            identityManager.setIdentityKeyPair(nil, for: .pni, tx: transaction)
         }
     }
 
@@ -474,7 +474,7 @@ class DebugUIMisc: NSObject, DebugUIPage {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             DependenciesBridge.shared.usernameEducationManager.setShouldShowUsernameEducation(
                 true,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
     }
@@ -483,7 +483,7 @@ class DebugUIMisc: NSObject, DebugUIPage {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             DependenciesBridge.shared.usernameEducationManager.setShouldShowUsernameLinkTooltip(
                 true,
-                tx: tx.asV2Write
+                tx: tx
             )
         }
     }

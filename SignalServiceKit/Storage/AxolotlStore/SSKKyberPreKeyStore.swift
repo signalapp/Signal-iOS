@@ -290,7 +290,7 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
     ) throws -> LibSignalClient.KyberPreKeyRecord {
         guard let preKey = self.loadKyberPreKey(
             id: id,
-            tx: context.asTransaction.asV2Read
+            tx: context.asTransaction
         ) else {
             throw Error.noKyberPreKeyWithId(id)
         }
@@ -317,11 +317,11 @@ extension SSKKyberPreKeyStore: LibSignalClient.KyberPreKeyStore {
             generatedAt: Date(millisecondsSince1970: record.timestamp),
             isLastResort: false
         )
-        try self.storeKyberPreKey(record: record, tx: context.asTransaction.asV2Write)
+        try self.storeKyberPreKey(record: record, tx: context.asTransaction)
     }
 
     public func markKyberPreKeyUsed(id: UInt32, context: StoreContext) throws {
-        try self.markKyberPreKeyUsed(id: id, tx: context.asTransaction.asV2Write)
+        try self.markKyberPreKeyUsed(id: id, tx: context.asTransaction)
     }
 
     public func setLastSuccessfulRotationDate(_ date: Date, tx: DBWriteTransaction) {

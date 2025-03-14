@@ -21,15 +21,15 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSSyncMessageRequestResponseType) {
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithLocalThread:(TSContactThread *)localThread
-                        transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+                        transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                       localThread:(TSContactThread *)localThread
-                      transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+                      transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (instancetype)initWithLocalThread:(TSContactThread *)localThread
                messageRequestThread:(TSThread *)thread
                        responseType:(OWSSyncMessageRequestResponseType)responseType
-                        transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER
+                        transaction:(DBReadTransaction *)transaction NS_DESIGNATED_INITIALIZER
     NS_SWIFT_NAME(init(localThread:messageRequestThread:responseType:transaction:));
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

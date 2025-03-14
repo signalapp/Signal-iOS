@@ -11,7 +11,7 @@ extension TSThread {
         draftMessageBody: MessageBody?,
         replyInfo: ThreadReplyInfo?,
         editTargetTimestamp: UInt64?,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         anyUpdate(transaction: tx) { thread in
             thread.messageDraft = draftMessageBody?.text
@@ -21,17 +21,17 @@ extension TSThread {
 
         if let replyInfo {
             DependenciesBridge.shared.threadReplyInfoStore
-                .save(replyInfo, for: uniqueId, tx: tx.asV2Write)
+                .save(replyInfo, for: uniqueId, tx: tx)
         } else {
             DependenciesBridge.shared.threadReplyInfoStore
-                .remove(for: uniqueId, tx: tx.asV2Write)
+                .remove(for: uniqueId, tx: tx)
         }
     }
 
     public func updateWithMentionNotificationMode(
         _ mentionNotificationMode: TSThreadMentionNotificationMode,
         wasLocallyInitiated: Bool,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         anyUpdate(transaction: tx) { thread in
             thread.mentionNotificationMode = mentionNotificationMode
@@ -55,7 +55,7 @@ extension TSThread {
     @objc
     public func updateWithShouldThreadBeVisible(
         _ shouldThreadBeVisible: Bool,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         anyUpdate(transaction: tx) { thread in
             thread.shouldThreadBeVisible = true
@@ -64,7 +64,7 @@ extension TSThread {
 
     public func updateWithLastSentStoryTimestamp(
         _ lastSentStoryTimestamp: UInt64,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         anyUpdate(transaction: tx) { thread in
             if lastSentStoryTimestamp > (thread.lastSentStoryTimestamp?.uint64Value ?? 0) {
@@ -75,7 +75,7 @@ extension TSThread {
 
     public func updateWithStoryViewMode(
         _ storyViewMode: TSThreadStoryViewMode,
-        transaction tx: SDSAnyWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         anyUpdate(transaction: tx) { thread in
             thread.storyViewMode = storyViewMode
@@ -85,15 +85,15 @@ extension TSThread {
     // MARK: -
 
     @objc
-    func scheduleTouchFinalization(transaction tx: SDSAnyWriteTransaction) {
-        tx.addTransactionFinalizationBlock(forKey: uniqueId) { tx in
+    func scheduleTouchFinalization(transaction tx: DBWriteTransaction) {
+        tx.addFinalizationBlock(key: uniqueId) { tx in
             let databaseStorage = SSKEnvironment.shared.databaseStorageRef
 
             guard let selfThread = Self.anyFetch(uniqueId: self.uniqueId, transaction: tx) else {
                 return
             }
 
-            databaseStorage.touch(thread: selfThread, shouldReindex: false, transaction: tx)
+            databaseStorage.touch(thread: selfThread, shouldReindex: false, tx: tx)
         }
     }
 }

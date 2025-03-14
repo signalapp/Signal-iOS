@@ -72,7 +72,7 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate, Us
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         selectionStyleForRecipient recipient: PickedRecipient,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> UITableViewCell.SelectionStyle {
         return Self.isRecipientValid(recipient) ? .default : .none
     }

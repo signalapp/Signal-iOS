@@ -70,7 +70,7 @@ public class CallRecordDeleteAllJobQueue {
     public func addJob(
         sendDeleteAllSyncMessage: Bool,
         deleteAllBefore: DeleteAllBeforeOptions,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let jobRecord: CallRecordDeleteAllJobRecord
 
@@ -78,7 +78,7 @@ public class CallRecordDeleteAllJobQueue {
         case .callRecord(let callRecord):
             let conversationId: Data
             do {
-                conversationId = try callRecordConversationIdAdapter.getConversationId(callRecord: callRecord, tx: tx.asV2Read)
+                conversationId = try callRecordConversationIdAdapter.getConversationId(callRecord: callRecord, tx: tx)
             } catch {
                 owsFailDebug("\(error)")
                 return
@@ -101,7 +101,7 @@ public class CallRecordDeleteAllJobQueue {
 
         jobRecord.anyInsert(transaction: tx)
 
-        jobSerializer.addOrderedSyncCompletion(tx: tx.asV2Write) {
+        jobSerializer.addOrderedSyncCompletion(tx: tx) {
             self.jobQueueRunner.addPersistedJob(jobRecord)
         }
     }
@@ -223,7 +223,7 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
         logger.info("Deleted \(deletedCount) calls.")
 
         await db.awaitableWrite { tx in
-            let sdsTx: SDSAnyWriteTransaction = SDSDB.shimOnlyBridge(tx)
+            let sdsTx: DBWriteTransaction = SDSDB.shimOnlyBridge(tx)
 
             if jobRecord.sendDeleteAllSyncMessage {
                 self.logger.info("Sending delete-all-calls sync message.")
@@ -314,7 +314,7 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
         callId: UInt64?,
         conversationId: Data?,
         beforeTimestamp: UInt64,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard let localThread = TSContactThread.getOrCreateLocalThread(
             transaction: tx

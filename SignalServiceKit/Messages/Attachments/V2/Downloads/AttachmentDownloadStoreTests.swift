@@ -38,7 +38,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 priority: .default,
                 tx: tx
             )
-            let downloadId = tx.db.lastInsertedRowID
+            let downloadId = tx.database.lastInsertedRowID
             var download = try downloadStore.fetchRecord(id: downloadId, tx: tx)
             XCTAssertNotNil(download)
             XCTAssertEqual(download?.attachmentId, attachmentId)
@@ -51,7 +51,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 tx: tx
             )
             // It should've done nothing.
-            XCTAssertEqual(tx.db.lastInsertedRowID, downloadId)
+            XCTAssertEqual(tx.database.lastInsertedRowID, downloadId)
             download = try downloadStore.fetchRecord(id: downloadId, tx: tx)
             XCTAssertEqual(download?.priority, .default)
 
@@ -63,7 +63,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 tx: tx
             )
             // It should've updated (no new row id) but at higher priority.
-            XCTAssertEqual(tx.db.lastInsertedRowID, downloadId)
+            XCTAssertEqual(tx.database.lastInsertedRowID, downloadId)
             download = try downloadStore.fetchRecord(id: downloadId, tx: tx)
             XCTAssertEqual(download?.priority, .userInitiated)
         }
@@ -84,7 +84,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
                     tx: tx
                 )
             }
-            let downloadCount = try QueuedAttachmentDownloadRecord.fetchCount(tx.db)
+            let downloadCount = try QueuedAttachmentDownloadRecord.fetchCount(tx.database)
             XCTAssertEqual(downloadCount, 50)
 
             // Enqueue one more, it should kick out the first.
@@ -95,7 +95,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 tx: tx
             )
             // It should've done nothing.
-            let downloads = try QueuedAttachmentDownloadRecord.fetchAll(tx.db)
+            let downloads = try QueuedAttachmentDownloadRecord.fetchAll(tx.database)
             XCTAssertEqual(downloads.count, 50)
             var expectedAttachmentIds = attachmentIds
             _ = expectedAttachmentIds.popFirst()
@@ -114,7 +114,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 priority: .default,
                 tx: tx
             )
-            let downloadId = tx.db.lastInsertedRowID
+            let downloadId = tx.database.lastInsertedRowID
             var download = try downloadStore.fetchRecord(id: downloadId, tx: tx)
             XCTAssertNotNil(download)
             XCTAssertEqual(download?.attachmentId, attachmentId)
@@ -140,7 +140,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
             )
             // It should've updated (no new row id) but at higher priority
             // and ready to retry.
-            XCTAssertEqual(tx.db.lastInsertedRowID, downloadId)
+            XCTAssertEqual(tx.database.lastInsertedRowID, downloadId)
             download = try downloadStore.fetchRecord(id: downloadId, tx: tx)
             XCTAssertEqual(download?.priority, .userInitiated)
             XCTAssertNil(download!.minRetryTimestamp)
@@ -167,7 +167,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
                     priority: priority,
                     tx: tx
                 )
-                return tx.db.lastInsertedRowID
+                return tx.database.lastInsertedRowID
             }
             var peekResult = try downloadStore.peek(count: 5, tx: tx)
             // Should get the first five high priority items.
@@ -210,7 +210,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
                     priority: .default,
                     tx: tx
                 )
-                let downloadId = tx.db.lastInsertedRowID
+                let downloadId = tx.database.lastInsertedRowID
                 try downloadStore.markQueuedDownloadFailed(
                     withId: downloadId,
                     minRetryTimestamp: now.ows_millisecondsSince1970 + 100 - UInt64(index),
@@ -234,7 +234,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
                     tx: tx
                 )
                 try downloadStore.markQueuedDownloadFailed(
-                    withId: tx.db.lastInsertedRowID,
+                    withId: tx.database.lastInsertedRowID,
                     minRetryTimestamp: UInt64(i + 1) * 100,
                     tx: tx
                 )
@@ -268,11 +268,11 @@ class AttachmentDownloadStoreTests: XCTestCase {
         return try db.write(block: insertAttachment(tx:))
     }
 
-    private func insertAttachment(tx: InMemoryDB.WriteTransaction) throws -> Attachment.IDType {
+    private func insertAttachment(tx: DBWriteTransaction) throws -> Attachment.IDType {
         let thread = TSThread(uniqueId: UUID().uuidString)
-        try thread.asRecord().insert(tx.db)
+        try thread.asRecord().insert(tx.database)
         let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
-        try interaction.asRecord().insert(tx.db)
+        try interaction.asRecord().insert(tx.database)
 
         let attachmentParams = Attachment.ConstructionParams.mockPointer()
         let referenceParams = AttachmentReference.ConstructionParams.mock(
@@ -294,6 +294,6 @@ class AttachmentDownloadStoreTests: XCTestCase {
             reference: referenceParams,
             tx: tx
         )
-        return tx.db.lastInsertedRowID
+        return tx.database.lastInsertedRowID
     }
 }

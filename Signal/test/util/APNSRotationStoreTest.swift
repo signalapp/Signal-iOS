@@ -305,7 +305,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
 
     private func createIncomingMessage(
         receivedTimestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         let message = self.messageFactory.create(transaction: transaction)
         message.replaceReceived(atTimestamp: receivedTimestamp, transaction: transaction)

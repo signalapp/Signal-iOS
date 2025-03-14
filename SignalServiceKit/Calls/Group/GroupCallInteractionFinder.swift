@@ -18,7 +18,7 @@ public final class GroupCallInteractionFinder {
     public func existsGroupCallMessageForEraId(
         _ eraId: String,
         thread: TSThread,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> Bool {
         let sql = """
             SELECT 1
@@ -33,7 +33,7 @@ public final class GroupCallInteractionFinder {
         let arguments: StatementArguments = [thread.uniqueId, eraId]
         do {
             return try Bool.fetchOne(
-                transaction.unwrapGrdbRead.database,
+                transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
@@ -48,7 +48,7 @@ public final class GroupCallInteractionFinder {
 
     public func unendedCallsForGroupThread(
         _ thread: TSThread,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> [OWSGroupCallMessage] {
         let sql: String = """
             SELECT *
@@ -63,7 +63,7 @@ public final class GroupCallInteractionFinder {
         let cursor = OWSGroupCallMessage.grdbFetchCursor(
             sql: sql,
             arguments: [thread.uniqueId],
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         )
 
         do {

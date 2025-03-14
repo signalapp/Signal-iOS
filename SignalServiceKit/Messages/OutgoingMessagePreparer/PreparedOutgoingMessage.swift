@@ -67,7 +67,7 @@ public class PreparedOutgoingMessage {
     /// Returns nil if the message no longer exists; records keep a pointer to a message which may be since deleted.
     public static func restore(
         from jobRecord: MessageSenderJobRecord,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> PreparedOutgoingMessage? {
         switch jobRecord.messageType {
         case .persisted(let messageId, _):
@@ -158,18 +158,18 @@ public class PreparedOutgoingMessage {
         return messageForSendStateUpdates.uniqueThreadId
     }
 
-    public func attachmentIdsForUpload(tx: SDSAnyReadTransaction) -> [Attachment.IDType] {
+    public func attachmentIdsForUpload(tx: DBReadTransaction) -> [Attachment.IDType] {
         switch messageType {
         case .persisted(let persisted):
             let attachmentIds = DependenciesBridge.shared.attachmentStore.allAttachments(
                 forMessageWithRowId: persisted.rowId,
-                tx: tx.asV2Read
+                tx: tx
             ).map(\.attachmentRowId)
             return attachmentIds
         case .editMessage(let editMessage):
             return DependenciesBridge.shared.attachmentStore.allAttachments(
                 forMessageWithRowId: editMessage.editedMessageRowId,
-                tx: tx.asV2Read
+                tx: tx
             ).map(\.attachmentRowId)
         case .contactSync:
             // These are pre-uploaded.
@@ -183,14 +183,14 @@ public class PreparedOutgoingMessage {
                 return [
                     DependenciesBridge.shared.attachmentStore.fetchFirstReference(
                         owner: .storyMessageMedia(storyMessageRowId: story.storyMessageRowId),
-                        tx: tx.asV2Read
+                        tx: tx
                     )?.attachmentRowId
                 ].compacted()
             case .text:
                 return [
                     DependenciesBridge.shared.attachmentStore.fetchFirstReference(
                         owner: .storyMessageLinkPreview(storyMessageRowId: story.storyMessageRowId),
-                        tx: tx.asV2Read
+                        tx: tx
                     )?.attachmentRowId
                 ].compacted()
             }
@@ -199,7 +199,7 @@ public class PreparedOutgoingMessage {
         }
     }
 
-    public func hasRenderableContent(tx: SDSAnyReadTransaction) -> Bool {
+    public func hasRenderableContent(tx: DBReadTransaction) -> Bool {
         switch messageType {
         case .persisted(let message):
             return message.message.insertedMessageHasRenderableContent(rowId: message.rowId, tx: tx)
@@ -212,7 +212,7 @@ public class PreparedOutgoingMessage {
     }
 
     /// The message, if any, we should use to donate the ``INSendMessageIntent`` to the OS for sharesheet shortcuts.
-    public func messageForIntentDonation(tx: SDSAnyReadTransaction) -> TSOutgoingMessage? {
+    public func messageForIntentDonation(tx: DBReadTransaction) -> TSOutgoingMessage? {
         switch messageType {
         case .persisted(let persisted):
             if persisted.message.isGroupStoryReply {
@@ -245,7 +245,7 @@ public class PreparedOutgoingMessage {
         try await sender(messageForSending)
     }
 
-    public func attachmentUploadOperations(tx: SDSAnyReadTransaction) -> [() async throws -> Void] {
+    public func attachmentUploadOperations(tx: DBReadTransaction) -> [() async throws -> Void] {
         return attachmentIdsForUpload(tx: tx).map { attachmentId in
             return {
                 try await DependenciesBridge.shared.attachmentUploadManager.uploadTransitTierAttachment(
@@ -257,13 +257,13 @@ public class PreparedOutgoingMessage {
 
     // MARK: - Message state updates
 
-    public func updateAllUnsentRecipientsAsSending(tx: SDSAnyWriteTransaction) {
+    public func updateAllUnsentRecipientsAsSending(tx: DBWriteTransaction) {
         messageForSendStateUpdates.updateAllUnsentRecipientsAsSending(transaction: tx)
     }
 
     public func updateWithAllSendingRecipientsMarkedAsFailed(
         error: (any Error)? = nil,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         messageForSendStateUpdates.updateWithAllSendingRecipientsMarkedAsFailed(
             error: error,
@@ -275,7 +275,7 @@ public class PreparedOutgoingMessage {
 
     public func asMessageSenderJobRecord(
         isHighPriority: Bool,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) throws -> MessageSenderJobRecord {
         switch messageType {
         case .persisted(let persisted):
@@ -363,7 +363,7 @@ public class PreparedOutgoingMessage {
 
 extension Array where Element == PreparedOutgoingMessage {
 
-    public func attachmentIdsForUpload(tx: SDSAnyReadTransaction) -> [Attachment.IDType] {
+    public func attachmentIdsForUpload(tx: DBReadTransaction) -> [Attachment.IDType] {
         // Use a non-story message if we have one.
         // When we multisend N attachments to M message threads and S story threads,
         // we create M messages with N attachments each, and (N * S) story messages

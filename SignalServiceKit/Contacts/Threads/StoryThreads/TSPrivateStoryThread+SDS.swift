@@ -16,7 +16,7 @@ public extension TSPrivateStoryThread {
     // NOTE: This method will fail if the object has unexpected type.
     class func anyFetchPrivateStoryThread(
         uniqueId: String,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> TSPrivateStoryThread? {
         assert(!uniqueId.isEmpty)
 
@@ -32,7 +32,7 @@ public extension TSPrivateStoryThread {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdatePrivateStoryThread(transaction: SDSAnyWriteTransaction, block: (TSPrivateStoryThread) -> Void) {
+    func anyUpdatePrivateStoryThread(transaction: DBWriteTransaction, block: (TSPrivateStoryThread) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? TSPrivateStoryThread else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")

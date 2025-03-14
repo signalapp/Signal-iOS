@@ -124,12 +124,12 @@ class ContactAboutSheet: StackSheetViewController {
     private func updateContents() {
         SSKEnvironment.shared.databaseStorageRef.read { tx in
             updateContactNames(tx: tx)
-            updateIsVerified(tx: tx.asV2Read)
+            updateIsVerified(tx: tx)
             updateProfileBio(tx: tx)
             updateConnectionState(tx: tx)
             updateIsInSystemContacts(tx: tx)
             updateMutualGroupThreadCount(tx: tx)
-            updateNote(tx: tx.asV2Read)
+            updateNote(tx: tx)
         }
 
         loadContents()
@@ -249,7 +249,7 @@ class ContactAboutSheet: StackSheetViewController {
     /// A secondary name to show after the primary name. Used to show a
     /// contact's profile name when it is overridden by a nickname.
     private var secondaryName: String?
-    private func updateContactNames(tx: SDSAnyReadTransaction) {
+    private func updateContactNames(tx: DBReadTransaction) {
         if isLocalUser {
             let profileManager = SSKEnvironment.shared.profileManagerRef
             let localUserProfile = profileManager.localUserProfile(tx: tx)
@@ -311,7 +311,7 @@ class ContactAboutSheet: StackSheetViewController {
     // MARK: Bio
 
     private var profileBio: String?
-    private func updateProfileBio(tx: SDSAnyReadTransaction) {
+    private func updateProfileBio(tx: DBReadTransaction) {
         let profileManager = SSKEnvironment.shared.profileManagerRef
         let userProfile = profileManager.userProfile(for: thread.contactAddress, tx: tx)
         profileBio = userProfile?.bioForDisplay
@@ -327,7 +327,7 @@ class ContactAboutSheet: StackSheetViewController {
     }
 
     private var connectionState: ConnectionState?
-    private func updateConnectionState(tx: SDSAnyReadTransaction) {
+    private func updateConnectionState(tx: DBReadTransaction) {
         if isLocalUser {
             connectionState = nil
         } else if SSKEnvironment.shared.profileManagerRef.isThread(inProfileWhitelist: thread, transaction: tx) {
@@ -344,7 +344,7 @@ class ContactAboutSheet: StackSheetViewController {
     // MARK: System contacts
 
     private var isInSystemContacts = false
-    private func updateIsInSystemContacts(tx: SDSAnyReadTransaction) {
+    private func updateIsInSystemContacts(tx: DBReadTransaction) {
         if isLocalUser {
             isInSystemContacts = false
             return
@@ -355,7 +355,7 @@ class ContactAboutSheet: StackSheetViewController {
     // MARK: Threads
 
     private var mutualGroupThreads: [TSGroupThread]?
-    private func updateMutualGroupThreadCount(tx: SDSAnyReadTransaction) {
+    private func updateMutualGroupThreadCount(tx: DBReadTransaction) {
         if isLocalUser {
             mutualGroupThreads = nil
             return

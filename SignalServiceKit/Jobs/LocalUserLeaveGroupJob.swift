@@ -76,7 +76,7 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
         }
     }
 
-    private func fetchGroupModel(threadUniqueId: String, tx: SDSAnyReadTransaction) throws -> TSGroupModelV2 {
+    private func fetchGroupModel(threadUniqueId: String, tx: DBReadTransaction) throws -> TSGroupModelV2 {
         guard
             let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: threadUniqueId, transaction: tx),
             let groupModel = groupThread.groupModel as? TSGroupModelV2
@@ -116,7 +116,7 @@ public class LocalUserLeaveGroupJobQueue {
         groupThread: TSGroupThread,
         replacementAdminAci: Aci?,
         waitForMessageProcessing: Bool,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) -> Promise<Void> {
         guard groupThread.isGroupV2Thread else {
             owsFail("[GV1] Mutations on V1 groups should be impossible!")
@@ -137,7 +137,7 @@ public class LocalUserLeaveGroupJobQueue {
         replacementAdminAci: Aci?,
         waitForMessageProcessing: Bool,
         future: Future<Void>,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let jobRecord = LocalUserLeaveGroupJobRecord(
             threadId: threadId,
@@ -145,7 +145,7 @@ public class LocalUserLeaveGroupJobQueue {
             waitForMessageProcessing: waitForMessageProcessing
         )
         jobRecord.anyInsert(transaction: tx)
-        jobSerializer.addOrderedSyncCompletion(tx: tx.asV2Write) {
+        jobSerializer.addOrderedSyncCompletion(tx: tx) {
             self.jobQueueRunner.addPersistedJob(jobRecord, runner: self.jobRunnerFactory.buildRunner(future: future))
         }
     }

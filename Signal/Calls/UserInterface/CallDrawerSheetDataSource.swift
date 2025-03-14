@@ -241,7 +241,7 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
         individualCall.addObserverAndSyncState(self)
     }
 
-    func unsortedMembers(tx: any SignalServiceKit.DBReadTransaction) -> [JoinedMember] {
+    func unsortedMembers(tx: DBReadTransaction) -> [JoinedMember] {
         var members = [JoinedMember]()
 
         if let remoteAci = thread.contactAddress.aci {

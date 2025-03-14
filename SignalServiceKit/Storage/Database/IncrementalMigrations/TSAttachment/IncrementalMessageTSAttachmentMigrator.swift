@@ -120,9 +120,9 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
         return true
     }
 
-    private func fetchRemainingTSAttachmentCount(tx: SDSAnyReadTransaction) -> UInt64 {
+    private func fetchRemainingTSAttachmentCount(tx: DBReadTransaction) -> UInt64 {
         UInt64(clamping: (try? Int64.fetchOne(
-            tx.unwrapGrdbRead.database,
+            tx.database,
             sql: "SELECT COUNT(id) FROM model_TSAttachment;"
         )) ?? 0)
     }
@@ -217,7 +217,7 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
             let didMigrateBatch = Migrator.completeNextIterativeTSMessageMigrationBatch(
                 batchSize: messageBatchSize,
                 errorLogger: errorLogger,
-                tx: tx.unwrapGrdbWrite
+                tx: tx
             )
             if didMigrateBatch {
                 return false
@@ -225,7 +225,7 @@ public class IncrementalMessageTSAttachmentMigratorImpl: IncrementalMessageTSAtt
 
             // If no messages are prepared, we try to prepare a batch of messages.
             let didPrepareBatch = Migrator.prepareNextIterativeTSMessageMigrationBatch(
-                tx: tx.unwrapGrdbWrite
+                tx: tx
             )
             if didPrepareBatch {
                 do {

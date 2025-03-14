@@ -87,23 +87,23 @@ extension TSInfoMessage {
         case outgoing(to: Aci)
     }
 
-    private func paymentsActivationRequestType(transaction tx: SDSAnyReadTransaction) -> PaymentsInfoMessageType? {
+    private func paymentsActivationRequestType(transaction tx: DBReadTransaction) -> PaymentsInfoMessageType? {
         return paymentsInfoMessageType(
             authorBlock: self.paymentsActivationRequestAuthor(localIdentifiers:),
-            tx: tx.asV2Read
+            tx: tx
         )
     }
 
-    private func paymentsActivatedType(transaction tx: SDSAnyReadTransaction) -> PaymentsInfoMessageType? {
+    private func paymentsActivatedType(transaction tx: DBReadTransaction) -> PaymentsInfoMessageType? {
         return paymentsInfoMessageType(
             authorBlock: self.paymentsActivatedAuthor(localIdentifiers:),
-            tx: tx.asV2Read
+            tx: tx
         )
     }
 
     private func paymentsInfoMessageType(
         authorBlock: (LocalIdentifiers) -> PaymentsInfoMessageAuthor?,
-        tx: any DBReadTransaction
+        tx: DBReadTransaction
     ) -> PaymentsInfoMessageType? {
         guard let localIdentiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
             return nil
@@ -125,7 +125,7 @@ extension TSInfoMessage {
         }
     }
 
-    public func isIncomingPaymentsActivationRequest(_ tx: SDSAnyReadTransaction) -> Bool {
+    public func isIncomingPaymentsActivationRequest(_ tx: DBReadTransaction) -> Bool {
         switch paymentsActivationRequestType(transaction: tx) {
         case .none, .outgoing:
             return false
@@ -134,7 +134,7 @@ extension TSInfoMessage {
         }
     }
 
-    public func isIncomingPaymentsActivated(_ tx: SDSAnyReadTransaction) -> Bool {
+    public func isIncomingPaymentsActivated(_ tx: DBReadTransaction) -> Bool {
         switch paymentsActivatedType(transaction: tx) {
         case .none, .outgoing:
             return false
@@ -144,7 +144,7 @@ extension TSInfoMessage {
     }
 
     @objc
-    func paymentsActivationRequestDescription(transaction: SDSAnyReadTransaction) -> String? {
+    func paymentsActivationRequestDescription(transaction: DBReadTransaction) -> String? {
         let aci: Aci
         let formatString: String
         switch paymentsActivationRequestType(transaction: transaction) {
@@ -169,7 +169,7 @@ extension TSInfoMessage {
     }
 
     @objc
-    func paymentsActivatedDescription(transaction: SDSAnyReadTransaction) -> String? {
+    func paymentsActivatedDescription(transaction: DBReadTransaction) -> String? {
         switch paymentsActivatedType(transaction: transaction) {
         case .none:
             return nil

@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 
 public class DonationReceiptFinder {
-    public static func hasAny(transaction: SDSAnyReadTransaction) -> Bool {
+    public static func hasAny(transaction: DBReadTransaction) -> Bool {
         let sql = """
             SELECT EXISTS (
                 SELECT 1
@@ -16,7 +16,7 @@ public class DonationReceiptFinder {
             )
         """
         do {
-            return try Bool.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? false
+            return try Bool.fetchOne(transaction.database, sql: sql) ?? false
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
                 userDefaults: CurrentAppContext().appUserDefaults(),
@@ -26,14 +26,14 @@ public class DonationReceiptFinder {
         }
     }
 
-    public static func fetchAllInReverseDateOrder(transaction: SDSAnyReadTransaction) -> [DonationReceipt] {
+    public static func fetchAllInReverseDateOrder(transaction: DBReadTransaction) -> [DonationReceipt] {
         let sql = """
             SELECT *
             FROM \(DonationReceipt.databaseTableName)
             ORDER BY \(DonationReceipt.columnName(.timestamp)) DESC
         """
         do {
-            return try DonationReceipt.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
+            return try DonationReceipt.fetchAll(transaction.database, sql: sql)
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
                 userDefaults: CurrentAppContext().appUserDefaults(),

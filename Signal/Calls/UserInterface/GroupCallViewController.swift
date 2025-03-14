@@ -283,19 +283,19 @@ final class GroupCallViewController: UIViewController {
     private var callControlsOverflowBottomConstraint: NSLayoutConstraint?
     private var callControlsConfirmationToastContainerViewBottomConstraint: NSLayoutConstraint?
 
-    static func load(call: SignalCall, groupCall: GroupCall, tx: SDSAnyReadTransaction) -> GroupCallViewController {
+    static func load(call: SignalCall, groupCall: GroupCall, tx: DBReadTransaction) -> GroupCallViewController {
         let didUserEverSwipeToSpeakerView = keyValueStore.getBool(
             didUserSwipeToSpeakerViewKey,
             defaultValue: false,
-            transaction: tx.asV2Read
+            transaction: tx
         )
         let didUserEverSwipeToScreenShare = keyValueStore.getBool(
             didUserSwipeToScreenShareKey,
             defaultValue: false,
-            transaction: tx.asV2Read
+            transaction: tx
         )
 
-        let phoneNumberSharingMode = SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx.asV2Read).orDefault
+        let phoneNumberSharingMode = SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx).orDefault
 
         return GroupCallViewController(
             call: call,
@@ -990,13 +990,13 @@ final class GroupCallViewController: UIViewController {
                 if !isAutoScrollingToScreenShare {
                     didUserEverSwipeToScreenShare = true
                     SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
-                        Self.keyValueStore.setBool(true, key: Self.didUserSwipeToScreenShareKey, transaction: writeTx.asV2Write)
+                        Self.keyValueStore.setBool(true, key: Self.didUserSwipeToScreenShareKey, transaction: writeTx)
                     }
                 }
             } else {
                 didUserEverSwipeToSpeakerView = true
                 SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTx in
-                    Self.keyValueStore.setBool(true, key: Self.didUserSwipeToSpeakerViewKey, transaction: writeTx.asV2Write)
+                    Self.keyValueStore.setBool(true, key: Self.didUserSwipeToSpeakerViewKey, transaction: writeTx)
                 }
             }
 
@@ -1570,7 +1570,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
                 identityManager.untrustedIdentityForSending(
                     to: memberAddress,
                     untrustedThreshold: untrustedThreshold,
-                    tx: transaction.asV2Read
+                    tx: transaction
                 ) != nil
             }
         }
@@ -1848,7 +1848,7 @@ extension GroupCallViewController: GroupCallObserver {
             return
         }
         let localAci = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
+            return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aci
         }
         guard let localAci else {
             owsFailDebug("Local user is in call but doesn't have ACI!")

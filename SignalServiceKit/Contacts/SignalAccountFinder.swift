@@ -9,7 +9,7 @@ import LibSignalClient
 public class SignalAccountFinder: NSObject {
     func signalAccount(
         for address: SignalServiceAddress,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> SignalAccount? {
         if
             let serviceId = address.serviceId,
@@ -32,14 +32,14 @@ public class SignalAccountFinder: NSObject {
 
     public func signalAccount(
         for e164: E164,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> SignalAccount? {
         return signalAccount(for: e164.stringValue, tx: tx)
     }
 
     func signalAccount(
         for phoneNumber: String,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> SignalAccount? {
         return signalAccountWhere(
             column: SignalAccount.columnName(.recipientPhoneNumber),
@@ -50,7 +50,7 @@ public class SignalAccountFinder: NSObject {
 
     func signalAccounts(
         for addresses: [SignalServiceAddress],
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> [SignalAccount?] {
         return Refinery<SignalServiceAddress, SignalAccount>(addresses).refine { addresses in
             return signalAccountsForServiceIds(
@@ -67,14 +67,14 @@ public class SignalAccountFinder: NSObject {
 
     func signalAccounts(
         for phoneNumbers: [String],
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> [SignalAccount?] {
         return signalAccountsForPhoneNumbers(phoneNumbers, tx: tx)
     }
 
     private func signalAccountsForServiceIds(
         _ serviceIds: [ServiceId?],
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> [SignalAccount?] {
         let accounts = signalAccountsWhere(
             column: SignalAccount.columnName(.recipientServiceId),
@@ -98,7 +98,7 @@ public class SignalAccountFinder: NSObject {
 
     private func signalAccountsForPhoneNumbers(
         _ phoneNumbers: [String?],
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> [SignalAccount?] {
         let accounts = signalAccountsWhere(
             column: SignalAccount.columnName(.recipientPhoneNumber),
@@ -123,7 +123,7 @@ public class SignalAccountFinder: NSObject {
     private func signalAccountsWhere(
         column: String,
         anyValueIn values: [String],
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> [SignalAccount?] {
         guard !values.isEmpty else {
             return []
@@ -145,7 +145,7 @@ public class SignalAccountFinder: NSObject {
     private func signalAccountWhere(
         column: String,
         matches matchString: String,
-        tx: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> SignalAccount? {
         let sql = "SELECT * FROM \(SignalAccount.databaseTableName) WHERE \(column) = ? LIMIT 1"
 
@@ -161,7 +161,7 @@ public class SignalAccountFinder: NSObject {
     }
 
     private func allSignalAccounts(
-        tx: SDSAnyReadTransaction,
+        tx: DBReadTransaction,
         sql: String,
         arguments: StatementArguments
     ) -> [SignalAccount] {
@@ -176,12 +176,12 @@ public class SignalAccountFinder: NSObject {
         return result
     }
 
-    func fetchPhoneNumbers(tx: SDSAnyReadTransaction) throws -> [String] {
+    func fetchPhoneNumbers(tx: DBReadTransaction) throws -> [String] {
         let sql = """
             SELECT \(SignalAccount.columnName(.recipientPhoneNumber)) FROM \(SignalAccount.databaseTableName)
         """
         do {
-            return try String?.fetchAll(tx.unwrapGrdbRead.database, sql: sql).compacted()
+            return try String?.fetchAll(tx.database, sql: sql).compacted()
         } catch {
             throw error.grdbErrorForLogging
         }

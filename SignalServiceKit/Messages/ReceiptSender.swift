@@ -99,7 +99,7 @@ public class ReceiptSender: NSObject {
     func enqueueDeliveryReceipt(
         for decryptedEnvelope: DecryptedIncomingEnvelope,
         messageUniqueId: String?,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         enqueueReceipt(
             for: decryptedEnvelope.sourceAci,
@@ -115,7 +115,7 @@ public class ReceiptSender: NSObject {
         for address: SignalServiceAddress,
         timestamp: UInt64,
         messageUniqueId: String?,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard let aci = address.aci else {
             Logger.warn("Dropping receipt for message without ACI.")
@@ -135,7 +135,7 @@ public class ReceiptSender: NSObject {
         for address: SignalServiceAddress,
         timestamp: UInt64,
         messageUniqueId: String?,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard let aci = address.aci else {
             Logger.warn("Dropping receipt for message without ACI.")
@@ -155,16 +155,16 @@ public class ReceiptSender: NSObject {
         timestamp: UInt64,
         messageUniqueId: String?,
         receiptType: ReceiptType,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         guard timestamp >= 1 else {
             owsFailDebug("Invalid timestamp.")
             return
         }
         let pendingTask = pendingTasks.buildPendingTask(label: "Receipt Send")
-        let persistedSet = fetchReceiptSet(receiptType: receiptType, aci: aci, tx: tx.asV2Read)
+        let persistedSet = fetchReceiptSet(receiptType: receiptType, aci: aci, tx: tx)
         persistedSet.insert(timestamp: timestamp, messageUniqueId: messageUniqueId)
-        storeReceiptSet(persistedSet, receiptType: receiptType, aci: aci, tx: tx.asV2Write)
+        storeReceiptSet(persistedSet, receiptType: receiptType, aci: aci, tx: tx)
         tx.addAsyncCompletion(on: DispatchQueue.global()) {
             self.sendingState.update { $0.mightHavePendingReceipts = true }
             self.sendPendingReceiptsIfNeeded(pendingTask: pendingTask)
@@ -230,7 +230,7 @@ public class ReceiptSender: NSObject {
     }
 
     private func sendReceipts(receiptType: ReceiptType) async throws {
-        let pendingReceipts = SSKEnvironment.shared.databaseStorageRef.read { tx in fetchAllReceiptSets(receiptType: receiptType, tx: tx.asV2Read) }
+        let pendingReceipts = SSKEnvironment.shared.databaseStorageRef.read { tx in fetchAllReceiptSets(receiptType: receiptType, tx: tx) }
         try await withThrowingTaskGroup(of: Void.self) { taskGroup in
             for (aci, receiptBatches) in pendingReceipts {
                 for receiptBatch in receiptBatches {
@@ -273,7 +273,7 @@ public class ReceiptSender: NSObject {
                 }
 
                 let recipientHidingManager = DependenciesBridge.shared.recipientHidingManager
-                if recipientHidingManager.isHiddenAddress(SignalServiceAddress(aci), tx: tx.asV2Read) {
+                if recipientHidingManager.isHiddenAddress(SignalServiceAddress(aci), tx: tx) {
                     Logger.warn("Dropping receipts for hidden \(aci)")
                     return (.value(()), remainingTimestamps.endIndex)
                 }
@@ -282,7 +282,7 @@ public class ReceiptSender: NSObject {
                 // anyway. If an identity state changes we should recheck our
                 // pendingReceipts to re-attempt a send to formerly untrusted recipients.
                 let identityManager = DependenciesBridge.shared.identityManager
-                guard identityManager.untrustedIdentityForSending(to: SignalServiceAddress(aci), untrustedThreshold: nil, tx: tx.asV2Read) == nil else {
+                guard identityManager.untrustedIdentityForSending(to: SignalServiceAddress(aci), untrustedThreshold: nil, tx: tx) == nil else {
                     Logger.warn("Deferring receipts for untrusted \(aci)")
                     return nil
                 }
@@ -369,9 +369,9 @@ public class ReceiptSender: NSObject {
 
     private func dequeueReceipts(for receiptBatch: ReceiptBatch, receiptType: ReceiptType) async {
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            let persistedSet = self._fetchReceiptSet(receiptType: receiptType, identifier: receiptBatch.identifier, tx: tx.asV2Write)
+            let persistedSet = self._fetchReceiptSet(receiptType: receiptType, identifier: receiptBatch.identifier, tx: tx)
             persistedSet.subtract(receiptBatch.receiptSet)
-            self._storeReceiptSet(persistedSet, receiptType: receiptType, identifier: receiptBatch.identifier, tx: tx.asV2Write)
+            self._storeReceiptSet(persistedSet, receiptType: receiptType, identifier: receiptBatch.identifier, tx: tx)
         }
     }
 

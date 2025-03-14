@@ -159,7 +159,7 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
 // --- CODE GENERATION MARKER
 
 - (void)updateWithVerificationState:(OWSVerificationState)verificationState
-                        transaction:(SDSAnyWriteTransaction *)transaction
+                        transaction:(DBWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -187,7 +187,7 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
 {
     OWSLogInfo(@"### All Recipient Identities ###");
     __block int count = 0;
-    [SSKEnvironment.shared.databaseStorageRef readWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [SSKEnvironment.shared.databaseStorageRef readWithBlock:^(DBReadTransaction *transaction) {
         [OWSRecipientIdentity
             anyEnumerateWithTransaction:transaction
                                 batched:YES

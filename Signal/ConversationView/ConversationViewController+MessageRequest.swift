@@ -160,7 +160,7 @@ private extension ConversationViewController {
             SSKEnvironment.shared.blockingManagerRef.addBlockedAci(
                 aci,
                 blockMode: .localShouldNotLeaveGroups,
-                tx: transaction.asV2Write
+                tx: transaction
             )
         }
         leaveAndSoftDeleteThread(messageRequestResponseType: .delete)
@@ -183,7 +183,7 @@ private extension ConversationViewController {
             SSKEnvironment.shared.blockingManagerRef.addBlockedAci(
                 aci,
                 blockMode: .localShouldNotLeaveGroups,
-                tx: transaction.asV2Write
+                tx: transaction
             )
         }
         leaveAndSoftDeleteThread(messageRequestResponseType: .blockAndDelete)
@@ -205,7 +205,7 @@ private extension ConversationViewController {
                     threads: [self.thread],
                     // We're already sending a sync message about this above!
                     sendDeleteForMeSyncMessage: false,
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
             }
             self.conversationSplitViewController?.closeSelectedConversation(animated: true)
@@ -266,7 +266,7 @@ private extension ConversationViewController {
                     try DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
                         thread.contactAddress,
                         wasLocallyInitiated: true,
-                        tx: transaction.asV2Write
+                        tx: transaction
                     )
                 } catch {
                     owsFailDebug("Couldn't unhide recipient")
@@ -282,7 +282,7 @@ private extension ConversationViewController {
                         thread: thread,
                         messageType: .acceptedMessageRequest
                     ),
-                    tx: transaction.asV2Write
+                    tx: transaction
                 )
 
                 /// Send a sync message telling our other devices that we

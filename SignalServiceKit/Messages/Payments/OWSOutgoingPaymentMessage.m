@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
            paymentNotification:(TSPaymentNotification *)paymentNotification
               expiresInSeconds:(uint32_t)expiresInSeconds
             expireTimerVersion:(nullable NSNumber *)expireTimerVersion
-                   transaction:(SDSAnyReadTransaction *)transaction
+                   transaction:(DBReadTransaction *)transaction
 {
     OWSAssertDebug(paymentNotification != nil);
 
@@ -161,7 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread
-                                                          transaction:(SDSAnyReadTransaction *)transaction
+                                                          transaction:(DBReadTransaction *)transaction
 {
     if (self.paymentNotification == nil) {
         OWSFailDebug(@"Missing payload.");

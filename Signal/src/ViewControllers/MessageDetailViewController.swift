@@ -208,7 +208,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     private func buildRenderItem(
         message interaction: TSMessage,
         spoilerState: SpoilerRenderState,
-        transaction: SDSAnyReadTransaction
+        transaction: DBReadTransaction
     ) -> CVRenderItem? {
         guard let thread = TSThread.anyFetch(
             uniqueId: interaction.uniqueThreadId,
@@ -227,7 +227,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             isWallpaperPhoto: false,
             chatColor: DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
                 for: thread,
-                tx: transaction.asV2Read
+                tx: transaction
             )
         )
 
@@ -515,7 +515,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private func buildAccessoryView(text: String,
                                     displayUDIndicator: Bool,
-                                    transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView {
+                                    transaction: DBReadTransaction) -> ContactCellAccessoryView {
         let label = CVLabel()
         label.textAlignment = .right
         let labelConfig = CVLabelConfig.unstyledText(
@@ -883,7 +883,7 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
             self.bodyMediaAttachments = DependenciesBridge.shared.attachmentStore
                 .fetchReferencedAttachments(
                     for: .messageBodyAttachment(messageRowId: newMessage.sqliteRowId!),
-                    tx: transaction.asV2Read
+                    tx: transaction
                 )
             guard let renderItem = buildRenderItem(
                 message: newMessage,

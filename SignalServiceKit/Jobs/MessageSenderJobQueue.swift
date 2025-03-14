@@ -42,7 +42,7 @@ public class MessageSenderJobQueue {
         message: PreparedOutgoingMessage,
         limitToCurrentProcessLifetime: Bool = false,
         isHighPriority: Bool = false,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         self.add(
             message: message,
@@ -58,7 +58,7 @@ public class MessageSenderJobQueue {
         message: PreparedOutgoingMessage,
         limitToCurrentProcessLifetime: Bool = false,
         isHighPriority: Bool = false,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) -> Promise<Void> {
         return Promise { future in
             self.add(
@@ -76,7 +76,7 @@ public class MessageSenderJobQueue {
         exclusiveToCurrentProcessIdentifier: Bool,
         isHighPriority: Bool,
         future: Future<Void>?,
-        transaction: SDSAnyWriteTransaction
+        transaction: DBWriteTransaction
     ) {
         // Mark as sending now so the UI updates immediately.
         message.updateAllUnsentRecipientsAsSending(tx: transaction)
@@ -237,7 +237,7 @@ public class MessageSenderJobQueue {
 
     private let state = AtomicValue<State>(State(), lock: .init())
 
-    private func didMarkAsReady(oldJobRecord: MessageSenderJobRecord, transaction: SDSAnyWriteTransaction) {
+    private func didMarkAsReady(oldJobRecord: MessageSenderJobRecord, transaction: DBWriteTransaction) {
         // TODO: Remove this method and status swapping logic entirely.
         let uniqueId: String
         switch oldJobRecord.messageType {
@@ -281,7 +281,7 @@ public class MessageSenderJobQueue {
         }
     }
 
-    private func queueJob(_ job: Job, tx transaction: SDSAnyWriteTransaction) {
+    private func queueJob(_ job: Job, tx transaction: DBWriteTransaction) {
         let future = self.state.update { $0.jobFutures.removeValue(forKey: job.record.uniqueId) }
 
         guard let message = PreparedOutgoingMessage.restore(from: job.record, tx: transaction) else {
@@ -308,7 +308,7 @@ public class MessageSenderJobQueue {
         )
 
         let queueKey = QueueKey(threadId: job.record.threadId, priority: sendPriority)
-        self.jobSerializer.addOrderedSyncCompletion(tx: transaction.asV2Write) {
+        self.jobSerializer.addOrderedSyncCompletion(tx: transaction) {
             self.state.update {
                 $0.queueStates[queueKey, default: QueueState()].queuedOperations.append(operation)
             }

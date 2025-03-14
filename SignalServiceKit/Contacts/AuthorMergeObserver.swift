@@ -59,7 +59,7 @@ class AuthorMergeObserver: RecipientMergeObserver {
                 AND "\(table.aciColumn)" IS NULL
             """
             let arguments: StatementArguments = [aciString, phoneNumber]
-            SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database.executeHandlingErrors(sql: sql, arguments: arguments)
+            SDSDB.shimOnlyBridge(tx).database.executeHandlingErrors(sql: sql, arguments: arguments)
         }
         SSKEnvironment.shared.modelReadCachesRef.evacuateAllCaches()
     }
