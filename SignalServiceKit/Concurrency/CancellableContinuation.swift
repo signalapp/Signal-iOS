@@ -10,12 +10,14 @@ import Foundation
 /// This is useful when there is no operation that needs to be canceled. For
 /// example, when waiting for an event to occur, "cancellation" means "stop
 /// waiting for the event to occur" and not "stop the event from occurring".
-class CancellableContinuation<T> {
-    private struct State {
-        var continuation: CheckedContinuation<T, Error>?
-        var result: Result<T, Error>?
+struct CancellableContinuation<T> {
+    private enum State {
+        case initial
+        case waiting(CheckedContinuation<T, Error>)
+        case completed(Result<T, Error>)
+        case consumed
     }
-    private let state = AtomicValue<State>(State(), lock: .init())
+    private let state = AtomicValue<State>(State.initial, lock: .init())
 
     func cancel() {
         self.resume(with: .failure(CancellationError()))
@@ -27,31 +29,42 @@ class CancellableContinuation<T> {
     /// invocations are ignored.
     func resume(with result: Result<T, Error>) {
         let continuation = self.state.update { state -> CheckedContinuation<T, Error>? in
-            if let continuation = state.continuation {
-                state.continuation = nil
+            switch state {
+            case .initial:
+                state = .completed(result)
+                return nil
+            case .waiting(let continuation):
+                state = .consumed
                 return continuation
+            case .completed(_), .consumed:
+                // Ignore the new result.
+                return nil
             }
-            if state.result == nil {
-                state.result = result
-            }
-            return nil
         }
         if let continuation {
             continuation.resume(with: result)
         }
     }
 
+    /// Waits for the result. Should only be called once per instance!
     func wait() async throws -> T {
         try await withTaskCancellationHandler(
             operation: {
                 return try await withCheckedThrowingContinuation { continuation in
                     let result = self.state.update { state -> Result<T, Error>? in
-                        if let result = state.result {
-                            state.result = nil
+                        switch state {
+                        case .initial:
+                            state = .waiting(continuation)
+                            return nil
+                        case .completed(let result):
+                            state = .consumed
                             return result
+                        case .waiting(_), .consumed:
+                            continuation.resume(throwing: OWSAssertionError(
+                                "should not await a CancellableContinuation multiple times"
+                            ))
+                            return nil
                         }
-                        state.continuation = continuation
-                        return nil
                     }
                     if let result {
                         continuation.resume(with: result)
