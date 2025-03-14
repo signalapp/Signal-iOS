@@ -525,6 +525,10 @@ public class SDSDatabaseStorage: NSObject, DB {
 
     // MARK: - Promises
 
+    public func readPromise<T>(file: String, function: String, line: Int, _ block: @escaping (DBReadTransaction) throws -> T) -> Promise<T> {
+        return read(.promise, file: file, function: function, line: line, block)
+    }
+
     public func read<T>(
         _: PromiseNamespace,
         file: String = #file,
@@ -541,6 +545,10 @@ public class SDSDatabaseStorage: NSObject, DB {
                 }
             }
         }
+    }
+
+    public func writePromise<T>(file: String, function: String, line: Int, _ block: @escaping (DBWriteTransaction) throws -> T) -> Promise<T> {
+        return write(.promise, file: file, function: function, line: line, block)
     }
 
     public func write<T>(
