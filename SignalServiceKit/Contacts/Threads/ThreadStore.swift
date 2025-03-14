@@ -206,11 +206,6 @@ public class ThreadStoreImpl: ThreadStore {
     public func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {
         let tx = SDSDB.shimOnlyBridge(tx)
 
-        // TODO: If we ever use transaction finalizations for more than
-        // de-bouncing thread touches, we should promote this to TSYapDatabaseObject
-        // (or at least include it in the "will remove" hook for any relevant models.
-        tx.addRemovedFinalizationKey(thread.transactionFinalizationKey)
-
         let sql = "DELETE FROM \(thread.sdsTableName) WHERE uniqueId = ?"
         tx.unwrapGrdbWrite.executeAndCacheStatement(sql: sql, arguments: [thread.uniqueId])
     }

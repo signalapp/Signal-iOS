@@ -252,9 +252,6 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
     }
 }
 
-private extension InteractionFinder {
-}
-
 // MARK: -
 
 private class BulkDeleteInteractionJobRunnerFactory: JobRunnerFactory {

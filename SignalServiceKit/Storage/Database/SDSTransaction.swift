@@ -82,17 +82,13 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
 
     fileprivate typealias TransactionFinalizationBlock = (_ transaction: GRDBWriteTransaction) -> Void
     private var transactionFinalizationBlocks = [String: TransactionFinalizationBlock]()
-    private var removedFinalizationKeys = Set<String>()
 
     private func performTransactionFinalizationBlocks() {
         assert(transactionState == .finalizing)
 
         let blocksCopy = transactionFinalizationBlocks
         transactionFinalizationBlocks.removeAll()
-        for (key, block) in blocksCopy {
-            guard !removedFinalizationKeys.contains(key) else {
-                continue
-            }
+        for (_, block) in blocksCopy {
             block(self)
         }
         assert(transactionFinalizationBlocks.isEmpty)
@@ -100,12 +96,6 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
 
     fileprivate func addTransactionFinalizationBlock(forKey key: String,
                                                      block: @escaping TransactionFinalizationBlock) {
-        guard !removedFinalizationKeys.contains(key) else {
-            // We shouldn't be adding finalizations for removed keys,
-            // e.g. touching removed entities.
-            owsFailDebug("Finalization unexpectedly added for removed key.")
-            return
-        }
         guard transactionState == .open else {
             // We're already finalizing; run the block immediately.
             block(self)
@@ -117,14 +107,6 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
         // We want to touch the last copy of the thread that was
         // written to the database.
         transactionFinalizationBlocks[key] = block
-    }
-
-    fileprivate func addRemovedFinalizationKey(_ key: String) {
-        guard !removedFinalizationKeys.contains(key) else {
-            owsFailDebug("Finalization key removed twice.")
-            return
-        }
-        removedFinalizationKeys.insert(key)
     }
 }
 
@@ -205,24 +187,21 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
         }
     }
 
-    public typealias TransactionFinalizationBlock = (SDSAnyWriteTransaction) -> Void
-
-    @objc
-    public func addTransactionFinalizationBlock(forKey key: String,
-                                                block: @escaping TransactionFinalizationBlock) {
+    /// Schedule the given block to run just before this transaction is
+    /// finalized.
+    ///
+    /// - Important
+    /// `block` must not capture any database models, as they may no longer be
+    /// valid by time the transaction finalizes.
+    public func addTransactionFinalizationBlock(
+        forKey key: String,
+        block: @escaping (SDSAnyWriteTransaction) -> Void
+    ) {
         switch writeTransaction {
         case .grdbWrite(let grdbWrite):
             grdbWrite.addTransactionFinalizationBlock(forKey: key) { (transaction: GRDBWriteTransaction) in
                 block(SDSAnyWriteTransaction(.grdbWrite(transaction)))
             }
-        }
-    }
-
-    @objc
-    public func addRemovedFinalizationKey(_ key: String) {
-        switch writeTransaction {
-        case .grdbWrite(let grdbWrite):
-            grdbWrite.addRemovedFinalizationKey(key)
         }
     }
 }

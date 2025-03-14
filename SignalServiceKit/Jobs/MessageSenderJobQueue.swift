@@ -102,7 +102,7 @@ public class MessageSenderJobQueue {
             }
         }
 
-        transaction.addTransactionFinalizationBlock(forKey: "\(#fileID):\(#line)") { _ in
+        transaction.addSyncCompletion {
             self.startPendingJobRecordsIfPossible()
         }
     }

@@ -55,10 +55,6 @@ public extension TSThread {
         return true
     }
 
-    var transactionFinalizationKey: String {
-        return "\(Self.table.tableName).\(self.uniqueId)"
-    }
-
     @available(swift, obsoleted: 1.0)
     func canSendChatMessagesToThread() -> Bool {
         canSendChatMessagesToThread(ignoreAnnouncementOnly: false)

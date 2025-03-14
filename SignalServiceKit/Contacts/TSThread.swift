@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-// MARK: - updateWith...
-
 extension TSThread {
+
+    // MARK: - updateWith...
+
     public func updateWithDraft(
         draftMessageBody: MessageBody?,
         replyInfo: ThreadReplyInfo?,
@@ -78,6 +79,21 @@ extension TSThread {
     ) {
         anyUpdate(transaction: tx) { thread in
             thread.storyViewMode = storyViewMode
+        }
+    }
+
+    // MARK: -
+
+    @objc
+    func scheduleTouchFinalization(transaction tx: SDSAnyWriteTransaction) {
+        tx.addTransactionFinalizationBlock(forKey: uniqueId) { tx in
+            let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
+            guard let selfThread = Self.anyFetch(uniqueId: self.uniqueId, transaction: tx) else {
+                return
+            }
+
+            databaseStorage.touch(thread: selfThread, shouldReindex: false, transaction: tx)
         }
     }
 }

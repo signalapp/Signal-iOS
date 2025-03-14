@@ -467,22 +467,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     }
 }
 
-- (void)scheduleTouchFinalizationWithTransaction:(SDSAnyWriteTransaction *)transactionForMethod
-{
-    OWSAssertDebug(transactionForMethod != nil);
-
-    // If we insert, update or remove N interactions in a given
-    // transactions, we don't need to touch the same thread more
-    // than once.
-    [transactionForMethod addTransactionFinalizationBlockForKey:self.transactionFinalizationKey
-                                                          block:^(SDSAnyWriteTransaction *transactionForBlock) {
-                                                              [SSKEnvironment.shared.databaseStorageRef
-                                                                    touchThread:self
-                                                                  shouldReindex:NO
-                                                                    transaction:transactionForBlock];
-                                                          }];
-}
-
 #pragma mark - Archival
 
 + (BOOL)legacyIsArchivedWithLastMessageDate:(nullable NSDate *)lastMessageDate
