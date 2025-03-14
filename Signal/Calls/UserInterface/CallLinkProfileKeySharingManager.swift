@@ -63,33 +63,26 @@ public class CallLinkProfileKeySharingManager {
     }
 
     private func sendProfileKey(_ profileKey: ProfileKey, toAci aci: Aci, tx: DBWriteTransaction) {
-        let address = SignalServiceAddress(aci)
-        if
-            let thread = TSContactThread.getWithContactAddress(
-                address,
-                transaction: SDSDB.shimOnlyBridge(tx)
-            )
-        {
-            let profileKeyMessage = OWSProfileKeyMessage(
-                thread: thread,
-                profileKey: profileKey.serialize().asData,
-                transaction: SDSDB.shimOnlyBridge(tx)
-            )
-            let preparedMessage = PreparedOutgoingMessage.preprepared(
-                transientMessageWithoutAttachments: profileKeyMessage
-            )
-            let sendPromise = SSKEnvironment.shared.messageSenderJobQueueRef.add(
-                .promise,
-                message: preparedMessage,
-                transaction: SDSDB.shimOnlyBridge(tx)
-            )
-            Task { @MainActor in
-                do {
-                    try await sendPromise.awaitable()
-                } catch is SpamChallengeRequiredError {
-                    Logger.warn("Marking \(aci) as eligible for another attempt because of a captcha.")
-                    self.consideredAcis.remove(aci)
-                }
+        let thread = TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(aci), transaction: tx)
+        let profileKeyMessage = OWSProfileKeyMessage(
+            thread: thread,
+            profileKey: profileKey.serialize().asData,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+        let preparedMessage = PreparedOutgoingMessage.preprepared(
+            transientMessageWithoutAttachments: profileKeyMessage
+        )
+        let sendPromise = SSKEnvironment.shared.messageSenderJobQueueRef.add(
+            .promise,
+            message: preparedMessage,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+        Task { @MainActor in
+            do {
+                try await sendPromise.awaitable()
+            } catch is SpamChallengeRequiredError {
+                Logger.warn("Marking \(aci) as eligible for another attempt because of a captcha.")
+                self.consideredAcis.remove(aci)
             }
         }
     }
