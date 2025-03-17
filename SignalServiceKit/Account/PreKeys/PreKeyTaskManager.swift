@@ -410,12 +410,8 @@ internal struct PreKeyTaskManager {
 
     // MARK: Message Processing
 
-    private class MessageProcessingTimeoutError: Swift.Error {}
-
-    /// Waits (potentially forever) for message processing, pausing every couple of seconds if not finished to check for cancellation.
+    /// Waits (potentially forever) for message processing. Supports cancellation.
     private func waitForMessageProcessing(identity: OWSIdentity) async throws {
-        try Task.checkCancellation()
-
         switch identity {
         case .aci:
             // We can't change our ACI via a message, so there's no need to wait.
@@ -425,18 +421,12 @@ internal struct PreKeyTaskManager {
             break
         }
 
-        do {
-            try await messageProcessor.waitForFetchingAndProcessing().asPromise()
-                .timeout(seconds: 3, timeoutErrorBlock: { MessageProcessingTimeoutError() })
-                .awaitable()
-        } catch let error {
-            if error is MessageProcessingTimeoutError {
-                // try again so we get the chance to check for cancellation.
-                try await self.waitForMessageProcessing(identity: identity)
-                return
-            }
-            throw SSKUnretryableError.messageProcessingFailed
+        let continuation = CancellableContinuation<Void>()
+        Task {
+            await messageProcessor.waitForFetchingAndProcessing().awaitable()
+            continuation.resume(with: .success(()))
         }
+        try await continuation.wait()
     }
 
     // MARK: Persist
