@@ -889,7 +889,7 @@ public class GroupsV2Impl: GroupsV2 {
             downloadedAvatars.merge(GroupV2DownloadedAvatars.from(groupModel: groupModel))
         }
 
-        let protoAvatarUrlPaths = try GroupsV2Protos.collectAvatarUrlPaths(
+        let protoAvatarUrlPaths = GroupsV2Protos.collectAvatarUrlPaths(
             groupProtos: groupProtos,
             changeActionsProtos: changeActionsProtos
         )

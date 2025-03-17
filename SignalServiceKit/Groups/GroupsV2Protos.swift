@@ -578,7 +578,7 @@ public class GroupsV2Protos {
     public class func collectAvatarUrlPaths(
         groupProtos: [GroupsProtoGroup] = [],
         changeActionsProtos: [GroupsProtoGroupChangeActions] = []
-    ) throws -> [String] {
+    ) -> [String] {
         var avatarUrlPaths = [String]()
         for groupProto in groupProtos {
             avatarUrlPaths += self.collectAvatarUrlPaths(groupProto: groupProto)
