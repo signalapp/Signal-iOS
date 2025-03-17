@@ -72,7 +72,7 @@ enum TimeGatedBatch {
     static func processAllAsync(
         db: any DB,
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
-        processBatch: @escaping (DBWriteTransaction) throws -> Int
+        processBatch: (DBWriteTransaction) throws -> Int
     ) async rethrows -> Int {
         var itemCount = 0
         while true {
