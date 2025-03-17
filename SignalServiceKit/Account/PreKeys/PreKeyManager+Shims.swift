@@ -64,8 +64,6 @@ public struct _PreKeyManager_MessageProcessorWrapper: PreKey.Shims.MessageProces
     }
 
     public func waitForFetchingAndProcessing() -> Guarantee<Void> {
-        messageProcessor.waitForFetchingAndProcessing(
-            suspensionBehavior: .onlyWaitIfAlreadyInProgress
-        )
+        messageProcessor.waitForFetchingAndProcessing()
     }
 }
