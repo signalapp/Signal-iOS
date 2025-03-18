@@ -320,6 +320,8 @@ extension MockConversationView: CVComponentDelegate {
 
     func didTapFailedOrPendingDownloads(_ message: TSMessage) {}
 
+    func didCancelDownload(_ message: TSMessage, attachmentId: Attachment.IDType) {}
+
     // MARK: -
 
     func didTapReplyToItem(_ itemViewModel: CVItemViewModelImpl) {}

@@ -1044,6 +1044,8 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func didTapFailedOrPendingDownloads(_ message: TSMessage) {}
 
+    func didCancelDownload(_ message: TSMessage, attachmentId: Attachment.IDType) {}
+
     // MARK: -
 
     // TODO:

@@ -151,6 +151,10 @@ public class CVViewState: NSObject {
 
     var unwrappedGiftMessageIds = Set<String>()
 
+    // MARK: - Attachment downloads
+
+    var manuallyCanceledDownloadsMessageIds = Set<String>()
+
     // MARK: - 
 
     public init(

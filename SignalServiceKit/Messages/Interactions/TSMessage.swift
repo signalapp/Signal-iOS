@@ -65,23 +65,10 @@ public extension TSMessage {
         return self.body?.nilIfEmpty
     }
 
-    func failedAttachments(transaction: SDSAnyReadTransaction) -> [AttachmentPointer] {
-        let attachments: [Attachment] = allAttachments(transaction: transaction)
-        let states: [AttachmentDownloadState] = [.failed]
-        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states), tx: transaction)
-    }
-
-    func failedOrPendingAttachments(transaction: SDSAnyReadTransaction) -> [AttachmentPointer] {
-        let attachments: [Attachment] = allAttachments(transaction: transaction)
+    func failedOrPendingAttachments(transaction tx: SDSAnyReadTransaction) -> [AttachmentPointer] {
+        let attachments: [Attachment] = allAttachments(transaction: tx)
         let states: [AttachmentDownloadState] = [.failed, .none]
-        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states), tx: transaction)
-    }
 
-    private static func onlyAttachmentPointers(
-        attachments: [Attachment],
-        withStateIn states: Set<AttachmentDownloadState>,
-        tx: SDSAnyReadTransaction
-    ) -> [AttachmentPointer] {
         return attachments.compactMap { attachment -> AttachmentPointer? in
             guard
                 attachment.asStream() == nil,
