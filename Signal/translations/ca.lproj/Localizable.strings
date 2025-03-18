@@ -4160,7 +4160,7 @@
 "LINKED_DEVICE_NOTIFICATION_BODY" = "S'ha vinculat un nou dispositiu al teu compte a les %1$@. Toca per veure.";
 
 /* Body for megaphone notification when a new device is linked. Embeds {{ time the device was linked }} */
-"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "S’ha vinculat un nou dispositiu al compte. Hora: {time} .";
+"LINKED_DEVICE_NOTIFICATION_MEGAPHONE_BODY" = "S’ha vinculat un nou dispositiu al compte. Hora: %1$@ .";
 
 /* Title for system notification when a new device is linked. */
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "Has vinculat un nou dispositiu";
