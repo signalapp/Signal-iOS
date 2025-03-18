@@ -176,6 +176,15 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
                     )
                     return ReceivedBackupAuthCredentials(redemptionTime: $0.redemptionTime, credential: credential)
                 } catch MessageBackupKeyMaterialError.missingMessageBackupKey where type != credentialType {
+                    // If the message backup key is missing and the caller is asking for
+                    // media credentials, ignore the error
+                    return nil
+                } catch MessageBackupKeyMaterialError.missingMediaRootBackupKey where type != credentialType {
+                    // Similarly, If the media backup key is missing and the caller is
+                    // asking for message credentials, ignore the error.  This will happen,
+                    // for example, during registration when restoring from backup - the
+                    // user will have entered a message backup key, but the media root backup
+                    // key won't be available until after downloading and reading the backup info.
                     return nil
                 } catch {
                     owsFailDebug("Error creating credential")
