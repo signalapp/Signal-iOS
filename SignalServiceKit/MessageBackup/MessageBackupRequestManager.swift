@@ -506,6 +506,8 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
 
     public func redeemReceipt(receiptCredentialPresentation: Data) async throws {
         _ = OWSRequestFactory.redeemReceipt(receiptCredentialPresentation: receiptCredentialPresentation)
+        // TODO: Send the request built on the previous line to the server.
+        throw OWSAssertionError("Not implemented.")
     }
 
     // MARK: - Private utility methods
