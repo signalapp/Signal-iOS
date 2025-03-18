@@ -16,7 +16,7 @@ final class TurnServerInfoTest: XCTestCase {
         ]
 
         for (idx, testCase) in testCases.enumerated() {
-            let parsedIceServers: [RTCIceServer] = try RTCIceServerFetcher.parse(
+            let (parsedIceServers, ttl) = try RTCIceServerFetcher.parse(
                 turnServerInfoJsonData: testCase.jsonData
             )
 
@@ -32,6 +32,12 @@ final class TurnServerInfoTest: XCTestCase {
                 parsedIceServerUrls,
                 testCase.expectedUrls,
                 "URL comparison failed for test case \(idx)"
+            )
+
+            XCTAssertEqual(
+                ttl,
+                testCase.expectedTtl,
+                "Unexpected ttl value \(ttl) for test case \(idx)"
             )
         }
     }
@@ -50,10 +56,12 @@ private struct TestCase {
     /// parsed from this test case.
     let expectedUrls: [String]
     let jsonData: Data
+    let expectedTtl: Int
 
-    init(expectedUrls: [String], jsonString: String) {
+    init(expectedUrls: [String], jsonString: String, expectedTtl: Int) {
         self.expectedUrls = expectedUrls
         self.jsonData = Data(jsonString.utf8)
+        self.expectedTtl = expectedTtl
     }
 
     static let multipleTurnServer = TestCase(
@@ -87,7 +95,45 @@ private struct TestCase {
                 "hostname": "5.voip.signal.org"
             }]
         }
-        """
+        """,
+        expectedTtl: 0
+    )
+
+    static let multipleTurnServerWithTtl = TestCase(
+        expectedUrls: [
+            "turn:[4444:bbbb:cccc:0:0:0:0:1]",
+            "turn:4.turn.signal.org",
+            "turn:[5555:bbbb:cccc:0:0:0:0:1]",
+            "turn:5.turn.signal.org",
+        ],
+        jsonString: """
+        {
+            "relays": [{
+                "username": "user",
+                "password": "pass",
+                "urls": [
+                    "turn:4.turn.signal.org"
+                ],
+                "urlsWithIps": [
+                    "turn:[4444:bbbb:cccc:0:0:0:0:1]",
+                ],
+                "hostname": "4.voip.signal.org",
+                "ttl": "86400"
+            }, {
+                "username": "user",
+                "password": "pass",
+                "urls": [
+                    "turn:5.turn.signal.org"
+                ],
+                "urlsWithIps": [
+                    "turn:[5555:bbbb:cccc:0:0:0:0:1]",
+                ],
+                "hostname": "5.voip.signal.org",
+                "ttl": "43200"
+            }]
+        }
+        """,
+        expectedTtl: 43200
     )
 
     static let nullableHostnameTurnServer = TestCase(
@@ -108,6 +154,7 @@ private struct TestCase {
                 ]
             }]
         }
-        """
+        """,
+        expectedTtl: 0
     )
 }
