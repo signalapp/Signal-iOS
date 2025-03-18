@@ -14,12 +14,6 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
     private var items: [CVMediaAlbumItem] {
         bodyMedia.items
     }
-    private var mediaAlbumHasFailedAttachment: Bool {
-        bodyMedia.mediaAlbumHasFailedAttachment
-    }
-    private var mediaAlbumHasPendingAttachment: Bool {
-        bodyMedia.mediaAlbumHasPendingAttachment
-    }
 
     private var areAllItemsImages: Bool {
         for item in items {
@@ -38,10 +32,6 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             }
         }
         return true
-    }
-
-    var hasDownloadButton: Bool {
-        mediaAlbumHasPendingAttachment
     }
 
     private let footerOverlay: CVComponent?
@@ -153,7 +143,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             stackView.layoutSubviewToFillSuperviewEdges(innerShadowView)
         }
 
-        if hasDownloadButton {
+        if bodyMedia.mediaAlbumHasPendingAttachment {
             let iconView = CVImageView()
             iconView.setTemplateImageName(Theme.iconName(.arrowDown), tintColor: UIColor.ows_white)
             if albumView.itemViews.count > 1 {
@@ -203,7 +193,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 stackView.addSubviewToCenterOnSuperview(iconView, size: .square(24))
             }
 
-            if mediaAlbumHasPendingAttachment {
+            if bodyMedia.mediaAlbumHasPendingAttachment {
                 let pendingManualDownloadAttachments = items
                     .lazy
                     .compactMap { (item: CVMediaAlbumItem) -> ReferencedAttachment? in
@@ -340,10 +330,25 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
     // MARK: - Events
 
-    public override func handleTap(sender: UIGestureRecognizer,
-                                   componentDelegate: CVComponentDelegate,
-                                   componentView: CVComponentView,
-                                   renderItem: CVRenderItem) -> Bool {
+    public override func cellWillBecomeVisible(
+        componentDelegate: CVComponentDelegate
+    ) {
+        AssertIsOnMainThread()
+
+        if
+            let message = interaction as? TSMessage,
+            bodyMedia.mediaAlbumHasFailedAttachment || bodyMedia.mediaAlbumHasPendingAttachment
+        {
+            componentDelegate.willBecomeVisibleWithFailedOrPendingDownloads(message)
+        }
+    }
+
+    public override func handleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem
+    ) -> Bool {
         AssertIsOnMainThread()
 
         guard let componentView = componentView as? CVComponentViewBodyMedia else {
@@ -354,20 +359,23 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             owsFailDebug("Invalid interaction.")
             return false
         }
-        if hasDownloadButton {
+
+        if bodyMedia.mediaAlbumHasPendingAttachment {
             componentDelegate.didTapFailedOrPendingDownloads(message)
             return true
         }
+
         let albumView = componentView.albumView
         let location = sender.location(in: albumView)
         guard let mediaView = albumView.mediaView(forLocation: location) else {
             Logger.warn("Missing mediaView.")
             return false
         }
-        let isMoreItemsWithMediaView = albumView.isMoreItemsView(mediaView: mediaView)
 
-        if isMoreItemsWithMediaView,
-           mediaAlbumHasFailedAttachment {
+        if
+            albumView.isMoreItemsView(mediaView: mediaView),
+            bodyMedia.mediaAlbumHasFailedAttachment
+        {
             componentDelegate.didTapFailedOrPendingDownloads(message)
             return true
         }
@@ -379,13 +387,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 componentDelegate.didTapFailedOrPendingDownloads(message)
                 return true
             case .enqueuedOrDownloading:
-                Logger.warn("Media attachment not yet downloaded.")
-                SSKEnvironment.shared.databaseStorageRef.write { tx in
-                    DependenciesBridge.shared.attachmentDownloadManager.cancelDownload(
-                        for: pointer.attachment.id,
-                        tx: tx
-                    )
-                }
+                componentDelegate.didCancelDownload(message, attachmentId: pointer.attachment.id)
                 return true
             }
         case .stream(let stream):

@@ -128,6 +128,12 @@ extension ConversationViewController: CVComponentDelegate {
     public func willBecomeVisibleWithFailedOrPendingDownloads(_ message: TSMessage) {
         AssertIsOnMainThread()
 
+        if viewState.manuallyCanceledDownloadsMessageIds.contains(message.uniqueId) {
+            // Don't auto-enqueue download if the user has previously manually
+            // cancelled downloads for this message.
+            return
+        }
+
         // Avoid doing this on the main actor, as this isn't user-initiated.
         Task.detached {
             let db = DependenciesBridge.shared.db
@@ -146,10 +152,28 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapFailedOrPendingDownloads(_ message: TSMessage) {
         AssertIsOnMainThread()
 
-        SSKEnvironment.shared.databaseStorageRef.write { tx in
-            DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
+        let db = DependenciesBridge.shared.db
+        let attachmentDownloadManager = DependenciesBridge.shared.attachmentDownloadManager
+        db.write { tx in
+            attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
                 message,
                 priority: .userInitiated,
+                tx: tx
+            )
+        }
+    }
+
+    public func didCancelDownload(_ message: TSMessage, attachmentId: Attachment.IDType) {
+        AssertIsOnMainThread()
+
+        // Record that the user manually canceled download for this message.
+        viewState.manuallyCanceledDownloadsMessageIds.insert(message.uniqueId)
+
+        let db = DependenciesBridge.shared.db
+        let attachmentDownloadManager = DependenciesBridge.shared.attachmentDownloadManager
+        db.write { tx in
+            attachmentDownloadManager.cancelDownload(
+                for: attachmentId,
                 tx: tx
             )
         }

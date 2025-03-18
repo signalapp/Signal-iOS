@@ -1647,16 +1647,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     // MARK: - Events
 
-    public override func cellWillBecomeVisible(
-        componentDelegate: CVComponentDelegate
-    ) {
-        AssertIsOnMainThread()
-
-        if
-            let message = interaction as? TSMessage,
-            componentState.failedOrPendingDownloads != nil
-        {
-            componentDelegate.willBecomeVisibleWithFailedOrPendingDownloads(message)
+    public override func cellWillBecomeVisible(componentDelegate: any CVComponentDelegate) {
+        subcomponents(forKeys: CVComponentKey.allCases).forEach { subcomponent in
+            subcomponent.cellWillBecomeVisible(componentDelegate: componentDelegate)
         }
     }
 
