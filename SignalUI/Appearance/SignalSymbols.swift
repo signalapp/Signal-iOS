@@ -4,6 +4,7 @@
 //
 
 import SignalServiceKit
+import NaturalLanguage
 public import SwiftUI
 
 public enum SignalSymbol: Character {
@@ -103,12 +104,41 @@ public enum SignalSymbol: Character {
     public static var leave: SignalSymbol {
         localizedSymbol(ltr: .leaveLTR, rtl: .leaveRTL)
     }
+    /// Use this when adding a trailing chevron to the end of strings we are
+    /// localizing ourselves. For names or other user-input text, you might want
+    /// to try ``chevronTrailing(for:)`` instead.
     public static var chevronTrailing: SignalSymbol {
         localizedSymbol(ltr: .chevronRight, rtl: .chevronLeft)
     }
 
     private static func localizedSymbol(ltr: SignalSymbol, rtl: SignalSymbol) -> SignalSymbol {
         CurrentAppContext().isRTL ? rtl : ltr
+    }
+
+    private static var stringIsRTLCache: [String: Bool] = [:]
+    private static func isRTL(string: String) -> Bool {
+        if let isRTL = stringIsRTLCache[string] {
+            return isRTL
+        }
+
+        let languageRecognizer = NLLanguageRecognizer()
+        languageRecognizer.processString(string)
+        let dominantLanguage = languageRecognizer.dominantLanguage
+
+        let isRTL = if let dominantLanguage {
+            Locale.characterDirection(forLanguage: dominantLanguage.rawValue) == .rightToLeft
+        } else {
+            CurrentAppContext().isRTL
+        }
+
+        stringIsRTLCache[string] = isRTL
+        return isRTL
+    }
+
+    /// Use this when adding a chevron to the end of user-input strings like
+    /// names. For strings we are localizing ourselves, use ``chevronTrailing``.
+    public static func chevronTrailing(for string: String) -> SignalSymbol {
+        isRTL(string: string) ? .chevronLeft : .chevronRight
     }
 
     // MARK: - Font

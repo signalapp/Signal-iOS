@@ -459,11 +459,11 @@ struct ConversationHeaderBuilder {
         }
 
         if canTap {
-            let chevron = SignalSymbol.chevronTrailing.attributedString(
+            let chevron = SignalSymbol.chevronTrailing(for: threadName).attributedString(
                 dynamicTypeBaseSize: 24,
                 weight: .bold,
                 leadingCharacter: .nonBreakingSpace,
-                attributes: [.foregroundColor: Theme.snippetColor]
+                attributes: [.foregroundColor: UIColor.Signal.secondaryLabel]
             )
             attributedString.append(chevron)
         }

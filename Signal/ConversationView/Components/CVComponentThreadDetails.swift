@@ -307,19 +307,14 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             attributedString.append(verifiedBadgeAttachment)
         }
 
-        if
-            canTapTitle,
-            let chevron = UIImage(named: "chevron-right-20")
-        {
-            attributedString.append(.with(
-                image: chevron,
-                font: .systemFont(ofSize: 24),
-                attributes: [
-                    .foregroundColor: Theme.primaryIconColor
-                ],
-                centerVerticallyRelativeTo: font,
-                heightReference: .pointSize
-            ))
+        if canTapTitle {
+            attributedString.append(
+                SignalSymbol.chevronTrailing(for: titleText).attributedString(
+                    dynamicTypeBaseSize: 24,
+                    leadingCharacter: .nonBreakingSpace,
+                    attributes: [.foregroundColor: UIColor.Signal.secondaryLabel]
+                )
+            )
         }
 
         return CVLabelConfig.init(
