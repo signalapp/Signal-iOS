@@ -42,15 +42,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     // MARK: - Layout
 
-    private var lastKnownScrollViewSafeAreaSize: CGSize = .zero
-    private lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView(frame: view.bounds)
-        scrollView.delegate = self
-        scrollView.showsVerticalScrollIndicator = false
-        scrollView.showsHorizontalScrollIndicator = false
-        scrollView.decelerationRate = .fast
-        return scrollView
-    }()
+    private var scrollView: ZoomableMediaView!
 
     private(set) var mediaView: UIView!
     private var mediaViewBottomConstraint: NSLayoutConstraint?
@@ -62,91 +54,8 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
     var videoPlayer: VideoPlayer? { videoPlayerView?.videoPlayer }
     private var buttonPlayVideo: UIButton?
 
-    private func updateZoomScaleAndConstraints() {
-        // We want a default layout that...
-        //
-        // * Has the media visually centered.
-        // * The media content should be zoomed to just barely fit by default,
-        //   regardless of the content size.
-        // * We should be able to safely zoom.
-        // * The "min zoom scale" should satisfy the requirements above.
-        // * The user should be able to scale in 4x.
-        //
-        // We use constraint-based layout and adjust
-        // UIScrollView.minimumZoomScale, etc.
-
-        // Determine the media's aspect ratio.
-        //
-        // * mediaView.intrinsicContentSize is most accurate, but
-        //   may not be available yet for media that is loaded async.
-        // * The self.image.size should always be available if the
-        //   media is valid.
-        let mediaSize: CGSize
-        let mediaIntrinsicSize = mediaView.intrinsicContentSize
-        if mediaIntrinsicSize.width > 0 && mediaIntrinsicSize.height > 0 {
-            mediaSize = mediaIntrinsicSize
-        } else if let imageSize = image?.size, imageSize.width > 0, imageSize.height > 0 {
-            mediaSize = imageSize
-        } else {
-            mediaSize = .zero
-        }
-
-        let scrollViewSize = scrollView.safeAreaLayoutGuide.layoutFrame.size
-
-        guard mediaSize.isNonEmpty && scrollViewSize.isNonEmpty else {
-            // Invalid content or view state.
-
-            scrollView.minimumZoomScale = 1
-            scrollView.maximumZoomScale = 1
-            scrollView.zoomScale = 1
-
-            mediaViewTopConstraint?.constant = 0
-            mediaViewBottomConstraint?.constant = 0
-            mediaViewLeadingConstraint?.constant = 0
-            mediaViewTrailingConstraint?.constant = 0
-
-            return
-        }
-
-        // Center the media view in the scroll view.
-        let mediaViewSize = mediaView.frame.size
-        let yOffset = max(0, (scrollView.bounds.height - mediaViewSize.height) / 2)
-        let xOffset = max(0, (scrollView.bounds.width - mediaViewSize.width) / 2)
-        mediaViewTopConstraint?.constant = yOffset
-        mediaViewBottomConstraint?.constant = yOffset
-        mediaViewLeadingConstraint?.constant = xOffset
-        mediaViewTrailingConstraint?.constant = -xOffset
-
-        // Find minScale for .scaleAspectFit-style layout.
-        let scaleWidth = scrollViewSize.width / mediaSize.width
-        let scaleHeight = scrollViewSize.height / mediaSize.height
-        let minScale = min(scaleWidth, scaleHeight)
-        let maxScale = minScale * 8
-
-        scrollView.minimumZoomScale = minScale
-        scrollView.maximumZoomScale = maxScale
-
-        if scrollView.zoomScale < minScale {
-            scrollView.zoomScale = minScale
-        } else if scrollView.zoomScale > maxScale {
-            scrollView.zoomScale = maxScale
-        }
-    }
-
-    private func resetScrollViewZoomIfNecessary() {
-        // In iOS multi-tasking, the size of root view (and hence the scroll view)
-        // is set later, after viewWillAppear, etc.  Therefore we need to reset the
-        // zoomScale to the default whenever the scrollView width changes.
-        let currentScrollViewSize = scrollView.safeAreaLayoutGuide.layoutFrame.size
-        if !(currentScrollViewSize - lastKnownScrollViewSafeAreaSize).asPoint.fuzzyEquals(.zero, tolerance: 0.001) {
-            scrollView.zoomScale = scrollView.minimumZoomScale
-        }
-        lastKnownScrollViewSafeAreaSize = currentScrollViewSize
-    }
-
     func zoomOut(animated: Bool) {
-        guard scrollView.zoomScale != scrollView.minimumZoomScale else { return }
-        scrollView.setZoomScale(scrollView.minimumZoomScale, animated: animated)
+        scrollView.zoomOut(animated: animated)
     }
 
     private func configureVideoPlaybackControls() {
@@ -180,7 +89,6 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
     private func configureMediaView() {
         buildMediaView()
-
         mediaView.contentMode = .scaleAspectFit
         mediaView.isUserInteractionEnabled = true
         mediaView.clipsToBounds = true
@@ -190,16 +98,11 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         mediaView.layer.minificationFilter = .trilinear
         mediaView.layer.magnificationFilter = .trilinear
 
-        scrollView.addSubview(mediaView)
-        mediaViewLeadingConstraint = mediaView.autoPinEdge(toSuperviewEdge: .leading)
-        mediaViewTopConstraint = mediaView.autoPinEdge(toSuperviewEdge: .top)
-        mediaViewTrailingConstraint = mediaView.autoPinEdge(toSuperviewEdge: .trailing)
-        mediaViewBottomConstraint = mediaView.autoPinEdge(toSuperviewEdge: .bottom)
-
-        // We add these gestures to mediaView rather than
-        // the root view so that interacting with the video player
-        // progress bar doesn't trigger any of these gestures.
-        addTapGestureRecognizers(to: mediaView)
+        scrollView = ZoomableMediaView(mediaView: mediaView, onSingleTap: { [weak self] in
+            guard let self else { return }
+            delegate?.mediaItemViewControllerDidTapMedia(self)
+        })
+        scrollView.delegate = self
     }
 
     private func buildMediaView() {
@@ -276,10 +179,10 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
 
         view.backgroundColor = .clear
 
+        configureMediaView()
+
         view.addSubview(scrollView)
         scrollView.autoPinEdgesToSuperviewEdges()
-
-        configureMediaView()
 
         // Video Playback controls
         if isVideo {
@@ -298,7 +201,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         view.layoutIfNeeded()
         mediaView.frame = mediaView.frame
 
-        updateZoomScaleAndConstraints()
+        scrollView.updateZoomScaleForLayout()
         scrollView.zoomScale = scrollView.minimumZoomScale
     }
 
@@ -314,8 +217,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        updateZoomScaleAndConstraints()
-        resetScrollViewZoomIfNecessary()
+        scrollView.updateZoomScaleForLayout()
    }
 
     // MARK: - Helpers
@@ -349,46 +251,6 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         }
     }
 
-    // MARK: - Tap Gestures
-
-    private func addTapGestureRecognizers(to view: UIView) {
-        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap))
-        doubleTap.numberOfTapsRequired = 2
-        view.addGestureRecognizer(doubleTap)
-
-        let singleTap = UITapGestureRecognizer(target: self, action: #selector(handleSingleTap))
-        singleTap.require(toFail: doubleTap)
-        view.addGestureRecognizer(singleTap)
-    }
-
-    @objc
-    private func handleSingleTap(_ gestureRecognizer: UITapGestureRecognizer) {
-        delegate?.mediaItemViewControllerDidTapMedia(self)
-    }
-
-    @objc
-    private func handleDoubleTap(_ gestureRecognizer: UITapGestureRecognizer) {
-        guard scrollView.zoomScale == scrollView.minimumZoomScale else {
-            // If already zoomed in at all, zoom out all the way.
-            zoomOut(animated: true)
-            return
-        }
-
-        let doubleTapZoomScale: CGFloat = 2
-
-        let zoomWidth = scrollView.width / doubleTapZoomScale
-        let zoomHeight = scrollView.height / doubleTapZoomScale
-
-        // center zoom rect around tapLocation
-        let tapLocation = gestureRecognizer.location(in: scrollView)
-        let zoomX = max(0, tapLocation.x - zoomWidth / 2)
-        let zoomY = max(0, tapLocation.y - zoomHeight / 2)
-        let zoomRect = CGRect(x: zoomX, y: zoomY, width: zoomWidth, height: zoomHeight)
-
-        let translatedRect = mediaView.convert(zoomRect, from: scrollView)
-        scrollView.zoom(to: translatedRect, animated: true)
-    }
-
     // MARK: - VideoPlaybackStatusProvider
 
     weak var videoPlaybackStatusObserver: VideoPlaybackStatusObserver?
@@ -410,14 +272,14 @@ extension MediaItemViewController: UIScrollViewDelegate {
     }
 
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        updateZoomScaleAndConstraints()
+        (scrollView as? ZoomableMediaView)?.updateZoomScaleForLayout()
         view.layoutIfNeeded()
     }
 }
 
 extension MediaItemViewController: LoopingVideoViewDelegate {
     func loopingVideoViewChangedPlayerItem() {
-        updateZoomScaleAndConstraints()
+        scrollView.updateZoomScaleForLayout()
         scrollView.zoomScale = scrollView.minimumZoomScale
     }
 }
@@ -441,7 +303,7 @@ extension MediaItemViewController: VideoPlayerViewDelegate {
         if let videoPlaybackStatusObserver, let videoPlayer = view.videoPlayer {
             videoPlaybackStatusObserver.videoPlayerStatusChanged(videoPlayer)
         }
-        updateZoomScaleAndConstraints()
+        scrollView.updateZoomScaleForLayout()
     }
 
     func videoPlayerViewPlaybackTimeDidChange(_ view: VideoPlayerView) {
