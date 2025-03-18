@@ -343,12 +343,20 @@ struct GroupAvatar {
 extension GroupAttributesEditorHelper: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString: String) -> Bool {
         // Truncate the replacement to fit.
-        return TextFieldHelper.textField(
-            textField,
-            shouldChangeCharactersInRange: range,
-            replacementString: replacementString.withoutBidiControlCharacters(),
-            maxGlyphCount: GroupManager.maxGroupNameGlyphCount
-        )
+        let isValidChange = TextFieldHelper.textField(
+                textField,
+                shouldChangeCharactersInRange: range,
+                replacementString: replacementString.withoutBidiControlCharacters(),
+                maxGlyphCount: GroupManager.maxGroupNameGlyphCount
+            )
+            
+            if replacementString.glyphCount > GroupManager.maxGroupNameGlyphCount &&
+                textField.text?.isEmpty == false
+                {
+                textFieldDidChange(textField)
+            }
+
+            return isValidChange
     }
 }
 
