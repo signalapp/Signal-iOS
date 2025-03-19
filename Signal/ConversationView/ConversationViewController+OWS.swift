@@ -149,7 +149,10 @@ extension ConversationViewController {
 
                 // This offset change will be animated by UIKit's UIView animation block
                 // which updateContentInsets() is called within
-                collectionView.setContentOffset(newOffset, animated: false)
+                //Keyboard check hack. We need to invest time in cleaning all of this up. This is way too complicated for checking for offsets to move a scrollviews insets and offsets. It is not sustainable
+                if keyboardOverlap > 40 || keyboardOverlap < 5 {
+                    collectionView.setContentOffset(newOffset, animated: false)
+                }
             }
         }
     }
