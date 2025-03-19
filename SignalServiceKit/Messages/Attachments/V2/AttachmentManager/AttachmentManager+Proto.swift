@@ -70,6 +70,7 @@ extension AttachmentManager {
         }
         builder.setKey(pointer.info.encryptionKey)
         builder.setDigest(pointer.info.digestSHA256Ciphertext)
+        builder.setUploadTimestamp(pointer.uploadTimestamp)
 
         pointer.attachment.blurHash.map(builder.setBlurHash(_:))
 
