@@ -2917,9 +2917,8 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         if !inMemoryState.hasProfileName {
             if let profileInfo = inMemoryState.pendingProfileInfo {
-                let profileManager = deps.profileManager
-                db.write { tx in
-                    profileManager.updateLocalProfile(
+                return db.write { tx in
+                    deps.profileManager.updateLocalProfile(
                         givenName: profileInfo.givenName,
                         familyName: profileInfo.familyName,
                         avatarData: profileInfo.avatarData,
@@ -2947,12 +2946,12 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                     self.inMemoryState.pendingProfileInfo = nil
                     return self.nextStep()
                 }
+            } else {
+                return .value(.setupProfile(RegistrationProfileState(
+                    e164: accountIdentity.e164,
+                    phoneNumberDiscoverability: inMemoryState.phoneNumberDiscoverability.orDefault
+                )))
             }
-
-            return .value(.setupProfile(RegistrationProfileState(
-                e164: accountIdentity.e164,
-                phoneNumberDiscoverability: inMemoryState.phoneNumberDiscoverability.orDefault
-            )))
         }
 
         if inMemoryState.phoneNumberDiscoverability == nil {
