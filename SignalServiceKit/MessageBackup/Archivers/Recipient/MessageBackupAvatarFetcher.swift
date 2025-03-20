@@ -205,6 +205,9 @@ public class MessageBackupAvatarFetcher {
                         _ = try await profileManager.fetchLocalUsersProfile(
                             authedAccount: .implicit()
                         )
+                        try await profileManager.downloadAndDecryptLocalUserAvatarIfNeeded(
+                            authedAccount: .implicit()
+                        )
                     } else {
                         _ = try await profileFetcher.fetchProfileImpl(
                             for: serviceId,
