@@ -250,12 +250,20 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         authedAccount: AuthedAccount,
         transaction: DBWriteTransaction
     ) {
-        // clearKeys will remove any local state and clear any in progress backup state.
-        // This will prevent us continuing any in progress backups/exposes.
-        clearKeys(transaction: transaction)
+        // Record if the existing master key has been backed up.
+        let hasBackedUpMasterKey = localStorage.getIsMasterKeyBackedUp(transaction)
 
+        // clearInProgressBackup will clear any in progress backup state.
+        // This will prevent us continuing any in progress backups/exposes.
+        clearInProgressBackup(transaction)
+
+        // If the master key has ever been backed up to SVR, persist that in
+        // local SVR state. For better or worse, there are other parts of the
+        // code that uses the presence of this value as an indicator of
+        // running against modern endpoints (e.g. OWS2FAManager uses this to
+        // as part of the check to determine if the v1 pin has been update to v1)
         updateLocalSVRState(
-            isMasterKeyBackedUp: false,
+            isMasterKeyBackedUp: hasBackedUpMasterKey,
             pinType: .alphanumeric,
             encodedPINVerificationString: nil,
             mrEnclaveStringValue: nil,
