@@ -57,13 +57,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
     private var innerVStackConfig: CVStackViewConfig {
 
-        let layoutMargins: UIEdgeInsets
-        if itemModel.itemViewState.isFirstInCluster {
-            layoutMargins = UIEdgeInsets(hMargin: 10, vMargin: 10)
-        } else {
-            layoutMargins = UIEdgeInsets(top: 0, left: 10, bottom: 10, right: 10)
-        }
-
+        let layoutMargins: UIEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 10, right: 10)
         return CVStackViewConfig(axis: .vertical,
                                  alignment: .center,
                                  spacing: 12,
