@@ -47,7 +47,7 @@ class GroupCallRecordRingingCleanupManager {
         db: any DB,
         interactionStore: InteractionStore,
         groupCallPeekClient: GroupCallPeekClient,
-        notificationPresenter: Shims.NotificationPresenter,
+        notificationPresenter: NotificationPresenter,
         threadStore: ThreadStore
     ) {
         self.callRecordStore = callRecordStore
@@ -55,22 +55,8 @@ class GroupCallRecordRingingCleanupManager {
         self.db = db
         self.interactionStore = interactionStore
         self.groupCallPeekClient = groupCallPeekClient
-        self.notificationPresenter = notificationPresenter
+        self.notificationPresenter = Wrappers.NotificationPresenter(notificationPresenter: notificationPresenter)
         self.threadStore = threadStore
-    }
-
-    static func fromGlobals() -> GroupCallRecordRingingCleanupManager {
-        return GroupCallRecordRingingCleanupManager(
-            callRecordStore: DependenciesBridge.shared.callRecordStore,
-            callRecordQuerier: DependenciesBridge.shared.callRecordQuerier,
-            db: DependenciesBridge.shared.db,
-            interactionStore: DependenciesBridge.shared.interactionStore,
-            groupCallPeekClient: SSKEnvironment.shared.groupCallManagerRef.groupCallPeekClient,
-            notificationPresenter: Wrappers.NotificationPresenter(
-                notificationPresenter: SSKEnvironment.shared.notificationPresenterRef
-            ),
-            threadStore: DependenciesBridge.shared.threadStore
-        )
     }
 
     func cleanupRingingCalls(tx: DBWriteTransaction) {
@@ -179,9 +165,9 @@ class GroupCallRecordRingingCleanupManager {
     }
 }
 
-// MARK: - Mocks
+// MARK: - Shims
 
-extension GroupCallRecordRingingCleanupManager {
+private extension GroupCallRecordRingingCleanupManager {
     enum Shims {
         typealias NotificationPresenter = GroupCallRecordRingingCleanupManager_NotificationPresenter_Shim
     }
@@ -191,7 +177,7 @@ extension GroupCallRecordRingingCleanupManager {
     }
 }
 
-protocol GroupCallRecordRingingCleanupManager_NotificationPresenter_Shim {
+private protocol GroupCallRecordRingingCleanupManager_NotificationPresenter_Shim {
     func notifyUserGroupCallStarted(
         groupCallInteraction: OWSGroupCallMessage,
         groupThread: TSGroupThread,
@@ -199,7 +185,7 @@ protocol GroupCallRecordRingingCleanupManager_NotificationPresenter_Shim {
     )
 }
 
-class GroupCallRecordRingingCleanupManager_NotificationPresenter_Wrapper: GroupCallRecordRingingCleanupManager_NotificationPresenter_Shim {
+private class GroupCallRecordRingingCleanupManager_NotificationPresenter_Wrapper: GroupCallRecordRingingCleanupManager_NotificationPresenter_Shim {
     private let notificationPresenter: any NotificationPresenter
 
     init(notificationPresenter: any NotificationPresenter) {

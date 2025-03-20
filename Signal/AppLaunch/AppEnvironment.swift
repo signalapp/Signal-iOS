@@ -75,19 +75,43 @@ public class AppEnvironment: NSObject {
         }
 
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            let isPrimaryDevice = SSKEnvironment.shared.databaseStorageRef.read { tx -> Bool in
-                return DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx).isPrimaryDevice ?? true
-            }
-
             let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
+            let callRecordStore = DependenciesBridge.shared.callRecordStore
+            let callRecordQuerier = DependenciesBridge.shared.callRecordQuerier
             let db = DependenciesBridge.shared.db
             let deletedCallRecordCleanupManager = DependenciesBridge.shared.deletedCallRecordCleanupManager
-            let groupCallRecordRingingCleanupManager = GroupCallRecordRingingCleanupManager.fromGlobals()
+            let groupCallPeekClient = SSKEnvironment.shared.groupCallManagerRef.groupCallPeekClient
             let inactiveLinkedDeviceFinder = DependenciesBridge.shared.inactiveLinkedDeviceFinder
+            let interactionStore = DependenciesBridge.shared.interactionStore
             let learnMyOwnPniManager = DependenciesBridge.shared.learnMyOwnPniManager
             let linkedDevicePniKeyManager = DependenciesBridge.shared.linkedDevicePniKeyManager
             let masterKeySyncManager = DependenciesBridge.shared.masterKeySyncManager
+            let notificationPresenter = SSKEnvironment.shared.notificationPresenterRef
             let pniHelloWorldManager = DependenciesBridge.shared.pniHelloWorldManager
+            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+            let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
+            let threadStore = DependenciesBridge.shared.threadStore
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+            let avatarDefaultColorStorageServiceMigrator = AvatarDefaultColorStorageServiceMigrator(
+                db: db,
+                recipientDatabaseTable: recipientDatabaseTable,
+                storageServiceManager: storageServiceManager,
+                threadStore: threadStore
+            )
+            let groupCallRecordRingingCleanupManager = GroupCallRecordRingingCleanupManager(
+                callRecordStore: callRecordStore,
+                callRecordQuerier: callRecordQuerier,
+                db: db,
+                interactionStore: interactionStore,
+                groupCallPeekClient: groupCallPeekClient,
+                notificationPresenter: notificationPresenter,
+                threadStore: threadStore
+            )
+
+            let isPrimaryDevice = db.read { tx -> Bool in
+                return tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice
+            }
 
             if isPrimaryDevice {
                 Task {
@@ -96,6 +120,14 @@ public class AppEnvironment: NSObject {
                         try await pniHelloWorldManager.sayHelloWorldIfNecessary()
                     } catch {
                         Logger.warn("Couldn't initialize PNI: \(error)")
+                    }
+                }
+
+                Task {
+                    do {
+                        try await avatarDefaultColorStorageServiceMigrator.performMigrationIfNecessary()
+                    } catch {
+                        Logger.warn("Couldn't perform avatar default color migration: \(error)")
                     }
                 }
             } else {

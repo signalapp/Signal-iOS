@@ -2768,6 +2768,7 @@
 		D9F6554429D798CC002A330A /* FactoryInitialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554329D798CC002A330A /* FactoryInitialization.swift */; };
 		D9F6554829DA4277002A330A /* FactoryInitializationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */; };
 		D9F96EDE2D83BEFF00466C6A /* Database+Execute.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F96EDD2D83BEFB00466C6A /* Database+Execute.swift */; };
+		D9F96EDC2D824E9000466C6A /* AvatarDefaultColorStorageServiceMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F96ED92D8249EE00466C6A /* AvatarDefaultColorStorageServiceMigrator.swift */; };
 		D9F9A6392BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */; };
 		D9F9A63B2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */; };
 		D9F9A63D2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63C2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift */; };
@@ -6622,6 +6623,7 @@
 		D9F6554329D798CC002A330A /* FactoryInitialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitialization.swift; sourceTree = "<group>"; };
 		D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitializationTests.swift; sourceTree = "<group>"; };
 		D9F96EDD2D83BEFB00466C6A /* Database+Execute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Database+Execute.swift"; sourceTree = "<group>"; };
+		D9F96ED92D8249EE00466C6A /* AvatarDefaultColorStorageServiceMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarDefaultColorStorageServiceMigrator.swift; sourceTree = "<group>"; };
 		D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkDeleteInteractionJobRecord.swift; sourceTree = "<group>"; };
 		D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkDeleteInteractionJobQueue.swift; sourceTree = "<group>"; };
 		D9F9A63C2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeAddressableMessageFinder.swift; sourceTree = "<group>"; };
@@ -10328,7 +10330,6 @@
 			isa = PBXGroup;
 			children = (
 				8847E6F126A0EFBD0063E319 /* AvatarEditViewController.swift */,
-				8847E6EF26A078200063E319 /* AvatarHistoryManager.swift */,
 				883A7FC2269F4C0000841DF9 /* AvatarSettingsViewController.swift */,
 			);
 			path = Avatars;
@@ -11082,6 +11083,7 @@
 				F94D12FD28BD0DD900B2C478 /* Accessibility */,
 				5045F44129E0DAA400058E5F /* AppLaunch */,
 				661AEE462C2088DF0046B1D8 /* Attachments */,
+				D9F96EDB2D824E6900466C6A /* Avatars */,
 				D9E43BE12CC194140001536E /* Calls */,
 				50B6BCAF2AEC4F3B0010FB3B /* Contacts */,
 				3448BFC01EDF0EA7005B2D69 /* ConversationView */,
@@ -12630,6 +12632,15 @@
 				D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */,
 			);
 			path = SDSCodableModel;
+			sourceTree = "<group>";
+		};
+		D9F96EDB2D824E6900466C6A /* Avatars */ = {
+			isa = PBXGroup;
+			children = (
+				D9F96ED92D8249EE00466C6A /* AvatarDefaultColorStorageServiceMigrator.swift */,
+				8847E6EF26A078200063E319 /* AvatarHistoryManager.swift */,
+			);
+			path = Avatars;
 			sourceTree = "<group>";
 		};
 		E19C3D922CF6B34200F2C496 /* QRCodes */ = {
@@ -16301,6 +16312,7 @@
 				D9E43C132CC194140001536E /* AudioSource.swift in Sources */,
 				8813F6E12330082900ADEC6A /* AudioWaveformProgressView.swift in Sources */,
 				50B6BCB12AEC4F4D0010FB3B /* AuthorMergeHelperBuilder.swift in Sources */,
+				D9F96EDC2D824E9000466C6A /* AvatarDefaultColorStorageServiceMigrator.swift in Sources */,
 				8847E6F226A0EFBD0063E319 /* AvatarEditViewController.swift in Sources */,
 				8847E6F026A078200063E319 /* AvatarHistoryManager.swift in Sources */,
 				883A7FC3269F4C0000841DF9 /* AvatarSettingsViewController.swift in Sources */,
