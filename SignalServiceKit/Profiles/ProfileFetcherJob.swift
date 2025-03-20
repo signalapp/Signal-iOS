@@ -337,12 +337,6 @@ public class ProfileFetcherJob {
             )
         } catch {
             Logger.warn("Error: \(error)")
-            if error.isNetworkFailureOrTimeout, localIdentifiers.contains(serviceId: fetchedProfile.profile.serviceId) {
-                // Fetches and local profile updates can conflict. To avoid these conflicts
-                // we treat "partial" profile fetches (where we download the profile but
-                // not the associated avatar) as failures.
-                throw SSKUnretryableError.partialLocalProfileFetch
-            }
             // Reaching this point with anything other than a network failure or
             // timeout should be very rare. It might reflect:
             //

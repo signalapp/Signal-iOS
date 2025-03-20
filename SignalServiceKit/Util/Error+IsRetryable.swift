@@ -103,7 +103,6 @@ public class OWSUnretryableError: CustomNSError, IsRetryableProvider {
 // MARK: -
 
 public enum SSKUnretryableError: Error, IsRetryableProvider {
-    case partialLocalProfileFetch
     case stickerDecryptionFailure
     case downloadCouldNotMoveFile
     case downloadCouldNotDeleteFile
