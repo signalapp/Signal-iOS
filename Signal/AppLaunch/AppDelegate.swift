@@ -725,6 +725,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             Task {
                 do {
                     _ = try await SSKEnvironment.shared.profileManagerRef.fetchLocalUsersProfile(authedAccount: .implicit())
+                    // Don't remove this -- fetching the local user's profile is special-cased
+                    // and won't download the avatar via the normal mechanism.
                     try await SSKEnvironment.shared.profileManagerRef.downloadAndDecryptLocalUserAvatarIfNeeded(
                         authedAccount: .implicit()
                     )
