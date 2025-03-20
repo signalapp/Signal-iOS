@@ -66,37 +66,37 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
 
     private let chatStyleArchiver: MessageBackupChatStyleArchiver
     private let disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore
-    private let donationSubscriptionManager: MessageBackup.AccountData.Shims.DonationSubscriptionManager
+    private let donationSubscriptionManager: MessageBackup.Shims.DonationSubscriptionManager
     private let linkPreviewSettingStore: LinkPreviewSettingStore
     private let localUsernameManager: LocalUsernameManager
     private let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
-    private let preferences: MessageBackup.AccountData.Shims.Preferences
+    private let preferences: MessageBackup.Shims.Preferences
     private let profileManager: MessageBackup.Shims.ProfileManager
-    private let receiptManager: MessageBackup.AccountData.Shims.ReceiptManager
-    private let reactionManager: MessageBackup.AccountData.Shims.ReactionManager
-    private let sskPreferences: MessageBackup.AccountData.Shims.SSKPreferences
-    private let storyManager: MessageBackup.AccountData.Shims.StoryManager
-    private let systemStoryManager: MessageBackup.AccountData.Shims.SystemStoryManager
-    private let typingIndicators: MessageBackup.AccountData.Shims.TypingIndicators
-    private let udManager: MessageBackup.AccountData.Shims.UDManager
+    private let receiptManager: MessageBackup.Shims.ReceiptManager
+    private let reactionManager: MessageBackup.Shims.ReactionManager
+    private let sskPreferences: MessageBackup.Shims.SSKPreferences
+    private let storyManager: MessageBackup.Shims.StoryManager
+    private let systemStoryManager: MessageBackup.Shims.SystemStoryManager
+    private let typingIndicators: MessageBackup.Shims.TypingIndicators
+    private let udManager: MessageBackup.Shims.UDManager
     private let usernameEducationManager: UsernameEducationManager
 
     public init(
         chatStyleArchiver: MessageBackupChatStyleArchiver,
         disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore,
-        donationSubscriptionManager: MessageBackup.AccountData.Shims.DonationSubscriptionManager,
+        donationSubscriptionManager: MessageBackup.Shims.DonationSubscriptionManager,
         linkPreviewSettingStore: LinkPreviewSettingStore,
         localUsernameManager: LocalUsernameManager,
         phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager,
-        preferences: MessageBackup.AccountData.Shims.Preferences,
+        preferences: MessageBackup.Shims.Preferences,
         profileManager: MessageBackup.Shims.ProfileManager,
-        receiptManager: MessageBackup.AccountData.Shims.ReceiptManager,
-        reactionManager: MessageBackup.AccountData.Shims.ReactionManager,
-        sskPreferences: MessageBackup.AccountData.Shims.SSKPreferences,
-        storyManager: MessageBackup.AccountData.Shims.StoryManager,
-        systemStoryManager: MessageBackup.AccountData.Shims.SystemStoryManager,
-        typingIndicators: MessageBackup.AccountData.Shims.TypingIndicators,
-        udManager: MessageBackup.AccountData.Shims.UDManager,
+        receiptManager: MessageBackup.Shims.ReceiptManager,
+        reactionManager: MessageBackup.Shims.ReactionManager,
+        sskPreferences: MessageBackup.Shims.SSKPreferences,
+        storyManager: MessageBackup.Shims.StoryManager,
+        systemStoryManager: MessageBackup.Shims.SystemStoryManager,
+        typingIndicators: MessageBackup.Shims.TypingIndicators,
+        udManager: MessageBackup.Shims.UDManager,
         usernameEducationManager: UsernameEducationManager
     ) {
         self.chatStyleArchiver = chatStyleArchiver

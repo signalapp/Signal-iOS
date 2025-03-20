@@ -13,13 +13,31 @@ extension MessageBackup {
     public enum Shims {
         public typealias BlockingManager = _MessageBackup_BlockingManagerShim
         public typealias ContactManager = _MessageBackup_ContactManagerShim
+        public typealias DonationSubscriptionManager = _MessageBackup_DonationSubscriptionManagerShim
+        public typealias Preferences = _MessageBackup_PreferencesShim
         public typealias ProfileManager = _MessageBackup_ProfileManagerShim
+        public typealias ReactionManager = _MessageBackup_ReactionManagerShim
+        public typealias ReceiptManager = _MessageBackup_ReceiptManagerShim
+        public typealias SSKPreferences = _MessageBackup_SSKPreferencesShim
+        public typealias StoryManager = _MessageBackup_StoryManagerShim
+        public typealias SystemStoryManager = _MessageBackup_SystemStoryManagerShim
+        public typealias TypingIndicators = _MessageBackup_TypingIndicatorsShim
+        public typealias UDManager = _MessageBackup_UDManagerShim
     }
 
     public enum Wrappers {
         public typealias BlockingManager = _MessageBackup_BlockingManagerWrapper
         public typealias ContactManager = _MessageBackup_ContactManagerWrapper
+        public typealias DonationSubscriptionManager = _MessageBackup_DonationSubscriptionManagerWrapper
+        public typealias Preferences = _MessageBackup_PreferencesWrapper
         public typealias ProfileManager = _MessageBackup_ProfileManagerWrapper
+        public typealias ReactionManager = _MessageBackup_ReactionManagerWrapper
+        public typealias ReceiptManager = _MessageBackup_ReceiptManagerWrapper
+        public typealias SSKPreferences = _MessageBackup_SSKPreferencesWrapper
+        public typealias StoryManager = _MessageBackup_StoryManagerWrapper
+        public typealias SystemStoryManager = _MessageBackup_SystemStoryManagerWrapper
+        public typealias TypingIndicators = _MessageBackup_TypingIndicatorsWrapper
+        public typealias UDManager = _MessageBackup_UDManagerWrapper
     }
 }
 
@@ -84,6 +102,74 @@ public class _MessageBackup_ContactManagerWrapper: _MessageBackup_ContactManager
 
     public func insertSignalAccount(_ account: SignalAccount, tx: DBWriteTransaction) {
         account.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+}
+
+// MARK: - DonationSubscriptionManager
+
+public protocol _MessageBackup_DonationSubscriptionManagerShim {
+    func displayBadgesOnProfile(tx: DBReadTransaction) -> Bool
+    func setDisplayBadgesOnProfile(value: Bool, tx: DBWriteTransaction)
+    func getSubscriberID(tx: DBReadTransaction) -> Data?
+    func setSubscriberID(subscriberID: Data, tx: DBWriteTransaction)
+    func getSubscriberCurrencyCode(tx: DBReadTransaction) -> String?
+    func setSubscriberCurrencyCode(currencyCode: Currency.Code?, tx: DBWriteTransaction)
+    func userManuallyCancelledSubscription(tx: DBReadTransaction) -> Bool
+    func setUserManuallyCancelledSubscription(value: Bool, tx: DBWriteTransaction)
+}
+
+public class _MessageBackup_DonationSubscriptionManagerWrapper: _MessageBackup_DonationSubscriptionManagerShim {
+    public func displayBadgesOnProfile(tx: DBReadTransaction) -> Bool {
+        DonationSubscriptionManager.displayBadgesOnProfile(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+    public func setDisplayBadgesOnProfile(value: Bool, tx: DBWriteTransaction) {
+        DonationSubscriptionManager.setDisplayBadgesOnProfile(value, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func getSubscriberID(tx: DBReadTransaction) -> Data? {
+        DonationSubscriptionManager.getSubscriberID(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func setSubscriberID(subscriberID: Data, tx: DBWriteTransaction) {
+        DonationSubscriptionManager.setSubscriberID(subscriberID, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func getSubscriberCurrencyCode(tx: DBReadTransaction) -> String? {
+        DonationSubscriptionManager.getSubscriberCurrencyCode(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func setSubscriberCurrencyCode(currencyCode: Currency.Code?, tx: DBWriteTransaction) {
+        DonationSubscriptionManager.setSubscriberCurrencyCode(currencyCode, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func userManuallyCancelledSubscription(tx: DBReadTransaction) -> Bool {
+        DonationSubscriptionManager.userManuallyCancelledSubscription(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func setUserManuallyCancelledSubscription(value: Bool, tx: DBWriteTransaction) {
+        DonationSubscriptionManager.setUserManuallyCancelledSubscription(value, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+}
+
+// MARK: - Preferences
+
+public protocol _MessageBackup_PreferencesShim {
+    func shouldShowUnidentifiedDeliveryIndicators(tx: DBReadTransaction) -> Bool
+    func setShouldShowUnidentifiedDeliveryIndicators(value: Bool, tx: DBWriteTransaction)
+}
+
+public class _MessageBackup_PreferencesWrapper: _MessageBackup_PreferencesShim {
+    let preferences: Preferences
+    init(preferences: Preferences) {
+        self.preferences = preferences
+    }
+
+    public func shouldShowUnidentifiedDeliveryIndicators(tx: DBReadTransaction) -> Bool {
+        preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func setShouldShowUnidentifiedDeliveryIndicators(value: Bool, tx: DBWriteTransaction) {
+        preferences.setShouldShowUnidentifiedDeliveryIndicators(value, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 
@@ -227,45 +313,29 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
     }
 }
 
-// MARK: - AccountData
+// MARK: - ReactionManager
 
-extension MessageBackup {
-    public enum AccountData {}
+public protocol _MessageBackup_ReactionManagerShim {
+    func customEmojiSet(tx: DBReadTransaction) -> [String]?
+    func setCustomEmojiSet(emojis: [String]?, tx: DBWriteTransaction)
 }
 
-extension MessageBackup.AccountData {
-    public enum Shims {
-        public typealias ReceiptManager = _MessageBackup_AccountData_ReceiptManagerShim
-        public typealias TypingIndicators = _MessageBackup_AccountData_TypingIndicatorsShim
-        public typealias Preferences = _MessageBackup_AccountData_PreferencesShim
-        public typealias SSKPreferences = _MessageBackup_AccountData_SSKPreferencesShim
-        public typealias DonationSubscriptionManager = _MessageBackup_AccountData_DonationSubscriptionManagerShim
-        public typealias StoryManager = _MessageBackup_AccountData_StoryManagerShim
-        public typealias SystemStoryManager = _MessageBackup_AccountData_SystemStoryManagerShim
-        public typealias ReactionManager = _MessageBackup_AccountData_ReactionManagerShim
-        public typealias UDManager = _MessageBackup_AccountData_UDManagerShim
+public class _MessageBackup_ReactionManagerWrapper: _MessageBackup_ReactionManagerShim {
+    public func customEmojiSet(tx: DBReadTransaction) -> [String]? {
+        ReactionManager.customEmojiSet(transaction: SDSDB.shimOnlyBridge(tx))
     }
-
-    public enum Wrappers {
-        public typealias ReceiptManager = _MessageBackup_AccountData_ReceiptManagerWrapper
-        public typealias TypingIndicators = _MessageBackup_AccountData_TypingIndicatorsWrapper
-        public typealias Preferences = _MessageBackup_AccountData_PreferencesWrapper
-        public typealias SSKPreferences = _MessageBackup_AccountData_SSKPreferencesWrapper
-        public typealias DonationSubscriptionManager = _MessageBackup_AccountData_DonationSubscriptionManagerWrapper
-        public typealias StoryManager = _MessageBackup_AccountData_StoryManagerWrapper
-        public typealias SystemStoryManager = _MessageBackup_AccountData_SystemStoryManagerWrapper
-        public typealias ReactionManager = _MessageBackup_AccountData_ReactionManagerWrapper
-        public typealias UDManager = _MessageBackup_AccountData_UDManagerWrapper
+    public func setCustomEmojiSet(emojis: [String]?, tx: DBWriteTransaction) {
+        ReactionManager.setCustomEmojiSet(emojis, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 
-// MARK: - RecipientManager
+// MARK: - ReceiptManager
 
-public protocol _MessageBackup_AccountData_ReceiptManagerShim {
+public protocol _MessageBackup_ReceiptManagerShim {
     func areReadReceiptsEnabled(tx: DBReadTransaction) -> Bool
     func setAreReadReceiptsEnabled(value: Bool, tx: DBWriteTransaction)
 }
-public class _MessageBackup_AccountData_ReceiptManagerWrapper: _MessageBackup_AccountData_ReceiptManagerShim {
+public class _MessageBackup_ReceiptManagerWrapper: _MessageBackup_ReceiptManagerShim {
     let receiptManager: OWSReceiptManager
     init(receiptManager: OWSReceiptManager) {
         self.receiptManager = receiptManager
@@ -280,51 +350,9 @@ public class _MessageBackup_AccountData_ReceiptManagerWrapper: _MessageBackup_Ac
     }
 }
 
-// MARK: - TypingIndicators
+// MARK: - SSKPreferences
 
-public protocol _MessageBackup_AccountData_TypingIndicatorsShim {
-    func areTypingIndicatorsEnabled() -> Bool
-    func setTypingIndicatorsEnabled(value: Bool, tx: DBWriteTransaction)
-}
-public class _MessageBackup_AccountData_TypingIndicatorsWrapper: _MessageBackup_AccountData_TypingIndicatorsShim {
-    let typingIndicators: TypingIndicators
-    init(typingIndicators: TypingIndicators) {
-        self.typingIndicators = typingIndicators
-    }
-
-    public func areTypingIndicatorsEnabled() -> Bool {
-        typingIndicators.areTypingIndicatorsEnabled()
-    }
-
-    public func setTypingIndicatorsEnabled(value: Bool, tx: DBWriteTransaction) {
-        typingIndicators.setTypingIndicatorsEnabled(value: value, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-}
-
-// MARK: - Preferences
-
-public protocol _MessageBackup_AccountData_PreferencesShim {
-    func shouldShowUnidentifiedDeliveryIndicators(tx: DBReadTransaction) -> Bool
-    func setShouldShowUnidentifiedDeliveryIndicators(value: Bool, tx: DBWriteTransaction)
-}
-public class _MessageBackup_AccountData_PreferencesWrapper: _MessageBackup_AccountData_PreferencesShim {
-    let preferences: Preferences
-    init(preferences: Preferences) {
-        self.preferences = preferences
-    }
-
-    public func shouldShowUnidentifiedDeliveryIndicators(tx: DBReadTransaction) -> Bool {
-        preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func setShouldShowUnidentifiedDeliveryIndicators(value: Bool, tx: DBWriteTransaction) {
-        preferences.setShouldShowUnidentifiedDeliveryIndicators(value, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-}
-
-// MARK: SSKPreferences
-
-public protocol _MessageBackup_AccountData_SSKPreferencesShim {
+public protocol _MessageBackup_SSKPreferencesShim {
     func preferContactAvatars(tx: DBReadTransaction) -> Bool
     func setPreferContactAvatars(value: Bool, tx: DBWriteTransaction)
 
@@ -332,7 +360,7 @@ public protocol _MessageBackup_AccountData_SSKPreferencesShim {
     func setShouldKeepMutedChatsArchived(value: Bool, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_AccountData_SSKPreferencesWrapper: _MessageBackup_AccountData_SSKPreferencesShim {
+public class _MessageBackup_SSKPreferencesWrapper: _MessageBackup_SSKPreferencesShim {
     public func preferContactAvatars(tx: DBReadTransaction) -> Bool {
         SSKPreferences.preferContactAvatars(transaction: SDSDB.shimOnlyBridge(tx))
     }
@@ -348,54 +376,9 @@ public class _MessageBackup_AccountData_SSKPreferencesWrapper: _MessageBackup_Ac
     }
 }
 
-// MARK: DonationSubscriptionManager
+// MARK: - StoryManager
 
-public protocol _MessageBackup_AccountData_DonationSubscriptionManagerShim {
-    func displayBadgesOnProfile(tx: DBReadTransaction) -> Bool
-    func setDisplayBadgesOnProfile(value: Bool, tx: DBWriteTransaction)
-    func getSubscriberID(tx: DBReadTransaction) -> Data?
-    func setSubscriberID(subscriberID: Data, tx: DBWriteTransaction)
-    func getSubscriberCurrencyCode(tx: DBReadTransaction) -> String?
-    func setSubscriberCurrencyCode(currencyCode: Currency.Code?, tx: DBWriteTransaction)
-    func userManuallyCancelledSubscription(tx: DBReadTransaction) -> Bool
-    func setUserManuallyCancelledSubscription(value: Bool, tx: DBWriteTransaction)
-}
-
-public class _MessageBackup_AccountData_DonationSubscriptionManagerWrapper: _MessageBackup_AccountData_DonationSubscriptionManagerShim {
-    public func displayBadgesOnProfile(tx: DBReadTransaction) -> Bool {
-        DonationSubscriptionManager.displayBadgesOnProfile(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-    public func setDisplayBadgesOnProfile(value: Bool, tx: DBWriteTransaction) {
-        DonationSubscriptionManager.setDisplayBadgesOnProfile(value, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func getSubscriberID(tx: DBReadTransaction) -> Data? {
-        DonationSubscriptionManager.getSubscriberID(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func setSubscriberID(subscriberID: Data, tx: DBWriteTransaction) {
-        DonationSubscriptionManager.setSubscriberID(subscriberID, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func getSubscriberCurrencyCode(tx: DBReadTransaction) -> String? {
-        DonationSubscriptionManager.getSubscriberCurrencyCode(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func setSubscriberCurrencyCode(currencyCode: Currency.Code?, tx: DBWriteTransaction) {
-        DonationSubscriptionManager.setSubscriberCurrencyCode(currencyCode, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func userManuallyCancelledSubscription(tx: DBReadTransaction) -> Bool {
-        DonationSubscriptionManager.userManuallyCancelledSubscription(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-    public func setUserManuallyCancelledSubscription(value: Bool, tx: DBWriteTransaction) {
-        DonationSubscriptionManager.setUserManuallyCancelledSubscription(value, updateStorageService: false, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-}
-
-// MARK: StoryManager
-
-public protocol _MessageBackup_AccountData_StoryManagerShim {
+public protocol _MessageBackup_StoryManagerShim {
     func hasSetMyStoriesPrivacy(tx: DBReadTransaction) -> Bool
     func setHasSetMyStoriesPrivacy(value: Bool, tx: DBWriteTransaction)
     func areStoriesEnabled(tx: DBReadTransaction) -> Bool
@@ -404,7 +387,7 @@ public protocol _MessageBackup_AccountData_StoryManagerShim {
     func setAreViewReceiptsEnabled(value: Bool, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_AccountData_StoryManagerWrapper: _MessageBackup_AccountData_StoryManagerShim {
+public class _MessageBackup_StoryManagerWrapper: _MessageBackup_StoryManagerShim {
     public func hasSetMyStoriesPrivacy(tx: DBReadTransaction) -> Bool {
         StoryManager.hasSetMyStoriesPrivacy(transaction: SDSDB.shimOnlyBridge(tx))
     }
@@ -425,16 +408,16 @@ public class _MessageBackup_AccountData_StoryManagerWrapper: _MessageBackup_Acco
     }
 }
 
-// MARK: SystemStoryManager
+// MARK: - SystemStoryManager
 
-public protocol _MessageBackup_AccountData_SystemStoryManagerShim {
+public protocol _MessageBackup_SystemStoryManagerShim {
     func isOnboardingStoryViewed(tx: DBReadTransaction) -> Bool
     func setHasViewedOnboardingStory(value: Bool, tx: DBWriteTransaction)
     func hasSeenGroupStoryEducationSheet(tx: DBReadTransaction) -> Bool
     func setHasSeenGroupStoryEducationSheet(value: Bool, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_AccountData_SystemStoryManagerWrapper: _MessageBackup_AccountData_SystemStoryManagerShim {
+public class _MessageBackup_SystemStoryManagerWrapper: _MessageBackup_SystemStoryManagerShim {
     let systemStoryManager: SystemStoryManagerProtocol
     init(systemStoryManager: SystemStoryManagerProtocol) {
         self.systemStoryManager = systemStoryManager
@@ -469,30 +452,35 @@ public class _MessageBackup_AccountData_SystemStoryManagerWrapper: _MessageBacku
     }
 }
 
-// MARK: ReactionManager
+// MARK: - TypingIndicators
 
-public protocol _MessageBackup_AccountData_ReactionManagerShim {
-    func customEmojiSet(tx: DBReadTransaction) -> [String]?
-    func setCustomEmojiSet(emojis: [String]?, tx: DBWriteTransaction)
+public protocol _MessageBackup_TypingIndicatorsShim {
+    func areTypingIndicatorsEnabled() -> Bool
+    func setTypingIndicatorsEnabled(value: Bool, tx: DBWriteTransaction)
+}
+public class _MessageBackup_TypingIndicatorsWrapper: _MessageBackup_TypingIndicatorsShim {
+    let typingIndicators: TypingIndicators
+    init(typingIndicators: TypingIndicators) {
+        self.typingIndicators = typingIndicators
+    }
+
+    public func areTypingIndicatorsEnabled() -> Bool {
+        typingIndicators.areTypingIndicatorsEnabled()
+    }
+
+    public func setTypingIndicatorsEnabled(value: Bool, tx: DBWriteTransaction) {
+        typingIndicators.setTypingIndicatorsEnabled(value: value, transaction: SDSDB.shimOnlyBridge(tx))
+    }
 }
 
-public class _MessageBackup_AccountData_ReactionManagerWrapper: _MessageBackup_AccountData_ReactionManagerShim {
-    public func customEmojiSet(tx: DBReadTransaction) -> [String]? {
-        ReactionManager.customEmojiSet(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-    public func setCustomEmojiSet(emojis: [String]?, tx: DBWriteTransaction) {
-        ReactionManager.setCustomEmojiSet(emojis, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-}
+// MARK: - UDManager
 
-// MARK: UDManager
-
-public protocol _MessageBackup_AccountData_UDManagerShim {
+public protocol _MessageBackup_UDManagerShim {
     func phoneNumberSharingMode(tx: DBReadTransaction) -> PhoneNumberSharingMode?
     func setPhoneNumberSharingMode(mode: PhoneNumberSharingMode, tx: DBWriteTransaction)
 }
 
-public class _MessageBackup_AccountData_UDManagerWrapper: _MessageBackup_AccountData_UDManagerShim {
+public class _MessageBackup_UDManagerWrapper: _MessageBackup_UDManagerShim {
     let udManager: OWSUDManager
     init(udManager: OWSUDManager) {
         self.udManager = udManager

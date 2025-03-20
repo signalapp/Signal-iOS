@@ -919,7 +919,7 @@
 		6659CCB129CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */; };
 		665C0D5C2ADF538100539A37 /* MessageBackupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D5B2ADF538100539A37 /* MessageBackupManager.swift */; };
 		665C0D5E2ADF53E200539A37 /* MessageBackupManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D5D2ADF53E200539A37 /* MessageBackupManagerImpl.swift */; };
-		665C0D602ADF57D000539A37 /* MessageBackupManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D5F2ADF57D000539A37 /* MessageBackupManager+Shims.swift */; };
+		665C0D602ADF57D000539A37 /* MessageBackup+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D5F2ADF57D000539A37 /* MessageBackup+Shims.swift */; };
 		665C0D622AE0552900539A37 /* MessageBackupProtoStreamProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D612AE0552900539A37 /* MessageBackupProtoStreamProvider.swift */; };
 		665C758C2C35A55300D2E4BA /* TSAttachmentMigration+ThreadWallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C758B2C35A55300D2E4BA /* TSAttachmentMigration+ThreadWallpaper.swift */; };
 		665CBD052BADC87A0059EA4F /* DraftQuotedReplyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665CBD042BADC87A0059EA4F /* DraftQuotedReplyModel.swift */; };
@@ -4747,7 +4747,7 @@
 		6659CCB029CD4650000C24C0 /* RegistrationConfirmModeSwitchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationConfirmModeSwitchViewController.swift; sourceTree = "<group>"; };
 		665C0D5B2ADF538100539A37 /* MessageBackupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupManager.swift; sourceTree = "<group>"; };
 		665C0D5D2ADF53E200539A37 /* MessageBackupManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupManagerImpl.swift; sourceTree = "<group>"; };
-		665C0D5F2ADF57D000539A37 /* MessageBackupManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageBackupManager+Shims.swift"; sourceTree = "<group>"; };
+		665C0D5F2ADF57D000539A37 /* MessageBackup+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageBackup+Shims.swift"; sourceTree = "<group>"; };
 		665C0D612AE0552900539A37 /* MessageBackupProtoStreamProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupProtoStreamProvider.swift; sourceTree = "<group>"; };
 		665C758B2C35A55300D2E4BA /* TSAttachmentMigration+ThreadWallpaper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+ThreadWallpaper.swift"; sourceTree = "<group>"; };
 		665CBD042BADC87A0059EA4F /* DraftQuotedReplyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftQuotedReplyModel.swift; sourceTree = "<group>"; };
@@ -9373,6 +9373,7 @@
 				667BB2042C58073600E79B57 /* Attachments */,
 				66CD25732B08079C00139E17 /* FileStreams */,
 				660A603D2D371C8B00D2765B /* MessageBackup+Bench.swift */,
+				665C0D5F2ADF57D000539A37 /* MessageBackup+Shims.swift */,
 				661429182D35B9EA0043AA22 /* MessageBackup+Timestamp.swift */,
 				66CD25902B0EC20800139E17 /* MessageBackupConstants.swift */,
 				66FFDADB2C823C270079C0E7 /* MessageBackupContexts.swift */,
@@ -9382,7 +9383,6 @@
 				C1A0F79C2B9F57340009DC0D /* MessageBackupKeyMaterial.swift */,
 				C1A0F79E2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift */,
 				D9C0AE6A2BDB212F00FCB05E /* MessageBackupLogger.swift */,
-				665C0D5F2ADF57D000539A37 /* MessageBackupManager+Shims.swift */,
 				665C0D5B2ADF538100539A37 /* MessageBackupManager.swift */,
 				665C0D5D2ADF53E200539A37 /* MessageBackupManagerImpl.swift */,
 				C10E9FAE2BB778E100A609B9 /* MessageBackupManagerMock.swift */,
@@ -17488,6 +17488,7 @@
 				66BB4D592AD8BF6200A84219 /* MergingDict.swift in Sources */,
 				660A603E2D371C9100D2765B /* MessageBackup+Bench.swift in Sources */,
 				66CD258D2B0EB3A700139E17 /* MessageBackup+InteractionTypes.swift in Sources */,
+				665C0D602ADF57D000539A37 /* MessageBackup+Shims.swift in Sources */,
 				661429192D35B9F10043AA22 /* MessageBackup+Timestamp.swift in Sources */,
 				66CD25642B06949C00139E17 /* MessageBackupAccountDataArchiver.swift in Sources */,
 				D9CA61482C2E2D0000F99EA3 /* MessageBackupAdHocCallArchiver.swift in Sources */,
@@ -17522,7 +17523,6 @@
 				D99655E32C50433800AD29FB /* MessageBackupLearnedProfileChatUpdateArchiver.swift in Sources */,
 				66CD25792B0832A400139E17 /* MessageBackupLocalRecipientArchiver.swift in Sources */,
 				D9C0AE6B2BDB212F00FCB05E /* MessageBackupLogger.swift in Sources */,
-				665C0D602ADF57D000539A37 /* MessageBackupManager+Shims.swift in Sources */,
 				665C0D5C2ADF538100539A37 /* MessageBackupManager.swift in Sources */,
 				665C0D5E2ADF53E200539A37 /* MessageBackupManagerImpl.swift in Sources */,
 				C10E9FAF2BB778E100A609B9 /* MessageBackupManagerMock.swift in Sources */,
