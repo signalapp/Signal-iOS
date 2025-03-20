@@ -1,1 +1,1 @@
-• A partir d'ara, quan enllacis un nou dispositiu, tindràs l'opció de transferir-hi l'historial del xat i els teus darrers 45 dies d'arxius multimèdia. El procés de transferència és xifrat d'extrem a extrem (i totalment opcional).
+• Now you can zoom in on a view-once image or video. What once was a bug has been fixed once and for all.

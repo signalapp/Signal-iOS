@@ -1,1 +1,1 @@
-• Od teraz, gdy połączysz w aplikacji Signal swoje główne urządzenie z nowym komputerem lub iPadem, oprócz historii czatów możesz też przenieść multimedia z ostatnich 45 dni. Proces transferu danych jest szyfrowany metodą end-to-end i całkowicie opcjonalny. Wymazać przeszłość czy zachować ciągłość historii? Tę decyzję zostawiamy Tobie.
+• Now you can zoom in on a view-once image or video. What once was a bug has been fixed once and for all.

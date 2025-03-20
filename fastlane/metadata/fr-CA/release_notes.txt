@@ -1,1 +1,1 @@
-• Lorsque vous associez votre principal appareil Signal à un nouvel ordinateur ou à un nouvel iPad, vous pouvez maintenant transférer toutes vos conversations, ainsi que vos médias des 45 derniers jours. Chiffré de bout en bout, ce processus de transfert est complètement facultatif : à vous de voir si vous préférez faire table rase du passé ou emmener vos souvenirs avec vous.
+• Now you can zoom in on a view-once image or video. What once was a bug has been fixed once and for all.
