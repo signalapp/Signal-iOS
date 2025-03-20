@@ -437,22 +437,22 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fail Tidak Disokong";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app. */
-"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Save";
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Simpan";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app, and disable the action sheet in the future. */
-"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Save and Don't Show Again";
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Simpan dan Jangan Tunjukkan Lagi";
 
 /* Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "This media will be saved to your phone’s Photos app. Other apps may be able to access it depending on your phone's permissions.";
+"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "Media ini akan disimpan ke aplikasi Foto telefon anda. Aplikasi lain mungkin boleh mengaksesnya berdasarkan tetapan kebenaran telefon anda.";
 
 /* Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Save to Photos?";
+"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Simpan ke Foto?";
 
 /* Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Failed to save to Photos";
+"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Gagal menyimpan ke Foto";
 
 /* Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Saved to Photos";
+"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Disimpan ke Foto";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "Beranimasi";
@@ -1484,7 +1484,7 @@
 "CONTEXT_MENU_REPLY" = "Balas";
 
 /* Context menu button title */
-"CONTEXT_MENU_SAVE_MEDIA" = "Save";
+"CONTEXT_MENU_SAVE_MEDIA" = "Simpan";
 
 /* Context menu button title */
 "CONTEXT_MENU_SELECT_MESSAGE" = "Pilih";
@@ -2249,10 +2249,10 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Derma iDEAL anda sedang diproses. Semak aplikasi perbankan anda untuk meluluskan pembayaran sebelum membuat derma lain.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Pindahan bank biasanya mengambil masa 1 hari bekerja untuk diproses. Sila tunggu sehingga pembayaran ini selesai sebelum membuat derma lain.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Pindahan bank boleh mengambil masa 1 hingga 14 hari perniagaan untuk diproses. Sila tunggu sehingga pembayaran ini selesai sebelum membuat derma lain.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Pindahan bank biasanya mengambil masa 1 hari bekerja untuk diproses. Sila tunggu sehingga pembayaran ini selesai sebelum mengemas kini langganan anda.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Pindahan bank boleh mengambil masa 1 hingga 14 hari perniagaan untuk diproses. Sila tunggu sehingga pembayaran ini selesai sebelum mengemas kini langganan anda.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
 "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Anda boleh menghantar sehingga %1$@ melalui pindahan bank. Cuba jumlah lain atau kaedah pembayaran yang berbeza.";
@@ -2312,10 +2312,10 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Derma belum selesai";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Derma sekali anda belum selesai. Anda akan dapat memaparkan lencana %1$@ pada profil anda apabila derma anda diterima.\n\nPindahan bank biasanya mengambil masa 1 hari bekerja untuk diproses.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Derma sekali anda belum selesai. Anda akan dapat memaparkan lencana %1$@ pada profil anda apabila derma anda diterima.\n\nPindahan bank boleh mengambil masa 1 hingga 14 hari perniagaan untuk diproses.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Derma bulanan anda belum selesai. Anda akan dapat memaparkan lencana %1$@ pada profil anda apabila derma anda diterima.\n\nPindahan bank biasanya mengambil masa 1 hari bekerja untuk diproses.";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Derma bulanan anda belum selesai. Anda akan dapat memaparkan lencana %1$@ pada profil anda apabila derma anda diterima.\n\nPindahan bank boleh mengambil masa 1 hingga 14 hari perniagaan untuk diproses.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Membaharui Langganan";
@@ -2504,7 +2504,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Derma iDEAL anda tidak dapat disahkan. Semak aplikasi perbankan anda untuk meluluskan derma anda atau cuba lagi.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Pindahan bank anda belum selesai. Pindahan bank biasanya mengambil masa 1 hari bekerja untuk diproses.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Pindahan bank anda belum selesai. Pindahan bank boleh mengambil masa 1 hingga 14 hari perniagaan untuk diproses.";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "Derma belum selesai";
@@ -4346,7 +4346,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Padam";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
-"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Save";
+"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Simpan";
 
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "Ingatkan Saya Kemudian";
@@ -4430,7 +4430,7 @@
 "MESSAGE_ACTION_REPLY" = "Balas Mesej Ini";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save";
+"MESSAGE_ACTION_SAVE_MEDIA" = "Simpan";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SELECT_MESSAGE" = "Pilih Pelbagai";
@@ -6586,17 +6586,8 @@
 /* Title for action sheet when the secondary device fails to sync messages due to an app update being required. */
 "SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE" = "Kemas Kini Diperlukan";
 
-/* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Pilih nama untuk peranti ini";
-
-/* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Anda akan melihat nama ini di bawah \"Peranti Dipautkan.\"";
-
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Pilih nama";
-
-/* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Selesai Memautkan";
 
 /* header text before the user can link this device */
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Lancarkan Signal pada telefon anda untuk memautkan iPad ini kepada akaun anda";
@@ -8595,12 +8586,6 @@
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Nama pengguna hanya boleh dikemas kini apabila disambungkan ke internet.";
-
-/* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Nama peranti tidak boleh kosong";
-
-/* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Nama peranti terlalu panjang";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Anda tandakan %1$@ sebagai tidak disahkan.";

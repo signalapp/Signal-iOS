@@ -437,22 +437,22 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Cineál comhaid nach dtacaítear leis";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app. */
-"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Save";
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Sábháil";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app, and disable the action sheet in the future. */
-"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Save and Don't Show Again";
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Sábháil agus Ná Taispeáin Arís";
 
 /* Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "This media will be saved to your phone’s Photos app. Other apps may be able to access it depending on your phone's permissions.";
+"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "Sábhálfar an meán seo chuig aip Grianghraif do ghutháin. Is féidir go mbeidh aipeanna eile in ann an meán a rochtain ag brath ar cheadanna do ghutháin.";
 
 /* Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Save to Photos?";
+"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Sábháil chuig Grianghraif?";
 
 /* Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Failed to save to Photos";
+"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Theip ar shábháil chuig Grianghraif";
 
 /* Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Saved to Photos";
+"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Sábháilte chuig Grianghraif";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "Beoite";
@@ -1484,7 +1484,7 @@
 "CONTEXT_MENU_REPLY" = "Freagair";
 
 /* Context menu button title */
-"CONTEXT_MENU_SAVE_MEDIA" = "Save";
+"CONTEXT_MENU_SAVE_MEDIA" = "Sábháil";
 
 /* Context menu button title */
 "CONTEXT_MENU_SELECT_MESSAGE" = "Roghnaigh";
@@ -2249,10 +2249,10 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Tá do thabhartas iDEAL á phróiseáil fós. Seiceáil d'aip bhaincéireachta le d'íocaíocht a fhaomhadh roimh thabhartas eile a dhéanamh.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Is gnách go bpróiseáiltear aistriú bainc laistigh de 1 lá gnó amháin. Fan go gcríochnófar an tabhartas seo roimh thabhartas eile a thabhairt.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Is gnách go bpróiseáiltear aistrithe bainc idir 1 agus 14 lá gnó. Fan go gcríochnófar an tabhartas seo roimh thabhartas eile a thabhairt.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Is gnách go bpróiseáiltear aistriú bainc laistigh de 1 lá gnó amháin. Fan go gcríochnófar an tabhartas seo roimh do shíntiús a nuashonrú.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Is gnách go bpróiseáiltear aistrithe bainc idir 1 agus 14 lá gnó. Fan go gcríochnófar an tabhartas seo roimh do shíntiús a nuashonrú.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
 "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Is féidir leat suas le %1$@ a sheoladh trí aistriú bainc. Triail méid difriúil nó modh íocaíochta eile.";
@@ -2312,10 +2312,10 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Tabhartas ar feitheamh";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tá do thabhartas aonuaire ar feitheamh. Beidh tú in ann an suaitheantas %1$@ a thaispeáint ar do phróifíl nuair a fhaightear do thabhartas.\n\nIs gnách go bpróiseáiltear aistrithe bainc laistigh de 1 lá gnó amháin.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tá do thabhartas aonuaire ar feitheamh. Beidh tú in ann an suaitheantas %1$@ a thaispeáint ar do phróifíl nuair a fhaightear do thabhartas.\n\nIs gnách go bpróiseáiltear aistrithe bainc idir 1 agus 14 lá gnó.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tá do thabhartas míosúil ar feitheamh. Beidh tú in ann an suaitheantas %1$@ a thaispeáint ar do phróifíl nuair a fhaightear do thabhartas.\n\nIs gnách go bpróiseáiltear aistrithe bainc laistigh de 1 lá gnó amháin.";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tá do thabhartas míosúil ar feitheamh. Beidh tú in ann an suaitheantas %1$@ a thaispeáint ar do phróifíl nuair a fhaightear do thabhartas.\n\nIs gnách go bpróiseáiltear aistrithe bainc idir 1 agus 14 lá gnó.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Renew Subscription";
@@ -2504,7 +2504,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Níorbh fhéidir do thabhartas iDEAL a dheimhniú. Seiceáil d'aip bhaincéireachta le do thabhartas a fhaomhadh nó triail arís.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tá d'aistriú bainc ar feitheamh. Is gnách go bpróiseáiltear aistriú bainc laistigh de 1 lá gnó amháin.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tá d'aistriú bainc ar feitheamh. Is gnách go bpróiseáiltear aistrithe bainc idir 1 agus 14 lá gnó.";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "Tabhartas ar feitheamh";
@@ -4346,7 +4346,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Scrios";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
-"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Save";
+"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Sábháil";
 
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "Meabhraigh Dom Níos Déanaí";
@@ -4430,7 +4430,7 @@
 "MESSAGE_ACTION_REPLY" = "Tabhair Freagra ar an Teachtaireacht Seo";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save";
+"MESSAGE_ACTION_SAVE_MEDIA" = "Sábháil";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SELECT_MESSAGE" = "Níos mó ná ceann amháin";
@@ -6586,17 +6586,8 @@
 /* Title for action sheet when the secondary device fails to sync messages due to an app update being required. */
 "SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE" = "Nuashonrú De Dhíth";
 
-/* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Cuir ainm ar an ngléas seo";
-
-/* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Feicfidh tú an t-ainm seo faoi “Gléasanna Nasctha.”";
-
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Roghnaigh ainm";
-
-/* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Cuir an Nascadh i gcrích";
 
 /* header text before the user can link this device */
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Tosaigh Signal ar do ghuthán chun an iPad seo a nascadh le do chuntas";
@@ -8595,12 +8586,6 @@
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Ní féidir ainmneacha úsáideora a nuashonrú ach nuair a bhíonn nasc leis an Idirlíon.";
-
-/* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Ní cheadaítear ainm gléis folamh";
-
-/* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Tá ainm an ghléis rófhada";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Mharcáil tú %1$@ neamhdheimhnithe.";

@@ -437,22 +437,22 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Filen stöds inte";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app. */
-"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Save";
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Spara";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app, and disable the action sheet in the future. */
-"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Save and Don't Show Again";
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Spara och visa inte igen";
 
 /* Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "This media will be saved to your phone’s Photos app. Other apps may be able to access it depending on your phone's permissions.";
+"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "Den här mediefilen kommer att sparas i telefonens app Bilder. Andra appar kanske kan komma åt den beroende på din telefons behörigheter.";
 
 /* Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Save to Photos?";
+"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Spara till Bilder?";
 
 /* Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Failed to save to Photos";
+"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Det gick inte att spara i Bilder";
 
 /* Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Saved to Photos";
+"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Sparad i Bilder";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "Animerad";
@@ -1484,7 +1484,7 @@
 "CONTEXT_MENU_REPLY" = "Svara";
 
 /* Context menu button title */
-"CONTEXT_MENU_SAVE_MEDIA" = "Save";
+"CONTEXT_MENU_SAVE_MEDIA" = "Spara";
 
 /* Context menu button title */
 "CONTEXT_MENU_SELECT_MESSAGE" = "Välj";
@@ -2249,10 +2249,10 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Din iDEAL-donation bearbetas fortfarande. Kontrollera din bankapp för att godkänna din betalning innan du gör en ny donation.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Banköverföringar tar vanligtvis 1 arbetsdag att bearbeta. Vänta tills denna donation slutförs innan du gör en ny donation.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Banköverföringar kan ta 1 till 14 arbetsdagar att bearbeta. Vänta tills denna donation slutförs innan du gör en ny donation.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Banköverföringar tar vanligtvis 1 arbetsdag att bearbeta. Vänta tills denna donation slutförs innan du uppdaterar ditt abonnemang.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Banköverföringar kan ta 1 till 14 arbetsdagar att bearbeta. Vänta tills denna donation slutförs innan du uppdaterar ditt abonnemang.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
 "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Du kan skicka upp till %1$@ via banköverföring. Prova ett annat belopp eller en annan betalningsmetod.";
@@ -2312,10 +2312,10 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Donation väntar";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Din engångsdonation väntar. Du kommer att kunna visa %1$@-märket på din profil när din donation tas emot.\n\nBanköverföringar tar vanligtvis 1 arbetsdag att bearbeta.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Din engångsdonation väntar. Du kommer att kunna visa %1$@-märket på din profil när din donation tas emot.\n\nBanköverföringar kan ta 1 till 14 arbetsdagar att bearbeta.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Din månatliga donation väntar. Du kommer att kunna visa %1$@-märket på din profil när din donation tas emot.\n\nBanköverföringar tar vanligtvis 1 arbetsdag att bearbeta.";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Din månatliga donation väntar. Du kommer att kunna visa %1$@-märket på din profil när din donation tas emot.\n\nBanköverföringar kan ta 1 till 14 arbetsdagar att bearbeta.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Förnya abonnemang";
@@ -2504,7 +2504,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Din iDEAL-donation kunde inte bekräftas. Kontrollera din bankapp för att godkänna din donation eller försök igen.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Din banköverföring väntar. Banköverföringar tar vanligtvis 1 arbetsdag att bearbeta.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Din banköverföring väntar. Banköverföringar kan ta 1 till 14 arbetsdagar att bearbeta.";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "Donation väntar";
@@ -4346,7 +4346,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Ta bort";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
-"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Save";
+"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Spara";
 
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "Påminn mig senare";
@@ -4430,7 +4430,7 @@
 "MESSAGE_ACTION_REPLY" = "Svara på detta meddelande";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save";
+"MESSAGE_ACTION_SAVE_MEDIA" = "Spara";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SELECT_MESSAGE" = "Välj flera";
@@ -6586,17 +6586,8 @@
 /* Title for action sheet when the secondary device fails to sync messages due to an app update being required. */
 "SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE" = "Uppdatering krävs";
 
-/* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Välj ett namn för denna enhet";
-
-/* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Detta namn visas under \"Länkade enheter.\"";
-
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Välj ett namn";
-
-/* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Klar med länkning";
 
 /* header text before the user can link this device */
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Starta Signal på din telefon för att länka denna iPad till ditt konto";
@@ -8595,12 +8586,6 @@
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Användarnamn kan endast uppdateras när du är ansluten till internet.";
-
-/* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Enhetens namn kan inte vara tomt";
-
-/* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Enhetsnamnet är för långt";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Du markerade %1$@ som inte verifierat.";

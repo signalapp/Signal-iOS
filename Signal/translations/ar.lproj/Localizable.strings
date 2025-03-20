@@ -203,13 +203,13 @@
 "APN_Message" = "قد تكون لديك رسائل جديدة";
 
 /* Default message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "يتعذَّر بدء سيجنال. لتمكيننا من مساعدتك في حل المشكلة، يُرجى إرسال سجل التصحيح إلى بريد الدعم: support@signal.org";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "يتعذَّر بدء سيجنال. لتمكيننا من مساعدتك في حل المشكلة، يُرجى إرسال سجل الأخطاء إلى بريد الدعم: support@signal.org";
 
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "افتح تطبيق سيجنال بدلًا من ذلك";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "يُرجى إرسال سِجلات التصحيح إلى support@signal.org لكي نتمكّن من حل هذه المشكلة.";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "يُرجى إرسال سِجلات الأخطاء إلى support@signal.org لكي نتمكّن من حل هذه المشكلة.";
 
 /* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "تعذَّر فتح تطبيق سيجنال";
@@ -224,7 +224,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "إصدار قاعدة البيانات مجهول.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "وقع خطأ لسيجنال أثناء محاولة فتحه. يُرجى إرسال سِجل التصحيح إلى support@signal.org لمساعدتنا في حل المشكلة.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "وقع خطأ لسيجنال أثناء محاولة فتحه. يُرجى إرسال سجل الاخطاء إلى support@signal.org لمساعدتنا في حل المشكلة.";
 
 /* Error indicating that the app crashed during the previous launch. */
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "تعذَّر فتح تطبيق سيجنال";
@@ -236,7 +236,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "مساحة التخزين مُنخفضة";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "تعذَّر استعادة البيانات المنقولة من جهازك القديم. يُرجى إرسال سِجل التصحيح إلى support@signal.org حتى نتمكّن من حل المُشكلة. إذا قمتَ بإعادة تثبيت سيجنال، فقد تفقد سجل الرسائل لديك.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "تعذَّر استعادة البيانات المنقولة من جهازك القديم. يُرجى إرسال سجل الأخطاء إلى support@signal.org حتى نتمكّن من حل المُشكلة. إذا قُمتَ بإعادة تثبيت سيجنال، فقد تفقد سجل الرسائل لديك.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "تعذّر إتمام عملية النقل";
@@ -437,22 +437,22 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "الملف غير مدعوم";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app. */
-"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Save";
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "حفظ";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app, and disable the action sheet in the future. */
-"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Save and Don't Show Again";
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "الحفظ وعدم الإظهار مُجدَّدًا";
 
 /* Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "This media will be saved to your phone’s Photos app. Other apps may be able to access it depending on your phone's permissions.";
+"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "سيتمُّ حفظ هذه الوسائط في تطبيق الصور على هاتفك. قد تتمكّن تطبيقات أخرى من الوصول إليها حسب الأذونات في هاتفك.";
 
 /* Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Save to Photos?";
+"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "هل ترغبُ بالحفظ في الصور؟";
 
 /* Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Failed to save to Photos";
+"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "تعذَّر الحفظ في الصور";
 
 /* Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Saved to Photos";
+"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "تمَّ الحفظ في الصور";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "صورة متحركة";
@@ -818,7 +818,7 @@
 "CALL_LINK_MULTI_CONFIRM" = "روابط المكالمات التي أنشأتها لن تعمل بعد الآن عند الأشخاص الذين أُرسِلَت إليهم من قبل.";
 
 /* Title for button to approve all requests to join a call. */
-"CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "موافقة على الكل";
+"CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "الموافقة على الكل";
 
 /* Title for button to deny all requests to join a call. */
 "CALL_LINK_REQUEST_SHEET_DENY_ALL_BUTTON" = "رفض الكل";
@@ -1439,19 +1439,19 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "حاوِل مُجدَّدًا";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "تساعدنا سجلات التصحيح في استكشاف مشاكلك وإصلاحها في أسرع وقت. إرسال سجلاتك إلينا أمر اختياري.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "تساعدنا سجلات الأخطاء في استكشاف مشاكلك وإصلاحها في أسرع وقت. إرسال سجلاتك إلينا أمر اختياري.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "هل ترغب بإرسال سجل التصحيح؟";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "هل ترغب بإرسال سجل الأخطاء؟";
 
 /* Placeholder telling user they must select a filter. */
 "CONTACT_SUPPORT_SELECT_A_FILTER" = "حدِّد سبب";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "إرسال مع سجل التصحيح";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "إرسال مع سجل الأخطاء";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "إرسال بدون سجل التصحيح";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "إرسال بدون سجل الأخطاء";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "الفتح في الخريطة";
@@ -1484,7 +1484,7 @@
 "CONTEXT_MENU_REPLY" = "الرد";
 
 /* Context menu button title */
-"CONTEXT_MENU_SAVE_MEDIA" = "Save";
+"CONTEXT_MENU_SAVE_MEDIA" = "حفظ";
 
 /* Context menu button title */
 "CONTEXT_MENU_SELECT_MESSAGE" = "حَدِّد";
@@ -1679,7 +1679,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "إنشاء جهة اتصال جديدة";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "لا يوجد مجموعات مشتركة";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "لا توجد مجموعات مُشتركة";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "الصلاحيات";
@@ -1760,7 +1760,7 @@
 "CORRUPTED_SESSION_DESCRIPTION" = "إعادة تعيين جلستك سيسمح لك باستقبال الرسائل الحديثة من %1$@, لكن لن تتمكن من استعادة أي من الرسائل التالفة.";
 
 /* No comment provided by engineer. */
-"COUNTRYCODE_SELECT_TITLE" = "اختر رمز الدولة";
+"COUNTRYCODE_SELECT_TITLE" = "اختر كود الدولة";
 
 /* Label for button that enables you to make a new call link. */
 "CREATE_CALL_LINK_LABEL" = "إنشاء رابط المكالمة";
@@ -1844,7 +1844,7 @@
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "مطلوب المزيد من مساحة التخزين";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "تعذَّرت استعادة سجل الرسائل الخاص بحسابك. يمكنك الاستمرار في استخدام تطبيق سيجنال بعد إعادة التثبيت. أرسِل سِجل التصحيح حتى نتمكن من فهم الخطأ الذي حدث بشكلٍ أفضل.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "تعذَّرت استعادة سجل الرسائل الخاص بحسابك. يمكنك الاستمرار في استخدام تطبيق سيجنال بعد إعادة التثبيت. أرسِل سجل الأخطاء حتى نتمكن من فهم الخطأ الذي حدث بشكلٍ أفضل.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "إعادة تعيين سيجنال";
@@ -1859,7 +1859,7 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "إعادة تعيين سيجنال";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "إرسال سجل التصحيح";
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "إرسال سجل الأخطاء";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "تعذَّر استرداد البيانات";
@@ -1898,7 +1898,7 @@
 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "تعذَّر تحميل السجلات.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "ما الذي ترغب بفعله بالرابط إلى سجل التصحيح؟";
+"DEBUG_LOG_ALERT_MESSAGE" = "ما الذي ترغب بفعله بالرابط إلى سجل الأخطاء الخاص بك؟";
 
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "تعذَّر العثور على أي سجلات.";
@@ -1919,7 +1919,7 @@
 "DEBUG_LOG_ALERT_TITLE" = "خطوة إضافية";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "معلومات عن سجل التصحيح";
+"DEBUG_LOG_INFO_BUTTON" = "معلومات عن سجل الأخطاء";
 
 /* info message text in conversation view */
 "DECLINED_VIDEO_CALL" = "رفضتَ مكالمة فيديو";
@@ -1937,7 +1937,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "هل أنت متأكِّد مِن أنك تريد حذف حسابك؟";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "رمز الدولة";
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "كود الدولة";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "فشل حذف الحساب. تأكَّد من أن شبكة الواي فاي أو بيانات الجوال تعمل، ثم حاوِل مرّة أخرى.";
@@ -2249,10 +2249,10 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "لا يزال تبرُّع iDeal الخاص بك قيد المُعالجة. تفقَّد تطبيق مصرفك للموافقة على عملية الدفع الخاصة بك قبل التبرُّع مرّة أخرى.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "عادة ما تستغرق التحويلات المصرفية يوم عمل واحد للمعالجة. يُرجى الانتظار حتى اكتمال تبرُّعك هذا قبل التبرُّع مرّة أخرى.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "عادةً ما تستغرق معالجة التحويلات المصرفية ما بين يوم واحد و14 يوم عمل. يُرجى الانتظار حتى اكتمال تبرُّعك هذا قبل التبرُّع مرّة أخرى.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "عادةً ما تستغرق التحويلات المصرفية يوم عمل واحد للمعالجة. يُرجى الانتظار حتى اكتمال تبرُّعك هذا قبل تحديث اشتراكك.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "عادةً ما تستغرق معالجة التحويلات المصرفية ما بين يوم واحد و14 يوم عمل. يُرجى الانتظار حتى اكتمال تبرُّعك هذا قبل تحديث اشتراكك.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
 "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "يُمكنك إرسال ما يصل إلى %1$@ عبر تحويل مصرفي. جرِّب مبلغًا مختلفًا أو طريقة دفع أخرى.";
@@ -2312,10 +2312,10 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "التبرُّّع مُعلَّق";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "تبرُّعك لمرّة واحدة مُعلَّق. ستتمكَّن من عرض شارتك %1$@ على ملفك الشخصي فور استلام تبرُّعك.\n\nعادةً ما تستغرق التحويلات المصرفية يوم عمل واحد للمعالجة.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "تبرُّعك لمرة واحدة مُعلَّق. ستتمكّن من عرض شارتك %1$@ على حسابك الشخصي فور استلام تبرُّعك.\n\nعادةً ما تستغرق معالجة التحويلات المصرفية ما بين يوم واحد و14 يوم عمل.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "تبرُّعك الشهري مُعلَّق. ستتمكّن من عرض شارتك %1$@ على حسابك الشخصي فور استلام تبرُّعك.⏎⏎عادةً ما تستغرق التحويلات المصرفية يوم عمل واحد للمعالجة.";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "تبرُّعك الشهري مُعلَّق. ستتمكّن من عرض شارتك %1$@ على حسابك الشخصي فور استلام تبرُّعك.\n\nعادةً ما تستغرق معالجة التحويلات المصرفية ما بين يوم واحد و14 يوم عمل.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "تجديد الاشتراك";
@@ -2504,7 +2504,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "تعذَّر تأكيد تبرُّع iDEAL الخاص بك. تحقَّق من تطبيقك المصرفي لتأكيد تبرُّعك أو حاوِل مُجدَّدًا.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "تحويلك المصرفي مُعلَّق. عادةً ما تستغرق التحويلات المصرفية يوم عمل واحد للمعالجة.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "تحويلك المصرفي مُعلَّق. عادةً ما تستغرق معالجة التحويلات المصرفية ما بين يوم واحد و14 يوم عمل.";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "التبرُّّع مُعلَّق";
@@ -2780,7 +2780,7 @@
 "ERROR_NETWORK_FAILURE" = "خطأ في الشبكة";
 
 /* Format string for an error alert notification message. Embeds {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "‫نرجو منك مساعدتنا على تحسين سيجنال، وذلك بالإبلاغ عن هذا الخطأ مع إرفاق سِجلات التصحيح من جهازك إلى support@signal.org؛ %1$@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "‫نرجو منك مساعدتنا على تحسين سيجنال، وذلك بالإبلاغ عن هذا الخطأ مع إرفاق سِجلات الأخطاء من جهازك إلى support@signal.org؛ %1$@";
 
 /* Format string for an error alert notification title. */
 "ERROR_NOTIFICATION_TITLE" = "‫إصدار سيجنال التجريبي‬: حدث خطأ ما";
@@ -4166,7 +4166,7 @@
 "LINKED_DEVICE_NOTIFICATION_TITLE" = "قُمتَ بربط جهازٍ جديد";
 
 /* Message for an action sheet telling users how to link a device, when trying to open an external device-linking URL. */
-"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "لِربط حاسوب أو جهاز آيباد بحساب سيجنال هذا، انتقِل إلى \"الأجهزة المُرتبِطة\" وانقر على \"ربط جهاز جديد\" وامسح كود الـ QR من جديد. تأكَّد من مسح كودات الـ QR الصادرة مباشرةً عن سيجنال فقط.";
+"LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "لِربط حاسوب أو جهاز آيباد بحساب سيجنال هذا، انتقِل إلى \"الأجهزة المُرتبِطة\" وانقر على \"ربط جهاز جديد\" وامسح ضوئيًا كود الـ QR من جديد. تأكَّد من مسح كودات الـ QR الصادرة مباشرةً عن سيجنال فقط.";
 
 /* Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera. */
 "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE" = "يبدو أنك تحاول ربط جهاز يستخدم سيجنال. انقر على \"متابعة\" ثم انقر على \"ربط جهاز جديد\" وامسح كود الـ QR من جديد.";
@@ -4262,7 +4262,7 @@
 "LOGGING_SECTION" = "التسجيل";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "سجلات التصحيح يمكن أن تساعد سيجنال على إصلاح المشكلات والأخطاء.";
+"LOGGING_SECTION_FOOTER" = "سجلات الأخطاء يمكن أن تساعد سيجنال على إصلاح المشكلات والأخطاء.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "الرسالة";
@@ -4346,7 +4346,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "حذف";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
-"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Save";
+"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "حفظ";
 
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "ذكِّرني لاحقًا";
@@ -4430,7 +4430,7 @@
 "MESSAGE_ACTION_REPLY" = "الرَّد على هذه الرسالة";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save";
+"MESSAGE_ACTION_SAVE_MEDIA" = "حفظ";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SELECT_MESSAGE" = "اختيار مُتعدِّد";
@@ -5189,7 +5189,7 @@
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "حدِّث الآن";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "حدِّث تطبيق سيجنال للاستمرار في استخدام عمليات الدفع. قد لا يكون رصيدك مُحدَّثًا.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "قُم بتحديث سيجنال للاستمرار في استخدام عمليات الدفع. قد لا يكون رصيدك مُحدَّثًا.";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "مكالمة فيديو لم يتم الرد عليها";
@@ -5354,7 +5354,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "مُعاملة غير صالحة";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "قُم بتحديث تطبيق سيجنال لاستخدام المدفوعات.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "قُم بتحديث سيجنال لاستخدام المدفوعات.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "لم يتم التحقُّق بعد من عملية الدفع";
@@ -6218,7 +6218,7 @@
 "REGISTRATION_CAPTCHA_TITLE" = "نحتاج للتحقُّق من أنك لستَ روبوتًا.";
 
 /* Label for the country code field */
-"REGISTRATION_DEFAULT_COUNTRY_NAME" = "كود البلد";
+"REGISTRATION_DEFAULT_COUNTRY_NAME" = "كود الدولة";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is a description on the screen that asks them this question. */
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "الاستمرار سيُعطِّل سيجنال على الأجهزة الأُخرى المُسجَّلة حاليًا بنفس رقم الهاتف.";
@@ -6554,7 +6554,7 @@
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "الحساب غير مُطابِق";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "حدِّث سيجنال في هذا الجهاز حتى تستطيع ربطه بهاتفك.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "قُم بتحديث سيجنال في هذا الجهاز حتى تستطيع ربطه بهاتفك.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "إصدار غير مدعوم";
@@ -6586,17 +6586,8 @@
 /* Title for action sheet when the secondary device fails to sync messages due to an app update being required. */
 "SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE" = "التحديث مطلوب";
 
-/* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "اختر اسمًا لهذا الجهاز";
-
-/* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "سترى هذا الاسم ضمن \"الأجهزة المُرتبِطة\".";
-
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "اختر اسمًا";
-
-/* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "إنهاء الارتباط";
 
 /* header text before the user can link this device */
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "شغِّل سيجنال على الهاتف الخاص بك لربط هذا الآيباد بحسابك.";
@@ -6695,7 +6686,7 @@
 "SEPA_DONATION_IBAN_INVALID_CHECK_ERROR" = "رقم IBAN غير صحيح";
 
 /* Users can donate to Signal with a bank account. If their internation bank account number (IBAN) has an unsupported country code, this error will be shown. Try to use a short string to make space in the UI. */
-"SEPA_DONATION_IBAN_INVALID_COUNTRY_ERROR" = "كود البلد الخاص بـ IBAN غير مدعوم";
+"SEPA_DONATION_IBAN_INVALID_COUNTRY_ERROR" = "كود الدولة الخاص بـ IBAN غير مدعوم";
 
 /* Users can donate to Signal with a bank account. This is the label for IBAN (internation bank account number) field on that screen. */
 "SEPA_DONATION_IBAN_LABEL" = "IBAN";
@@ -6713,7 +6704,7 @@
 "SEPA_DONATION_NAME_PLACEHOLDER" = "الاسم كما يظهر في الحساب المصرفي";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "يستخدم سيجنال التشفير من طرف لطرف، وقد يحتاج إلى إنعاش جلسة الدردشة الخاصة بك في بعض الأحيان. لا يُؤثِّر هذا على أمان الدردشة ولكن رُبما تكون أنت قد فوَّتَ رسالة من جهة الاتصال هذه. ولذلك، يُمكِنُك سؤاله لإعادة إرسالها.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "يستخدم سيجنال التشفير من طرف لِطرف، وقد يحتاج إلى إنعاش جلسة الدردشة الخاصة بك في بعض الأحيان. لا يُؤثِّر هذا على أمان الدردشة ولكن رُبما تكون أنت قد فوَّتَ رسالة من جهة الاتصال هذه. ولذلك، يُمكِنُك سؤاله لإعادة إرسالها.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "تمَّ تحديث جلسة الدردشة";
@@ -6773,7 +6764,7 @@
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "تفعيل رقم PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "إرسال سجل التصحيح";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "إرسال سجل الأخطاء";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "سجلَّات الأخطاء";
@@ -8129,7 +8120,7 @@
 "SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "نسخة سيجنال: %1$@";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "طلب دعم خاص بمُستخدِمي سيجنال على iOS";
+"SUPPORT_EMAIL_SUBJECT" = "طلب دعم خاص بمُستخدِمي سيجنال iOS";
 
 /* Header for emoji mood selection */
 "SUPPORT_EMOJI_PROMPT" = "ما هو شعورك؟ (اِختياري)";
@@ -8138,7 +8129,7 @@
 "SUPPORT_FAQ_PROMPT" = "هل قرأتَ الأسئلة الشائعة الخاصة بنا؟";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "تضمين سِجل التصحيح";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "تضمين سجل الأخطاء";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "جارٍ التحميل";
@@ -8372,7 +8363,7 @@
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "تلقيتَ رسالة لا يُمكن مُعالجتها أو عرضها لأنها تستخدم ميزة جديدة في سيجنال.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "قُم بتحديث ًسيجنال الآن";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "قُم بتحديث سيجنال الآن";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "تمَّ التحديث إلى آخر إصدار من سيجنال. يُمكنك الآن تلقي هذا النوع من الرسائل على جهازك.";
@@ -8450,7 +8441,7 @@
 "USE_PROXY_BUTTON" = "استخدم البروكسي";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "استخدِم البروكسي فقط إذا تعذّر عليك الاتصال بسيجنال عبر بيانات الجوّال أو عبر شبكة الواي فاي.";
+"USE_PROXY_EXPLANATION" = "استخدِم البروكسي فقط إذا تعذَّر عليك الاتصال بسيجنال عبر بيانات الجوّال أو عبر شبكة الواي فاي.";
 
 /* Description of username links and QR codes on the username education sheet */
 "USERNAME_EDUCATION_LINK_DESCRIPTION" = "أسماء المُستخدمين لها كودات QR فريدة يُمكنك مُشاركتُهما مع أصدقائك لكي يبدؤوا الدردشة معك.";
@@ -8596,12 +8587,6 @@
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "يُمكن تحديث أسماء المُستخدِمين فقط عند وجود اتصال بالإنترنت.";
 
-/* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "لا يُمكن ترك اسم الجهاز فارغًا";
-
-/* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "اسم الجهاز طويل جدًا";
-
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "قُمتَ بالإشارة إلى %1$@ كغير مُتحقَّق منه.";
 
@@ -8624,7 +8609,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "مُراجعة أرقام الأمان";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "للتحقُّق من أمان التشفير من طرف لطرف مع %1$@، قارِن الأرقام أعلاه بأجهزته. يُمكنه أيضًا مسح الكود على جهازه.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "للتحقُّق من أمان التشفير من طرف لِطرف مع %1$@، قارِن الأرقام أعلاه بأجهزته. يُمكنه أيضًا مسح الكود على جهازه.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "تعذّر تشغيل هذا الفيديو";

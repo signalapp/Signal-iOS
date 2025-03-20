@@ -437,22 +437,22 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "असमर्थित फ़ाइल प्रकार";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app. */
-"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Save";
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "सेव करें";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app, and disable the action sheet in the future. */
-"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Save and Don't Show Again";
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "सेव करें और फिर से न दिखाएँ";
 
 /* Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "This media will be saved to your phone’s Photos app. Other apps may be able to access it depending on your phone's permissions.";
+"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "यह मीडिया आपके फ़ोन के Photos ऐप में सेव किया जाएगा। आपके फ़ोन की अनुमतियों के आधार पर, शायद दूसरे ऐप्स इसे ऐक्सेस कर पाएँ।";
 
 /* Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Save to Photos?";
+"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Photos में सेव करें?";
 
 /* Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Failed to save to Photos";
+"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Photos में सेव नहीं किया जा सका";
 
 /* Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Saved to Photos";
+"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Photos में सेव किया गया";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "ऐनिमेटेड";
@@ -1484,7 +1484,7 @@
 "CONTEXT_MENU_REPLY" = "उत्तर";
 
 /* Context menu button title */
-"CONTEXT_MENU_SAVE_MEDIA" = "Save";
+"CONTEXT_MENU_SAVE_MEDIA" = "सेव करें";
 
 /* Context menu button title */
 "CONTEXT_MENU_SELECT_MESSAGE" = "चुनिए";
@@ -2249,10 +2249,10 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "आपका आदर्श दान अभी भी संसाधित हो रहा है। दोबारा दान देने से पहले भुगतान को स्वीकृत करने के लिए अपने बैंकिंग ऐप की जांच करें।";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "बैंक हस्तांतरण प्रक्रिया में आमतौर पर 1 कार्यदिवस लगता है। कृपया, दूसरा दान करने से पहले इस भुगतान के पूरा होने तक इंतजार करें।";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "बैंक ट्रांसफर को प्रोसेस करने में 1 से 14 कारोबारी दिन लग सकते हैं। कृपया, दूसरा दान करने से पहले इस भुगतान के पूरा होने तक इंतजार करें।";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "बैंक हस्तांतरण प्रक्रिया में आमतौर पर 1 कार्यदिवस लगता है। कृपया अपना सब्सक्रिप्शन अपडेट करने से पहले इस दान के पूरा होने तक इंतजार करें।";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "बैंक ट्रांसफर को प्रोसेस करने में 1 से 14 कारोबारी दिन लग सकते हैं। कृपया अपना सब्सक्रिप्शन अपडेट करने से पहले इस दान के पूरा होने तक इंतजार करें।";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
 "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "आप बैंक ट्रांसफर के माध्यम से %1$@ तक भेज सकते हैं। एक अलग राशि या एक अलग भुगतान विधि आज़माएँ।";
@@ -2312,10 +2312,10 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "दान लंबित है";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "आपका एकमुश्त दान लंबित है। आपका दान प्राप्त होने पर आप अपने प्रोफाइल पर %1$@ बैज प्रदर्शित कर सकेंगे।\n\nबैंक हस्तांतरण प्रक्रिया में आमतौर पर 1 कार्यदिवस लगता है।";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "आपका एकमुश्त दान लंबित है। आपका दान प्राप्त होने पर आप अपने प्रोफाइल पर %1$@ बैज प्रदर्शित कर सकेंगे।\n\nबैंक ट्रांसफर को प्रोसेस करने में 1 से 14 कारोबारी दिन लग सकते हैं।";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "आपका मासिक दान लंबित है। आपका दान प्राप्त होने पर आप अपने प्रोफाइल पर %1$@ बैज प्रदर्शित कर सकेंगे।\n\nबैंक हस्तांतरण प्रक्रिया में आमतौर पर 1 कार्यदिवस लगता है।";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "आपका मासिक दान लंबित है। आपका दान प्राप्त होने पर आप अपने प्रोफाइल पर %1$@ बैज प्रदर्शित कर सकेंगे।\n\nबैंक ट्रांसफर को प्रोसेस करने में 1 से 14 कारोबारी दिन लग सकते हैं।";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "सब्सक्रिप्शन रिन्यू करें";
@@ -2504,7 +2504,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "आपके iDEAL दान की पुष्टि नहीं की जा सकी। अपने दान को स्वीकृत करने या पुनः प्रयास करने के लिए अपना बैंकिंग ऐप देखें।";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "आपका बैंक हस्तांतरण लंबित है। बैंक हस्तांतरण प्रक्रिया में आमतौर पर 1 कार्यदिवस लगता है।";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "आपका बैंक हस्तांतरण लंबित है। बैंक ट्रांसफर को प्रोसेस करने में 1 से 14 कारोबारी दिन लग सकते हैं।";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "दान लंबित है";
@@ -4346,7 +4346,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "डिलीट करें";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
-"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Save";
+"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "सेव करें";
 
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "मुझे बाद में याद दिलाना";
@@ -4430,7 +4430,7 @@
 "MESSAGE_ACTION_REPLY" = "इस मेसेज का जवाब दें";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save";
+"MESSAGE_ACTION_SAVE_MEDIA" = "सेव करें";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SELECT_MESSAGE" = "कई का चयन करें";
@@ -6586,17 +6586,8 @@
 /* Title for action sheet when the secondary device fails to sync messages due to an app update being required. */
 "SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE" = "अपडेट आवश्यक है";
 
-/* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "इस डिवाइस के लिये एक नाम चुनें";
-
-/* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "आप इस डिवाइस का नाम \"लिंक्ड डिवाइस\" में देख सकते हैं।";
-
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "नाम चुनें";
-
-/* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "लिंकिंग पूरी करें";
 
 /* header text before the user can link this device */
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "इस iPad को अपने Signal खाते से लिंक करने के लिये अपने फोन में Signal ऐप खोलें";
@@ -8595,12 +8586,6 @@
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "यूज़रनेम तभी अपडेट हो सकता है जब आप इंटरनेट से जुड़े हों।";
-
-/* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "डिवाइस का नाम ख़ाली नहीं हो सकता";
-
-/* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "डिवाइस का नाम बहुत लंबा है";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "आपने %1$@ को असत्यापित मार्क करे हुए है।";

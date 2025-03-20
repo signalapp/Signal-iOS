@@ -437,22 +437,22 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Datei nicht unterstützt";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app. */
-"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Save";
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Speichern";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app, and disable the action sheet in the future. */
-"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Save and Don't Show Again";
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Speichern und nicht erneut anzeigen";
 
 /* Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "This media will be saved to your phone’s Photos app. Other apps may be able to access it depending on your phone's permissions.";
+"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "Dieser Medieninhalt wird in der Foto-App deines Handys gespeichert. Andere Apps können möglicherweise, je nach Berechtigungen deines Telefons, darauf zugreifen.";
 
 /* Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Save to Photos?";
+"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "In „Fotos“ speichern?";
 
 /* Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Failed to save to Photos";
+"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Speichern in „Fotos“ fehlgeschlagen";
 
 /* Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Saved to Photos";
+"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "In „Fotos“ gespeichert";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "Animiert";
@@ -1484,7 +1484,7 @@
 "CONTEXT_MENU_REPLY" = "Antworten";
 
 /* Context menu button title */
-"CONTEXT_MENU_SAVE_MEDIA" = "Save";
+"CONTEXT_MENU_SAVE_MEDIA" = "Speichern";
 
 /* Context menu button title */
 "CONTEXT_MENU_SELECT_MESSAGE" = "Auswählen";
@@ -2249,10 +2249,10 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Deine Spende über iDEAL wird noch bearbeitet. Überprüfe deine Banking-App, um deine Zahlung zu bestätigen, bevor du eine weitere Spende vornimmst.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Die Bearbeitung von Banküberweisungen dauert in der Regel einen Werktag. Bitte warte, bis diese Spende abgeschlossen ist, bevor du eine weitere Spende vornimmst.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Die Bearbeitung von Banküberweisungen kann 1 bis 14 Werktage dauern. Bitte warte, bis diese Spende abgeschlossen ist, bevor du eine weitere Spende vornimmst.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Die Bearbeitung von Banküberweisungen dauert in der Regel einen Werktag. Bitte warte, bis diese Spende abgeschlossen ist, bevor du deine regelmäßige Spende aktualisierst.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Die Bearbeitung von Banküberweisungen kann 1 bis 14 Werktage dauern. Bitte warte, bis diese Spende abgeschlossen ist, bevor du deine regelmäßige Spende aktualisierst.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
 "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Du kannst bis zu %1$@ per Banküberweisung senden. Versuche es mit einem anderen Betrag oder einer anderen Zahlungsmethode.";
@@ -2312,10 +2312,10 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Spende ausstehend";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Deine einmalige Spende steht noch aus. Sobald deine Spende eingegangen ist, kannst du das %1$@-Abzeichen in deinem Profil anzeigen.\n\nDie Verarbeitung von Banküberweisungen dauert in der Regel einen Werktag.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Deine einmalige Spende steht noch aus. Sobald deine Spende eingegangen ist, kannst du das %1$@-Abzeichen in deinem Profil anzeigen.\n\nDie Bearbeitung von Banküberweisungen kann 1 bis 14 Werktage dauern.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Deine monatliche Spende steht noch aus. Sobald deine Spende eingegangen ist, kannst du das %1$@-Abzeichen in deinem Profil anzeigen.\n\nDie Verarbeitung von Banküberweisungen dauert in der Regel einen Werktag.";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Deine monatliche Spende steht noch aus. Sobald deine Spende eingegangen ist, kannst du das %1$@-Abzeichen in deinem Profil anzeigen.\n\nDie Bearbeitung von Banküberweisungen kann 1 bis 14 Werktage dauern.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Regelmäßige Spende verlängern";
@@ -2504,7 +2504,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Deine Spende über iDEAL konnte nicht bestätigt werden. Überprüfe deine Banking-App, um deine Spende zu bestätigen oder versuche es erneut.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Deine Überweisung wurde noch nicht ausgeführt. Die Bearbeitung von Banküberweisungen dauert in der Regel einen Werktag.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Deine Überweisung wurde noch nicht ausgeführt. Die Bearbeitung von Banküberweisungen kann 1 bis 14 Werktage dauern.";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "Spende ausstehend";
@@ -3839,7 +3839,7 @@
 "IN_CALL_RECONNECTING" = "Neu verbinden …";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Klingelt …";
+"IN_CALL_RINGING" = "Es klingelt …";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "Sprachanruf …";
@@ -4346,7 +4346,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Löschen";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
-"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Save";
+"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Speichern";
 
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "Mich später erinnern";
@@ -4430,7 +4430,7 @@
 "MESSAGE_ACTION_REPLY" = "Diese Nachricht beantworten";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save";
+"MESSAGE_ACTION_SAVE_MEDIA" = "Speichern";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SELECT_MESSAGE" = "Mehrere auswählen";
@@ -6586,17 +6586,8 @@
 /* Title for action sheet when the secondary device fails to sync messages due to an app update being required. */
 "SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE" = "Update erforderlich";
 
-/* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Wähle einen Namen für dieses Gerät aus";
-
-/* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Dieser Name wird in »Gekoppelte Geräte« erscheinen.";
-
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Name wählen";
-
-/* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Koppeln abgeschlossen";
 
 /* header text before the user can link this device */
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Starte Signal auf deinem Mobiltelefon, um dieses iPad mit deinem Konto zu koppeln.";
@@ -8207,7 +8198,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifizieren";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Die Ablaufzeit für verschwindende Nachrichten wird auf %1$@ festgelegt, sobald du dem Kontakt eine Nachricht sendest.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Die Zeit für verschwindende Nachrichten wird auf %1$@ festgelegt, sobald du dem Kontakt eine Nachricht sendest.";
 
 /* Indicator warning about an unknown contact thread */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING" = "Prüfe sorgfältig";
@@ -8595,12 +8586,6 @@
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Nutzernamen können nur aktualisiert werden, wenn eine Verbindung zum Internet besteht.";
-
-/* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Gerätename darf nicht leer sein";
-
-/* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Gerätename ist zu lang";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Du hast %1$@ als nicht verifiziert markiert.";

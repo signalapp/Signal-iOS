@@ -437,22 +437,22 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Datoteka nije podržana.";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app. */
-"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Save";
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE" = "Spremi";
 
 /* Title for an action in an action sheet that will save attachments to the device's Photos app, and disable the action sheet in the future. */
-"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Save and Don't Show Again";
+"ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN" = "Spremi i ne prikaži opet";
 
 /* Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "This media will be saved to your phone’s Photos app. Other apps may be able to access it depending on your phone's permissions.";
+"ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE" = "Medijski zapisi spremit će se u aplikaciju Fotografije na vašem telefonu. Druge aplikacije moći će im pristupiti ovisno o dopuštenjima vašeg telefona.";
 
 /* Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Save to Photos?";
+"ATTACHMENT_SAVING_ACTION_SHEET_TITLE" = "Spremiti u Fotografije?";
 
 /* Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Failed to save to Photos";
+"ATTACHMENT_SAVING_FAILURE_MESSAGE" = "Spremanje u Fotografije nije uspjelo";
 
 /* Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name. */
-"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Saved to Photos";
+"ATTACHMENT_SAVING_SUCCESS_MESSAGE" = "Spremljeno u Fotografije";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_ANIMATED" = "Animirano";
@@ -1484,7 +1484,7 @@
 "CONTEXT_MENU_REPLY" = "Odgovori";
 
 /* Context menu button title */
-"CONTEXT_MENU_SAVE_MEDIA" = "Save";
+"CONTEXT_MENU_SAVE_MEDIA" = "Spremi";
 
 /* Context menu button title */
 "CONTEXT_MENU_SELECT_MESSAGE" = "Odaberi";
@@ -2249,10 +2249,10 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "Vaša donacija putem platforme iDEAL još uvijek se obrađuje. Provjerite svoju aplikaciju mobilnog bankarstva kako biste odobrili plaćanje prije nego što izvršite novu donaciju.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Obrada transakcije putem bankovnog transfera u prosjeku traje 1 radni dan. Pričekajte završetak transakcije prije nego što izvršite novu donaciju.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Obrada transakcije putem bankovnog transfera može potrajati od 1 do 14 radnih dana. Pričekajte završetak transakcije prije nego što izvršite novu donaciju.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Obrada transakcije putem bankovnog transfera u prosjeku traje 1 radni dan. Prije ažuriranja pretplate pričekajte završetak transakcije.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Obrada transakcije putem bankovnog transfera može potrajati od 1 do 14 radnih dana. Prije ažuriranja pretplate pričekajte završetak transakcije.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
 "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "Moguće je poslati do %1$@ putem bankovnog transfera. Pokušajte s nižim iznosom ili drugim načinom plaćanja.";
@@ -2312,10 +2312,10 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Potvrda donacije u tijeku";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Vaša jednokratna donacija je na čekanju. Moći ćete prikazati značku %1$@ na vašem profilu kada zaprimimo vašu donaciju.\n\nObrada transakcije putem bankovnog transfera u prosjeku traje 1 radni dan.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Vaša jednokratna donacija je na čekanju. Moći ćete prikazati značku %1$@ na vašem profilu kada zaprimimo vašu donaciju.\n\nObrada transakcije putem bankovnog transfera može potrajati od 1 do 14 radnih dana.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Vaša mjesečna donacija je na čekanju. Moći ćete prikazati značku %1$@ na vašem profilu kada zaprimimo vašu donaciju.\n\nObrada transakcije putem bankovnog transfera u prosjeku traje 1 radni dan.";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Vaša mjesečna donacija je na čekanju. Moći ćete prikazati značku %1$@ na vašem profilu kada zaprimimo vašu donaciju.\n\nObrada transakcije putem bankovnog transfera može potrajati od 1 do 14 radnih dana.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Obnovi pretplatu";
@@ -2504,7 +2504,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Vašu donaciju putem platforme iDEAL nije bilo moguće potvrditi. Provjerite svoju aplikaciju mobilnog bankarstva kako biste odobrili donaciju ili pokušajte ponovno.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Čekamo potvrdu vaše uplate putem bankovnog transfera. Obrada transakcije putem bankovnog transfera u prosjeku traje 1 radni dan.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Čekamo potvrdu vaše uplate putem bankovnog transfera. Obrada transakcije putem bankovnog transfera može potrajati od 1 do 14 radnih dana.";
 
 /* Title for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE" = "Potvrda donacije u tijeku";
@@ -4346,7 +4346,7 @@
 "MEDIA_VIEWER_DELETE_MEDIA_ACTION" = "Izbriši";
 
 /* Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app. */
-"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Save";
+"MEDIA_VIEWER_SAVE_MEDIA_ACTION" = "Spremi";
 
 /* button title to snooze a megaphone */
 "MEGAPHONE_REMIND_LATER" = "Podsjeti me kasnije";
@@ -4430,7 +4430,7 @@
 "MESSAGE_ACTION_REPLY" = "Odgovori na ovu poruku";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save";
+"MESSAGE_ACTION_SAVE_MEDIA" = "Spremi";
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SELECT_MESSAGE" = "Odaberi više";
@@ -6586,17 +6586,8 @@
 /* Title for action sheet when the secondary device fails to sync messages due to an app update being required. */
 "SECONDARY_LINKING_SYNCING_UPDATE_REQUIRED_ERROR_TITLE" = "Potrebno je ažuriranje";
 
-/* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Odaberite naziv ovog uređaja";
-
-/* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Ovaj naziv će te vidjeti pod \"Povezani uređaji\".";
-
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Odaberite naziv";
-
-/* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Dovršite povezivanje";
 
 /* header text before the user can link this device */
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Pokrenite Signal na uređaju kako biste povezali ovaj iPad s svojim računom";
@@ -8595,12 +8586,6 @@
 
 /* An error message indicating that a usernames-related requeset failed because of a network error. */
 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION" = "Korisničko ime može se ažurirati samo kada ste povezani s internetom.";
-
-/* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Naziv uređaja ne smije biti prazan";
-
-/* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Naziv uređaja je predugačak";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Označili ste da %1$@ nije provjeren/a.";
