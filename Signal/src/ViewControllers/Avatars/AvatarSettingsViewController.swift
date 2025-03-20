@@ -9,7 +9,7 @@ import SignalUI
 import UniformTypeIdentifiers
 
 class AvatarSettingsViewController: OWSTableViewController2 {
-    let context: AvatarContext
+    let context: AvatarHistoryManager.Context
 
     static let headerAvatarSize: CGFloat = UIDevice.current.isIPhone5OrShorter ? 120 : 160
 
@@ -48,7 +48,11 @@ class AvatarSettingsViewController: OWSTableViewController2 {
 
     private let avatarChangeCallback: (UIImage?) -> Void
 
-    init(context: AvatarContext, currentAvatarImage: UIImage?, avatarChangeCallback: @escaping (UIImage?) -> Void) {
+    init(
+        context: AvatarHistoryManager.Context,
+        currentAvatarImage: UIImage?,
+        avatarChangeCallback: @escaping (UIImage?) -> Void
+    ) {
         self.context = context
         self.state = .original(currentAvatarImage)
         self.avatarChangeCallback = avatarChangeCallback
@@ -89,8 +93,8 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         }
 
         if let model = model {
-            SSKEnvironment.shared.databaseStorageRef.asyncWrite { [context] transaction in
-                AppEnvironment.shared.avatarHistorManagerRef.touchedModel(model, in: context, transaction: transaction)
+            DependenciesBridge.shared.db.asyncWrite { [context] tx in
+                AppEnvironment.shared.avatarHistoryManager.touchedModel(model, in: context, tx: tx)
             }
             guard let newAvatar = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                 model: model,
@@ -245,9 +249,29 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         cell.contentView.addSubview(vStackView)
         vStackView.autoPinEdgesToSuperviewMargins()
 
-        let avatars: [(model: AvatarModel, image: UIImage)] = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            let models = AppEnvironment.shared.avatarHistorManagerRef.models(for: context, transaction: transaction)
-            return models.compactMap { model in
+        let avatars: [(model: AvatarModel, image: UIImage)] = DependenciesBridge.shared.db.read { tx in
+            var allModels = [AvatarModel]()
+
+            let persistedModels = AppEnvironment.shared.avatarHistoryManager.models(for: context, tx: tx)
+            allModels.append(contentsOf: persistedModels)
+
+            // Insert models for default icons that aren't persisted
+            let defaultIcons: [AvatarIcon] = switch context {
+            case .groupId: AvatarIcon.defaultGroupIcons
+            case .profile: AvatarIcon.defaultProfileIcons
+            }
+            let iconsFromPersistedModels: Set<AvatarIcon> = Set(persistedModels.compactMap {
+                switch $0.type {
+                case .icon(let icon): return icon
+                case .image, .text: return nil
+                }
+            })
+            allModels.append(contentsOf: defaultIcons.compactMap { icon in
+                if iconsFromPersistedModels.contains(icon) { return nil }
+                return AvatarModel(type: .icon(icon), theme: .forIcon(icon))
+            })
+
+            return allModels.compactMap { model in
                 guard let image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                     model: model,
                     diameterPoints: UInt(avatarSize)
@@ -367,12 +391,12 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                 action: { [weak self] in
                     let model = AvatarModel(type: .text(""), theme: .default)
                     let vc = AvatarEditViewController(model: model) { [weak self] editedModel in
-                        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
+                        DependenciesBridge.shared.db.asyncWrite { tx in
                             guard let self = self else { return }
-                            AppEnvironment.shared.avatarHistorManagerRef.touchedModel(
+                            AppEnvironment.shared.avatarHistoryManager.touchedModel(
                                 editedModel,
                                 in: self.context,
-                                transaction: transaction
+                                tx: tx
                             )
                         } completion: {
                             self?.state = .new(editedModel)
@@ -451,11 +475,11 @@ extension AvatarSettingsViewController: UIImagePickerControllerDelegate, UINavig
         dismiss(animated: true) { [weak self] in
             let vc = CropScaleImageViewController(srcImage: originalImage) { croppedImage in
                 guard let self = self else { return }
-                let imageModel = SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    AppEnvironment.shared.avatarHistorManagerRef.recordModelForImage(
+                let imageModel = DependenciesBridge.shared.db.write { tx in
+                    AppEnvironment.shared.avatarHistoryManager.recordModelForImage(
                         croppedImage,
                         in: self.context,
-                        transaction: transaction
+                        tx: tx
                     )
                 }
                 DispatchQueue.main.async {
@@ -478,11 +502,11 @@ extension AvatarSettingsViewController: OptionViewDelegate {
         owsAssertDebug(model.type.isEditable)
 
         let vc = AvatarEditViewController(model: model) { [weak self, context] editedModel in
-            SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
-                AppEnvironment.shared.avatarHistorManagerRef.touchedModel(
+            DependenciesBridge.shared.db.asyncWrite { tx in
+                AppEnvironment.shared.avatarHistoryManager.touchedModel(
                     editedModel,
                     in: context,
-                    transaction: transaction
+                    tx: tx
                 )
             } completion: {
                 self?.state = .new(editedModel)
@@ -494,11 +518,11 @@ extension AvatarSettingsViewController: OptionViewDelegate {
 
     fileprivate func didDeleteOptionView(_ optionView: OptionView, model: AvatarModel) {
         owsAssertDebug(model.type.isDeletable)
-        SSKEnvironment.shared.databaseStorageRef.asyncWrite { [context] transaction in
-            AppEnvironment.shared.avatarHistorManagerRef.deletedModel(
+        DependenciesBridge.shared.db.asyncWrite { [context] tx in
+            AppEnvironment.shared.avatarHistoryManager.deletedModel(
                 model,
                 in: context,
-                transaction: transaction
+                tx: tx
             )
         } completion: { [weak self] in
             // If we just deleted the selected avatar, also clear it.

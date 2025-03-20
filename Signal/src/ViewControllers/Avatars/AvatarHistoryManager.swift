@@ -3,45 +3,46 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-public import SignalServiceKit
+import SignalServiceKit
 
-enum AvatarContext {
-    case groupId(Data)
-    case profile
+class AvatarHistoryManager {
+    enum Context {
+        case groupId(Data)
+        case profile
 
-    var key: String {
-        switch self {
-        case .groupId(let data): return "group.\(data.hexadecimalString)"
-        case .profile: return "profile"
-        }
-    }
-}
-
-public class AvatarHistoryManager: NSObject {
-    static let keyValueStore = KeyValueStore(collection: "AvatarHistory")
-    static let appSharedDataDirectory = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
-    static let imageHistoryDirectory = URL(fileURLWithPath: "AvatarHistory", isDirectory: true, relativeTo: appSharedDataDirectory)
-
-    public init(appReadiness: AppReadiness) {
-        super.init()
-        SwiftSingletons.register(self)
-
-        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            DispatchQueue.global().async {
-                self.cleanupOrphanedImages()
+        fileprivate var key: String {
+            switch self {
+            case .groupId(let data): return "group.\(data.hexadecimalString)"
+            case .profile: return "profile"
             }
         }
+    }
+
+    private let db: any DB
+    private let keyValueStore: KeyValueStore
+    private let imageHistoryDirectory: URL
+
+    init(
+        appReadiness: AppReadiness,
+        db: any DB
+    ) {
+        self.db = db
+        self.keyValueStore = KeyValueStore(collection: "AvatarHistory")
+        self.imageHistoryDirectory = URL(
+            fileURLWithPath: "AvatarHistory",
+            isDirectory: true,
+            relativeTo: URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
+        )
     }
 
     func cleanupOrphanedImages() {
         owsAssertDebug(!Thread.isMainThread)
 
-        guard OWSFileSystem.fileOrFolderExists(url: Self.imageHistoryDirectory) else { return }
+        guard OWSFileSystem.fileOrFolderExists(url: imageHistoryDirectory) else { return }
 
-        let allRecords: [[AvatarRecord]] = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+        let allRecords: [[AvatarRecord]] = db.read { tx in
             do {
-                return try Self.keyValueStore.allCodableValues(transaction: transaction)
+                return try keyValueStore.allCodableValues(transaction: tx)
             } catch {
                 owsFailDebug("Failed to decode avatar history for orphan cleanup \(error)")
                 return []
@@ -52,7 +53,7 @@ public class AvatarHistoryManager: NSObject {
 
         let filesInDirectory: [String]
         do {
-            filesInDirectory = try OWSFileSystem.recursiveFilesInDirectory(Self.imageHistoryDirectory.path)
+            filesInDirectory = try OWSFileSystem.recursiveFilesInDirectory(imageHistoryDirectory.path)
         } catch {
             owsFailDebug("Failed to lookup files in image history directory \(error)")
             return
@@ -72,28 +73,8 @@ public class AvatarHistoryManager: NSObject {
         }
     }
 
-    func models(for context: AvatarContext, transaction: DBReadTransaction) -> [AvatarModel] {
-        var (models, icons) = persisted(for: context, transaction: transaction)
-
-        let defaultIcons: [AvatarIcon]
-        switch context {
-        case .groupId: defaultIcons = AvatarIcon.defaultGroupIcons
-        case .profile: defaultIcons = AvatarIcon.defaultProfileIcons
-        }
-
-        // Insert models for default icons that aren't persisted
-        for icon in defaultIcons.filter({ !icons.contains($0) }) {
-            models.append(.init(
-                type: .icon(icon),
-                theme: .forIcon(icon)
-            ))
-        }
-
-        return models
-    }
-
-    func touchedModel(_ model: AvatarModel, in context: AvatarContext, transaction: DBWriteTransaction) {
-        var (models, _) = persisted(for: context, transaction: transaction)
+    func touchedModel(_ model: AvatarModel, in context: Context, tx: DBWriteTransaction) {
+        var models = models(for: context, tx: tx)
 
         models.removeAll { $0.identifier == model.identifier }
         models.insert(model, at: 0)
@@ -111,14 +92,14 @@ public class AvatarHistoryManager: NSObject {
         }
 
         do {
-            try Self.keyValueStore.setCodable(records, key: context.key, transaction: transaction)
+            try keyValueStore.setCodable(records, key: context.key, transaction: tx)
         } catch {
             owsFailDebug("Failed to touch avatar history \(error)")
         }
     }
 
-    func deletedModel(_ model: AvatarModel, in context: AvatarContext, transaction: DBWriteTransaction) {
-        var (models, _) = persisted(for: context, transaction: transaction)
+    func deletedModel(_ model: AvatarModel, in context: Context, tx: DBWriteTransaction) {
+        var models = models(for: context, tx: tx)
 
         models.removeAll { $0.identifier == model.identifier }
 
@@ -139,17 +120,17 @@ public class AvatarHistoryManager: NSObject {
         }
 
         do {
-            try Self.keyValueStore.setCodable(records, key: context.key, transaction: transaction)
+            try keyValueStore.setCodable(records, key: context.key, transaction: tx)
         } catch {
             owsFailDebug("Failed to touch avatar history \(error)")
         }
     }
 
-    func recordModelForImage(_ image: UIImage, in context: AvatarContext, transaction: DBWriteTransaction) -> AvatarModel? {
-        OWSFileSystem.ensureDirectoryExists(Self.imageHistoryDirectory.path)
+    func recordModelForImage(_ image: UIImage, in context: Context, tx: DBWriteTransaction) -> AvatarModel? {
+        OWSFileSystem.ensureDirectoryExists(imageHistoryDirectory.path)
 
         let identifier = UUID().uuidString
-        let url = URL(fileURLWithPath: identifier + ".jpg", relativeTo: Self.imageHistoryDirectory)
+        let url = URL(fileURLWithPath: identifier + ".jpg", relativeTo: imageHistoryDirectory)
 
         guard let avatarData = OWSProfileManager.avatarData(avatarImage: image) else {
             owsFailDebug("avatarData was nil")
@@ -163,24 +144,23 @@ public class AvatarHistoryManager: NSObject {
         }
 
         let model = AvatarModel(identifier: identifier, type: .image(url), theme: .default)
-        touchedModel(model, in: context, transaction: transaction)
+        touchedModel(model, in: context, tx: tx)
         return model
     }
 
-    private func persisted(
-        for context: AvatarContext,
-        transaction: DBReadTransaction
-    ) -> (models: [AvatarModel], persistedIcons: Set<AvatarIcon>) {
+    func models(
+        for context: Context,
+        tx: DBReadTransaction
+    ) -> [AvatarModel] {
         let records: [AvatarRecord]?
 
         do {
-            records = try Self.keyValueStore.getCodableValue(forKey: context.key, transaction: transaction)
+            records = try keyValueStore.getCodableValue(forKey: context.key, transaction: tx)
         } catch {
             owsFailDebug("Failed to load persisted avatar records \(error)")
             records = nil
         }
 
-        var icons = Set<AvatarIcon>()
         var models = [AvatarModel]()
 
         for record in records ?? [] {
@@ -190,7 +170,6 @@ public class AvatarHistoryManager: NSObject {
                     owsFailDebug("Invalid avatar icon \(record.identifier)")
                     continue
                 }
-                icons.insert(icon)
                 models.append(.init(
                     identifier: record.identifier,
                     type: .icon(icon),
@@ -219,7 +198,7 @@ public class AvatarHistoryManager: NSObject {
             }
         }
 
-        return (models, icons)
+        return models
     }
 }
 

@@ -22,30 +22,23 @@ public class AppEnvironment: NSObject {
     @MainActor
     var ownedObjects = [AnyObject]()
 
+    let deviceTransferServiceRef: DeviceTransferService
     let pushRegistrationManagerRef: PushRegistrationManager
 
-    var callService: CallService!
-
-    let deviceTransferServiceRef: DeviceTransferService
-
-    let avatarHistorManagerRef: AvatarHistoryManager
-
     let cvAudioPlayerRef = CVAudioPlayer()
-
     let speechManagerRef = SpeechManager()
-
     let windowManagerRef = WindowManager()
 
-    private(set) var callLinkProfileKeySharingManager: CallLinkProfileKeySharingManager!
-
     private(set) var appIconBadgeUpdater: AppIconBadgeUpdater!
+    private(set) var avatarHistoryManager: AvatarHistoryManager!
     private(set) var badgeManager: BadgeManager!
-    private var usernameValidationObserverRef: UsernameValidationObserver?
+    private(set) var callLinkProfileKeySharingManager: CallLinkProfileKeySharingManager!
+    private(set) var callService: CallService!
+    private var usernameValidationObserverRef: UsernameValidationObserver!
 
     init(appReadiness: AppReadiness, deviceTransferService: DeviceTransferService) {
         self.deviceTransferServiceRef = deviceTransferService
         self.pushRegistrationManagerRef = PushRegistrationManager(appReadiness: appReadiness)
-        self.avatarHistorManagerRef = AvatarHistoryManager(appReadiness: appReadiness)
 
         super.init()
 
@@ -53,23 +46,27 @@ public class AppEnvironment: NSObject {
     }
 
     func setUp(appReadiness: AppReadiness, callService: CallService) {
-        self.callService = callService
-
-        self.badgeManager = BadgeManager(
+        let badgeManager = BadgeManager(
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
             mainScheduler: DispatchQueue.main,
             serialScheduler: DispatchQueue.sharedUtility
         )
+
         self.appIconBadgeUpdater = AppIconBadgeUpdater(badgeManager: badgeManager)
+        self.avatarHistoryManager = AvatarHistoryManager(
+            appReadiness: appReadiness,
+            db: DependenciesBridge.shared.db
+        )
+        self.badgeManager = badgeManager
+        self.callService = callService
+        self.callLinkProfileKeySharingManager = CallLinkProfileKeySharingManager(
+            db: DependenciesBridge.shared.db,
+            accountManager: DependenciesBridge.shared.tsAccountManager
+        )
         self.usernameValidationObserverRef = UsernameValidationObserver(
             appReadiness: appReadiness,
             manager: DependenciesBridge.shared.usernameValidationManager,
             database: DependenciesBridge.shared.db
-        )
-
-        self.callLinkProfileKeySharingManager = CallLinkProfileKeySharingManager(
-            db: DependenciesBridge.shared.db,
-            accountManager: DependenciesBridge.shared.tsAccountManager
         )
 
         appReadiness.runNowOrWhenAppWillBecomeReady {
@@ -113,6 +110,10 @@ public class AppEnvironment: NSObject {
 
             db.asyncWrite { tx in
                 groupCallRecordRingingCleanupManager.cleanupRingingCalls(tx: tx)
+            }
+
+            DispatchQueue.global().async {
+                self.avatarHistoryManager.cleanupOrphanedImages()
             }
 
             Task {

@@ -94,8 +94,6 @@ public enum AvatarIcon: String, CaseIterable {
 
     public var imageName: String { "avatar_\(rawValue)"}
 
-    // todo: real names / final icons
-
     public static var defaultGroupIcons: [AvatarIcon] = [
         .heart,
         .house,
