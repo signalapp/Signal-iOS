@@ -68,6 +68,89 @@ enum StorageServiceProtos_OptionalBool: SwiftProtobuf.Enum, Swift.CaseIterable {
 
 }
 
+/// If unset - computed as the value of the first byte of SHA-256(msg=CONTACT_ID)
+/// modulo the count of colors. Once set the avatar color for a recipient is
+/// never recomputed or changed.
+///
+/// `CONTACT_ID` is the first available identifier from the list:
+/// - ServiceIdToBinary(ACI)
+/// - E164
+/// - ServiceIdToBinary(PNI)
+/// - Group Id
+enum StorageServiceProtos_AvatarColor: SwiftProtobuf.Enum, Swift.CaseIterable {
+  typealias RawValue = Int
+  case a100 // = 0
+  case a110 // = 1
+  case a120 // = 2
+  case a130 // = 3
+  case a140 // = 4
+  case a150 // = 5
+  case a160 // = 6
+  case a170 // = 7
+  case a180 // = 8
+  case a190 // = 9
+  case a200 // = 10
+  case a210 // = 11
+  case UNRECOGNIZED(Int)
+
+  init() {
+    self = .a100
+  }
+
+  init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .a100
+    case 1: self = .a110
+    case 2: self = .a120
+    case 3: self = .a130
+    case 4: self = .a140
+    case 5: self = .a150
+    case 6: self = .a160
+    case 7: self = .a170
+    case 8: self = .a180
+    case 9: self = .a190
+    case 10: self = .a200
+    case 11: self = .a210
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  var rawValue: Int {
+    switch self {
+    case .a100: return 0
+    case .a110: return 1
+    case .a120: return 2
+    case .a130: return 3
+    case .a140: return 4
+    case .a150: return 5
+    case .a160: return 6
+    case .a170: return 7
+    case .a180: return 8
+    case .a190: return 9
+    case .a200: return 10
+    case .a210: return 11
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static let allCases: [StorageServiceProtos_AvatarColor] = [
+    .a100,
+    .a110,
+    .a120,
+    .a130,
+    .a140,
+    .a150,
+    .a160,
+    .a170,
+    .a180,
+    .a190,
+    .a200,
+    .a210,
+  ]
+
+}
+
 struct StorageServiceProtos_StorageItem: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -430,6 +513,15 @@ struct StorageServiceProtos_ContactRecord: @unchecked Sendable {
     set {_uniqueStorage()._note = newValue}
   }
 
+  var avatarColor: StorageServiceProtos_AvatarColor {
+    get {return _storage._avatarColor ?? .a100}
+    set {_uniqueStorage()._avatarColor = newValue}
+  }
+  /// Returns true if `avatarColor` has been explicitly set.
+  var hasAvatarColor: Bool {return _storage._avatarColor != nil}
+  /// Clears the value of `avatarColor`. Subsequent reads from it will return its default value.
+  mutating func clearAvatarColor() {_uniqueStorage()._avatarColor = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum IdentityState: SwiftProtobuf.Enum, Swift.CaseIterable {
@@ -526,6 +618,15 @@ struct StorageServiceProtos_GroupV2Record: @unchecked Sendable {
 
   var storySendMode: StorageServiceProtos_GroupV2Record.StorySendMode = .default
 
+  var avatarColor: StorageServiceProtos_AvatarColor {
+    get {return _avatarColor ?? .a100}
+    set {_avatarColor = newValue}
+  }
+  /// Returns true if `avatarColor` has been explicitly set.
+  var hasAvatarColor: Bool {return self._avatarColor != nil}
+  /// Clears the value of `avatarColor`. Subsequent reads from it will return its default value.
+  mutating func clearAvatarColor() {self._avatarColor = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum StorySendMode: SwiftProtobuf.Enum, Swift.CaseIterable {
@@ -567,6 +668,8 @@ struct StorageServiceProtos_GroupV2Record: @unchecked Sendable {
   }
 
   init() {}
+
+  fileprivate var _avatarColor: StorageServiceProtos_AvatarColor? = nil
 }
 
 struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
@@ -754,6 +857,15 @@ struct StorageServiceProtos_AccountRecord: @unchecked Sendable {
   var hasBackupSubscriberData: Bool {return _storage._backupSubscriberData != nil}
   /// Clears the value of `backupSubscriberData`. Subsequent reads from it will return its default value.
   mutating func clearBackupSubscriberData() {_uniqueStorage()._backupSubscriberData = nil}
+
+  var avatarColor: StorageServiceProtos_AvatarColor {
+    get {return _storage._avatarColor ?? .a100}
+    set {_uniqueStorage()._avatarColor = newValue}
+  }
+  /// Returns true if `avatarColor` has been explicitly set.
+  var hasAvatarColor: Bool {return _storage._avatarColor != nil}
+  /// Clears the value of `avatarColor`. Subsequent reads from it will return its default value.
+  mutating func clearAvatarColor() {_uniqueStorage()._avatarColor = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1042,6 +1154,23 @@ extension StorageServiceProtos_OptionalBool: SwiftProtobuf._ProtoNameProviding {
     0: .same(proto: "UNSET"),
     1: .same(proto: "TRUE"),
     2: .same(proto: "FALSE"),
+  ]
+}
+
+extension StorageServiceProtos_AvatarColor: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "A100"),
+    1: .same(proto: "A110"),
+    2: .same(proto: "A120"),
+    3: .same(proto: "A130"),
+    4: .same(proto: "A140"),
+    5: .same(proto: "A150"),
+    6: .same(proto: "A160"),
+    7: .same(proto: "A170"),
+    8: .same(proto: "A180"),
+    9: .same(proto: "A190"),
+    10: .same(proto: "A200"),
+    11: .same(proto: "A210"),
   ]
 }
 
@@ -1506,6 +1635,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     20: .same(proto: "hidden"),
     22: .same(proto: "nickname"),
     23: .same(proto: "note"),
+    24: .same(proto: "avatarColor"),
   ]
 
   fileprivate class _StorageClass {
@@ -1531,6 +1661,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     var _hidden: Bool = false
     var _nickname: StorageServiceProtos_ContactRecord.Name? = nil
     var _note: String = String()
+    var _avatarColor: StorageServiceProtos_AvatarColor? = nil
 
     #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
@@ -1567,6 +1698,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       _hidden = source._hidden
       _nickname = source._nickname
       _note = source._note
+      _avatarColor = source._avatarColor
     }
   }
 
@@ -1607,6 +1739,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
         case 20: try { try decoder.decodeSingularBoolField(value: &_storage._hidden) }()
         case 22: try { try decoder.decodeSingularMessageField(value: &_storage._nickname) }()
         case 23: try { try decoder.decodeSingularStringField(value: &_storage._note) }()
+        case 24: try { try decoder.decodeSingularEnumField(value: &_storage._avatarColor) }()
         default: break
         }
       }
@@ -1685,6 +1818,9 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       if !_storage._note.isEmpty {
         try visitor.visitSingularStringField(value: _storage._note, fieldNumber: 23)
       }
+      try { if let v = _storage._avatarColor {
+        try visitor.visitSingularEnumField(value: v, fieldNumber: 24)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1716,6 +1852,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._hidden != rhs_storage._hidden {return false}
         if _storage._nickname != rhs_storage._nickname {return false}
         if _storage._note != rhs_storage._note {return false}
+        if _storage._avatarColor != rhs_storage._avatarColor {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -1815,6 +1952,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     7: .same(proto: "dontNotifyForMentionsIfMuted"),
     8: .same(proto: "hideStory"),
     10: .same(proto: "storySendMode"),
+    11: .same(proto: "avatarColor"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1832,12 +1970,17 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
       case 7: try { try decoder.decodeSingularBoolField(value: &self.dontNotifyForMentionsIfMuted) }()
       case 8: try { try decoder.decodeSingularBoolField(value: &self.hideStory) }()
       case 10: try { try decoder.decodeSingularEnumField(value: &self.storySendMode) }()
+      case 11: try { try decoder.decodeSingularEnumField(value: &self._avatarColor) }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if !self.masterKey.isEmpty {
       try visitor.visitSingularBytesField(value: self.masterKey, fieldNumber: 1)
     }
@@ -1865,6 +2008,9 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if self.storySendMode != .default {
       try visitor.visitSingularEnumField(value: self.storySendMode, fieldNumber: 10)
     }
+    try { if let v = self._avatarColor {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 11)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1878,6 +2024,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if lhs.dontNotifyForMentionsIfMuted != rhs.dontNotifyForMentionsIfMuted {return false}
     if lhs.hideStory != rhs.hideStory {return false}
     if lhs.storySendMode != rhs.storySendMode {return false}
+    if lhs._avatarColor != rhs._avatarColor {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1927,6 +2074,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     34: .same(proto: "completedUsernameOnboarding"),
     35: .same(proto: "usernameLink"),
     41: .same(proto: "backupSubscriberData"),
+    42: .same(proto: "avatarColor"),
   ]
 
   fileprivate class _StorageClass {
@@ -1963,6 +2111,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _completedUsernameOnboarding: Bool = false
     var _usernameLink: StorageServiceProtos_AccountRecord.UsernameLink? = nil
     var _backupSubscriberData: StorageServiceProtos_AccountRecord.IAPSubscriberData? = nil
+    var _avatarColor: StorageServiceProtos_AvatarColor? = nil
 
     #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
@@ -2010,6 +2159,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _completedUsernameOnboarding = source._completedUsernameOnboarding
       _usernameLink = source._usernameLink
       _backupSubscriberData = source._backupSubscriberData
+      _avatarColor = source._avatarColor
     }
   }
 
@@ -2061,6 +2211,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 34: try { try decoder.decodeSingularBoolField(value: &_storage._completedUsernameOnboarding) }()
         case 35: try { try decoder.decodeSingularMessageField(value: &_storage._usernameLink) }()
         case 41: try { try decoder.decodeSingularMessageField(value: &_storage._backupSubscriberData) }()
+        case 42: try { try decoder.decodeSingularEnumField(value: &_storage._avatarColor) }()
         default: break
         }
       }
@@ -2172,6 +2323,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       try { if let v = _storage._backupSubscriberData {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 41)
       } }()
+      try { if let v = _storage._avatarColor {
+        try visitor.visitSingularEnumField(value: v, fieldNumber: 42)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -2214,6 +2368,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._completedUsernameOnboarding != rhs_storage._completedUsernameOnboarding {return false}
         if _storage._usernameLink != rhs_storage._usernameLink {return false}
         if _storage._backupSubscriberData != rhs_storage._backupSubscriberData {return false}
+        if _storage._avatarColor != rhs_storage._avatarColor {return false}
         return true
       }
       if !storagesAreEqual {return false}

@@ -52,19 +52,31 @@ class BlockListViewController: OWSTableViewController2 {
         contents.add(sectionAddContact)
 
         let addresses: [SignalServiceAddress]
-        let groups: [(groupId: Data, groupName: String, groupModel: TSGroupModel?)]
+        let groups: [(groupId: Data, groupName: String, groupModel: TSGroupModel?, groupAvatarImage: UIImage?)]
         (addresses, groups) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
+            let avatarBuilder = SSKEnvironment.shared.avatarBuilderRef
             let blockingManager = SSKEnvironment.shared.blockingManagerRef
             let contactManager = SSKEnvironment.shared.contactManagerRef
             let addresses = contactManager.sortSignalServiceAddresses(
                 blockingManager.blockedAddresses(transaction: transaction),
                 transaction: transaction
             )
-            let groups: [(groupId: Data, groupName: String, groupModel: TSGroupModel?)]
-            groups = ((try? blockingManager.blockedGroupIds(transaction: transaction)) ?? []).map {
-                let groupModel = TSGroupThread.fetch(groupId: $0, transaction: transaction)?.groupModel
+            let groups: [(groupId: Data, groupName: String, groupModel: TSGroupModel?, groupAvatarImage: UIImage?)]
+            groups = ((try? blockingManager.blockedGroupIds(transaction: transaction)) ?? []).map { groupId in
+                let groupModel = TSGroupThread.fetch(groupId: groupId, transaction: transaction)?.groupModel
                 let groupName = groupModel?.groupNameOrDefault ?? TSGroupThread.defaultGroupName
-                return ($0, groupName, groupModel)
+                let groupAvatarImage: UIImage? = {
+                    if let avatarData = groupModel?.avatarDataState.dataIfPresent {
+                        return UIImage(data: avatarData)
+                    }
+
+                    return avatarBuilder.defaultAvatarImage(
+                        forGroupId: groupId,
+                        diameterPoints: AvatarBuilder.standardAvatarSizePoints,
+                        transaction: transaction
+                    )
+                }()
+                return (groupId, groupName, groupModel, groupAvatarImage)
             }.sorted(by: {
                 switch $0.groupName.localizedCaseInsensitiveCompare($1.groupName) {
                 case .orderedAscending:
@@ -117,22 +129,11 @@ class BlockListViewController: OWSTableViewController2 {
         }
 
         // Groups
-        let groupsSectionItems = groups.map { (groupId, groupName, groupModel) in
-            let image: UIImage? = {
-                if let avatarData = groupModel?.avatarDataState.dataIfPresent {
-                    return UIImage(data: avatarData)
-                }
-
-                return SSKEnvironment.shared.avatarBuilderRef.avatarImage(
-                    forGroupId: groupId,
-                    diameterPoints: AvatarBuilder.standardAvatarSizePoints
-                )
-            }()
-
+        let groupsSectionItems = groups.map { (groupId, groupName, groupModel, groupAvatarImage) in
             return OWSTableItem(
                 customCellBlock: {
                     let cell = AvatarTableViewCell()
-                    cell.configure(image: image, text: groupName)
+                    cell.configure(image: groupAvatarImage, text: groupName)
                     return cell
                 },
                 actionBlock: { [weak self] in

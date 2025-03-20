@@ -53,6 +53,7 @@ public class DependenciesBridge {
     public let attachmentViewOnceManager: AttachmentViewOnceManager
     public let audioWaveformManager: AudioWaveformManager
     public let authorMergeHelper: AuthorMergeHelper
+    public let avatarDefaultColorManager: AvatarDefaultColorManager
     public let backupAttachmentDownloadManager: BackupAttachmentDownloadManager
     public let backupAttachmentUploadManager: BackupAttachmentUploadManager
     public let backupSubscriptionManager: BackupSubscriptionManager
@@ -170,6 +171,7 @@ public class DependenciesBridge {
         attachmentViewOnceManager: AttachmentViewOnceManager,
         audioWaveformManager: AudioWaveformManager,
         authorMergeHelper: AuthorMergeHelper,
+        avatarDefaultColorManager: AvatarDefaultColorManager,
         backupAttachmentDownloadManager: BackupAttachmentDownloadManager,
         backupAttachmentUploadManager: BackupAttachmentUploadManager,
         backupSubscriptionManager: BackupSubscriptionManager,
@@ -286,6 +288,7 @@ public class DependenciesBridge {
         self.attachmentViewOnceManager = attachmentViewOnceManager
         self.audioWaveformManager = audioWaveformManager
         self.authorMergeHelper = authorMergeHelper
+        self.avatarDefaultColorManager = avatarDefaultColorManager
         self.backupAttachmentDownloadManager = backupAttachmentDownloadManager
         self.backupAttachmentUploadManager = backupAttachmentUploadManager
         self.backupSubscriptionManager = backupSubscriptionManager

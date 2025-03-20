@@ -2051,6 +2051,7 @@ class StorageServiceOperation {
                 localIdentifiers: localIdentifiers,
                 isPrimaryDevice: isPrimaryDevice,
                 authedAccount: authedAccount,
+                avatarDefaultColorManager: DependenciesBridge.shared.avatarDefaultColorManager,
                 backupSubscriptionManager: DependenciesBridge.shared.backupSubscriptionManager,
                 dmConfigurationStore: DependenciesBridge.shared.disappearingMessagesConfigurationStore,
                 linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
@@ -2061,6 +2062,7 @@ class StorageServiceOperation {
                 preferences: SSKEnvironment.shared.preferencesRef,
                 profileManager: SSKEnvironment.shared.profileManagerImplRef,
                 receiptManager: SSKEnvironment.shared.receiptManagerRef,
+                recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
                 registrationStateChangeManager: DependenciesBridge.shared.registrationStateChangeManager,
                 storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
                 systemStoryManager: SSKEnvironment.shared.systemStoryManagerRef,
@@ -2081,6 +2083,7 @@ class StorageServiceOperation {
                 localIdentifiers: localIdentifiers,
                 isPrimaryDevice: isPrimaryDevice,
                 authedAccount: authedAccount,
+                avatarDefaultColorManager: DependenciesBridge.shared.avatarDefaultColorManager,
                 blockingManager: SSKEnvironment.shared.blockingManagerRef,
                 contactsManager: SSKEnvironment.shared.contactManagerImplRef,
                 identityManager: DependenciesBridge.shared.identityManager,
@@ -2114,6 +2117,8 @@ class StorageServiceOperation {
         return MultipleElementStateUpdater(
             recordUpdater: StorageServiceGroupV2RecordUpdater(
                 authedAccount: authedAccount,
+                isPrimaryDevice: isPrimaryDevice,
+                avatarDefaultColorManager: DependenciesBridge.shared.avatarDefaultColorManager,
                 blockingManager: SSKEnvironment.shared.blockingManagerRef,
                 groupsV2: SSKEnvironment.shared.groupsV2Ref,
                 profileManager: SSKEnvironment.shared.profileManagerRef

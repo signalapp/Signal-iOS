@@ -36,12 +36,22 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     }
 
     private lazy var defaultAvatarImage: UIImage? = {
-        switch context {
-        case .groupId(let groupId):
-            return SSKEnvironment.shared.avatarBuilderRef.avatarImage(forGroupId: groupId, diameterPoints: UInt(Self.headerAvatarSize))
-        case .profile:
-            return SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                SSKEnvironment.shared.avatarBuilderRef.defaultAvatarImageForLocalUser(diameterPoints: UInt(Self.headerAvatarSize), transaction: transaction)
+        let avatarBuilder = SSKEnvironment.shared.avatarBuilderRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
+        return databaseStorage.read { tx in
+            switch context {
+            case .groupId(let groupId):
+                return avatarBuilder.defaultAvatarImage(
+                    forGroupId: groupId,
+                    diameterPoints: UInt(Self.headerAvatarSize),
+                    transaction: tx
+                )
+            case .profile:
+                return avatarBuilder.defaultAvatarImageForLocalUser(
+                    diameterPoints: UInt(Self.headerAvatarSize),
+                    transaction: tx
+                )
             }
         }
     }()

@@ -560,4 +560,58 @@ extension GRDBSchemaMigratorTest {
         let groupIds = Set(try GRDBSchemaMigrator.decodeBlockedGroupIds(dataValue: coder.encodedData))
         XCTAssertEqual(groupIds, [Data(count: 16), Data(count: 32)])
     }
+
+    func testPopulateDefaultAvatarColorsTable() throws {
+        @objc(TSGroupModelForMigrations)
+        class TSGroupModelForMigrations: NSObject, NSSecureCoding {
+            static var supportsSecureCoding: Bool { true }
+            let groupId: NSData
+            init(groupId: Data) { self.groupId = groupId as NSData }
+            required init?(coder: NSCoder) { owsFail("Don't decode these!") }
+            func encode(with coder: NSCoder) {
+                coder.encode(groupId, forKey: "groupId")
+            }
+        }
+        let coder = NSKeyedArchiver(requiringSecureCoding: true)
+        coder.setClassName("SignalServiceKit.TSGroupModelV2", for: TSGroupModelForMigrations.self)
+        let groupId = Data(repeating: 9, count: 32)
+        let groupModel = TSGroupModelForMigrations(groupId: groupId)
+        coder.encode(groupModel, forKey: NSKeyedArchiveRootObjectKey)
+
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "model_TSThread"(
+                "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+                ,"uniqueId" TEXT NOT NULL UNIQUE ON CONFLICT FAIL
+                ,"groupModel" BLOB
+            );
+            INSERT INTO model_TSThread VALUES
+                (1, 'g\(groupId.base64EncodedString())', X'\(coder.encodedData.hexadecimalString)');
+
+            CREATE TABLE model_SignalRecipient(
+                "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+                ,"recipientPhoneNumber" TEXT
+                ,"recipientUUID" TEXT
+                ,"pni" TEXT
+            );
+            INSERT INTO model_SignalRecipient VALUES
+                (1, '+12135550124', NULL, NULL),
+                (2, NULL, 'A025BF78-653E-44E0-BEB9-DEB14BA32487', NULL),
+                (3, NULL, '+12135550199', 'PNI:11A175E3-FE31-4EDA-87DA-E0BF2A2E250B');
+            """)
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.createDefaultAvatarColorTable(tx: tx)
+                try GRDBSchemaMigrator.populateDefaultAvatarColorTable(tx: tx)
+            }
+
+            let rows = try Row.fetchAll(db, sql: "SELECT * FROM AvatarDefaultColor")
+            XCTAssertEqual(rows.count, 4)
+            XCTAssertEqual(rows.filter { $0["groupId"] != nil }.count, 1)
+            XCTAssertEqual(rows.filter { $0["recipientRowId"] != nil }.count, 3)
+        }
+    }
 }

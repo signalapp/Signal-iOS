@@ -2273,3 +2273,17 @@ AND (
     "storyTimestamp" IS NOT NULL
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "AvatarDefaultColor" (
+            "recipientRowId" INTEGER UNIQUE REFERENCES "model_SignalRecipient"("id"
+        )
+            ON DELETE
+                CASCADE
+                    ON UPDATE
+                        CASCADE
+                        ,"groupId" BLOB UNIQUE
+                        ,"defaultColorIndex" INTEGER NOT NULL
+)
+;

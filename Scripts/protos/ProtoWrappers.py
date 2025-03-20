@@ -319,7 +319,7 @@ class BaseContext(object):
     def swift_type_for_field(self, field, suppress_optional=False):
         base_type = self.base_swift_type_for_field(field)
 
-        if field.rules == "optional":
+        if field.rules == "optional" or field.rules == "explicit_proto3_optional":
             if suppress_optional:
                 return base_type
             can_be_optional = self.can_field_be_optional(field)
@@ -344,7 +344,7 @@ class BaseContext(object):
         )
 
     def can_field_be_optional(self, field):
-        return not self.is_field_primitive(field) or not field.is_required
+        return not self.is_field_primitive(field) or not field.is_required or field.rules == "explicit_proto3_optional"
 
     def is_field_proto3_primitive(self, field):
         return (
@@ -402,7 +402,7 @@ class BaseContext(object):
         if field.default_value is not None and len(field.default_value) > 0:
             return field.default_value
 
-        if field.rules == "optional":
+        if field.rules == "optional" or field.rules == "explicit_proto3_optional":
             can_be_optional = self.can_field_be_optional(field)
             if can_be_optional:
                 return None  # Swift provides this automatically.
@@ -637,8 +637,9 @@ class MessageContext(BaseContext):
                 writer.newline()
 
         for field in implict_fields:
-            if field.rules == "optional":
-                can_be_optional = not self.is_field_primitive(field) and not self.is_field_proto3_primitive(field)
+            if field.rules == "optional" or field.rules == "explicit_proto3_optional":
+                can_be_optional = field.rules == "explicit_proto3_optional"
+                can_be_optional = can_be_optional or (not self.is_field_primitive(field) and not self.is_field_proto3_primitive(field))
                 if can_be_optional:
                     def write_field_getter(
                         is_objc_accessible, is_required_optional
@@ -776,7 +777,14 @@ class MessageContext(BaseContext):
                     writer.pop_indent()
                     writer.add("}")
 
-                if not self.is_field_proto3_primitive(field) and not self.is_field_oneof(field):
+                if field.rules == "explicit_proto3_optional":
+                    writer.add("public var %s: Bool {" % field.has_accessor_name())
+                    writer.push_indent()
+                    writer.add("return proto.%s" % field.has_accessor_name())
+                    writer.pop_indent()
+                    writer.add("}")
+                    writer.newline()
+                elif not self.is_field_proto3_primitive(field) and not self.is_field_oneof(field):
                     writer.add_objc()
                     writer.add("public var %s: Bool {" % field.has_accessor_name())
                     writer.push_indent()
@@ -1259,8 +1267,13 @@ public func serializedData() throws -> Data {
                     accessor_name = field.name_swift
                     accessor_name = "set" + accessor_name[0].upper() + accessor_name[1:]
 
-                    can_be_optional = not self.is_field_primitive(field)
-                    if field.rules == "repeated" or self.is_field_proto3_primitive(field):
+                    if field.rules == "explicit_proto3_optional":
+                        writer.add("if let _value = %s {" % field.name_swift)
+                        writer.push_indent()
+                        writer.add("builder.%s(_value)" % (accessor_name,))
+                        writer.pop_indent()
+                        writer.add("}")
+                    elif field.rules == "repeated" or self.is_field_proto3_primitive(field):
                         writer.add(
                             "builder.%s(%s)"
                             % (
@@ -1268,7 +1281,7 @@ public func serializedData() throws -> Data {
                                 field.name_swift,
                             )
                         )
-                    elif can_be_optional:
+                    elif not self.is_field_primitive(field):
                         writer.add("if let _value = %s {" % field.name_swift)
                         writer.push_indent()
                         writer.add("builder.%s(_value)" % (accessor_name,))
@@ -2174,7 +2187,7 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
         # optional bytes  id          = 1;
         # optional bool              isComplete = 2 [default = false];
         #
-        # NOTE: optional and required are not valid in proto3.
+        # NOTE: required is not valid in proto3.
         item_match = message_item_regex.search(line)
         if item_match:
             # print 'item_rules:', item_match.groups()
@@ -2188,6 +2201,8 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
             if proto_syntax == "proto3":
                 if item_rules is None:
                     item_rules = "optional"
+                elif item_rules == "optional":
+                    item_rules = "explicit_proto3_optional"
                 elif item_rules == "repeated":
                     pass
                 else:

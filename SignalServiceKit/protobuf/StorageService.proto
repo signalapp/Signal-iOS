@@ -80,6 +80,30 @@ message StorageRecord {
   }
 }
 
+// If unset - computed as the value of the first byte of SHA-256(msg=CONTACT_ID)
+// modulo the count of colors. Once set the avatar color for a recipient is
+// never recomputed or changed.
+//
+// `CONTACT_ID` is the first available identifier from the list:
+// - ServiceIdToBinary(ACI)
+// - E164
+// - ServiceIdToBinary(PNI)
+// - Group Id
+enum AvatarColor {
+  A100 = 0;
+  A110 = 1;
+  A120 = 2;
+  A130 = 3;
+  A140 = 4;
+  A150 = 5;
+  A160 = 6;
+  A170 = 7;
+  A180 = 8;
+  A190 = 9;
+  A200 = 10;
+  A210 = 11;
+}
+
 message ContactRecord {
   enum IdentityState {
     DEFAULT = 0;
@@ -114,6 +138,7 @@ message ContactRecord {
   bool hidden = 20;
   Name nickname = 22;
   string note = 23;
+  optional AvatarColor avatarColor = 24;
 }
 
 message GroupV1Record {
@@ -143,6 +168,7 @@ message GroupV2Record {
   bool dontNotifyForMentionsIfMuted = 7;
   bool hideStory = 8;
   StorySendMode storySendMode = 10;
+  optional AvatarColor avatarColor = 11;
 }
 
 message AccountRecord {
@@ -238,6 +264,7 @@ message AccountRecord {
   reserved /*backupsSubscriberCurrencyCode*/ 37;
   reserved /*backupsSubscriptionManuallyCancelled*/ 38;
   IAPSubscriberData backupSubscriberData = 41;
+  optional AvatarColor avatarColor = 42;
 }
 
 message StoryDistributionListRecord {

@@ -816,6 +816,17 @@ extension SignalServiceAddress {
             cache: SignalServiceAddressCache()
         )
     }
+
+    static func isolatedForTesting(
+        serviceId: ServiceId? = nil,
+        phoneNumber: String? = nil
+    ) -> SignalServiceAddress {
+        SignalServiceAddress(
+            serviceId: serviceId,
+            phoneNumber: phoneNumber,
+            cache: SignalServiceAddressCache()
+        )
+    }
 }
 
 extension SignalServiceAddressCache {

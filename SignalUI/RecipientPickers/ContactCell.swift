@@ -92,7 +92,7 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
             nameComponents.familyName = systemContact.lastName
 
             let avatar = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-                SSKEnvironment.shared.avatarBuilderRef.avatarImage(
+                SSKEnvironment.shared.avatarBuilderRef.defaultAvatarImage(
                     personNameComponents: nameComponents,
                     diameterPoints: UInt(ContactCell.avatarDiameter),
                     transaction: transaction

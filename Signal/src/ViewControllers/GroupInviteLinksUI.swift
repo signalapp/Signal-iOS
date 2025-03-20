@@ -96,15 +96,21 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
     /// Fills out this view's contents before any group-invite-link-preview info
     /// fetches have been attempted.
     private func createContents() {
+        let avatarBuilder = SSKEnvironment.shared.avatarBuilderRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
         let header = UIView()
         header.layoutMargins = UIEdgeInsets(hMargin: 32, vMargin: 32)
         header.backgroundColor = Theme.actionSheetBackgroundColor
         self.customHeader = header
 
-        avatarView.image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
-            forGroupId: groupV2ContextInfo.groupId,
-            diameterPoints: Self.avatarSize
-        )
+        avatarView.image = databaseStorage.read { tx in
+            avatarBuilder.defaultAvatarImage(
+                forGroupId: groupV2ContextInfo.groupId,
+                diameterPoints: Self.avatarSize,
+                transaction: tx
+            )
+        }
         avatarView.autoSetDimension(.width, toSize: CGFloat(Self.avatarSize))
 
         groupTitleLabel.font = UIFont.semiboldFont(ofSize: UIFont.dynamicTypeTitle1Clamped.pointSize * (13/14))

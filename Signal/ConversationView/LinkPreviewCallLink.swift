@@ -121,7 +121,9 @@ public class CommonCallLinksUI {
         guard let image = UIImage(named: "video-compact") else { return nil }
         let newSize = CGSize(square: Constants.circleViewDimension)
 
-        let theme = AvatarTheme.forData(rootKey.bytes.prefix(1))
+        // Call link default colors aren't persisted, so we can use the derived
+        // color directly instead of making a database query.
+        let theme = AvatarDefaultColorManager.deriveDefaultColor(useCase: .callLink(rootKey: rootKey))
 
         let renderer = UIGraphicsImageRenderer(size: newSize)
         let finalImage = renderer.image { context in

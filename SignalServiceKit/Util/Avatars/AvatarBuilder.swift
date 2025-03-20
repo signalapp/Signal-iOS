@@ -279,7 +279,7 @@ public class AvatarBuilder {
         return avatarImage(forRequest: request, transaction: transaction)
     }
 
-    public func avatarImage(
+    public func defaultAvatarImage(
         personNameComponents: PersonNameComponents,
         address: SignalServiceAddress? = nil,
         diameterPoints: UInt,
@@ -288,8 +288,14 @@ public class AvatarBuilder {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
         let shouldBlurAvatar = false
         let theme: AvatarTheme
-        if let address = address {
-            theme = .forAddress(address)
+        if let address {
+            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+            let avatarDefaultColorManager = DependenciesBridge.shared.avatarDefaultColorManager
+            if let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: transaction) {
+                theme = avatarDefaultColorManager.defaultColor(useCase: .contact(recipient: recipient), tx: transaction)
+            } else {
+                theme = avatarDefaultColorManager.defaultColor(useCase: .contactWithoutRecipient(address: address), tx: transaction)
+            }
         } else {
             theme = .default
         }
@@ -304,12 +310,12 @@ public class AvatarBuilder {
         return avatarImage(forRequest: request, transaction: transaction)
     }
 
-    public func avatarImage(forGroupId groupId: Data, diameterPoints: UInt) -> UIImage? {
+    public func defaultAvatarImage(
+        forGroupId groupId: Data,
+        diameterPoints: UInt,
+        transaction tx: DBReadTransaction
+    ) -> UIImage? {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
-        return avatarImage(forGroupId: groupId, diameterPixels: UInt(diameterPixels))
-    }
-
-    public func avatarImage(forGroupId groupId: Data, diameterPixels: UInt) -> UIImage? {
         let shouldBlurAvatar = false
         let requestType: RequestType = .groupDefaultIcon(groupId: groupId)
         let request = Request(
@@ -317,7 +323,10 @@ public class AvatarBuilder {
             diameterPixels: CGFloat(diameterPixels),
             shouldBlurAvatar: shouldBlurAvatar
         )
-        let avatarContentType: AvatarContentType = .groupDefault(theme: .forGroupId(groupId))
+        let avatarContentType: AvatarContentType = .groupDefault(
+            theme: DependenciesBridge.shared.avatarDefaultColorManager
+                .defaultColor(useCase: .group(groupId: groupId), tx: tx)
+        )
         let avatarContent = AvatarContent(
             request: request,
             contentType: avatarContentType,
@@ -344,13 +353,19 @@ public class AvatarBuilder {
         transaction: DBReadTransaction
     ) -> UIImage? {
         let requestType: RequestType = {
-            guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress else {
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+            let avatarDefaultColorManager = DependenciesBridge.shared.avatarDefaultColorManager
+
+            guard
+                let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction),
+                let localRecipient = recipientDatabaseTable.fetchRecipient(serviceId: localIdentifiers.aci, transaction: transaction)
+            else {
                 return .contactDefaultIcon(theme: .default)
             }
 
-            let theme = AvatarTheme.forAddress(localAddress)
-
-            let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: localAddress, tx: transaction)
+            let theme = avatarDefaultColorManager.defaultColor(useCase: .contact(recipient: localRecipient), tx: transaction)
+            let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: localIdentifiers.aciAddress, tx: transaction)
             if let contactInitials = Self.contactInitials(for: displayName) {
                 return .text(text: contactInitials, theme: theme)
             } else {
@@ -753,7 +768,14 @@ public class AvatarBuilder {
                     return AvatarContentTypes(contentType: .contactDefaultIcon(theme: .default), failoverContentType: nil)
                 }
 
-                let theme = AvatarTheme.forAddress(address)
+                let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+                let avatarDefaultColorManager = DependenciesBridge.shared.avatarDefaultColorManager
+                let theme: AvatarTheme
+                if let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: transaction) {
+                    theme = avatarDefaultColorManager.defaultColor(useCase: .contact(recipient: recipient), tx: transaction)
+                } else {
+                    theme = avatarDefaultColorManager.defaultColor(useCase: .contactWithoutRecipient(address: address), tx: transaction)
+                }
 
                 if address.isLocalAddress, localUserDisplayMode == .noteToSelf {
                     return AvatarContentTypes(
@@ -804,13 +826,15 @@ public class AvatarBuilder {
                     failoverContentType: nil
                 )
             case .group(let groupId, let avatarData, let digestString):
-                let theme = AvatarTheme.forGroupId(groupId)
+                let theme = DependenciesBridge.shared.avatarDefaultColorManager
+                    .defaultColor(useCase: .group(groupId: groupId), tx: transaction)
                 return AvatarContentTypes(
                     contentType: .data(imageData: avatarData, digestString: digestString, shouldValidate: false),
                     failoverContentType: .groupDefault(theme: theme)
                 )
             case .groupDefaultIcon(let groupId):
-                let theme = AvatarTheme.forGroupId(groupId)
+                let theme = DependenciesBridge.shared.avatarDefaultColorManager
+                    .defaultColor(useCase: .group(groupId: groupId), tx: transaction)
                 return AvatarContentTypes(contentType: .groupDefault(theme: theme), failoverContentType: nil)
             case .model(let model):
                 switch model.type {

@@ -136,6 +136,8 @@ public class AppSetup {
         let dateProvider = testDependencies.dateProvider ?? Date.provider
         let dateProviderMonotonic = MonotonicDate.provider
 
+        let avatarDefaultColorManager = AvatarDefaultColorManager()
+
         let schedulers = DispatchQueueSchedulers()
 
         let appExpiry = AppExpiryImpl(
@@ -1242,6 +1244,7 @@ public class AppSetup {
             attachmentViewOnceManager: attachmentViewOnceManager,
             audioWaveformManager: audioWaveformManager,
             authorMergeHelper: authorMergeHelper,
+            avatarDefaultColorManager: avatarDefaultColorManager,
             backupAttachmentDownloadManager: backupAttachmentDownloadManager,
             backupAttachmentUploadManager: backupAttachmentUploadManager,
             backupSubscriptionManager: backupSubscriptionManager,

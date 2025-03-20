@@ -92,7 +92,7 @@ public class ContactShareViewModel: NSObject {
         // This could mislead the user into thinking
         // that an avatar they did not share was in fact included in the
         // contact share.
-        return SSKEnvironment.shared.avatarBuilderRef.avatarImage(
+        return SSKEnvironment.shared.avatarBuilderRef.defaultAvatarImage(
             personNameComponents: name.components,
             diameterPoints: UInt(diameter),
             transaction: transaction

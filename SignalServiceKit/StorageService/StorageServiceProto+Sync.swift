@@ -175,6 +175,8 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let localIdentifiers: LocalIdentifiers
     private let isPrimaryDevice: Bool
     private let authedAccount: AuthedAccount
+
+    private let avatarDefaultColorManager: AvatarDefaultColorManager
     private let blockingManager: BlockingManager
     private let contactsManager: OWSContactsManager
     private let identityManager: OWSIdentityManager
@@ -193,6 +195,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         localIdentifiers: LocalIdentifiers,
         isPrimaryDevice: Bool,
         authedAccount: AuthedAccount,
+        avatarDefaultColorManager: AvatarDefaultColorManager,
         blockingManager: BlockingManager,
         contactsManager: OWSContactsManager,
         identityManager: OWSIdentityManager,
@@ -210,6 +213,8 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         self.localIdentifiers = localIdentifiers
         self.isPrimaryDevice = isPrimaryDevice
         self.authedAccount = authedAccount
+
+        self.avatarDefaultColorManager = avatarDefaultColorManager
         self.blockingManager = blockingManager
         self.contactsManager = contactsManager
         self.identityManager = identityManager
@@ -387,6 +392,15 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             builder.setNickname(nicknameBuilder.buildInfallibly())
             nicknameRecord.note.map { builder.setNote($0) }
         }
+
+        // Avatar color
+
+        builder.setAvatarColor(
+            avatarDefaultColorManager.defaultColor(
+                useCase: .contact(recipient: recipient),
+                tx: tx
+            ).asStorageServiceProtoAvatarColor
+        )
 
         // Unknown
 
@@ -688,6 +702,10 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             )
         }
 
+        if mergeDefaultAvatarColor(in: record, recipient: recipient, tx: tx) {
+            needsUpdate = true
+        }
+
         return .merged(needsUpdate: needsUpdate, recipient.uniqueId)
     }
 
@@ -805,6 +823,40 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         // match Storage Service.
         return false
     }
+
+    /// Merge the default avatar color from this ContactRecord with local state.
+    ///
+    /// - Returns Whether this record needs updating. For example, the primary
+    /// may need to overwrite state set by a linked device.
+    private func mergeDefaultAvatarColor(
+        in record: StorageServiceProtoContactRecord,
+        recipient: SignalRecipient,
+        tx: DBWriteTransaction
+    ) -> Bool {
+        let localDefaultAvatarColor = avatarDefaultColorManager.defaultColor(
+            useCase: .contact(recipient: recipient),
+            tx: tx
+        )
+        let remoteDefaultAvatarColor = record.avatarColor.flatMap {
+            AvatarTheme.from(storageServiceProtoAvatarColor: $0)
+        }
+
+        guard localDefaultAvatarColor != remoteDefaultAvatarColor else {
+            return false
+        }
+
+        if isPrimaryDevice {
+            return true
+        } else if let remoteDefaultAvatarColor {
+            try? avatarDefaultColorManager.persistDefaultColor(
+                remoteDefaultAvatarColor,
+                recipientRowId: recipient.id!,
+                tx: tx
+            )
+        }
+
+        return false
+    }
 }
 
 // MARK: -
@@ -891,17 +943,25 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
     typealias RecordType = StorageServiceProtoGroupV2Record
 
     private let authedAccount: AuthedAccount
+    private let isPrimaryDevice: Bool
+
+    private let avatarDefaultColorManager: AvatarDefaultColorManager
     private let blockingManager: BlockingManager
     private let groupsV2: GroupsV2
     private let profileManager: ProfileManager
 
     init(
         authedAccount: AuthedAccount,
+        isPrimaryDevice: Bool,
+        avatarDefaultColorManager: AvatarDefaultColorManager,
         blockingManager: BlockingManager,
         groupsV2: GroupsV2,
         profileManager: ProfileManager
     ) {
         self.authedAccount = authedAccount
+        self.isPrimaryDevice = isPrimaryDevice
+
+        self.avatarDefaultColorManager = avatarDefaultColorManager
         self.blockingManager = blockingManager
         self.groupsV2 = groupsV2
         self.profileManager = profileManager
@@ -968,6 +1028,13 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
             builder.setStorySendMode(enqueuedRecord.storySendMode)
         }
 
+        builder.setAvatarColor(
+            avatarDefaultColorManager.defaultColor(
+                useCase: .group(groupId: groupId),
+                tx: transaction
+            ).asStorageServiceProtoAvatarColor
+        )
+
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
         }
@@ -979,6 +1046,8 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         _ record: StorageServiceProtoGroupV2Record,
         transaction: DBWriteTransaction
     ) -> StorageServiceMergeResult<Data> {
+        var needsUpdate = false
+
         let masterKey = record.masterKey
 
         let groupContextInfo: GroupV2ContextInfo
@@ -1064,7 +1133,45 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
             localStoryContextAssociatedData.update(updateStorageService: false, isHidden: record.hideStory, transaction: transaction)
         }
 
-        return .merged(needsUpdate: false, masterKey)
+        if mergeDefaultAvatarColor(in: record, groupId: groupId, tx: transaction) {
+            needsUpdate = true
+        }
+
+        return .merged(needsUpdate: needsUpdate, masterKey)
+    }
+
+    /// Merge the default avatar color from this GroupV2Record with local state.
+    ///
+    /// - Returns Whether this record needs updating. For example, the primary
+    /// may need to overwrite state set by a linked device.
+    private func mergeDefaultAvatarColor(
+        in record: StorageServiceProtoGroupV2Record,
+        groupId: Data,
+        tx: DBWriteTransaction
+    ) -> Bool {
+        let localDefaultAvatarColor = avatarDefaultColorManager.defaultColor(
+            useCase: .group(groupId: groupId),
+            tx: tx
+        )
+        let remoteDefaultAvatarColor = record.avatarColor.flatMap {
+            AvatarTheme.from(storageServiceProtoAvatarColor: $0)
+        }
+
+        guard localDefaultAvatarColor != remoteDefaultAvatarColor else {
+            return false
+        }
+
+        if isPrimaryDevice {
+            return true
+        } else if let remoteDefaultAvatarColor {
+            try? avatarDefaultColorManager.persistDefaultColor(
+                remoteDefaultAvatarColor,
+                groupId: groupId,
+                tx: tx
+            )
+        }
+
+        return false
     }
 }
 
@@ -1076,8 +1183,9 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
     private let localIdentifiers: LocalIdentifiers
     private let isPrimaryDevice: Bool
-
     private let authedAccount: AuthedAccount
+
+    private let avatarDefaultColorManager: AvatarDefaultColorManager
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let linkPreviewSettingStore: LinkPreviewSettingStore
@@ -1088,6 +1196,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let preferences: Preferences
     private let profileManager: OWSProfileManager
     private let receiptManager: OWSReceiptManager
+    private let recipientDatabaseTable: RecipientDatabaseTable
     private let registrationStateChangeManager: RegistrationStateChangeManager
     private let storageServiceManager: StorageServiceManager
     private let systemStoryManager: SystemStoryManagerProtocol
@@ -1100,6 +1209,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         localIdentifiers: LocalIdentifiers,
         isPrimaryDevice: Bool,
         authedAccount: AuthedAccount,
+        avatarDefaultColorManager: AvatarDefaultColorManager,
         backupSubscriptionManager: BackupSubscriptionManager,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         linkPreviewSettingStore: LinkPreviewSettingStore,
@@ -1110,6 +1220,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         preferences: Preferences,
         profileManager: OWSProfileManager,
         receiptManager: OWSReceiptManager,
+        recipientDatabaseTable: RecipientDatabaseTable,
         registrationStateChangeManager: RegistrationStateChangeManager,
         storageServiceManager: StorageServiceManager,
         systemStoryManager: SystemStoryManagerProtocol,
@@ -1120,8 +1231,9 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     ) {
         self.localIdentifiers = localIdentifiers
         self.isPrimaryDevice = isPrimaryDevice
-
         self.authedAccount = authedAccount
+
+        self.avatarDefaultColorManager = avatarDefaultColorManager
         self.backupSubscriptionManager = backupSubscriptionManager
         self.dmConfigurationStore = dmConfigurationStore
         self.linkPreviewSettingStore = linkPreviewSettingStore
@@ -1132,6 +1244,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.preferences = preferences
         self.profileManager = profileManager
         self.receiptManager = receiptManager
+        self.recipientDatabaseTable = recipientDatabaseTable
         self.registrationStateChangeManager = registrationStateChangeManager
         self.storageServiceManager = storageServiceManager
         self.systemStoryManager = systemStoryManager
@@ -1285,6 +1398,18 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         builder.setCompletedUsernameOnboarding(
             !usernameEducationManager.shouldShowUsernameEducation(tx: transaction)
         )
+
+        if let localRecipient = recipientDatabaseTable.fetchRecipient(
+            serviceId: localIdentifiers.aci,
+            transaction: transaction
+        ) {
+            builder.setAvatarColor(
+                avatarDefaultColorManager.defaultColor(
+                    useCase: .contact(recipient: localRecipient),
+                    tx: transaction
+                ).asStorageServiceProtoAvatarColor
+            )
+        }
 
         return builder.buildInfallibly()
     }
@@ -1610,7 +1735,51 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             )
         }
 
+        if mergeDefaultAvatarColor(in: record, tx: transaction) {
+            needsUpdate = true
+        }
+
         return .merged(needsUpdate: needsUpdate, ())
+    }
+
+    /// Merge the default avatar color from this AccountRecord with local state.
+    ///
+    /// - Returns Whether this record needs updating. For example, the primary
+    /// may need to overwrite state set by a linked device.
+    private func mergeDefaultAvatarColor(
+        in record: StorageServiceProtoAccountRecord,
+        tx: DBWriteTransaction
+    ) -> Bool {
+        guard let localRecipient = recipientDatabaseTable.fetchRecipient(
+            serviceId: localIdentifiers.aci,
+            transaction: tx
+        ) else {
+            return false
+        }
+
+        let localDefaultAvatarColor = avatarDefaultColorManager.defaultColor(
+            useCase: .contact(recipient: localRecipient),
+            tx: tx
+        )
+        let remoteDefaultAvatarColor = record.avatarColor.flatMap {
+            AvatarTheme.from(storageServiceProtoAvatarColor: $0)
+        }
+
+        guard localDefaultAvatarColor != remoteDefaultAvatarColor else {
+            return false
+        }
+
+        if isPrimaryDevice {
+            return true
+        } else if let remoteDefaultAvatarColor {
+            try? avatarDefaultColorManager.persistDefaultColor(
+                remoteDefaultAvatarColor,
+                recipientRowId: localRecipient.id!,
+                tx: tx
+            )
+        }
+
+        return false
     }
 }
 

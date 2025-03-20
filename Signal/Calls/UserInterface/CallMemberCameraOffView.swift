@@ -303,14 +303,32 @@ class BlurredAvatarBackgroundView: UIView {
 
     private func avatarImageAndBackgroundColorWithSneakyTransaction(
         for address: SignalServiceAddress
-    ) -> (UIImage?, UIColor?) {
-        let profileImage = SSKEnvironment.shared.databaseStorageRef.read { tx in
-            return SSKEnvironment.shared.contactManagerImplRef.avatarImage(forAddress: address, transaction: tx)
-        }
-        return (
+    ) -> (UIImage?, UIColor) {
+        let avatarDefaultColorManager = DependenciesBridge.shared.avatarDefaultColorManager
+        let contactManagerImpl = SSKEnvironment.shared.contactManagerImplRef
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+
+        let (
             profileImage,
-            AvatarTheme.forAddress(address).backgroundColor
-        )
+            defaultAvatarColor
+        ): (UIImage?, AvatarTheme) = databaseStorage.read { tx in
+            let avatarImage = contactManagerImpl.avatarImage(forAddress: address, transaction: tx)
+
+            if let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx) {
+                return (
+                    avatarImage,
+                    avatarDefaultColorManager.defaultColor(useCase: .contact(recipient: recipient), tx: tx)
+                )
+            } else {
+                return (
+                    avatarImage,
+                    avatarDefaultColorManager.defaultColor(useCase: .contactWithoutRecipient(address: address), tx: tx)
+                )
+            }
+        }
+
+        return (profileImage, defaultAvatarColor.backgroundColor)
     }
 
     func clear() {

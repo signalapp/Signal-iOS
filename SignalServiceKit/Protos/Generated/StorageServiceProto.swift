@@ -62,6 +62,101 @@ private func StorageServiceProtoOptionalBoolUnwrap(_ value: StorageServiceProtoO
     }
 }
 
+// MARK: - StorageServiceProtoAvatarColor
+
+public enum StorageServiceProtoAvatarColor: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+    case a100 // 0
+    case a110 // 1
+    case a120 // 2
+    case a130 // 3
+    case a140 // 4
+    case a150 // 5
+    case a160 // 6
+    case a170 // 7
+    case a180 // 8
+    case a190 // 9
+    case a200 // 10
+    case a210 // 11
+    case UNRECOGNIZED(Int)
+
+    public init() {
+        self = .a100
+    }
+
+    public init?(rawValue: Int) {
+        switch rawValue {
+            case 0: self = .a100
+            case 1: self = .a110
+            case 2: self = .a120
+            case 3: self = .a130
+            case 4: self = .a140
+            case 5: self = .a150
+            case 6: self = .a160
+            case 7: self = .a170
+            case 8: self = .a180
+            case 9: self = .a190
+            case 10: self = .a200
+            case 11: self = .a210
+            default: self = .UNRECOGNIZED(rawValue)
+        }
+    }
+
+    public var rawValue: Int {
+        switch self {
+            case .a100: return 0
+            case .a110: return 1
+            case .a120: return 2
+            case .a130: return 3
+            case .a140: return 4
+            case .a150: return 5
+            case .a160: return 6
+            case .a170: return 7
+            case .a180: return 8
+            case .a190: return 9
+            case .a200: return 10
+            case .a210: return 11
+            case .UNRECOGNIZED(let i): return i
+        }
+    }
+}
+
+private func StorageServiceProtoAvatarColorWrap(_ value: StorageServiceProtos_AvatarColor) -> StorageServiceProtoAvatarColor {
+    switch value {
+    case .a100: return .a100
+    case .a110: return .a110
+    case .a120: return .a120
+    case .a130: return .a130
+    case .a140: return .a140
+    case .a150: return .a150
+    case .a160: return .a160
+    case .a170: return .a170
+    case .a180: return .a180
+    case .a190: return .a190
+    case .a200: return .a200
+    case .a210: return .a210
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
+private func StorageServiceProtoAvatarColorUnwrap(_ value: StorageServiceProtoAvatarColor) -> StorageServiceProtos_AvatarColor {
+    switch value {
+    case .a100: return .a100
+    case .a110: return .a110
+    case .a120: return .a120
+    case .a130: return .a130
+    case .a140: return .a140
+    case .a150: return .a150
+    case .a160: return .a160
+    case .a170: return .a170
+    case .a180: return .a180
+    case .a190: return .a190
+    case .a200: return .a200
+    case .a210: return .a210
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
 // MARK: - StorageServiceProtoStorageItem
 
 public struct StorageServiceProtoStorageItem: Codable, CustomDebugStringConvertible {
@@ -1562,6 +1657,24 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         return !proto.note.isEmpty
     }
 
+    public var avatarColor: StorageServiceProtoAvatarColor? {
+        guard hasAvatarColor else {
+            return nil
+        }
+        return StorageServiceProtoAvatarColorWrap(proto.avatarColor)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedAvatarColor: StorageServiceProtoAvatarColor {
+        if !hasAvatarColor {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: ContactRecord.avatarColor.")
+        }
+        return StorageServiceProtoAvatarColorWrap(proto.avatarColor)
+    }
+    public var hasAvatarColor: Bool {
+        return proto.hasAvatarColor
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1665,6 +1778,9 @@ extension StorageServiceProtoContactRecord {
         }
         if let _value = note {
             builder.setNote(_value)
+        }
+        if let _value = avatarColor {
+            builder.setAvatarColor(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -1843,6 +1959,10 @@ public struct StorageServiceProtoContactRecordBuilder {
 
     public mutating func setNote(_ valueParam: String) {
         proto.note = valueParam
+    }
+
+    public mutating func setAvatarColor(_ valueParam: StorageServiceProtoAvatarColor) {
+        proto.avatarColor = StorageServiceProtoAvatarColorUnwrap(valueParam)
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -2074,6 +2194,24 @@ public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConver
     public var storySendMode: StorageServiceProtoGroupV2RecordStorySendMode {
         return StorageServiceProtoGroupV2RecordStorySendModeWrap(proto.storySendMode)
     }
+    public var avatarColor: StorageServiceProtoAvatarColor? {
+        guard hasAvatarColor else {
+            return nil
+        }
+        return StorageServiceProtoAvatarColorWrap(proto.avatarColor)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedAvatarColor: StorageServiceProtoAvatarColor {
+        if !hasAvatarColor {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: GroupV2Record.avatarColor.")
+        }
+        return StorageServiceProtoAvatarColorWrap(proto.avatarColor)
+    }
+    public var hasAvatarColor: Bool {
+        return proto.hasAvatarColor
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -2135,6 +2273,9 @@ extension StorageServiceProtoGroupV2Record {
         builder.setDontNotifyForMentionsIfMuted(dontNotifyForMentionsIfMuted)
         builder.setHideStory(hideStory)
         builder.setStorySendMode(storySendMode)
+        if let _value = avatarColor {
+            builder.setAvatarColor(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2193,6 +2334,10 @@ public struct StorageServiceProtoGroupV2RecordBuilder {
 
     public mutating func setStorySendMode(_ valueParam: StorageServiceProtoGroupV2RecordStorySendMode) {
         proto.storySendMode = StorageServiceProtoGroupV2RecordStorySendModeUnwrap(valueParam)
+    }
+
+    public mutating func setAvatarColor(_ valueParam: StorageServiceProtoAvatarColor) {
+        proto.avatarColor = StorageServiceProtoAvatarColorUnwrap(valueParam)
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -3229,6 +3374,24 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     public var completedUsernameOnboarding: Bool {
         return proto.completedUsernameOnboarding
     }
+    public var avatarColor: StorageServiceProtoAvatarColor? {
+        guard hasAvatarColor else {
+            return nil
+        }
+        return StorageServiceProtoAvatarColorWrap(proto.avatarColor)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedAvatarColor: StorageServiceProtoAvatarColor {
+        if !hasAvatarColor {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: AccountRecord.avatarColor.")
+        }
+        return StorageServiceProtoAvatarColorWrap(proto.avatarColor)
+    }
+    public var hasAvatarColor: Bool {
+        return proto.hasAvatarColor
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -3361,6 +3524,9 @@ extension StorageServiceProtoAccountRecord {
         }
         if let _value = backupSubscriberData {
             builder.setBackupSubscriberData(_value)
+        }
+        if let _value = avatarColor {
+            builder.setAvatarColor(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -3579,6 +3745,10 @@ public struct StorageServiceProtoAccountRecordBuilder {
 
     public mutating func setBackupSubscriberData(_ valueParam: StorageServiceProtoAccountRecordIAPSubscriberData) {
         proto.backupSubscriberData = valueParam.proto
+    }
+
+    public mutating func setAvatarColor(_ valueParam: StorageServiceProtoAvatarColor) {
+        proto.avatarColor = StorageServiceProtoAvatarColorUnwrap(valueParam)
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

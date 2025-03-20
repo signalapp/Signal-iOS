@@ -196,29 +196,34 @@ public extension GroupsV2Impl {
         }
 
         let markAsComplete = {
-            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+                let isPrimaryDevice = DependenciesBridge.shared.tsAccountManager
+                    .registrationState(tx: tx).isRegisteredPrimaryDevice
+
                 // Now that the thread exists, re-apply the pending group record from
                 // storage service.
                 if var groupRecord {
                     // First apply any migrations
-                    if StorageServiceUnknownFieldMigrator.shouldInterceptRemoteManifestBeforeMerging(tx: transaction) {
+                    if StorageServiceUnknownFieldMigrator.shouldInterceptRemoteManifestBeforeMerging(tx: tx) {
                         groupRecord = StorageServiceUnknownFieldMigrator.interceptRemoteManifestBeforeMerging(
                             record: groupRecord,
-                            tx: transaction
+                            tx: tx
                         )
                     }
 
                     let recordUpdater = StorageServiceGroupV2RecordUpdater(
                         authedAccount: authedAccount,
+                        isPrimaryDevice: isPrimaryDevice,
+                        avatarDefaultColorManager: DependenciesBridge.shared.avatarDefaultColorManager,
                         blockingManager: SSKEnvironment.shared.blockingManagerRef,
                         groupsV2: SSKEnvironment.shared.groupsV2Ref,
                         profileManager: SSKEnvironment.shared.profileManagerRef
                     )
-                    _ = recordUpdater.mergeRecord(groupRecord, transaction: transaction)
+                    _ = recordUpdater.mergeRecord(groupRecord, transaction: tx)
                 }
 
-                self.storageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
-                self.legacyStorageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
+                self.storageServiceGroupsToRestore.removeValue(forKey: key, transaction: tx)
+                self.legacyStorageServiceGroupsToRestore.removeValue(forKey: key, transaction: tx)
             }
         }
 

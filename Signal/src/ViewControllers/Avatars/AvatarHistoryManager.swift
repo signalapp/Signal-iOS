@@ -5,6 +5,13 @@
 
 import SignalServiceKit
 
+/// Responsible for persisting the history of user-selected avatars.
+///
+/// At the time of writing, these include custom images, the stock icons, and
+/// custom text overlaid over a colored background. They do not include default
+/// avatars, such as "contact initials over a colored background".
+///
+/// - SeeAlso ``AvatarDefaultColorManager``
 class AvatarHistoryManager {
     enum Context {
         case groupId(Data)

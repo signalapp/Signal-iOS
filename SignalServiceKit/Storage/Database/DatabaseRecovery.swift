@@ -300,6 +300,7 @@ public extension DatabaseRecovery {
             "MessageBackupAvatarFetchQueue",
             "model_TSAttachment",
             "TSAttachmentMigration",
+            "AvatarDefaultColor",
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

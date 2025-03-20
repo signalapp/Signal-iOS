@@ -387,7 +387,6 @@
 		34BBC862220E883300857249 /* ImageEditorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC860220E883200857249 /* ImageEditorTest.swift */; };
 		34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */; };
 		34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */; };
-		34C1A93B2656E905004FA478 /* MiscTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C1A93A2656E904004FA478 /* MiscTest.swift */; };
 		34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78E2040A4F70000134C /* sonarping.mp3 */; };
 		34C6B0AE1FA0E4AA00D35993 /* test-jpg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */; };
 		34C7C7152625D8E100F4DC2A /* DebugUIMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C7C7142625D8E100F4DC2A /* DebugUIMessages.swift */; };
@@ -2449,6 +2448,8 @@
 		D93EA11F2A057FD600579C6F /* LearnMyOwnPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */; };
 		D93EA1212A0596E400579C6F /* LearnMyOwnPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */; };
 		D93EDC042AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */; };
+		D93F4D5A2D800DD20042926C /* AvatarDefaultColorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93F4D552D7FAC3C0042926C /* AvatarDefaultColorManager.swift */; };
+		D93F4D5D2D801D750042926C /* AvatarDefaultColorManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93F4D5C2D801D700042926C /* AvatarDefaultColorManagerTest.swift */; };
 		D941863C2ACE252D002FE2D3 /* CallRecordLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D941863B2ACE252D002FE2D3 /* CallRecordLogger.swift */; };
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
 		D94441312D55956B005B2A54 /* UUIDv7.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94441302D559567005B2A54 /* UUIDv7.swift */; };
@@ -4148,7 +4149,6 @@
 		34BBC860220E883200857249 /* ImageEditorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTest.swift; sourceTree = "<group>"; };
 		34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerViewController.swift; sourceTree = "<group>"; };
 		34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerLayout.swift; sourceTree = "<group>"; };
-		34C1A93A2656E904004FA478 /* MiscTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiscTest.swift; sourceTree = "<group>"; };
 		34C3C78E2040A4F70000134C /* sonarping.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = sonarping.mp3; path = Signal/AudioFiles/sonarping.mp3; sourceTree = SOURCE_ROOT; };
 		34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "test-jpg.jpg"; sourceTree = "<group>"; };
 		34C7C7142625D8E100F4DC2A /* DebugUIMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIMessages.swift; sourceTree = "<group>"; };
@@ -6284,6 +6284,8 @@
 		D93EA11E2A057FD600579C6F /* LearnMyOwnPniManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManager.swift; sourceTree = "<group>"; };
 		D93EA1202A0596E400579C6F /* LearnMyOwnPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMyOwnPniManagerTest.swift; sourceTree = "<group>"; };
 		D93EDC032AE9E3CD0004BDD9 /* DonationSettingsViewController+MySupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationSettingsViewController+MySupport.swift"; sourceTree = "<group>"; };
+		D93F4D552D7FAC3C0042926C /* AvatarDefaultColorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarDefaultColorManager.swift; sourceTree = "<group>"; };
+		D93F4D5C2D801D700042926C /* AvatarDefaultColorManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarDefaultColorManagerTest.swift; sourceTree = "<group>"; };
 		D941863B2ACE252D002FE2D3 /* CallRecordLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordLogger.swift; sourceTree = "<group>"; };
 		D943F3EE2892F89B008C0C8B /* NSELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSELogger.swift; sourceTree = "<group>"; };
 		D94441302D559567005B2A54 /* UUIDv7.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UUIDv7.swift; sourceTree = "<group>"; };
@@ -10116,6 +10118,7 @@
 			isa = PBXGroup;
 			children = (
 				34FC7EEB265834F30046707A /* AvatarBuilder.swift */,
+				D93F4D552D7FAC3C0042926C /* AvatarDefaultColorManager.swift */,
 				883A7FD1269F642F00841DF9 /* AvatarModel.swift */,
 				7254651C2BA00FD200EABFD2 /* LocalUserDisplayMode.swift */,
 			);
@@ -10818,7 +10821,6 @@
 				3485434426BC598800FB9C38 /* EmojiTests.swift */,
 				F9952B3029F2D99500EA989E /* ExpirationNagViewTest.swift */,
 				345AE2B52317048200DB6225 /* GRDBFinderTest.swift */,
-				34C1A93A2656E904004FA478 /* MiscTest.swift */,
 				F93461BA291ED2B000366682 /* PaymentDetailsValidityTest.swift */,
 				349D21E7268E044700D98870 /* QRCodeParserTest.swift */,
 				F963164A291AE06C00218FB7 /* ScrubbingLogFormatterTest.swift */,
@@ -12141,6 +12143,14 @@
 			path = Media;
 			sourceTree = "<group>";
 		};
+		D93F4D5B2D801D690042926C /* Avatars */ = {
+			isa = PBXGroup;
+			children = (
+				D93F4D5C2D801D700042926C /* AvatarDefaultColorManagerTest.swift */,
+			);
+			path = Avatars;
+			sourceTree = "<group>";
+		};
 		D962346E2C0E99CE00DAF6CB /* DeleteForMe */ = {
 			isa = PBXGroup;
 			children = (
@@ -12776,6 +12786,7 @@
 		F94261E4289B1B5400460798 /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				D93F4D5B2D801D690042926C /* Avatars */,
 				F908C67A29F08E4E00C3EFC4 /* AppExpiryTest.swift */,
 				66B1E26F2CB48C48005F43AC /* Array+SSKTest.swift */,
 				F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */,
@@ -17012,7 +17023,6 @@
 				1700E33B28B5684C0073D949 /* MediaGallerySectionsTest.swift in Sources */,
 				50D8796A2A16D2C20031345D /* MessageLoaderBatchTest.swift in Sources */,
 				4C2A538C23C5462300D28CD8 /* MessageLoaderTest.swift in Sources */,
-				34C1A93B2656E905004FA478 /* MiscTest.swift in Sources */,
 				45D062F527D7F49800BD505E /* OWSContactsManagerTest.swift in Sources */,
 				F93461BB291ED2B000366682 /* PaymentDetailsValidityTest.swift in Sources */,
 				3452851D26DFD12300824983 /* PaymentsFormatTest.swift in Sources */,
@@ -17130,6 +17140,7 @@
 				6649651C2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift in Sources */,
 				058B49932C66805500307D38 /* AVAssetExportSession+Async.swift in Sources */,
 				7254651E2BA012BD00EABFD2 /* AvatarBuilder.swift in Sources */,
+				D93F4D5A2D800DD20042926C /* AvatarDefaultColorManager.swift in Sources */,
 				720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */,
 				D972E2FF2C542BCD001D7337 /* Backup.pb.swift in Sources */,
 				66E257032CA3861200100A08 /* BackupAttachmentDownloadManager.swift in Sources */,
@@ -18246,6 +18257,7 @@
 				66C1A8802BB77EA50076C65A /* AttachmentUploadManagerTests.swift in Sources */,
 				50BDC36A2C88C2C8002294D0 /* AudioWaveformSamplerTest.swift in Sources */,
 				50B6BCB62AEC68940010FB3B /* AuthorMergeHelperTest.swift in Sources */,
+				D93F4D5D2D801D750042926C /* AvatarDefaultColorManagerTest.swift in Sources */,
 				66681CDF2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift in Sources */,
 				66C795302C9B83A200C13937 /* BackupAttachmentUploadStoreTests.swift in Sources */,
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,

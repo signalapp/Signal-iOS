@@ -322,6 +322,8 @@ public class GRDBSchemaMigrator {
         case deleteLegacyMessageDecryptJobRecords
         case dropMessageContentJobTable
         case deleteMessageRequestInteractionEpoch
+        case addAvatarDefaultColorTable
+        case populateAvatarDefaultColorTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -385,7 +387,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 109
+    public static let grdbSchemaVersionLatest: UInt = 110
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3933,6 +3935,16 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.addAvatarDefaultColorTable) { tx in
+            try Self.createDefaultAvatarColorTable(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.populateAvatarDefaultColorTable) { tx in
+            try Self.populateDefaultAvatarColorTable(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -5512,6 +5524,162 @@ public class GRDBSchemaMigrator {
             DROP INDEX IF EXISTS "index_model_TSInteraction_ConversationLoadInteractionDistance"
             """
         )
+    }
+
+    public static func createDefaultAvatarColorTable(tx: DBWriteTransaction) throws {
+        try tx.database.create(
+            table: "AvatarDefaultColor",
+            options: [.ifNotExists]
+        ) { table in
+            table.column("recipientRowId", .integer)
+                .unique()
+                .references(
+                    "model_SignalRecipient",
+                    column: "id",
+                    onDelete: .cascade,
+                    onUpdate: .cascade
+                )
+            table.column("groupId", .blob).unique()
+            table.column("defaultColorIndex", .integer).notNull()
+        }
+    }
+
+    public static func populateDefaultAvatarColorTable(tx: DBWriteTransaction) throws {
+        /// This is the hashing algorithm historically used to compute the
+        /// default avatar color index.
+        func computeAvatarColorIndex(seedData: Data) -> Int {
+            func rotateLeft(_ uint: UInt64, _ count: Int) -> UInt64 {
+                let count = count % UInt64.bitWidth
+                return (uint << count) | (uint >> (UInt64.bitWidth - count))
+            }
+
+            var hash: UInt64 = 0
+            for value in seedData {
+                hash = rotateLeft(hash, 3) ^ UInt64(value)
+            }
+            return Int(hash % 12)
+        }
+
+        func insertDefaultColorIndex(
+            _ defaultColorIndex: Int,
+            groupId: Data?,
+            recipientRowId: Int64?
+        ) throws {
+            try tx.database.execute(
+                sql: """
+                    INSERT INTO AvatarDefaultColor
+                    VALUES (?, ?, ?)
+                """,
+                arguments: [recipientRowId, groupId, defaultColorIndex]
+            )
+        }
+
+        /// The group ID is buried inside of an `NSKeyedArchiver`-serialized
+        /// `TSGroupModel`. We'll grab the serialized blobs, then selectively
+        /// decode the group ID from them. That avoids referencing production
+        /// types here, and also avoids deserializing the rest of the group
+        /// model, such as the membership (which can be very slow).
+        let groupModelDataCursor = try Data.fetchCursor(tx.database, sql: """
+            SELECT groupModel
+            FROM model_TSThread
+            WHERE groupModel IS NOT NULL
+        """)
+        while let groupModelData = try groupModelDataCursor.next() {
+            if
+                let groupId = try decodeGroupIdFromGroupModelData(groupModelData),
+                groupId.count == 32
+            {
+                try insertDefaultColorIndex(
+                    computeAvatarColorIndex(seedData: groupId),
+                    groupId: groupId,
+                    recipientRowId: nil
+                )
+            }
+        }
+
+        var visitedRecipientIds = Set<Int64>()
+
+        let aciRowCursor = try Row.fetchCursor(tx.database, sql: """
+            SELECT id, recipientUUID
+            FROM model_SignalRecipient
+            WHERE recipientUUID IS NOT NULL
+        """)
+        while let row = try aciRowCursor.next() {
+            let recipientRowId: Int64 = row["id"]
+            let aciString: String = row["recipientUUID"]
+
+            let (inserted, _) = visitedRecipientIds.insert(recipientRowId)
+            if !inserted { continue }
+
+            try insertDefaultColorIndex(
+                computeAvatarColorIndex(seedData: Data(aciString.uppercased().utf8)),
+                groupId: nil,
+                recipientRowId: recipientRowId
+            )
+        }
+
+        let pniRowCursor = try Row.fetchCursor(tx.database, sql: """
+            SELECT id, pni
+            FROM model_SignalRecipient
+            WHERE pni IS NOT NULL
+        """)
+        while let row = try pniRowCursor.next() {
+            let recipientRowId: Int64 = row["id"]
+            let pniString: String = row["pni"]
+
+            let (inserted, _) = visitedRecipientIds.insert(recipientRowId)
+            if !inserted { continue }
+
+            try insertDefaultColorIndex(
+                computeAvatarColorIndex(seedData: Data(pniString.uppercased().utf8)),
+                groupId: nil,
+                recipientRowId: recipientRowId
+            )
+        }
+
+        let phoneNumberRowCursor = try Row.fetchCursor(tx.database, sql: """
+            SELECT id, recipientPhoneNumber
+            FROM model_SignalRecipient
+            WHERE recipientPhoneNumber IS NOT NULL
+        """)
+        while let row = try phoneNumberRowCursor.next() {
+            let recipientRowId: Int64 = row["id"]
+            let phoneNumber: String = row["recipientPhoneNumber"]
+
+            let (inserted, _) = visitedRecipientIds.insert(recipientRowId)
+            if !inserted { continue }
+
+            try insertDefaultColorIndex(
+                computeAvatarColorIndex(seedData: Data(phoneNumber.utf8)),
+                groupId: nil,
+                recipientRowId: recipientRowId
+            )
+        }
+    }
+
+    private static func decodeGroupIdFromGroupModelData(
+        _ groupModelData: Data
+    ) throws -> Data? {
+        @objc(TSGroupModelForMigrations)
+        class TSGroupModelForMigrations: NSObject, NSSecureCoding {
+            static var supportsSecureCoding: Bool { true }
+            let groupId: NSData?
+            required init?(coder: NSCoder) {
+                groupId = coder.decodeObject(of: NSData.self, forKey: "groupId")
+            }
+            func encode(with coder: NSCoder) { owsFail("Don't encode these!") }
+        }
+
+        let coder = try NSKeyedUnarchiver(forReadingFrom: groupModelData)
+        coder.requiresSecureCoding = true
+        coder.setClass(TSGroupModelForMigrations.self, forClassName: "TSGroupModel")
+        coder.setClass(TSGroupModelForMigrations.self, forClassName: "SignalServiceKit.TSGroupModelV2")
+
+        let groupModel = try coder.decodeTopLevelObject(
+            of: TSGroupModelForMigrations.self,
+            forKey: NSKeyedArchiveRootObjectKey
+        )
+        return groupModel?.groupId as Data?
     }
 }
 

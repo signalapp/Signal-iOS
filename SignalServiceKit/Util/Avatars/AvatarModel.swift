@@ -139,6 +139,8 @@ public enum AvatarTheme: String, CaseIterable {
     case A200
     case A210
 
+    public static var `default`: AvatarTheme { .A100 }
+
     public var foregroundColor: UIColor {
         switch self {
         case .A100: return UIColor(rgbHex: 0x3838F5)
@@ -172,48 +174,8 @@ public enum AvatarTheme: String, CaseIterable {
         case .A210: return UIColor(rgbHex: 0xD7D7D9)
         }
     }
-}
 
-// MARK: - Avatar Colors
-
-public extension AvatarTheme {
-    static var `default`: AvatarTheme { .A100 }
-
-    static func forThread(_ thread: TSThread) -> AvatarTheme {
-        if let contactThread = thread as? TSContactThread {
-            return forAddress(contactThread.contactAddress)
-        } else if let groupThread = thread as? TSGroupThread {
-            return forGroupId(groupThread.groupId)
-        } else {
-            owsFailDebug("Invalid thread.")
-            return Self.default
-        }
-    }
-
-    static func forGroupModel(_ groupModel: TSGroupModel) -> AvatarTheme {
-        forGroupId(groupModel.groupId)
-    }
-
-    static func forGroupId(_ groupId: Data) -> AvatarTheme {
-        forData(groupId)
-    }
-
-    static func forAddress(_ address: SignalServiceAddress) -> AvatarTheme {
-        if let serviceId = address.serviceId {
-            return forSeed(serviceId.serviceIdUppercaseString)
-        }
-        if let phoneNumber = address.phoneNumber {
-            return forSeed(phoneNumber)
-        }
-        owsFailDebug("Empty address.")
-        return Self.default
-    }
-
-    static func forSeed(_ seed: String) -> AvatarTheme {
-        return forData(Data(seed.utf8))
-    }
-
-    static func forIcon(_ icon: AvatarIcon) -> AvatarTheme {
+    public static func forIcon(_ icon: AvatarIcon) -> AvatarTheme {
         switch icon {
         case .abstract01: return .A130
         case .abstract02: return .A120
@@ -241,42 +203,43 @@ public extension AvatarTheme {
         case .football: return .A210
         }
     }
-
-    static func forData(_ data: Data) -> AvatarTheme {
-        var hash: UInt = 0
-        for value in data {
-            // A primitive hashing function.
-            // We only require it to be stable and fast.
-            hash = hash.rotateLeft(3) ^ UInt(value)
-        }
-        let values = AvatarTheme.allCases
-        guard let value = values[safe: Int(hash % UInt(values.count))] else {
-            owsFailDebug("Could not determine avatar color.")
-            return Self.default
-        }
-        return value
-    }
 }
 
 // MARK: -
 
-extension UInt {
-    public static let is64bit = { UInt.bitWidth == UInt64.bitWidth }()
-    public static let is32bit = { UInt.bitWidth == UInt32.bitWidth }()
-
-    public static let highestBit: UInt = {
-        if is32bit {
-            return UInt(1).rotateLeft(31)
-        } else if is64bit {
-            return UInt(1).rotateLeft(63)
-        } else {
-            owsFail("Unexpected UInt width.")
+extension AvatarTheme {
+    var asStorageServiceProtoAvatarColor: StorageServiceProtoAvatarColor {
+        return switch self {
+        case .A100: .a100
+        case .A110: .a110
+        case .A120: .a120
+        case .A130: .a130
+        case .A140: .a140
+        case .A150: .a150
+        case .A160: .a160
+        case .A170: .a170
+        case .A180: .a180
+        case .A190: .a190
+        case .A200: .a200
+        case .A210: .a210
         }
-    }()
+    }
 
-    // <<<
-    public func rotateLeft(_ count: Int) -> UInt {
-        let count = count % UInt.bitWidth
-        return (self << count) | (self >> (UInt.bitWidth - count))
+    static func from(storageServiceProtoAvatarColor: StorageServiceProtoAvatarColor) -> AvatarTheme? {
+        return switch storageServiceProtoAvatarColor {
+        case .a100: .A100
+        case .a110: .A110
+        case .a120: .A120
+        case .a130: .A130
+        case .a140: .A140
+        case .a150: .A150
+        case .a160: .A160
+        case .a170: .A170
+        case .a180: .A180
+        case .a190: .A190
+        case .a200: .A200
+        case .a210: .A210
+        case .UNRECOGNIZED: nil
+        }
     }
 }
