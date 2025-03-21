@@ -113,10 +113,10 @@ public class _RegistrationCoordinator_MessageProcessorMock: _RegistrationCoordin
 
     public init() {}
 
-    public var waitForProcessingCompleteAndThenSuspendMock: (() -> Guarantee<Void>)?
+    public var waitForFetchingAndProcessingMock: (() -> Guarantee<Void>)?
 
-    public func waitForProcessingCompleteAndThenSuspend(for suspension: MessagePipelineSupervisor.Suspension) -> Guarantee<Void> {
-        return waitForProcessingCompleteAndThenSuspendMock!()
+    public func waitForFetchingAndProcessing() -> Guarantee<Void> {
+        return waitForFetchingAndProcessingMock!()
     }
 }
 

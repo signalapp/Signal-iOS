@@ -161,10 +161,7 @@ public class _RegistrationCoordinator_MessagePipelineSupervisorWrapper: _Registr
 // MARK: - MessageProcessor
 
 public protocol _RegistrationCoordinator_MessageProcessorShim {
-
-    func waitForProcessingCompleteAndThenSuspend(
-        for suspension: MessagePipelineSupervisor.Suspension
-    ) -> Guarantee<Void>
+    func waitForFetchingAndProcessing() -> Guarantee<Void>
 }
 
 public class _RegistrationCoordinator_MessageProcessorWrapper: _RegistrationCoordinator_MessageProcessorShim {
@@ -175,10 +172,8 @@ public class _RegistrationCoordinator_MessageProcessorWrapper: _RegistrationCoor
         self.processor = processor
     }
 
-    public func waitForProcessingCompleteAndThenSuspend(
-        for suspension: MessagePipelineSupervisor.Suspension
-    ) -> Guarantee<Void> {
-        return processor.waitForProcessingCompleteAndThenSuspend(for: suspension)
+    public func waitForFetchingAndProcessing() -> Guarantee<Void> {
+        return processor.waitForFetchingAndProcessing()
     }
 }
 

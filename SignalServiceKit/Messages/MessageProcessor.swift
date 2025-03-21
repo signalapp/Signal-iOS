@@ -14,66 +14,13 @@ public class MessageProcessor {
         !pendingEnvelopes.isEmpty
     }
 
-    /// When calling `waitForProcessingComplete` while message processing is
-    /// suspended, there is a problem. We may have pending messages waiting to
-    /// be processed once the suspension is lifted. But what's more, we may have
-    /// started processing messages, then suspended, then called
-    /// `waitForProcessingComplete` before that initial processing finished.
-    /// Suspending does not interrupt processing if it already started.
-    ///
-    /// So there are 4 cases to worry about:
-    /// 1. Message processing isn't suspended
-    /// 2. Suspended with no pending messages
-    /// 3. Suspended with pending messages and no active processing underway
-    /// 4. Suspended but still processing from before the suspension took effect
-    ///
-    /// Cases 1 and 2 are easy and behave the same in all cases.
-    ///
-    /// Case 3 differs in behavior; sometimes we want to wait for suspension to
-    /// be lifted and those pending messages to be processed, other times we
-    /// don't want to wait to unsuspend.
-    ///
-    /// Case 4 is once again the same in all cases; processing has started and
-    /// can't be stopped, so we should always wait until it finishes.
-    public enum SuspensionBehavior {
-        /// Default value. (Legacy behavior)
-        /// If suspended with pending messages and no processing underway, wait for
-        /// suspension to be lifted and those messages to be processed.
-        case alwaysWait
-        /// If suspended with pending messages, only wait if processing has already
-        /// started. If it hasn't started, don't wait for it to start, so that the
-        /// promise can resolve before suspension is lifted.
-        case onlyWaitIfAlreadyInProgress
-    }
-
-    /// - parameter suspensionBehavior: What the promise should wait for if
-    /// message processing is suspended; see `SuspensionBehavior` documentation
-    /// for details.
-    public func waitForProcessingComplete(
-        suspensionBehavior: SuspensionBehavior = .alwaysWait
-    ) -> Guarantee<Void> {
+    public func waitForProcessingComplete() -> Guarantee<Void> {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             return Guarantee.value(())
         }
 
-        // Check if processing is suspended; if so we need to fork behavior.
-        let shouldWaitForEverything: Bool
-        if SSKEnvironment.shared.messagePipelineSupervisorRef.isMessageProcessingPermitted {
-            shouldWaitForEverything = true
-        } else {
-            switch suspensionBehavior {
-            case .alwaysWait:
-                shouldWaitForEverything = true
-            case .onlyWaitIfAlreadyInProgress:
-                shouldWaitForEverything = false
-            }
-        }
-
         let shouldWaitForMessageProcessing: () -> Bool = {
-            // Check if we are already processing, if so wait for that to finish.
-            // If not don't wait even if we have pending messages; those won't process
-            // until we unsuspend.
-            return shouldWaitForEverything ? self.hasPendingEnvelopes : self.isDrainingPendingEnvelopes.get()
+            return self.hasPendingEnvelopes
         }
         if shouldWaitForMessageProcessing() {
             let messageProcessingPromise = NotificationCenter.default.observe(once: Self.messageProcessorDidDrainQueue)
@@ -83,18 +30,14 @@ public class MessageProcessor {
             if shouldWaitForMessageProcessing() {
                 return messageProcessingPromise.then { _ in
                     // Recur, in case we've enqueued messages handled in another block.
-                    self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
+                    self.waitForProcessingComplete()
                 }.asVoid()
             }
         }
 
         let shouldWaitForGroupMessageProcessing: () -> Bool = {
-            if shouldWaitForEverything {
-                return SSKEnvironment.shared.databaseStorageRef.read {
-                    SSKEnvironment.shared.groupsV2MessageProcessorRef.hasPendingJobs(tx: $0)
-                }
-            } else {
-                return SSKEnvironment.shared.groupsV2MessageProcessorRef.isActivelyProcessing()
+            return SSKEnvironment.shared.databaseStorageRef.read {
+                SSKEnvironment.shared.groupsV2MessageProcessorRef.hasPendingJobs(tx: $0)
             }
         }
         if shouldWaitForGroupMessageProcessing() {
@@ -102,7 +45,7 @@ public class MessageProcessor {
             if shouldWaitForGroupMessageProcessing() {
                 return groupMessageProcessingPromise.then { _ in
                     // Recur, in case we've enqueued messages handled in another block.
-                    self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
+                    self.waitForProcessingComplete()
                 }.asVoid()
             }
         }
@@ -110,32 +53,9 @@ public class MessageProcessor {
         return Guarantee.value(())
     }
 
-    /// Suspends message processing, but before doing so processes any messages
-    /// received so far.
-    /// This suppression will persist until the suspension is explicitly lifted.
-    /// For this reason calling this method is highly dangerous, please use with care.
-    public func waitForProcessingCompleteAndThenSuspend(
-        for suspension: MessagePipelineSupervisor.Suspension
-    ) -> Guarantee<Void> {
-        // We need to:
-        // 1. wait to process
-        // 2. suspend
-        // 3. wait to process again
-        // This is because steps 1 and 2 are not transactional, and in between a message
-        // may get queued up for processing. After 2, nothing new can come in, so we only
-        // need to wait the once.
-        // In most cases nothing sneaks in between 1 and 2, so 3 resolves instantly.
-        return waitForProcessingComplete(suspensionBehavior: .onlyWaitIfAlreadyInProgress).then(on: DispatchQueue.main) {
-            SSKEnvironment.shared.messagePipelineSupervisorRef.suspendMessageProcessingWithoutHandle(for: suspension)
-            return self.waitForProcessingComplete(suspensionBehavior: .onlyWaitIfAlreadyInProgress)
-        }.recover(on: SyncScheduler()) { _ in return () }
-    }
-
-    public func waitForFetchingAndProcessing(
-        suspensionBehavior: SuspensionBehavior = .alwaysWait
-    ) -> Guarantee<Void> {
+    public func waitForFetchingAndProcessing() -> Guarantee<Void> {
         SSKEnvironment.shared.messageFetcherJobRef.waitForFetchingComplete().then { () -> Guarantee<Void> in
-            self.waitForProcessingComplete(suspensionBehavior: suspensionBehavior)
+            self.waitForProcessingComplete()
         }
     }
 

@@ -3772,8 +3772,10 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
     ) -> Guarantee<ChangeNumberResult> {
         Logger.info("")
 
-        // Process all messages first.
-        return deps.messageProcessor.waitForProcessingCompleteAndThenSuspend(for: .pendingChangeNumber)
+        // Process all messages first. The caller doesn't invoke this method when
+        // "pniState" is set, and message processing is only suspended when
+        // "pniState" is set. So it's safe to always wait here.
+        return deps.messageProcessor.waitForFetchingAndProcessing()
             .then(on: schedulers.main) { [weak self] in
                 guard let strongSelf = self else {
                     return .value(.unretainedSelf)
