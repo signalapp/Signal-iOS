@@ -81,7 +81,7 @@ class PniHelloWorldManagerTest: XCTestCase {
                 aci: localIdentifiers.aci,
                 pni: localIdentifiers.pni,
                 phoneNumber: E164(localIdentifiers.phoneNumber)!,
-                deviceIds: [1, 2, 3].map(DeviceId.init(rawValue:))
+                deviceIds: [1, 2, 3].map { DeviceId(validating: $0)! }
             ), transaction: tx)
         }
 
@@ -99,7 +99,7 @@ class PniHelloWorldManagerTest: XCTestCase {
         try await runRunRun()
 
         XCTAssert(didMakeNetworkRequest)
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3].map(DeviceId.init(rawValue:))])
+        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3].map { DeviceId(validating: $0)! }])
         XCTAssertTrue(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
@@ -112,7 +112,7 @@ class PniHelloWorldManagerTest: XCTestCase {
         try await runRunRun()
 
         XCTAssert(didMakeNetworkRequest)
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3].map(DeviceId.init(rawValue:))])
+        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3].map { DeviceId(validating: $0)! }])
         XCTAssertTrue(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
@@ -175,7 +175,7 @@ class PniHelloWorldManagerTest: XCTestCase {
 
         try? await runRunRun()
 
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3].map(DeviceId.init(rawValue:))])
+        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3].map { DeviceId(validating: $0)! }])
         XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 
@@ -185,7 +185,7 @@ class PniHelloWorldManagerTest: XCTestCase {
 
         try? await runRunRun()
 
-        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3].map(DeviceId.init(rawValue:))])
+        XCTAssertEqual(pniDistributionParameterBuilderMock.buildRequestedDeviceIds, [[1, 2, 3].map { DeviceId(validating: $0)! }])
         XCTAssertFalse(db.read { kvStore.hasSaidHelloWorld(tx: $0) })
     }
 }
@@ -216,7 +216,7 @@ private class PniDistributionParamaterBuilderMock: PniDistributionParamaterBuild
     func buildPniDistributionParameters(
         localAci _: Aci,
         localRecipientUniqueId _: String,
-        localDeviceId: DeviceId,
+        localDeviceId: LocalDeviceId,
         localUserAllDeviceIds: [DeviceId],
         localPniIdentityKeyPair: ECKeyPair,
         localE164: E164,
@@ -233,7 +233,7 @@ private class PniDistributionParamaterBuilderMock: PniDistributionParamaterBuild
         case .success:
             return .mock(
                 pniIdentityKeyPair: localPniIdentityKeyPair,
-                localDeviceId: localDeviceId,
+                localDeviceId: localDeviceId.ifValid!,
                 localDevicePniSignedPreKey: localDevicePniSignedPreKey,
                 localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKey,
                 localDevicePniRegistrationId: localDevicePniRegistrationId

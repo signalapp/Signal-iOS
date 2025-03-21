@@ -62,7 +62,7 @@ public class NotificationActionHandler {
 
         switch action {
         case .callBack:
-            return try callBack(userInfo: userInfo)
+            return Promise.wrapAsync { try await self.callBack(userInfo: userInfo) }
         case .markAsRead:
             return try markAsRead(userInfo: userInfo)
         case .reply:
@@ -96,7 +96,7 @@ public class NotificationActionHandler {
     // MARK: -
 
     @MainActor
-    private class func callBack(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
+    private class func callBack(userInfo: [AnyHashable: Any]) async throws {
         let aciString = userInfo[AppNotificationUserInfoKey.callBackAciString] as? String
         let phoneNumber = userInfo[AppNotificationUserInfoKey.callBackPhoneNumber] as? String
         let address = SignalServiceAddress.legacyAddress(aciString: aciString, phoneNumber: phoneNumber)
@@ -105,8 +105,14 @@ public class NotificationActionHandler {
         }
         let thread = TSContactThread.getOrCreateThread(contactAddress: address)
 
-        callService.callUIAdapter.startAndShowOutgoingCall(thread: thread, hasLocalVideo: false)
-        return Promise.value(())
+        guard let viewController = UIApplication.shared.frontmostViewController else {
+            throw OWSAssertionError("Missing frontmostViewController.")
+        }
+        let prepareResult = await CallStarter.prepareToStartCall(from: viewController, shouldAskForCameraPermission: false)
+        guard let prepareResult else {
+            return
+        }
+        callService.callUIAdapter.startAndShowOutgoingCall(thread: thread, prepareResult: prepareResult, hasLocalVideo: false)
     }
 
     private class func markAsRead(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {

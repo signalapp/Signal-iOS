@@ -90,7 +90,7 @@ protocol PniDistributionParamaterBuilder {
     func buildPniDistributionParameters(
         localAci: Aci,
         localRecipientUniqueId: String,
-        localDeviceId: DeviceId,
+        localDeviceId: LocalDeviceId,
         localUserAllDeviceIds: [DeviceId],
         localPniIdentityKeyPair: ECKeyPair,
         localE164: E164,
@@ -126,7 +126,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     func buildPniDistributionParameters(
         localAci: Aci,
         localRecipientUniqueId: String,
-        localDeviceId: DeviceId,
+        localDeviceId: LocalDeviceId,
         localUserAllDeviceIds: [DeviceId],
         localPniIdentityKeyPair: ECKeyPair,
         localE164: E164,
@@ -136,9 +136,26 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     ) async throws -> PniDistribution.Parameters {
         var parameters = PniDistribution.Parameters(pniIdentityKey: localPniIdentityKeyPair.keyPair.identityKey)
 
+        var localUserDeviceId: DeviceId?
+        var localUserLinkedDeviceIds = [DeviceId]()
+
+        for deviceId in localUserAllDeviceIds {
+            if localDeviceId.equals(deviceId) {
+                localUserDeviceId = deviceId
+            } else {
+                localUserLinkedDeviceIds.append(deviceId)
+            }
+        }
+
+        guard let localUserDeviceId else {
+            let message = "Local device ID missing - can't build linked device params if the local device isn't registered."
+            logger.error(message)
+            throw OWSGenericError(message)
+        }
+
         // Include the signed pre key & registration ID for the current device.
         parameters.addLocalDevice(
-            localDeviceId: localDeviceId,
+            localDeviceId: localUserDeviceId,
             signedPreKey: localDevicePniSignedPreKey,
             pqLastResortPreKey: localDevicePniPqLastResortPreKey,
             registrationId: localDevicePniRegistrationId
@@ -148,8 +165,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         let linkedDeviceParamResults = try await buildLinkedDevicePniGenerationParams(
             localAci: localAci,
             localRecipientUniqueId: localRecipientUniqueId,
-            localDeviceId: localDeviceId,
-            localUserAllDeviceIds: localUserAllDeviceIds,
+            localUserLinkedDeviceIds: localUserLinkedDeviceIds,
             pniIdentityKeyPair: localPniIdentityKeyPair,
             e164: localE164
         )
@@ -186,21 +202,10 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     private func buildLinkedDevicePniGenerationParams(
         localAci: Aci,
         localRecipientUniqueId: String,
-        localDeviceId: DeviceId,
-        localUserAllDeviceIds: [DeviceId],
+        localUserLinkedDeviceIds: [DeviceId],
         pniIdentityKeyPair: ECKeyPair,
         e164: E164
     ) async throws -> [LinkedDevicePniGenerationParams] {
-        let localUserLinkedDeviceIds: [DeviceId] = localUserAllDeviceIds.filter { deviceId in
-            deviceId != localDeviceId
-        }
-
-        guard localUserLinkedDeviceIds.count == (localUserAllDeviceIds.count - 1) else {
-            let message = "Local device ID missing - can't build linked device params if the local device isn't registered."
-            logger.error(message)
-            throw OWSGenericError(message)
-        }
-
         let logger = logger
 
         return try await withThrowingTaskGroup(of: LinkedDevicePniGenerationParams?.self) { taskGroup in

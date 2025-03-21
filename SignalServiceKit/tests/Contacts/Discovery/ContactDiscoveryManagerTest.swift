@@ -18,7 +18,7 @@ final class ContactDiscoveryManagerTest: XCTestCase {
 
         static func foundResponse(for phoneNumbers: Set<String>) -> Set<SignalRecipient> {
             Set(phoneNumbers.lazy.map {
-                SignalRecipient(aci: Aci.randomForTesting(), pni: Pni.randomForTesting(), phoneNumber: E164($0)!, deviceIds: [DeviceId(rawValue: 1)])
+                SignalRecipient(aci: Aci.randomForTesting(), pni: Pni.randomForTesting(), phoneNumber: E164($0)!, deviceIds: [DeviceId(validating: 1)!])
             })
         }
     }

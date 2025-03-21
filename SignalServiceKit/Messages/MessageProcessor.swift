@@ -315,7 +315,7 @@ public class MessageProcessor {
     private func buildNextCombinedRequest(
         envelopes: inout [ReceivedEnvelope],
         localIdentifiers: LocalIdentifiers,
-        localDeviceId: DeviceId,
+        localDeviceId: LocalDeviceId,
         tx: DBWriteTransaction
     ) -> RelatedProcessingRequests {
         let result = RelatedProcessingRequests()
@@ -475,7 +475,7 @@ private class RelatedProcessingRequests {
 private struct ProcessingRequestBuilder {
     let receivedEnvelope: ReceivedEnvelope
     let blockingManager: BlockingManager
-    let localDeviceId: DeviceId
+    let localDeviceId: LocalDeviceId
     let localIdentifiers: LocalIdentifiers
     let messageDecrypter: OWSMessageDecrypter
     let messageReceiver: MessageReceiver
@@ -483,7 +483,7 @@ private struct ProcessingRequestBuilder {
     init(
         _ receivedEnvelope: ReceivedEnvelope,
         blockingManager: BlockingManager,
-        localDeviceId: DeviceId,
+        localDeviceId: LocalDeviceId,
         localIdentifiers: LocalIdentifiers,
         messageDecrypter: OWSMessageDecrypter,
         messageReceiver: MessageReceiver
@@ -637,7 +637,7 @@ private extension MessageProcessor {
     func processingRequest(
         for envelope: ReceivedEnvelope,
         localIdentifiers: LocalIdentifiers,
-        localDeviceId: DeviceId,
+        localDeviceId: LocalDeviceId,
         tx: DBWriteTransaction
     ) -> ProcessingRequest {
         assertOnQueue(serialQueue)
@@ -676,7 +676,7 @@ private struct ReceivedEnvelope {
     func decryptIfNeeded(
         messageDecrypter: OWSMessageDecrypter,
         localIdentifiers: LocalIdentifiers,
-        localDeviceId: DeviceId,
+        localDeviceId: LocalDeviceId,
         tx: DBWriteTransaction
     ) throws -> DecryptionResult {
         // Figure out what type of envelope we're dealing with.

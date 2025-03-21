@@ -75,11 +75,8 @@ final class IndividualCallService: CallServiceStateObserver {
         // Create a call interaction for outgoing calls immediately.
         call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoingIncomplete)
 
-        // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = tsAccountManager.storedDeviceIdWithMaybeTransaction
-
         do {
-            try callManager.placeCall(call: call, callMediaType: call.individualCall.offerMediaType.asCallMediaType, localDevice: localDeviceId.uint32Value)
+            try callManager.placeCall(call: call, callMediaType: call.individualCall.offerMediaType.asCallMediaType, localDevice: call.individualCall.localDeviceId.uint32Value)
         } catch {
             self.handleFailedCall(failedCall: call, error: error, shouldResetUI: true, shouldResetRingRTC: true)
         }
@@ -204,11 +201,12 @@ final class IndividualCallService: CallServiceStateObserver {
             callId: callId,
             thread: partialResult.thread,
             sentAtTimestamp: sentAtTimestamp,
-            offerMediaType: partialResult.offerMediaType
+            offerMediaType: partialResult.offerMediaType,
+            localDeviceId: partialResult.localDeviceId
         )
 
         // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = tsAccountManager.storedDeviceId(tx: tx)
+        let localDeviceId = partialResult.localDeviceId
 
         let newCall = SignalCall(individualCall: individualCall)
 
@@ -917,8 +915,13 @@ final class IndividualCallService: CallServiceStateObserver {
 
         Task {
             do {
-                let deviceId = DeviceId(rawValue: deviceId)
-                let destinationDeviceId = destinationDeviceId.map(DeviceId.init(rawValue:))
+                guard
+                    let deviceIdObj = DeviceId(validating: deviceId),
+                    let destinationDeviceId,
+                    let destinationDeviceIdObj = DeviceId(validating: destinationDeviceId)
+                else {
+                    throw OWSGenericError("Couldn't send hangup with invalid deviceIds.")
+                }
                 let sendPromise = await self.databaseStorage.awaitableWrite { tx in
                     return CallHangupSender.sendHangup(
                         thread: call.individualCall.thread,
@@ -932,8 +935,8 @@ final class IndividualCallService: CallServiceStateObserver {
                             case .needPermission: return .hangupNeedPermission
                             }
                         }(),
-                        localDeviceId: deviceId,
-                        remoteDeviceId: destinationDeviceId,
+                        localDeviceId: deviceIdObj,
+                        remoteDeviceId: destinationDeviceIdObj,
                         tx: tx
                     )
                 }

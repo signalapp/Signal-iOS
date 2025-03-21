@@ -216,7 +216,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
             proceedStyle: .destructive
         ) { _ in
             let deviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction
-            SignalApp.resetLinkedAppDataWithUI(currentDeviceId: deviceId)
+            SignalApp.resetLinkedAppDataWithUI(localDeviceId: deviceId)
         }
     }
 
@@ -269,12 +269,12 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 let localRecipient = recipientDatabaseTable.fetchRecipient(
                     serviceId: localIdentifiers.aci,
                     transaction: transaction
-                )
+                ),
+                let localDeviceId = tsAccountManager.storedDeviceId(tx: transaction).ifValid
             else {
                 return .disallowed
             }
             let localRecipientUniqueId = localRecipient.uniqueId
-            let localDeviceId = tsAccountManager.storedDeviceId(tx: transaction)
             let localUserAllDeviceIds = localRecipient.deviceIds
 
             return .allowed(RegistrationMode.ChangeNumberParams(

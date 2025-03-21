@@ -527,7 +527,7 @@ public class OWSMessageDecrypter {
     func decryptUnidentifiedSenderEnvelope(
         _ validatedEnvelope: ValidatedIncomingEnvelope,
         localIdentifiers: LocalIdentifiers,
-        localDeviceId: DeviceId,
+        localDeviceId: LocalDeviceId,
         tx transaction: DBWriteTransaction
     ) throws -> DecryptedIncomingEnvelope {
         let localIdentity = validatedEnvelope.localIdentity
@@ -584,10 +584,6 @@ public class OWSMessageDecrypter {
             DependenciesBridge.shared.tsAccountManager.registrationState(tx: transaction).isRegistered
         {
             DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: transaction)
-        }
-
-        guard decryptResult.senderDeviceId.uint32Value > 0 else {
-            throw OWSAssertionError("Invalid UD sender device id.")
         }
 
         let envelopeBuilder = validatedEnvelope.envelope.asBuilder()

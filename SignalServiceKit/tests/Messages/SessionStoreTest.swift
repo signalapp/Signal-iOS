@@ -38,7 +38,7 @@ class SessionStoreTest: SSKBaseTest {
 
         read {
             XCTAssertTrue(sessionStore.mightContainSession(for: recipient, tx: $0))
-            XCTAssertNotNil(try! sessionStore.loadSession(for: recipient.aci!, deviceId: DeviceId(rawValue: 1), tx: $0))
+            XCTAssertNotNil(try! sessionStore.loadSession(for: recipient.aci!, deviceId: DeviceId(validating: 1)!, tx: $0))
         }
 
         // Then imitate a session store with a mix of legacy and modern sessions.
@@ -55,7 +55,7 @@ class SessionStoreTest: SSKBaseTest {
             // There's something in the store...
             XCTAssertTrue(sessionStore.mightContainSession(for: recipient, tx: $0))
             // ...but it turns into nil on load.
-            XCTAssertNil(try! sessionStore.loadSession(for: recipient.aci!, deviceId: DeviceId(rawValue: 2), tx: $0))
+            XCTAssertNil(try! sessionStore.loadSession(for: recipient.aci!, deviceId: DeviceId(validating: 2)!, tx: $0))
         }
     }
 }

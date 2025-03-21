@@ -174,7 +174,7 @@ public class SMKSecretSessionCipher: NSObject {
         cipherTextData: Data,
         timestamp: UInt64,
         localIdentifiers: LocalIdentifiers,
-        localDeviceId: DeviceId,
+        localDeviceId: LocalDeviceId,
         protocolContext: StoreContext?
     ) throws -> SMKDecryptResult {
         guard timestamp > 0 else {
@@ -190,15 +190,14 @@ public class SMKSecretSessionCipher: NSObject {
         let sender = messageContent.senderCertificate.sender
 
         // NOTE: We use the sender properties from the sender certificate, not from this class' properties.
-        guard sender.deviceId <= Int32.max else {
+        guard let deviceId = DeviceId(validating: sender.deviceId) else {
             throw SMKError.assertionError(description: "[\(type(of: self))] Invalid senderDeviceId.")
         }
-        let deviceId = DeviceId(rawValue: sender.deviceId)
         guard let senderAci = Aci.parseFrom(aciString: sender.uuidString) else {
             throw SMKError.assertionError(description: "[\(type(of: self))] Invalid senderAci.")
         }
 
-        if localIdentifiers.aci == senderAci && deviceId == localDeviceId {
+        if localIdentifiers.aci == senderAci && localDeviceId.equals(deviceId) {
             Logger.info("Discarding self-sent message")
             throw SMKSecretSessionCipherError.selfSentMessage
         }

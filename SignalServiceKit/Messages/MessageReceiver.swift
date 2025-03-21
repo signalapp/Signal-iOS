@@ -1289,9 +1289,11 @@ public final class MessageReceiver {
         // If destinationDevice is defined, ignore messages not addressed to this device.
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let localDeviceId = tsAccountManager.storedDeviceId(tx: tx)
-        if callMessage.hasDestinationDeviceID, callMessage.destinationDeviceID != localDeviceId.uint32Value {
-            Logger.info("Ignoring call message for other device #\(callMessage.destinationDeviceID)")
-            return
+        if callMessage.hasDestinationDeviceID {
+            guard localDeviceId.equals(DeviceId(validating: callMessage.destinationDeviceID)) else {
+                Logger.info("Ignoring call message for other device #\(callMessage.destinationDeviceID)")
+                return
+            }
         }
 
         if let profileKey = callMessage.profileKey {
@@ -1516,7 +1518,7 @@ public final class MessageReceiver {
             }
             let errorMessage = try DecryptionErrorMessage(bytes: decryptionErrorMessage)
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard errorMessage.deviceId == tsAccountManager.storedDeviceId(tx: tx).uint32Value else {
+            guard tsAccountManager.storedDeviceId(tx: tx).equals(DeviceId(validating: errorMessage.deviceId)) else {
                 Logger.info("Received a DecryptionError message targeting a linked device. Ignoring.")
                 return
             }

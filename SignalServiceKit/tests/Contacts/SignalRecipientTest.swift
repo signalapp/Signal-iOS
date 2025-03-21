@@ -675,7 +675,7 @@ final class SignalRecipient2Test: XCTestCase {
 
             XCTAssertEqual(signalRecipients[0].id, 18)
             XCTAssertEqual(signalRecipients[0].uniqueId, "00000000-0000-4000-8000-00000000000A")
-            XCTAssertEqual(signalRecipients[0].deviceIds, [1, 2, 5, 4, 6].map(DeviceId.init(rawValue:)))
+            XCTAssertEqual(signalRecipients[0].deviceIds, [1, 2, 5, 4, 6].map { DeviceId(validating: $0)! })
             XCTAssertEqual(signalRecipients[0].phoneNumber?.stringValue, "+16505550100")
             XCTAssertEqual(signalRecipients[0].phoneNumber?.isDiscoverable, false)
             XCTAssertEqual(signalRecipients[0].aciString, "00000000-0000-4000-8000-000000000000")
@@ -729,7 +729,7 @@ final class SignalRecipient2Test: XCTestCase {
     }
 
     func testEqualityAndHashing() {
-        let someRecipient = SignalRecipient(aci: Aci.randomForTesting(), pni: nil, phoneNumber: nil, deviceIds: [1, 2].map(DeviceId.init(rawValue:)))
+        let someRecipient = SignalRecipient(aci: Aci.randomForTesting(), pni: nil, phoneNumber: nil, deviceIds: [1, 2].map { DeviceId(validating: $0)! })
         let copiedRecipient = someRecipient.copyRecipient()
         XCTAssertEqual(copiedRecipient, someRecipient)
         XCTAssertEqual(copiedRecipient.hashValue, someRecipient.hashValue)
@@ -792,9 +792,9 @@ final class SignalRecipient2Test: XCTestCase {
         mockDb.write { tx in
             for testCase in testCases {
                 let recipient = recipientFetcher.fetchOrCreate(serviceId: Aci.randomForTesting(), tx: tx)
-                recipientManager.setDeviceIds(Set(testCase.initialDeviceIds.map(DeviceId.init(rawValue:))), for: recipient, shouldUpdateStorageService: false)
-                recipientManager.markAsRegisteredAndSave(recipient, deviceId: DeviceId(rawValue: testCase.addedDeviceId), shouldUpdateStorageService: false, tx: tx)
-                XCTAssertEqual(Set(recipient.deviceIds), Set(testCase.expectedDeviceIds.map(DeviceId.init(rawValue:))), "\(testCase)")
+                recipientManager.setDeviceIds(Set(testCase.initialDeviceIds.map { DeviceId(validating: $0)! }), for: recipient, shouldUpdateStorageService: false)
+                recipientManager.markAsRegisteredAndSave(recipient, deviceId: DeviceId(validating: testCase.addedDeviceId)!, shouldUpdateStorageService: false, tx: tx)
+                XCTAssertEqual(Set(recipient.deviceIds), Set(testCase.expectedDeviceIds.map { DeviceId(validating: $0)! }), "\(testCase)")
             }
         }
     }

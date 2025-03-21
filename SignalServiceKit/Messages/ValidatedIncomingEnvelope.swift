@@ -76,10 +76,10 @@ class ValidatedIncomingEnvelope {
         else {
             throw OWSAssertionError("Invalid source.")
         }
-        guard envelope.hasSourceDevice, envelope.sourceDevice >= 1 else {
+        guard envelope.hasSourceDevice, let sourceDevice = DeviceId(validating: envelope.sourceDevice) else {
             throw OWSAssertionError("Invalid source device.")
         }
-        return (sourceServiceId, DeviceId(rawValue: envelope.sourceDevice))
+        return (sourceServiceId, sourceDevice)
     }
 
     // MARK: - Destination

@@ -161,6 +161,9 @@ public class IndividualCall: CustomDebugStringConvertible {
     /// Can be accessed from the main thread.
     private(set) var callType: RPRecentCallType?
 
+    // The current local device ID; must be valid for lifetime of the call.
+    let localDeviceId: DeviceId
+
     @MainActor
     lazy var hasLocalVideo = offerMediaType == .video {
         didSet {
@@ -248,7 +251,8 @@ public class IndividualCall: CustomDebugStringConvertible {
 
     static func outgoingIndividualCall(
         thread: TSContactThread,
-        offerMediaType: TSRecentCallOfferType
+        offerMediaType: TSRecentCallOfferType,
+        localDeviceId: DeviceId
     ) -> IndividualCall {
         return IndividualCall(
             callId: nil,
@@ -256,7 +260,8 @@ public class IndividualCall: CustomDebugStringConvertible {
             offerMediaType: offerMediaType,
             state: .dialing,
             thread: thread,
-            sentAtTimestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp()
+            sentAtTimestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
+            localDeviceId: localDeviceId
         )
     }
 
@@ -264,7 +269,8 @@ public class IndividualCall: CustomDebugStringConvertible {
         callId: UInt64,
         thread: TSContactThread,
         sentAtTimestamp: UInt64,
-        offerMediaType: TSRecentCallOfferType
+        offerMediaType: TSRecentCallOfferType,
+        localDeviceId: DeviceId
     ) -> IndividualCall {
         return IndividualCall(
             callId: callId,
@@ -272,7 +278,8 @@ public class IndividualCall: CustomDebugStringConvertible {
             offerMediaType: offerMediaType,
             state: .answering,
             thread: thread,
-            sentAtTimestamp: sentAtTimestamp
+            sentAtTimestamp: sentAtTimestamp,
+            localDeviceId: localDeviceId
         )
     }
 
@@ -282,7 +289,8 @@ public class IndividualCall: CustomDebugStringConvertible {
         offerMediaType: TSRecentCallOfferType,
         state: CallState,
         thread: TSContactThread,
-        sentAtTimestamp: UInt64
+        sentAtTimestamp: UInt64,
+        localDeviceId: DeviceId
     ) {
         self.callId = callId
         self.callEventInserter = CallEventInserter(
@@ -302,6 +310,7 @@ public class IndividualCall: CustomDebugStringConvertible {
         self.state = state
         self.thread = thread
         self.sentAtTimestamp = sentAtTimestamp
+        self.localDeviceId = localDeviceId
     }
 
     deinit {

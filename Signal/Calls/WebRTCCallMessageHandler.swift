@@ -104,7 +104,10 @@ class WebRTCCallMessageHandler: CallMessageHandler {
                 messageAgeSec = (serverDeliveryTimestamp - serverReceivedTimestamp) / 1000
             }
 
-            let localDeviceId = tsAccountManager.storedDeviceId(tx: tx)
+            guard let localDeviceId = tsAccountManager.storedDeviceId(tx: tx).ifValid else {
+                owsFailDebug("Received opaque call message when not registered")
+                return
+            }
 
             DispatchQueue.main.async {
                 self.callService.callManager.receivedCallMessage(

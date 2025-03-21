@@ -1151,7 +1151,10 @@ public class MessageSender {
         }
         owsAssertDebug(message.recipientAddresses().count == 1)
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            let deviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx)
+            guard let deviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx).ifValid else {
+                owsFailDebug("Can't send a Note to Self message with an invalid deviceId.")
+                return
+            }
             for sendingAddress in message.sendingRecipientAddresses() {
                 message.update(
                     withReadRecipient: sendingAddress,
@@ -1308,8 +1311,9 @@ public class MessageSender {
         }
         owsAssertDebug(messageSend.message.canSendToLocalAddress)
 
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let hasMessageForLinkedDevice = deviceMessages.contains(where: {
-            $0.destinationDeviceId != DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction
+            return !tsAccountManager.storedDeviceIdWithMaybeTransaction.equals($0.destinationDeviceId)
         })
 
         if hasMessageForLinkedDevice {
@@ -1350,7 +1354,7 @@ public class MessageSender {
 
         if messageSend.localIdentifiers.contains(serviceId: messageSend.serviceId) {
             let localDeviceId = DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction
-            recipientDeviceIds.removeAll(where: { $0 == localDeviceId })
+            recipientDeviceIds.removeAll(where: { localDeviceId.equals($0) })
         }
 
         var results = [DeviceMessage]()

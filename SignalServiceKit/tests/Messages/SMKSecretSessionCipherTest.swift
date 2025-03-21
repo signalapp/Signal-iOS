@@ -71,7 +71,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
             cipherTextData: ciphertext,
             timestamp: 31335,
             localIdentifiers: bobMockClient.localIdentifiers,
-            localDeviceId: bobMockClient.deviceId,
+            localDeviceId: .valid(bobMockClient.deviceId),
             protocolContext: nil
         )
 
@@ -138,7 +138,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                 cipherTextData: ciphertext,
                 timestamp: 31335,
                 localIdentifiers: bobMockClient.localIdentifiers,
-                localDeviceId: bobMockClient.deviceId,
+                localDeviceId: .valid(bobMockClient.deviceId),
                 protocolContext: nil
             )
             XCTFail("Decryption should have failed.")
@@ -218,7 +218,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                 cipherTextData: ciphertext,
                 timestamp: 31338,
                 localIdentifiers: bobMockClient.localIdentifiers,
-                localDeviceId: bobMockClient.deviceId,
+                localDeviceId: .valid(bobMockClient.deviceId),
                 protocolContext: nil
             )
             XCTFail("Decryption should have failed.")
@@ -295,7 +295,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                 cipherTextData: ciphertext,
                 timestamp: 31335,
                 localIdentifiers: bobMockClient.localIdentifiers,
-                localDeviceId: bobMockClient.deviceId,
+                localDeviceId: .valid(bobMockClient.deviceId),
                 protocolContext: nil
             )
             XCTFail("Decryption should have failed.")
@@ -357,7 +357,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
             cipherTextData: Data(singleRecipientCiphertext),
             timestamp: 31335,
             localIdentifiers: bobMockClient.localIdentifiers,
-            localDeviceId: bobMockClient.deviceId,
+            localDeviceId: .valid(bobMockClient.deviceId),
             protocolContext: nil
         )
 
@@ -412,7 +412,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
                 cipherTextData: Data(singleRecipientCiphertext),
                 timestamp: 31335,
                 localIdentifiers: bobMockClient.localIdentifiers,
-                localDeviceId: bobMockClient.deviceId,
+                localDeviceId: .valid(bobMockClient.deviceId),
                 protocolContext: nil
             )
             XCTFail("Decryption should have failed.")

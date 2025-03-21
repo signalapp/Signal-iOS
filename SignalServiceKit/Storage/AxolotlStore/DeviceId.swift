@@ -6,17 +6,23 @@
 import Foundation
 
 public struct DeviceId: Codable, Comparable, CustomStringConvertible, Hashable {
-    private let rawValue: UInt32
+    public let rawValue: Int8
 
-    public static let primary: DeviceId = DeviceId(rawValue: OWSDevice.primaryDeviceId)
+    public static let primary: DeviceId = DeviceId(validating: OWSDevice.primaryDeviceId)!
 
-    public init(rawValue: UInt32) {
+    public init?(validating rawValue: some FixedWidthInteger) {
+        guard let rawValue = Int8(exactly: rawValue), rawValue >= 1 else {
+            return nil
+        }
         self.rawValue = rawValue
     }
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()
-        self.init(rawValue: try container.decode(UInt32.self))
+        guard let validatedResult = Self(validating: try container.decode(Int8.self)) else {
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "")
+        }
+        self = validatedResult
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -30,5 +36,6 @@ public struct DeviceId: Codable, Comparable, CustomStringConvertible, Hashable {
         return lhs.rawValue < rhs.rawValue
     }
 
-    public var uint32Value: UInt32 { rawValue }
+    // The `rawValue` isn't ever negative, so this is always safe.
+    public var uint32Value: UInt32 { UInt32(rawValue) }
 }

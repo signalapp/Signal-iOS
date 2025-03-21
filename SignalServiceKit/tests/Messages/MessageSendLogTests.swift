@@ -21,7 +21,7 @@ class MessageSendLogTests: SSKBaseTest {
 
             // "Send" the message to a recipient
             let serviceId = Aci.randomForTesting()
-            let deviceId = DeviceId(rawValue: UInt32.random(in: 0..<100))
+            let deviceId = DeviceId(validating: UInt32.random(in: 1...100))!
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: serviceId,
@@ -53,7 +53,7 @@ class MessageSendLogTests: SSKBaseTest {
 
             // "Send" the message to one recipient
             let serviceId = Aci.randomForTesting()
-            let deviceId = DeviceId(rawValue: UInt32.random(in: 0..<100))
+            let deviceId = DeviceId(validating: UInt32.random(in: 1...100))!
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: serviceId,
@@ -65,7 +65,7 @@ class MessageSendLogTests: SSKBaseTest {
             // Expect no results when re-fetching the payload with a different deviceId
             XCTAssertNil(messageSendLog.fetchPayload(
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: deviceId.uint32Value+1),
+                recipientDeviceId: DeviceId(validating: deviceId.uint32Value+1)!,
                 timestamp: newMessage.timestamp,
                 tx: writeTx
             ))
@@ -89,7 +89,7 @@ class MessageSendLogTests: SSKBaseTest {
 
             // "Send" the message to two devices
             let serviceId = Aci.randomForTesting()
-            for deviceId in [0, 1].map(DeviceId.init(rawValue:)) {
+            for deviceId in [1, 2].map({ DeviceId(validating: $0)! }) {
                 messageSendLog.recordPendingDelivery(
                     payloadId: payloadId,
                     recipientAci: serviceId,
@@ -103,14 +103,14 @@ class MessageSendLogTests: SSKBaseTest {
             messageSendLog.recordSuccessfulDelivery(
                 message: newMessage,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 0),
+                recipientDeviceId: DeviceId(validating: 1)!,
                 tx: writeTx
             )
 
             // Expect no results when re-fetching the payload for the first device
             XCTAssertNil(messageSendLog.fetchPayload(
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 0),
+                recipientDeviceId: DeviceId(validating: 1)!,
                 timestamp: newMessage.timestamp,
                 tx: writeTx
             ))
@@ -118,7 +118,7 @@ class MessageSendLogTests: SSKBaseTest {
             // Expect some results when re-fetching the payload for the second device
             XCTAssertNotNil(messageSendLog.fetchPayload(
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 1),
+                recipientDeviceId: DeviceId(validating: 2)!,
                 timestamp: newMessage.timestamp,
                 tx: writeTx
             ))
@@ -134,7 +134,7 @@ class MessageSendLogTests: SSKBaseTest {
 
             // "Send" the message to a recipient
             let serviceId = Aci.randomForTesting()
-            let deviceId = DeviceId(rawValue: UInt32.random(in: 0..<100))
+            let deviceId = DeviceId(validating: UInt32.random(in: 1...100))!
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: serviceId,
@@ -162,7 +162,7 @@ class MessageSendLogTests: SSKBaseTest {
 
             // "Send" the message to one recipient, two devices
             let serviceId = Aci.randomForTesting()
-            for deviceId in [0, 1].map(DeviceId.init(rawValue:)) {
+            for deviceId in [1, 2].map({ DeviceId(validating: $0)! }) {
                 messageSendLog.recordPendingDelivery(
                     payloadId: payloadId,
                     recipientAci: serviceId,
@@ -177,7 +177,7 @@ class MessageSendLogTests: SSKBaseTest {
             messageSendLog.recordSuccessfulDelivery(
                 message: newMessage,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 0),
+                recipientDeviceId: DeviceId(validating: 1)!,
                 tx: writeTx
             )
 
@@ -188,7 +188,7 @@ class MessageSendLogTests: SSKBaseTest {
             messageSendLog.recordSuccessfulDelivery(
                 message: newMessage,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 1),
+                recipientDeviceId: DeviceId(validating: 2)!,
                 tx: writeTx
             )
 
@@ -210,14 +210,14 @@ class MessageSendLogTests: SSKBaseTest {
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 0),
+                recipientDeviceId: DeviceId(validating: 1)!,
                 message: newMessage,
                 tx: writeTx
             )
             messageSendLog.recordSuccessfulDelivery(
                 message: newMessage,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 0),
+                recipientDeviceId: DeviceId(validating: 1)!,
                 tx: writeTx
             )
 
@@ -225,7 +225,7 @@ class MessageSendLogTests: SSKBaseTest {
             XCTAssertTrue(isPayloadAlive(index: payloadId, transaction: writeTx))
 
             // "Send" the message to two more devices. Mark send as complete
-            for deviceId in [1, 2].map(DeviceId.init(rawValue:)) {
+            for deviceId in [2, 3].map({ DeviceId(validating: $0)! }) {
                 messageSendLog.recordPendingDelivery(
                     payloadId: payloadId,
                     recipientAci: serviceId,
@@ -240,7 +240,7 @@ class MessageSendLogTests: SSKBaseTest {
             messageSendLog.recordSuccessfulDelivery(
                 message: newMessage,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 1),
+                recipientDeviceId: DeviceId(validating: 2)!,
                 tx: writeTx
             )
 
@@ -251,7 +251,7 @@ class MessageSendLogTests: SSKBaseTest {
             messageSendLog.recordSuccessfulDelivery(
                 message: newMessage,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 2),
+                recipientDeviceId: DeviceId(validating: 3)!,
                 tx: writeTx
             )
 
@@ -273,7 +273,7 @@ class MessageSendLogTests: SSKBaseTest {
             messageSendLog.recordPendingDelivery(
                 payloadId: initialPayloadId,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 0),
+                recipientDeviceId: DeviceId(validating: 1)!,
                 message: newMessage,
                 tx: writeTx
             )
@@ -285,7 +285,7 @@ class MessageSendLogTests: SSKBaseTest {
             messageSendLog.recordPendingDelivery(
                 payloadId: initialPayloadId,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 1),
+                recipientDeviceId: DeviceId(validating: 2)!,
                 message: newMessage,
                 tx: writeTx
             )
@@ -299,7 +299,7 @@ class MessageSendLogTests: SSKBaseTest {
             messageSendLog.recordSuccessfulDelivery(
                 message: newMessage,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 0),
+                recipientDeviceId: DeviceId(validating: 1)!,
                 tx: writeTx
             )
 
@@ -310,7 +310,7 @@ class MessageSendLogTests: SSKBaseTest {
             messageSendLog.recordSuccessfulDelivery(
                 message: newMessage,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 1),
+                recipientDeviceId: DeviceId(validating: 2)!,
                 tx: writeTx
             )
 
@@ -331,14 +331,14 @@ class MessageSendLogTests: SSKBaseTest {
             messageSendLog.recordPendingDelivery(
                 payloadId: initialPayloadId,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 0),
+                recipientDeviceId: DeviceId(validating: 1)!,
                 message: newMessage,
                 tx: writeTx
             )
             messageSendLog.recordSuccessfulDelivery(
                 message: newMessage,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 0),
+                recipientDeviceId: DeviceId(validating: 1)!,
                 tx: writeTx
             )
             messageSendLog.sendComplete(message: newMessage, tx: writeTx)
@@ -351,7 +351,7 @@ class MessageSendLogTests: SSKBaseTest {
             messageSendLog.recordPendingDelivery(
                 payloadId: secondPayloadId,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 1),
+                recipientDeviceId: DeviceId(validating: 2)!,
                 message: newMessage,
                 tx: writeTx
             )
@@ -359,7 +359,7 @@ class MessageSendLogTests: SSKBaseTest {
             messageSendLog.recordSuccessfulDelivery(
                 message: newMessage,
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 1),
+                recipientDeviceId: DeviceId(validating: 2)!,
                 tx: writeTx
             )
 
@@ -397,7 +397,7 @@ class MessageSendLogTests: SSKBaseTest {
 
             // "Send" the message to a recipient
             let serviceId = Aci.randomForTesting()
-            let deviceId = DeviceId(rawValue: UInt32.random(in: 0..<100))
+            let deviceId = DeviceId(validating: UInt32.random(in: 1...100))!
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: serviceId,
@@ -430,7 +430,7 @@ class MessageSendLogTests: SSKBaseTest {
 
             // "Send" the messages to a recipient
             let serviceId = Aci.randomForTesting()
-            let deviceId = DeviceId(rawValue: UInt32.random(in: 0..<100))
+            let deviceId = DeviceId(validating: UInt32.random(in: 1...100))!
             for index in [index1, index2, index3] {
                 messageSendLog.recordPendingDelivery(
                     payloadId: index,
@@ -502,11 +502,11 @@ class MessageSendLogTests: SSKBaseTest {
             XCTAssertEqual(message.timestamp, originalTimestamp)
 
             let index = try XCTUnwrap(messageSendLog.recordPayload(data, for: message, tx: writeTx))
-            messageSendLog.recordPendingDelivery(payloadId: index, recipientAci: serviceId, recipientDeviceId: DeviceId(rawValue: 1), message: message, tx: writeTx)
+            messageSendLog.recordPendingDelivery(payloadId: index, recipientAci: serviceId, recipientDeviceId: DeviceId(validating: 1)!, message: message, tx: writeTx)
 
             let fetchedPayload = messageSendLog.fetchPayload(
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(rawValue: 1),
+                recipientDeviceId: DeviceId(validating: 1)!,
                 timestamp: originalTimestamp,
                 tx: writeTx
             )

@@ -24,9 +24,9 @@ public protocol TSAccountManager {
 
     func storedServerAuthToken(tx: DBReadTransaction) -> String?
 
-    var storedDeviceIdWithMaybeTransaction: DeviceId { get }
+    var storedDeviceIdWithMaybeTransaction: LocalDeviceId { get }
 
-    func storedDeviceId(tx: DBReadTransaction) -> DeviceId
+    func storedDeviceId(tx: DBReadTransaction) -> LocalDeviceId
 
     // MARK: - Registration State
 
@@ -64,6 +64,37 @@ public protocol TSAccountManager {
 
     func phoneNumberDiscoverability(tx: DBReadTransaction) -> PhoneNumberDiscoverability?
     func lastSetIsDiscoverableByPhoneNumber(tx: DBReadTransaction) -> Date
+}
+
+/// It's *possible* (but implausible) that the local user's "device ID"
+/// isn't valid. These "device IDs" aren't supported on the server, so these
+/// users consider themselves "deregistered" (or, if they don't, they will
+/// as soon as they try to authenticate).
+public enum LocalDeviceId {
+    case valid(DeviceId)
+    case invalid
+
+    public var ifValid: DeviceId? {
+        switch self {
+        case .valid(let deviceId):
+            return deviceId
+        case .invalid:
+            return nil
+        }
+    }
+
+    /// Checks if the LocalDeviceId matches an arbitrary DeviceId.
+    ///
+    /// All DeviceIds are valid, so if the LocalDeviceId isn't valid, it can't
+    /// possibly match a DeviceId.
+    public func equals(_ otherDeviceId: DeviceId?) -> Bool {
+        switch self {
+        case .valid(let deviceId):
+            return deviceId == otherDeviceId
+        case .invalid:
+            return false
+        }
+    }
 }
 
 extension TSAccountManager {

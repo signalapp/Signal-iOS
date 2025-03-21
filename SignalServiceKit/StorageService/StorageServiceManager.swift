@@ -1066,7 +1066,14 @@ class StorageServiceOperation {
             manifestBuilder.setRecordIkm(manifestRecordIkm)
         }
         manifestBuilder.setKeys(identifiers.map { $0.buildRecord() })
-        manifestBuilder.setSourceDevice(DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction.uint32Value)
+
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        if let deviceId = tsAccountManager.storedDeviceIdWithMaybeTransaction.ifValid {
+            manifestBuilder.setSourceDevice(deviceId.uint32Value)
+        } else {
+            owsFailDebug("Can't sync with an invalid deviceId.")
+        }
+
         return manifestBuilder.buildInfallibly()
     }
 

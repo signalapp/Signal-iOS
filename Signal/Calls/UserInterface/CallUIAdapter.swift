@@ -5,7 +5,7 @@
 
 public import Foundation
 import CallKit
-public import SignalServiceKit
+import SignalServiceKit
 import SignalUI
 import WebRTC
 import UIKit
@@ -159,9 +159,10 @@ public class CallUIAdapter: NSObject {
     }
 
     @MainActor
-    public func startAndShowOutgoingCall(thread: TSContactThread, hasLocalVideo: Bool) {
+    func startAndShowOutgoingCall(thread: TSContactThread, prepareResult: CallStarter.PrepareToStartCallResult, hasLocalVideo: Bool) {
         guard let (call, individualCall) = self.callService.buildOutgoingIndividualCallIfPossible(
             thread: thread,
+            localDeviceId: prepareResult.localDeviceId,
             hasVideo: hasLocalVideo
         ) else {
             // @integration This is not unexpected, it could happen if Bob tries

@@ -45,12 +45,12 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         }
 
         messageSenderMock.deviceMessageMocks.update {
-            $0[DeviceId(rawValue: 123)] = .valid(registrationId: 456)
+            $0[DeviceId(validating: 123)!] = .valid(registrationId: 456)
         }
 
         let parameters = try await build(
-            localDeviceId: DeviceId(rawValue: 1),
-            localUserAllDeviceIds: [1, 123].map(DeviceId.init(rawValue:)),
+            localDeviceId: DeviceId(validating: 1)!,
+            localUserAllDeviceIds: [1, 123].map { DeviceId(validating: $0)! },
             localPniIdentityKeyPair: pniKeyPair,
             localDevicePniSignedPreKey: localSignedPreKey,
             localDevicePniPqLastResortPreKey: localPqLastResortPreKey,
@@ -75,7 +75,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         )
 
         XCTAssertEqual(parameters.deviceMessages.count, 1)
-        XCTAssertEqual(parameters.deviceMessages.first?.destinationDeviceId, DeviceId(rawValue: 123))
+        XCTAssertEqual(parameters.deviceMessages.first?.destinationDeviceId, DeviceId(validating: 123)!)
         XCTAssertEqual(parameters.deviceMessages.first?.destinationRegistrationId, 456)
 
         XCTAssertTrue(messageSenderMock.deviceMessageMocks.get().isEmpty)
@@ -90,13 +90,13 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         }
 
         messageSenderMock.deviceMessageMocks.update {
-            $0[DeviceId(rawValue: 123)] = .valid(registrationId: 456)
+            $0[DeviceId(validating: 123)!] = .valid(registrationId: 456)
         }
 
         let result = await Result {
             return try await build(
-                localDeviceId: DeviceId(rawValue: 1),
-                localUserAllDeviceIds: [2, 123].map(DeviceId.init(rawValue:)),
+                localDeviceId: DeviceId(validating: 1)!,
+                localUserAllDeviceIds: [2, 123].map { DeviceId(validating: $0)! },
                 localPniIdentityKeyPair: pniKeyPair,
                 localDevicePniSignedPreKey: localSignedPreKey,
                 localDevicePniPqLastResortPreKey: localPqLastResortPreKey,
@@ -118,13 +118,13 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         }
 
         messageSenderMock.deviceMessageMocks.update {
-            $0[DeviceId(rawValue: 123)] = .valid(registrationId: 456)
-            $0[DeviceId(rawValue: 1234)] = .invalidDevice
+            $0[DeviceId(validating: 123)!] = .valid(registrationId: 456)
+            $0[DeviceId(validating: 124)!] = .invalidDevice
         }
 
         let parameters = try await build(
-            localDeviceId: DeviceId(rawValue: 1),
-            localUserAllDeviceIds: [1, 123, 1234].map(DeviceId.init(rawValue:)),
+            localDeviceId: DeviceId(validating: 1)!,
+            localUserAllDeviceIds: [1, 123, 124].map { DeviceId(validating: $0)! },
             localPniIdentityKeyPair: pniKeyPair,
             localDevicePniSignedPreKey: localSignedPreKey,
             localDevicePniPqLastResortPreKey: localPqLastResortPreKey,
@@ -142,7 +142,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         XCTAssertLessThan(parameters.pniRegistrationIds.count, registrationIdGeneratorMock.generatedRegistrationIds.count)
 
         XCTAssertEqual(parameters.deviceMessages.count, 1)
-        XCTAssertEqual(parameters.deviceMessages.first?.destinationDeviceId, DeviceId(rawValue: 123))
+        XCTAssertEqual(parameters.deviceMessages.first?.destinationDeviceId, DeviceId(validating: 123)!)
         XCTAssertEqual(parameters.deviceMessages.first?.destinationRegistrationId, 456)
 
         XCTAssert(messageSenderMock.deviceMessageMocks.get().isEmpty)
@@ -157,13 +157,13 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         }
 
         messageSenderMock.deviceMessageMocks.update {
-            $0[DeviceId(rawValue: 123)] = .error
+            $0[DeviceId(validating: 123)!] = .error
         }
 
         let result = await Result {
             return try await build(
-                localDeviceId: DeviceId(rawValue: 1),
-                localUserAllDeviceIds: [1, 123].map(DeviceId.init(rawValue:)),
+                localDeviceId: DeviceId(validating: 1)!,
+                localUserAllDeviceIds: [1, 123].map { DeviceId(validating: $0)! },
                 localPniIdentityKeyPair: pniKeyPair,
                 localDevicePniSignedPreKey: localSignedPreKey,
                 localDevicePniPqLastResortPreKey: localPqLastResortPreKey,
@@ -194,7 +194,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         return try await pniDistributionParameterBuilder.buildPniDistributionParameters(
             localAci: aci,
             localRecipientUniqueId: recipientUniqueId,
-            localDeviceId: localDeviceId,
+            localDeviceId: .valid(localDeviceId),
             localUserAllDeviceIds: localUserAllDeviceIds,
             localPniIdentityKeyPair: localPniIdentityKeyPair,
             localE164: e164,

@@ -701,7 +701,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             owsFail("Can't start a call if there's no view controller")
         }
 
-        guard await CallStarter.prepareToStartCall(from: frontmostViewController, shouldAskForCameraPermission: isVideo) else {
+        let prepareResult = await CallStarter.prepareToStartCall(from: frontmostViewController, shouldAskForCameraPermission: isVideo)
+        guard let prepareResult else {
             return
         }
 
@@ -714,15 +715,16 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             return
         }
 
-        self.callUIAdapter.startAndShowOutgoingCall(thread: thread, hasLocalVideo: isVideo)
+        self.callUIAdapter.startAndShowOutgoingCall(thread: thread, prepareResult: prepareResult, hasLocalVideo: isVideo)
     }
 
-    func buildOutgoingIndividualCallIfPossible(thread: TSContactThread, hasVideo: Bool) -> (SignalCall, IndividualCall)? {
+    func buildOutgoingIndividualCallIfPossible(thread: TSContactThread, localDeviceId: DeviceId, hasVideo: Bool) -> (SignalCall, IndividualCall)? {
         guard callServiceState.currentCall == nil else { return nil }
 
         let individualCall = IndividualCall.outgoingIndividualCall(
             thread: thread,
-            offerMediaType: hasVideo ? .video : .audio
+            offerMediaType: hasVideo ? .video : .audio,
+            localDeviceId: localDeviceId
         )
 
         let call = SignalCall(individualCall: individualCall)

@@ -357,9 +357,13 @@ public class EarlyMessageManager {
                     owsFailDebug("Unexpected message type for early read receipt for outgoing message.")
                     break
                 }
+                guard let deviceId = DeviceId(validating: deviceId) else {
+                    owsFailDebug("Unexpected deviceId for early read receipt for outgoing message.")
+                    break
+                }
                 message.update(
                     withReadRecipient: sender,
-                    deviceId: DeviceId(rawValue: deviceId),
+                    deviceId: deviceId,
                     readTimestamp: timestamp,
                     tx: transaction
                 )
@@ -370,9 +374,13 @@ public class EarlyMessageManager {
                     owsFailDebug("Unexpected message type for early read receipt for outgoing message.")
                     break
                 }
+                guard let deviceId = DeviceId(validating: deviceId) else {
+                    owsFailDebug("Unexpected deviceId for early viewed receipt for outgoing message.")
+                    break
+                }
                 message.update(
                     withViewedRecipient: sender,
-                    deviceId: DeviceId(rawValue: deviceId),
+                    deviceId: deviceId,
                     viewedTimestamp: timestamp,
                     tx: transaction
                 )
@@ -383,9 +391,13 @@ public class EarlyMessageManager {
                     owsFailDebug("Unexpected message type for early delivery receipt for outgoing message.")
                     break
                 }
+                guard let deviceId = DeviceId(validating: deviceId) else {
+                    owsFailDebug("Unexpected deviceId for early delivery receipt for outgoing message.")
+                    break
+                }
                 message.update(
                     withDeliveredRecipient: sender,
-                    deviceId: DeviceId(rawValue: deviceId),
+                    deviceId: deviceId,
                     deliveryTimestamp: timestamp,
                     context: PassthroughDeliveryReceiptContext(),
                     tx: transaction

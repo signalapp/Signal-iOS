@@ -272,7 +272,7 @@ public class MessageSendLog {
                 .filter(Column("recipientUuid") == recipientAci.serviceIdUppercaseString)
                 .select(Column("recipientDeviceId"), as: Int64.self)
                 .fetchAll(tx.database)
-                .map { UInt32(exactly: $0).map(DeviceId.init(rawValue:)) }
+                .map { DeviceId(validating: $0) }
         } catch {
             owsFailDebug("\(error)")
             return nil

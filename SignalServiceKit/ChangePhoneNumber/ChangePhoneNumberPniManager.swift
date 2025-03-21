@@ -157,7 +157,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
                 let parameters = try await self.pniDistributionParameterBuilder.buildPniDistributionParameters(
                     localAci: localAci,
                     localRecipientUniqueId: localRecipientUniqueId,
-                    localDeviceId: localDeviceId,
+                    localDeviceId: .valid(localDeviceId),
                     localUserAllDeviceIds: localUserAllDeviceIds,
                     localPniIdentityKeyPair: pniIdentityKeyPair,
                     localE164: newE164,

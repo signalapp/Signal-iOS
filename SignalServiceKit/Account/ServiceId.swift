@@ -58,7 +58,12 @@ extension ProtocolAddress {
     }
 
     public var deviceIdObj: DeviceId {
-        return DeviceId(rawValue: self.deviceId)
+        get throws {
+            guard let result = DeviceId(validating: self.deviceId) else {
+                throw OWSAssertionError("Invalid protocol address: must have valid deviceId")
+            }
+            return result
+        }
     }
 }
 

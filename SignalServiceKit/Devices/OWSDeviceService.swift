@@ -26,11 +26,11 @@ extension OWSDeviceService {
     }
 
     public func unlinkDevice(_ device: OWSDevice, auth: ChatServiceAuth = .implicit()) async throws {
-        guard let deviceId = UInt32(exactly: device.deviceId) else {
+        guard let deviceId = DeviceId(validating: device.deviceId) else {
             // If it's not valid, the device can't exist on the server.
             return
         }
-        try await unlinkDevice(deviceId: DeviceId(rawValue: deviceId), auth: auth)
+        try await unlinkDevice(deviceId: deviceId, auth: auth)
     }
 }
 

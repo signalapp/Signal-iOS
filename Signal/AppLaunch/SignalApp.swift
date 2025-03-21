@@ -273,7 +273,7 @@ extension SignalApp {
 
     @MainActor
     static func resetLinkedAppDataWithUI(
-        currentDeviceId: DeviceId,
+        localDeviceId: LocalDeviceId,
         keyFetcher: GRDBKeyFetcher = SSKEnvironment.shared.databaseStorageRef.keyFetcher
     ) {
         Logger.info("")
@@ -283,8 +283,12 @@ extension SignalApp {
             fromViewController: fromVC,
             canCancel: false,
             asyncBlock: { _ in
-                // Best effort to unlink ourselves from the server.
-                try? await DependenciesBridge.shared.deviceService.unlinkDevice(deviceId: currentDeviceId)
+                if let localDeviceId = localDeviceId.ifValid {
+                    // Best effort to unlink ourselves from the server.
+                    try? await DependenciesBridge.shared.deviceService.unlinkDevice(deviceId: localDeviceId)
+                } else {
+                    // If localDeviceId isn't valid, we've already been unlinked.
+                }
                 SignalApp.resetAppDataAndExit(keyFetcher: keyFetcher)
             }
         )

@@ -27,7 +27,7 @@ final class ChatServiceAuthTest: XCTestCase {
         let aciString = "125a6d22-5364-4583-9132-66227867d9ec"
         let aci = Aci.constantForTesting(aciString)
 
-        let auth = ChatServiceAuth.explicit(aci: aci, deviceId: .secondary(DeviceId(rawValue: 3)), password: "foo bar")
+        let auth = ChatServiceAuth.explicit(aci: aci, deviceId: .secondary(DeviceId(validating: 3)!), password: "foo bar")
 
         XCTAssertEqual(auth.credentials, .explicit(username: "\(aciString).3", password: "foo bar"))
     }

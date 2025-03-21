@@ -238,7 +238,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         // If we can't parse the values in the NSOrderedSet, assume the user isn't
         // registered. If they are registered, we'll correct the data store the
         // next time we try to send them a message.
-        deviceIds = deviceArray?.map(DeviceId.init(rawValue:)) ?? []
+        deviceIds = deviceArray?.compactMap(DeviceId.init(validating:)) ?? []
         unregisteredAtTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .unregisteredAtTimestamp)
     }
 

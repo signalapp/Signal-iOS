@@ -391,14 +391,19 @@ public class OWSUDManagerImpl: OWSUDManager {
     }
 
     private func isValidCertificate(_ certificate: SenderCertificate) -> Bool {
-        let sender = certificate.sender
-        guard sender.deviceId == DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction.uint32Value else {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
+        guard
+            let deviceId = DeviceId(validating: certificate.deviceId),
+            tsAccountManager.storedDeviceIdWithMaybeTransaction.equals(deviceId)
+        else {
             Logger.warn("Sender certificate has incorrect device ID")
             return false
         }
 
-        let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
+        let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction
 
+        let sender = certificate.sender
         guard sender.e164 == nil || sender.e164 == localIdentifiers?.phoneNumber else {
             Logger.warn("Sender certificate has incorrect phone number")
             return false

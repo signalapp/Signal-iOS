@@ -419,7 +419,8 @@ final class GroupCallViewController: UIViewController {
         shouldAskForCameraPermission: Bool,
         buildAndStartConnecting: () async throws -> (SignalCall, GroupCall)?
     ) async rethrows -> (() -> Void)? {
-        guard await CallStarter.prepareToStartCall(from: viewController, shouldAskForCameraPermission: shouldAskForCameraPermission) else {
+        let prepareResult = await CallStarter.prepareToStartCall(from: viewController, shouldAskForCameraPermission: shouldAskForCameraPermission)
+        guard prepareResult != nil else {
             return nil
         }
 

@@ -90,11 +90,11 @@ public class TSAccountManagerImpl: TSAccountManager {
         return getOrLoadAccountState(tx: tx).serverAuthToken
     }
 
-    public var storedDeviceIdWithMaybeTransaction: DeviceId {
+    public var storedDeviceIdWithMaybeTransaction: LocalDeviceId {
         return getOrLoadAccountStateWithMaybeTransaction().deviceId
     }
 
-    public func storedDeviceId(tx: DBReadTransaction) -> DeviceId {
+    public func storedDeviceId(tx: DBReadTransaction) -> LocalDeviceId {
         return getOrLoadAccountState(tx: tx).deviceId
     }
 
@@ -423,7 +423,7 @@ extension TSAccountManagerImpl {
 
         let localIdentifiers: LocalIdentifiers?
 
-        let deviceId: DeviceId
+        let deviceId: LocalDeviceId
 
         let serverAuthToken: String?
 
@@ -461,12 +461,18 @@ extension TSAccountManagerImpl {
             )
             self.localIdentifiers = localIdentifiers
 
-            let persistedDeviceId = kvStore.getUInt32(
-                Keys.deviceId,
-                transaction: tx
-            )
-            // Assume primary, for backwards compatibility.
-            self.deviceId = DeviceId(rawValue: persistedDeviceId ?? OWSDevice.primaryDeviceId)
+            let persistedDeviceId = kvStore.getUInt32(Keys.deviceId, transaction: tx)
+
+            if let persistedDeviceId {
+                if let validatedDeviceId = DeviceId(validating: persistedDeviceId) {
+                    self.deviceId = .valid(validatedDeviceId)
+                } else {
+                    self.deviceId = .invalid
+                }
+            } else {
+                // Assume primary, for backwards compatibility.
+                self.deviceId = .valid(.primary)
+            }
 
             self.serverAuthToken = kvStore.getString(Keys.serverAuthToken, transaction: tx)
 

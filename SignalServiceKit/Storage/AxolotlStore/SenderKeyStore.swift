@@ -163,9 +163,13 @@ public class SenderKeyStore {
     public func skdmBytesForThread(
         _ thread: TSThread,
         localAci: Aci,
-        localDeviceId: DeviceId,
+        localDeviceId: LocalDeviceId,
         tx: DBWriteTransaction
     ) -> Data? {
+        guard let localDeviceId = localDeviceId.ifValid else {
+            owsFailDebug("Can't construct sender key message if we're not registered")
+            return nil
+        }
         do {
             let localAddress = ProtocolAddress(localAci, deviceId: localDeviceId)
             let distributionId = distributionIdForSendingToThread(thread, writeTx: tx)
@@ -211,7 +215,7 @@ extension SenderKeyStore: LibSignalClient.SenderKeyStore {
             updatedValue = KeyMetadata(
                 record: record,
                 senderAci: senderAci,
-                senderDeviceId: sender.deviceIdObj,
+                senderDeviceId: try sender.deviceIdObj,
                 localIdentifiers: localIdentifiers,
                 localDeviceId: DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx),
                 distributionId: distributionId
@@ -510,14 +514,14 @@ private struct KeyMetadata {
         senderAci: Aci,
         senderDeviceId: DeviceId,
         localIdentifiers: LocalIdentifiers,
-        localDeviceId: DeviceId,
+        localDeviceId: LocalDeviceId,
         distributionId: SenderKeyStore.DistributionId
     ) {
         self.serializedRecord = Data(record.serialize())
         self.distributionId = distributionId
         self._ownerAci = AciUuid(wrappedValue: senderAci)
         self.ownerDeviceId = senderDeviceId
-        self.isForEncrypting = senderAci == localIdentifiers.aci && senderDeviceId == localDeviceId
+        self.isForEncrypting = senderAci == localIdentifiers.aci && localDeviceId.equals(senderDeviceId)
         self.creationDate = Date()
         self.sentKeyInfo = [:]
     }

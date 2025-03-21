@@ -29,6 +29,7 @@ public class CallOfferHandlerImpl {
         public let identityKeys: CallIdentityKeys
         public let offerMediaType: TSRecentCallOfferType
         public let thread: TSContactThread
+        public let localDeviceId: DeviceId
     }
 
     public func insertMissedCallInteraction(
@@ -81,7 +82,10 @@ public class CallOfferHandlerImpl {
             )
         }
 
-        guard tsAccountManager.registrationState(tx: tx).isRegistered else {
+        guard
+            tsAccountManager.registrationState(tx: tx).isRegistered,
+            let localDeviceId = tsAccountManager.storedDeviceId(tx: tx).ifValid
+        else {
             Logger.warn("user is not registered, skipping call.")
             insertMissedCallInteraction(outcome: .incomingMissed, tx: tx)
             return nil
@@ -143,7 +147,7 @@ public class CallOfferHandlerImpl {
                     thread: thread,
                     callId: callId,
                     hangupType: .hangupNeedPermission,
-                    localDeviceId: tsAccountManager.storedDeviceId(tx: tx),
+                    localDeviceId: localDeviceId,
                     remoteDeviceId: sourceDevice,
                     tx: tx
                 )
@@ -162,7 +166,8 @@ public class CallOfferHandlerImpl {
         return PartialResult(
             identityKeys: identityKeys,
             offerMediaType: offerMediaType,
-            thread: thread
+            thread: thread,
+            localDeviceId: localDeviceId
         )
     }
 
