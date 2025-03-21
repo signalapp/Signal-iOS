@@ -16,7 +16,6 @@ final class PreKeyTaskTests: XCTestCase {
     private var mockAPIClient: PreKey.Mocks.APIClient!
     private var mockDateProvider: PreKey.Mocks.DateProvider!
     private var mockDb: InMemoryDB!
-    private var scheduler: TestScheduler!
 
     private var taskManager: PreKeyTaskManager!
 
@@ -31,8 +30,7 @@ final class PreKeyTaskTests: XCTestCase {
         mockLinkedDevicePniKeyManager = .init()
         mockAPIClient = .init()
         mockDateProvider = .init()
-        scheduler = TestScheduler()
-        mockDb = InMemoryDB(schedulers: TestSchedulers(scheduler: scheduler))
+        mockDb = InMemoryDB()
 
         mockAciProtocolStore = .init()
         mockPniProtocolStore = .init()
@@ -347,19 +345,18 @@ final class PreKeyTaskTests: XCTestCase {
     // PNI
     //
 
-    func test403WhileSettingKeysReportsSuspectedPniIdentityKeyIssue() async throws {
+    func test422WhileSettingKeysReportsSuspectedPniIdentityKeyIssue() async {
+        mockTSAccountManager.registrationStateMock = { .provisioned }
         mockIdentityManager.pniKeyPair = ECKeyPair.generateKeyPair()
         mockAPIClient.setPreKeysResult = .error(OWSHTTPError.forServiceResponse(
             requestUrl: URL(string: "https://example.com")!,
-            responseStatus: 403,
+            responseStatus: 422,
             responseHeaders: OWSHttpHeaders(),
             responseError: nil,
             responseData: nil
         ))
 
-        _ = try await taskManager.rotate(identity: .pni, targets: .all, auth: .implicit())
-
-        scheduler.runUntilIdle()
+        _ = try? await taskManager.rotate(identity: .pni, targets: .all, auth: .implicit())
 
         // Validate
         XCTAssertTrue(mockLinkedDevicePniKeyManager.hasSuspectedIssue)

@@ -519,13 +519,7 @@ internal struct PreKeyTaskManager {
             try await db.awaitableWrite { tx in
                 try self.persistStateAfterUpload(bundle: bundle, tx: tx)
             }
-        case .incorrectIdentityKeyOnLinkedDevice:
-            guard
-                identity == .pni
-            else {
-                throw OWSAssertionError("Expected to be a PNI operation!")
-            }
-
+        case let .failure(error) where error.httpStatusCode == 422 && identity == .pni && tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == false:
             // We think we have an incorrect PNI identity key, which
             // we should record so we can handle it later.
             await db.awaitableWrite { tx in
@@ -535,6 +529,7 @@ internal struct PreKeyTaskManager {
             Task {
                 await self.linkedDevicePniKeyManager.validateLocalPniIdentityKeyIfNecessary()
             }
+            fallthrough
         case let .failure(error):
             PreKey.logger.info("[\(identity)] Failed to upload prekeys")
             throw error
@@ -544,12 +539,6 @@ internal struct PreKeyTaskManager {
     private enum UploadResult {
         case success
         case skipped
-        /// An error in which we, a linked device, attempted an upload and
-        /// were told by the server that the identity key in our bundle was
-        /// incorrect.
-        ///
-        /// This error should never occur on a primary.
-        case incorrectIdentityKeyOnLinkedDevice
         case failure(Swift.Error)
     }
 
@@ -573,12 +562,7 @@ internal struct PreKeyTaskManager {
             )
             return .success
         } catch let error {
-            switch error.httpStatusCode {
-            case 403:
-                return .incorrectIdentityKeyOnLinkedDevice
-            default:
-                return .failure(error)
-            }
+            return .failure(error)
         }
     }
 }
