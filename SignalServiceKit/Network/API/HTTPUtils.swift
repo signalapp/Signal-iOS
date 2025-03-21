@@ -96,7 +96,7 @@ class HTTPUtils {
         request: TSRequest,
         requestUrl: URL,
         responseStatus: Int,
-        responseHeaders: OWSHttpHeaders,
+        responseHeaders: HttpHeaders,
         responseData: Data?
     ) -> OWSHTTPError {
         let httpError = HTTPUtils.buildServiceError(
@@ -135,7 +135,7 @@ class HTTPUtils {
         request: TSRequest,
         requestUrl: URL,
         responseStatus: Int,
-        responseHeaders: OWSHttpHeaders,
+        responseHeaders: HttpHeaders,
         responseData: Data?
     ) -> OWSHTTPError {
 
@@ -187,7 +187,7 @@ public extension Error {
         HTTPUtils.httpStatusCode(forError: self)
     }
 
-    var httpResponseHeaders: OWSHttpHeaders? {
+    var httpResponseHeaders: HttpHeaders? {
         guard let error = self as? OWSHTTPError else {
             return nil
         }
@@ -328,7 +328,7 @@ public func owsFailBetaUnlessNetworkFailure(
 
 // MARK: -
 
-extension OWSHttpHeaders {
+extension HttpHeaders {
 
     // fallback retry-after delay if we fail to parse a non-empty retry-after string
     private static var kOWSFallbackRetryAfter: TimeInterval { 60 }

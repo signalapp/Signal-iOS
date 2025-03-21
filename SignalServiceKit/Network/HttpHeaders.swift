@@ -10,7 +10,7 @@ import Foundation
 //
 // HTTP headers are case-insensitive.
 // This class handles conflict resolution.
-public struct OWSHttpHeaders: CustomDebugStringConvertible {
+public struct HttpHeaders: CustomDebugStringConvertible {
     public private(set) var headers = [String: String]()
 
     public init() {}
@@ -174,7 +174,7 @@ public struct OWSHttpHeaders: CustomDebugStringConvertible {
 
     public static func fillInMissingDefaultHeaders(request: URLRequest) -> URLRequest {
         var request = request
-        var httpHeaders = OWSHttpHeaders()
+        var httpHeaders = HttpHeaders()
         httpHeaders.addHeaderMap(request.allHTTPHeaderFields, overwriteOnConflict: true)
         httpHeaders.addDefaultHeaders()
         request.set(httpHeaders: httpHeaders)
@@ -205,7 +205,7 @@ public struct OWSHttpHeaders: CustomDebugStringConvertible {
 // MARK: - HTTP Headers
 
 public extension URLRequest {
-    mutating func set(httpHeaders: OWSHttpHeaders) {
+    mutating func set(httpHeaders: HttpHeaders) {
         for (headerField, headerValue) in httpHeaders.headers {
             setValue(headerValue, forHTTPHeaderField: headerField)
         }

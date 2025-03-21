@@ -176,7 +176,7 @@ extension ProvisioningCoordinatorTest {
             return HTTPResponseImpl(
                 requestUrl: rawRequest.url!,
                 status: 200,
-                headers: OWSHttpHeaders(),
+                headers: HttpHeaders(),
                 bodyData: responseBody
             )
         }

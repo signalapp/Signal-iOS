@@ -127,7 +127,7 @@ class AttachmentUploadManagerMockHelper {
             return HTTPResponseImpl(
                 requestUrl: request.url!,
                 status: statusCode,
-                headers: OWSHttpHeaders(),
+                headers: HttpHeaders(),
                 bodyData: try! JSONEncoder().encode(form)
             )
         }))
@@ -142,7 +142,7 @@ class AttachmentUploadManagerMockHelper {
             return HTTPResponseImpl(
                 requestUrl: request.url!,
                 status: statusCode,
-                headers: OWSHttpHeaders(httpHeaders: headers, overwriteOnConflict: true),
+                headers: HttpHeaders(httpHeaders: headers, overwriteOnConflict: true),
                 bodyData: nil
             )
         }))
@@ -180,7 +180,7 @@ class AttachmentUploadManagerMockHelper {
             return HTTPResponseImpl(
                 requestUrl: request.url!,
                 status: statusCode,
-                headers: OWSHttpHeaders(httpHeaders: headers, overwriteOnConflict: true),
+                headers: HttpHeaders(httpHeaders: headers, overwriteOnConflict: true),
                 bodyData: nil
             )
         }))
@@ -204,7 +204,7 @@ class AttachmentUploadManagerMockHelper {
                 return HTTPResponseImpl(
                     requestUrl: request.url!,
                     status: statusCode,
-                    headers: OWSHttpHeaders(),
+                    headers: HttpHeaders(),
                     bodyData: nil
                 )
             }

@@ -126,7 +126,7 @@ public class AppSetup {
 
         let libsignalNet = Net(
             env: TSConstants.isUsingProductionService ? .production : .staging,
-            userAgent: OWSHttpHeaders.userAgentHeaderValueSignalIos
+            userAgent: HttpHeaders.userAgentHeaderValueSignalIos
         )
 
         let recipientDatabaseTable = RecipientDatabaseTableImpl()

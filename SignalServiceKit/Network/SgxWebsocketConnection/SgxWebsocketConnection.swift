@@ -116,12 +116,12 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         websocketFactory: WebSocketFactory,
         scheduler: Scheduler
     ) throws -> WebSocketPromise {
-        let authHeaderValue = OWSHttpHeaders.authHeaderValue(username: auth.username, password: auth.password)
+        let authHeaderValue = HttpHeaders.authHeaderValue(username: auth.username, password: auth.password)
         let request = WebSocketRequest(
             signalService: Configurator.signalServiceType,
             urlPath: Configurator.websocketUrlPath(mrenclaveString: configurator.mrenclave.dataValue.hexadecimalString),
             urlQueryItems: nil,
-            extraHeaders: [OWSHttpHeaders.authHeaderKey: authHeaderValue]
+            extraHeaders: [HttpHeaders.authHeaderKey: authHeaderValue]
         )
         guard let webSocketPromise = websocketFactory.webSocketPromise(request: request, callbackScheduler: scheduler) else {
             throw OWSAssertionError("We should always be able to get a web socket from this API.")

@@ -89,7 +89,7 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
         return HTTPResponseImpl(
             requestUrl: rawRequest.url!,
             status: 200,
-            headers: OWSHttpHeaders(),
+            headers: HttpHeaders(),
             bodyData: nil
         )
     }
@@ -105,7 +105,7 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
         return HTTPResponseImpl(
             requestUrl: request.url!,
             status: 200,
-            headers: OWSHttpHeaders(),
+            headers: HttpHeaders(),
             bodyData: nil
         )
     }
@@ -120,7 +120,7 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
         return HTTPResponseImpl(
             requestUrl: request.url!,
             status: 200,
-            headers: OWSHttpHeaders(),
+            headers: HttpHeaders(),
             bodyData: nil
         )
     }
@@ -130,7 +130,7 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
         return HTTPResponseImpl(
             requestUrl: request.url!,
             status: 200,
-            headers: OWSHttpHeaders(),
+            headers: HttpHeaders(),
             bodyData: nil
         )
     }

@@ -27,7 +27,7 @@ public struct MessageBackupServiceAuth {
         ]
     }
 
-    public func apply(to httpHeaders: inout OWSHttpHeaders) {
+    public func apply(to httpHeaders: inout HttpHeaders) {
         for (headerKey, headerValue) in authHeaders {
             httpHeaders.addHeader(headerKey, value: headerValue, overwriteOnConflict: true)
         }

@@ -79,13 +79,13 @@ public class OWSURLSession: OWSURLSessionProtocol {
 
     // MARK: Default Headers
 
-    public static var userAgentHeaderKey: String { OWSHttpHeaders.userAgentHeaderKey }
+    public static var userAgentHeaderKey: String { HttpHeaders.userAgentHeaderKey }
 
-    public static var userAgentHeaderValueSignalIos: String { OWSHttpHeaders.userAgentHeaderValueSignalIos }
+    public static var userAgentHeaderValueSignalIos: String { HttpHeaders.userAgentHeaderValueSignalIos }
 
-    public static var acceptLanguageHeaderKey: String { OWSHttpHeaders.acceptLanguageHeaderKey }
+    public static var acceptLanguageHeaderKey: String { HttpHeaders.acceptLanguageHeaderKey }
 
-    public static var acceptLanguageHeaderValue: String { OWSHttpHeaders.acceptLanguageHeaderValue }
+    public static var acceptLanguageHeaderValue: String { HttpHeaders.acceptLanguageHeaderValue }
 
     // MARK: Initializers
 
@@ -333,7 +333,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
 
                 if statusCode > 0 {
                     let requestUrl = requestConfig.requestUrl
-                    let responseHeaders = OWSHttpHeaders(response: httpUrlResponse)
+                    let responseHeaders = HttpHeaders(response: httpUrlResponse)
                     throw OWSHTTPError.forServiceResponse(
                         requestUrl: requestUrl,
                         responseStatus: statusCode,
@@ -388,7 +388,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
 
         request.httpShouldHandleCookies = false
 
-        request = OWSHttpHeaders.fillInMissingDefaultHeaders(request: request)
+        request = HttpHeaders.fillInMissingDefaultHeaders(request: request)
 
         // Only requests to Signal services require CC.
         // If frontingHost is nil, this instance of OWSURLSession does not perform CC.
@@ -413,7 +413,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
             throw OWSHTTPError.invalidAppState
         }
 
-        var httpHeaders = OWSHttpHeaders()
+        var httpHeaders = HttpHeaders()
 
         // Set User-Agent and Accept-Language headers.
         httpHeaders.addDefaultHeaders()
@@ -891,7 +891,7 @@ private class WebSocketTaskState: TaskState {
         // `badServerResponse` to distinguish errors during the initial handshake
         // from other unexpected errors that occur later (eg losing internet).
         if case URLError.badServerResponse = error, let httpResponse = task.response as? HTTPURLResponse {
-            let retryAfter = OWSHttpHeaders(response: httpResponse).retryAfterDate
+            let retryAfter = HttpHeaders(response: httpResponse).retryAfterDate
             closeBlock(WebSocketError.httpError(statusCode: httpResponse.statusCode, retryAfter: retryAfter))
             return
         }

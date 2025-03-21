@@ -11,7 +11,7 @@ public struct GroupsV2Request {
     let method: HTTPMethod
     let bodyData: Data?
 
-    var headers = OWSHttpHeaders()
+    var headers = HttpHeaders()
 
     mutating func addHeader(_ header: String, value: String) {
         headers.addHeader(header, value: value, overwriteOnConflict: true)
@@ -202,8 +202,8 @@ public extension StorageService {
         let username: String = try groupSecretParams.getPublicParams().serialize().asData.hexadecimalString
         let password: String = authCredentialPresentationData.hexadecimalString
         request.addHeader(
-            OWSHttpHeaders.authHeaderKey,
-            value: OWSHttpHeaders.authHeaderValue(username: username, password: password)
+            HttpHeaders.authHeaderKey,
+            value: HttpHeaders.authHeaderValue(username: username, password: password)
         )
     }
 }

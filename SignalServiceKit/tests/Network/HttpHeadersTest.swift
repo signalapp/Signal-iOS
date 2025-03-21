@@ -6,7 +6,7 @@
 import XCTest
 @testable import SignalServiceKit
 
-class OWSHttpHeadersTest: XCTestCase {
+class HttpHeadersTest: XCTestCase {
     func testFormatAcceptLanguageHeader() throws {
         func chars(_ str: String) -> [String] {
             str.map { String($0) }
@@ -35,26 +35,26 @@ class OWSHttpHeadersTest: XCTestCase {
         ]
 
         for (languages, expected) in testCases {
-            let actual = OWSHttpHeaders.formatAcceptLanguageHeader(languages)
+            let actual = HttpHeaders.formatAcceptLanguageHeader(languages)
             XCTAssertEqual(actual, expected, "Input: \(languages)")
         }
     }
 
     func testAcceptLanguageHeaderValue() throws {
-        let expected = OWSHttpHeaders.formatAcceptLanguageHeader(Locale.preferredLanguages)
-        let actual = OWSHttpHeaders.acceptLanguageHeaderValue
+        let expected = HttpHeaders.formatAcceptLanguageHeader(Locale.preferredLanguages)
+        let actual = HttpHeaders.acceptLanguageHeaderValue
         XCTAssertEqual(actual, expected)
     }
 
     func testDebugDescription() {
-        var httpHeaders = OWSHttpHeaders()
+        var httpHeaders = HttpHeaders()
         httpHeaders.addHeader("Retry-After", value: "Wed, 21 Oct 2015 07:28:01 GMT", overwriteOnConflict: true)
         httpHeaders.addHeader("x-signal-timestamp", value: "1669077270", overwriteOnConflict: true)
         httpHeaders.addHeader("Content-Type", value: "text/plain", overwriteOnConflict: true)
 
         XCTAssertEqual(
             "\(httpHeaders)",
-            "<OWSHttpHeaders: [content-type; retry-after: Wed, 21 Oct 2015 07:28:01 GMT; x-signal-timestamp: 1669077270]>"
+            "<HttpHeaders: [content-type; retry-after: Wed, 21 Oct 2015 07:28:01 GMT; x-signal-timestamp: 1669077270]>"
         )
     }
 
@@ -109,7 +109,7 @@ class OWSHttpHeadersTest: XCTestCase {
         ]
 
         for (headerValue, expectedTimeInterval) in testCases {
-            let actualTimeInterval = OWSHttpHeaders.parseRetryAfterHeaderValue(headerValue)?.timeIntervalSince1970
+            let actualTimeInterval = HttpHeaders.parseRetryAfterHeaderValue(headerValue)?.timeIntervalSince1970
             if let expectedTimeInterval, let actualTimeInterval {
                 XCTAssertEqual(actualTimeInterval, expectedTimeInterval, accuracy: 0.3, "\(headerValue ?? "nil")")
             } else {

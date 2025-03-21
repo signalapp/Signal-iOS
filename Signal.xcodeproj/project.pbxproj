@@ -3049,7 +3049,7 @@
 		F942623B289B1B5500460798 /* OWSDeviceProvisionerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261C8289B1B5300460798 /* OWSDeviceProvisionerTest.swift */; };
 		F9426241289B1B5500460798 /* MessageSenderJobRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D0289B1B5400460798 /* MessageSenderJobRecordTest.swift */; };
 		F9426242289B1B5500460798 /* OWSURLBuilderUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D1289B1B5400460798 /* OWSURLBuilderUtilTest.swift */; };
-		F9426243289B1B5500460798 /* OWSHttpHeadersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D2289B1B5400460798 /* OWSHttpHeadersTest.swift */; };
+		F9426243289B1B5500460798 /* HttpHeadersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D2289B1B5400460798 /* HttpHeadersTest.swift */; };
 		F9426244289B1B5500460798 /* OWSRequestFactoryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D3289B1B5400460798 /* OWSRequestFactoryTest.swift */; };
 		F9426246289B1B5500460798 /* MessageSendJobQueueTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D5289B1B5400460798 /* MessageSendJobQueueTest.swift */; };
 		F9426248289B1B5500460798 /* OWSIdentityManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D9289B1B5400460798 /* OWSIdentityManagerTests.swift */; };
@@ -3511,7 +3511,7 @@
 		F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAEF289453B200548EEE /* HTTPEntities.swift */; };
 		F9C5CDC3289453B400548EEE /* DeviceProvisioningService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF0289453B200548EEE /* DeviceProvisioningService.swift */; };
 		F9C5CDC4289453B400548EEE /* NetworkInterfaceSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF1289453B200548EEE /* NetworkInterfaceSet.swift */; };
-		F9C5CDC5289453B400548EEE /* OWSHttpHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF2289453B200548EEE /* OWSHttpHeaders.swift */; };
+		F9C5CDC5289453B400548EEE /* HttpHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF2289453B200548EEE /* HttpHeaders.swift */; };
 		F9C5CDC6289453B400548EEE /* OWSURLSessionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF3289453B200548EEE /* OWSURLSessionProtocol.swift */; };
 		F9C5CDC8289453B400548EEE /* MessageSenderJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF5289453B200548EEE /* MessageSenderJobQueue.swift */; };
 		F9C5CDCA289453B400548EEE /* ContentProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF7289453B200548EEE /* ContentProxy.swift */; };
@@ -6962,7 +6962,7 @@
 		F94261C8289B1B5300460798 /* OWSDeviceProvisionerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDeviceProvisionerTest.swift; sourceTree = "<group>"; };
 		F94261D0289B1B5400460798 /* MessageSenderJobRecordTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSenderJobRecordTest.swift; sourceTree = "<group>"; };
 		F94261D1289B1B5400460798 /* OWSURLBuilderUtilTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLBuilderUtilTest.swift; sourceTree = "<group>"; };
-		F94261D2289B1B5400460798 /* OWSHttpHeadersTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSHttpHeadersTest.swift; sourceTree = "<group>"; };
+		F94261D2289B1B5400460798 /* HttpHeadersTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHeadersTest.swift; sourceTree = "<group>"; };
 		F94261D3289B1B5400460798 /* OWSRequestFactoryTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSRequestFactoryTest.swift; sourceTree = "<group>"; };
 		F94261D4289B1B5400460798 /* HTMLMetadataTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLMetadataTests.swift; sourceTree = "<group>"; };
 		F94261D5289B1B5400460798 /* MessageSendJobQueueTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSendJobQueueTest.swift; sourceTree = "<group>"; };
@@ -7434,7 +7434,7 @@
 		F9C5CAEF289453B200548EEE /* HTTPEntities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPEntities.swift; sourceTree = "<group>"; };
 		F9C5CAF0289453B200548EEE /* DeviceProvisioningService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceProvisioningService.swift; sourceTree = "<group>"; };
 		F9C5CAF1289453B200548EEE /* NetworkInterfaceSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceSet.swift; sourceTree = "<group>"; };
-		F9C5CAF2289453B200548EEE /* OWSHttpHeaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSHttpHeaders.swift; sourceTree = "<group>"; };
+		F9C5CAF2289453B200548EEE /* HttpHeaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpHeaders.swift; sourceTree = "<group>"; };
 		F9C5CAF3289453B200548EEE /* OWSURLSessionProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSessionProtocol.swift; sourceTree = "<group>"; };
 		F9C5CAF5289453B200548EEE /* MessageSenderJobQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSenderJobQueue.swift; sourceTree = "<group>"; };
 		F9C5CAF7289453B200548EEE /* ContentProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentProxy.swift; sourceTree = "<group>"; };
@@ -12908,9 +12908,9 @@
 				F9427EAC297F1EA5008EF0AC /* Spam */,
 				C1DF3F4A2B028409004B6986 /* Upload */,
 				50E51A3A2AE989C4004F9069 /* AccountAttributesTest.swift */,
+				F94261D2289B1B5400460798 /* HttpHeadersTest.swift */,
 				F94261D0289B1B5400460798 /* MessageSenderJobRecordTest.swift */,
 				F94261D5289B1B5400460798 /* MessageSendJobQueueTest.swift */,
-				F94261D2289B1B5400460798 /* OWSHttpHeadersTest.swift */,
 				F94261D3289B1B5400460798 /* OWSRequestFactoryTest.swift */,
 				F94261D1289B1B5400460798 /* OWSURLBuilderUtilTest.swift */,
 				6600F350298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift */,
@@ -14039,12 +14039,12 @@
 				669E8FE528B4149200043D28 /* BaseOWSURLSessionMock.swift */,
 				F9C5CAC4289453B200548EEE /* ChatConnectionManager.swift */,
 				F9C5CAF7289453B200548EEE /* ContentProxy.swift */,
+				F9C5CAF2289453B200548EEE /* HttpHeaders.swift */,
 				F9C5CAF1289453B200548EEE /* NetworkInterfaceSet.swift */,
 				F9C5CAC8289453B200548EEE /* OutageDetection.swift */,
 				72328C8A2C6C7322000EA728 /* OWSCensorshipConfiguration.swift */,
 				F9C5CAC3289453B200548EEE /* OWSChatConnection.swift */,
 				72328C882C6C6733000EA728 /* OWSCountryMetadata.swift */,
-				F9C5CAF2289453B200548EEE /* OWSHttpHeaders.swift */,
 				72328C862C6C3E6D000EA728 /* OWSMultipart.swift */,
 				669E8FEE28B417D500043D28 /* OWSSignalService.swift */,
 				669E8FEC28B4177800043D28 /* OWSSignalServiceMock.swift */,
@@ -17621,6 +17621,7 @@
 				72345D1E2B9A1F64000237B3 /* HapticFeedback.swift in Sources */,
 				C16AFACB2BE9CA6F00838FFB /* HmacStreamTransform.swift in Sources */,
 				F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */,
+				F9C5CDC5289453B400548EEE /* HttpHeaders.swift in Sources */,
 				727328052CA661A10080E2C7 /* HttpSecurityPolicy.swift in Sources */,
 				F9C5CDB4289453B400548EEE /* HTTPUtils.swift in Sources */,
 				66FC637C29DF8FF200F00DAC /* HydratedMessageBody.swift in Sources */,
@@ -17908,7 +17909,6 @@
 				F9C5CC46289453B300548EEE /* OWSGroupCallMessage+SDS.swift in Sources */,
 				F9C5CC6B289453B300548EEE /* OWSGroupCallMessage.m in Sources */,
 				D91AC9402B63393300814975 /* OWSGroupCallMessage.swift in Sources */,
-				F9C5CDC5289453B400548EEE /* OWSHttpHeaders.swift in Sources */,
 				72552EF42C9EF9EC008614AF /* OWSIdentity.swift in Sources */,
 				F9C5CC2C289453B300548EEE /* OWSIdentityManager.swift in Sources */,
 				661BFE102C0808CA0065435B /* OWSImageSource+EncryptedFileHandle.swift in Sources */,
@@ -18528,6 +18528,7 @@
 				D91F0B4F2B193A7A0086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift in Sources */,
 				5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */,
 				F9426251289B1B5500460798 /* GroupModelsTest.swift in Sources */,
+				F9426243289B1B5500460798 /* HttpHeadersTest.swift in Sources */,
 				D9C0AE672BD7162300FCB05E /* InactiveLinkedDeviceFinderTest.swift in Sources */,
 				D979CC4F2AD4DECB006AAC49 /* IncomingCallEventSyncMessageManagerTest.swift in Sources */,
 				D958C67D2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift in Sources */,
@@ -18573,7 +18574,6 @@
 				F97217F628DC9A5000113D9F /* OWSFileSystemTest.swift in Sources */,
 				F9AE695328F046E40012E9C9 /* OWSFingerprintTest.swift in Sources */,
 				F942625B289B1B5500460798 /* OWSFormatTest.swift in Sources */,
-				F9426243289B1B5500460798 /* OWSHttpHeadersTest.swift in Sources */,
 				F9426248289B1B5500460798 /* OWSIdentityManagerTests.swift in Sources */,
 				669FAE1B2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift in Sources */,
 				F9426290289B1B5600460798 /* OWSLinkPreviewTest.swift in Sources */,

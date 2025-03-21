@@ -27,7 +27,7 @@ public protocol HTTPResponse {
 public struct HTTPErrorServiceResponse {
     let requestUrl: URL
     let responseStatus: Int
-    let responseHeaders: OWSHttpHeaders
+    let responseHeaders: HttpHeaders
     let responseError: Error?
     let responseData: Data?
     let customRetryAfterDate: Date?
@@ -87,7 +87,7 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
     // The custom parameters are optional.
     public static func forServiceResponse(requestUrl: URL,
                                           responseStatus: Int,
-                                          responseHeaders: OWSHttpHeaders,
+                                          responseHeaders: HttpHeaders,
                                           responseError: Error?,
                                           responseData: Data?,
                                           customRetryAfterDate: Date? = nil,
@@ -188,7 +188,7 @@ extension OWSHTTPError {
         }
     }
 
-    public var responseHeaders: OWSHttpHeaders? {
+    public var responseHeaders: HttpHeaders? {
         switch self {
         case .missingRequest, .invalidAppState, .invalidRequest, .wrappedFailure, .networkFailure:
             return nil
@@ -278,7 +278,7 @@ public class HTTPResponseImpl {
 
     public let status: Int
 
-    public let headers: OWSHttpHeaders
+    public let headers: HttpHeaders
 
     public let bodyData: Data?
 
@@ -295,7 +295,7 @@ public class HTTPResponseImpl {
 
     public init(requestUrl: URL,
                 status: Int,
-                headers: OWSHttpHeaders,
+                headers: HttpHeaders,
                 bodyData: Data?,
                 stringEncoding: String.Encoding = .utf8) {
         self.requestUrl = requestUrl
@@ -308,7 +308,7 @@ public class HTTPResponseImpl {
     public static func build(requestUrl: URL,
                              httpUrlResponse: HTTPURLResponse,
                              bodyData: Data?) -> HTTPResponse {
-        let headers = OWSHttpHeaders(response: httpUrlResponse)
+        let headers = HttpHeaders(response: httpUrlResponse)
         let stringEncoding: String.Encoding = httpUrlResponse.parseStringEncoding() ?? .utf8
         return HTTPResponseImpl(requestUrl: requestUrl,
                                 status: httpUrlResponse.statusCode,

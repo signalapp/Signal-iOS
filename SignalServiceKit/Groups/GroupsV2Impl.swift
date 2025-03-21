@@ -2149,7 +2149,7 @@ public class GroupsV2Impl: GroupsV2 {
     }
 }
 
-fileprivate extension OWSHttpHeaders {
+fileprivate extension HttpHeaders {
     private static let forbiddenKey: String = "X-Signal-Forbidden-Reason"
     private static let forbiddenValue: String = "banned"
 

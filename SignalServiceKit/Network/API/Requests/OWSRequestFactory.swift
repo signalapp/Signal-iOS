@@ -455,7 +455,7 @@ public enum OWSRequestFactory {
             method: "GET",
             parameters: nil
         )
-        result.addValue(OWSHttpHeaders.acceptLanguageHeaderValue, forHTTPHeaderField: OWSHttpHeaders.acceptLanguageHeaderKey)
+        result.addValue(HttpHeaders.acceptLanguageHeaderValue, forHTTPHeaderField: HttpHeaders.acceptLanguageHeaderKey)
         result.auth = .anonymous
         return result
     }

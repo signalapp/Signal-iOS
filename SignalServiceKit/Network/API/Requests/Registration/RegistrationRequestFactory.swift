@@ -135,11 +135,11 @@ public enum RegistrationRequestFactory {
             languageCodes.append("en")
         }
 
-        let languageHeader: String = OWSHttpHeaders.formatAcceptLanguageHeader(languageCodes)
+        let languageHeader: String = HttpHeaders.formatAcceptLanguageHeader(languageCodes)
 
         let result = TSRequest(url: url, method: "POST", parameters: parameters)
         result.auth = .registration(nil)
-        result.setValue(languageHeader, forHTTPHeaderField: OWSHttpHeaders.acceptLanguageHeaderKey)
+        result.setValue(languageHeader, forHTTPHeaderField: HttpHeaders.acceptLanguageHeaderKey)
         redactSessionIdFromLogs(sessionId, in: result)
         return result
     }

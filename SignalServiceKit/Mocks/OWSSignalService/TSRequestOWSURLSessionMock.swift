@@ -17,7 +17,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
         let matcher: (TSRequest) -> Bool
 
         let statusCode: Int
-        let headers: OWSHttpHeaders
+        let headers: HttpHeaders
         let bodyData: Data?
 
         let error: Error?
@@ -25,7 +25,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
         public init(
             matcher: @escaping (TSRequest) -> Bool,
             statusCode: Int = 200,
-            headers: OWSHttpHeaders = OWSHttpHeaders(),
+            headers: HttpHeaders = HttpHeaders(),
             bodyData: Data? = nil
         ) {
             self.matcher = matcher
@@ -51,7 +51,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
             }
             self.matcher = matcher
             self.statusCode = statusCode
-            self.headers = OWSHttpHeaders(httpHeaders: headers, overwriteOnConflict: true)
+            self.headers = HttpHeaders(httpHeaders: headers, overwriteOnConflict: true)
             self.bodyData = bodyData
             self.error = nil
         }
@@ -84,7 +84,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
         public static func serviceResponseError(
             matcher: @escaping (TSRequest) -> Bool,
             statusCode: Int,
-            headers: OWSHttpHeaders = OWSHttpHeaders(),
+            headers: HttpHeaders = HttpHeaders(),
             bodyData: Data? = nil,
             url: URL
         ) -> Self {

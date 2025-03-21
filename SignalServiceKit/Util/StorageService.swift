@@ -647,7 +647,7 @@ public struct StorageService {
         do {
             let (username, password) = try await requestStorageAuth(chatServiceAuth: chatServiceAuth)
 
-            var httpHeaders = OWSHttpHeaders()
+            var httpHeaders = HttpHeaders()
             httpHeaders.addHeader("Content-Type", value: MimeType.applicationXProtobuf.rawValue, overwriteOnConflict: true)
             httpHeaders.addAuthHeader(username: username, password: password)
 

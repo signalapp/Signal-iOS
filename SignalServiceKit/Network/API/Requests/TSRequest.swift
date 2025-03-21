@@ -102,7 +102,7 @@ public class TSRequest: NSMutableURLRequest {
 
     public var auth: Auth = .identified(.implicit())
 
-    func applyAuth(to httpHeaders: inout OWSHttpHeaders, willSendViaWebSocket: Bool) {
+    func applyAuth(to httpHeaders: inout HttpHeaders, willSendViaWebSocket: Bool) {
         switch self.auth {
         case .identified(let auth):
             // If it's sent via the web socket, the "auth" is applied when the
@@ -131,7 +131,7 @@ public class TSRequest: NSMutableURLRequest {
         }
     }
 
-    private func setAuth(username: String, password: String, for httpHeaders: inout OWSHttpHeaders) {
+    private func setAuth(username: String, password: String, for httpHeaders: inout HttpHeaders) {
         owsAssertDebug(!username.isEmpty)
         owsAssertDebug(!password.isEmpty)
         httpHeaders.addAuthHeader(username: username, password: password)
@@ -150,7 +150,7 @@ public class TSRequest: NSMutableURLRequest {
         }
     }
 
-    private func setAuth(sealedSender: SealedSenderAuth, for httpHeaders: inout OWSHttpHeaders) {
+    private func setAuth(sealedSender: SealedSenderAuth, for httpHeaders: inout HttpHeaders) {
         switch sealedSender {
         case .story:
             break

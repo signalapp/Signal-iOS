@@ -25,7 +25,7 @@ public enum ContentProxy {
     public static func configureProxiedRequest(request: inout URLRequest) -> Bool {
         request.setValue(
             OWSURLSession.userAgentHeaderValueSignalIos,
-            forHTTPHeaderField: OWSHttpHeaders.userAgentHeaderKey
+            forHTTPHeaderField: HttpHeaders.userAgentHeaderKey
         )
 
         padRequestSize(request: &request)

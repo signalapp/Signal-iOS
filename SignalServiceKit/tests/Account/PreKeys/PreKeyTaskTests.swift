@@ -351,7 +351,7 @@ final class PreKeyTaskTests: XCTestCase {
         mockAPIClient.setPreKeysResult = .error(OWSHTTPError.forServiceResponse(
             requestUrl: URL(string: "https://example.com")!,
             responseStatus: 422,
-            responseHeaders: OWSHttpHeaders(),
+            responseHeaders: HttpHeaders(),
             responseError: nil,
             responseData: nil
         ))
