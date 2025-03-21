@@ -179,7 +179,7 @@ class IncomingGroupsV2MessageQueue: MessageProcessingPipelineStage {
         })
 
         guard !groupIdsWithJobs.isEmpty else {
-            NotificationCenter.default.postNotificationNameAsync(GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue, object: nil)
+            NotificationCenter.default.postOnMainThread(name: GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue, object: nil)
             return
         }
 

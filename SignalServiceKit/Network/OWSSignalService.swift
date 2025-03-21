@@ -23,8 +23,8 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             // Update libsignal's Net instance first, so that connections can be recreated by notification observers.
             libsignalNet?.setCensorshipCircumventionEnabled(isCensorshipCircumventionActive)
 
-            NotificationCenter.default.postNotificationNameAsync(
-                .isCensorshipCircumventionActiveDidChange,
+            NotificationCenter.default.postOnMainThread(
+                name: .isCensorshipCircumventionActiveDidChange,
                 object: nil,
                 userInfo: nil
             )

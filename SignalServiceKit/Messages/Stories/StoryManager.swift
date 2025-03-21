@@ -354,7 +354,7 @@ extension StoryManager {
         }
 
         transaction.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(.storiesEnabledStateDidChange, object: nil)
+            NotificationCenter.default.postOnMainThread(name: .storiesEnabledStateDidChange, object: nil)
         }
     }
 

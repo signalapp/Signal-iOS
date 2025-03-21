@@ -76,7 +76,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
         SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
 
-        NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
     }
 
     public func setTypingIndicatorsEnabled(value: Bool, transaction: DBWriteTransaction) {
@@ -87,7 +87,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                               key: kDatabaseKey_TypingIndicatorsEnabled,
                               transaction: transaction)
 
-        NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
     }
 
     public func areTypingIndicatorsEnabled() -> Bool {
@@ -405,7 +405,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             guard delegate.areTypingIndicatorsEnabled() else {
                 return
             }
-            NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: thread.uniqueId)
+            NotificationCenter.default.postOnMainThread(name: TypingIndicatorsImpl.typingIndicatorStateDidChange, object: thread.uniqueId)
         }
     }
 }

@@ -213,7 +213,7 @@ public class ChatColorSettingStore {
     private func postChatColorsDidChangeNotification(for thread: TSThread?, tx: DBWriteTransaction) {
         let threadUniqueId = thread?.uniqueId
         tx.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(Self.chatColorsDidChangeNotification, object: threadUniqueId)
+            NotificationCenter.default.postOnMainThread(name: Self.chatColorsDidChangeNotification, object: threadUniqueId)
         }
     }
 }

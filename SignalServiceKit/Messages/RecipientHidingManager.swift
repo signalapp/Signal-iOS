@@ -326,7 +326,7 @@ private extension RecipientHidingManagerImpl {
         tx: DBWriteTransaction
     ) {
         // Triggers UI updates of recipient lists.
-        NotificationCenter.default.postNotificationNameAsync(Self.hideListDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: Self.hideListDidChange, object: nil)
 
         Logger.info("[Recipient hiding][side effects] Beginning side effects of setting as hidden.")
         if let thread = TSContactThread.getWithContactAddress(
@@ -400,7 +400,7 @@ private extension RecipientHidingManagerImpl {
     /// that case.
     func didSetAsUnhidden(recipient: SignalRecipient, wasLocallyInitiated: Bool, tx: DBWriteTransaction) {
         // Triggers UI updates of recipient lists.
-        NotificationCenter.default.postNotificationNameAsync(Self.hideListDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: Self.hideListDidChange, object: nil)
 
         Logger.info("[Recipient hiding][side effects] Beginning side effects of setting as unhidden.")
         if wasLocallyInitiated {

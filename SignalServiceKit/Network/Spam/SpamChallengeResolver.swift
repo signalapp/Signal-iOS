@@ -332,7 +332,7 @@ extension SpamChallengeResolver {
             workQueue.async { self.recheckChallenges() }
         }
         if challenge.state == .complete {
-            NotificationCenter.default.postNotificationNameAsync(Self.didCompleteAnyChallenge, object: self)
+            NotificationCenter.default.postOnMainThread(name: Self.didCompleteAnyChallenge, object: self)
         }
     }
 }

@@ -230,7 +230,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
         _ = try? TSPaymentsActivationRequestModel.deleteAll(transaction.database)
 
         transaction.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(PaymentsConstants.arePaymentsEnabledDidChange, object: nil)
+            NotificationCenter.default.postOnMainThread(name: PaymentsConstants.arePaymentsEnabledDidChange, object: nil)
 
             Task {
                 SSKEnvironment.shared.paymentsEventsRef.paymentsStateDidChange()
@@ -316,7 +316,7 @@ public class PaymentsHelperImpl: PaymentsHelperSwift, PaymentsHelper {
     public func setPaymentsVersionOutdated(_ value: Bool) {
         let oldValue = isPaymentsVersionOutdatedCache.swap(value)
         guard oldValue != value else { return }
-        NotificationCenter.default.postNotificationNameAsync(PaymentsConstants.isPaymentsVersionOutdatedDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: PaymentsConstants.isPaymentsVersionOutdatedDidChange, object: nil)
     }
 
     // MARK: - Incoming Messages

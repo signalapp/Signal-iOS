@@ -887,7 +887,7 @@ extension DonationSubscriptionManager {
             subscriptionKVS.removeValue(forKey: mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction)
         }
         transaction.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(.hasExpiredGiftBadgeDidChangeNotification, object: nil)
+            NotificationCenter.default.postOnMainThread(name: .hasExpiredGiftBadgeDidChangeNotification, object: nil)
         }
     }
 

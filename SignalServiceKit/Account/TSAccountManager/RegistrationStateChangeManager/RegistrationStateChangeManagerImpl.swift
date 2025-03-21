@@ -261,15 +261,15 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     // MARK: Notifications
 
     private func postRegistrationStateDidChangeNotification() {
-        NotificationCenter.default.postNotificationNameAsync(
-            .registrationStateDidChange,
+        NotificationCenter.default.postOnMainThread(
+            name: .registrationStateDidChange,
             object: nil
         )
     }
 
     private func postLocalNumberDidChangeNotification() {
-        NotificationCenter.default.postNotificationNameAsync(
-            .localNumberDidChange,
+        NotificationCenter.default.postOnMainThread(
+            name: .localNumberDidChange,
             object: nil
         )
     }

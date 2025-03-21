@@ -273,7 +273,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     public func fireIdentityStateChangeNotification(after tx: DBWriteTransaction) {
         tx.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(.identityStateDidChange, object: nil)
+            NotificationCenter.default.postOnMainThread(name: .identityStateDidChange, object: nil)
         }
     }
 

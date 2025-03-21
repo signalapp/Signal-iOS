@@ -43,7 +43,7 @@ public class OutageDetection {
 
         if oldValue.hasOutage != newValue.hasOutage {
             Logger.info("hasOutage? \(newValue.hasOutage)")
-            NotificationCenter.default.postNotificationNameAsync(OutageDetection.outageStateDidChange, object: nil)
+            NotificationCenter.default.postOnMainThread(name: OutageDetection.outageStateDidChange, object: nil)
         }
 
         if oldValue.shouldCheck != newValue.shouldCheck {

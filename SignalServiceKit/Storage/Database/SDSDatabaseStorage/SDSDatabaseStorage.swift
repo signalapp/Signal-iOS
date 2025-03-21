@@ -216,7 +216,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         //       de-bouncing notifications while inactive and only updating
         //       once when we become active, we should be able to effectively
         //       skip most of the perf cost.
-        NotificationCenter.default.postNotificationNameAsync(SDSDatabaseStorage.didReceiveCrossProcessNotificationActiveAsync, object: nil)
+        NotificationCenter.default.postOnMainThread(name: SDSDatabaseStorage.didReceiveCrossProcessNotificationActiveAsync, object: nil)
     }
 
     // MARK: - Reading & Writing

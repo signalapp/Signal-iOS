@@ -144,7 +144,7 @@ class GroupMemberUpdaterTemporaryShimsImpl: GroupMemberUpdaterTemporaryShims {
 
     func didUpdateRecords(groupThreadId: String, transaction: DBWriteTransaction) {
         transaction.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(TSGroupThread.membershipDidChange, object: groupThreadId)
+            NotificationCenter.default.postOnMainThread(name: TSGroupThread.membershipDidChange, object: groupThreadId)
         }
     }
 }

@@ -33,8 +33,8 @@ class CaptchaChallenge: SpamChallenge {
     }
 
     private func requestCaptchaFromUser() {
-        NotificationCenter.default.postNotificationNameAsync(
-            SpamChallengeResolver.NeedsCaptchaNotification, object: nil)
+        NotificationCenter.default.postOnMainThread(
+            name: SpamChallengeResolver.NeedsCaptchaNotification, object: nil)
     }
 
     private func notifyServerOfCompletedCaptcha() {

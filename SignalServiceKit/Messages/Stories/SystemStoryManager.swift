@@ -632,7 +632,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         if updateStorageService {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
-        NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: .onboardingStoryStateDidChange, object: nil)
     }
 
     // MARK: Onboarding Story View Status
@@ -665,7 +665,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
             key: Constants.kvStoreOnboardingStoryViewStatusKey,
             transaction: transaction
         )
-        NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: .onboardingStoryStateDidChange, object: nil)
     }
 
     private func setOnboardingStoryViewedOnThisDevice(
@@ -685,7 +685,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         if shouldUpdateStorageService {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingLocalAccountUpdates()
         }
-        NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: .onboardingStoryStateDidChange, object: nil)
     }
 
     // MARK: Onboarding Story Download Status
@@ -733,7 +733,7 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
 
     private func setSystemStoryHidden(_ hidden: Bool, transaction: DBWriteTransaction) {
         kvStore.setBool(hidden, key: Constants.kvStoreHiddenStateKey, transaction: transaction)
-        NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: .onboardingStoryStateDidChange, object: nil)
     }
 
     internal enum Constants {

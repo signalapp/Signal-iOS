@@ -160,7 +160,7 @@ public class MessageProcessor {
             while autoreleasepool(invoking: { self.drainNextBatch() }) {}
             self.isDrainingPendingEnvelopes.set(false)
             if self.pendingEnvelopes.isEmpty {
-                NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidDrainQueue, object: nil)
+                NotificationCenter.default.postOnMainThread(name: Self.messageProcessorDidDrainQueue, object: nil)
             }
         }
     }

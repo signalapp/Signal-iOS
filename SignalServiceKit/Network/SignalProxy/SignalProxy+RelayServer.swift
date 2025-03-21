@@ -13,7 +13,7 @@ extension SignalProxy {
 
         @Atomic private(set) var isReady = false {
             didSet {
-                NotificationCenter.default.postNotificationNameAsync(.isSignalProxyReadyDidChange, object: nil)
+                NotificationCenter.default.postOnMainThread(name: .isSignalProxyReadyDidChange, object: nil)
             }
         }
 

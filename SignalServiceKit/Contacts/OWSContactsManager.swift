@@ -460,8 +460,8 @@ extension OWSContactsManager: ContactManager {
             SSKEnvironment.shared.databaseStorageRef.touch(thread: contactThread, shouldReindex: false, tx: tx)
         }
         tx.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(
-                Self.skipContactAvatarBlurDidChange,
+            NotificationCenter.default.postOnMainThread(
+                name: Self.skipContactAvatarBlurDidChange,
                 object: nil,
                 userInfo: [
                     Self.skipContactAvatarBlurAddressKey: address
@@ -489,8 +489,8 @@ extension OWSContactsManager: ContactManager {
         SSKEnvironment.shared.databaseStorageRef.touch(thread: groupThread, shouldReindex: false, tx: transaction)
 
         transaction.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(
-                Self.skipGroupAvatarBlurDidChange,
+            NotificationCenter.default.postOnMainThread(
+                name: Self.skipGroupAvatarBlurDidChange,
                 object: nil,
                 userInfo: [
                     Self.skipGroupAvatarBlurGroupUniqueIdKey: groupUniqueId
@@ -818,7 +818,7 @@ extension OWSContactsManager: ContactManager {
 
     private func didUpdateSignalAccounts(shouldNotify: Bool) {
         if shouldNotify {
-            NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerSignalAccountsDidChange, object: nil)
+            NotificationCenter.default.postOnMainThread(name: .OWSContactsManagerSignalAccountsDidChange, object: nil)
         }
     }
 
@@ -1084,7 +1084,7 @@ extension OWSContactsManager: ContactManager {
     private func setFetchedSystemContacts(_ fetchedSystemContacts: FetchedSystemContacts) {
         systemContactsCache.fetchedSystemContacts.set(fetchedSystemContacts)
         cnContactCache.removeAllObjects()
-        NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerContactsDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: .OWSContactsManagerContactsDidChange, object: nil)
     }
 
     public func cnContact(withId cnContactId: String?) -> CNContact? {

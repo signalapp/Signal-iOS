@@ -42,8 +42,8 @@ extension TSGroupThread {
 
         if didAvatarChange {
             tx.addSyncCompletion {
-                NotificationCenter.default.postNotificationNameAsync(
-                    .TSGroupThreadAvatarChanged,
+                NotificationCenter.default.postOnMainThread(
+                    name: .TSGroupThreadAvatarChanged,
                     object: self.uniqueId,
                     userInfo: [TSGroupThread_NotificationKey_UniqueId: self.uniqueId]
                 )

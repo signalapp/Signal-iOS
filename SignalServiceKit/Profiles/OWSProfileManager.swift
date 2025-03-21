@@ -211,7 +211,7 @@ public class OWSProfileManager: ProfileManagerProtocol {
             }
 
             for address in addressesToRemove {
-                NotificationCenter.default.postNotificationNameAsync(UserProfileNotifications.profileWhitelistDidChange, object: nil, userInfo: [
+                NotificationCenter.default.postOnMainThread(name: UserProfileNotifications.profileWhitelistDidChange, object: nil, userInfo: [
                     UserProfileNotifications.profileAddressKey: address,
                     Self.notificationKeyUserProfileWriter: NSNumber(value: userProfileWriter.rawValue),
                 ])
@@ -246,7 +246,7 @@ public class OWSProfileManager: ProfileManagerProtocol {
             }
 
             for address in addressesToAdd {
-                NotificationCenter.default.postNotificationNameAsync(UserProfileNotifications.profileWhitelistDidChange, object: nil, userInfo: [
+                NotificationCenter.default.postOnMainThread(name: UserProfileNotifications.profileWhitelistDidChange, object: nil, userInfo: [
                     UserProfileNotifications.profileAddressKey: address,
                     Self.notificationKeyUserProfileWriter: NSNumber(value: userProfileWriter.rawValue),
                 ])
@@ -305,7 +305,7 @@ public class OWSProfileManager: ProfileManagerProtocol {
                 self.recordPendingUpdatesForStorageService(groupId: groupId)
             }
 
-            NotificationCenter.default.postNotificationNameAsync(UserProfileNotifications.profileWhitelistDidChange, object: nil, userInfo: [
+            NotificationCenter.default.postOnMainThread(name: UserProfileNotifications.profileWhitelistDidChange, object: nil, userInfo: [
                 UserProfileNotifications.profileGroupIdKey: groupId,
                 Self.notificationKeyUserProfileWriter: NSNumber(value: userProfileWriter.rawValue)
             ])

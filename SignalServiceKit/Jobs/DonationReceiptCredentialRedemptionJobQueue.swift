@@ -647,7 +647,7 @@ public enum DonationReceiptCredentialRedemptionJob {
     public static let didFailNotification = NSNotification.Name("DonationReceiptCredentialRedemptionJob.DidFail")
 
     fileprivate static func postNotification(name: NSNotification.Name) {
-        NotificationCenter.default.postNotificationNameAsync(name, object: nil, userInfo: nil)
+        NotificationCenter.default.postOnMainThread(name: name, object: nil, userInfo: nil)
     }
 }
 

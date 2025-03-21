@@ -847,7 +847,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
         keyValueStore.setUInt(interfaceSet.rawValue, key: highDataPreferenceKey, transaction: writeTx)
         writeTx.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(callServicePreferencesDidChange, object: nil)
+            NotificationCenter.default.postOnMainThread(name: callServicePreferencesDidChange, object: nil)
         }
     }
 

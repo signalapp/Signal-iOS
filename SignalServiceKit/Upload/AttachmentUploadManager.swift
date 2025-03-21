@@ -1058,8 +1058,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     }
 
     private func updateProgress(id: Attachment.IDType, progress: Double) {
-        NotificationCenter.default.postNotificationNameAsync(
-            Upload.Constants.attachmentUploadProgressNotification,
+        NotificationCenter.default.postOnMainThread(
+            name: Upload.Constants.attachmentUploadProgressNotification,
             object: nil,
             userInfo: [
                 Upload.Constants.uploadProgressKey: progress,

@@ -46,8 +46,8 @@ public class StickerManager: NSObject {
         maxFrequencySeconds: 0.5,
         onQueue: .asyncOnQueue(queue: .global()),
         notifyBlock: {
-            NotificationCenter.default.postNotificationNameAsync(packsDidChange, object: nil)
-            NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
+            NotificationCenter.default.postOnMainThread(name: packsDidChange, object: nil)
+            NotificationCenter.default.postOnMainThread(name: stickersOrPacksDidChange, object: nil)
         }
     )
 
@@ -56,7 +56,7 @@ public class StickerManager: NSObject {
         maxFrequencySeconds: 0.5,
         onQueue: .asyncOnQueue(queue: .global()),
         notifyBlock: {
-            NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
+            NotificationCenter.default.postOnMainThread(name: stickersOrPacksDidChange, object: nil)
         }
     )
 
@@ -956,7 +956,7 @@ public class StickerManager: NSObject {
             maxCount: kRecentStickersMaxCount,
             tx: transaction
         )
-        NotificationCenter.default.postNotificationNameAsync(recentStickersDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: recentStickersDidChange, object: nil)
     }
 
     private class func removeFromRecentStickers(
@@ -964,7 +964,7 @@ public class StickerManager: NSObject {
         transaction: DBWriteTransaction
     ) {
         store.removeFromOrderedUniqueArray(key: kRecentStickersKey, value: stickerInfo.asKey(), tx: transaction)
-        NotificationCenter.default.postNotificationNameAsync(recentStickersDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: recentStickersDidChange, object: nil)
     }
 
     // Returned in descending order of recency.

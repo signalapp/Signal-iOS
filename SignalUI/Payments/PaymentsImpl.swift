@@ -242,7 +242,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
 
         // TODO: We could only fire if the value actually changed.
-        NotificationCenter.default.postNotificationNameAsync(Self.currentPaymentBalanceDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: Self.currentPaymentBalanceDidChange, object: nil)
     }
 
     private var canUsePayments: Bool {

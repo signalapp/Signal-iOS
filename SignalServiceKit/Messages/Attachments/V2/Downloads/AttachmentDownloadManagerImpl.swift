@@ -1621,8 +1621,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .attachment(_, let attachmentId):
                 progressStates.setFractionCompleted(fractionCompleted, for: attachmentId)
 
-                NotificationCenter.default.postNotificationNameAsync(
-                    AttachmentDownloads.attachmentDownloadProgressNotification,
+                NotificationCenter.default.postOnMainThread(
+                    name: AttachmentDownloads.attachmentDownloadProgressNotification,
                     object: nil,
                     userInfo: [
                         AttachmentDownloads.attachmentDownloadProgressKey: NSNumber(value: fractionCompleted),

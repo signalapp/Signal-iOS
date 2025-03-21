@@ -81,8 +81,8 @@ public class MediaBandwidthPreferenceStoreImpl: MediaBandwidthPreferenceStore {
         )
 
         tx.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(
-                MediaBandwidthPreferences.mediaBandwidthPreferencesDidChange,
+            NotificationCenter.default.postOnMainThread(
+                name: MediaBandwidthPreferences.mediaBandwidthPreferencesDidChange,
                 object: nil
             )
         }
@@ -93,8 +93,8 @@ public class MediaBandwidthPreferenceStoreImpl: MediaBandwidthPreferenceStore {
             kvStore.removeValue(forKey: mediaDownloadType.rawValue, transaction: tx)
         }
         tx.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(
-                MediaBandwidthPreferences.mediaBandwidthPreferencesDidChange,
+            NotificationCenter.default.postOnMainThread(
+                name: MediaBandwidthPreferences.mediaBandwidthPreferencesDidChange,
                 object: nil
             )
         }

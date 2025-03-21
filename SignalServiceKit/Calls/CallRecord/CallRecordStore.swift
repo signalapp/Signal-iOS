@@ -323,7 +323,7 @@ class CallRecordStoreImpl: CallRecordStore {
         tx: DBWriteTransaction
     ) {
         tx.addSyncCompletion {
-            NotificationCenter.default.postNotificationAsync(
+            NotificationCenter.default.postOnMainThread(
                 CallRecordStoreNotification(updateType: updateType).asNotification
             )
         }

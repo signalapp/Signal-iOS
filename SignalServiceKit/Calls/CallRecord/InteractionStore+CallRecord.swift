@@ -115,7 +115,7 @@ public extension InteractionStore {
         tx: DBWriteTransaction
     ) {
         tx.addSyncCompletion {
-            NotificationCenter.default.postNotificationAsync(
+            NotificationCenter.default.postOnMainThread(
                 GroupCallInteractionUpdatedNotification(
                     callId: callId,
                     groupThreadRowId: groupThreadRowId

@@ -115,8 +115,8 @@ public class AppExpiryImpl: AppExpiry {
             }
 
             transaction.addSyncCompletion {
-                NotificationCenter.default.postNotificationNameAsync(
-                    Self.AppExpiryDidChange,
+                NotificationCenter.default.postOnMainThread(
+                    name: Self.AppExpiryDidChange,
                     object: nil
                 )
             }

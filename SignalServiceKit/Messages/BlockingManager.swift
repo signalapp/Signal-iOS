@@ -59,7 +59,7 @@ public class BlockingManager {
             clearNeedsSync(tx: tx)
         }
         tx.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(Self.blockListDidChange, object: nil)
+            NotificationCenter.default.postOnMainThread(name: Self.blockListDidChange, object: nil)
         }
     }
 
@@ -353,7 +353,7 @@ public class BlockingManager {
     ) {
         Logger.info("")
         transaction.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(Self.blockedSyncDidComplete, object: nil)
+            NotificationCenter.default.postOnMainThread(name: Self.blockedSyncDidComplete, object: nil)
         }
 
         var didChange = false

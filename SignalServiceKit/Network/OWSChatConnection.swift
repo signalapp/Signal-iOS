@@ -280,7 +280,7 @@ public class OWSChatConnection {
         for (_, waiter) in continuationsToResolve {
             waiter.resume(with: .success(()))
         }
-        NotificationCenter.default.postNotificationNameAsync(Self.chatConnectionStateDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: Self.chatConnectionStateDidChange, object: nil)
     }
 
     fileprivate var cachedCurrentState: OWSChatConnectionState {

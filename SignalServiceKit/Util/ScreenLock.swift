@@ -66,7 +66,7 @@ public class ScreenLock: NSObject {
                                        transaction: transaction)
         }
 
-        NotificationCenter.default.postNotificationNameAsync(ScreenLock.ScreenLockDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: ScreenLock.ScreenLockDidChange, object: nil)
     }
 
     public func screenLockTimeout() -> TimeInterval {
@@ -88,7 +88,7 @@ public class ScreenLock: NSObject {
                                          transaction: transaction)
         }
 
-        NotificationCenter.default.postNotificationNameAsync(ScreenLock.ScreenLockDidChange, object: nil)
+        NotificationCenter.default.postOnMainThread(name: ScreenLock.ScreenLockDidChange, object: nil)
     }
 
     // MARK: - Methods

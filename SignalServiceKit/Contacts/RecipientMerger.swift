@@ -961,7 +961,7 @@ public class RecipientMergeNotifier: RecipientMergeObserver {
 
     func didLearnAssociation(mergedRecipient: MergedRecipient, tx: DBWriteTransaction) {
         tx.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(.didLearnRecipientAssociation, object: self)
+            NotificationCenter.default.postOnMainThread(name: .didLearnRecipientAssociation, object: self)
         }
     }
 }

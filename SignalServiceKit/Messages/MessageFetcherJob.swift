@@ -225,7 +225,7 @@ public class MessageFetcherJob {
             try await fetchMessagesViaRestWhenReady()
         } else {
             self.didFinishFetchingViaREST.set(true)
-            NotificationCenter.default.postNotificationNameAsync(MessageFetcherJob.didChangeStateNotificationName, object: nil)
+            NotificationCenter.default.postOnMainThread(name: MessageFetcherJob.didChangeStateNotificationName, object: nil)
         }
     }
 

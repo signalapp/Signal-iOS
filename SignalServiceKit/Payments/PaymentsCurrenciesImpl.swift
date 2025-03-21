@@ -134,7 +134,7 @@ public class PaymentsCurrenciesImpl: PaymentsCurrenciesSwift, PaymentsCurrencies
                 }
             }
             self._conversionRates = newConversionRates
-            NotificationCenter.default.postNotificationNameAsync(Self.paymentConversionRatesDidChange,
+            NotificationCenter.default.postOnMainThread(name: Self.paymentConversionRatesDidChange,
                                                                  object: nil)
         }
     }

@@ -1248,12 +1248,12 @@ extension OWSUserProfile {
             switch internalAddress {
             case .localUser:
                 if oldProfileKey != newProfileKey {
-                    NotificationCenter.default.postNotificationNameAsync(UserProfileNotifications.localProfileKeyDidChange, object: nil)
+                    NotificationCenter.default.postOnMainThread(name: UserProfileNotifications.localProfileKeyDidChange, object: nil)
                 }
-                NotificationCenter.default.postNotificationNameAsync(UserProfileNotifications.localProfileDidChange, object: nil)
+                NotificationCenter.default.postOnMainThread(name: UserProfileNotifications.localProfileDidChange, object: nil)
             case .otherUser(let address):
-                NotificationCenter.default.postNotificationNameAsync(
-                    UserProfileNotifications.otherUsersProfileDidChange,
+                NotificationCenter.default.postOnMainThread(
+                    name: UserProfileNotifications.otherUsersProfileDidChange,
                     object: nil,
                     userInfo: [UserProfileNotifications.profileAddressKey: address]
                 )

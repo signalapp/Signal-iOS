@@ -633,7 +633,7 @@ private class EmojiSearchIndex: NSObject {
                 if let localization = localization {
                     self.fetchEmojiSearchIndex(for: localization, version: remoteVersion)
                 }
-                NotificationCenter.default.postNotificationNameAsync(self.EmojiSearchManifestFetchedNotification, object: nil)
+                NotificationCenter.default.postOnMainThread(name: self.EmojiSearchManifestFetchedNotification, object: nil)
             }
         }.catch { error in
             owsFailDebug("Failed to download manifest \(error)")
@@ -728,7 +728,7 @@ private class EmojiSearchIndex: NSObject {
                 self.emojiSearchIndexKVS.setObject(index, key: localization, transaction: transaction)
             }
 
-            NotificationCenter.default.postNotificationNameAsync(self.EmojiSearchIndexFetchedNotification, object: nil)
+            NotificationCenter.default.postOnMainThread(name: self.EmojiSearchIndexFetchedNotification, object: nil)
 
         }.catch { error in
             owsFailDebug("Failed to download manifest \(error)")

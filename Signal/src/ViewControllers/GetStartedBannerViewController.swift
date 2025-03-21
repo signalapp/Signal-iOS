@@ -297,7 +297,7 @@ extension GetStartedBannerViewController {
         }
 
         writeTx.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(activeCardsDidChange, object: nil)
+            NotificationCenter.default.postOnMainThread(name: activeCardsDidChange, object: nil)
         }
     }
 
@@ -330,7 +330,7 @@ extension GetStartedBannerViewController {
         }
 
         writeTx.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(activeCardsDidChange, object: nil)
+            NotificationCenter.default.postOnMainThread(name: activeCardsDidChange, object: nil)
         }
     }
 
@@ -346,7 +346,7 @@ extension GetStartedBannerViewController {
         Self.keyValueStore.removeValue(forKey: key, transaction: writeTx)
 
         writeTx.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(activeCardsDidChange, object: nil)
+            NotificationCenter.default.postOnMainThread(name: activeCardsDidChange, object: nil)
         }
     }
 }

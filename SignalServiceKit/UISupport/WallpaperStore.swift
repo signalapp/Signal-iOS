@@ -128,7 +128,7 @@ public class WallpaperStore {
 
     private func postWallpaperDidChangeNotification(for threadUniqueId: String?, tx: DBWriteTransaction) {
         tx.addSyncCompletion {
-            NotificationCenter.default.postNotificationNameAsync(Self.wallpaperDidChangeNotification, object: threadUniqueId)
+            NotificationCenter.default.postOnMainThread(name: Self.wallpaperDidChangeNotification, object: threadUniqueId)
         }
     }
 }
