@@ -191,7 +191,12 @@ public class MessageFetcherJob {
     }
 
     private func fetchMessagesViaRest() async throws {
-        let batch = try await fetchBatchViaRest()
+        let batch = try await Retry.performWithBackoff(maxAttempts: 2) {
+            // If we get a network failure (≈10 seconds) or 5xx error (< 10 seconds),
+            // it's worth retrying just once in the NSE. This helps ensures we stay
+            // within the 30s execution limit.
+            return try await fetchBatchViaRest()
+        }
 
         let envelopeJobs: [EnvelopeJob] = batch.envelopes.map { envelope in
             let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
